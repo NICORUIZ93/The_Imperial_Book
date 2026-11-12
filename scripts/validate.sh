@@ -43,9 +43,10 @@ const TRACK_SOURCES = {
   ios: 'web/src/app/tracks/ios.track.ts',
   flutter: 'web/src/app/tracks/flutter.track.ts',
   rutaflow: 'web/src/app/tracks/rutaflow.track.ts',
+  'control-1': 'web/src/app/tracks/control-1.track.ts',
 };
 
-const trackIdsInData = [...angularCourseData.matchAll(/id:\s*'([a-z-]+)'/g)].map((m) => m[1]);
+const trackIdsInData = [...angularCourseData.matchAll(/id:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
 for (const trackId of Object.keys(TRACK_SOURCES)) {
   if (!trackIdsInData.includes(trackId)) {
     throw new Error(`web/src/app/course-data.ts no registra el track '${trackId}' en TRACKS`);

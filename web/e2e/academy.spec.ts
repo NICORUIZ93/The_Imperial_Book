@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.card').first()).toBeVisible();
-  await expect(page.locator('.hero-stats')).toContainText('14');
+  await expect(page.locator('.hero-stats')).toContainText('15');
 });
 
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
@@ -17,7 +17,7 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
 
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.group-title').first()).toBeVisible();
-  await expect(page.locator('.card')).toHaveCount(14);
+  await expect(page.locator('.card')).toHaveCount(15);
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
 });
 
@@ -289,4 +289,32 @@ test('inicio desde cero: mapa Archify y lectura responsive sin errores', async (
   await popup.screenshot({ path: `/tmp/academia-archify-mobile-${test.info().project.name}.png` });
   expect(errors).toEqual([]);
   await popup.close();
+});
+
+test('control 1: renderiza fórmulas TeX con KaTeX y las figuras del curso', async ({ page }) => {
+  await page.goto('/curso/control-1/12');
+
+  await expect(page.locator('.lesson-markdown .katex').first()).toBeVisible();
+  await expect(page.locator('.lesson-markdown .math-display .katex-display').first()).toBeVisible();
+  // Ninguna fórmula debe quedar sin renderizar ni marcada como error de KaTeX.
+  await expect(page.locator('.lesson-markdown .math:not(.math-rendered)')).toHaveCount(0);
+  await expect(page.locator('.lesson-markdown .katex-error')).toHaveCount(0);
+  // El TeX original solo puede quedar dentro de la anotación MathML accesible de KaTeX.
+  const rawTex = await page.locator('.lesson-markdown').evaluate(root => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let found = 0;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.parentElement?.closest('.katex')) continue;
+      if (/\\(?:dfrac|frac|omega|zeta|\(|\[)/.test(node.textContent ?? '')) found += 1;
+    }
+    return found;
+  });
+  expect(rawTex).toBe(0);
+  await expect(page.locator('iframe.anatomy-figure-frame')).toHaveCount(1);
+  // Las figuras están dentro de temas plegados: se comprueba que existan y que el SVG se sirva.
+  const figure = page.locator('.lesson-markdown img[src*="figures/control-1/"]').first();
+  await expect(figure).toHaveCount(1);
+  const src = await figure.getAttribute('src');
+  expect((await page.request.get(`/${src}`)).status()).toBe(200);
+  expect((await page.request.get('/content/figures/control-1-segundo-orden/figure-light.html')).status()).toBe(200);
 });

@@ -28,6 +28,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "{katex.min.css,fonts/*.woff2}",
+                "input": "node_modules/katex/dist",
+                "output": "katex"
               }
             ],
             "styles": [

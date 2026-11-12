@@ -3,10 +3,15 @@
 Academia en español para estudiar desarrollo profesional y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 14 rutas, 241 módulos y 1062 temas editoriales en formato de
+La academia reúne 15 rutas, 264 módulos y 1145 temas editoriales en formato de
 libro. La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
+
+La ruta **Control 1** (`web/public/content/control-1/`) cubre sistemas de control
+desde cero: Laplace, funciones de transferencia, respuesta temporal, estabilidad,
+lugar de las raíces, PID y compensadores. Sus fórmulas se escriben en TeX
+(`\(...\)` en línea y `\[...\]` en bloque) y el visor las renderiza con KaTeX.
 
 - [Guia web](web/README.md)
 - [Mapa compacto del repo](docs/repo-graph.md)
@@ -142,8 +147,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 14 tracks, 241
-módulos y 1062 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 15 tracks, 264
+módulos y 1145 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -217,10 +222,11 @@ como certificaciones.
 | iOS | 15 | SwiftUI, concurrencia moderna, SwiftData |
 | Flutter | 16 | Widgets, gestión de estado, plataformas nativas |
 | RutaFlow | 8 | Proyecto integrador de entregas, GPS, datos y operación |
+| Control 1 | 23 | Laplace, respuesta temporal, estabilidad, PID y diseño |
 
 `scripts/validate.sh` valida automaticamente que el numero de archivos
 Markdown de cada track coincida con los modulos declarados en su fuente
-TypeScript, que el índice web corresponda a esos 14 tracks y que los reportes de
+TypeScript, que el índice web corresponda a esos 15 tracks y que los reportes de
 calidad permanezcan sincronizados con el Markdown real.
 
 ## Actualización tecnológica

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web/public/content"
 TRACKS = (
     "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
-    "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
+    "java", "spring-boot", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow", "control-1",
 )
 TRACK_SOURCES = {
     "foundations": "web/src/app/tracks/foundations.track.ts",
@@ -25,6 +25,7 @@ TRACK_SOURCES = {
     "ios": "web/src/app/tracks/ios.track.ts",
     "flutter": "web/src/app/tracks/flutter.track.ts",
     "rutaflow": "web/src/app/tracks/rutaflow.track.ts",
+    "control-1": "web/src/app/tracks/control-1.track.ts",
 }
 
 errors: list[str] = []
@@ -75,7 +76,7 @@ track_labels = {
     "javascript": "JavaScript", "node": "Node.js", "angular": "Angular",
     "react": "React", "java": "Java", "spring-boot": "Spring Boot",
     "kotlin-multiplatform": "Kotlin Multiplatform", "android": "Android",
-    "ios": "iOS", "flutter": "Flutter", "rutaflow": "RutaFlow",
+    "ios": "iOS", "flutter": "Flutter", "rutaflow": "RutaFlow", "control-1": "Control 1",
 }
 for track, label in track_labels.items():
     track_modules = len(list((CONTENT / track).glob("modulo-*.md")))

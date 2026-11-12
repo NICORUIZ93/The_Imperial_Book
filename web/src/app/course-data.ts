@@ -12,6 +12,7 @@ import { IOS_MODULES } from './tracks/ios.track';
 import { FLUTTER_MODULES } from './tracks/flutter.track';
 import { FOUNDATIONS_MODULES } from './tracks/foundations.track';
 import { RUTAFLOW_MODULES } from './tracks/rutaflow.track';
+import { CONTROL_1_MODULES } from './tracks/control-1.track';
 
 export type { CourseModule, Track };
 export { createModule };
@@ -880,6 +881,7 @@ export const TRACKS: Track[] = [
   { id: 'android', name: 'Android con Jetpack Compose', shortName: 'Android', tagline: 'Apps Android nativas modernas con Compose y Kotlin.', color: '#15803d', icon: 'smartphone', modules: ANDROID_MODULES },
   { id: 'ios', name: 'iOS con SwiftUI', shortName: 'iOS', tagline: 'Apps iOS nativas con Swift, SwiftUI y concurrencia moderna.', color: '#334155', icon: 'apple', modules: IOS_MODULES },
   { id: 'flutter', name: 'Flutter', shortName: 'Flutter', tagline: 'Una base de código para Android, iOS y web con Dart.', color: '#1e40af', icon: 'wind', modules: FLUTTER_MODULES },
+  { id: 'control-1', name: 'Control 1 — Sistemas de control desde cero', shortName: 'Control 1', tagline: 'Laplace, funciones de transferencia, respuesta temporal, estabilidad, PID y diseño, con cada fórmula demostrada.', color: '#1d4ed8', icon: 'activity', modules: CONTROL_1_MODULES },
 ];
 
 export const findTrack = (trackId: string): Track | undefined => TRACKS.find(t => t.id === trackId);

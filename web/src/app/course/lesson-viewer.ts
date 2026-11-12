@@ -17,6 +17,17 @@ import { learningPrompt, LearningPromptMode } from '../learning-prompts';
 
 let mermaidInitialized = false;
 
+/** La hoja de estilos de KaTeX (y sus fuentes) se copia a /katex en el build y
+ * solo se carga cuando una lección tiene fórmulas, para no inflar el bundle inicial. */
+function ensureKatexStylesheet(): void {
+  if (document.getElementById('katex-stylesheet')) return;
+  const link = document.createElement('link');
+  link.id = 'katex-stylesheet';
+  link.rel = 'stylesheet';
+  link.href = new URL('katex/katex.min.css', document.baseURI).href;
+  document.head.appendChild(link);
+}
+
 export interface TocItem {
   id: string;
   text: string;
@@ -40,6 +51,7 @@ const TRACK_OFFICIAL_SOURCES: Record<string, { label: string; url: string }> = {
   flutter: { label: 'Aprende Flutter', url: 'https://docs.flutter.dev/learn' },
   devops: { label: 'Tutoriales de Kubernetes', url: 'https://kubernetes.io/docs/tutorials/' },
   cloud: { label: 'Floci AWS oficial', url: 'https://floci.io/aws/' },
+  'control-1': { label: 'Control Tutorials (Universidad de Michigan)', url: 'https://ctms.engin.umich.edu/CTMS/index.php?aux=Home' },
 };
 
 const CLOUD_MODULE_SOURCES: Record<number, { label: string; url: string }> = {
@@ -340,6 +352,7 @@ export class LessonViewerComponent implements OnDestroy {
       }
     }
 
+    await this.renderMath(container);
     this.prepareAnatomyFigures(container);
     this.prepareArchifyVisuals(container);
     this.enhanceEducationalContent(container);
@@ -352,6 +365,26 @@ export class LessonViewerComponent implements OnDestroy {
     window.removeEventListener('scroll', this.updateReadingProgress);
     window.addEventListener('scroll', this.updateReadingProgress, { passive: true });
     this.updateReadingProgress();
+  }
+
+  /** Renderiza las fórmulas TeX marcadas por content.service.ts. KaTeX se carga
+   * solo cuando la lección tiene fórmulas; si una expresión falla, se muestra el
+   * TeX original en rojo (throwOnError: false) en lugar de romper la lección. */
+  private async renderMath(container: HTMLElement): Promise<void> {
+    const nodes = Array.from(container.querySelectorAll<HTMLElement>('.math:not(.math-rendered)'));
+    if (!nodes.length) return;
+    ensureKatexStylesheet();
+    const { default: katex } = await import('katex');
+    for (const node of nodes) {
+      const tex = node.textContent ?? '';
+      katex.render(tex, node, {
+        displayMode: node.classList.contains('math-display'),
+        throwOnError: false,
+        strict: false,
+        output: 'htmlAndMathml',
+      });
+      node.classList.add('math-rendered');
+    }
   }
 
   private prepareMermaidDiagrams(container: HTMLElement): void {

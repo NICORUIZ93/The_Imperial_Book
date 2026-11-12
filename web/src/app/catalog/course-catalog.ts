@@ -65,12 +65,14 @@ export class CourseCatalogComponent {
   readonly featuredTracks = computed(() => this.cards().filter(card => ['rutaflow', 'cloud', 'devops'].includes(card.id)));
   readonly foundationTracks = computed(() => this.cards().filter(card => ['foundations', 'javascript', 'java', 'node', 'angular', 'react', 'spring-boot'].includes(card.id)));
   readonly mobileTracks = computed(() => this.cards().filter(card => ['flutter', 'android', 'ios', 'kotlin-multiplatform'].includes(card.id)));
+  readonly engineeringTracks = computed(() => this.cards().filter(card => ['control-1'].includes(card.id)));
 
   trackGroups() {
     return [
       { title: 'Recomendados', cards: this.featuredTracks() },
       { title: 'Lenguajes y frameworks', cards: this.foundationTracks() },
       { title: 'Móvil', cards: this.mobileTracks() },
+      { title: 'Ingeniería', cards: this.engineeringTracks() },
     ];
   }
 

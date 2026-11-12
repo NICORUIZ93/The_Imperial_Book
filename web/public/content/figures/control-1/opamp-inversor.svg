@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 210" role="img" aria-label="Op-amp inversor con Zi a la entrada y Zf de realimentación" font-family="IBM Plex Sans, sans-serif" font-size="14"><rect x="0" y="0" width="640" height="210" fill="#ffffff"/>
+      <g fill="none" stroke="#16213a" stroke-width="1.6">
+        <path d="M60 120H140"></path><rect x="140" y="105" width="90" height="30" rx="4"></rect><path d="M230 120H330"></path>
+        <path d="M290 120V50H350"></path><rect x="350" y="35" width="90" height="30" rx="4"></rect><path d="M440 50H520V130"></path>
+        <path d="M330 90V170L450 130Z"></path><path d="M450 130H580"></path>
+        <path d="M330 155H300V185"></path><path d="M288 185H312M293 191H307M298 197H302"></path>
+      </g>
+      <text x="185" y="125" text-anchor="middle" fill="#2557c7" font-weight="600">Zi</text>
+      <text x="395" y="55" text-anchor="middle" fill="#2557c7" font-weight="600">Zf</text>
+      <text x="338" y="111" fill="#16213a" font-size="18">−</text><text x="338" y="161" fill="#16213a" font-size="16">+</text>
+      <text x="30" y="125" fill="#16213a" font-weight="600">Vi</text><text x="590" y="135" fill="#16213a" font-weight="600">Vo</text>
+      <circle cx="290" cy="120" r="3.5" fill="#16213a"></circle><circle cx="520" cy="130" r="3.5" fill="#16213a"></circle>
+      <text x="262" y="142" fill="#d9480f" font-size="12">0 V</text>
+    </svg>

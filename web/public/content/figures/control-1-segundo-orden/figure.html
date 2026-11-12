@@ -1,0 +1,455 @@
+<!doctype html><html lang="es" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Simulador de segundo orden</title><style>
+/* Layout: curso por lecciones. Barra lateral con el temario; una lección visible a la vez (ruta por #hash) */
+:root {
+  --bg: #f4f6f9;
+  --paper: #ffffff;
+  --ink: #16213a;
+  --muted: #5b6579;
+  --line: #dde2ea;
+  --accent: #2557c7;
+  --accent-soft: #e6edfb;
+  --signal: #d9480f;
+  --signal-soft: #fdece4;
+  --good: #1f7a4d;
+  --good-soft: #e3f3ea;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1420; --paper: #161d2c; --ink: #e6eaf2; --muted: #9aa5ba; --line: #2a3346;
+    --accent: #7fa3f5; --accent-soft: #1d2a47; --signal: #ff8a5b; --signal-soft: #3a2219;
+    --good: #5fd39a; --good-soft: #17322a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1420; --paper: #161d2c; --ink: #e6eaf2; --muted: #9aa5ba; --line: #2a3346;
+  --accent: #7fa3f5; --accent-soft: #1d2a47; --signal: #ff8a5b; --signal-soft: #3a2219;
+  --good: #5fd39a; --good-soft: #17322a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.65; }
+mjx-container { color: inherit; display: inline-block; line-height: 0; }
+mjx-container svg { overflow: visible; }
+mjx-container:not([display]) { max-width: 100%; }
+mjx-container:not([display]) svg { max-width: 100%; height: auto; }
+mjx-container[display="true"] { display: block; text-align: center; overflow-x: auto; overflow-y: hidden; padding: 4px 0; margin: 12px 0 !important; }
+
+.shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1200px; margin: 0 auto; gap: 40px; padding: 0 24px; }
+nav.side { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 28px 0; }
+nav.side .brand { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.2; margin: 0 10px 18px; }
+nav.side ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.side a { display: grid; grid-template-columns: 36px 1fr; align-items: baseline; padding: 6px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 14.5px; line-height: 1.35; }
+nav.side a span.n { font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); }
+nav.side a:hover, nav.side a:focus-visible { background: var(--accent-soft); color: var(--ink); outline: none; }
+nav.side a.on { background: var(--accent); color: #fff; }
+nav.side a.on span.n { color: #fff; }
+nav.side .group { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 18px 10px 6px; }
+
+main { padding: 36px 0 120px; min-width: 0; }
+.prose { max-width: 740px; }
+section.lesson { display: none; }
+section.lesson.show { display: block; }
+
+.lesson-head { border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 8px; }
+.kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: .04em; }
+h1 { font-family: var(--font-display); font-size: clamp(32px, 4.6vw, 46px); line-height: 1.07; margin: 6px 0 12px; text-wrap: balance; letter-spacing: -0.01em; }
+.lead { font-size: 19px; color: var(--muted); margin: 0; }
+.goals { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 20px; margin: 20px 0 0; }
+.goals h4 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.goals ul { margin: 0; }
+.meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13.5px; color: var(--muted); margin-top: 12px; }
+.meta span { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 2px 12px; }
+
+h2 { font-family: var(--font-display); font-size: 27px; line-height: 1.2; margin: 44px 0 10px; text-wrap: balance; }
+h2 .num { font-family: var(--font-mono); font-size: 15px; color: var(--accent); margin-right: 10px; font-weight: 500; }
+h3 { font-size: 19px; margin: 28px 0 8px; line-height: 1.3; }
+h4 { font-size: 16px; margin: 0 0 6px; }
+p { margin: 0 0 14px; }
+ul, ol { padding-left: 22px; margin: 0 0 16px; }
+li { margin-bottom: 6px; }
+strong { font-weight: 600; }
+.idea { font-size: 18.5px; border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin: 6px 0 20px; }
+
+.formula { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 6px 20px; margin: 16px 0; }
+.formula .lbl { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+
+.procedure { background: var(--accent-soft); border-radius: 14px; padding: 16px 20px 8px; margin: 18px 0; }
+.procedure h4 { color: var(--accent); text-transform: uppercase; font-size: 13px; letter-spacing: .06em; }
+.procedure ol { margin-bottom: 8px; }
+
+.ex { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin: 16px 0; }
+.ex-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.ex-title { font-weight: 600; }
+.tag { display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 2px 9px; border-radius: 999px; }
+.tag.basic { background: var(--good-soft); color: var(--good); }
+.tag.mid { background: var(--accent-soft); color: var(--accent); }
+.tag.adv { background: var(--signal-soft); color: var(--signal); }
+.ex .ask { margin-bottom: 10px; }
+.ex ol.sol { counter-reset: st; list-style: none; padding: 0; margin: 10px 0 0; border-top: 1px dashed var(--line); padding-top: 12px; }
+.ex ol.sol > li { counter-increment: st; position: relative; padding-left: 38px; margin-bottom: 10px; }
+.ex ol.sol > li::before { content: counter(st); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 600; display: grid; place-items: center; }
+.ex .result { background: var(--good-soft); border-radius: 10px; padding: 4px 14px; margin-top: 8px; }
+.ex .why { font-size: 15px; color: var(--muted); }
+.ex .link { font-size: 14.5px; background: var(--bg); border-radius: 8px; padding: 6px 12px; margin: 0 0 10px; color: var(--muted); }
+.ex .link b { color: var(--accent); font-weight: 600; }
+.ex .ask b { font-weight: 600; }
+.ex ol.sol > li .do { }
+.ex ol.sol > li .calc { margin: 2px 0; }
+.ex ol.sol > li .por { font-size: 14.5px; color: var(--muted); border-left: 3px solid var(--accent-soft); padding: 2px 0 2px 12px; margin-top: 6px; line-height: 1.55; }
+.ex ol.sol > li .por b { color: var(--accent); font-weight: 600; }
+.ex ol.sol > li { margin-bottom: 14px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; margin: 16px 0; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; min-width: 0; }
+.card p:last-child { margin-bottom: 0; }
+
+.tip { background: var(--accent-soft); border-radius: 12px; padding: 14px 18px; margin: 18px 0; }
+.tip b { color: var(--accent); }
+.mistakes { background: var(--signal-soft); border-radius: 14px; padding: 16px 20px 6px; margin: 22px 0; }
+.mistakes h4 { color: var(--signal); text-transform: uppercase; font-size: 13px; letter-spacing: .06em; }
+.proof { background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--good); border-radius: 12px; padding: 14px 22px 10px; margin: 18px 0; }
+.proof h4 { color: var(--good); text-transform: uppercase; font-size: 13px; letter-spacing: .06em; }
+.proof .qed { text-align: right; color: var(--good); font-weight: 600; margin: 0; }
+.proof ol { margin-bottom: 6px; }
+.level { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; margin-left: 8px; vertical-align: 2px; }
+.level.b { background: var(--good-soft); color: var(--good); }
+.level.i { background: var(--accent-soft); color: var(--accent); }
+.level.a { background: var(--signal-soft); color: var(--signal); }
+.level.e { background: var(--ink); color: var(--bg); }
+
+.tbl { overflow-x: auto; margin: 14px 0 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; }
+
+figure { margin: 18px 0; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 10px; }
+figure svg { display: block; width: 100%; height: auto; }
+figcaption { font-size: 13.5px; color: var(--muted); padding-top: 6px; }
+.plot { width: 100%; }
+
+details.sol { margin: 10px 0 0; }
+details.sol summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 15px; list-style: none; display: inline-flex; gap: 6px; align-items: center; padding: 4px 0; }
+details.sol summary::-webkit-details-marker { display: none; }
+details.sol summary::before { content: "▸"; transition: transform .15s; }
+details.sol[open] summary::before { transform: rotate(90deg); }
+details.sol summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+details.sol > div { padding-top: 6px; }
+
+.practice { display: grid; gap: 10px; }
+.practice .card strong.q { color: var(--accent); margin-right: 6px; }
+
+.quiz { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin: 12px 0; }
+.quiz .qt { font-weight: 600; margin-bottom: 10px; }
+.quiz .opts { display: grid; gap: 8px; }
+.quiz button { font: inherit; font-size: 15.5px; text-align: left; background: var(--bg); color: var(--ink); border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 14px; cursor: pointer; }
+.quiz button:hover { border-color: var(--accent); }
+.quiz button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.quiz button.right { border-color: var(--good); background: var(--good-soft); }
+.quiz button.wrong { border-color: var(--signal); background: var(--signal-soft); }
+.quiz .fb { font-size: 15px; margin-top: 10px; min-height: 1em; }
+
+.pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); }
+.pager a { flex: 1; text-decoration: none; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.pager a:hover, .pager a:focus-visible { border-color: var(--accent); outline: none; }
+.pager a small { display: block; color: var(--muted); font-size: 12.5px; }
+.pager a.next { text-align: right; }
+
+/* Inicio */
+.roadmap { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 18px 0; }
+.roadmap a { text-decoration: none; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; }
+.roadmap a:hover, .roadmap a:focus-visible { border-color: var(--accent); outline: none; }
+.roadmap .n { font-family: var(--font-mono); color: var(--accent); font-size: 13px; }
+.roadmap .t { font-weight: 600; line-height: 1.3; }
+.roadmap .d { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+.diag { display: grid; gap: 10px; margin: 16px 0; }
+.diag .row { display: grid; grid-template-columns: 44px 1fr; gap: 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.diag .p { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--signal); }
+.diag .q { font-weight: 600; }
+.diag .a { color: var(--muted); font-size: 15.5px; }
+
+/* Simulador */
+.sim { display: grid; gap: 16px; }
+.sim .controls { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.ctrl label { display: flex; justify-content: space-between; font-size: 14.5px; font-weight: 500; }
+.ctrl output { font-family: var(--font-mono); color: var(--accent); }
+.ctrl input[type=range] { width: 100%; accent-color: var(--accent); }
+.ctrl input[type=range]:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.metric { background: var(--bg); border-radius: 10px; padding: 8px 12px; }
+.metric .k { font-size: 12px; color: var(--muted); }
+.metric .v { font-family: var(--font-mono); font-size: 16px; font-variant-numeric: tabular-nums; }
+
+.plan { display: grid; gap: 8px; margin: 14px 0; }
+.plan .day { display: grid; grid-template-columns: 64px 1fr; gap: 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+.plan .d { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--accent); line-height: 1.1; }
+.plan .d small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; gap: 0; padding: 0 16px; }
+  nav.side { position: static; height: auto; padding: 18px 0 0; }
+  nav.side ol { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  nav.side .group { display: none; }
+  h2 { font-size: 24px; }
+  .ex { padding: 16px; }
+}
+
+html, body { background: var(--bg); }
+body { padding: 14px 18px; font-size: 15px; }
+.wrap { max-width: 660px; margin: 0 auto; }
+h1 { font-family: var(--font-body); font-size: 17px; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: 13.5px; margin: 0 0 10px; }
+figure { margin: 0; }
+</style></head><body><div class="wrap"><h1>Simulador de segundo orden</h1><p class="sub">Mueve ζ, ωn y K: arriba la respuesta al escalón unitario, abajo los polos en el plano s.</p><figure>
+<div class="sim">
+<div class="plot" id="plotSim"></div>
+<div class="plot" id="plotPoles"></div>
+<div class="controls">
+<div class="ctrl"><label for="sK">Ganancia K <output id="oK"></output></label><input id="sK" max="5" min="0.5" step="0.5" type="range" value="3"/></div>
+<div class="ctrl"><label for="sZ">Amortiguamiento ζ <output id="oZ"></output></label><input id="sZ" max="1.5" min="0.05" step="0.01" type="range" value="0.3"/></div>
+<div class="ctrl"><label for="sW">Frecuencia ωn <output id="oW"></output></label><input id="sW" max="10" min="0.5" step="0.1" type="range" value="2"/></div>
+</div>
+<div class="metrics">
+<div class="metric"><div class="k">Tipo</div><div class="v" id="regime" style="font-size:14px"></div></div>
+<div class="metric"><div class="k">Sobrepico Mp</div><div class="v" id="mMp"></div></div>
+<div class="metric"><div class="k">Tiempo pico tp</div><div class="v" id="mTp"></div></div>
+<div class="metric"><div class="k">Establec. ts (2 %)</div><div class="v" id="mTs"></div></div>
+<div class="metric"><div class="k">Valor final</div><div class="v" id="mYf"></div></div>
+<div class="metric" style="grid-column: span 2"><div class="k">Polos</div><div class="v" id="mPo"></div></div>
+</div>
+</div>
+
+</figure></div><script>
+(function () {
+  /* ---------- Rutas: una lección visible a la vez ---------- */
+  var lessons = Array.prototype.slice.call(document.querySelectorAll('section.lesson'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.side a'));
+  lessons.forEach(function (sec, i) {
+    var prev = lessons[i - 1], next = lessons[i + 1];
+    var pg = document.createElement('div'); pg.className = 'pager';
+    pg.innerHTML = (prev ? '<a class="prev" href="#' + prev.id + '"><small>← Anterior</small>' + prev.dataset.title + '</a>' : '<span></span>') +
+                   (next ? '<a class="next" href="#' + next.id + '"><small>Siguiente →</small>' + next.dataset.title + '</a>' : '<span></span>');
+    sec.appendChild(pg);
+  });
+  function show() {
+    var id = (location.hash || '#inicio').slice(1);
+    if (!document.getElementById(id) || !document.getElementById(id).classList.contains('lesson')) id = 'inicio';
+    lessons.forEach(function (s) { s.classList.toggle('show', s.id === id); });
+    links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + id); });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', show);
+  show();
+
+  /* ---------- Quiz ---------- */
+  document.querySelectorAll('.quiz').forEach(function (q) {
+    var ok = q.dataset.ok, fb = q.querySelector('.fb');
+    q.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        q.querySelectorAll('button').forEach(function (x) { x.classList.remove('right', 'wrong'); });
+        if (b.dataset.k === ok) { b.classList.add('right'); fb.innerHTML = '<strong style="color:var(--good)">Correcto.</strong> ' + q.dataset.fb; }
+        else { b.classList.add('wrong'); fb.innerHTML = '<strong style="color:var(--signal)">No es esa.</strong> ' + q.dataset.fb; }
+      });
+    });
+  });
+
+  /* ---------- Gráficas ---------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function niceStep(r) { var raw = r / 5, p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+  function fmt(v) { return (Math.round(v * 100) / 100).toString().replace('.', ','); }
+  var COLORS = ['var(--accent)', 'var(--signal)', 'var(--good)', 'var(--muted)'];
+
+  function plot(id, fs, tmax, o) {
+    o = o || {}; var host = document.getElementById(id); if (!host) return; host.innerHTML = '';
+    if (typeof fs === 'function') fs = [fs];
+    var W = 640, H = o.h || 240, L = 48, R = 16, T = 16, B = 34, N = 500;
+    var series = fs.map(function (f) { var a = []; for (var i = 0; i <= N; i++) { var t = tmax * i / N; a.push([t, f(t)]); } return a; });
+    var all = []; series.forEach(function (s) { s.forEach(function (p) { all.push(p[1]); }); });
+    var ymin = o.ymin != null ? o.ymin : Math.min(0, Math.min.apply(null, all));
+    var ymax = o.ymax != null ? o.ymax : Math.max.apply(null, all);
+    if (o.ref != null) ymax = Math.max(ymax, o.ref);
+    var pad = (ymax - ymin) * 0.08 || 1; ymax += pad; if (ymin < 0) ymin -= pad;
+    var X = function (t) { return L + (W - L - R) * t / tmax; };
+    var Y = function (y) { return T + (H - T - B) * (1 - (y - ymin) / (ymax - ymin)); };
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': o.label || 'gráfica', 'font-family': 'IBM Plex Mono, monospace', 'font-size': '12.5' }, host);
+    var ys = niceStep(ymax - ymin), xs = niceStep(tmax);
+    for (var v = Math.ceil(ymin / ys) * ys; v <= ymax + 1e-9; v += ys) {
+      el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: 'var(--line)' }, svg);
+      el('text', { x: L - 6, y: Y(v) + 4, 'text-anchor': 'end', fill: 'var(--muted)' }, svg).textContent = fmt(v);
+    }
+    for (var u = 0; u <= tmax + 1e-9; u += xs) { if (X(u) > W - R - 44) continue; el('text', { x: X(u), y: H - 12, 'text-anchor': 'middle', fill: 'var(--muted)' }, svg).textContent = fmt(u); }
+    el('text', { x: W - R, y: H - 12, 'text-anchor': 'end', fill: 'var(--muted)' }, svg).textContent = 't (s)';
+    el('line', { x1: L, x2: W - R, y1: Y(0), y2: Y(0), stroke: 'var(--muted)' }, svg);
+    if (o.ref != null) el('line', { x1: L, x2: W - R, y1: Y(o.ref), y2: Y(o.ref), stroke: 'var(--muted)', 'stroke-dasharray': '5 5' }, svg);
+    series.forEach(function (s, k) {
+      var c = (o.colors || COLORS)[k % 4], d = '';
+      s.forEach(function (p, j) { d += (j ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); });
+      if (series.length === 1) el('path', { d: d + 'L' + X(tmax) + ' ' + Y(0) + 'L' + X(0) + ' ' + Y(0) + 'Z', fill: c, 'fill-opacity': '0.08' }, svg);
+      el('path', { d: d, fill: 'none', stroke: c, 'stroke-width': '2.4', 'stroke-linejoin': 'round' }, svg);
+    });
+    (o.marks || []).forEach(function (m) {
+      el('circle', { cx: X(m[0]), cy: Y(m[1]), r: 4.5, fill: 'var(--signal)' }, svg);
+      el('text', { x: X(m[0]) + 8, y: Y(m[1]) - 8, fill: 'var(--signal)', 'font-weight': '500' }, svg).textContent = m[2];
+    });
+    (o.labels || []).forEach(function (m, k) {
+      el('text', { x: X(m[0]), y: Y(m[1]), fill: (o.colors || COLORS)[k % 4], 'font-weight': '600' }, svg).textContent = m[2];
+    });
+  }
+  function step2(K, z, w) {
+    if (z < 1) { var s = z * w, wd = w * Math.sqrt(1 - z * z); return function (t) { return K * (1 - Math.exp(-s * t) * (Math.cos(wd * t) + s / wd * Math.sin(wd * t))); }; }
+    if (Math.abs(z - 1) < 1e-6) return function (t) { return K * (1 - Math.exp(-w * t) * (1 + w * t)); };
+    var r = Math.sqrt(z * z - 1), p1 = w * (z - r), p2 = w * (z + r);
+    return function (t) { return K * (1 + (p1 * Math.exp(-p2 * t) - p2 * Math.exp(-p1 * t)) / (p2 - p1)); };
+  }
+
+  /* Simulador L8 */
+  function polesPlot(z, w) {
+    var host = document.getElementById('plotPoles'); if (!host) return; host.innerHTML = '';
+    var W = 640, H = 170, ox = 560, oy = 85;
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'polos en el plano s', 'font-family': 'IBM Plex Mono, monospace', 'font-size': '12' }, host);
+    el('rect', { x: 0, y: 0, width: ox, height: H, fill: 'var(--good)', 'fill-opacity': '0.06' }, svg);
+    el('line', { x1: 10, x2: W - 10, y1: oy, y2: oy, stroke: 'var(--muted)' }, svg);
+    el('line', { x1: ox, x2: ox, y1: 6, y2: H - 6, stroke: 'var(--muted)' }, svg);
+    el('text', { x: W - 12, y: oy - 6, 'text-anchor': 'end', fill: 'var(--muted)' }, svg).textContent = 'σ';
+    el('text', { x: ox + 6, y: 18, fill: 'var(--muted)' }, svg).textContent = 'jω';
+    el('text', { x: 14, y: 20, fill: 'var(--good)' }, svg).textContent = 'semiplano izquierdo: estable';
+    var ps;
+    if (z < 1) { var s = z * w, wd = w * Math.sqrt(1 - z * z); ps = [[-s, wd], [-s, -wd]]; }
+    else { var r = Math.sqrt(z * z - 1); ps = [[-w * (z - r), 0], [-w * (z + r), 0]]; }
+    var maxRe = Math.max(10, Math.abs(ps[1][0]) * 1.1);
+    var sc = (ox - 30) / maxRe, scy = Math.min(sc, (oy - 14) / Math.max(1, w));
+    var stepT = maxRe > 20 ? 10 : 2;
+    for (var k = stepT; k <= maxRe; k += stepT) {
+      el('line', { x1: ox - k * sc, x2: ox - k * sc, y1: oy - 3, y2: oy + 3, stroke: 'var(--muted)' }, svg);
+      el('text', { x: ox - k * sc, y: oy + 16, 'text-anchor': 'middle', fill: 'var(--muted)' }, svg).textContent = '−' + k;
+    }
+    ps.forEach(function (p) {
+      var x = ox + p[0] * sc, y = oy - p[1] * scy;
+      el('path', { d: 'M' + (x - 7) + ' ' + (y - 7) + 'L' + (x + 7) + ' ' + (y + 7) + 'M' + (x - 7) + ' ' + (y + 7) + 'L' + (x + 7) + ' ' + (y - 7), stroke: 'var(--signal)', 'stroke-width': '2.8' }, svg);
+    });
+  }
+  function updateSim() {
+    var sK = document.getElementById('sK'); if (!sK) return;
+    var K = +sK.value, z = +document.getElementById('sZ').value, w = +document.getElementById('sW').value;
+    document.getElementById('oK').textContent = fmt(K);
+    document.getElementById('oZ').textContent = z.toFixed(2).replace('.', ',');
+    document.getElementById('oW').textContent = w.toFixed(1).replace('.', ',') + ' rad/s';
+    document.getElementById('regime').textContent = z < 1 ? 'Subamortiguado' : (Math.abs(z - 1) < 0.005 ? 'Crítico' : 'Sobreamortiguado');
+    var s = z * w, tmax, marks = [];
+    if (z < 1) {
+      var wd = w * Math.sqrt(1 - z * z), Mp = Math.exp(-s * Math.PI / wd), tp = Math.PI / wd, ts = 4 / s;
+      tmax = Math.min(Math.max(ts * 1.2, tp * 3), 60);
+      document.getElementById('mMp').textContent = fmt(Mp * 100) + ' %';
+      document.getElementById('mTp').textContent = fmt(tp) + ' s';
+      document.getElementById('mTs').textContent = fmt(ts) + ' s';
+      document.getElementById('mPo').textContent = '−' + fmt(s) + ' ± ' + fmt(wd) + 'j';
+      marks.push([tp, K * (1 + Mp), 'pico']);
+    } else {
+      var r = Math.sqrt(z * z - 1), slow = w * (z - r);
+      tmax = Math.min(6 / slow, 60);
+      document.getElementById('mMp').textContent = '0 %';
+      document.getElementById('mTp').textContent = '—';
+      document.getElementById('mTs').textContent = '≈ ' + fmt(4 / slow) + ' s';
+      document.getElementById('mPo').textContent = r < 1e-3 ? '−' + fmt(w) + ' (doble)' : '−' + fmt(slow) + ' y −' + fmt(w * (z + r));
+    }
+    document.getElementById('mYf').textContent = fmt(K);
+    plot('plotSim', step2(K, z, w), tmax, { ref: K, h: 250, marks: marks, label: 'respuesta al escalón' });
+    polesPlot(z, w);
+  }
+  ['sK', 'sZ', 'sW'].forEach(function (id) { var e = document.getElementById(id); if (e) e.addEventListener('input', updateSim); });
+
+  plot('plotTau', function (t) { return 5 * (1 - Math.exp(-t / 2)); }, 12, { ref: 5, marks: [[2, 3.16, '63 % en τ'], [8, 4.91, '98 % en 4τ']], label: 'primer orden' });
+  plot('plotZetas', [step2(1, .2, 2), step2(1, .5, 2), step2(1, 1, 2), step2(1, 2, 2)], 8, { ref: 1, h: 250, labels: [[1.55, 1.55, 'ζ = 0,2'], [2.2, 1.22, 'ζ = 0,5'], [3.1, 0.86, 'ζ = 1'], [4.3, 0.6, 'ζ = 2']], label: 'efecto de zeta' });
+  plot('plotKp', [function (t) { return 10 / 12 * step2(1, 3 / (2 * Math.sqrt(12)), Math.sqrt(12))(t); }, function (t) { return 40 / 42 * step2(1, 3 / (2 * Math.sqrt(42)), Math.sqrt(42))(t); }], 5, { ref: 1, h: 240, labels: [[3.4, 0.74, 'Kp = 10'], [3.4, 1.06, 'Kp = 40']], label: 'efecto de Kp' });
+  plot('plotP1a', function (t) { return t < 3 ? 0 : 7 / 9 * Math.exp(-(t - 3) / 9); }, 40, { h: 200, marks: [[3, 0.778, 'arranca en t = 3 s']], label: 'impulso con retardo' });
+  plot('plotP1b', function (t) { return 370 / 6 * Math.exp(-t) * Math.sin(6 * t); }, 5, { h: 200, label: 'impulso de segundo orden' });
+  plot('plotP2a', step2(3, 1 / Math.sqrt(65), Math.sqrt(65)), 5, { ref: 3, h: 210, marks: [[Math.PI / 8, 5.03, 'Mp = 67,5 %']], label: 'escalón parcial 2' });
+  plot('plotP2c', step2(3, 0.128, 1.584), 20, { ref: 3, h: 210, marks: [[2, 5, 'pico 5 en t = 2 s']], label: 'modelo identificado' });
+
+  /* L13: polos dominantes y ceros (respuestas exactas) */
+  function stepZero(a) { // G = (4/a)(s+a)/(s^2+2s+4)  -> y = y0 + y0'/a
+    var y0 = step2(1, .5, 2), wn = 2, z = .5, wd = wn * Math.sqrt(1 - z * z);
+    return function (t) { return y0(t) + (1 / a) * (wn * wn / wd) * Math.exp(-z * wn * t) * Math.sin(wd * t); };
+  }
+  function third(t) { // 100/((s+10)(s^2+2s+10)) step, partial fractions
+    var A = 1, B = -1 / 9; // residue at -10 is -0.111
+    // remaining: complex part, coefficients from (s+10)(s^2+2s+10)
+    // y = 1 - 1/9 e^{-10t} + e^{-t}(c1 cos3t + c2 sin3t); y(0)=0 -> c1 = -8/9 ; y'(0)=0 -> 10/9 - c1 + 3c2 = 0
+    var c1 = -8 / 9, c2 = (c1 - 10 / 9) / 3;
+    return A + B * Math.exp(-10 * t) + Math.exp(-t) * (c1 * Math.cos(3 * t) + c2 * Math.sin(3 * t));
+  }
+  plot('plotDom', [third, step2(1, 1 / Math.sqrt(10), Math.sqrt(10))], 6, { ref: 1, h: 230, labels: [[2.6, 0.62, 'exacto (3.er orden)'], [2.6, 0.45, 'aproximado (2.º orden)']], label: 'polos dominantes' });
+  plot('plotZero', [step2(1, .5, 2), stepZero(4), stepZero(1), stepZero(0.5)], 6, { ref: 1, h: 250, labels: [[2.3, 1.24, 'sin cero'], [1.75, 1.42, 'cero −4'], [1.2, 1.78, 'cero −1'], [0.95, 2.62, 'cero −0,5']], label: 'efecto de un cero' });
+
+  /* L17: lugar de las raíces de K/(s(s+1)(s+2)) */
+  function rootsCubic(K) { // Durand-Kerner for s^3+3s^2+2s+K
+    var c = [1, 3, 2, K], r = [{re: .4, im: .9}, {re: -1.2, im: -.6}, {re: -2.5, im: .2}];
+    function ev(z) { var re = 1, im = 0; for (var i = 1; i < 4; i++) { var nre = re * z.re - im * z.im + c[i], nim = re * z.im + im * z.re; re = nre; im = nim; } return {re: re, im: im}; }
+    for (var it = 0; it < 200; it++) {
+      for (var i = 0; i < 3; i++) {
+        var num = ev(r[i]), den = {re: 1, im: 0};
+        for (var j = 0; j < 3; j++) if (j !== i) { var dre = r[i].re - r[j].re, dim = r[i].im - r[j].im, nre = den.re * dre - den.im * dim, nim = den.re * dim + den.im * dre; den = {re: nre, im: nim}; }
+        var d2 = den.re * den.re + den.im * den.im || 1e-12;
+        r[i] = {re: r[i].re - (num.re * den.re + num.im * den.im) / d2, im: r[i].im - (num.im * den.re - num.re * den.im) / d2};
+      }
+    }
+    return r;
+  }
+  var rlHost = document.getElementById('plotRL');
+  if (rlHost) {
+    var W = 640, H = 380, x0 = -4, x1 = 1.5, yr = 3.2;
+    var X = function (x) { return 40 + (W - 60) * (x - x0) / (x1 - x0); }, Y = function (y) { return H / 2 - (H / 2 - 20) * y / yr; };
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'lugar de las raíces', 'font-family': 'IBM Plex Mono, monospace', 'font-size': '12' }, rlHost);
+    el('rect', { x: X(0), y: 0, width: W - X(0), height: H, fill: 'var(--signal)', 'fill-opacity': '0.05' }, svg);
+    for (var gx = -4; gx <= 1; gx++) { el('line', { x1: X(gx), x2: X(gx), y1: 10, y2: H - 10, stroke: 'var(--line)' }, svg); el('text', { x: X(gx), y: H / 2 + 16, 'text-anchor': 'middle', fill: 'var(--muted)' }, svg).textContent = gx; }
+    for (var gy = -3; gy <= 3; gy++) { if (!gy) continue; el('line', { x1: 40, x2: W - 20, y1: Y(gy), y2: Y(gy), stroke: 'var(--line)' }, svg); el('text', { x: X(0) + 6, y: Y(gy) + 4, fill: 'var(--muted)' }, svg).textContent = gy + 'j'; }
+    el('line', { x1: 40, x2: W - 20, y1: Y(0), y2: Y(0), stroke: 'var(--muted)' }, svg);
+    el('line', { x1: X(0), x2: X(0), y1: 10, y2: H - 10, stroke: 'var(--muted)' }, svg);
+    // asymptotes from -1 at ±60°
+    [60, -60].forEach(function (a) { var r = 5, ex = -1 + r * Math.cos(a * Math.PI / 180), ey = r * Math.sin(a * Math.PI / 180); el('line', { x1: X(-1), y1: Y(0), x2: X(ex), y2: Y(ey), stroke: 'var(--muted)', 'stroke-dasharray': '4 5' }, svg); });
+    // zeta = 0.5 line
+    el('line', { x1: X(0), y1: Y(0), x2: X(-1.6), y2: Y(1.6 * Math.tan(Math.PI / 3)), stroke: 'var(--good)', 'stroke-dasharray': '2 4' }, svg);
+    el('text', { x: X(-1.55), y: Y(2.85), fill: 'var(--good)' }, svg).textContent = 'ζ = 0,5';
+    var g = el('g', {}, svg);
+    for (var k = 0; k <= 900; k++) { var K = 20 * Math.pow(k / 900, 2); rootsCubic(K).forEach(function (r) { if (r.re >= x0 && r.re <= x1 && Math.abs(r.im) <= yr) el('circle', { cx: X(r.re), cy: Y(r.im), r: 1.6, fill: 'var(--accent)' }, g); }); }
+    [0, -1, -2].forEach(function (p) { el('path', { d: 'M' + (X(p) - 6) + ' ' + (Y(0) - 6) + 'L' + (X(p) + 6) + ' ' + (Y(0) + 6) + 'M' + (X(p) - 6) + ' ' + (Y(0) + 6) + 'L' + (X(p) + 6) + ' ' + (Y(0) - 6), stroke: 'var(--ink)', 'stroke-width': '2' }, svg); });
+    var cur = el('g', {}, svg);
+    var upd = function () {
+      var K = +document.getElementById('sRL').value; document.getElementById('oRL').textContent = K.toFixed(2).replace('.', ',');
+      cur.innerHTML = ''; var rs = rootsCubic(K), txt = [], unstable = false;
+      rs.sort(function (a, b) { return b.im - a.im; }).forEach(function (r) {
+        var x = X(r.re), y = Y(r.im); el('path', { d: 'M' + (x - 7) + ' ' + (y - 7) + 'L' + (x + 7) + ' ' + (y + 7) + 'M' + (x - 7) + ' ' + (y + 7) + 'L' + (x + 7) + ' ' + (y - 7), stroke: 'var(--signal)', 'stroke-width': '3' }, cur);
+        if (r.re > 1e-6) unstable = true;
+        txt.push(fmt(r.re) + (Math.abs(r.im) > 1e-3 ? (r.im > 0 ? ' + ' : ' − ') + fmt(Math.abs(r.im)) + 'j' : ''));
+      });
+      document.getElementById('mRL').textContent = txt.join('   ·   ');
+      document.getElementById('sRLst').textContent = unstable ? 'Inestable' : (K > 5.995 && K < 6.005 ? 'Marginal' : 'Estable');
+    };
+    document.getElementById('sRL').addEventListener('input', upd); upd();
+  }
+
+  /* L20: Bode de 100/(s(s+10)) */
+  function bode(id, f, ymin, ymax, ylab, mark, step) {
+    var host = document.getElementById(id); if (!host) return;
+    var W = 640, H = 230, L = 52, R = 16, T = 26, B = 34, w0 = -1, w1 = 3;
+    var X = function (w) { return L + (W - L - R) * (Math.log10(w) - w0) / (w1 - w0); }, Y = function (v) { return T + (H - T - B) * (1 - (v - ymin) / (ymax - ymin)); };
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': ylab, 'font-family': 'IBM Plex Mono, monospace', 'font-size': '12' }, host);
+    for (var d = w0; d <= w1; d++) { for (var m = 1; m < 10; m++) { var w = m * Math.pow(10, d); if (Math.log10(w) > w1) break; el('line', { x1: X(w), x2: X(w), y1: T, y2: H - B, stroke: 'var(--line)', 'stroke-opacity': m === 1 ? 1 : 0.45 }, svg); } el('text', { x: X(Math.pow(10, d)), y: H - 14, 'text-anchor': 'middle', fill: 'var(--muted)' }, svg).textContent = Math.pow(10, d).toString().replace('.', ','); }
+    for (var v = ymin; v <= ymax + 1e-9; v += step) { el('line', { x1: L, x2: W - R, y1: Y(v), y2: Y(v), stroke: 'var(--line)' }, svg); el('text', { x: L - 6, y: Y(v) + 4, 'text-anchor': 'end', fill: 'var(--muted)' }, svg).textContent = Math.round(v); }
+    el('text', { x: 8, y: 14, fill: 'var(--muted)' }, svg).textContent = ylab;
+    el('text', { x: W - R, y: H - 2, 'text-anchor': 'end', fill: 'var(--muted)' }, svg).textContent = 'ω (rad/s)';
+    var dd = ''; for (var i = 0; i <= 400; i++) { var lw = w0 + (w1 - w0) * i / 400, ww = Math.pow(10, lw); dd += (i ? 'L' : 'M') + X(ww).toFixed(1) + ' ' + Y(f(ww)).toFixed(1); }
+    el('path', { d: dd, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2.4' }, svg);
+    el('line', { x1: X(7.86), x2: X(7.86), y1: T, y2: H - B, stroke: 'var(--signal)', 'stroke-dasharray': '4 4' }, svg);
+    if (mark) { el('line', { x1: L, x2: W - R, y1: Y(mark[0]), y2: Y(mark[0]), stroke: 'var(--muted)', 'stroke-dasharray': '5 5' }, svg); el('text', { x: X(7.86) + 8, y: Y(mark[1]) - 6, fill: 'var(--signal)', 'font-weight': '500' }, svg).textContent = mark[2]; }
+  }
+  bode('plotBodeM', function (w) { return 20 * Math.log10(100 / (w * Math.sqrt(w * w + 100))); }, -80, 40, 'Magnitud (dB)', [0, 0, 'ωc = 7,86'], 20);
+  bode('plotBodeP', function (w) { return -90 - Math.atan(w / 10) * 180 / Math.PI; }, -180, -90, 'Fase (grados)', [-180, -128.2, 'MF = 51,8°'], 15);
+  updateSim();
+})();
+</script></body></html>

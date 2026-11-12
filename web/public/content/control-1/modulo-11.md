@@ -1,0 +1,264 @@
+# Módulo 11: Sistemas de primer orden y retardo
+
+El sistema más simple: un tanque que se llena, un condensador que se carga o un horno que se calienta. Aprende a leerlo, resolverlo e identificarlo desde una gráfica.
+
+**Al terminar podrás:**
+
+- Leer \(K\) y \(\tau\) de cualquier \(G(s)\) de primer orden.
+- Escribir la respuesta al impulso, al escalón y a la rampa.
+- Manejar el retardo \(e^{-Ts}\) (punto 3.i del Parcial 1).
+- Sacar \(G(s)\) a partir de una curva medida.
+
+## Aprende construyendo
+
+### Tema 1: Forma estándar
+
+**¿Por qué es importante?** La forma estándar de primer orden te deja leer la ganancia y la constante de tiempo sin hacer cuentas.
+
+\[G(s) = \frac{K}{\tau s+1}\]
+
+*\(K\): ganancia estática, cuánto vale la salida al final por cada unidad de entrada. \(\tau\): constante de tiempo, qué tan lento es. Polo en \(s = -1/\tau\).*
+
+**Cómo llevar cualquier G(s) a la forma estándar**
+
+1. Haz que el término independiente del denominador sea 1: divide arriba y abajo por él.
+2. Ejemplo: \(\dfrac{10}{s+5} = \dfrac{10/5}{s/5+1} = \dfrac{2}{0{,}2s+1}\). Entonces \(K=2\) y \(\tau=0{,}2\) s.
+
+### Tema 2: Respuestas
+
+**¿Por qué es importante?** Las respuestas al impulso, al escalón y a la rampa son las que se piden en los exámenes y las que se miden en el laboratorio.
+
+| Entrada | \(Y(s)\) | \(y(t)\) |
+|---|---|---|
+| Impulso | \(\dfrac{K}{\tau s+1} = \dfrac{K/\tau}{s+1/\tau}\) | \(\dfrac{K}{\tau}e^{-t/\tau}\) |
+| Escalón de amplitud \(A\) | \(\dfrac{AK}{s(\tau s+1)}\) | \(AK\left(1-e^{-t/\tau}\right)\) |
+| Rampa \(t\) | \(\dfrac{K}{s^2(\tau s+1)}\) | \(K\left(t - \tau + \tau e^{-t/\tau}\right)\) |
+
+#### Demostración de la respuesta a la rampa
+
+1. \(\dfrac{K}{s^2(\tau s+1)} = \dfrac{A}{s^2} + \dfrac{B}{s} + \dfrac{C}{\tau s+1}\).
+2. \(A\): multiplica por \(s^2\) y evalúa en 0: \(A = K\). \(C\): multiplica por \((\tau s+1)\) y evalúa en \(s = -1/\tau\): \(C = K\tau^2\).
+3. \(B\) es la derivada de \(\dfrac{K}{\tau s+1}\) en \(s=0\): \(-K\tau\).
+4. \(\dfrac{K\tau^2}{\tau s+1} = \dfrac{K\tau}{s+1/\tau} \to K\tau e^{-t/\tau}\). Total: \(K(t - \tau + \tau e^{-t/\tau})\).
+
+∎
+
+![Respuesta al escalón de un sistema de primer orden](content/figures/control-1/primer-orden-escalon.svg)
+
+*Escalón en \(G = \dfrac{5}{2s+1}\). En \(t = \tau\) llega al 63,2 %, en \(2\tau\) al 86,5 %, en \(3\tau\) al 95 % y en \(4\tau\) al 98 % (\(t_s\)).*
+
+| Tiempo | \(\tau\) | \(2\tau\) | \(3\tau\) | \(4\tau\) | \(5\tau\) |
+|---|---|---|---|---|---|
+| % del valor final | 63,2 | 86,5 | 95,0 | 98,2 | 99,3 |
+
+#### Demostración de la respuesta al escalón y de los porcentajes
+
+1. \(Y = \dfrac{K}{s(\tau s+1)} = \dfrac{K/\tau}{s(s+1/\tau)}\). Tapado: en \(s=0\) da \(K\); en \(s=-1/\tau\) da \(\dfrac{K/\tau}{-1/\tau} = -K\).
+2. \(y(t) = K - Ke^{-t/\tau} = K(1-e^{-t/\tau})\).
+3. En \(t = n\tau\): \(y/K = 1 - e^{-n}\). Con \(n=1\): \(1 - 0{,}368 = 0{,}632\). Con \(n=4\): \(1 - 0{,}018 = 0{,}982\).
+4. Tiempo de establecimiento exacto al 2 %: \(e^{-t/\tau} = 0{,}02 \Rightarrow t = \tau\ln 50 = 3{,}91\tau \approx 4\tau\). Al 5 %: \(\tau\ln20 = 3\tau\).
+5. Pendiente inicial: \(y'(0) = \dfrac{K}{\tau}e^{0} = \dfrac{K}{\tau}\). Si la salida siguiera subiendo con esa pendiente, llegaría a \(K\) justo en \(t = \tau\). Es otra forma de leer \(\tau\) en una gráfica: la tangente en el origen corta el valor final en \(t=\tau\).
+6. La respuesta al impulso es la derivada de la del escalón: \(\dfrac{d}{dt}K(1-e^{-t/\tau}) = \dfrac{K}{\tau}e^{-t/\tau}\). Tiene sentido: el impulso es la derivada del escalón.
+
+∎
+
+#### Ejemplo 1 · Ya en forma estándar · *Básico*
+
+**Enunciado.** \(G = \dfrac{3}{0{,}5s+1}\). Halla la respuesta al escalón unitario, al impulso y el tiempo de establecimiento.
+
+1. Compara con \(\dfrac{K}{\tau s+1}\): \(K = 3\), \(\tau = 0{,}5\) s.
+
+   **¿Por qué?** Ya está en forma estándar: el término independiente del denominador es 1.
+
+2. Escalón: \(K(1-e^{-t/\tau}) = 3(1-e^{-t/0{,}5}) = 3(1-e^{-2t})\).
+
+   **¿Por qué?** Fórmula demostrada arriba. \(1/0{,}5 = 2\).
+
+3. Impulso: \(\dfrac K\tau e^{-t/\tau} = \dfrac{3}{0{,}5}e^{-2t} = 6e^{-2t}\).
+
+   **¿Por qué?** Es la derivada de la respuesta al escalón.
+
+4. \(t_s = 4\tau = 2\) s.
+
+   **¿Por qué?** En \(4\tau\) la salida está a menos del 2 % del final.
+
+**Resultado:** Escalón \(3(1-e^{-2t})\), impulso \(6e^{-2t}\), \(t_s = 2\) s
+
+#### Ejemplo 2 · Primero hay que llevarlo a la forma estándar · *Básico*
+
+> **Qué cambia respecto al anterior:** La \(G\) no venía en forma estándar.
+
+**Enunciado.** \(G = \dfrac{10}{s+5}\), escalón unitario.
+
+1. El término independiente es 5, no 1. Divide arriba y abajo por 5: \(\dfrac{2}{0{,}2s+1}\).
+
+   **¿Por qué?** Solo en la forma \(\tau s+1\) se pueden leer \(K\) y \(\tau\) directamente.
+
+2. \(K = 2\), \(\tau = 0{,}2\) s.
+
+   **¿Por qué?** Lectura directa.
+
+3. \(y = 2(1-e^{-5t})\), \(t_s = 0{,}8\) s.
+
+   **¿Por qué?** \(1/\tau = 5\).
+
+**Resultado:** \(y(t) = 2(1-e^{-5t})\)
+
+> Error típico: decir que \(\tau = 5\). En realidad \(\tau = 1/5\).
+
+#### Ejemplo 3 · Escalón de amplitud 4 · *Intermedio*
+
+> **Qué cambia respecto al anterior:** La entrada no es unitaria.
+
+**Enunciado.** \(G = \dfrac{2}{3s+1}\) con escalón de 4 V. ¿Cuánto vale la salida en \(t = 3\) s?
+
+1. \(y = 4\cdot K(1-e^{-t/\tau}) = 4\cdot2(1-e^{-t/3}) = 8(1-e^{-t/3})\).
+
+   **¿Por qué?** Un escalón de 4 es 4 veces el unitario; por linealidad la salida también se multiplica por 4.
+
+2. En \(t = 3 = \tau\): \(8(1-e^{-1}) = 8(1-0{,}368) = 8\cdot0{,}632\).
+
+   **¿Por qué?** En una constante de tiempo llega al 63,2 %.
+
+**Resultado:** \(y(3) = 5{,}06\) V
+
+#### Ejemplo 4 · Rampa · *Intermedio*
+
+> **Qué cambia respecto al anterior:** La entrada es una rampa.
+
+**Enunciado.** \(G = \dfrac{1}{s+1}\) con \(r(t) = t\).
+
+1. \(Y = \dfrac{1}{s^2(s+1)}\).
+
+   **¿Por qué?** La rampa es \(1/s^2\).
+
+2. Fracciones: \(\dfrac{1}{s^2} - \dfrac1s + \dfrac{1}{s+1}\).
+
+   **¿Por qué?** Demostración de la rampa (arriba) con \(K = \tau = 1\).
+
+3. \(y = t - 1 + e^{-t}\).
+
+   **¿Por qué?** Tabla.
+
+**Resultado:** La salida sigue a la rampa con 1 unidad de atraso (\(=\tau\))
+
+### Tema 3: Retardo o tiempo muerto
+
+**¿Por qué es importante?** El retardo aparece en procesos reales (bandas, tuberías, hornos) y en el punto 3 del Parcial 1.
+
+Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos tarde. Pasa en bandas transportadoras, tuberías largas y procesos térmicos.
+
+**Procedimiento**
+
+1. Ignora el \(e^{-Ts}\) y halla la respuesta sin retardo, \(y_0(t)\).
+2. Cambia cada \(t\) por \((t-T)\).
+3. Multiplica por \(u(t-T)\): la salida es cero antes de \(T\).
+
+#### Ejemplo 5 · Escalón con retardo · *Intermedio*
+
+> **Qué cambia respecto al anterior:** Aparece un retardo.
+
+**Enunciado.** \(G = \dfrac{2e^{-1{,}5s}}{4s+1}\), escalón unitario.
+
+1. Ignora \(e^{-1{,}5s}\): \(y_0 = 2(1-e^{-t/4})\).
+
+   **¿Por qué?** Primero el sistema sin retardo, como en el Ejemplo 1.
+
+2. Cambia \(t\) por \(t-1{,}5\) y multiplica por \(u(t-1{,}5)\).
+
+   **¿Por qué?** Propiedad del retardo (capítulo 3): la misma respuesta corrida 1,5 s.
+
+**Resultado:** \(y(t) = 2\left(1-e^{-(t-1{,}5)/4}\right)u(t-1{,}5)\)
+
+#### Ejemplo 6 · Impulso con retardo (como el Parcial 1) · *Nivel parcial*
+
+> **Qué cambia respecto al anterior:** Impulso en lugar de escalón.
+
+**Enunciado.** \(G = \dfrac{4e^{-2s}}{5s+1}\), impulso unitario.
+
+1. Sin retardo: \(\dfrac{4}{5s+1} = \dfrac{4/5}{s+1/5} = \dfrac{0{,}8}{s+0{,}2}\).
+
+   **¿Por qué?** Para usar \(\dfrac{1}{s+a}\) el coeficiente de \(s\) tiene que ser 1.
+
+2. \(y_0 = 0{,}8e^{-0{,}2t}\).
+
+   **¿Por qué?** Tabla.
+
+3. Con retardo de 2 s: \(y = 0{,}8e^{-0{,}2(t-2)}u(t-2)\).
+
+   **¿Por qué?** Mismo paso del Ejemplo 5.
+
+**Resultado:** Vale 0 hasta \(t = 2\) s, salta a 0,8 y decae
+
+### Tema 4: Identificación desde una gráfica
+
+**¿Por qué es importante?** Identificar \(K\), \(\tau\) y el retardo desde una curva es como se modela una planta real a partir de un experimento.
+
+**Procedimiento**
+
+1. Lee el valor final \(y_\infty\) y la amplitud del escalón \(A\). Entonces \(K = y_\infty/A\).
+2. Calcula el 63,2 % del valor final y busca en qué tiempo la curva llega ahí. Ese tiempo es \(\tau\), medido desde que empieza a subir.
+3. Si la curva tarda en arrancar, ese tiempo es el retardo \(T\).
+
+#### Ejemplo 7 · Identificar desde una gráfica · *Nivel parcial*
+
+> **Qué cambia respecto al anterior:** Se hace el camino inverso: de la curva a \(G\).
+
+**Enunciado.** Un escalón de 2 V da una salida que arranca en \(t = 0{,}5\) s, se estabiliza en 6 V y vale 3,79 V en \(t = 4{,}5\) s.
+
+1. \(K = \dfrac{y_\infty}{A} = \dfrac62 = 3\).
+
+   **¿Por qué?** \(K\) es salida final por unidad de entrada.
+
+2. 63,2 % del final: \(0{,}632\cdot6 = 3{,}79\) V, alcanzado en \(t = 4{,}5\) s.
+
+   **¿Por qué?** En \(t = \tau\) (desde que arranca) la salida vale el 63,2 % del final.
+
+3. Retardo \(T = 0{,}5\) s. Entonces \(\tau = 4{,}5 - 0{,}5 = 4\) s.
+
+   **¿Por qué?** \(\tau\) se mide desde que empieza a subir, no desde 0.
+
+**Resultado:** \(G = \dfrac{3e^{-0{,}5s}}{4s+1}\)
+
+#### Errores comunes
+
+- Leer \(\tau\) sin pasar primero a la forma estándar: en \(\dfrac{10}{s+5}\), \(\tau\) no es 5.
+- Olvidar multiplicar por la amplitud del escalón.
+- Con retardo, olvidar el \(u(t-T)\): la salida no existe antes de \(T\).
+- Medir \(\tau\) desde \(t=0\) cuando la curva tiene retardo.
+
+### Tema 5: Práctica
+
+**¿Por qué es importante?** Practicar con variantes (entrada no unitaria, retardo, forma no estándar) te prepara para cualquier enunciado.
+
+- **1.**Impulso y escalón de \(\dfrac{8}{4s+2}\).
+  
+  <details><summary>Respuesta</summary>
+  
+  \(\dfrac{4}{2s+1}\): impulso \(2e^{-0{,}5t}\), escalón \(4(1-e^{-0{,}5t})\).
+  
+  </details>
+
+- **2.**Escalón de \(\dfrac{3e^{-2s}}{s+3}\).
+  
+  <details><summary>Respuesta</summary>
+  
+  \(\left(1-e^{-3(t-2)}\right)u(t-2)\).
+  
+  </details>
+
+- **3.**Con escalón unitario la salida llega a 10 y vale 6,32 en \(t = 0{,}3\) s, sin retardo. Halla \(G\).
+  
+  <details><summary>Respuesta</summary>
+  
+  \(\dfrac{10}{0{,}3s+1}\).
+  
+  </details>
+
+- **4.**Impulso de \(\dfrac{6e^{-s}}{3s+1}\).
+  
+  <details><summary>Respuesta</summary>
+  
+  \(2e^{-(t-1)/3}u(t-1)\).
+  
+  </details>

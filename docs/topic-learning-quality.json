@@ -60,6 +60,22 @@
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
+    "control-1": {
+      "topics": 83,
+      "explanation": 80,
+      "code": 2,
+      "visual": 0,
+      "filePath": 0,
+      "runCommand": 0,
+      "expectedResult": 9,
+      "practice": 20,
+      "project": 0,
+      "modelMental": 83,
+      "limitsDecision": 16,
+      "practicable": 0,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
     "devops": {
       "topics": 103,
       "explanation": 103,
@@ -6421,6 +6437,1834 @@
         "classification": {
           "rubricScore": 16,
           "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      }
+    ],
+    "control-1": [
+      {
+        "module": 0,
+        "topic": "Tema 1: Cómo está armado cada capítulo",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 5,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: El temario",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 3: Qué faltó en el Parcial 1",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Plan de dos semanas",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 1: ¿Qué es un número complejo?",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 2: Operaciones",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 3: Raíces de s²+bs+c",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 4: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 1: La forma de estado",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 2: De estados a función de transferencia",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 1: Forma estándar",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 2: Respuestas",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 3: Retardo o tiempo muerto",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 4: Identificación desde una gráfica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 5: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 1: Forma estándar",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 2: Simulador: mueve ζ y ωn",
+        "criteria": {
+          "explanation": false,
+          "code": true,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 3: Los cuatro casos según ζ",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 4: Fórmulas del caso subamortiguado",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 5: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 1: Polos dominantes",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 4,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 2: Efecto de un cero",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 3: Cero de fase no mínima",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 1: Fórmula general",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 2: Tipo de sistema y constantes",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 1: Qué es estabilidad",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 4,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 2: El arreglo de Routh",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 3: Casos especiales",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 4: Rango de K para estabilidad",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 1: Geometría de un polo",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 2: Estabilidad",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 3: La zona de diseño",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 4,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 1: Las dos condiciones",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 17,
+        "topic": "Tema 2: Reglas de construcción (con su porqué)",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 5,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 1: La idea",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 2: Error en estado estacionario",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: Cada acción, con números",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 5: Sintonía de Ziegler-Nichols",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 6: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 1: Diseño de un adelanto",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 2: Diseño de un atraso",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 3: Implementación con op-amps",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 1: La idea",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 2: La tabla",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 3: Propiedades",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 4: Valor final y valor inicial",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 4,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 5: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 1: Qué es la respuesta en frecuencia",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 2: Decibeles y la escala logarítmica",
+        "criteria": {
+          "explanation": false,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 0,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 3: Los bloques básicos",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 4: Márgenes de estabilidad",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 1: Parcial 1",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 21,
+        "topic": "Tema 2: Parcial 2",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 1: Simulacro con solución",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 2: Formulario",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 1: Caso 1: polos reales distintos",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 2: Caso 2: polos repetidos",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 3: Caso 3: polos complejos (completar el cuadrado)",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 4: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 1: Qué es la función de transferencia",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 2: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 1: ¿Qué es un sistema de control?",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 2: Los elementos",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 2,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 3: Álgebra de bloques",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 4: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 1: Reglas para mover bloques",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 2: Grafos de flujo de señal",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 3: Regla de Mason",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": true,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: Referencia y perturbación juntas",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 5: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 1: Impedancias",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 2: Circuitos pasivos: divisor de voltaje",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 3: El op-amp inversor",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 4,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 1: Mecánico de traslación",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 2: Mecánico de rotación",
+        "criteria": {
+          "explanation": false,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 0,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 3: Motor DC (electromecánico)",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 4: Sistemas térmicos e hidráulicos",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 5: Analogías",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 6: Práctica",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": true,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 3,
+          "practicable": false,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 1: La idea",
+        "criteria": {
+          "explanation": true,
+          "code": false,
+          "visual": false,
+          "filePath": false,
+          "runCommand": false,
+          "expectedResult": false,
+          "practice": false,
+          "project": false,
+          "modelMental": true,
+          "limitsDecision": false
+        },
+        "classification": {
+          "rubricScore": 1,
+          "practicable": false,
           "genericScaffold": false,
           "repeatedDemo": false
         }
