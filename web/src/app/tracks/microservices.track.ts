@@ -16,9 +16,9 @@ export const MICROSERVICES_MODULES: CourseModule[] = [
     ['¿Por qué un timeout no demuestra que la operación falló?', '¿Qué información necesitas para reintentar sin duplicar un efecto?', '¿Por qué dos marcas de tiempo no garantizan causalidad?'],
     ['Java HttpClient', 'TCP', 'OpenTelemetry'],
     'Laboratorio de dos procesos con latencia, timeout, fallo parcial y contrato compatible demostrados.'),
-  m(1, 'Monolito modular antes de microservicios', 'Monolito modular', 'Fundamentos', '7 h', '#0f766e',
+  m(1, 'Construir un monolito modular antes de extraer servicios', 'Monolito modular', 'Fundamentos', '8 h', '#0f766e',
     'Organiza RutaFlow por capacidades, protege sus fronteras con tests y decide una extracción mediante evidencia, no por moda.',
-    ['Monolito, módulo, servicio y microservicio', 'Cohesión funcional y acoplamiento', 'API pública e implementación interna', 'Puertos y adaptadores', 'Fitness functions con ArchUnit', 'Criterios y ADR de extracción'],
+    ['Distinguir estructura lógica de unidad de despliegue', 'Evaluar autonomía antes de extraer un proceso', 'Cohesión funcional y acoplamiento', 'API pública e implementación interna', 'Puertos y adaptadores', 'Fitness functions con ArchUnit', 'Criterios y ADR de extracción'],
     [
       'Clasifica una aplicación sin confundir despliegue con estructura lógica',
       'Agrupa envíos y facturación por capacidad y mide dependencias',

@@ -210,23 +210,23 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 16,
-      "objective": 9,
-      "prerequisites": 13,
-      "context": 10,
-      "theoryAnalogy": 10,
-      "guidedDemo": 10,
-      "codeExplanation": 16,
-      "execution": 13,
-      "expectedResult": 15,
-      "deliberateFailure": 16,
-      "guidedPractice": 10,
-      "independentPractice": 10,
-      "closure": 10,
-      "commonErrors": 9,
-      "resources": 9,
-      "standaloneExample": 11,
-      "complete": 9
+      "topics": 17,
+      "objective": 11,
+      "prerequisites": 14,
+      "context": 12,
+      "theoryAnalogy": 12,
+      "guidedDemo": 12,
+      "codeExplanation": 17,
+      "execution": 15,
+      "expectedResult": 16,
+      "deliberateFailure": 17,
+      "guidedPractice": 12,
+      "independentPractice": 12,
+      "closure": 12,
+      "commonErrors": 11,
+      "resources": 11,
+      "standaloneExample": 13,
+      "complete": 11
     },
     "node": {
       "topics": 83,
@@ -26006,32 +26006,57 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+        "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 1,
-        "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,
@@ -26056,7 +26081,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,
@@ -26081,7 +26106,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -26106,7 +26131,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+        "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -26131,7 +26156,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "topic": "Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,

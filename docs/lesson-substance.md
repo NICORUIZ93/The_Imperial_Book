@@ -6,7 +6,7 @@ señales detectadas tampoco acredita corrección ni comprensión.
 
 | Métrica | Valor |
 |---|---:|
-| Temas analizados | 1316 |
+| Temas analizados | 1317 |
 | Temas con alguna señal (requiere inspección) | 1 |
 | Módulos con apéndices heredados | 170/291 |
 
@@ -38,4 +38,4 @@ señales detectadas tampoco acredita corrección ni comprensión.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estas señales sin revisión.
 
-Huella del contenido: `ea83945d3c8ddf51bb77945d1ab46d9f019e986020a688ff74ac467cf04a755a`
+Huella del contenido: `05f8543b0297c8ec5f9975ebe520e765d484d23215635b6650f37af8c450ef81`

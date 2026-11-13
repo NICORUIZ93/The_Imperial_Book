@@ -241,7 +241,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 1071,
+      "lines": 1080,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19504,
+      "lines": 19511,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1858,7 +1858,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1176,
+      "lines": 1177,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2133,7 +2133,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3183,
+      "lines": 3197,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16616,
+      "lines": 16628,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2176,7 +2176,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1348,
+      "lines": 1349,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2385,7 +2385,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11110,
+      "lines": 11117,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2578,7 +2578,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13715,
+      "lines": 13726,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2743,7 +2743,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33243,
+      "lines": 33268,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22182,
+      "lines": 22210,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 1875,
+      "lines": 1883,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2998,7 +2998,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29259,
+      "lines": 29281,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6285,6 +6285,14 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/CompatibilidadContrato.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/DependenciaDeadline.java",
       "lines": 51,
       "kind": "example",
@@ -6293,8 +6301,24 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/FalaciasDistribuidas.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/GatewayDeadline.java",
       "lines": 59,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/LimitePayload.java",
+      "lines": 25,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6410,7 +6434,7 @@
     },
     {
       "path": "examples/professional-bridges/verification.json",
-      "lines": 135,
+      "lines": 143,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -17783,7 +17807,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-1.md",
-      "lines": 290,
+      "lines": 428,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17791,15 +17815,15 @@
         "# Curso Microservicios \u00b7 Construir un monolito modular antes de extraer servicios",
         "## Aprende construyendo",
         "## Entorno reproducible",
-        "### Tema 1: Monolito, monolito modular, servicio y microservicio \u00b7 Fundamentos \u00b7 75 min",
-        "#### Aprende",
-        "#### Practica",
-        "# Clasificaci\u00f3n de RutaFlow",
-        "### Tema 2: Cohesi\u00f3n, acoplamiento y API del m\u00f3dulo \u00b7 Aplicaci\u00f3n \u00b7 90 min",
-        "#### Aprende",
-        "#### Practica",
-        "### Tema 3: Arquitectura hexagonal \u2014 dominio, puertos y adaptadores \u00b7 Aplicaci\u00f3n \u00b7 95 min",
-        "#### Aprende"
+        "### Tema 1: Distinguir estructura l\u00f3gica de unidad de despliegue \u00b7 Fundamentos \u00b7 40 min",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Evaluar autonom\u00eda antes de extraer un proceso \u00b7 Fundamentos \u00b7 45 min"
       ]
     },
     {
@@ -19189,7 +19213,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5881,
+      "lines": 5885,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

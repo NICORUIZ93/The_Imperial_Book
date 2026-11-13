@@ -78,7 +78,7 @@
       "completeSubtopics": 0
     },
     "microservices": {
-      "topics": 16,
+      "topics": 17,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -11770,42 +11770,49 @@
       },
       {
         "module": 1,
-        "topic": "### Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
+        "topic": "### Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "topic": "### Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "topic": "### Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "topic": "### Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+        "topic": "### Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "topic": "### Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

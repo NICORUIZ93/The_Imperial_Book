@@ -1068,3 +1068,12 @@ compresión, streaming y las falacias distribuidas con controles verificables.
 Ejecución JDK 27.0.1: V1/V2 produjeron ciudad desconocida/presente; 7 bytes se aceptaron y 33 se
 rechazaron antes de reservar; seis falacias se conectaron con evidencia del módulo. Los dos temas
 nuevos recibieron revisión semántica trazable y la deuda permanece estable.
+
+## 37. Estructura de despliegue y autonomía separadas
+
+Fecha: 2026-11-13. El primer tema de 75 minutos del módulo de monolito modular se dividió en
+«Distinguir estructura lógica de unidad de despliegue» (40 min) y «Evaluar autonomía antes de
+extraer un proceso» (45 min). Se separó clasificación observable de la decisión económica y
+operativa. Los ejemplos JDK 27.0.1 produjeron las tres clasificaciones arquitectónicas y las
+decisiones `MANTENER_MODULAR`/`CANDIDATO_A_EXTRAER`. El tema nuevo de autonomía recibió revisión
+semántica trazable y no aumenta la deuda.

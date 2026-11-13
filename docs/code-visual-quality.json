@@ -109,16 +109,16 @@
       "officialSource": 112
     },
     "microservices": {
-      "topics": 16,
-      "code": 16,
-      "commentedCode": 6,
+      "topics": 17,
+      "code": 17,
+      "commentedCode": 5,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 15,
-      "runCommand": 14,
-      "officialSource": 16
+      "filePath": 17,
+      "runCommand": 15,
+      "officialSource": 17
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2572,28 +2572,42 @@
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+      "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
       "missingCode": false,
       "missingComments": true
     },

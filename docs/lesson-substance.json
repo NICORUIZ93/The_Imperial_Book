@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "ea83945d3c8ddf51bb77945d1ab46d9f019e986020a688ff74ac467cf04a755a",
+    "fingerprint": "05f8543b0297c8ec5f9975ebe520e765d484d23215635b6650f37af8c450ef81",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1316,
+    "topics": 1317,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9076,43 +9076,50 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
-        "words": 490
+        "tailWords": 71,
+        "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+        "words": 710
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 73,
+        "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "words": 641
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
-        "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
         "words": 460
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
-        "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
         "words": 466
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
-        "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
         "words": 480
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
-        "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
+        "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
         "words": 499
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
-        "topic": "Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "topic": "Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
         "words": 456
       }
     ],

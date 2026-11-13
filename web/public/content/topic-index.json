@@ -4580,28 +4580,32 @@
     ],
     "1": [
       {
-        "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
-        "fragment": "tema-1-monolito-monolito-modular-servicio-y-microservicio-fundamentos-75-min"
+        "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+        "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue-fundamentos-40-min"
+      },
+      {
+        "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
       },
       {
         "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
-        "fragment": "tema-2-cohesion-acoplamiento-y-api-del-modulo-aplicacion-90-min"
+        "fragment": "tema-3-cohesion-acoplamiento-y-api-del-modulo-aplicacion-90-min"
       },
       {
         "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "fragment": "tema-3-arquitectura-hexagonal-dominio-puertos-y-adaptadores-aplicacion-95-min"
+        "fragment": "tema-4-arquitectura-hexagonal-dominio-puertos-y-adaptadores-aplicacion-95-min"
       },
       {
         "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "fragment": "tema-4-dependencias-ciclos-y-costo-de-coordinacion-integracion-80-min"
+        "fragment": "tema-5-dependencias-ciclos-y-costo-de-coordinacion-integracion-80-min"
       },
       {
         "title": "Fitness functions con ArchUnit · Integración · 110 min",
-        "fragment": "tema-5-fitness-functions-con-archunit-integracion-110-min"
+        "fragment": "tema-6-fitness-functions-con-archunit-integracion-110-min"
       },
       {
         "title": "Evidencia y ADR para decidir una extracción",
-        "fragment": "tema-6-evidencia-y-adr-para-decidir-una-extraccion"
+        "fragment": "tema-7-evidencia-y-adr-para-decidir-una-extraccion"
       }
     ]
   },
