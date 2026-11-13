@@ -529,44 +529,239 @@ Añade una segunda dependencia de 200 ms después de tarifas sin cambiar el dead
 
 Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Clasificar un resultado desconocido antes de reintentar» (referencia interna M0 T4). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
 
-### Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min
+### Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min
 
-**Al terminar podrás:** distinguir rechazo, fallo confirmado y resultado desconocido, y diseñar un reintento que no duplique el negocio.
+**Prerrequisito:** tema «Propagar un deadline absoluto entre servicios HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T3).
 
-**¿Por qué es importante?** Los sistemas reales no pueden confundir una respuesta perdida con una operación no ejecutada: esa confusión duplica cobros, envíos o reservas.
+**Al finalizar podrás:** distinguir éxito, fallo y resultado desconocido; demostrar que un timeout puede ocultar un efecto confirmado; reconciliar mediante el mismo identificador y decidir si existe evidencia suficiente antes de reintentar.
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-| Subtema | Papel | Evidencia observable |
+Usarás **JDK 27.0.1**, `curl` y dos terminales. Crea una carpeta vacía `academia-labs/microservices/resultado-desconocido/{src,out,evidence}` y libera el puerto 8084. Debes comprender que un timeout describe lo observado por el cliente, no el estado final del servidor.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Repetir una operación cuyo resultado es desconocido puede duplicar cobros, reservas o envíos; no repetirla puede abandonar una intención válida.
+
+RutaFlow confirma un envío y persiste `CONFIRMADO`, pero responde después de que el cliente abandona. El cliente no puede afirmar «falló»: sólo sabe que no recibió confirmación. El identificador `ENV-001` permite reconciliar mediante una lectura posterior. Este tema clasifica la incertidumbre; «Evitar efectos duplicados con una clave idempotente» enseñará después cómo proteger un reintento necesario.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
 |---|---|---|
-| Fallo parcial | Núcleo | cliente falla mientras servidor sigue vivo |
-| Ambigüedad del timeout | Núcleo | efecto puede ocurrir aunque no llegue respuesta |
-| Reintento | Variante | segundo intento repite transporte |
-| Clave idempotente | Núcleo | mismo identificador produce un solo efecto |
-| Estado durable | Límite | mapa en memoria pierde deduplicación al reiniciar |
-| Reconciliación | Diagnóstico | consulta posterior decide qué ocurrió |
+| Fallo parcial | Núcleo | Cliente y servidor terminan con observaciones distintas aunque sólo falle la comunicación |
+| Punto de compromiso | Núcleo | Después del commit el efecto existe aunque la respuesta se pierda |
+| Resultado desconocido | Núcleo | Es conocimiento insuficiente del cliente, no un estado del negocio |
+| Identificador estable | Prerrequisito | Permite consultar la misma intención; un ID nuevo representa otra operación |
+| Reconciliación | Diagnóstico | Una lectura posterior transforma incertidumbre en estado observable |
+| Reintento | Variante | Sólo es seguro si no hubo efecto o existe protección contra duplicados |
+| Réplica atrasada | Límite | Un 404 temporal puede no demostrar ausencia en sistemas eventualmente consistentes |
 
-Un fallo total detiene todo el sistema; uno parcial deja componentes con visiones distintas. Si el servidor confirma en su base y la conexión cae antes de responder, el cliente ve un error pero el efecto existe. Por eso «timeout = operación fallida» es falso.
+Un **fallo parcial** permite que una parte complete y otra pierda la evidencia. El **punto de compromiso** separa «sin efecto» de «efecto aceptado». Un **resultado desconocido** exige reconciliación, no una conclusión inventada. Analogía: entregas un paquete en recepción y se corta la llamada antes del comprobante; llevar otro paquete no aclara el primero, pero consultar el número de guía sí.
 
-Reintentar mejora disponibilidad solo cuando el efecto es seguro o idempotente. Una clave idempotente identifica la intención de negocio, no el intento HTTP. El servidor guarda clave, huella de la petición y resultado; la misma clave con payload diferente debe rechazarse. Guardarla en memoria no sobrevive a reinicios y solo sirve para demostrar el mecanismo.
-
-La reconciliación consulta el estado por un identificador estable después de un resultado desconocido. Error frecuente: generar una clave nueva en cada retry; así cada intento parece una operación distinta.
-
-#### Practica
-
-Crea `src/ServidorIdempotente.java` con un endpoint `POST /envios` que exija `Idempotency-Key`, incremente un contador solo si la clave no existe y guarde la respuesta en un `ConcurrentHashMap`. Antes de devolver la primera respuesta, duerme 900 ms. Ejecuta dos veces con timeout de 300 ms usando la **misma** clave y luego consulta `GET /envios/{clave}`.
-
-```bash
-curl --max-time 0.3 -X POST -H 'Idempotency-Key: ENV-001' http://127.0.0.1:8081/envios
-curl --max-time 0.3 -X POST -H 'Idempotency-Key: ENV-001' http://127.0.0.1:8081/envios
-curl http://127.0.0.1:8081/envios/ENV-001
+```text
+cliente          servidor             estado
+ POST ENV-001 ---> commit -----------> CONFIRMADO
+ timeout <-------- respuesta tardía
+ GET ENV-001 ------------------------> ENV-001 CONFIRMADO
 ```
 
-**Resultado esperado:** las dos llamadas pueden expirar, pero la consulta debe mostrar un solo envío. **Fallo deliberado:** usa `ENV-002` en el retry y observa dos efectos; corrige reutilizando la intención original. **Transferencia al proyecto integrador RutaFlow Distribuido:** reemplaza el mapa por una tabla con `UNIQUE(idempotency_key)`, guarda estado `PROCESSING/SUCCEEDED/FAILED` y explica cómo recuperas un `PROCESSING` huérfano.
+#### Paso 4 · Demostración guiada desde cero
 
-**Decisión profesional:** conserva la deduplicación al menos durante la ventana máxima de reintentos y devuelve la respuesta original, no una segunda ejecución. La clave debe estar ligada a identidad/operación para que otro usuario no pueda consultar el resultado. Los errores de validación deterministas pueden almacenarse; un fallo transitorio anterior al efecto requiere una política diferente. Fuente: [Azure Architecture Center — Retry](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) e [Idempotent Consumer](https://microservices.io/patterns/communication-style/idempotent-consumer.html).
+Crea `resultado-desconocido/src/ServidorResultadoDesconocido.java`. El archivo completo está en `examples/professional-bridges/microservices/ServidorResultadoDesconocido.java`; contiene un `ConcurrentHashMap`, confirma antes de dormir 900 ms y permite reconciliar por `GET`.
 
-### Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min
+```java
+// Fragmento causal del archivo completo: el efecto sucede antes de responder.
+ENVIOS.put(id, "CONFIRMADO");
+System.out.println("EFECTO_CONFIRMADO " + id);
+Thread.sleep(900);
+respond(exchange, 201, id + " CONFIRMADO");
+```
+
+```bash
+mkdir -p academia-labs/microservices/resultado-desconocido/{src,out,evidence}
+cp examples/professional-bridges/microservices/ServidorResultadoDesconocido.java academia-labs/microservices/resultado-desconocido/src/
+cd academia-labs/microservices/resultado-desconocido
+javac --release 27 -d out src/ServidorResultadoDesconocido.java
+java -cp out ServidorResultadoDesconocido
+# Segunda terminal:
+curl --max-time 0.3 -X POST http://127.0.0.1:8084/envios/ENV-001
+curl -sS http://127.0.0.1:8084/envios/ENV-001
+```
+
+**Resultado esperado:** `curl` termina con código 28; el servidor imprime `EFECTO_CONFIRMADO ENV-001`; la consulta imprime exactamente `ENV-001 CONFIRMADO`.
+
+**Fallo deliberado:** interpreta el código 28 como ausencia y repite con `ENV-002` → **Error esperado:** aparecen efectos para `ENV-001` y `ENV-002` → **Diagnóstico:** cambiaste el identificador y creaste otra intención; primero reconcilia `ENV-001`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** provoca el timeout y consulta `ENV-001`. Pista: mira primero el servidor.
+2. **Variación:** usa timeout de 1.2 s y clasifica HTTP 201 como éxito confirmado.
+3. **Diagnóstico:** consulta `ENV-999`; explica el 404 y el límite de una réplica atrasada.
+4. **Integración:** registra ID, observación, estado reconciliado y decisión en `evidence/resultado.txt`.
+5. **Diseño:** define `PENDING`, `SUCCEEDED`, `FAILED` y `UNKNOWN`; decide cuál requiere reconciliación.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** incorpora consulta por ID y bitácora de reconciliación. No automatices aún el reintento: el mapa se pierde al reiniciar y no protege concurrencia.
+
+#### Paso 6 · Práctica independiente
+
+Añade `fallar-antes`, que responde 503 sin escribir, y `fallar-despues`, que escribe y cierra sin responder. Entrega observación, estado real, clasificación y acción segura para ambos y para el camino exitoso.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo fallo confirmado de resultado desconocido.
+- [ ] Identifico el punto de compromiso.
+- [ ] Reconcilio usando el mismo identificador.
+- [ ] No genero un ID nuevo para una operación incierta.
+- [ ] Explico el límite de una réplica atrasada.
+
+Si fallas 2 o más puntos, vuelve a la demostración. **Siguiente tema:** «Evitar efectos duplicados con una clave idempotente» (referencia interna M0 T5). **Errores comunes:** equiparar timeout con rollback y reconciliar otro ID. **Fuentes oficiales:** [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) y [AWS Builders' Library — retries](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/).
+
+### Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min
+
+**Prerrequisito:** tema «Clasificar un resultado desconocido antes de reintentar» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T4).
+
+**Al finalizar podrás:** asociar una clave estable con la huella y el resultado de una intención, devolver la respuesta original ante una repetición concurrente, rechazar la misma clave con otro payload y explicar qué almacenamiento, ámbito y vencimiento necesita una implementación durable.
+
+#### Paso 1 · Objetivo y preparación
+
+Usarás **JDK 27.0.1**, `curl` y el puerto 8085. Crea `academia-labs/microservices/idempotencia/{src,out,evidence}` desde una carpeta vacía. Debes haber reproducido un resultado desconocido; una clave idempotente no elimina timeouts, sino que limita el efecto de repetir la misma intención.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Después de un resultado desconocido, RutaFlow necesita repetir una confirmación sin crear dos envíos. Deducir duplicados sólo por payload confunde intenciones legítimamente iguales; deducirlos sólo por una clave sin comparar payload permite reutilización accidental o maliciosa.
+
+El cliente genera `OP-001` una vez y la conserva en todos los intentos. El servidor guarda clave, huella normalizada, estado HTTP y cuerpo. Una repetición idéntica recibe el resultado almacenado; la misma clave con otra huella recibe 409. El mapa de este laboratorio hace visible la operación atómica, pero se pierde al reiniciar y no coordina réplicas: producción necesita una restricción única y transacción durable.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
+|---|---|---|
+| Intención y clave | Núcleo | La clave identifica la operación de negocio, no cada intento de transporte |
+| Huella canónica | Núcleo | Detecta reutilización con contenido distinto; exige normalización estable |
+| Reserva atómica | Núcleo | Dos solicitudes concurrentes deben crear un solo registro y un solo efecto |
+| Respuesta almacenada | Núcleo | La repetición devuelve estado y cuerpo originales, no vuelve a ejecutar |
+| Estados de proceso | Variante | `PROCESSING/SUCCEEDED/FAILED` permiten recuperar trabajo huérfano |
+| Ámbito y autorización | Seguridad | La clave debe ligarse a actor y operación para impedir lectura cruzada |
+| TTL | Límite | Debe cubrir la ventana máxima de reintento sin conservar datos indefinidamente |
+| Durabilidad | Profundización | Un mapa demuestra el algoritmo, pero reinicios y múltiples réplicas requieren base compartida |
+
+La **idempotencia** hace que repetir una intención produzca un efecto equivalente a ejecutarla una vez. Analogía: el número de comprobante de una transferencia permite volver a pedir la confirmación; no autoriza cambiar monto y beneficiario conservando el número. `compute` reserva atómicamente dentro de este proceso, pero no sustituye `UNIQUE(actor_id, operation, key)` y una transacción en una base durable.
+
+##### Identificar una intención y comprobar su huella
+
+La clave nace en el cliente cuando nace la intención y se reutiliza en cada intento. El servidor calcula o recibe una huella canónica del método, recurso y payload relevante. Si la clave existe con otra huella, responde conflicto: reproducir el resultado anterior aplicaría una respuesta a datos diferentes.
+
+##### Reservar y reproducir de forma atómica
+
+La comprobación y la creación del registro forman una sola operación. `ConcurrentHashMap.compute` lo demuestra dentro de una JVM; una base usa una restricción única y transacción. Después del éxito se conserva código, headers relevantes y cuerpo para que el retry observe la misma decisión sin repetir el efecto.
+
+##### Recuperar estados incompletos
+
+Una caída puede dejar `PROCESSING` sin respuesta final. El registro necesita propietario, lease o versión, instante de actualización y una política que distinga recuperar de volver a ejecutar ciegamente. Si el efecto externo no es consultable ni idempotente, la recuperación requiere reconciliación manual.
+
+##### Limitar ámbito, conservación y exposición
+
+La clave se busca dentro del actor y operación autorizados; no es un secreto ni debe permitir consultar resultados de otro usuario. El TTL cubre el máximo de retries y reconciliación. Borrarla antes reabre duplicados; conservarla sin límite acumula datos y puede violar políticas de privacidad.
+
+```text
+OP-001 + huella A -> reservar -> efecto #1 -> guardar 201/cuerpo
+OP-001 + huella A -> reproducir 201/cuerpo (sin efecto)
+OP-001 + huella B -> 409 conflicto
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `idempotencia/src/ServidorIdempotente.java` copiando `examples/professional-bridges/microservices/ServidorIdempotente.java`. Este es el archivo completo:
+
+```java
+import com.sun.net.httpserver.*;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class ServidorIdempotente {
+  record Record(String fingerprint, int status, String body) { }
+  private static final ConcurrentHashMap<String,Record> RECORDS = new ConcurrentHashMap<>();
+  private static final AtomicInteger EFFECTS = new AtomicInteger();
+  private ServidorIdempotente() { }
+  public static void main(String[] args) throws IOException {
+    var server = HttpServer.create(new InetSocketAddress("127.0.0.1",8085),16);
+    server.createContext("/envios", ServidorIdempotente::create);
+    server.createContext("/metricas", e -> respond(e,200,"efectos=" + EFFECTS.get()));
+    server.start();
+    System.out.println("LISTEN http://127.0.0.1:8085");
+  }
+  private static void create(HttpExchange exchange) throws IOException {
+    if (!exchange.getRequestMethod().equals("POST")) { respond(exchange,405,"METODO_NO_PERMITIDO"); return; }
+    String key = exchange.getRequestHeaders().getFirst("Idempotency-Key");
+    String fingerprint = exchange.getRequestHeaders().getFirst("X-Payload-Fingerprint");
+    if (key == null || fingerprint == null) { respond(exchange,400,"CLAVE_Y_HUELLA_REQUERIDAS"); return; }
+    var created = new boolean[1];
+    Record record = RECORDS.compute(key, (ignored, existing) -> {
+      if (existing != null) return existing;
+      created[0] = true;
+      int number = EFFECTS.incrementAndGet();
+      return new Record(fingerprint,201,"ENVIO_CREADO numero=" + number);
+    });
+    if (!record.fingerprint().equals(fingerprint)) {
+      respond(exchange,409,"CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD");
+      return;
+    }
+    exchange.getResponseHeaders().set("Idempotency-Replayed",Boolean.toString(!created[0]));
+    respond(exchange,record.status(),record.body());
+  }
+  private static void respond(HttpExchange exchange,int status,String text) throws IOException {
+    byte[] body = text.getBytes(StandardCharsets.UTF_8);
+    exchange.sendResponseHeaders(status,body.length);
+    try (var output = exchange.getResponseBody()) { output.write(body); }
+  }
+}
+```
+
+```bash
+mkdir -p academia-labs/microservices/idempotencia/{src,out,evidence}
+cp examples/professional-bridges/microservices/ServidorIdempotente.java academia-labs/microservices/idempotencia/src/
+cd academia-labs/microservices/idempotencia
+javac --release 27 -d out src/ServidorIdempotente.java
+java -cp out ServidorIdempotente
+curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Bogota' http://127.0.0.1:8085/envios
+curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Bogota' http://127.0.0.1:8085/envios
+curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Cali' http://127.0.0.1:8085/envios
+curl -sS http://127.0.0.1:8085/metricas
+```
+
+**Resultado esperado:** ambas respuestas válidas contienen `ENVIO_CREADO numero=1`; la segunda añade `Idempotency-Replayed: true`; el payload distinto devuelve HTTP 409 y `CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD`; la métrica termina exactamente en `efectos=1`.
+
+**Fallo deliberado:** cambia `compute` por `get` seguido de `put` y lanza dos solicitudes simultáneas → **Error esperado:** la métrica puede terminar en `efectos=2` → **Diagnóstico:** comprobar y escribir en pasos separados abre una carrera; restaura la reserva atómica y, en producción, una restricción única transaccional.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** repite `OP-001` con la misma huella y confirma `efectos=1`.
+2. **Variación:** usa `OP-002`; predice `numero=2`. Pista: es otra intención.
+3. **Diagnóstico:** omite la huella y explica el HTTP 400. Pista: la clave sola no detecta payload distinto.
+4. **Integración:** ejecuta dos `curl` en paralelo y conserva headers, cuerpos y métrica en `evidence/idempotencia.txt`.
+5. **Diseño:** propone tabla, restricción única, estados, TTL y ámbito por usuario; explica cómo recuperas `PROCESSING` huérfano.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** aplica la clave a `POST /envios`, conserva la respuesta original y añade una consulta de reconciliación. No uses este mapa en producción ni guardes secretos en la clave.
+
+#### Paso 6 · Práctica independiente
+
+Implementa `PROCESSING`, `SUCCEEDED` y `FAILED` con un fallo después de reservar pero antes de guardar la respuesta. Define quién puede recuperar el registro, cuándo, y cómo evitas que dos recuperadores ejecuten el efecto. Entrega pruebas para repetición idéntica, conflicto de huella y reserva huérfana.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo intención de intento HTTP.
+- [ ] Comparo la huella antes de reproducir una respuesta.
+- [ ] Reservo la clave de forma atómica.
+- [ ] Devuelvo estado y cuerpo originales sin repetir el efecto.
+- [ ] Defino ámbito, TTL, durabilidad y recuperación.
+
+Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar orden causal por agregado» (referencia interna M0 T6). **Errores comunes:** generar clave nueva en cada retry, aceptar otra huella, usar `get`+`put` y confiar en memoria local. **Fuentes oficiales:** [AWS Powertools — idempotency](https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/) y [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry).
+
+### Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min
 
 **Al terminar podrás:** evitar decisiones de negocio basadas en un reloj global inexistente y preservar orden donde realmente importa.
 
@@ -620,7 +815,7 @@ java -cp out Proyeccion
 
 **Diagnóstico y seguridad.** Registra `eventId`, agregado, versión esperada/recibida y correlation ID, evitando payloads sensibles. Distingue duplicado exacto, evento obsoleto y hueco: requieren ignorar, reconciliar o aparcar, respectivamente. Una cola de cuarentena sin alerta ni procedimiento solo es almacenamiento de deuda. Fuente: [OpenTelemetry — contexto](https://opentelemetry.io/docs/specs/otel/context/) y [Azure Architecture Center — Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy).
 
-### Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min
+### Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min
 
 **Al terminar podrás:** evolucionar un mensaje compatible, limitar su costo y convertir una falacia distribuida en una prueba reproducible.
 

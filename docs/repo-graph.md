@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-13 05:27 UTC
+Generated: 2026-11-13 05:35 UTC
 Root: `Academia_Floci`
 Indexed files: 1623
 Import edges: 67
@@ -244,7 +244,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/CONTINUAR-7-PASOS.md` (26 lines) - headings: # Migración a cuatro pasos y subtemas atómicos, ## Formato que se aplica, ## Estado de migración
 - `docs/CONTINUAR-EXPANSION-JAVA-Y-ACADEMIA.md` (1927 lines) - headings: # Continuidad: expansión Java y academia, ## Encargo y razón, ## Fuentes de verdad y rutas, ## Contrato de cada tema
 - `docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md` (182 lines) - headings: # Continuidad de ChatGPT: biblioteca, metodología y revisión de prompts, ## Punto exacto del repositorio, ## Qué ya está confirmado, ## Qué contiene la tanda local sin commit
-- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (1037 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
+- `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (1049 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
@@ -293,7 +293,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
-- `docs/atomic-subtopics.json` (19476 lines)
+- `docs/atomic-subtopics.json` (19483 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)

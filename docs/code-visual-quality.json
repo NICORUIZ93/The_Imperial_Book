@@ -109,16 +109,16 @@
       "officialSource": 112
     },
     "microservices": {
-      "topics": 12,
-      "code": 12,
-      "commentedCode": 5,
+      "topics": 13,
+      "code": 13,
+      "commentedCode": 6,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 11,
-      "runCommand": 10,
-      "officialSource": 12
+      "filePath": 12,
+      "runCommand": 11,
+      "officialSource": 13
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2530,21 +2530,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "missingCode": false,
       "missingComments": true
     },

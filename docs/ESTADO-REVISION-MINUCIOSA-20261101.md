@@ -1034,3 +1034,15 @@ La regla quedó persistida en `MASTER-PROMPT.md` para todos los cursos. También
 primer laboratorio de Microservicios de JDK 25 a JDK 27.0.1 y su fuente a la API Java 27. Las
 rutas técnicas de carpetas (`m0-t1`, etc.) se conservan porque son identificadores reproducibles,
 no etiquetas pedagógicas que el estudiante deba interpretar.
+
+## 34. Resultado desconocido e idempotencia separados
+
+Fecha: 2026-11-13. El antiguo tema de 90 minutos se dividió en «Clasificar un resultado
+desconocido antes de reintentar» y «Evitar efectos duplicados con una clave idempotente», ambos de
+45 minutos y con nombres completos. Se conservaron fallo parcial, punto de commit, reconciliación,
+clave, huella, respuesta almacenada, concurrencia, estados, recuperación, ámbito, TTL y durabilidad.
+
+Ejecución JDK 27.0.1: el primer laboratorio produjo curl 28 y luego `ENV-001 CONFIRMADO`. El
+segundo devolvió `numero=1` tanto en original como replay, 409 ante otra huella y `efectos=1`.
+Idempotencia recibió revisión semántica manual trazable para que el tema nuevo no aumente la deuda;
+no se confunde el mapa local con una implementación durable multi-réplica.

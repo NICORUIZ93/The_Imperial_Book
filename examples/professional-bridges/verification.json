@@ -102,6 +102,14 @@
       "status": "checked-with-limits",
       "checkedAt": "2026-11-13",
       "evidence": "Temurin JDK 27.0.1: tres clases compilaron con --release 27; cliente con 1200 ms obtuvo HTTP_200 TARIFA=12000; con 250 ms obtuvo HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA; omitir el header produjo HTTP 400 DEADLINE_INVALIDO. Límite: loopback y System.currentTimeMillis; no se probó sesgo entre hosts, carga ni efectos persistentes."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "Clasificar un resultado desconocido y evitar duplicados con idempotencia",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: timeout curl 28 seguido de ENV-001 CONFIRMADO; idempotencia devolvió numero=1 para original y replay, HTTP 409 para misma clave con otra huella y efectos=1. Límite: mapas en una JVM; no prueba durabilidad, concurrencia entre réplicas ni recuperación tras caída."
     }
   ],
   "additionalRepair": {

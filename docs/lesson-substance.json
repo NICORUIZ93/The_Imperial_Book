@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "9a72eea6b1d092d2d3a27a2b23907a4bf4eab6d6ad33b0490bde9e0f94d5f793",
+    "fingerprint": "f2428c23f340505311c8d89c1f457fdd0d3c8053cdc291b7ce9682eb0b4c7395",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1312,
+    "topics": 1313,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9027,22 +9027,29 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
-        "words": 489
+        "tailWords": 97,
+        "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+        "words": 818
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 103,
+        "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+        "words": 1372
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
-        "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
         "words": 544
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
-        "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "words": 586
       },
       {

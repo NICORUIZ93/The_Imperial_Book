@@ -210,23 +210,23 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 12,
-      "objective": 2,
-      "prerequisites": 7,
-      "context": 3,
-      "theoryAnalogy": 3,
-      "guidedDemo": 3,
-      "codeExplanation": 12,
-      "execution": 9,
-      "expectedResult": 11,
-      "deliberateFailure": 11,
-      "guidedPractice": 3,
-      "independentPractice": 3,
-      "closure": 3,
-      "commonErrors": 2,
-      "resources": 2,
-      "standaloneExample": 4,
-      "complete": 2
+      "topics": 13,
+      "objective": 4,
+      "prerequisites": 9,
+      "context": 5,
+      "theoryAnalogy": 5,
+      "guidedDemo": 5,
+      "codeExplanation": 13,
+      "execution": 10,
+      "expectedResult": 12,
+      "deliberateFailure": 12,
+      "guidedPractice": 5,
+      "independentPractice": 5,
+      "closure": 5,
+      "commonErrors": 4,
+      "resources": 4,
+      "standaloneExample": 6,
+      "complete": 4
     },
     "node": {
       "topics": 83,
@@ -25831,32 +25831,57 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
         "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 0,
-        "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -25881,7 +25906,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,

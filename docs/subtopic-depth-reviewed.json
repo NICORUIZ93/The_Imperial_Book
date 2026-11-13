@@ -2,6 +2,27 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: primera solicitud OP-001/huella Bogotá produjo HTTP 201, numero=1 y replay=false; repetición idéntica devolvió numero=1 y replay=true; misma clave con huella Cali produjo HTTP 409; /metricas terminó en efectos=1.",
+      "criticalSubtopics": [
+        "intención de negocio y clave estable",
+        "huella canónica y conflicto de payload",
+        "reserva atómica bajo concurrencia",
+        "respuesta original almacenada",
+        "estados PROCESSING/SUCCEEDED/FAILED",
+        "recuperación de reservas huérfanas",
+        "ámbito por actor y autorización",
+        "TTL según ventana de reintentos",
+        "durabilidad y restricción única transaccional"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/",
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry"
+      ]
+    },
     "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
