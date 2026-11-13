@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "da2c14422b52d5f3c4eac06dd0adbdf18645e46368d4acab2e9ab6c1369215c0",
+    "fingerprint": "7a3875a7355e075959c8173ea527dd16ea1124d47cef9a51a184577dad12a77a",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7224,7 +7224,7 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 2: public static void main — qué significa cada palabra",
-        "words": 888
+        "words": 1275
       },
       {
         "issues": [],
@@ -7238,7 +7238,7 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 4: Tipos primitivos vs referencias",
-        "words": 540
+        "words": 1025
       },
       {
         "issues": [],
@@ -7252,7 +7252,7 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 6: Operadores, precedencia y control de flujo",
-        "words": 567
+        "words": 891
       },
       {
         "issues": [],

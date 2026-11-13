@@ -2,6 +2,62 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "java/modulo-0::Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: Scanner con entrada '3' imprimió 'Recibidos: 3'; con 'tres' e hasNextInt() en false imprimió 'Escribe un número entero'. LocalDate.parse('2026-11-03').plusDays(1) dio 2026-11-04; LocalDate.parse('03/11/2026') lanzó DateTimeParseException (formato no ISO). ZoneId.of('America/Desconocida') lanzó ZoneRulesException: Unknown time-zone ID. Las cuatro afirmaciones del tema se confirmaron correctas; el tema no necesitó contenido nuevo.",
+      "criticalSubtopics": ["validar antes de convertir (hasNextInt)", "LocalDate.parse exige ISO yyyy-MM-dd", "Instant vs ZonedDateTime (momento global vs. hora local)", "ZoneId rechaza identificadores de zona inválidos"],
+      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html"]
+    },
+    "java/modulo-0::Tema 7: Arreglos, wrappers y paso de argumentos": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: guias[2] sobre un arreglo de longitud 2 reprodujo ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2; Integer.valueOf(\"cuatro\") reprodujo NumberFormatException: For input string: \"cuatro\"; PasoValor.cambiar mutó el StringBuilder compartido ('pedido listo') pero la reasignación local del parámetro no afectó la variable del llamador, confirmando paso por valor de la referencia. Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
+      "criticalSubtopics": ["longitud fija e índice 0-based", "autoboxing/unboxing y NullPointerException con Integer null", "paso por valor de una referencia (mutar vs. reasignar)"],
+      "sources": ["https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html"]
+    },
+    "java/modulo-0::Tema 6: Operadores, precedencia y control de flujo": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: 'paquete != null & paquete.pesoKg() > 0' con & (sin cortocircuito) reprodujo NullPointerException en pesoValido(null); el switch expression sin 'CANCELADO' falló en compilación con 'the switch expression does not cover all possible input values'; el bucle con i <= guias.length reprodujo ArrayIndexOutOfBoundsException: Index 3 out of bounds for length 3. Se detectó un hueco real: el título promete 'precedencia' pero ningún subtema la demostraba. Se agregó y verificó el Subtema 6.4: con esUrgente=true, pesoExcedido=false, clienteVip=false, 'esUrgente || pesoExcedido && clienteVip' dio true mientras '(esUrgente || pesoExcedido) && clienteVip' dio false con los mismos argumentos, confirmando que && agrupa antes que || sin paréntesis.",
+      "criticalSubtopics": ["cortocircuito && vs & sin cortocircuito", "switch expression exhaustivo sobre enum", "límite de arreglo (length no es índice válido)", "precedencia && antes que || sin paréntesis"],
+      "sources": ["https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html", "https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.22"]
+    },
+    "java/modulo-0::Tema 5: Variables, conversiones y `String`": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: Conversion.java confirmó que (int) 2.75 trunca a 2 sin redondear (2.75 / 2); LeerPeso.java procesó '2.75' como 'Peso: 2.75 kg' y 'pesado' cayó al catch con 'Uso: java LeerPeso <número>' por NumberFormatException. Las tres afirmaciones del tema (final solo bloquea reasignación, no vuelve inmutable el objeto; cast estrecho trunca sin redondear; parseDouble exige formato numérico) se confirmaron correctas; el tema no necesitó contenido nuevo.",
+      "criticalSubtopics": ["declaración vs reasignación", "final en la variable, no en el objeto", "conversión estrecha trunca (no redondea)", "parseDouble y NumberFormatException"],
+      "sources": ["https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html"]
+    },
+    "java/modulo-0::Tema 4: Tipos primitivos vs referencias": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: Tipos.java imprimió '3 entregas, 12.5 km' (4.1), 'RT-8 -> Cali' vía record (4.2) y, con new String(...) en ambos lados, equals=true/==false (4.3). Se detectó un hueco real: el 4.3 solo usaba new String() en los dos lados, sin mostrar el caso real que confunde a principiantes. Se agregó y verificó el Subtema 4.4: dos literales '\"RT-8\"' dieron ==true (pool de strings) mientras literal==new String dio false y nuevaA.intern()==literal volvió a dar true, confirmando que el pool —no la igualdad de contenido— explica por qué == 'a veces funciona' con literales y nunca es confiable con texto construido en runtime.",
+      "criticalSubtopics": ["primitivo vs referencia", "null solo en referencias", "equals vs == en objetos", "pool de strings e intern()", "por qué == con literales no valida == para texto en general"],
+      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html#intern()", "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html"]
+    },
+    "java/modulo-0::Tema 3: JDK, JRE y JVM": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: 'java --version'/'javac --version' coinciden en versión mayor (25.0.2 ambos); 'javacc --version' falla con 'command not found' (nombre de comando inexistente, confirma el fallo deliberado 3.1); Entorno.java imprimió 'OpenJDK 64-Bit Server VM' y '25.0.2' vía System.getProperty; 'java -cp src Entorno' reprodujo el mismo patrón Could not find or load main class / ClassNotFoundException ya verificado en el Tema 1. No se encontraron afirmaciones imprecisas; el tema no necesitó contenido nuevo.",
+      "criticalSubtopics": ["javac compila / java ejecuta", "versión mayor coincidente", "java.vm.name y java.version en runtime", "JRE ya no es paquete separado desde Java 9 (JEP 220)"],
+      "sources": ["https://docs.oracle.com/en/java/javase/25/"]
+    },
+    "java/modulo-0::Tema 2: public static void main — qué significa cada palabra": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: PuntoEntrada.java mostró 'Motor de entregas listo'/'Argumentos recibidos: 0' y, con dos argumentos, 'Ruta solicitada: Medellin -> Envigado'; Hola25.java corrió directo con 'java Hola25.java' y compiló sin banderas de preview con 'javac -d out Hola25.java' en JDK 25 (JEP 512 finalizado). Se agregó y verificó el Subtema 2.4: una clase final sin 'public' en un archivo motor.java (nombre distinto a la clase) compiló y ejecutó igual que una clase pública, confirmando que la regla de nombre de archivo del Subtema 1.1 aplica solo a clases 'public', mientras que 'public' en main es obligatorio sin importar la visibilidad de la clase.",
+      "criticalSubtopics": ["modificadores public/static/void", "String[] args y su orden", "método main ausente o mal nombrado", "forma compacta de Java 25 (JEP 512)", "visibilidad de la clase vs. visibilidad de main"],
+      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html", "https://openjdk.org/jeps/512"]
+    },
     "java/modulo-0::Tema 1: Del código fuente a la JVM": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",

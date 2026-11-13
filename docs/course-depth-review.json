@@ -9324,7 +9324,7 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 295,
+      "line": 329,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9338,7 +9338,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 402,
+      "line": 436,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9352,7 +9352,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 517,
+      "line": 591,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9366,7 +9366,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 635,
+      "line": 709,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9380,7 +9380,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 762,
+      "line": 873,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9394,7 +9394,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 875,
+      "line": 986,
       "signals": [
         "demostracion-no-delimitada"
       ],

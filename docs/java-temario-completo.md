@@ -24,6 +24,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
   - ✓ Subtema 2.2: Recibe argumentos sin recompilar · 10 min
   - ✓ Subtema 2.3: Compara una forma abreviada de Java 25 · 10 min
+  - ✓ Subtema 2.4: Separa la regla del archivo de la regla del método · 10 min
 - [4 pasos] Tema 3: JDK, JRE y JVM
   - ✓ Subtema 3.1: Comprueba qué herramientas instalaste · 10 min
   - ✓ Subtema 3.2: Inspecciona la VM que ejecuta tu clase · 10 min
@@ -32,6 +33,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Guarda una cantidad primitiva · 10 min
   - ✓ Subtema 4.2: Usa una referencia para describir un envío · 10 min
   - ✓ Subtema 4.3: Compara valores, no direcciones por accidente · 10 min
+  - ✓ Subtema 4.4: Descubre por qué `==` "a veces parece funcionar" con texto · 10 min
 - [4 pasos] Tema 5: Variables, conversiones y `String`
   - ✓ Subtema 5.1: Declara y actualiza una variable · 10 min
   - ✓ Subtema 5.2: Convierte un dato sin perderlo · 10 min
@@ -40,6 +42,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 6.1: Protege una comprobación con cortocircuito · 10 min
   - ✓ Subtema 6.2: Elige una acción con switch · 10 min
   - ✓ Subtema 6.3: Recorre una lista sin salir de sus límites · 10 min
+  - ✓ Subtema 6.4: Descubre qué agrupa la precedencia sin paréntesis · 10 min
 - [4 pasos] Tema 7: Arreglos, wrappers y paso de argumentos
   - ✓ Subtema 7.1: Guarda y recorre varias guías · 10 min
   - ✓ Subtema 7.2: Convierte entre primitivos y wrappers con cuidado · 10 min

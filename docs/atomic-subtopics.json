@@ -60,8 +60,8 @@
       "topics": 111,
       "completeTopics": 101,
       "topicsWith3to6Subtopics": 101,
-      "subtopics": 308,
-      "completeSubtopics": 308
+      "subtopics": 311,
+      "completeSubtopics": 311
     },
     "javascript": {
       "topics": 88,
@@ -5575,7 +5575,7 @@
       {
         "module": 0,
         "topic": "### Tema 2: public static void main — qué significa cada palabra",
-        "subtopicCount": 3,
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "2.1",
@@ -5608,6 +5608,20 @@
           {
             "id": "2.3",
             "title": "#### Subtema 2.3: Compara una forma abreviada de Java 25 · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "2.4",
+            "title": "#### Subtema 2.4: Separa la regla del archivo de la regla del método · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -5675,7 +5689,7 @@
       {
         "module": 0,
         "topic": "### Tema 4: Tipos primitivos vs referencias",
-        "subtopicCount": 3,
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "4.1",
@@ -5708,6 +5722,20 @@
           {
             "id": "4.3",
             "title": "#### Subtema 4.3: Compara valores, no direcciones por accidente · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "4.4",
+            "title": "#### Subtema 4.4: Descubre por qué `==` \"a veces parece funcionar\" con texto · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -5775,7 +5803,7 @@
       {
         "module": 0,
         "topic": "### Tema 6: Operadores, precedencia y control de flujo",
-        "subtopicCount": 3,
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "6.1",
@@ -5808,6 +5836,20 @@
           {
             "id": "6.3",
             "title": "#### Subtema 6.3: Recorre una lista sin salir de sus límites · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "6.4",
+            "title": "#### Subtema 6.4: Descubre qué agrupa la precedencia sin paréntesis · 10 min",
             "criteria": {
               "context": true,
               "action": true,

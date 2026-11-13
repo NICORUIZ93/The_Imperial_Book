@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1323
-- Revisados humanamente para subtemas: 164
-- Pendientes: 1159
-- Candidatos prioritarios por señales: 1010
+- Revisados humanamente para subtemas: 171
+- Pendientes: 1152
+- Candidatos prioritarios por señales: 1004
 
 ## Cobertura por track
 
@@ -19,7 +19,7 @@
 | flutter | 106 | 63 | 43 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 111 | 11 | 100 |
+| java | 111 | 18 | 93 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | microservices | 23 | 17 | 6 |
@@ -572,12 +572,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-0` — Tema 3: JDK, JRE y JVM — título agrupa varios conceptos
-- `java/modulo-0` — Tema 4: Tipos primitivos vs referencias — título agrupa varios conceptos
-- `java/modulo-0` — Tema 5: Variables, conversiones y `String` — título agrupa varios conceptos
-- `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo — título agrupa varios conceptos
-- `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos — título agrupa varios conceptos
-- `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) — título agrupa varios conceptos
 - `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación — título agrupa varios conceptos
 - `java/modulo-1` — Tema 2: Herencia y sobreescritura — título agrupa varios conceptos
 - `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una — título agrupa varios conceptos
@@ -1178,6 +1172,13 @@
 - `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
 - `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
 - `java/modulo-0` — Tema 1: Del código fuente a la JVM — compilación fuente→bytecode; classpath (-cp); inspección de bytecode con javap; clase principal ausente (Could not find or load main class); dependencia ausente en runtime (NoClassDefFoundError)
+- `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra — modificadores public/static/void; String[] args y su orden; método main ausente o mal nombrado; forma compacta de Java 25 (JEP 512); visibilidad de la clase vs. visibilidad de main
+- `java/modulo-0` — Tema 3: JDK, JRE y JVM — javac compila / java ejecuta; versión mayor coincidente; java.vm.name y java.version en runtime; JRE ya no es paquete separado desde Java 9 (JEP 220)
+- `java/modulo-0` — Tema 4: Tipos primitivos vs referencias — primitivo vs referencia; null solo en referencias; equals vs == en objetos; pool de strings e intern(); por qué == con literales no valida == para texto en general
+- `java/modulo-0` — Tema 5: Variables, conversiones y `String` — declaración vs reasignación; final en la variable, no en el objeto; conversión estrecha trunca (no redondea); parseDouble y NumberFormatException
+- `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo — cortocircuito && vs & sin cortocircuito; switch expression exhaustivo sobre enum; límite de arreglo (length no es índice válido); precedencia && antes que || sin paréntesis
+- `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos — longitud fija e índice 0-based; autoboxing/unboxing y NullPointerException con Integer null; paso por valor de una referencia (mutar vs. reasignar)
+- `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) — validar antes de convertir (hasNextInt); LocalDate.parse exige ISO yyyy-MM-dd; Instant vs ZonedDateTime (momento global vs. hora local); ZoneId rechaza identificadores de zona inválidos
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada

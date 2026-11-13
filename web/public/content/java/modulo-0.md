@@ -279,12 +279,46 @@ Java 25 amplió las formas de entrada válidas para facilitar programas pequeño
 **4. Cierra**
 Anota las versiones con las que verificaste cada archivo y conserva las salidas. No cambies la firma clásica del motor por una forma que el JDK objetivo no soporte.
 
+#### Subtema 2.4: Separa la regla del archivo de la regla del método · 10 min
+
+**1. Contexto**
+El Subtema 1.1 mostró que el nombre del archivo debe coincidir con el de la clase pública. Esa regla es sobre `public class`, no sobre `main`. Vale la pena comprobar si el lanzador también exige que la clase sea pública para arrancarla.
+
+**2. Hazlo tú**
+Crea `java-motor/src/motor.java` (nombre de archivo en minúsculas, sin relación con el nombre de la clase) con este contenido exacto:
+
+```java
+final class MotorInterno {
+    public static void main(String[] args) {
+        System.out.println("corre sin ser clase publica");
+    }
+}
+```
+
+Desde `java-motor/`, compila y ejecuta:
+
+```bash
+javac -d out src/motor.java
+java -cp out MotorInterno
+```
+
+**Resultado esperado:** compila sin error y ejecuta `corre sin ser clase publica`. El `.class` se llama `MotorInterno.class` aunque el archivo fuente se llamaba `motor.java`.
+
+**Fallo deliberado:** una hipótesis frecuente es pensar que la regla "el nombre del archivo debe coincidir con el de la clase" aplica a cualquier clase con `main`. **Error esperado:** no hay ningún error; `javac` acepta el archivo sin quejarse y `java -cp out MotorInterno` funciona igual que con una clase pública. **Diagnóstico:** la restricción de nombre de archivo del Subtema 1.1 es exclusiva de las clases declaradas `public`; una clase sin modificador de acceso (paquete-privada) puede vivir en un archivo con cualquier nombre, mientras ese archivo no contenga ninguna otra clase `public`. Lo que el lanzador exige siempre, con o sin `public` en la clase, es que el método `main` sea `public static void`.
+
+**3. Entiende**
+`public` en `class MotorInterno` controla quién puede importar y usar esa clase desde otro paquete; no tiene nada que ver con lo que exige `java` para arrancarla por classpath. `public` en `main` sí es obligatorio siempre: es el contrato que el lanzador busca, independientemente de la visibilidad de la clase que lo contiene.
+
+**4. Cierra**
+Explica con tus palabras por qué el motor de entregas puede tener clases de ayuda sin `public` y seguir ejecutándolas con `java -cp` durante el desarrollo, aunque el archivo final que se publique sí necesite una clase pública con el nombre acordado.
+
 **Hito del tema:**
 
 - [ ] Identifiqué el papel de `public`, `static`, `void`, `main` y `String[] args`.
 - [ ] Recibí y mostré dos argumentos en el orden correcto.
 - [ ] Controlé el caso en que faltaba un argumento y reproduje el fallo sin validación.
 - [ ] Distinguí la firma clásica de la forma compacta disponible en Java 25.
+- [ ] Separé la regla de nombre de archivo (clase `public`) de la regla de `main` (siempre `public static void`, sin importar la visibilidad de la clase).
 
 **Fuentes oficiales:** [guía de lanzamiento de aplicaciones Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) y [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512).
 
@@ -513,6 +547,46 @@ Para primitivos `==` compara valores. Para objetos compara identidad de referenc
 **4. Cierra**
 
 Explica por qué las dos comparaciones imprimen resultados distintos. Revisa [tipos primitivos de Java](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html).
+
+#### Subtema 4.4: Descubre por qué `==` "a veces parece funcionar" con texto · 10 min
+
+**1. Contexto**
+El Subtema 4.3 mostró que `==` siempre da `false` entre dos `String` creados con `new`. Pero si alguien prueba `==` con dos literales de texto en vez de `new String(...)`, puede obtener `true` por accidente y concluir —equivocadamente— que `==` sí sirve para comparar texto.
+
+**2. Hazlo tú**
+Reemplaza `java-motor/src/Tipos.java` por este archivo completo:
+
+```java
+public class Tipos {
+    public static void main(String[] args) {
+        String literalA = "RT-8";
+        String literalB = "RT-8";
+        String nuevaA = new String("RT-8");
+        System.out.println("literal == literal: " + (literalA == literalB));
+        System.out.println("literal == new String: " + (literalA == nuevaA));
+        System.out.println("new String().intern() == literal: " + (nuevaA.intern() == literalA));
+    }
+}
+```
+
+Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp out Tipos`.
+
+**Resultado esperado:** `literal == literal: true`, `literal == new String: false`, `new String().intern() == literal: true`.
+
+**Fallo deliberado:** una hipótesis frecuente, al ver que `literalA == literalB` dio `true`, es concluir que "`==` funciona bien con `String` mientras sean literales, el problema es solo `new String(...)`". **Error esperado:** esa regla se rompe apenas el texto llega por `args[0]`, por `scanner.next()`, por concatenación en tiempo de ejecución o por lectura de un archivo: en esos casos el `String` resultante casi nunca es el mismo objeto interno que el literal, aunque el contenido sea idéntico, y `==` vuelve a dar `false` de forma impredecible para quien solo probó con literales fijos. **Diagnóstico:** Java reutiliza un único objeto por cada literal de texto distinto en lo que se llama el *pool de strings*; por eso dos literales idénticos (`"RT-8"` y `"RT-8"`) son el mismo objeto y `==` da `true` casi por casualidad. `new String(...)` crea deliberadamente un objeto nuevo fuera del pool, y `.intern()` es el único método que busca o registra ese objeto en el pool explícitamente. Ninguna de las dos reglas depende de si el *contenido* es igual, sino de si el *objeto* es el mismo.
+
+**3. Entiende**
+El pool de strings es una optimización de memoria, no una garantía de comparación. Confiar en que `==` "funcionó en mis pruebas con literales" es una trampa: el comportamiento cambia en cuanto el texto deja de ser un literal fijo en el código y pasa a construirse en tiempo de ejecución. `equals` compara contenido siempre, sin depender de esa optimización interna.
+
+**4. Cierra**
+Anota qué pasaría si el motor de entregas comparara con `==` el código de guía que llega por `args[0]` contra un literal `"RT-8"` escrito en el código: explica por qué fallaría aunque el texto fuera idéntico.
+
+**Hito del tema:**
+
+- [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
+- [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
+- [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
+- [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
 
 ### Tema 5: Variables, conversiones y `String`
 
@@ -758,6 +832,43 @@ La longitud cuenta elementos; no es un índice válido. Comprueba el límite ant
 **4. Cierra**
 
 Anota cuántas guías hay y cuál es su último índice. Fuente oficial: [control de flujo](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html).
+
+#### Subtema 6.4: Descubre qué agrupa la precedencia sin paréntesis · 10 min
+
+**1. Contexto**
+El título de este tema promete "precedencia", pero hasta ahora solo viste `&&` en una sola condición. Cuando mezclas `||` y `&&` en la misma línea sin paréntesis, Java agrupa según la precedencia del operador, no según el orden en que los leíste.
+
+**2. Hazlo tú**
+Crea `java-motor/src/Precedencia.java`:
+
+```java
+public class Precedencia {
+    static boolean sinParentesis(boolean esUrgente, boolean pesoExcedido, boolean clienteVip) {
+        return esUrgente || pesoExcedido && clienteVip;
+    }
+
+    static boolean conParentesis(boolean esUrgente, boolean pesoExcedido, boolean clienteVip) {
+        return (esUrgente || pesoExcedido) && clienteVip;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sinParentesis(true, false, false));
+        System.out.println(conParentesis(true, false, false));
+    }
+}
+```
+
+Desde `java-motor`, compila y ejecuta `javac -d out src/Precedencia.java` y `java -cp out Precedencia`.
+
+**Resultado esperado:** `true` y después `false`, con los mismos tres argumentos (`true, false, false`) en ambos métodos.
+
+**Fallo deliberado:** una hipótesis frecuente es pensar que `a || b && c` se lee de izquierda a derecha, como si fuera `(a || b) && c`. **Error esperado:** con `esUrgente=true, pesoExcedido=false, clienteVip=false`, esa lectura predice `false` (porque `clienteVip` es `false`), pero el programa imprime `true`. **Diagnóstico:** `&&` tiene mayor precedencia que `||`, así que Java evalúa primero `pesoExcedido && clienteVip` (`false && false` = `false`) y luego `esUrgente || false` (`true || false` = `true`); la expresión real es `esUrgente || (pesoExcedido && clienteVip)`, no `(esUrgente || pesoExcedido) && clienteVip`.
+
+**3. Entiende**
+La precedencia decide qué operador "atrapa" a sus operandos vecinos antes que otro cuando no hay paréntesis. `&&` agrupa antes que `||`, igual que `*` agrupa antes que `+` en aritmética. Cuando una condición combina ambos operadores y el orden importa para el negocio, los paréntesis explícitos no son opcionales: documentan la intención y evitan depender de que quien lea el código recuerde la tabla de precedencia.
+
+**4. Cierra**
+Reescribe `sinParentesis` con paréntesis que hagan explícito el agrupamiento real que ya tiene (sin cambiar el resultado) y explica por qué ahora es más fácil de leer sin memorizar reglas de precedencia.
 
 ### Tema 7: Arreglos, wrappers y paso de argumentos
 

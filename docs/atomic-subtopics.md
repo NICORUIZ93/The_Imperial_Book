@@ -14,7 +14,7 @@ Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 100 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 101 | 111 | 308 | 308 |
+| java | 101 | 111 | 311 | 311 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | microservices | 0 | 23 | 0 | 0 |
