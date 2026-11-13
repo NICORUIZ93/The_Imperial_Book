@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1314,
-    "reviewed": 149,
+    "topics": 1316,
+    "reviewed": 151,
     "pending": 1165,
-    "priorityCandidates": 1017,
+    "priorityCandidates": 1016,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -61,8 +61,8 @@
         "pending": 56
       },
       "microservices": {
-        "topics": 14,
-        "reviewed": 3,
+        "topics": 16,
+        "reviewed": 5,
         "pending": 11
       },
       "node": {
@@ -17751,17 +17751,76 @@
       }
     },
     {
-      "id": "microservices/modulo-0::Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "id": "microservices/modulo-0::Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min",
       "status": "pending",
-      "semanticHeadings": [],
-      "prioritySignals": [
-        "título agrupa varios conceptos",
-        "menos de dos encabezados semánticos internos"
+      "semanticHeadings": [
+        "Objetivo y preparación"
       ],
+      "prioritySignals": [],
       "review": null
+    },
+    {
+      "id": "microservices/modulo-0::Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 27.0.1: ENVIO-1 produjo FRAME_OK bytes=7; 33 bytes fueron rechazados antes de leer el cuerpo con IllegalArgumentException: PAYLOAD_EXCESIVO y exit 1.",
+        "criticalSubtopics": [
+          "serialización a bytes",
+          "framing por longitud",
+          "límite antes de reservar",
+          "frame truncado",
+          "bytes UTF-8 frente a caracteres",
+          "tamaño descomprimido",
+          "streaming frente a memoria"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html",
+          "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload"
+        ]
+      }
+    },
+    {
+      "id": "microservices/modulo-0::Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 27.0.1: seis líneas REFUTADA conectaron confiabilidad, latencia, ancho, seguridad, topología y homogeneidad con evidencia/mitigación del módulo.",
+        "criticalSubtopics": [
+          "hipótesis comprobable",
+          "perturbación reproducible",
+          "señal observable",
+          "impacto",
+          "mitigación específica",
+          "límites del laboratorio",
+          "prueba operativa y responsable"
+        ],
+        "sources": [
+          "https://learn.microsoft.com/en-us/azure/architecture/patterns/",
+          "https://aws.amazon.com/builders-library/"
+        ]
+      }
     },
     {
       "id": "microservices/modulo-1::Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",

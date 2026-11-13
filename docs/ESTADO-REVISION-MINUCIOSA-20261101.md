@@ -1057,3 +1057,14 @@ versión, duplicado, hueco, compare-and-set, buffer y cuarentena.
 Con JDK 27.0.1 se ejecutaron ambos ejemplos: las tres invariantes de reloj fueron `true`; la
 proyección produjo aplicación v1, hueco v3, aplicación v2, duplicado v2 y orden independiente para
 ENV-2. El tema nuevo de orden recibió revisión semántica trazable; la deuda no aumenta.
+
+## 36. Contratos, framing y falacias separados
+
+Fecha: 2026-11-13. El último tema de 100 minutos del primer módulo se dividió en tres: evolucionar
+contratos JSON (45 min), rechazar frames excesivos (35 min) y refutar falacias con evidencia (45
+min). Se conservaron compatibilidad atrás/adelante, defaults, migración, framing, límites,
+compresión, streaming y las falacias distribuidas con controles verificables.
+
+Ejecución JDK 27.0.1: V1/V2 produjeron ciudad desconocida/presente; 7 bytes se aceptaron y 33 se
+rechazaron antes de reservar; seis falacias se conectaron con evidencia del módulo. Los dos temas
+nuevos recibieron revisión semántica trazable y la deuda permanece estable.

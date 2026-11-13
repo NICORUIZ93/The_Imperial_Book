@@ -5535,10 +5535,32 @@
       "track": "microservices",
       "module": 0,
       "position": 8,
-      "title": "Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "title": "Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:7"
+      ]
+    },
+    {
+      "id": "microservices:0:9",
+      "track": "microservices",
+      "module": 0,
+      "position": 9,
+      "title": "Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:8"
+      ]
+    },
+    {
+      "id": "microservices:0:10",
+      "track": "microservices",
+      "module": 0,
+      "position": 10,
+      "title": "Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:9"
       ]
     },
     {
@@ -5549,7 +5571,7 @@
       "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
-        "microservices:0:8"
+        "microservices:0:10"
       ]
     },
     {

@@ -118,6 +118,14 @@
       "status": "checked-with-limits",
       "checkedAt": "2026-11-13",
       "evidence": "Temurin JDK 27.0.1: reloj de pared ordenable, duración monotónica dentro de 100–500 ms y nanoTime no tratado como fecha; la proyección clasificó aplicación, hueco y duplicado para dos agregados. Límite: una JVM; no se probó sesgo real entre hosts ni broker."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "Contratos, framing y falacias distribuidas",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: V1/V2 produjeron ciudad DESCONOCIDA/PRESENTE; frame de 7 bytes aceptado y 33 bytes rechazado con PAYLOAD_EXCESIVO; seis falacias imprimieron REFUTADA con mitigación. Límite: parser JSON didáctico y loopback; no sustituye schema registry ni prueba de red real."
     }
   ],
   "additionalRepair": {

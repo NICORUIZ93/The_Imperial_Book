@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1314
-- Revisados humanamente para subtemas: 149
+- Temas inventariados: 1316
+- Revisados humanamente para subtemas: 151
 - Pendientes: 1165
-- Candidatos prioritarios por señales: 1017
+- Candidatos prioritarios por señales: 1016
 
 ## Cobertura por track
 
@@ -22,7 +22,7 @@
 | java | 111 | 10 | 101 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
-| microservices | 14 | 3 | 11 |
+| microservices | 16 | 5 | 11 |
 | node | 83 | 0 | 83 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
@@ -798,7 +798,6 @@
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
 - `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-0` — Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-1` — Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-1` — Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-1` — Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -1197,5 +1196,7 @@
 - `microservices/modulo-0` — Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min — presupuesto inicial convertido una sola vez; deadline absoluto compartido; cálculo de tiempo restante por salto; propagación sin renovar el instante límite; reserva del llamador para completar la respuesta; rechazo temprano por presupuesto insuficiente; sesgo y sincronización de relojes; límite de confianza para deadlines externos; cancelación local frente a efectos remotos
 - `microservices/modulo-0` — Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min — intención de negocio y clave estable; huella canónica y conflicto de payload; reserva atómica bajo concurrencia; respuesta original almacenada; estados PROCESSING/SUCCEEDED/FAILED; recuperación de reservas huérfanas; ámbito por actor y autorización; TTL según ventana de reintentos; durabilidad y restricción única transaccional
 - `microservices/modulo-0` — Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min — agregado como unidad de orden; versión de dominio; duplicado exacto; evento obsoleto; hueco de secuencia; concurrencia de escritores; compare-and-set; buffer acotado; cuarentena y reconciliación
+- `microservices/modulo-0` — Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min — serialización a bytes; framing por longitud; límite antes de reservar; frame truncado; bytes UTF-8 frente a caracteres; tamaño descomprimido; streaming frente a memoria
+- `microservices/modulo-0` — Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min — hipótesis comprobable; perturbación reproducible; señal observable; impacto; mitigación específica; límites del laboratorio; prueba operativa y responsable
 - `spring-boot/modulo-26` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
 - `spring-boot/modulo-26` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor

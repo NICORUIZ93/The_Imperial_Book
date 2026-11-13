@@ -2,9 +2,9 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 /** Publicación progresiva: sólo se registra un módulo cuando su lección real supera la puerta editorial. */
 export const MICROSERVICES_MODULES: CourseModule[] = [
-  m(0, 'Antes de distribuir: proceso, red y falacias', 'Proceso, red y fallos', 'Fundamentos', '6 h', '#0f766e',
+  m(0, 'Antes de distribuir: proceso, red y falacias', 'Proceso, red y fallos', 'Fundamentos', '11 h', '#0f766e',
     'Reproduce los fallos que aparecen al separar procesos antes de elegir frameworks, brokers u orquestadores.',
-    ['Ejecutar dos procesos Java y comprobar su socket HTTP', 'Imponer un presupuesto temporal a una solicitud HTTP', 'Propagar un deadline absoluto entre servicios HTTP', 'Clasificar un resultado desconocido antes de reintentar', 'Evitar efectos duplicados con una clave idempotente', 'Seleccionar un reloj según la evidencia temporal', 'Preservar el orden de eventos por versión del agregado', 'Serialización, evolución y falacias distribuidas'],
+    ['Ejecutar dos procesos Java y comprobar su socket HTTP', 'Imponer un presupuesto temporal a una solicitud HTTP', 'Propagar un deadline absoluto entre servicios HTTP', 'Clasificar un resultado desconocido antes de reintentar', 'Evitar efectos duplicados con una clave idempotente', 'Seleccionar un reloj según la evidencia temporal', 'Preservar el orden de eventos por versión del agregado', 'Evolucionar un contrato JSON sin romper consumidores', 'Rechazar un frame excesivo antes de reservar memoria', 'Refutar falacias distribuidas mediante evidencia reproducible'],
     [
       'Ejecuta dos procesos Java y confirma el socket TCP con lsof o ss',
       'Introduce latencia y distingue timeout de conexión de timeout de solicitud',

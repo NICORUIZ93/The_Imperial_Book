@@ -4566,8 +4566,16 @@
         "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
       },
       {
-        "title": "Serialización, evolución y falacias distribuidas",
-        "fragment": "tema-8-serializacion-evolucion-y-falacias-distribuidas"
+        "title": "Evolucionar un contrato JSON sin romper consumidores",
+        "fragment": "tema-8-evolucionar-un-contrato-json-sin-romper-consumidores"
+      },
+      {
+        "title": "Rechazar un frame excesivo antes de reservar memoria",
+        "fragment": "tema-9-rechazar-un-frame-excesivo-antes-de-reservar-memoria"
+      },
+      {
+        "title": "Refutar falacias distribuidas mediante evidencia reproducible",
+        "fragment": "tema-10-refutar-falacias-distribuidas-mediante-evidencia-reproducible"
       }
     ],
     "1": [

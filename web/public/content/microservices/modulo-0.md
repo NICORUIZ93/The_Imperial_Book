@@ -955,32 +955,62 @@ Implementa un buffer acotado que reciba v1, v3 y v2, aplique v1, espere v2 y lue
 
 Si fallas 2 o más puntos, repite la secuencia. **Siguiente tema:** «Evolucionar contratos serializados sin romper consumidores» (referencia interna M0 T8). **Errores comunes:** ordenar por timestamp, usar offset como versión y acumular huecos sin límite. **Fuentes oficiales:** [Azure Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy) y [OpenTelemetry Context](https://opentelemetry.io/docs/specs/otel/context/).
 
-### Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min
+### Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min
 
-**Al terminar podrás:** evolucionar un mensaje compatible, limitar su costo y convertir una falacia distribuida en una prueba reproducible.
+**Prerrequisito:** tema «Preservar el orden de eventos por versión del agregado» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T7).
 
-**¿Por qué es importante?** Un contrato cambia mientras productores y consumidores se despliegan en momentos distintos; sin compatibilidad y límites, una mejora rompe el sistema o agota recursos.
+**Al finalizar podrás:** distinguir compatibilidad hacia atrás y hacia adelante, agregar un campo opcional con default, detectar cambios incompatibles de nombre/tipo/significado y diseñar convivencia, deprecación y migración con pruebas de artefactos reales.
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-| Subtema | Papel | Evidencia observable |
+Usarás **JDK 27.0.1** y dos JSON. Crea `academia-labs/microservices/contratos/{src,out,evidence}`. Debes distinguir la versión del agregado de la versión del esquema: una ordena transiciones; la otra describe cómo interpretar bytes.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Productores y consumidores se despliegan en momentos distintos. Un cambio que compila en el productor puede romper un consumidor anterior en producción.
+
+RutaFlow añade `ciudadDestino` mientras existe un consumidor que sólo conoce `id` y `estado`. Agregar un campo opcional suele permitir convivencia si el lector ignora desconocidos y el nuevo lector define un default para datos antiguos. Renombrar `estado`, cambiarlo de texto a objeto o reutilizar su significado requiere migración explícita; publicar `/v2` no explica quién escribe cada versión ni cuándo se retira v1.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
 |---|---|---|
-| Serialización y framing | Núcleo | objeto se convierte en bytes delimitados |
-| Compatibilidad atrás/adelante | Núcleo | consumidor anterior tolera campo nuevo |
-| Campos obligatorios y defaults | Variante | ausencia produce valor explícito o error versionado |
-| Tamaño y límites | Seguridad | payload excesivo se rechaza antes de reservar memoria sin control |
-| Versionado semántico | Decisión | cambio incompatible usa contrato/migración explícitos |
-| Falacias distribuidas | Diagnóstico | cada supuesto se conecta a fallo y mitigación |
+| Esquema | Núcleo | Define campos, tipos, obligatoriedad y significado, no sólo sintaxis JSON |
+| Compatibilidad atrás | Núcleo | Consumidor anterior tolera datos del productor nuevo |
+| Compatibilidad adelante | Núcleo | Consumidor nuevo interpreta datos históricos mediante defaults |
+| Campo opcional/default | Variante | Permite ausencia sin inventar un significado ambiguo |
+| Cambio incompatible | Diagnóstico | Renombre, tipo o semántica exige adaptador, doble escritura o versión nueva |
+| Ventana de convivencia | Decisión | Define productores/consumidores admitidos, métricas, deprecación y retiro |
 
-Serializar pierde identidad de objeto, métodos y tipos que el formato no representa. El receptor solo conoce bytes y contrato. Delimita mensajes y fija tamaño máximo antes de leerlos completos. Agregar un campo opcional con default suele ser compatible; renombrar, reutilizar significado o cambiar tipo puede romper consumidores aunque el JSON siga siendo válido.
+Analogía: un formulario nuevo añade «ciudad» opcional; una oficina antigua puede ignorarlo y la nueva puede leer formularios viejos como «desconocida». Cambiar «estado» de palabra a estructura sin avisar equivale a cambiar las casillas del formulario durante su procesamiento.
 
-Compatibilidad hacia atrás permite que el productor nuevo sea leído por consumidor anterior; hacia adelante permite que consumidor nuevo lea mensajes anteriores. Debes probar ambas direcciones con artefactos reales. «Tenemos `/v2`» no explica convivencia, deprecación ni migración.
+```text
+V1 {id,estado} -> lector nuevo: ciudad=DESCONOCIDA
+V2 {id,estado,ciudadDestino} -> lector anterior: ignora ciudad
+cambiar estado:string -> object -> INCOMPATIBLE
+```
 
-Las falacias son supuestos que debes negar con diseño: red confiable → timeout/retry/reconciliación; latencia cero → presupuesto y medición; ancho infinito → límites/compresión; red segura → autenticación/cifrado/autorización; topología estable → descubrimiento; un administrador → políticas auditables; transporte sin costo → batching con límites; sistema homogéneo → contratos evolutivos; observabilidad posterior → contexto y señales desde el primer flujo.
+#### Paso 4 · Demostración guiada desde cero
 
-#### Practica
+Crea `contratos/src/CompatibilidadContrato.java` copiando el archivo completo desde `examples/professional-bridges/microservices/CompatibilidadContrato.java`; guarda `envio-v1.json` y `envio-v2.json` en `evidence/`.
 
-Guarda `evidence/envio-v1.json` y `evidence/envio-v2.json`:
+```java
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+public final class CompatibilidadContrato {
+  private CompatibilidadContrato() { }
+  public static void main(String[] args) throws Exception {
+    for (String file : args) {
+      String json = Files.readString(Path.of(file),StandardCharsets.UTF_8);
+      if (!json.contains("\"id\"") || !json.contains("\"estado\""))
+        throw new IllegalArgumentException("CONTRATO_INVALIDO");
+      String city = json.contains("\"ciudadDestino\"") ? "PRESENTE" : "DESCONOCIDA";
+      System.out.println(Path.of(file).getFileName() + " ciudad=" + city);
+    }
+  }
+}
+```
 
 ```json
 {"id":"ENV-1","estado":"CREADO"}
@@ -990,31 +1020,254 @@ Guarda `evidence/envio-v1.json` y `evidence/envio-v2.json`:
 {"id":"ENV-1","estado":"CREADO","ciudadDestino":"Bogotá"}
 ```
 
-Crea `src/Compatibilidad.java`: lee cada archivo, verifica `id` y `estado`, ignora claves desconocidas y usa `DESCONOCIDA` cuando no exista `ciudadDestino`. Para este laboratorio acotado puedes comprobar presencia con texto; en producción usa un parser con límite de bytes y esquema.
+```bash
+mkdir -p academia-labs/microservices/contratos/{src,out,evidence}
+cp examples/professional-bridges/microservices/CompatibilidadContrato.java academia-labs/microservices/contratos/src/
+cd academia-labs/microservices/contratos
+javac --release 27 -d out src/CompatibilidadContrato.java
+java -cp out CompatibilidadContrato evidence/envio-v1.json evidence/envio-v2.json
+```
+
+**Resultado esperado:** `envio-v1.json ciudad=DESCONOCIDA` y `envio-v2.json ciudad=PRESENTE`.
+
+**Fallo deliberado:** elimina `estado` de V2 → **Error esperado:** `java.lang.IllegalArgumentException: CONTRATO_INVALIDO` → **Diagnóstico:** un campo requerido desapareció; restaura el contrato o introduce una migración/versionado explícito.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta V1/V2 y explica el default. Pista: ausencia no equivale a cadena vacía.
+2. **Variación:** agrega `prioridad` opcional sin romper V1.
+3. **Diagnóstico:** cambia el tipo de `estado`; documenta qué lector falla y por qué.
+4. **Integración:** crea una matriz productor/consumidor V1/V2 con cuatro pruebas.
+5. **Diseño:** define doble lectura/escritura, métrica de uso y condición para retirar V1.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** versiona eventos de envío y conserva fixtures de compatibilidad en CI; no reutilices un campo con otro significado.
+
+#### Paso 6 · Práctica independiente
+
+Diseña V3 que reemplace `ciudadDestino` por un objeto de dirección sin romper despliegues escalonados. Entrega adaptador, fixtures V1/V2/V3, matriz de pruebas y criterio observable para retirar el campo anterior.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo compatibilidad atrás y adelante.
+- [ ] Defino defaults explícitos para campos opcionales.
+- [ ] Detecto cambios de nombre, tipo y semántica.
+- [ ] Pruebo artefactos de versiones reales.
+- [ ] Documento convivencia, deprecación y retiro.
+
+Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Delimitar y rechazar payloads antes de reservar memoria» (referencia interna M0 T9). **Errores comunes:** creer que JSON garantiza compatibilidad y llamar `/v2` a una migración inexistente. **Fuentes oficiales:** [Confluent Schema Evolution](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html) y [Microsoft API design](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design).
+
+### Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min
+
+**Prerrequisito:** tema «Evolucionar un contrato JSON sin romper consumidores» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T8).
+
+**Al finalizar podrás:** delimitar mensajes con longitud explícita, validar el tamaño antes de reservar/interpretar, detectar frames truncados y justificar límites por endpoint antes de considerar compresión o streaming.
+
+#### Paso 1 · Objetivo y preparación
+
+Usarás **JDK 27.0.1** y bytes UTF-8. Crea `academia-labs/microservices/framing/{src,out,evidence}`. Debes comprender que TCP entrega un flujo de bytes, no objetos ni fronteras de mensajes.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Leer un cuerpo completo antes de validar su tamaño permite que una petición agote heap, CPU o disco. Confundir una lectura TCP con un mensaje completo produce JSON truncado o concatenado.
+
+RutaFlow recibe evidencia y eventos con límites distintos. El receptor lee primero un prefijo de longitud, rechaza valores negativos o superiores al máximo y sólo entonces reserva el cuerpo. La demostración usa 32 bytes para observar el mecanismo; producción fija límites por contrato, autenticación y capacidad, y puede elegir streaming cuando el contenido legítimo es grande.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
+|---|---|---|
+| Serialización | Prerrequisito | Convierte valores a bytes y pierde identidad/métodos del objeto |
+| Framing | Núcleo | Longitud o delimitador permite separar mensajes en un flujo |
+| Límite temprano | Seguridad | Rechaza antes de reservar el cuerpo completo |
+| Frame truncado | Diagnóstico | Menos bytes que la longitud declarada exige error, no parseo parcial |
+| Compresión | Variante | Reduce red pero puede amplificar al descomprimir; limita tamaño expandido |
+| Streaming | Decisión | Procesa por partes cuando el contrato no cabe razonablemente en memoria |
+
+Analogía: la etiqueta de una caja declara peso antes de subirla al ascensor. Abrir y cargar toda la caja para decidir después que excede el límite llega demasiado tarde.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `framing/src/LimitePayload.java` copiando el archivo completo desde `examples/professional-bridges/microservices/LimitePayload.java`.
 
 ```java
-import java.nio.file.*;
-public class Compatibilidad {
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+public final class LimitePayload {
+  private static final int MAX_BYTES = 32;
+  private LimitePayload() { }
   public static void main(String[] args) throws Exception {
-    for (String archivo : args) {
-      byte[] bytes = Files.readAllBytes(Path.of(archivo));
-      if (bytes.length > 1_048_576) throw new IllegalArgumentException("PAYLOAD_EXCESIVO");
-      String json = new String(bytes);
-      if (!json.contains("\"id\"") || !json.contains("\"estado\"")) throw new IllegalArgumentException("CONTRATO_INVALIDO");
-      String ciudad = json.contains("ciudadDestino") ? "PRESENTE" : "DESCONOCIDA";
-      System.out.println(archivo + " ciudad=" + ciudad);
+    byte[] payload = args[0].getBytes(StandardCharsets.UTF_8);
+    var buffer = new ByteArrayOutputStream();
+    try (var output = new DataOutputStream(buffer)) {
+      output.writeInt(payload.length);
+      output.write(payload);
+    }
+    try (var input = new DataInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
+      int length = input.readInt();
+      if (length < 0 || length > MAX_BYTES) throw new IllegalArgumentException("PAYLOAD_EXCESIVO");
+      byte[] body = input.readNBytes(length);
+      if (body.length != length) throw new EOFException("FRAME_INCOMPLETO");
+      System.out.println("FRAME_OK bytes=" + body.length + " texto=" + new String(body,StandardCharsets.UTF_8));
     }
   }
 }
 ```
 
 ```bash
-javac -d out src/Compatibilidad.java
-java -cp out Compatibilidad evidence/envio-v1.json evidence/envio-v2.json
+mkdir -p academia-labs/microservices/framing/{src,out,evidence}
+cp examples/professional-bridges/microservices/LimitePayload.java academia-labs/microservices/framing/src/
+cd academia-labs/microservices/framing
+javac --release 27 -d out src/LimitePayload.java
+java -cp out LimitePayload ENVIO-1
+java -cp out LimitePayload 123456789012345678901234567890123
 ```
 
-**Resultado esperado:** V1 produce `ciudad=DESCONOCIDA` y V2 `ciudad=PRESENTE`; ambos conservan `id` y `estado`. Después genera un body mayor de 1 MiB y verifica `PAYLOAD_EXCESIVO` antes de interpretar su contenido.
+**Resultado esperado:** `FRAME_OK bytes=7 texto=ENVIO-1`; el segundo comando termina con `java.lang.IllegalArgumentException: PAYLOAD_EXCESIVO`.
 
-**Fallo deliberado:** cambia `estado` de texto a objeto conservando el mismo nombre; la prueba de compatibilidad debe fallar. No «arregles» el consumidor con un cast inseguro: publica migración o adaptador. **Transferencia final al proyecto integrador RutaFlow Distribuido:** elige una falacia, crea `evidence/falacia.md` con supuesto, experimento, salida, impacto y mitigación. La evidencia mínima del módulo es: dos procesos, timeout medido, resultado ambiguo reconciliado, evento tardío diagnosticado y compatibilidad en ambas direcciones.
+**Fallo deliberado:** elimina la comprobación `length > MAX_BYTES` → **Error esperado:** el receptor acepta 33 bytes pese al contrato → **Diagnóstico:** validar después de `readNBytes` ya permitió la reserva; restaura el rechazo previo.
 
-**Fuentes primarias y de arquitectura:** [Java 25 `HttpClient`](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html), [gRPC — deadlines y propagación](https://grpc.io/docs/guides/deadlines/), [OpenTelemetry — contexto](https://opentelemetry.io/docs/specs/otel/context/) y [Azure Architecture Center — falacias y patrones distribuidos](https://learn.microsoft.com/en-us/azure/architecture/patterns).
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** prueba 7 y 33 bytes. Pista: cuenta bytes UTF-8, no caracteres visuales.
+2. **Variación:** prueba exactamente 32 bytes y confirma el borde inclusivo.
+3. **Diagnóstico:** declara 10 bytes y entrega 5; exige `FRAME_INCOMPLETO`.
+4. **Integración:** registra longitud declarada/recibida y decisión sin guardar payload sensible.
+5. **Diseño:** fija límites diferentes para evento JSON y evidencia fotográfica; justifica streaming.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** limita cuerpos antes de parsear y documenta 413/errores de framing; mide tamaño sin usar IDs como etiquetas métricas.
+
+#### Paso 6 · Práctica independiente
+
+Lee dos frames consecutivos desde el mismo flujo, rechaza el segundo por tamaño y demuestra que el primero no consume bytes del siguiente. Añade una prueba de frame truncado y una decisión sobre compresión.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo flujo de bytes de frontera de mensaje.
+- [ ] Valido longitud antes de reservar el cuerpo.
+- [ ] Detecto frame incompleto.
+- [ ] Limito también tamaño descomprimido.
+- [ ] Elijo memoria o streaming según contrato.
+
+Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Refutar falacias distribuidas mediante evidencia reproducible» (referencia interna M0 T10). **Errores comunes:** contar caracteres, confiar en Content-Length sin límite y descomprimir sin cuota. **Fuentes oficiales:** [Java 27 `DataInputStream`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html) y [OWASP Unrestricted File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
+
+### Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min
+
+**Prerrequisito:** tema «Delimitar y rechazar payloads antes de reservar memoria» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T9).
+
+**Al finalizar podrás:** convertir una suposición distribuida en hipótesis, experimento, evidencia, impacto y mitigación; conectar cada falacia con un mecanismo probado en el módulo y evitar listas memorizadas sin decisiones operativas.
+
+#### Paso 1 · Objetivo y preparación
+
+Reutilizarás las evidencias de sockets, timeout, deadline, reconciliación, idempotencia, orden, contratos y límites. Crea `academia-labs/microservices/falacias/{src,out,evidence}` con **JDK 27.0.1**. Debes conservar salidas reales; una tabla sin experimento no refuta nada.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** «La red es confiable» parece inocente hasta que una respuesta perdida duplica un envío. Las falacias son supuestos de diseño que deben transformarse en pruebas y controles verificables.
+
+RutaFlow revisa seis supuestos: confiabilidad, latencia cero, ancho infinito, seguridad implícita, topología estable y homogeneidad. Para cada uno registra condición, perturbación, señal, impacto y mitigación. Un timeout no prueba por sí solo pérdida de red; la evidencia del módulo sí demuestra que el cliente puede abandonar mientras el servidor completa.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Falacia | Evidencia del módulo | Control profesional |
+|---|---|---|
+| Red confiable | timeout con efecto confirmado | reconciliación + idempotencia |
+| Latencia cero | `/lento` supera presupuesto | medición + deadline |
+| Ancho infinito | frame de 33 bytes rechazado | límite + streaming/compresión acotada |
+| Red segura | header sin identidad no autoriza | autenticación, cifrado y autorización |
+| Topología estable | puerto/PID cambia | descubrimiento y health checks |
+| Sistema homogéneo | V1/V2 conviven | contrato y compatibilidad |
+
+Analogía: una lista de normas de aviación no demuestra que el avión resista una falla; cada supuesto necesita una prueba controlada, instrumentos y procedimiento de recuperación. El límite es que el laboratorio local no reproduce regiones, pérdida real ni adversarios.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `falacias/src/FalaciasDistribuidas.java` copiando el archivo completo desde `examples/professional-bridges/microservices/FalaciasDistribuidas.java`.
+
+```java
+import java.util.LinkedHashMap;
+public final class FalaciasDistribuidas {
+  private FalaciasDistribuidas() { }
+  public static void main(String[] args) {
+    var evidence = new LinkedHashMap<String,String>();
+    evidence.put("red_confiable","timeout+reconciliacion");
+    evidence.put("latencia_cero","deadline+medicion");
+    evidence.put("ancho_infinito","limite+framing");
+    evidence.put("red_segura","autenticacion+cifrado+autorizacion");
+    evidence.put("topologia_estable","descubrimiento+health");
+    evidence.put("sistema_homogeneo","contrato+compatibilidad");
+    evidence.forEach((assumption,mitigation) ->
+        System.out.println("REFUTADA " + assumption + " -> " + mitigation));
+  }
+}
+```
+
+```bash
+mkdir -p academia-labs/microservices/falacias/{src,out,evidence}
+cp examples/professional-bridges/microservices/FalaciasDistribuidas.java academia-labs/microservices/falacias/src/
+cd academia-labs/microservices/falacias
+javac --release 27 -d out src/FalaciasDistribuidas.java
+java -cp out FalaciasDistribuidas
+```
+
+**Resultado esperado:** seis líneas comienzan con `REFUTADA`; la primera termina en `red_confiable -> timeout+reconciliacion` y la última en `sistema_homogeneo -> contrato+compatibilidad`.
+
+**Fallo deliberado:** cambia la mitigación de red confiable a `retry` → **Error esperado:** la revisión rechaza la evidencia porque retry sin reconciliación/idempotencia puede duplicar → **Diagnóstico:** una mitigación debe responder al impacto demostrado, no sólo repetir transporte.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** relaciona las seis salidas con evidencias ejecutadas. Pista: cita archivo y comando.
+2. **Variación:** añade «transporte sin costo» con batching y límites.
+3. **Diagnóstico:** encuentra una mitigación que sólo mueve el riesgo y corrígela.
+4. **Integración:** escribe `evidence/falacia.md` con hipótesis, perturbación, salida, impacto y control.
+5. **Diseño:** prioriza dos pruebas para CI y una para staging; justifica costo y señal.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** el documento se convierte en backlog de pruebas de resiliencia, seguridad y compatibilidad, con responsable y criterio de recuperación.
+
+#### Paso 6 · Práctica independiente
+
+Elige una falacia no demostrada por loopback, diseña un experimento reproducible en dos contenedores o hosts y define qué resultado la refuta. Incluye límites éticos, rollback, señal observable y decisión posterior.
+
+#### Paso 7 · Cierre
+
+- [ ] Formulo cada falacia como hipótesis comprobable.
+- [ ] Conservo salida real, no sólo una tabla.
+- [ ] Conecto impacto con mitigación específica.
+- [ ] Declaro límites del laboratorio.
+- [ ] Convierto la evidencia en prueba operativa con responsable.
+
+Si fallas 2 o más puntos, repite una perturbación del módulo. **Siguiente módulo:** «Construir un monolito modular antes de extraer servicios»; primer tema «Distinguir estructura lógica de unidad de despliegue» (referencia interna M1 T1). **Errores comunes:** memorizar la lista, llamar retry a una solución universal y ocultar límites. **Fuentes oficiales:** [Azure distributed systems patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/) y [AWS Builders' Library](https://aws.amazon.com/builders-library/).
+
+## Proyecto de cierre · Diagnosticar una cotización distribuida de RutaFlow · 3 h
+
+Construye un cliente, un gateway y una dependencia Java sin frameworks. El flujo debe propagar un
+deadline, aceptar `Idempotency-Key` con huella, conservar una versión por envío y devolver un
+contrato V1/V2 compatible. Provoca una respuesta perdida después del efecto y demuestra la
+reconciliación. Conserva en `evidence/proyecto-modulo-red.md` comandos, salidas y decisiones.
+
+### Requisitos verificables
+
+1. Tres procesos en puertos distintos; PID y sockets comprobados.
+2. Presupuesto de 1200 ms exitoso y otro insuficiente con 504 sin renovar el deadline.
+3. Resultado desconocido reconciliado por el mismo ID.
+4. Retry con la misma clave produce un solo efecto; otra huella devuelve 409.
+5. Evento tardío/duplicado clasificado por versión del agregado.
+6. Consumidores V1/V2 y payload excesivo probados con salida exacta.
+7. Una falacia documentada como hipótesis, perturbación, evidencia, impacto y mitigación.
+
+### Rúbrica · 100 puntos
+
+| Criterio | Puntos |
+|---|---:|
+| Procesos, sockets y ejecución reproducible desde carpeta limpia | 10 |
+| Deadline extremo a extremo y reserva correctamente propagados | 15 |
+| Resultado desconocido y reconciliación demostrados | 15 |
+| Idempotencia atómica, conflicto de huella y un solo efecto | 20 |
+| Orden por agregado, duplicado y hueco diagnosticados | 15 |
+| Compatibilidad V1/V2 y límite temprano de payload | 10 |
+| Evidencia de falacia, límites y decisión profesional | 10 |
+| README, comandos, salidas y limpieza de procesos | 5 |
+| **Total** | **100** |
+
+Para aprobar técnicamente deben obtenerse al menos 80 puntos y no puede faltar ninguno de los
+criterios de deadline, reconciliación, idempotencia u orden. La puntuación organiza revisión; no
+reemplaza la explicación causal ni acredita comprensión por sí sola.

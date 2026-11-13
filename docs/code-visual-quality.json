@@ -109,16 +109,16 @@
       "officialSource": 112
     },
     "microservices": {
-      "topics": 14,
-      "code": 14,
+      "topics": 16,
+      "code": 16,
       "commentedCode": 6,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 13,
-      "runCommand": 12,
-      "officialSource": 14
+      "filePath": 15,
+      "runCommand": 14,
+      "officialSource": 16
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2551,7 +2551,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min",
       "missingCode": false,
       "missingComments": true
     },
