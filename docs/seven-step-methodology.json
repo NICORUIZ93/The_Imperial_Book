@@ -210,23 +210,23 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 11,
-      "objective": 1,
-      "prerequisites": 6,
-      "context": 2,
-      "theoryAnalogy": 2,
-      "guidedDemo": 2,
-      "codeExplanation": 11,
-      "execution": 8,
-      "expectedResult": 10,
-      "deliberateFailure": 10,
-      "guidedPractice": 2,
-      "independentPractice": 2,
-      "closure": 1,
-      "commonErrors": 1,
-      "resources": 1,
-      "standaloneExample": 3,
-      "complete": 1
+      "topics": 12,
+      "objective": 2,
+      "prerequisites": 7,
+      "context": 3,
+      "theoryAnalogy": 3,
+      "guidedDemo": 3,
+      "codeExplanation": 12,
+      "execution": 9,
+      "expectedResult": 11,
+      "deliberateFailure": 11,
+      "guidedPractice": 3,
+      "independentPractice": 3,
+      "closure": 2,
+      "commonErrors": 2,
+      "resources": 2,
+      "standaloneExample": 4,
+      "complete": 2
     },
     "node": {
       "topics": 83,
@@ -25806,7 +25806,32 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,
@@ -25831,7 +25856,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
         "criteria": {
           "objective": false,
           "prerequisites": true,
@@ -25856,7 +25881,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,

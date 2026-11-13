@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "63485859e83e7ea2d8e3b03f58b2466a0fb890a0faf2f041895a03fe05668b2d",
+    "fingerprint": "152bcf2066e4b56172d3a7607da2b884ab99c2a84aecbbc5ee11e70236b51915",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1311,
+    "topics": 1312,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9020,22 +9020,29 @@
       {
         "issues": [],
         "module": 0,
+        "tailWords": 126,
+        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "words": 1597
+      },
+      {
+        "issues": [],
+        "module": 0,
         "tailWords": 0,
-        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
         "words": 489
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
-        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
         "words": 544
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
-        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "words": 586
       },
       {

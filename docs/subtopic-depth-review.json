@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1311,
-    "reviewed": 146,
+    "topics": 1312,
+    "reviewed": 147,
     "pending": 1165,
     "priorityCandidates": 1018,
     "byTrack": {
@@ -61,8 +61,8 @@
         "pending": 56
       },
       "microservices": {
-        "topics": 11,
-        "reviewed": 0,
+        "topics": 12,
+        "reviewed": 1,
         "pending": 11
       },
       "node": {
@@ -17625,20 +17625,52 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "id": "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Codex — revisión semántica manual del contenido y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 27.0.1: cliente, gateway y dependencia compilaron con --release 27. El presupuesto de 1200 ms produjo HTTP_200 TARIFA=12000; 250 ms produjo HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA; omitir X-Deadline-Epoch-Millis produjo HTTP 400 DEADLINE_INVALIDO. Revisión manual confirmó explicación causal, ejemplo, límite y transferencia para cada subtema. No se probaron hosts con relojes sesgados, carga ni efectos persistentes.",
+        "criticalSubtopics": [
+          "presupuesto inicial convertido una sola vez",
+          "deadline absoluto compartido",
+          "cálculo de tiempo restante por salto",
+          "propagación sin renovar el instante límite",
+          "reserva del llamador para completar la respuesta",
+          "rechazo temprano por presupuesto insuficiente",
+          "sesgo y sincronización de relojes",
+          "límite de confianza para deadlines externos",
+          "cancelación local frente a efectos remotos"
+        ],
+        "sources": [
+          "https://grpc.io/docs/guides/deadlines/",
+          "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)"
+        ]
+      }
+    },
+    {
+      "id": "microservices/modulo-0::Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
       "status": "pending",
       "semanticHeadings": [],
       "prioritySignals": [],
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "id": "microservices/modulo-0::Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
       "status": "pending",
       "semanticHeadings": [],
       "prioritySignals": [
@@ -17648,10 +17680,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "id": "microservices/modulo-0::Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "status": "pending",
       "semanticHeadings": [],
       "prioritySignals": [

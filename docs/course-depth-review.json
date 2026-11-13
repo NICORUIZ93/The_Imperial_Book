@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1311,
+    "topics": 1312,
     "topicsWithSignals": 365,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1311,
+    "total": 1312,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -12692,9 +12692,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "title": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "line": 326,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "title": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "line": 532,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -12706,9 +12718,9 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "title": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 363,
+      "line": 569,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12718,9 +12730,9 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "title": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 417,
+      "line": 623,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

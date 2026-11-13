@@ -189,18 +189,18 @@
       "repeatedDemo": 0
     },
     "microservices": {
-      "topics": 11,
-      "explanation": 11,
-      "code": 11,
+      "topics": 12,
+      "explanation": 12,
+      "code": 12,
       "visual": 1,
-      "filePath": 11,
-      "runCommand": 11,
-      "expectedResult": 11,
-      "practice": 11,
-      "project": 10,
-      "modelMental": 11,
-      "limitsDecision": 11,
-      "practicable": 10,
+      "filePath": 12,
+      "runCommand": 12,
+      "expectedResult": 12,
+      "practice": 12,
+      "project": 11,
+      "modelMental": 12,
+      "limitsDecision": 12,
+      "practicable": 11,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -22713,7 +22713,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22735,7 +22735,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22757,7 +22757,29 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "criteria": {
           "explanation": true,
           "code": true,

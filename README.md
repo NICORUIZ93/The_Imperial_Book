@@ -9,7 +9,7 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 16 tracks, 291 módulos y 1311 temas editoriales en formato de
+La academia reúne 16 tracks, 291 módulos y 1312 temas editoriales en formato de
 libro. Esos 16 tracks son Fundamentos + RutaFlow + 14 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
@@ -62,7 +62,7 @@ catálogo puedes exportarlo a un archivo JSON y restaurarlo en otro navegador.
 
 No hay quizzes generados, XP, insignias, rachas ni recompensas artificiales:
 el progreso representa exclusivamente actividades y capítulos terminados. Las
-13 rutas de especialización tienen un proyecto integrador propio; Fundamentos
+14 rutas de especialización tienen un proyecto integrador propio; Fundamentos
 prepara las bases, incluye un capítulo introductorio de electrónica e IoT con 17 modelos Python ejecutables, y RutaFlow conecta los proyectos en una plataforma logística transversal.
 
 ```bash
@@ -214,7 +214,7 @@ El contrato editorial que debe alcanzar cada tema es:
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
 (`web/public/content/<track>/modulo-N.md`), organizado en 16 tracks, 291
-módulos y 1311 temas editoriales visibles. Cada módulo prioriza una secuencia de
+módulos y 1312 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -223,10 +223,10 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1166/1311 temas con los nueve criterios detectados. El
+versionado registra 1167/1312 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 929/1311 temas con sus
+auditoría independiente de metodología registra 931/1312 temas con sus
 marcadores de siete pasos. Los 17 módulos migrados usan la envoltura
 Aprende/Practica/Aplica y 249 conservan el formato anterior; ambos formatos
 pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean

@@ -78,7 +78,7 @@
       "completeSubtopics": 0
     },
     "microservices": {
-      "topics": 11,
+      "topics": 12,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -11714,21 +11714,28 @@
       },
       {
         "module": 0,
-        "topic": "### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
+        "topic": "### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 0,
-        "topic": "### Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "### Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 0,
-        "topic": "### Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "### Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

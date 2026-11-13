@@ -1006,3 +1006,19 @@ prioritarias de profundidad. El registro humano continúa `pending`: la detecci�
 no se presentan como firma pedagógica externa. Siguiente trabajo: separar y redactar M0 T3 para
 propagación de deadlines; después corregir fallo parcial/idempotencia y renumerar el resto sin
 perder conceptos. M1 sigue íntegramente pendiente de migración estricta.
+
+## 32. Microservicios M0 T3 — deadline extremo a extremo
+
+Fecha: 2026-11-13. Se insertó un tema nuevo de 45 minutos para separar la propagación de deadline
+del timeout local. Explica presupuesto, instante absoluto, tiempo restante, propagación sin
+renovación, reserva del llamador, confianza y sesgo de reloj, y el límite frente a cancelación y
+efectos. El módulo conserva todos sus conceptos: los temas anteriores 3–5 pasan a 4–6.
+
+El laboratorio contiene cliente, gateway y dependencia Java completos. Con Temurin 27.0.1 se
+compilaron y ejecutaron tres procesos: 1200 ms produjo `HTTP_200 TARIFA=12000`; 250 ms produjo
+`HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA`; omitir el header produjo HTTP 400
+`DEADLINE_INVALIDO`. Es evidencia local; no valida relojes de hosts distintos ni persistencia.
+
+El tema entra con perfil practicable y sin señales prioritarias de profundidad, pero permanece
+`pending` en el registro humano. La deuda humana aumenta en una unidad porque el currículo ganó
+un tema necesario; antes de continuar a M2 deben corregirse M0 T4–T6 y todo M1.

@@ -241,7 +241,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 1009,
+      "lines": 1025,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19469,
+      "lines": 19476,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1858,7 +1858,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1171,
+      "lines": 1172,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16556,
+      "lines": 16568,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2176,7 +2176,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1343,
+      "lines": 1344,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2385,7 +2385,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11075,
+      "lines": 11082,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2578,7 +2578,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13660,
+      "lines": 13671,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2743,7 +2743,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33118,
+      "lines": 33143,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22020,
+      "lines": 22052,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2917,7 +2917,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1200,
+      "lines": 1201,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 1809,
+      "lines": 1830,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2998,7 +2998,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29149,
+      "lines": 29171,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6269,8 +6269,24 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/ClienteTimeout.java",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/Servidor.java",
       "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ServidorLatencia.java",
+      "lines": 36,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6338,7 +6354,7 @@
     },
     {
       "path": "examples/professional-bridges/verification.json",
-      "lines": 103,
+      "lines": 111,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -17690,7 +17706,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-0.md",
-      "lines": 480,
+      "lines": 686,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19117,7 +19133,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5861,
+      "lines": 5865,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

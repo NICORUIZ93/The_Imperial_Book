@@ -2,6 +2,27 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual del contenido y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: cliente, gateway y dependencia compilaron con --release 27. El presupuesto de 1200 ms produjo HTTP_200 TARIFA=12000; 250 ms produjo HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA; omitir X-Deadline-Epoch-Millis produjo HTTP 400 DEADLINE_INVALIDO. Revisión manual confirmó explicación causal, ejemplo, límite y transferencia para cada subtema. No se probaron hosts con relojes sesgados, carga ni efectos persistentes.",
+      "criticalSubtopics": [
+        "presupuesto inicial convertido una sola vez",
+        "deadline absoluto compartido",
+        "cálculo de tiempo restante por salto",
+        "propagación sin renovar el instante límite",
+        "reserva del llamador para completar la respuesta",
+        "rechazo temprano por presupuesto insuficiente",
+        "sesgo y sincronización de relojes",
+        "límite de confianza para deadlines externos",
+        "cancelación local frente a efectos remotos"
+      ],
+      "sources": [
+        "https://grpc.io/docs/guides/deadlines/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)"
+      ]
+    },
     "java/modulo-22::Tema 1: El contrato de equals y hashCode · Básico · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",

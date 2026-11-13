@@ -4546,16 +4546,20 @@
         "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
       },
       {
+        "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http-aplicacion-45-min"
+      },
+      {
         "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
-        "fragment": "tema-3-fallo-parcial-resultado-desconocido-e-idempotencia-integracion-90-min"
+        "fragment": "tema-4-fallo-parcial-resultado-desconocido-e-idempotencia-integracion-90-min"
       },
       {
         "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
-        "fragment": "tema-4-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
+        "fragment": "tema-5-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
       },
       {
         "title": "Serialización, evolución y falacias distribuidas",
-        "fragment": "tema-5-serializacion-evolucion-y-falacias-distribuidas"
+        "fragment": "tema-6-serializacion-evolucion-y-falacias-distribuidas"
       }
     ],
     "1": [

@@ -323,7 +323,213 @@ Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desd
 
 **Errores comunes:** interpretar todo timeout como «el servidor no hizo nada», medir solo el promedio, usar el timeout de conexión como límite total o aumentar valores sin observar saturación. **Fuentes oficiales:** la API de Java 27 enlazada arriba define el alcance y las excepciones; la elección numérica sigue dependiendo del presupuesto y de mediciones propias.
 
-### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min
+### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min
+
+**Prerrequisito:** M0 T2 (imponer un presupuesto temporal a una solicitud HTTP).
+
+**Al finalizar podrás:** convertir un presupuesto del cliente en un instante límite, propagar el mismo valor por un gateway, calcular el tiempo restante en cada salto, reservar margen para responder y rechazar trabajo que ya no puede terminar de forma útil.
+
+#### Paso 1 · Objetivo y preparación
+
+Usarás **JDK 27.0.1**, tres terminales y los puertos locales 8082 y 8083. Crea una carpeta vacía `academia-labs/microservices/m0-t3/{src,out,evidence}`. Detén los procesos de T2 y verifica que ambos puertos estén libres antes de compilar; conserva la distinción entre timeout de una fase y presupuesto extremo a extremo.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Si cada servicio recibe «500 ms nuevos», una cadena de cuatro saltos puede consumir dos segundos aunque el usuario sólo pudiera esperar medio segundo. El trabajo tardío ocupa capacidad y puede producir resultados que nadie utilizará.
+
+RutaFlow recibe una solicitud de cotización con 1200 ms disponibles. El gateway necesita consultar tarifas y aún reservar tiempo para serializar y devolver la respuesta. En lugar de reiniciar una duración, el cliente calcula un instante límite; el gateway propaga exactamente ese valor y cada proceso resta su reloj actual. Una dependencia que recibe menos tiempo del necesario rechaza antes de iniciar trabajo costoso. El laboratorio hace visible la conservación del presupuesto, pero no resuelve por sí solo sincronización de relojes, cancelación de efectos ni reintentos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Explicación causal, límite y evidencia |
+|---|---|---|
+| Presupuesto | Prerrequisito | Es la duración disponible al inicio; disminuye mientras la operación avanza |
+| Deadline absoluto | Núcleo | Es el instante final compartido; evita conceder una duración completa nueva en cada salto |
+| Tiempo restante | Núcleo | Se recalcula como `deadline - ahora`; si no alcanza, el servicio rechaza antes de trabajar |
+| Propagación | Núcleo | El gateway reenvía el mismo header, no un deadline reconstruido a partir de su timeout local |
+| Reserva | Variante | El llamador descuenta margen para procesar la respuesta; reservar todo o nada también puede ser incorrecto |
+| Relojes y confianza | Límite/seguridad | Un epoch presupone relojes razonablemente sincronizados y el servidor debe limitar valores absurdos enviados por clientes |
+| Cancelación y efectos | Diagnóstico | Vencer el deadline no revierte una escritura iniciada; los efectos requieren idempotencia y reconciliación |
+
+Un **timeout** limita una espera local; un **deadline** expresa cuándo deja de ser útil toda la operación. El **tiempo restante** cambia en cada salto y la **reserva** evita que una dependencia consuma hasta el último milisegundo. Analogía: una entrega debe llegar antes de las 18:00; cada conductor consulta la misma hora límite. Entregar «30 minutos nuevos» en cada transbordo falsearía el compromiso original.
+
+```text
+Cliente: deadline D
+   | X-Deadline=D
+Gateway: restante=D-ahora; reserva 100 ms
+   | X-Deadline=D (el mismo valor)
+Dependencia: restante=D-ahora; trabajo 400 ms
+   | 200 TARIFA o 504 SIN_PRESUPUESTO
+```
+
+Un deadline absoluto por epoch es didáctico y común en HTTP propio; gRPC puede convertir deadlines entre procesos para mitigar sesgo de reloj. Ningún formato autoriza confiar en plazos arbitrariamente largos enviados desde Internet.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `m0-t3/src/DependenciaDeadline.java`, `m0-t3/src/GatewayDeadline.java` y `m0-t3/src/ClienteDeadline.java`. También puedes copiarlos como ejemplo independiente desde `examples/professional-bridges/microservices/`. Este es el contenido completo de los tres archivos; los comentarios señalan dónde se conserva o consume el presupuesto.
+
+`m0-t3/src/DependenciaDeadline.java`:
+
+```java
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+
+public final class DependenciaDeadline {
+  private DependenciaDeadline() { }
+  public static void main(String[] args) throws IOException {
+    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8083), 16);
+    server.createContext("/tarifa", DependenciaDeadline::tarifa);
+    server.start();
+    System.out.println("DEPENDENCIA http://127.0.0.1:8083/tarifa");
+  }
+  private static void tarifa(HttpExchange exchange) throws IOException {
+    String raw = exchange.getRequestHeaders().getFirst("X-Deadline-Epoch-Millis");
+    if (raw == null) { respond(exchange, 400, "DEADLINE_REQUERIDO"); return; }
+    long remaining;
+    try { remaining = Long.parseLong(raw) - System.currentTimeMillis(); }
+    catch (NumberFormatException error) { respond(exchange, 400, "DEADLINE_INVALIDO"); return; }
+    // Los 50 ms extra evitan empezar si no queda margen sobre el trabajo de 400 ms.
+    if (remaining < 450) { respond(exchange, 504, "SIN_PRESUPUESTO_DEPENDENCIA"); return; }
+    try {
+      Thread.sleep(400);
+      respond(exchange, 200, "TARIFA=12000");
+    } catch (InterruptedException error) {
+      Thread.currentThread().interrupt();
+      exchange.close();
+    }
+  }
+  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
+    byte[] body = text.getBytes(StandardCharsets.UTF_8);
+    exchange.sendResponseHeaders(status, body.length);
+    try (var output = exchange.getResponseBody()) { output.write(body); }
+  }
+}
+```
+
+`m0-t3/src/GatewayDeadline.java`:
+
+```java
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
+public final class GatewayDeadline {
+  private static final long RESERVE_MILLIS = 100;
+  private static final HttpClient CLIENT = HttpClient.newHttpClient();
+  private GatewayDeadline() { }
+  public static void main(String[] args) throws IOException {
+    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8082), 16);
+    server.createContext("/cotizar", GatewayDeadline::quote);
+    server.start();
+    System.out.println("GATEWAY http://127.0.0.1:8082/cotizar");
+  }
+  private static void quote(HttpExchange exchange) throws IOException {
+    String raw = exchange.getRequestHeaders().getFirst("X-Deadline-Epoch-Millis");
+    long deadline;
+    try { deadline = Long.parseLong(raw == null ? "" : raw); }
+    catch (NumberFormatException error) { respond(exchange, 400, "DEADLINE_INVALIDO"); return; }
+    long remaining = deadline - System.currentTimeMillis();
+    if (remaining <= RESERVE_MILLIS) { respond(exchange, 504, "SIN_PRESUPUESTO_GATEWAY"); return; }
+    var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8083/tarifa"))
+        // Se propaga el instante original; no se fabrica un presupuesto nuevo.
+        .header("X-Deadline-Epoch-Millis", Long.toString(deadline))
+        .timeout(Duration.ofMillis(remaining - RESERVE_MILLIS))
+        .GET().build();
+    try {
+      var response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+      respond(exchange, response.statusCode(), response.body());
+    } catch (Exception error) {
+      respond(exchange, 504, "DEPENDENCIA_NO_COMPLETO");
+    }
+  }
+  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
+    byte[] body = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    exchange.sendResponseHeaders(status, body.length);
+    try (var output = exchange.getResponseBody()) { output.write(body); }
+  }
+}
+```
+
+`m0-t3/src/ClienteDeadline.java`:
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public final class ClienteDeadline {
+  private ClienteDeadline() { }
+  public static void main(String[] args) throws Exception {
+    long budget = Long.parseLong(args[0]);
+    // El presupuesto se convierte en deadline una sola vez, en el origen.
+    long deadline = System.currentTimeMillis() + budget;
+    var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8082/cotizar"))
+        .header("X-Deadline-Epoch-Millis", Long.toString(deadline)).GET().build();
+    try (var client = HttpClient.newHttpClient()) {
+      var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      System.out.printf("HTTP_%d %s%n", response.statusCode(), response.body());
+    }
+  }
+}
+```
+
+```bash
+mkdir -p academia-labs/microservices/m0-t3/{src,out,evidence}
+cp examples/professional-bridges/microservices/{DependenciaDeadline,GatewayDeadline,ClienteDeadline}.java academia-labs/microservices/m0-t3/src/
+cd academia-labs/microservices/m0-t3
+javac --release 27 -d out src/*.java
+java -cp out DependenciaDeadline  # terminal 1
+java -cp out GatewayDeadline      # terminal 2
+java -cp out ClienteDeadline 1200 # terminal 3
+java -cp out ClienteDeadline 250
+```
+
+**Resultado esperado — salida exacta del cliente:**
+
+```text
+HTTP_200 TARIFA=12000
+HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA
+```
+
+**Fallo deliberado:** en `GatewayDeadline.java`, reemplaza el header reenviado por `Long.toString(System.currentTimeMillis() + 1200)` y ejecuta el cliente con 250 ms → **Error esperado:** aparece `HTTP_200 TARIFA=12000` aunque el presupuesto original no alcanzaba → **Diagnóstico:** el gateway reinició el reloj y violó el compromiso extremo a extremo; restaura la propagación de `deadline`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta 1200 y 250 ms; conserva ambas salidas. Pista: el gateway no cambia el header.
+2. **Variación:** usa 700 ms y predice el resultado antes de medir. Pista: considera trabajo y reserva, no sólo 400 ms.
+3. **Diagnóstico:** omite el header con `curl`; confirma HTTP 400 y explica por qué no debe inventarse un presupuesto. Pista: diferencia contrato inválido de plazo vencido.
+4. **Integración:** registra presupuesto inicial, restante al entrar en cada proceso y estado final en `evidence/tema-3.txt`. Pista: no registres datos sensibles.
+5. **Diseño:** fija máximo aceptable de deadline externo y estrategia ante sesgo de reloj. Pista: un cliente no debe reservar recursos indefinidamente.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** usa el mismo contrato en la consulta de tarifas y conserva el reparto cliente/gateway/dependencia. Este tema decide cuándo no iniciar trabajo; el siguiente determinará qué hacer cuando el resultado de un efecto ya iniciado sea desconocido.
+
+#### Paso 6 · Práctica independiente
+
+Añade una segunda dependencia de 200 ms después de tarifas sin cambiar el deadline original. Diseña dos presupuestos iniciales: uno que complete ambos saltos y otro que obligue al gateway a omitir el segundo. Entrega salidas, tiempos restantes y una justificación de la reserva; no reinicies duraciones ni conviertas HTTP 504 en éxito vacío.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo presupuesto, timeout, deadline y tiempo restante.
+- [ ] Propago exactamente el mismo instante límite entre procesos.
+- [ ] Rechazo trabajo cuando el restante no cubre ejecución y reserva.
+- [ ] Explico el límite de reloj, confianza y cancelación de efectos.
+- [ ] Reproduzco el fallo de reiniciar el presupuesto y lo diagnostico.
+
+Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema y prerrequisito de:** M0 T4 (clasificar un resultado desconocido antes de reintentar). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
+
+### Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min
 
 **Al terminar podrás:** distinguir rechazo, fallo confirmado y resultado desconocido, y diseñar un reintento que no duplique el negocio.
 
@@ -360,7 +566,7 @@ curl http://127.0.0.1:8081/envios/ENV-001
 
 **Decisión profesional:** conserva la deduplicación al menos durante la ventana máxima de reintentos y devuelve la respuesta original, no una segunda ejecución. La clave debe estar ligada a identidad/operación para que otro usuario no pueda consultar el resultado. Los errores de validación deterministas pueden almacenarse; un fallo transitorio anterior al efecto requiere una política diferente. Fuente: [Azure Architecture Center — Retry](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) e [Idempotent Consumer](https://microservices.io/patterns/communication-style/idempotent-consumer.html).
 
-### Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min
+### Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min
 
 **Al terminar podrás:** evitar decisiones de negocio basadas en un reloj global inexistente y preservar orden donde realmente importa.
 
@@ -414,7 +620,7 @@ java -cp out Proyeccion
 
 **Diagnóstico y seguridad.** Registra `eventId`, agregado, versión esperada/recibida y correlation ID, evitando payloads sensibles. Distingue duplicado exacto, evento obsoleto y hueco: requieren ignorar, reconciliar o aparcar, respectivamente. Una cola de cuarentena sin alerta ni procedimiento solo es almacenamiento de deuda. Fuente: [OpenTelemetry — contexto](https://opentelemetry.io/docs/specs/otel/context/) y [Azure Architecture Center — Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy).
 
-### Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min
+### Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min
 
 **Al terminar podrás:** evolucionar un mensaje compatible, limitar su costo y convertir una falacia distribuida en una prueba reproducible.
 

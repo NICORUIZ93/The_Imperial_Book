@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1312**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -17,7 +17,7 @@ Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 | java | 101 | 111 | 307 | 307 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
-| microservices | 0 | 11 | 0 | 0 |
+| microservices | 0 | 12 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
@@ -977,9 +977,10 @@ Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 
 - M0 ### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: tiene 0 subtemas
 - M0 ### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min: tiene 0 subtemas
-- M0 ### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min: tiene 0 subtemas
-- M0 ### Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min: tiene 0 subtemas
-- M0 ### Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas
+- M0 ### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min: tiene 0 subtemas
+- M0 ### Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min: tiene 0 subtemas
+- M0 ### Tema 5: Relojes, causalidad, concurrencia y orden · Integración · 80 min: tiene 0 subtemas
+- M0 ### Tema 6: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas
 - M1 ### Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min: tiene 0 subtemas
 - M1 ### Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min: tiene 0 subtemas
 - M1 ### Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min: tiene 0 subtemas
