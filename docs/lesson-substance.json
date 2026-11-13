@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "d7a02e7d7d2599daa41a5c65ca5f7f77dbcd6abd03cca3091f21947389405914",
+    "fingerprint": "14ccc3789f5bba938e32666495289100380d9e9b0d74c88f01c5f298ce66b73f",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -4050,7 +4050,7 @@
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 4: Identificación desde una gráfica",
-        "words": 979
+        "words": 1049
       },
       {
         "issues": [],
@@ -4120,7 +4120,7 @@
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 2: Tipo de sistema y constantes",
-        "words": 1190
+        "words": 1282
       },
       {
         "issues": [],
@@ -4218,7 +4218,7 @@
         "module": 18,
         "tailWords": 0,
         "topic": "Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)",
-        "words": 702
+        "words": 780
       },
       {
         "issues": [],
@@ -4358,7 +4358,7 @@
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 1: ¿Qué es un sistema de control?",
-        "words": 934
+        "words": 1016
       },
       {
         "issues": [],
@@ -4449,7 +4449,7 @@
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 4: Sistemas térmicos e hidráulicos",
-        "words": 659
+        "words": 721
       },
       {
         "issues": [],

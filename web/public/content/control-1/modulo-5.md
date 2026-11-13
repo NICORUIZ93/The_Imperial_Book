@@ -143,6 +143,8 @@ python3 verificacion.py
 
 **Límite:** esta comparación asume que el lazo cerrado es estable; si al cerrar el lazo el sistema se vuelve inestable (puede pasar con \(C\) muy grande en sistemas de orden alto), la fórmula \(1/(1+CG_p)\) deja de tener sentido físico aunque el álgebra la calcule igual.
 
+**Conexión con el proyecto integrador:** el control de nivel de un tanque (Ejemplo 1 de este tema) es exactamente el proyecto integrador del curso. Ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` desde la raíz del repositorio y anota en tu bitácora cuál es la referencia (1,5 m), la perturbación (el caudal de salida, que depende de la altura) y por qué este es un sistema de lazo cerrado real, no solo un ejemplo de pizarrón.
+
 ### Tema 2: Los elementos
 
 **¿Por qué es importante?** Nombrar y definir cada elemento es exactamente lo que pedía el punto 1 del Parcial 1.

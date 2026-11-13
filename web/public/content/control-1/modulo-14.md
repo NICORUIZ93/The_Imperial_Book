@@ -348,3 +348,5 @@ python3 verificacion.py
 
 **Límite:** estas constantes (\(K_p\), \(K_v\), \(K_a\)) se calculan sobre \(G\) de **lazo abierto**, no sobre la función de lazo cerrado; mezclarlas es uno de los errores comunes señalados al final de esta sección.
 
+**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y compara el `error_final` que imprime para P frente a PI. Con P puro queda un error permanente (el tanque se estabiliza en 1,3077 m en vez de 1,5 m); con PI el integrador lo elimina. Anota en tu bitácora por qué, usando lo aprendido aquí: P dado que el tanque es tipo 0 en lazo abierto, y PI porque agrega el polo en el origen que sube el tipo a 1.
+

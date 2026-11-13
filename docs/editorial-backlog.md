@@ -14,7 +14,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Ejecución | 1265 | 58 |
 | Resultado | 1321 | 2 |
 | Modificación | 1275 | 48 |
-| Conexión con un proyecto | 1179 | 144 |
+| Conexión con un proyecto | 1184 | 139 |
 | Modelo mental | 1323 | 0 |
 | Límites | 1280 | 43 |
 | **Perfil de criterios detectado** | **1238** | **85** |
@@ -26,7 +26,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | android | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | cloud | 156 | 0 | 0 | 0 | 2 | 0 | 0 | 1 |
-| control-1 | 70 | 0 | 0 | 0 | 0 | 0 | 70 | 0 |
+| control-1 | 70 | 0 | 0 | 0 | 0 | 0 | 65 | 0 |
 | devops | 129 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

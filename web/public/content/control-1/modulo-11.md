@@ -586,6 +586,8 @@ python3 verificacion.py
 
 **Límite:** esta fórmula identifica un modelo de primer orden sin retardo; si la curva tarda en arrancar (Ejemplo 5), primero hay que restar ese retardo \(T\) del tiempo observado antes de aplicar la fórmula, o \(\tau\) saldrá sobreestimado.
 
+**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y abre `tanque-P.csv`. Identifica \(K\) y \(\tau\) con este método usando dos filas cualesquiera de la columna `altura_m` antes del cambio de referencia en \(t=5\) s, y compáralo con el \(G(s)=2/(4s+1)\) que calculaste en el capítulo 9 (módulo 8). Anota ambos valores en tu bitácora.
+
 #### Práctica para resolver sola o solo
 
 - **1.**Impulso y escalón de \(\dfrac{8}{4s+2}\).

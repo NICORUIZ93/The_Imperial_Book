@@ -4197,7 +4197,7 @@
       "module": 18,
       "title": "Tema 5: Sintonía de Ziegler-Nichols",
       "file": "web/public/content/control-1/modulo-18.md",
-      "line": 511,
+      "line": 513,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4477,7 +4477,7 @@
       "module": 5,
       "title": "Tema 2: Los elementos",
       "file": "web/public/content/control-1/modulo-5.md",
-      "line": 146,
+      "line": 148,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4491,7 +4491,7 @@
       "module": 5,
       "title": "Tema 3: Álgebra de bloques",
       "file": "web/public/content/control-1/modulo-5.md",
-      "line": 323,
+      "line": 325,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -4659,7 +4659,7 @@
       "module": 8,
       "title": "Tema 5: Analogías",
       "file": "web/public/content/control-1/modulo-8.md",
-      "line": 497,
+      "line": 499,
       "signals": [
         "demostracion-no-delimitada"
       ],

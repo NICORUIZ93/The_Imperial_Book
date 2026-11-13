@@ -508,6 +508,8 @@ python3 verificacion.py
 
 **Límite:** esta tabla de ventajas/desventajas es una guía general; la elección real de controlador (Ejemplos 2-5) siempre depende del caso concreto — ruido del sensor, velocidad del proceso y tolerancia al sobrepico — no de aplicar la tabla mecánicamente.
 
+**Conexión con el proyecto integrador:** la bitácora de `examples/control-1-tanque/` pide justamente esta decisión con datos, no solo con la tabla. Con los dos CSV que genera `simular.py` (P y PI), argumenta por escrito por qué el PI es la elección correcta para un tanque que no puede quedarse con error permanente, y qué desventaja del PI (windup, si el caudal se satura en 1,5 m³/s) habría que vigilar en la planta real.
+
 ### Tema 5: Sintonía de Ziegler-Nichols
 
 **¿Por qué es importante?** Ziegler-Nichols es el método práctico para sintonizar un PID cuando no hay un modelo exacto.
