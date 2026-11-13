@@ -16,6 +16,12 @@ VISUALS = PUBLIC / "visuals"
 JSON_REPORT = ROOT / "docs/topic-learning-quality.json"
 MD_REPORT = ROOT / "docs/topic-learning-quality.md"
 REQUIRED_CRITERIA = ("explanation", "code", "filePath", "runCommand", "expectedResult", "practice", "project", "modelMental", "limitsDecision")
+# control-1 es un track de teoría de control (matemático), no de software: no integra
+# un proyecto RutaFlow ni tiene sentido forzar esa conexión. El resto del contrato
+# (código ejecutable, ruta, comando, resultado, práctica, límites) sí aplica igual.
+TRACK_REQUIRED_CRITERIA = {
+    "control-1": tuple(c for c in REQUIRED_CRITERIA if c != "project"),
+}
 EDITORIAL_MARKERS = ("DEFINITIVE-COMPLEMENTS", "SUPPLEMENTAL-COMPLEMENTS", "REQUESTED-PRACTICAL-EXAMPLES")
 ARCHIFY_VISUAL_LINK = re.compile(r"\[[^\]]+\]\((/visuals/[^)\s]+\.html)\)")
 # runCommand: exige un comando de ejecución REAL al inicio de una línea
@@ -122,8 +128,9 @@ def evaluate(block: str) -> dict[str, bool]:
     }
 
 
-def classify(criteria: dict[str, bool], block: str) -> dict[str, bool | int]:
+def classify(criteria: dict[str, bool], block: str, track: str = "") -> dict[str, bool | int]:
     """Distingue presencia editorial de una lección realmente practicable."""
+    required = TRACK_REQUIRED_CRITERIA.get(track, REQUIRED_CRITERIA)
     rubric = {
         "explanation": 2 if criteria["modelMental"] and criteria["limitsDecision"] else int(criteria["explanation"]),
         "example": 2 if criteria["code"] else 0,
@@ -144,7 +151,7 @@ def classify(criteria: dict[str, bool], block: str) -> dict[str, bool | int]:
     )
     return {
         "rubricScore": score,
-        "practicable": all(criteria[name] for name in REQUIRED_CRITERIA) and not any(marker in block for marker in generic_markers),
+        "practicable": all(criteria[name] for name in required) and not any(marker in block for marker in generic_markers),
         "genericScaffold": any(marker in block for marker in generic_markers),
         "repeatedDemo": False,
     }
@@ -178,7 +185,7 @@ def build() -> dict:
                 "module": module,
                 "topic": title,
                 "criteria": criteria,
-                "classification": classify(criteria, block),
+                "classification": classify(criteria, block, path.parent.name),
                 "_demoSignature": demo_signature(block),
             })
     signature_counts = Counter(
@@ -211,7 +218,7 @@ def build() -> dict:
 
 
 def render_markdown(data: dict) -> str:
-    lines = ["# Auditoría pedagógica tema por tema", "", "Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. **Práctica** reconoce el vocabulario de los siete pasos o una sección `#### Practica` con cuerpo accionable (código, comando o archivo); un encabezado vacío no cuenta. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado.", "", "| Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    lines = ["# Auditoría pedagógica tema por tema", "", "Esta auditoría mide exclusivamente la presencia de criterios en el contenido editorial real mediante heurísticas de texto. **Explicación** solo indica extensión mínima; no demuestra calidad. **Perfil cubierto** significa que aparecen explicación, código, ruta, ejecución, resultado, práctica, proyecto, modelo mental y límites; no acredita que sean suficientes, correctos, pedagógicamente eficaces ni ejecutables. **Texto genérico** detecta plantillas que nombran un tema sin enseñarlo. **Demo repetida** detecta el mismo Paso 4 reciclado en tres o más temas cambiando apenas nombres o números. Una ausencia o plantilla es deuda editorial explícita. La presencia visual reconoce Mermaid, diagramas ASCII y enlaces locales a HTML Archify existente; no acredita calidad ni revisión visual. Esta comprobación no ejecuta ejemplos ni sustituye la revisión humana. **Práctica** reconoce el vocabulario de los siete pasos o una sección `#### Practica` con cuerpo accionable (código, comando o archivo); un encabezado vacío no cuenta. La metodología más estricta de siete pasos usa marcadores propios y mide un conjunto distinto de requisitos; consulta su reporte por separado. **Excepción de track:** `control-1` es teoría de control matemática, no software; su «perfil cubierto» no exige «proyecto» (no hay integración RutaFlow aplicable), pero sí exige código, ruta, ejecución, resultado, práctica, modelo mental y límites igual que el resto.", "", "| Track | Temas | Explicación | Código | Ruta | Ejecución | Resultado | Práctica | Proyecto | Modelo mental | Límites | Perfil cubierto | Texto genérico | Demo repetida |", "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for track, row in data["summary"].items():
         lines.append(f"| {track} | {row['topics']} | {row['explanation']} | {row['code']} | {row['filePath']} | {row['runCommand']} | {row['expectedResult']} | {row['practice']} | {row['project']} | {row['modelMental']} | {row['limitsDecision']} | {row['practicable']} | {row['genericScaffold']} | {row['repeatedDemo']} |")
     total = {key: sum(row[key] for row in data["summary"].values()) for key in ["topics", *data["criteria"], "practicable", "genericScaffold", "repeatedDemo"]}

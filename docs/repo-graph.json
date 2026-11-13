@@ -2209,7 +2209,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 194,
+      "lines": 124,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22016,
+      "lines": 22017,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3434,6 +3434,32 @@
       "symbols": [],
       "imports": [
         "node:http"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/control-1-tanque/README.md",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Proyecto integrador Control 1: nivel de un tanque"
+      ]
+    },
+    {
+      "path": "examples/control-1-tanque/simular.py",
+      "lines": 54,
+      "kind": "example",
+      "symbols": [
+        "simular",
+        "guardar_csv",
+        "main"
+      ],
+      "imports": [
+        "argparse",
+        "csv",
+        "pathlib"
       ],
       "headings": []
     },
@@ -11787,7 +11813,7 @@
     },
     {
       "path": "scripts/audit_topic_learning_quality.py",
-      "lines": 259,
+      "lines": 266,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
@@ -11815,7 +11841,7 @@
     },
     {
       "path": "scripts/build_editorial_backlog.py",
-      "lines": 99,
+      "lines": 100,
       "kind": "automation-script",
       "symbols": [
         "render",
@@ -14407,7 +14433,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-20.md",
-      "lines": 518,
+      "lines": 548,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -20484,7 +20510,7 @@
     },
     {
       "path": "web/src/app/learning-activities.ts",
-      "lines": 29,
+      "lines": 30,
       "kind": "angular-app",
       "symbols": [
         "TrackProject",

@@ -421,6 +421,36 @@ python3 verificacion.py
 
 **Resultado:** \(MF = 51{,}8°\)
 
+#### Verificación con código
+
+Guarda este script como `verificacion.py` y ejecútalo para comprobar las magnitudes del Ejemplo 1.
+
+```python
+# verificacion.py
+from sympy import I, Abs, log, N
+
+def mag_dB(omega):
+    s = omega * I
+    G = 10 / (s + 10)
+    return N(20 * log(Abs(G), 10), 3)
+
+print("omega=1:", mag_dB(1))
+print("omega=10:", mag_dB(10))
+print("omega=100:", mag_dB(100))
+```
+
+Ejecuta:
+
+```bash
+python3 verificacion.py
+```
+
+**Resultado esperado:** `omega=1: -0.0432` (≈0 dB), `omega=10: -3.01` y `omega=100: -20.0`, igual al Ejemplo 1.
+
+**Práctica:** cambia `G` a `100/(s*(s+10))` y evalúa en `omega=7.86` para confirmar que la magnitud está cerca de 0 dB (el \(\omega_c\) del Ejemplo 2).
+
+**Límite:** este script evalúa la magnitud exacta en puntos concretos; el margen de fase del Ejemplo 2 exige además encontrar \(\omega_c\) resolviendo \(|G(j\omega)|=1\), que no es una simple sustitución sino resolver una ecuación.
+
 ![Bode de magnitud](content/figures/control-1/bode-magnitud.svg)
 
 ![Bode de fase](content/figures/control-1/bode-fase.svg)

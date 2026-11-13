@@ -6358,6 +6358,7 @@
       "semanticHeadings": [
         "Ejemplo 1 · Un polo simple · *Básico*",
         "Ejemplo 2 · Bode y margen de fase · *Experto*",
+        "Verificación con código",
         "Más ejemplos resueltos",
         "Ejemplo 3 · Márgenes de \\(\\frac{10}{s^{3} + 3 s^{2} + 2 s}\\) · *Intermedio*",
         "Ejemplo 4 · Márgenes de \\(\\frac{40}{s^{3} + 6 s^{2} + 8 s}\\) · *Intermedio*",

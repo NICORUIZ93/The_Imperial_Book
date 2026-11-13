@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "0fc4c431da0d74cfa2843d7c7f1805e349a1da65c0bbd52209da22ba182fed76",
+    "fingerprint": "fff6acfaa86f97d76632e56b47bb5546da2dad12b4113645751468ab2d171d81",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -4302,7 +4302,7 @@
         "module": 20,
         "tailWords": 0,
         "topic": "Tema 4: Márgenes de estabilidad",
-        "words": 1167
+        "words": 1319
       },
       {
         "issues": [],

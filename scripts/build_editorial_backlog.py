@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from audit_topic_learning_quality import build
+from audit_topic_learning_quality import REQUIRED_CRITERIA, TRACK_REQUIRED_CRITERIA, build
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "editorial-backlog.md"
@@ -62,8 +62,9 @@ def render() -> str:
     lines.extend(["", "## Pendientes por tema", ""])
     pending = []
     for track, topics in data["topics"].items():
+        required = TRACK_REQUIRED_CRITERIA.get(track, REQUIRED_CRITERIA)
         for topic in topics:
-            missing = [label for key, label in LABELS.items() if not topic["criteria"][key]]
+            missing = [label for key, label in LABELS.items() if key in required and not topic["criteria"][key]]
             if topic["classification"]["genericScaffold"]:
                 missing.append("texto genérico o demostración repetida")
             if missing:

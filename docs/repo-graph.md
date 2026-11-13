@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-12 22:08 UTC
+Generated: 2026-11-13 13:45 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1616
+Indexed files: 1618
 Import edges: 67
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,15 +19,15 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 51 files
 - `course-content`: 331 files
 - `documentation`: 149 files
-- `example`: 929 files
+- `example`: 931 files
 - `local-infra`: 1 files
 - `project-file`: 86 files
 
 ## File Types
 
-- `.md`: 512
+- `.md`: 513
 - `.java`: 386
-- `.py`: 179
+- `.py`: 180
 - `.json`: 124
 - `.ts`: 72
 - `.js`: 54
@@ -194,8 +194,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_subtopic_depth.py` (164 lines) - symbols: semantic_headings, broad_title, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
-- `scripts/audit_topic_learning_quality.py` (259 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
-- `scripts/build_editorial_backlog.py` (99 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
+- `scripts/audit_topic_learning_quality.py` (266 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
+- `scripts/build_editorial_backlog.py` (100 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_full_review.py` (175 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
 - `scripts/build_prerequisite_graph.py` (115 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
@@ -271,7 +271,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
-- ... 911 more files
+- ... 913 more files
 
 ### local-infra
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baselineCommit": "07733a29",
-  "reviewedAt": "2026-11-12",
+  "reviewedAt": "2026-11-13",
   "method": "Inventario de los 378 temas sin dominio reconocido en la línea base; verificación HTTP de citas ya escritas para 19 proveedores documentales inequívocos.",
   "limits": "El éxito HTTP no prueba pertinencia, actualidad de versiones ni calidad pedagógica. Todos los temas conservan revisión manual pendiente.",
   "providerHostsReviewed": [

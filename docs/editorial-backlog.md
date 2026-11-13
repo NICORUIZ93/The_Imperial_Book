@@ -17,7 +17,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Conexión con un proyecto | 1177 | 134 |
 | Modelo mental | 1311 | 0 |
 | Límites | 1269 | 42 |
-| **Perfil de criterios detectado** | **1166** | **145** |
+| **Perfil de criterios detectado** | **1236** | **75** |
 
 ## Prioridad por track
 
@@ -44,76 +44,6 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
-- [control-1 · módulo 0](../web/public/content/control-1/modulo-0.md) · Tema 1: Cómo está armado cada capítulo: conexión con un proyecto.
-- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 1: ¿Qué es un número complejo?: conexión con un proyecto.
-- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 2: Operaciones: conexión con un proyecto.
-- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 3: Raíces de s²+bs+c: conexión con un proyecto.
-- [control-1 · módulo 1](../web/public/content/control-1/modulo-1.md) · Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω): conexión con un proyecto.
-- [control-1 · módulo 10](../web/public/content/control-1/modulo-10.md) · Tema 1: La forma de estado: conexión con un proyecto.
-- [control-1 · módulo 10](../web/public/content/control-1/modulo-10.md) · Tema 2: De estados a función de transferencia: conexión con un proyecto.
-- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 1: Forma estándar: conexión con un proyecto.
-- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 2: Respuestas: conexión con un proyecto.
-- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 3: Retardo o tiempo muerto: conexión con un proyecto.
-- [control-1 · módulo 11](../web/public/content/control-1/modulo-11.md) · Tema 4: Identificación desde una gráfica: conexión con un proyecto.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 1: Forma estándar: conexión con un proyecto.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 2: Simulador: mueve ζ y ωn: conexión con un proyecto.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 3: Los cuatro casos según ζ: conexión con un proyecto.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 4: Fórmulas del caso subamortiguado: conexión con un proyecto.
-- [control-1 · módulo 12](../web/public/content/control-1/modulo-12.md) · Tema 5: De las especificaciones a la función de transferencia: conexión con un proyecto.
-- [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 1: Polos dominantes: conexión con un proyecto.
-- [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 2: Efecto de un cero: conexión con un proyecto.
-- [control-1 · módulo 13](../web/public/content/control-1/modulo-13.md) · Tema 3: Cero de fase no mínima: conexión con un proyecto.
-- [control-1 · módulo 14](../web/public/content/control-1/modulo-14.md) · Tema 1: Fórmula general: conexión con un proyecto.
-- [control-1 · módulo 14](../web/public/content/control-1/modulo-14.md) · Tema 2: Tipo de sistema y constantes: conexión con un proyecto.
-- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 1: Qué es estabilidad: conexión con un proyecto.
-- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 2: El arreglo de Routh: conexión con un proyecto.
-- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 3: Casos especiales: conexión con un proyecto.
-- [control-1 · módulo 15](../web/public/content/control-1/modulo-15.md) · Tema 4: Rango de K para estabilidad: conexión con un proyecto.
-- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 1: Geometría de un polo: conexión con un proyecto.
-- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 2: Estabilidad: conexión con un proyecto.
-- [control-1 · módulo 16](../web/public/content/control-1/modulo-16.md) · Tema 3: La zona de diseño: conexión con un proyecto.
-- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 1: Las dos condiciones: conexión con un proyecto.
-- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 2: Reglas de construcción (con su porqué): conexión con un proyecto.
-- [control-1 · módulo 17](../web/public/content/control-1/modulo-17.md) · Tema 3: Elegir K desde el lugar de las raíces: conexión con un proyecto.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 1: La idea: conexión con un proyecto.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 2: Error en estado estacionario: conexión con un proyecto.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 3: Cada acción, con números: conexión con un proyecto.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 4: Ventajas y desventajas (punto 4 del Parcial 1): conexión con un proyecto.
-- [control-1 · módulo 18](../web/public/content/control-1/modulo-18.md) · Tema 5: Sintonía de Ziegler-Nichols: conexión con un proyecto.
-- [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 1: Diseño de un adelanto: conexión con un proyecto.
-- [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 2: Diseño de un atraso: conexión con un proyecto.
-- [control-1 · módulo 19](../web/public/content/control-1/modulo-19.md) · Tema 3: Implementación con op-amps: conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 1: La idea: conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 2: La tabla: conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 3: Propiedades: conexión con un proyecto.
-- [control-1 · módulo 2](../web/public/content/control-1/modulo-2.md) · Tema 4: Valor final y valor inicial: conexión con un proyecto.
-- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 1: Qué es la respuesta en frecuencia: conexión con un proyecto.
-- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 2: Decibeles y la escala logarítmica: conexión con un proyecto.
-- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 3: Los bloques básicos: conexión con un proyecto.
-- [control-1 · módulo 20](../web/public/content/control-1/modulo-20.md) · Tema 4: Márgenes de estabilidad: conexión con un proyecto.
-- [control-1 · módulo 21](../web/public/content/control-1/modulo-21.md) · Tema 1: Parcial 1: conexión con un proyecto.
-- [control-1 · módulo 22](../web/public/content/control-1/modulo-22.md) · Tema 1: Simulacro con solución: conexión con un proyecto.
-- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 1: Caso 1: polos reales distintos: conexión con un proyecto.
-- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 2: Caso 2: polos repetidos: conexión con un proyecto.
-- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 3: Caso 3: polos complejos (completar el cuadrado): conexión con un proyecto.
-- [control-1 · módulo 3](../web/public/content/control-1/modulo-3.md) · Tema 4: Resolver una ecuación diferencial completa: conexión con un proyecto.
-- [control-1 · módulo 4](../web/public/content/control-1/modulo-4.md) · Tema 1: Qué es la función de transferencia: conexión con un proyecto.
-- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 1: ¿Qué es un sistema de control?: conexión con un proyecto.
-- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 2: Los elementos: conexión con un proyecto.
-- [control-1 · módulo 5](../web/public/content/control-1/modulo-5.md) · Tema 3: Álgebra de bloques: conexión con un proyecto.
-- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 1: Reglas para mover bloques: conexión con un proyecto.
-- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 2: Grafos de flujo de señal: conexión con un proyecto.
-- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 3: Regla de Mason: conexión con un proyecto.
-- [control-1 · módulo 6](../web/public/content/control-1/modulo-6.md) · Tema 4: Referencia y perturbación juntas: conexión con un proyecto.
-- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 1: Impedancias: conexión con un proyecto.
-- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 2: Circuitos pasivos: divisor de voltaje: conexión con un proyecto.
-- [control-1 · módulo 7](../web/public/content/control-1/modulo-7.md) · Tema 3: El op-amp inversor: conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 1: Mecánico de traslación: conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 2: Mecánico de rotación: conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 3: Motor DC (electromecánico): conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 4: Sistemas térmicos e hidráulicos: conexión con un proyecto.
-- [control-1 · módulo 8](../web/public/content/control-1/modulo-8.md) · Tema 5: Analogías: conexión con un proyecto.
-- [control-1 · módulo 9](../web/public/content/control-1/modulo-9.md) · Tema 1: La idea: conexión con un proyecto.
 - [flutter · módulo 19](../web/public/content/flutter/modulo-19.md) · Tema 1: estado de la jornada con Riverpod: conexión con un proyecto, límites.
 - [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 1: Del código fuente a la JVM: conexión con un proyecto, límites.
 - [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 2: public static void main — qué significa cada palabra: modificación, conexión con un proyecto, límites.
