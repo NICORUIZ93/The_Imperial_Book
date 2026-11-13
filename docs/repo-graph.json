@@ -2355,6 +2355,16 @@
       ]
     },
     {
+      "path": "docs/java-m2-technical-review.md",
+      "lines": 22,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Java M2 \u2014 revisi\u00f3n t\u00e9cnica de colecciones y gen\u00e9ricos"
+      ]
+    },
+    {
       "path": "docs/java-temario-completo.md",
       "lines": 581,
       "kind": "documentation",
@@ -17099,7 +17109,7 @@
     },
     {
       "path": "web/public/content/java/modulo-2.md",
-      "lines": 552,
+      "lines": 635,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

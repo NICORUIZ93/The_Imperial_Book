@@ -7,7 +7,9 @@
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Una colección organiza datos según cómo los vas a consultar: por posición, sin duplicados o mediante una clave.
-**Prerrequisitos:** M1 T1. Proyecto continuo: guardar guías, evitar duplicados y buscar cada guía por su código.
+**Prerrequisitos:** M0 T7 (arreglos y wrappers), M1 T1 (objetos). Proyecto continuo: guardar guías, evitar duplicados y buscar cada guía por su código.
+
+**Mapa de subtemas críticos:** `List` e índices válidos (núcleo y diagnóstico, 1.1); igualdad de códigos y orden de inserción en `Set` (núcleo y límite, 1.2); reemplazo por clave, ausencia y valor `null` en `Map` (núcleo y diagnóstico, 1.3). La comparación de objetos de dominio mediante `equals/hashCode` se profundiza en M22; el orden de `TreeSet` se enseña en el Tema 3.
 
 #### Subtema 1.1: Conserva el orden con una List · 10 min
 
@@ -59,7 +61,7 @@ Anota qué posición tiene RF-105 después de insertarla y qué pasaría si la a
 #### Subtema 1.2: Evita duplicados con un Set · 10 min
 
 **1. Contexto**
-Al importar un lote pueden llegar guías repetidas. Una colección Set mantiene solo un ejemplar según equals y hashCode.
+Al importar un lote pueden llegar guías repetidas. Aquí los códigos son `String`, cuya igualdad por contenido permite detectar un duplicado aunque llegue en otra instancia.
 
 **2. Hazlo tú**
 Reemplaza java-motor-colecciones/src/ColeccionesDemo.java:
@@ -67,7 +69,6 @@ Reemplaza java-motor-colecciones/src/ColeccionesDemo.java:
 ```java
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class ColeccionesDemo {
     public static void main(String[] args) {
@@ -76,25 +77,24 @@ public class ColeccionesDemo {
         ingreso.add("RF-101");
         ingreso.add("RF-102");
 
-        Set<String> ordenadas = new TreeSet<>(ingreso);
         System.out.println("ingreso=" + ingreso);
-        System.out.println("ordenadas=" + ordenadas);
-        System.out.println("nuevas=" + ingreso.add("RF-101"));
+        System.out.println("duplicada=" + ingreso.add(new String("RF-101")));
+        System.out.println("cantidad=" + ingreso.size());
     }
 }
 ```
 
 Compila y ejecuta con los comandos del subtema 1.1.
 
-**Resultado esperado:** ingreso=[RF-102, RF-101], ordenadas=[RF-101, RF-102] y nuevas=false.
+**Resultado esperado:** ingreso=[RF-102, RF-101], duplicada=false y cantidad=2.
 
-**Fallo deliberado:** reemplaza LinkedHashSet por HashSet y exige como salida fija el orden RF-102, RF-101. **Resultado no garantizado:** el orden puede variar. **Diagnóstico:** HashSet no promete orden de iteración; usa LinkedHashSet para conservar inserción o TreeSet para ordenar.
+**Fallo deliberado:** sustituye solo la declaración por `java.util.List<String> ingreso = new java.util.ArrayList<>();` y ejecuta el mismo archivo. **Resultado erróneo esperado:** `ingreso=[RF-102, RF-101, RF-102]`, `duplicada=true` y `cantidad=4`. **Diagnóstico:** `List` conserva ambos códigos repetidos; usa `Set` cuando cada código de guía deba aparecer una sola vez.
 
 **3. Entiende**
-Set impide duplicados de acuerdo con la igualdad de sus elementos. LinkedHashSet conserva el orden de inserción; TreeSet itera en orden natural o según un Comparator.
+`LinkedHashSet` conserva el primer código y su posición de inserción; `add` devuelve `false` cuando un código ya existe. Para `String`, el contenido se compara mediante `equals` y `hashCode`, por eso `new String("RF-101")` no crea una tercera entrada. `HashSet` también descarta duplicados, pero no garantiza un orden de iteración. Un conjunto ordenado usa además una regla de comparación; verás su contrato en el Tema 3.
 
 **4. Cierra**
-Explica cuál colección usarías para deduplicar sin cambiar el orden del archivo importado y cuál para mostrar los códigos ordenados.
+Agrega `RF-103` dos veces y predice el booleano de cada `add`, el tamaño y la posición del código. Explica por qué `HashSet` no sirve si debes conservar el orden del archivo importado.
 
 #### Subtema 1.3: Busca una guía por su clave con Map · 15 min
 
@@ -118,6 +118,9 @@ public class ColeccionesDemo {
         System.out.println(estados.get("RF-101"));
         System.out.println(estados.getOrDefault("RF-999", "DESCONOCIDA"));
         System.out.println("guias=" + estados.size());
+        estados.put("RF-103", null);
+        System.out.println("registrada=" + estados.containsKey("RF-103"));
+        System.out.println("valor=" + estados.getOrDefault("RF-103", "DESCONOCIDA"));
     }
 }
 ```
@@ -129,24 +132,24 @@ javac -d out src/ColeccionesDemo.java
 java -cp out ColeccionesDemo
 ```
 
-**Resultado esperado:** EN_REPARTO, DESCONOCIDA y guias=2.
+**Resultado esperado:** EN_REPARTO, DESCONOCIDA, guias=2, registrada=true y valor=null, en ese orden.
 
 **Fallo deliberado:** cambia la segunda búsqueda por estados.get("RF-999").toUpperCase(). **Error esperado:** NullPointerException. **Diagnóstico:** get devuelve null si la clave no existe; comprueba el resultado o usa getOrDefault.
 
 **3. Entiende**
-Map relaciona una clave única con su valor. Al insertar otra vez RF-101, se reemplazó su estado y no se añadió una tercera entrada. LinkedHashMap conserva el orden de inserción; HashMap no lo garantiza.
+`Map` relaciona una clave única con su valor. Al insertar otra vez RF-101, se reemplazó su estado y no se añadió una tercera entrada. `get` devuelve `null` tanto para una clave ausente como para una clave asociada explícitamente a `null` en este `LinkedHashMap`; `containsKey` distingue ambos casos. `getOrDefault` solo usa el valor alternativo cuando falta la clave: si existe con valor `null`, devuelve `null`. Evita guardar `null` como estado de negocio si necesitas distinguirlo de «no registrada» sin esa comprobación adicional. `LinkedHashMap` conserva el orden de inserción; `HashMap` no lo garantiza.
 
 **4. Cierra**
-Agrega la guía RF-999, conserva la salida y explica qué significa que una clave no exista.
+Agrega la guía RF-999 con estado `EN_RUTA`, observa qué devuelve `getOrDefault` antes y después, y usa `containsKey` para explicar la diferencia con RF-103.
 
 **Hito del tema:**
 
 - [ ] Usé List para conservar posiciones y repetir valores.
-- [ ] Eliminé duplicados y diferencié orden de inserción de orden natural.
+- [ ] Eliminé duplicados y conservé el orden de inserción.
 - [ ] Consulté y actualicé un estado con una clave de Map.
-- [ ] Manejé una clave ausente sin provocar un error accidental.
+- [ ] Distinguí una clave ausente de una clave asociada a `null`.
 
-**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/) y [interfaces de colecciones de Java](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/package-summary.html).
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [LinkedHashSet](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashSet.html) y [contrato de Map.getOrDefault](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Map.html#getOrDefault(java.lang.Object,V)).
 
 **Transferencia al proyecto integrador:** almacena guías en una lista ordenada, usa un Set para rechazar importaciones duplicadas y conserva el estado actual en un Map por código. **Límite:** usa `ArrayList` cuando el orden de llegada importa y habrá lecturas frecuentes por índice; usa `HashSet` solo para descartar duplicados sin importar el orden; si necesitas orden de inserción y descarte de duplicados a la vez, usa `LinkedHashSet` en vez de combinar las dos estructuras a mano. **Práctica:** modifica `ColeccionesDemo.java` para usar `getOrDefault("RF-999", "SIN_REGISTRO")` en vez de `get`, y confirma que ya no se produce `NullPointerException`.
 
@@ -155,6 +158,8 @@ Agrega la guía RF-999, conserva la salida y explica qué significa que una clav
 **Duración estimada:** 40 min.
 **¿Por qué es importante?** Los genéricos hacen que el compilador detecte mezclas de tipos antes de ejecutar; los wildcards dejan aceptar familias de tipos sin perder esa seguridad.
 **Prerrequisitos:** M2 T1. Proyecto continuo: construir herramientas reutilizables para almacenar y procesar guías de distintos tipos.
+
+**Mapa de subtemas críticos:** parámetro de tipo e inferencia del diamante (núcleo, 2.1); invariancia y lectura mediante `? extends` (prerrequisito y núcleo, 2.2); escritura mediante `? super` y límite de lectura (variante, 2.3); borrado de tipos, prueba con `instanceof` y riesgo de tipos raw (límite y diagnóstico, 2.4). Cada mecanismo tiene un resultado compilado o un error reproducible y una práctica de transferencia.
 
 #### Subtema 2.1: Crea una clase genérica segura · 10 min
 
@@ -196,7 +201,7 @@ java -cp out GenericosDemo
 **Fallo deliberado:** cambia el argumento new Caja<>("RF-401") por new Caja<>(12) y deja la variable como Caja<String>. **Error esperado:** incompatible types o inference variable T has incompatible bounds. **Diagnóstico:** una Caja<String> solo puede contener texto; conserva el tipo de la variable y el del valor alineados.
 
 **3. Entiende**
-T es un parámetro de tipo. Al escribir Caja<String>, el compilador comprueba que obtienes y guardas texto sin casts.
+`T` es un parámetro de tipo. Al escribir `Caja<String>`, el compilador comprueba que obtienes y guardas texto sin casts. El diamante `<>` de `new Caja<>(...)` infiere aquí `String` desde el tipo declarado de `guia`; no crea una clase nueva llamada `Caja<String>` en ejecución. Por eso `new Caja<>(12)` no puede satisfacer una variable `Caja<String>`.
 
 **4. Cierra**
 Agrega una Caja<Double> para una tarifa y explica qué verifica el compilador.
@@ -273,10 +278,10 @@ Compila y ejecuta con los comandos del subtema 2.1.
 
 **Resultado esperado:** [401, 402] en ambas líneas.
 
-**Fallo deliberado:** cambia el parámetro a List<? super String> y llama agregarCodigos con List<Integer>. **Error esperado:** incompatible types. **Diagnóstico:** el límite de super Integer acepta Integer o un supertipo suyo, como Number u Object; String no pertenece a esa familia.
+**Fallo deliberado:** deja la firma intacta y añade en `main` `List<Double> decimales = new ArrayList<>(); agregarCodigos(decimales);`. **Error esperado:** `List<Double>` no se puede convertir a `List<? super Integer>`. **Diagnóstico:** el límite acepta `Integer` o un supertipo suyo, como `Number` u `Object`; `Double` es otro subtipo de `Number`, no un supertipo de `Integer`.
 
 **3. Entiende**
-? super Integer permite agregar Integer con seguridad. Cuando lees elementos de esa lista, el tipo útil común es Object; el wildcard se elige según si el método principalmente lee o agrega.
+`? super Integer` permite agregar `Integer` con seguridad. Dentro de `agregarCodigos`, una lectura de `destino.get(0)` solo se puede asignar a `Object`: la lista real podría ser `List<Integer>`, `List<Number>` o `List<Object>`, y el compilador no sabe cuál. Este límite sirve cuando el método produce enteros para un destino; no convierte una `List<Double>` en una lista de enteros.
 
 **4. Cierra**
 Escribe qué tipo de lista es válido para el parámetro y por qué no acepta List<Double>.
@@ -316,8 +321,18 @@ Compila y ejecuta con los comandos del subtema 2.1.
 **3. Entiende**
 El borrado de tipos hace que Caja<String> y Caja<Integer> compartan la clase Caja en ejecución. Java mantiene cierta información genérica en firmas declaradas para herramientas de reflexión, pero no puedes inspeccionar el parámetro de tipo de un objeto común como si fuera una clase distinta.
 
+Para observar el riesgo profesional del borrado, agrega antes del cierre de `main` estas tres líneas, sin quitar las salidas anteriores:
+
+```java
+Caja sinTipo = numero;
+Caja<String> contaminada = sinTipo;
+System.out.println(contaminada.obtener().length());
+```
+
+Compila desde `java-motor-colecciones/` con `javac -Xlint:unchecked -d out src/GenericosDemo.java` y ejecuta `java -cp out GenericosDemo`. **Resultado observable:** el compilador avisa de una conversión `unchecked` en la asignación a `Caja<String>`; tras las tres salidas iniciales, la llamada a `length()` falla con `ClassCastException` porque el contenido era un `Integer`. Un tipo raw evita la comprobación genérica en el límite y desplaza el fallo a quien lee. **Límite:** `@SuppressWarnings` ocultaría el aviso, no volvería segura la conversión. Restaura el archivo original después del diagnóstico.
+
 **4. Cierra**
-Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y qué parámetro genérico no se puede probar con instanceof.
+Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y qué parámetro genérico no se puede probar con `instanceof`. Después de reproducir el fallo raw, cambia `Caja sinTipo` por `Caja<?> sinTipo` y predice qué asignación dejará de compilar; compruébalo antes de restaurar el archivo.
 
 **Hito del tema:**
 
@@ -325,8 +340,9 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 - [ ] Leí números de List<? extends Number>.
 - [ ] Agregué enteros a List<? super Integer> sin perder seguridad de tipos.
 - [ ] Comprobé que dos variantes de Caja comparten la clase en runtime.
+- [ ] Reproduje una advertencia `unchecked` y su `ClassCastException` posterior al mezclar un tipo raw con uno parametrizado.
 
-**Fuentes oficiales:** [genéricos en dev.java](https://dev.java/learn/generics/) y [genéricos en la especificación del lenguaje Java](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.6).
+**Fuentes oficiales:** [genéricos en dev.java](https://dev.java/learn/generics/), [wildcards](https://dev.java/learn/generics/wildcards/), [tipos raw y advertencias unchecked](https://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html) y [borrado de tipos en la especificación Java](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.6).
 
 **Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos. **Práctica:** agrega un segundo tipo de parámetro a `Caja<T>` (por ejemplo una etiqueta `Caja<T, E>`) y confirma con `instanceof Caja<?, ?>` que ambos parámetros siguen borrados en tiempo de ejecución.
 
@@ -393,10 +409,10 @@ java -cp out OrdenDemo
 **Fallo deliberado:** elimina implements Comparable<Guia> y la anotación @Override de compareTo; luego ejecuta Collections.sort(guias). **Error esperado:** el compilador no puede inferir un orden para Guia. **Diagnóstico:** el orden natural requiere que Guia implemente Comparable o que la llamada reciba un Comparator.
 
 **3. Entiende**
-compareTo devuelve un valor negativo, cero o positivo para indicar menor, igual o mayor. Comparar Strings directamente evita restar números y no tiene el riesgo de desbordamiento de restar enteros. En `TreeSet`, `compareTo` igual a cero significa que el segundo objeto ocupa la misma posición lógica y no se agrega, aunque sea otra instancia. Aquí dos guías con código `RF-101` cuentan como una. Esta clase didáctica aún hereda `equals` por identidad: un `HashSet` trataría esas dos instancias como distintas. No uses esta clase tal cual como modelo de dominio; antes de combinar conjuntos ordenados y conjuntos basados en hash, alinea `compareTo`, `equals` y `hashCode` con la misma identidad de guía. El contrato completo de igualdad se desarrolla en el módulo 22.
+`compareTo` devuelve un valor negativo, cero o positivo para indicar menor, igual o mayor. Debe ser coherente al invertir los operandos y transitivo: si `RF-101 < RF-102` y `RF-102 < RF-103`, también `RF-101 < RF-103`. Comparar `String` directamente da ese orden y evita el desbordamiento de restar enteros. En `TreeSet`, `compareTo` igual a cero significa que el segundo objeto ocupa la misma posición lógica y no se agrega, aunque sea otra instancia. Aquí dos guías con código `RF-101` cuentan como una. Esta clase didáctica aún hereda `equals` por identidad: un `HashSet` trataría esas dos instancias como distintas. No uses esta clase tal cual como modelo de dominio; antes de combinar conjuntos ordenados y conjuntos basados en hash, alinea `compareTo`, `equals` y `hashCode` con la misma identidad de guía. El contrato completo de igualdad se desarrolla en el módulo 22.
 
 **4. Cierra**
-Cambia los valores de entrada y confirma que el orden natural sigue comparando por código. Luego agrega una segunda instancia con código `RF-102` al `TreeSet` y predice el valor de `add` y el tamaño final antes de ejecutar.
+Cambia los valores de entrada y confirma que el orden natural sigue comparando por código. Comprueba con tres instancias las relaciones `RF-101 < RF-102`, `RF-102 < RF-103` y `RF-101 < RF-103`; luego agrega una segunda instancia con código `RF-102` al `TreeSet` y predice el valor de `add` y el tamaño final antes de ejecutar.
 
 #### Subtema 3.2: Cambia el criterio con Comparator · 10 min
 
@@ -460,7 +476,7 @@ Compila y ejecuta con los comandos del subtema 3.1.
 **Fallo deliberado:** elimina las dos líneas que comparan `codigo` y devuelve `0` cuando los destinos coinciden; coloca `RF-102` antes de `RF-101` en la entrada. **Resultado observado:** ambas guías de Bogota conservan ese orden de entrada en esta ordenación estable, en vez de ordenarse por código. **Diagnóstico:** el comparador ya no distingue los códigos de un mismo destino; restaura el segundo criterio. Si usas ese comparador en un `TreeSet`, los dos códigos pasarían a considerarse equivalentes y solo se conservaría uno.
 
 **3. Entiende**
-`Comparator<Guia>` define un criterio externo al objeto. Su método `compare` recibe dos guías: primero compara destinos; solo si son iguales compara códigos. Así obtiene un orden total para este ejemplo sin cambiar la clase `Guia` ni depender de lambdas o referencias a métodos, que se estudian más adelante. Un resultado `0` debe reservarse para guías que este criterio considere equivalentes. Los campos usados para ordenar deben conservar su valor mientras el objeto permanezca en una colección ordenada.
+`Comparator<Guia>` define un criterio externo al objeto. Su método `compare` recibe dos guías: primero compara destinos; solo si son iguales compara códigos. Así obtiene un orden total para este ejemplo sin cambiar la clase `Guia` ni depender de lambdas o referencias a métodos, que se estudian más adelante. Un resultado `0` debe reservarse para guías que este criterio considere equivalentes. `List.sort` conserva el orden previo de elementos que el comparador considera iguales, pero `TreeSet` conservaría solo uno de ellos. Los campos usados para ordenar deben conservar su valor mientras el objeto permanezca en una colección ordenada. Si `destino` es `null`, `String.compareTo` lanza `NullPointerException`: valida ese dato en el constructor antes de ordenar guías reales.
 
 **4. Cierra**
 Cambia solo la comparación del destino a `segunda.destino().compareTo(primera.destino())`; predice qué ciudad aparecerá primero y comprueba que los códigos dentro de Bogota siguen ascendentes. Explica por qué no conviene restar números para implementar `compare`.
@@ -493,8 +509,9 @@ public class OrdenDemo {
             }
         }
 
-        estados.forEach((codigo, estado) ->
-            System.out.println(codigo + "=" + estado));
+        for (Map.Entry<String, String> entrada : estados.entrySet()) {
+            System.out.println(entrada.getKey() + "=" + entrada.getValue());
+        }
     }
 }
 ```
@@ -521,7 +538,7 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 - [ ] Ordené Guia por su criterio natural con Comparable.
 - [ ] Creé un orden alternativo por destino y un desempate con Comparator.
 - [ ] Recorrí pares de un Map mediante entrySet.
-- [ ] Eliminé la entrada actual con Iterator y corregí una comparación de String con ==.
+- [ ] Eliminé la entrada actual con `Iterator.remove` y reproduje el fallo al modificar el mapa directamente durante el recorrido.
 
 **Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación estable de listas](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html#sort(java.util.Comparator)), [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html), [contrato de Iterator.remove](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Iterator.html#remove()) y [límites de fail-fast en LinkedHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashMap.html).
 
@@ -541,6 +558,72 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 | 4 | Recorrer entradas y eliminar con `Iterator` | Ver Tema 3 | Evita modificar el mapa fuera del iterador |
 
 **Verificación:** el laboratorio se considera exitoso si las colecciones producen las salidas esperadas, el compilador rechaza un tipo incorrecto y el orden alternativo conserva la clase sin cambios.
+
+### Incremento del proyecto: preparar guías asignables
+
+Conserva `java-motor-poo/src/modelo/Guia.java` del M1 T4.3: el proyecto ya tiene una clase `Guia` con constructor público y método `numero()`. Los archivos `java-motor-colecciones/` de este módulo son experimentos aislados; ahora aplica sus decisiones al motor que empezaste en M1. Crea `java-motor-poo/src/MotorAsignacion.java` con este contenido completo:
+
+```java
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import modelo.Guia;
+
+public class MotorAsignacion {
+    static class PorNumero implements Comparator<Guia> {
+        @Override
+        public int compare(Guia primera, Guia segunda) {
+            return primera.numero().compareTo(segunda.numero());
+        }
+    }
+
+    public static void main(String[] args) {
+        List<Guia> recibidas = List.of(
+            new Guia("RF-103"), new Guia("RF-101"),
+            new Guia("RF-102"), new Guia("RF-101"));
+        Map<String, Guia> unicas = new LinkedHashMap<>();
+        Set<String> duplicadas = new LinkedHashSet<>();
+
+        for (Guia guia : recibidas) {
+            if (unicas.containsKey(guia.numero())) {
+                duplicadas.add(guia.numero());
+            } else {
+                unicas.put(guia.numero(), guia);
+            }
+        }
+
+        Iterator<Map.Entry<String, Guia>> iterador =
+            unicas.entrySet().iterator();
+        while (iterador.hasNext()) {
+            if (iterador.next().getKey().equals("RF-103")) {
+                iterador.remove(); // cancelación conocida antes de asignar
+            }
+        }
+
+        List<Guia> asignables = new ArrayList<>(unicas.values());
+        asignables.sort(new PorNumero());
+        System.out.println("duplicadas=" + duplicadas);
+        for (Guia guia : asignables) {
+            System.out.println("asignable=" + guia.numero());
+        }
+    }
+}
+```
+
+Desde `java-motor-poo/` ejecuta:
+
+```bash
+mkdir -p out
+javac -d out src/modelo/Guia.java src/MotorAsignacion.java
+java -cp out MotorAsignacion
+```
+
+**Resultado esperado:** `duplicadas=[RF-101]`, `asignable=RF-101` y `asignable=RF-102`, en tres líneas. La clave `String` evita depender del `equals` aún no definido para objetos `Guia`; `LinkedHashMap` conserva la primera instancia de cada código y `PorNumero` ordena la vista asignable. La lista `recibidas` no se modifica. **Fallo diagnosticado:** reemplaza `iterador.remove()` por `unicas.remove("RF-103")`; en esta ejecución, el siguiente avance del iterador lanza `ConcurrentModificationException`. Restaura la eliminación mediante el iterador. **Práctica de transferencia:** agrega `RF-104` dos veces y cambia el código cancelado a `RF-102`; predice la lista de duplicadas y el orden asignable, ejecuta y explica por qué el resultado no depende de la identidad de cada objeto `Guia`.
 
 **Errores comunes y soluciones**
 

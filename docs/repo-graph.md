@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-13 15:45 UTC
+Generated: 2026-11-13 15:51 UTC
 Root: `The_Imperial_Book`
-Indexed files: 1649
+Indexed files: 1650
 Import edges: 67
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 69 files
 - `automation-script`: 51 files
 - `course-content`: 331 files
-- `documentation`: 149 files
+- `documentation`: 150 files
 - `example`: 962 files
 - `local-infra`: 1 files
 - `project-file`: 86 files
 
 ## File Types
 
-- `.md`: 513
+- `.md`: 514
 - `.java`: 417
 - `.py`: 180
 - `.json`: 124
@@ -249,7 +249,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 131 more files
+- ... 132 more files
 
 ### example
 

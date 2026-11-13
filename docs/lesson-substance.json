@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "071a5305fd510c39eea402422df1bb351ad8e32b3d3902663c3619a92e417e1e",
+    "fingerprint": "93fbc9fd240155c02dd19c6450ea5ff341b877cb6518197765a8915f2a0686a5",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7616,21 +7616,21 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 1: List, Set, Map y sus implementaciones",
-        "words": 905
+        "words": 1152
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 2: Genéricos, wildcards y type erasure",
-        "words": 1177
+        "words": 1505
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
-        "words": 1464
+        "words": 1555
       },
       {
         "issues": [],

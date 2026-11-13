@@ -10030,7 +10030,7 @@
       "module": 2,
       "title": "Tema 2: Genéricos, wildcards y type erasure",
       "file": "web/public/content/java/modulo-2.md",
-      "line": 153,
+      "line": 156,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10044,7 +10044,7 @@
       "module": 2,
       "title": "Tema 3: Comparable vs Comparator, e iteración",
       "file": "web/public/content/java/modulo-2.md",
-      "line": 333,
+      "line": 349,
       "signals": [
         "demostracion-no-delimitada"
       ],
