@@ -19,6 +19,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 1.1: Compila y ejecuta tu primera clase · 10 min
   - ✓ Subtema 1.2: Lee una instrucción del bytecode · 10 min
   - ✓ Subtema 1.3: Diagnostica dónde busca la JVM · 10 min
+  - ✓ Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente · 10 min
 - [4 pasos] Tema 2: public static void main — qué significa cada palabra
   - ✓ Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
   - ✓ Subtema 2.2: Recibe argumentos sin recompilar · 10 min

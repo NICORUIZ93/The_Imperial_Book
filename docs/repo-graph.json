@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19553,
+      "lines": 19567,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2356,7 +2356,7 @@
     },
     {
       "path": "docs/java-temario-completo.md",
-      "lines": 577,
+      "lines": 578,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22494,
+      "lines": 22512,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2917,7 +2917,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1209,
+      "lines": 1210,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 1971,
+      "lines": 1979,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -16847,7 +16847,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 998,
+      "lines": 1045,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16859,11 +16859,11 @@
         "#### Subtema 1.1: Compila y ejecuta tu primera clase \u00b7 10 min",
         "#### Subtema 1.2: Lee una instrucci\u00f3n del bytecode \u00b7 10 min",
         "#### Subtema 1.3: Diagnostica d\u00f3nde busca la JVM \u00b7 10 min",
+        "#### Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente \u00b7 10 min",
         "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra",
         "#### Subtema 2.1: Identifica cada parte de la firma cl\u00e1sica \u00b7 10 min",
         "#### Subtema 2.2: Recibe argumentos sin recompilar \u00b7 10 min",
-        "#### Subtema 2.3: Compara una forma abreviada de Java 25 \u00b7 10 min",
-        "### Tema 3: JDK, JRE y JVM"
+        "#### Subtema 2.3: Compara una forma abreviada de Java 25 \u00b7 10 min"
       ]
     },
     {

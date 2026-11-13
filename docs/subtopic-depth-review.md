@@ -3,8 +3,8 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1323
-- Revisados humanamente para subtemas: 163
-- Pendientes: 1160
+- Revisados humanamente para subtemas: 164
+- Pendientes: 1159
 - Candidatos prioritarios por señales: 1010
 
 ## Cobertura por track
@@ -19,7 +19,7 @@
 | flutter | 106 | 63 | 43 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 111 | 10 | 101 |
+| java | 111 | 11 | 100 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | microservices | 23 | 17 | 6 |
@@ -1177,6 +1177,7 @@
 - `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
 - `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
 - `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
+- `java/modulo-0` — Tema 1: Del código fuente a la JVM — compilación fuente→bytecode; classpath (-cp); inspección de bytecode con javap; clase principal ausente (Could not find or load main class); dependencia ausente en runtime (NoClassDefFoundError)
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada

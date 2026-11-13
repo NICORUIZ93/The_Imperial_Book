@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "java/modulo-0::Tema 1: Del código fuente a la JVM": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 25.0.2: javac/java sobre Saludo.java reprodujo 'Hola desde la JVM' y el classpath incorrecto produjo 'Error: no se ha encontrado o cargado la clase principal Saludo / Causado por: java.lang.ClassNotFoundException'. Se agregó y verificó el Subtema 1.4: compilando Principal+Ayudante y borrando solo Ayudante.class se reprodujo 'Exception in thread \"main\" java.lang.NoClassDefFoundError: Ayudante' con 'at Principal.main' y 'Caused by: java.lang.ClassNotFoundException', confirmando que ambos errores comparten causa pero ocurren en momentos distintos del ciclo de vida (antes vs. después de iniciar main).",
+      "criticalSubtopics": ["compilación fuente→bytecode", "classpath (-cp)", "inspección de bytecode con javap", "clase principal ausente (Could not find or load main class)", "dependencia ausente en runtime (NoClassDefFoundError)"],
+      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html", "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NoClassDefFoundError.html"]
+    },
     "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",

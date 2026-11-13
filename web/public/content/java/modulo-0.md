@@ -110,11 +110,58 @@ java -cp src Saludo
 **4. Cierra**
 Entrega la salida correcta, el error reproducido y la ruta que corregiste.
 
+#### Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente · 10 min
+
+**1. Contexto**
+El Subtema 1.3 produjo `Could not find or load main class` cuando la propia clase que ejecutas no existe en el classpath. Pero `Saludo` podría compilar y empezar a ejecutarse, y fallar después porque una clase que *usa* internamente sí falta. Ambos casos imprimen `ClassNotFoundException` en algún lugar del mensaje y es fácil confundirlos; cada uno exige un diagnóstico distinto.
+
+**2. Hazlo tú**
+Crea `java-motor/src/Ayudante.java` y `java-motor/src/Principal.java`:
+
+```java
+public final class Ayudante {
+    void saludar() { System.out.println("ayudando"); }
+}
+```
+
+```java
+public final class Principal {
+    public static void main(String[] args) {
+        new Ayudante().saludar();
+    }
+}
+```
+
+Desde `java-motor/`, compila los tres archivos del tema y ejecuta `Principal`:
+
+```bash
+javac -d out src/Saludo.java src/Principal.java src/Ayudante.java
+java -cp out Principal
+```
+
+**Resultado esperado:** imprime `ayudando`. Ahora borra solo la dependencia, sin tocar `Principal.class`:
+
+```bash
+rm out/Ayudante.class
+java -cp out Principal
+```
+
+**Resultado esperado:** `Exception in thread "main" java.lang.NoClassDefFoundError: Ayudante`, con `at Principal.main(Principal.java:3)` y como causa `Caused by: java.lang.ClassNotFoundException: Ayudante`. Compara este mensaje con el del Subtema 1.3 (`Could not find or load main class Saludo` / `no se ha encontrado o cargado la clase principal`): son errores diferentes que comparten la misma excepción de causa.
+
+**Fallo deliberado:** una hipótesis frecuente es pensar que cualquier mensaje con `ClassNotFoundException` significa "la clase que quiero ejecutar no existe". **Error esperado:** con `Ayudante.class` borrado, `Principal` sí empieza a ejecutarse (la JVM ya cargó y arrancó `Principal.main`) y falla *dentro* de `main`, al intentar cargar `Ayudante` por primera vez. **Diagnóstico:** `Could not find or load main class` ocurre antes de iniciar `main` porque la propia clase que invocaste en `java` no se encontró; `NoClassDefFoundError` ocurre durante la ejecución porque una clase que el código ya en marcha necesita cargar no está disponible, aunque sí existía al compilar. Restaura `Ayudante.class` recompilando para corregirlo.
+
+**3. Entiende**
+El mensaje de arranque (`Could not find or load main class`) y la excepción en tiempo de ejecución (`NoClassDefFoundError`) comparten la misma causa raíz —no se encontró el `.class`— pero ocurren en momentos distintos del ciclo de vida: antes de que exista un hilo `main` ejecutándose, o después. Leer *dónde* aparece el stack trace (si hay uno) dice en qué momento falló la carga.
+
+**4. Cierra**
+Guarda ambas salidas lado a lado y explica con tus palabras en qué momento del programa ocurrió cada una.
+
 **Hito del tema:**
 
 - [ ] Compilé y ejecuté `Saludo`.
 - [ ] Inspeccioné bytecode con `javap`.
 - [ ] Reproduje el error de classpath y lo corregí.
+- [ ] Distinguí `Could not find or load main class` de `NoClassDefFoundError` por el momento en que ocurren.
 - [ ] Conservé fuente, artefacto y salidas.
 
 **Fuentes oficiales:** [manual de `javac`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html) y [manual de `java`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html).
