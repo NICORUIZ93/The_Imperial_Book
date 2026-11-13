@@ -2339,6 +2339,18 @@
       ]
     },
     {
+      "path": "docs/java-lambdas-prerequisite-plan.md",
+      "lines": 23,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Prerrequisito de lambdas antes de Java M4",
+        "## Objetivo, evidencia y secuencia",
+        "## Verificaci\u00f3n t\u00e9cnica del candidato archivado"
+      ]
+    },
+    {
       "path": "docs/java-m0-reconstruction-map.md",
       "lines": 58,
       "kind": "documentation",
