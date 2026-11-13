@@ -58,10 +58,10 @@
     },
     "java": {
       "topics": 111,
-      "completeTopics": 100,
+      "completeTopics": 101,
       "topicsWith3to6Subtopics": 101,
       "subtopics": 313,
-      "completeSubtopics": 312
+      "completeSubtopics": 313
     },
     "javascript": {
       "topics": 88,
@@ -9466,12 +9466,12 @@
               "context": true,
               "action": true,
               "expectedResult": true,
-              "deliberateFailure": false,
+              "deliberateFailure": true,
               "understand": true,
               "close": true,
               "duration": true
             },
-            "complete": false
+            "complete": true
           },
           {
             "id": "3.2",
@@ -9516,7 +9516,7 @@
             "complete": true
           }
         ],
-        "complete": false
+        "complete": true
       },
       {
         "module": 4,

@@ -99,15 +99,17 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [4 pasos] Tema 1: Checked vs unchecked exceptions
   - ✓ Subtema 1.1: Maneja un archivo que no existe · 10 min
   - ✓ Subtema 1.2: Propaga una checked exception hasta quien puede resolverla · 10 min
-  - ✓ Subtema 1.3: Trata una entrada inválida como error de programa · 10 min
+  - ✓ Subtema 1.3: Rechaza un argumento inválido antes de acceder a la lista · 10 min
 - [4 pasos] Tema 2: try-with-resources
   - ✓ Subtema 2.1: Lee un archivo y deja que Java lo cierre · 10 min
   - ✓ Subtema 2.2: Comprueba el cierre aunque ocurra un error · 10 min
   - ✓ Subtema 2.3: Cierra varios recursos en orden inverso · 10 min
+  - ✓ Subtema 2.4: Conserva el fallo principal y examina los errores de cierre · 10 min
 - [4 pasos] Tema 3: Excepciones personalizadas y no tragar excepciones
-  - ✓ Subtema 3.1: Representa un saldo insuficiente · 10 min
-  - ✓ Subtema 3.2: Atiende el error donde puedes informar al usuario · 10 min
-  - ✓ Subtema 3.3: No ocultes fallos con un catch vacío · 10 min
+  - ✓ Subtema 3.1: Rechaza una asignación sin capacidad · 10 min
+  - ✓ Subtema 3.2: Atiende el rechazo donde puedes informar al operador · 10 min
+  - ✓ Subtema 3.3: Detecta el falso éxito de un catch vacío · 10 min
+  - ✓ Subtema 3.4: Conserva la causa al traducir un fallo de lectura · 10 min
 
 ### Módulo 4: Streams y programación funcional
 

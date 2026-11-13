@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "5d466ad894bdba0457b73ddbd5406871df91a65a6a71acb416842199fc3829de",
+    "fingerprint": "0955e7c30e63002ad96c219101f74a43cbe80e553f39f8df907db88d221c340c",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7812,7 +7812,7 @@
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
-        "words": 1340
+        "words": 1358
       },
       {
         "issues": [],

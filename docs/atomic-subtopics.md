@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **214/1323**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -14,7 +14,7 @@ Temas conformes a cuatro pasos: **214/1323**. Tracks inventariados: **16**.
 | flutter | 1 | 106 | 3 | 3 |
 | foundations | 0 | 100 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
-| java | 100 | 111 | 313 | 312 |
+| java | 101 | 111 | 313 | 313 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
 | microservices | 0 | 23 | 0 | 0 |
@@ -822,7 +822,6 @@ Temas conformes a cuatro pasos: **214/1323**. Tracks inventariados: **16**.
 - M22 ### Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min: tiene 0 subtemas
 - M22 ### Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min: tiene 0 subtemas
 - M22 ### Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min: tiene 0 subtemas
-- M3 ### Tema 3: Excepciones personalizadas y no tragar excepciones: 3.1: faltan deliberateFailure
 
 ### javascript
 

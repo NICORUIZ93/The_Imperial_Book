@@ -160,7 +160,7 @@
       "theoryAnalogy": 13,
       "guidedDemo": 13,
       "codeExplanation": 111,
-      "execution": 109,
+      "execution": 110,
       "expectedResult": 111,
       "deliberateFailure": 111,
       "guidedPractice": 11,
@@ -21508,7 +21508,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21519,7 +21519,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },

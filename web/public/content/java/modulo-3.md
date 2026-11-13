@@ -441,11 +441,16 @@ public class Asignador {
 }
 ```
 
-Desde `java-motor-poo/`, ejecuta `javac -d out src/Asignador.java` y `java -cp out Asignador`.
+Desde `java-motor-poo/`, ejecuta:
+
+```bash
+javac -d out src/Asignador.java
+java -cp out Asignador
+```
 
 **Resultado esperado:** el proceso termina con `CapacidadInsuficienteException: Solicitadas 3, disponibles 2`; el contador no se incrementa porque la comprobación ocurre antes de `ocupadas += cantidad`.
 
-**Fallo deliberado:** reemplaza el `throw` de capacidad por `throw new RuntimeException("Solicitadas " + cantidad + ", disponibles " + disponibles);`. **Resultado:** se conserva el texto, pero el tipo deja de expresar el motivo del rechazo y no expone `solicitadas()` ni `disponibles()`. Restaura la excepción específica.
+**Fallo deliberado:** reemplaza el `throw` de capacidad por `throw new RuntimeException("Solicitadas " + cantidad + ", disponibles " + disponibles);`. **Resultado:** se conserva el texto, pero el tipo deja de expresar el motivo del rechazo y no expone `solicitadas()` ni `disponibles()`. **Diagnóstico:** el llamador ya no puede capturar el rechazo de capacidad por su tipo ni consultar sus datos; restaura la excepción específica.
 
 **3. Entiende**
 
