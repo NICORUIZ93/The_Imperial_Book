@@ -210,22 +210,22 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 17,
-      "objective": 11,
-      "prerequisites": 14,
-      "context": 12,
-      "theoryAnalogy": 12,
-      "guidedDemo": 12,
-      "codeExplanation": 17,
-      "execution": 15,
-      "expectedResult": 16,
-      "deliberateFailure": 17,
-      "guidedPractice": 12,
-      "independentPractice": 12,
-      "closure": 12,
-      "commonErrors": 11,
+      "topics": 23,
+      "objective": 22,
+      "prerequisites": 23,
+      "context": 23,
+      "theoryAnalogy": 23,
+      "guidedDemo": 19,
+      "codeExplanation": 23,
+      "execution": 23,
+      "expectedResult": 22,
+      "deliberateFailure": 23,
+      "guidedPractice": 13,
+      "independentPractice": 23,
+      "closure": 22,
+      "commonErrors": 12,
       "resources": 11,
-      "standaloneExample": 13,
+      "standaloneExample": 22,
       "complete": 11
     },
     "node": {
@@ -26056,126 +26056,276 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
         "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
-        },
-        "classification": {
-          "stepsPassed": 4,
-          "complete": false
-        }
-      },
-      {
-        "module": 1,
-        "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": true,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
-        },
-        "classification": {
-          "stepsPassed": 4,
-          "complete": false
-        }
-      },
-      {
-        "module": 1,
-        "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
-          "codeExplanation": true,
-          "execution": false,
-          "expectedResult": true,
-          "deliberateFailure": true,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
-        },
-        "classification": {
-          "stepsPassed": 4,
-          "complete": false
-        }
-      },
-      {
-        "module": 1,
-        "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
-        "criteria": {
-          "objective": false,
-          "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": false,
           "resources": false,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 12,
           "complete": false
         }
       },
       {
         "module": 1,
-        "topic": "Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
         "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
+          "independentPractice": true,
+          "closure": true,
           "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 12,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 11,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 11,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 11,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": false,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": true,
+          "closure": false,
+          "commonErrors": true,
           "resources": false,
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 10,
           "complete": false
         }
       }

@@ -4588,24 +4588,48 @@
         "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
       },
       {
-        "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
-        "fragment": "tema-3-cohesion-acoplamiento-y-api-del-modulo-aplicacion-90-min"
+        "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
+        "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio-aplicacion-40-min"
       },
       {
-        "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "fragment": "tema-4-arquitectura-hexagonal-dominio-puertos-y-adaptadores-aplicacion-95-min"
+        "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
+        "fragment": "tema-4-proteger-la-api-publica-de-un-modulo-aplicacion-45-min"
       },
       {
-        "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "fragment": "tema-5-dependencias-ciclos-y-costo-de-coordinacion-integracion-80-min"
+        "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks-aplicacion-40-min"
       },
       {
-        "title": "Fitness functions con ArchUnit · Integración · 110 min",
-        "fragment": "tema-6-fitness-functions-con-archunit-integracion-110-min"
+        "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "fragment": "tema-6-sustituir-adaptadores-mediante-puertos-aplicacion-45-min"
       },
       {
-        "title": "Evidencia y ADR para decidir una extracción",
-        "fragment": "tema-7-evidencia-y-adr-para-decidir-una-extraccion"
+        "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo-integracion-35-min"
+      },
+      {
+        "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento-integracion-45-min"
+      },
+      {
+        "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit-integracion-40-min"
+      },
+      {
+        "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit-integracion-35-min"
+      },
+      {
+        "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions-integracion-35-min"
+      },
+      {
+        "title": "Medir señales que justifican una extracción",
+        "fragment": "tema-12-medir-senales-que-justifican-una-extraccion"
+      },
+      {
+        "title": "Registrar una decisión reversible en un ADR",
+        "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
       }
     ]
   },

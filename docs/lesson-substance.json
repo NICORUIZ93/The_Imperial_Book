@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "05f8543b0297c8ec5f9975ebe520e765d484d23215635b6650f37af8c450ef81",
+    "fingerprint": "06ea1e85bd179e68f868cbbf63d2310f525a708e57ea3537e7d5fcd0f8e384cb",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1317,
+    "topics": 1323,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9090,37 +9090,79 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
-        "words": 460
+        "tailWords": 74,
+        "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+        "words": 653
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "words": 466
+        "tailWords": 65,
+        "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+        "words": 623
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "words": 480
+        "tailWords": 51,
+        "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "words": 580
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
-        "words": 499
+        "tailWords": 58,
+        "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "words": 592
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
-        "words": 456
+        "tailWords": 51,
+        "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "words": 519
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 51,
+        "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "words": 482
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 49,
+        "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "words": 550
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 52,
+        "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "words": 560
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 44,
+        "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "words": 635
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 50,
+        "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+        "words": 536
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 70,
+        "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
+        "words": 537
       }
     ],
     "node": [

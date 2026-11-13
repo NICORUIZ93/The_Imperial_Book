@@ -109,16 +109,16 @@
       "officialSource": 112
     },
     "microservices": {
-      "topics": 17,
-      "code": 17,
+      "topics": 23,
+      "code": 23,
       "commentedCode": 5,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 17,
-      "runCommand": 15,
-      "officialSource": 17
+      "filePath": 23,
+      "runCommand": 22,
+      "officialSource": 23
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2586,28 +2586,70 @@
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
+      "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
       "missingCode": false,
       "missingComments": true
     },

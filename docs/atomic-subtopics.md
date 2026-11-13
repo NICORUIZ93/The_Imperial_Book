@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1317**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -17,7 +17,7 @@ Temas conformes a cuatro pasos: **215/1317**. Tracks inventariados: **16**.
 | java | 101 | 111 | 307 | 307 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
-| microservices | 0 | 17 | 0 | 0 |
+| microservices | 0 | 23 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
@@ -987,11 +987,17 @@ Temas conformes a cuatro pasos: **215/1317**. Tracks inventariados: **16**.
 - M0 ### Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min: tiene 0 subtemas
 - M1 ### Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min: tiene 0 subtemas
 - M1 ### Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min: tiene 0 subtemas
-- M1 ### Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min: tiene 0 subtemas
-- M1 ### Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min: tiene 0 subtemas
-- M1 ### Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min: tiene 0 subtemas
-- M1 ### Tema 6: Fitness functions con ArchUnit · Integración · 110 min: tiene 0 subtemas
-- M1 ### Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min: tiene 0 subtemas
+- M1 ### Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min: tiene 0 subtemas
+- M1 ### Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min: tiene 0 subtemas
+- M1 ### Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min: tiene 0 subtemas
+- M1 ### Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min: tiene 0 subtemas
+- M1 ### Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min: tiene 0 subtemas
+- M1 ### Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min: tiene 0 subtemas
+- M1 ### Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 12: Medir señales que justifican una extracción · Experto · 40 min: tiene 0 subtemas
+- M1 ### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min: tiene 0 subtemas
 
 ### node
 

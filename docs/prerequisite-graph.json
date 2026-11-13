@@ -5590,7 +5590,7 @@
       "track": "microservices",
       "module": 1,
       "position": 3,
-      "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:2"
@@ -5601,7 +5601,7 @@
       "track": "microservices",
       "module": 1,
       "position": 4,
-      "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:3"
@@ -5612,7 +5612,7 @@
       "track": "microservices",
       "module": 1,
       "position": 5,
-      "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:4"
@@ -5623,7 +5623,7 @@
       "track": "microservices",
       "module": 1,
       "position": 6,
-      "title": "Fitness functions con ArchUnit · Integración · 110 min",
+      "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:5"
@@ -5634,10 +5634,76 @@
       "track": "microservices",
       "module": 1,
       "position": 7,
-      "title": "Evidencia y ADR para decidir una extracción · Experto · 90 min",
+      "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:6"
+      ]
+    },
+    {
+      "id": "microservices:1:8",
+      "track": "microservices",
+      "module": 1,
+      "position": 8,
+      "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:7"
+      ]
+    },
+    {
+      "id": "microservices:1:9",
+      "track": "microservices",
+      "module": 1,
+      "position": 9,
+      "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:8"
+      ]
+    },
+    {
+      "id": "microservices:1:10",
+      "track": "microservices",
+      "module": 1,
+      "position": 10,
+      "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:9"
+      ]
+    },
+    {
+      "id": "microservices:1:11",
+      "track": "microservices",
+      "module": 1,
+      "position": 11,
+      "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:10"
+      ]
+    },
+    {
+      "id": "microservices:1:12",
+      "track": "microservices",
+      "module": 1,
+      "position": 12,
+      "title": "Medir señales que justifican una extracción · Experto · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:11"
+      ]
+    },
+    {
+      "id": "microservices:1:13",
+      "track": "microservices",
+      "module": 1,
+      "position": 13,
+      "title": "Registrar una decisión reversible en un ADR · Experto · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "requires": [
+        "microservices:1:12"
       ]
     },
     {

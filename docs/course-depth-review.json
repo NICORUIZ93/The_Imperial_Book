@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1317,
-    "topicsWithSignals": 365,
+    "topics": 1323,
+    "topicsWithSignals": 366,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1317,
+    "total": 1323,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -12814,7 +12814,7 @@
     {
       "track": "microservices",
       "module": 1,
-      "title": "Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+      "title": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "line": 194,
       "signals": [],
@@ -12826,9 +12826,9 @@
     {
       "track": "microservices",
       "module": 1,
-      "title": "Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+      "title": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
-      "line": 238,
+      "line": 276,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12838,9 +12838,9 @@
     {
       "track": "microservices",
       "module": 1,
-      "title": "Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+      "title": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
-      "line": 283,
+      "line": 360,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12850,9 +12850,9 @@
     {
       "track": "microservices",
       "module": 1,
-      "title": "Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
+      "title": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
-      "line": 327,
+      "line": 439,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12862,9 +12862,83 @@
     {
       "track": "microservices",
       "module": 1,
-      "title": "Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+      "title": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
       "file": "web/public/content/microservices/modulo-1.md",
-      "line": 380,
+      "line": 517,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 584,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 647,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 731,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 794,
+      "signals": [
+        "ejemplo-breve-revisar-contexto"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 852,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 915,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

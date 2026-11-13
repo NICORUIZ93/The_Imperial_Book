@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19511,
+      "lines": 19553,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1858,7 +1858,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1177,
+      "lines": 1183,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2133,7 +2133,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3197,
+      "lines": 3239,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16628,
+      "lines": 16702,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2176,7 +2176,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1349,
+      "lines": 1355,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2209,7 +2209,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 194,
+      "lines": 204,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2385,7 +2385,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11117,
+      "lines": 11159,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2578,7 +2578,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13726,
+      "lines": 13792,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2743,7 +2743,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33268,
+      "lines": 33418,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22210,
+      "lines": 22455,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2917,7 +2917,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1203,
+      "lines": 1209,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 1883,
+      "lines": 1971,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2998,7 +2998,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29281,
+      "lines": 29413,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -6269,6 +6269,14 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/ClasificarArquitectura.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/ClienteDeadline.java",
       "lines": 22,
       "kind": "example",
@@ -6295,6 +6303,14 @@
     {
       "path": "examples/professional-bridges/microservices/DependenciaDeadline.java",
       "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/EvaluarAutonomia.java",
+      "lines": 15,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -17807,7 +17823,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-1.md",
-      "lines": 428,
+      "lines": 1002,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19213,7 +19229,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5885,
+      "lines": 5909,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

@@ -78,7 +78,7 @@
       "completeSubtopics": 0
     },
     "microservices": {
-      "topics": 17,
+      "topics": 23,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -11784,35 +11784,77 @@
       },
       {
         "module": 1,
-        "topic": "### Tema 3: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
+        "topic": "### Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 4: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
+        "topic": "### Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 5: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
+        "topic": "### Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 6: Fitness functions con ArchUnit · Integración · 110 min",
+        "topic": "### Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 1,
-        "topic": "### Tema 7: Evidencia y ADR para decidir una extracción · Experto · 90 min",
+        "topic": "### Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

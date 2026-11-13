@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-13 05:49 UTC
+Generated: 2026-11-13 06:25 UTC
 Root: `Academia_Floci`
-Indexed files: 1630
+Indexed files: 1632
 Import edges: 67
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -19,14 +19,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `automation-script`: 51 files
 - `course-content`: 331 files
 - `documentation`: 149 files
-- `example`: 943 files
+- `example`: 945 files
 - `local-infra`: 1 files
 - `project-file`: 86 files
 
 ## File Types
 
 - `.md`: 513
-- `.java`: 398
+- `.java`: 400
 - `.py`: 180
 - `.json`: 124
 - `.ts`: 72
@@ -271,7 +271,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
-- ... 925 more files
+- ... 927 more files
 
 ### local-infra
 
@@ -293,7 +293,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
-- `docs/atomic-subtopics.json` (19511 lines)
+- `docs/atomic-subtopics.json` (19553 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
