@@ -1,4 +1,4 @@
-# Módulo 1: Monolito modular antes de microservicios
+# Curso Microservicios · Construir un monolito modular antes de extraer servicios
 
 ## Aprende construyendo
 
@@ -10,7 +10,7 @@ Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/micr
 
 ### Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min
 
-**Prerrequisitos:** proceso y frontera de red del Módulo 0.
+**Prerrequisitos:** módulo «Antes de distribuir: proceso, red y falacias», especialmente el tema «Ejecutar dos procesos Java y comprobar su socket HTTP».
 
 **Al terminar podrás:** clasificar una arquitectura por sus fronteras reales y explicar qué autonomía compra —o no— separar un proceso.
 

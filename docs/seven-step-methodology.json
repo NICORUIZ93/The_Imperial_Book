@@ -222,7 +222,7 @@
       "deliberateFailure": 11,
       "guidedPractice": 3,
       "independentPractice": 3,
-      "closure": 2,
+      "closure": 3,
       "commonErrors": 2,
       "resources": 2,
       "standaloneExample": 4,
@@ -25769,13 +25769,13 @@
           "deliberateFailure": true,
           "guidedPractice": true,
           "independentPractice": true,
-          "closure": false,
+          "closure": true,
           "commonErrors": false,
           "resources": false,
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 10,
+          "stepsPassed": 11,
           "complete": false
         }
       },

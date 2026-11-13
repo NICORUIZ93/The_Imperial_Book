@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "152bcf2066e4b56172d3a7607da2b884ab99c2a84aecbbc5ee11e70236b51915",
+    "fingerprint": "9a72eea6b1d092d2d3a27a2b23907a4bf4eab6d6ad33b0490bde9e0f94d5f793",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -9006,23 +9006,23 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 93,
+        "tailWords": 97,
         "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
-        "words": 1079
+        "words": 1081
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 203,
+        "tailWords": 202,
         "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
-        "words": 1699
+        "words": 1718
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 126,
+        "tailWords": 125,
         "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
-        "words": 1597
+        "words": 1608
       },
       {
         "issues": [],
@@ -9050,7 +9050,7 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
-        "words": 478
+        "words": 490
       },
       {
         "issues": [],

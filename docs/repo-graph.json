@@ -92,7 +92,7 @@
     },
     {
       "path": "MASTER-PROMPT.md",
-      "lines": 143,
+      "lines": 149,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -241,7 +241,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 1025,
+      "lines": 1037,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -6269,8 +6269,32 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/ClienteDeadline.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/ClienteTimeout.java",
       "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/DependenciaDeadline.java",
+      "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/GatewayDeadline.java",
+      "lines": 59,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -17711,7 +17735,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 0: Antes de distribuir \u2014 proceso, red y falacias",
+        "# Curso Microservicios \u00b7 Antes de distribuir: proceso, red y falacias",
         "## Aprende construyendo",
         "## Entorno del m\u00f3dulo",
         "### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP \u00b7 Fundamentos \u00b7 45 min",
@@ -17732,7 +17756,7 @@
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 1: Monolito modular antes de microservicios",
+        "# Curso Microservicios \u00b7 Construir un monolito modular antes de extraer servicios",
         "## Aprende construyendo",
         "## Entorno reproducible",
         "### Tema 1: Monolito, monolito modular, servicio y microservicio \u00b7 Fundamentos \u00b7 75 min",

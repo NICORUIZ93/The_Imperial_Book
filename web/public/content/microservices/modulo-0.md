@@ -1,4 +1,4 @@
-# Módulo 0: Antes de distribuir — proceso, red y falacias
+# Curso Microservicios · Antes de distribuir: proceso, red y falacias
 
 Este módulo no presupone que «microservicio» signifique Spring Boot, Docker o una API pequeña. Primero separas dos procesos y observas qué se pierde al cruzar la red: llamadas instantáneas, memoria compartida, resultado inequívoco y orden global.
 
@@ -20,7 +20,7 @@ Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java 
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 25** porque es la LTS fijada para el laboratorio de Microservicios. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve a Java M0 T1 antes de continuar.
+Usarás **JDK 27.0.1**. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve al curso Java, tema «Ejecutar el ciclo fuente-bytecode-proceso» antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 
@@ -136,17 +136,17 @@ Sin copiar el ejemplo, crea `src/ServidorVersion.java` que escuche en `127.0.0.1
 - [ ] Reproduzco y diagnostico el puerto ocupado sin cambiarlo al azar.
 - [ ] Entrego evidencia en `evidence/tema-1.txt`.
 
-Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Prerrequisito de:** M0 T2 (diagnosticar DNS, conexión y ruta HTTP). Fuente primaria: [Java 25 `HttpServer`](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
+Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Siguiente tema:** «Imponer un presupuesto temporal a una solicitud HTTP» (referencia interna M0 T2). Fuente primaria: [Java 27 `HttpServer`](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
 
 ### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min
 
-**Prerrequisito:** M0 T1 (ejecutar dos procesos Java y comprobar su socket HTTP).
+**Prerrequisito:** tema «Ejecutar dos procesos Java y comprobar su socket HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T1).
 
 **Al finalizar podrás:** medir por separado el tiempo de una respuesta saludable y una lenta, configurar límites para establecer una conexión y esperar una respuesta, identificar la excepción que corresponde a cada fase y explicar por qué abandonar la espera del cliente no cancela automáticamente el trabajo del servidor.
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor de M0 T1; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
+Usarás **JDK 27.0.1** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor del tema «Ejecutar dos procesos Java y comprobar su socket HTTP»; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 
@@ -319,13 +319,13 @@ Crea un endpoint `/variable?ms=N` que acepte únicamente valores entre 0 y 2000,
 - [ ] Demuestro que el servidor puede continuar después del abandono del cliente.
 - [ ] Justifico un límite mediante presupuesto y mediciones, no por intuición.
 
-Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desde una carpeta limpia. **Siguiente tema y prerrequisito de:** M0 T3 (propagar un deadline sin reiniciar el presupuesto). Fuentes primarias: [Java 27 `HttpClient`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html), [`HttpRequest.Builder.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)) y [`HttpTimeoutException`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpTimeoutException.html).
+Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desde una carpeta limpia. **Siguiente tema:** «Propagar un deadline absoluto entre servicios HTTP» (referencia interna M0 T3). Fuentes primarias: [Java 27 `HttpClient`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html), [`HttpRequest.Builder.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)) y [`HttpTimeoutException`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpTimeoutException.html).
 
 **Errores comunes:** interpretar todo timeout como «el servidor no hizo nada», medir solo el promedio, usar el timeout de conexión como límite total o aumentar valores sin observar saturación. **Fuentes oficiales:** la API de Java 27 enlazada arriba define el alcance y las excepciones; la elección numérica sigue dependiendo del presupuesto y de mediciones propias.
 
 ### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min
 
-**Prerrequisito:** M0 T2 (imponer un presupuesto temporal a una solicitud HTTP).
+**Prerrequisito:** tema «Imponer un presupuesto temporal a una solicitud HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T2).
 
 **Al finalizar podrás:** convertir un presupuesto del cliente en un instante límite, propagar el mismo valor por un gateway, calcular el tiempo restante en cada salto, reservar margen para responder y rechazar trabajo que ya no puede terminar de forma útil.
 
@@ -527,7 +527,7 @@ Añade una segunda dependencia de 200 ms después de tarifas sin cambiar el dead
 - [ ] Explico el límite de reloj, confianza y cancelación de efectos.
 - [ ] Reproduzco el fallo de reiniciar el presupuesto y lo diagnostico.
 
-Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema y prerrequisito de:** M0 T4 (clasificar un resultado desconocido antes de reintentar). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
+Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Clasificar un resultado desconocido antes de reintentar» (referencia interna M0 T4). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
 
 ### Tema 4: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min
 

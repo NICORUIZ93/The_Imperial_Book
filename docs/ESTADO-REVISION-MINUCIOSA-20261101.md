@@ -1022,3 +1022,15 @@ compilaron y ejecutaron tres procesos: 1200 ms produjo `HTTP_200 TARIFA=12000`; 
 El tema entra con perfil practicable y sin señales prioritarias de profundidad, pero permanece
 `pending` en el registro humano. La deuda humana aumenta en una unidad porque el currículo ganó
 un tema necesario; antes de continuar a M2 deben corregirse M0 T4–T6 y todo M1.
+
+## 33. Nombres comprensibles en lugar de códigos curriculares
+
+Fecha: 2026-11-13. Por instrucción del usuario, `M0`, `T2` y códigos similares dejan de ser el
+nombre visible de la continuidad. Los encabezados de Microservicios muestran ahora el nombre real
+del curso y del módulo. Prerrequisitos y siguientes temas presentan primero los nombres completos;
+el código permanece sólo entre paréntesis como referencia interna para validadores y enlaces.
+
+La regla quedó persistida en `MASTER-PROMPT.md` para todos los cursos. También se corrigió el
+primer laboratorio de Microservicios de JDK 25 a JDK 27.0.1 y su fuente a la API Java 27. Las
+rutas técnicas de carpetas (`m0-t1`, etc.) se conservan porque son identificadores reproducibles,
+no etiquetas pedagógicas que el estudiante deba interpretar.
