@@ -75,6 +75,38 @@ Un monitor establece exclusión mutua y orden de memoria para el bloque protegid
 
 Guarda el invariante antes y después y nombra el lock que lo protege. Fuente: [Java Language Specification, memoria entre hilos](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html).
 
+#### Fragmento real
+
+```java
+// src/Inventario.java
+public class Inventario {
+    private int disponibles;
+    private int reservados;
+
+    public synchronized boolean reservar() {
+        if (disponibles <= 0) return false;
+        disponibles--;
+        reservados++;
+        return true;
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Inventario.java
+java -cp out Inventario
+```
+
+**Conexión con el proyecto integrador:** el procesador concurrente de tu proyecto integrador (módulo 13) necesita exactamente este tipo de invariante protegido; dos hilos reservando la última guía disponible es el mismo problema que dos hilos reservando el último cupo de inventario aquí.
+
+**Límite:** `synchronized` protege el invariante dentro de un solo proceso; no coordina dos instancias de la aplicación corriendo en máquinas distintas contra la misma base de datos, donde se necesita bloqueo optimista o pesimista a nivel de base (como en JPA, módulo 16).
+
+#### Practica
+
+Modifica `reservar()` para que la comprobación `disponibles > 0` quede fuera del bloque `synchronized` y solo el decremento esté protegido; lanza varios hilos y explica por qué `disponibles` puede terminar en negativo.
+
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
 
 **¿Por qué es importante?** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
@@ -147,6 +179,41 @@ Un benchmark compara una pregunta acotada. La carga del servicio real puede camb
 
 Guarda salida, entorno, parámetros y conclusión provisional. Fuente: [OpenJDK JMH](https://openjdk.org/projects/code-tools/jmh/).
 
+#### Fragmento real
+
+```java
+// src/main/java/BusquedaBenchmark.java
+@State(Scope.Thread)
+public class BusquedaBenchmark {
+    private int[] datos;
+
+    @Setup
+    public void preparar() { datos = /* arreglo ordenado preparado */ new int[0]; }
+
+    @Benchmark
+    public int busquedaBinaria(Blackhole bh) {
+        int indice = Arrays.binarySearch(datos, 42);
+        bh.consume(indice);
+        return indice;
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+mvn clean verify
+java -jar target/benchmarks.jar -wi 2 -i 3 -f 1
+```
+
+**Conexión con el proyecto integrador:** antes de optimizar el procesamiento concurrente del proyecto integrador (módulo 13), mide con JMH si el cambio realmente mejora algo; un `System.nanoTime()` suelto alrededor del código del proyecto puede llevarte a "optimizar" algo que la JIT ya eliminaba.
+
+**Límite:** JMH mide una operación acotada con datos preparados; no reproduce la presión real de GC, red o contención de un servicio en producción — por eso el Tema 1 insiste en comparar bajo carga real con JFR, no solo con el número que imprime JMH.
+
+#### Practica
+
+Modifica el benchmark para quitar `Blackhole.consume` y usa solo `System.out.println` fuera del método medido; ejecuta de nuevo y explica por qué el tiempo reportado puede caer a casi cero.
+
 ### Tema 3: Deserializar es permitir construcción y comportamiento
 
 **¿Por qué es importante?** datos serializados pueden intentar construir tipos inesperados; limitar la entrada antes de aceptar objetos es más seguro que confiar en su origen.
@@ -217,6 +284,32 @@ Seguridad requiere límite de entrada, contrato de tipos y validación semántic
 
 Conserva los dos tests fallidos y el límite adoptado.
 
+#### Fragmento real
+
+```java
+// src/EntradaJson.java
+public record Registro(String guia, String estado) {}
+
+// Jackson con un esquema cerrado: rechaza campos no declarados
+ObjectMapper mapper = JsonMapper.builder()
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+    .build();
+```
+
+Ejecuta:
+
+```bash
+mvn test
+```
+
+**Conexión con el proyecto integrador:** cuando el proyecto integrador reciba datos externos (una API de terceros, un archivo subido), este es el contrato que necesita: un DTO cerrado con límite de tamaño, no `ObjectInputStream` ni un mapa abierto que acepte cualquier campo.
+
+**Límite:** un esquema JSON cerrado evita construir clases arbitrarias, pero no reemplaza el límite de tamaño de entrada (Subtema 3.3, un JSON de 2 campos puede venir envuelto en un archivo de varios gigabytes) ni la validación semántica de cada campo (una guía con formato válido pero inexistente).
+
+#### Practica
+
+Modifica el mapper para que acepte campos desconocidos (`FAIL_ON_UNKNOWN_PROPERTIES, false`) y envía un JSON con un campo extra; confirma que se acepta en silencio y decide si eso es aceptable para tu caso.
+
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
 
 **¿Por qué es importante?** el JDK, los módulos incluidos y el proceso de actualización forman parte de lo que se despliega.
@@ -286,6 +379,22 @@ El runtime personalizado es un artefacto versionado, no una carpeta desechable q
 **4. Cierra**
 
 Guarda versión antigua y nueva, smoke test y responsable de actualización.
+
+#### Fragmento real
+
+```bash
+jdeps --multi-release 25 --print-module-deps target/rutas.jar
+jlink --add-modules academia.rutas --module-path "$JAVA_HOME/jmods:out" --output runtime-rutas
+cd runtime-rutas/bin && java -m academia.rutas/academia.rutas.app.Main
+```
+
+**Conexión con el proyecto integrador:** si empaquetas tu proyecto integrador para distribuirlo (un contenedor, un instalador), `jdeps` + `jlink` producen un runtime del tamaño real que usa tu aplicación, no el JDK completo.
+
+**Límite:** `jdeps` detecta dependencias estáticas; si el proyecto integrador usa reflexión (Jackson, frameworks) o carga dinámica de clases, puede necesitar módulos que `jdeps` no reporta — prueba siempre el runtime reducido antes de confiar en él.
+
+#### Practica
+
+Modifica el comando `jlink` para omitir un módulo que la aplicación sí necesita, intenta arrancar el runtime resultante y registra el mensaje de error exacto antes de corregirlo.
 
 ---
 

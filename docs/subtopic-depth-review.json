@@ -13637,7 +13637,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Declara un módulo pequeño · 10 min",
         "Subtema 1.2: Ejecuta una aplicación modular · 10 min",
-        "Subtema 1.3: Distingue public de exported · 10 min"
+        "Subtema 1.3: Distingue public de exported · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13653,7 +13654,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Inspecciona un JAR antes de modularizar · 10 min",
         "Subtema 2.2: Migra un consumidor por etapas · 10 min",
-        "Subtema 2.3: Decide si JPMS resuelve un problema real · 10 min"
+        "Subtema 2.3: Decide si JPMS resuelve un problema real · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13669,7 +13671,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Distingue exports de opens · 10 min",
         "Subtema 3.2: Limita la apertura a un consumidor · 10 min",
-        "Subtema 3.3: Diagnostica una reflexión bloqueada · 10 min"
+        "Subtema 3.3: Diagnostica una reflexión bloqueada · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -13839,7 +13842,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Separa entrada, caso de uso y dominio · 10 min",
         "Subtema 1.2: Invierte la dependencia del repositorio · 10 min",
-        "Subtema 1.3: Expón una frontera de entrada · 10 min"
+        "Subtema 1.3: Expón una frontera de entrada · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -13853,7 +13857,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Envía trabajos acotados a un executor · 10 min",
         "Subtema 2.2: Conserva el orden y diagnostica una tarea fallida · 10 min",
-        "Subtema 2.3: Prueba coordinación sin Thread.sleep · 10 min"
+        "Subtema 2.3: Prueba coordinación sin Thread.sleep · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13869,7 +13874,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Fija herramientas y dependencias · 10 min",
         "Subtema 3.2: Arranca desde una copia limpia · 10 min",
-        "Subtema 3.3: Cierra con evidencia verificable · 10 min"
+        "Subtema 3.3: Cierra con evidencia verificable · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13885,7 +13891,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Detén un hilo con un flag visible · 10 min",
         "Subtema 1.2: Distingue visibilidad de atomicidad · 10 min",
-        "Subtema 1.3: Protege un invariante con synchronized · 10 min"
+        "Subtema 1.3: Protege un invariante con synchronized · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13901,7 +13908,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Observa por qué un cronómetro ingenuo engaña · 10 min",
         "Subtema 2.2: Escribe un benchmark consumible por JMH · 10 min",
-        "Subtema 2.3: Compara algoritmos con el mismo trabajo · 10 min"
+        "Subtema 2.3: Compara algoritmos con el mismo trabajo · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13917,7 +13925,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Reconoce por qué evitar datos nativos no confiables · 10 min",
         "Subtema 3.2: Filtra un formato legado · 10 min",
-        "Subtema 3.3: Limita tamaño y valida después de parsear · 10 min"
+        "Subtema 3.3: Limita tamaño y valida después de parsear · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13933,7 +13942,8 @@
       "semanticHeadings": [
         "Subtema 4.1: Averigua qué módulos necesita el programa · 10 min",
         "Subtema 4.2: Construye un runtime mínimo con jlink · 10 min",
-        "Subtema 4.3: Actualiza y valida el runtime como artefacto · 10 min"
+        "Subtema 4.3: Actualiza y valida el runtime como artefacto · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14039,7 +14049,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Guarda una relación de cliente y pedido · 10 min",
         "Subtema 1.2: Protege la referencia obligatoria · 10 min",
-        "Subtema 1.3: Elige la cascada según historial · 10 min"
+        "Subtema 1.3: Elige la cascada según historial · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14055,7 +14066,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Accede a una relación lazy en su contexto · 10 min",
         "Subtema 2.2: Cuenta las consultas N+1 · 10 min",
-        "Subtema 2.3: Elige datos para cada pantalla · 10 min"
+        "Subtema 2.3: Elige datos para cada pantalla · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14071,7 +14083,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Impide dos perfiles para el mismo cliente · 10 min",
         "Subtema 3.2: Modela una línea como entidad · 10 min",
-        "Subtema 3.3: Inspecciona una estrategia de herencia · 10 min"
+        "Subtema 3.3: Inspecciona una estrategia de herencia · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14087,7 +14100,8 @@
       "semanticHeadings": [
         "Subtema 4.1: Separa flush de clear · 10 min",
         "Subtema 4.2: Consulta entidades con JPQL · 10 min",
-        "Subtema 4.3: Reconoce una entidad separada · 10 min"
+        "Subtema 4.3: Reconoce una entidad separada · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14103,7 +14117,8 @@
       "semanticHeadings": [
         "Subtema 5.1: Busca por prefijo con Criteria · 10 min",
         "Subtema 5.2: Combina filtros opcionales · 10 min",
-        "Subtema 5.3: Prueba Querydsl con Jakarta · 10 min"
+        "Subtema 5.3: Prueba Querydsl con Jakarta · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14119,7 +14134,8 @@
       "semanticHeadings": [
         "Subtema 6.1: Carga detalle con EntityGraph · 10 min",
         "Subtema 6.2: Observa el caché de primer nivel · 10 min",
-        "Subtema 6.3: Mide antes de activar caché de segundo nivel · 10 min"
+        "Subtema 6.3: Mide antes de activar caché de segundo nivel · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14135,7 +14151,8 @@
       "semanticHeadings": [
         "Subtema 7.1: Detecta una actualización perdida · 10 min",
         "Subtema 7.2: Revierte un agregado completo · 10 min",
-        "Subtema 7.3: Compara lock optimista y pesimista · 10 min"
+        "Subtema 7.3: Compara lock optimista y pesimista · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14151,7 +14168,8 @@
       "semanticHeadings": [
         "Subtema 8.1: Versiona un cambio de esquema · 10 min",
         "Subtema 8.2: Ejecuta integración contra PostgreSQL · 10 min",
-        "Subtema 8.3: Comprueba rollback fuera del contexto viejo · 10 min"
+        "Subtema 8.3: Comprueba rollback fuera del contexto viejo · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -15291,7 +15309,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Compila una clase con Maven · 10 min",
         "Subtema 1.2: Declara el mismo proyecto con Gradle · 10 min",
-        "Subtema 1.3: Fija una dependencia directa · 10 min"
+        "Subtema 1.3: Fija una dependencia directa · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -15307,7 +15326,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Sigue las fases de Maven · 10 min",
         "Subtema 2.2: Mantén JUnit en test scope · 10 min",
-        "Subtema 2.3: Inspecciona scopes en Gradle · 10 min"
+        "Subtema 2.3: Inspecciona scopes en Gradle · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -15323,7 +15343,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Separa modelo y aplicación con Maven · 10 min",
         "Subtema 3.2: Encuentra y rompe un ciclo · 10 min",
-        "Subtema 3.3: Construye solo lo que necesita cambio · 10 min"
+        "Subtema 3.3: Construye solo lo que necesita cambio · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -15353,7 +15374,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Escribe y ejecuta tu primera prueba · 10 min",
         "Subtema 1.2: Prepara datos para cada prueba · 10 min",
-        "Subtema 1.3: Comprueba errores esperados · 10 min"
+        "Subtema 1.3: Comprueba errores esperados · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -15369,7 +15391,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Simula un repositorio · 10 min",
         "Subtema 2.2: Verifica una interacción necesaria · 10 min",
-        "Subtema 2.3: Simula un error externo · 10 min"
+        "Subtema 2.3: Simula un error externo · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -15383,7 +15406,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Comprueba varios casos con CSV · 10 min",
         "Subtema 3.2: Encuentra una rama no probada · 10 min",
-        "Subtema 3.3: Lee una métrica sin perseguir el porcentaje · 10 min"
+        "Subtema 3.3: Lee una métrica sin perseguir el porcentaje · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"

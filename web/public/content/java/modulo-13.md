@@ -75,6 +75,34 @@ Identifica qué cambiarías para añadir una API distinta sin reescribir `CrearG
 
 **Traza una petición:** sigue `POST /envios` desde controlador a caso de uso, dominio y repositorio. El controlador traduce HTTP; el caso de uso coordina; el dominio protege reglas como peso positivo; el repositorio guarda. Prueba la regla de peso sin levantar servidor y prueba HTTP por separado. Dibuja dependencias desde los imports: si dominio importa Spring o SQL, una regla central depende de un mecanismo externo. Asigna una responsabilidad observable a cada capa. Fuente: https://docs.spring.io/spring-modulith/reference/fundamentals.html.
 
+#### Fragmento real
+
+```java
+// src/domain/Guia.java
+public record Guia(String numero) {
+    public Guia {
+        if (numero == null || numero.isBlank()) {
+            throw new IllegalArgumentException("numero vacio");
+        }
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/domain/Guia.java src/application/CrearGuia.java src/Main.java
+java -cp out Main
+```
+
+**Conexión con el proyecto integrador:** esta arquitectura por capas (entrada → caso de uso → dominio → repositorio) ES el esqueleto de tu proyecto integrador completo, no un ejercicio aparte; cada módulo anterior (records, concurrencia, testing, builds) se ensambla exactamente aquí.
+
+**Límite:** separar en capas protege el dominio de detalles externos, pero no evita por sí solo el acoplamiento si el dominio termina importando tipos de Spring o de la capa web; revisa los imports, no solo los nombres de las carpetas.
+
+#### Practica
+
+Modifica `CrearGuia` para que reciba directamente un `HttpServletRequest` en vez del número ya extraído, y explica por escrito qué se rompe al intentar probar el caso de uso sin un servidor.
+
 ### Tema 2: Integrando concurrencia, modelado y testing
 
 **¿Por qué es importante?** la concurrencia debe preservar las reglas de dominio y probar resultados sin depender de pausas arbitrarias.
@@ -146,6 +174,33 @@ Las pruebas concurrentes deben controlar orden y límite de espera, no adivinar 
 Conserva la prueba, la señal de coordinación y el timeout que usarías en CI.
 
 **Prueba el caso concurrente:** inicia dos reservas para la última unidad y comprueba que solo una confirme. Controla el executor y espera cada `Future`; `Thread.sleep` no sincroniza y puede ocultar la carrera. Repite el escenario en secuencia para separar un defecto del modelo de uno de coordinación. Si importa el orden, conserva un identificador y el estado observado por cada tarea. La salida debe poder repetirse con datos fijos y un límite de espera claro. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html.
+
+#### Fragmento real
+
+```java
+// src/application/ProcesarGuias.java
+try (var executor = Executors.newFixedThreadPool(2)) {
+    List<Future<String>> futuros = guias.stream()
+        .map(guia -> executor.submit(() -> procesar(guia)))
+        .toList();
+    // recoger cada Future.get() conservando el orden de entrada
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/application/ProcesarGuias.java src/Main.java
+java -cp out Main
+```
+
+**Conexión con el proyecto integrador:** el reporte concurrente de guías de este tema es el procesamiento por lotes que tu proyecto integrador necesita para no bloquear una petición mientras calcula resultados para muchos envíos a la vez.
+
+**Límite:** un pool fijo de 2 hilos limita la concurrencia pero no elimina condiciones de carrera si varias tareas comparten una colección mutable sin sincronizar; el aislamiento de datos por tarea (Subtema 2.1) importa tanto como el límite de hilos.
+
+#### Practica
+
+Modifica el Subtema 2.3 para reemplazar el `CountDownLatch` por `Thread.sleep(2000)` y ejecuta el test varias veces seguidas; identifica en qué condición de carga empieza a fallar de forma intermitente.
 
 ### Tema 3: Build reproducible y cierre del track
 
@@ -219,6 +274,22 @@ Entrega una lista de lo que sí ejecutaste y lo que todavía necesita revisión 
 
 
 **Cierre reproducible:** desde un checkout limpio ejecuta `./mvnw clean verify` o `./gradlew clean check`. Anota la versión del wrapper y JDK; confirma que no necesitas archivos generados a mano antes del build. Si solo funciona en tu carpeta, revisa rutas relativas, configuración local y artefactos no versionados. El comando y sus requisitos deben bastar para que otra persona reconstruya el proyecto. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
+
+#### Fragmento real
+
+```bash
+mvn wrapper:wrapper
+./mvnw --version
+./mvnw clean verify
+```
+
+**Conexión con el proyecto integrador:** este es literalmente el cierre de tu proyecto integrador: el wrapper versionado, el build limpio desde una copia nueva y la evidencia verificable son lo que entregas al final del track, no un ejercicio adicional sobre otro programa.
+
+**Límite:** `./mvnw clean verify` prueba que el proyecto compila y pasa sus tests en tu máquina (o en CI); no certifica que el diseño sea correcto ni sustituye una revisión humana del dominio y la arquitectura (Subtema 3.3 lo distingue explícitamente).
+
+#### Practica
+
+Modifica temporalmente una versión de dependencia en `pom.xml` a un rango abierto (`[1.0,)`) en vez de una versión fija, ejecuta `./mvnw clean verify` dos veces separadas en el tiempo y explica por qué eso pone en riesgo la reproducibilidad.
 
 ---
 

@@ -73,6 +73,32 @@ Una dependencia directa debe tener versión controlada. Las transitivas que trae
 
 Guarda el árbol de dependencias de una herramienta. Fuentes: [guía Maven](https://maven.apache.org/guides/) y [manual Gradle](https://docs.gradle.org/current/userguide/).
 
+#### Fragmento real
+
+```java
+// src/main/java/Saludo.java
+public class Saludo {
+    public static void main(String[] args) {
+        System.out.println("Ruta lista");
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+mvn package
+java -cp target/classes Saludo
+```
+
+**Conexión con el proyecto integrador:** este mismo esqueleto de `pom.xml`/`build.gradle.kts` (coordenadas, dependencias, plugin de compilación) es el que vas a usar para compilar tu proyecto integrador del track (el motor de asignación de entregas), no solo este ejemplo de bolsillo.
+
+**Límite:** esta comparación asume un solo módulo sin dependencias externas conflictivas; con varios módulos (Tema 3) o árboles de dependencias transitivas, elegir entre Maven y Gradle deja de ser solo una diferencia de sintaxis XML/Kotlin.
+
+#### Practica
+
+Modifica `maven.compiler.release` a una versión de JDK que no tengas instalada y repite `mvn package`; confirma el mensaje de error antes de restaurar el valor original.
+
 ### Tema 2: Ciclo de vida de build y scopes
 
 **¿Por qué es importante?** una dependencia de prueba no debe filtrarse al artefacto de producción.
@@ -144,6 +170,33 @@ En `build.gradle.kts` agrega JUnit a `testImplementation`, activa `useJUnitPlatf
 Anota una diferencia entre `implementation` y `testImplementation`.
 
 **Compara classpaths:** `mvn package` ejecuta fases previas y genera artefacto; scope `test` solo participa en pruebas. En Gradle, `testImplementation` expresa una intención parecida y `runtimeClasspath` muestra lo disponible al ejecutar. No supongas que un JAR normal incluye todas sus dependencias: revisa cómo se empaqueta y qué comando lo inicia. Así evitas filtrar JUnit a producción o desplegar sin una librería necesaria. Fuentes: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html y https://docs.gradle.org/current/userguide/declaring_configurations.html.
+
+#### Fragmento real
+
+```xml
+<!-- pom.xml: JUnit solo disponible para pruebas -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.11.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
+Ejecuta:
+
+```bash
+mvn clean compile test package
+jar tf target/rutas-1.0.jar
+```
+
+**Conexión con el proyecto integrador:** separar dependencias de producción y de prueba con `scope`/`testImplementation` es exactamente lo que necesitarás en el proyecto integrador para que el JAR que despliegas no cargue JUnit ni Mockito en producción.
+
+**Límite:** el ciclo de vida y los scopes describen una sola compilación; no sustituyen un plan de CI con cacheo de dependencias ni resuelven builds multi-módulo (Tema 3), donde el orden entre módulos también importa.
+
+#### Practica
+
+Modifica el scope de JUnit de `test` a `compile` en `pom.xml`, corre `mvn package` y abre el JAR con `jar tf` para confirmar que ahora sí se filtró al artefacto de producción. Restaura el scope correcto después.
 
 ### Tema 3: Proyectos multi-módulo
 
@@ -217,6 +270,27 @@ Registra el comando que usarías en CI para validar la app y sus dependencias.
 
 **Crea módulos por frontera:** separa `modelo` y `app` si la aplicación consume el modelo, no solo porque haya carpetas distintas. Revisa dependencias con `mvn dependency:tree` o `./gradlew :app:dependencies`; el módulo compartido no debe depender de la aplicación. El orden del build sale de esas relaciones declaradas, no de ejecutar comandos en un orden memorizado. Fuentes: https://maven.apache.org/guides/mini/guide-multiple-modules.html y https://docs.gradle.org/current/userguide/multi_project_builds.html.
 
+#### Fragmento real
+
+```xml
+<!-- app/pom.xml: app depende del módulo compartido modelo -->
+<dependency>
+    <groupId>academia</groupId>
+    <artifactId>modelo</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+Ejecuta:
+
+```bash
+mvn -q -pl app -am package
+```
+
+**Conexión con el proyecto integrador:** el proyecto integrador de java ("Motor de asignación de entregas") necesita esta misma separación en módulos (dominio vs. aplicación) para que las reglas de asignación no dependan de detalles de entrada/salida.
+
+**Límite:** `-pl -am` solo construye lo que falta en el reactor actual; en CI, sin repositorio local ya poblado, hay que construir el árbol completo al menos una vez o declarar explícitamente qué módulos se cachean entre builds.
+
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
 
 **¿Por qué es importante?** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
@@ -288,6 +362,21 @@ Maven ofrece convenciones estrictas; Gradle da un DSL programable y wrapper. Nin
 Entrega la nota y la razón de la elección. Fuentes: [Maven](https://maven.apache.org/guides/) y [Gradle](https://docs.gradle.org/current/userguide/).
 
 En esa nota registra versión del JDK, versión de ambos wrappers, comando exacto y salida del test. Si el resultado difiere, compara primero las dependencias resueltas y los argumentos de ejecución. No elijas por una sola medición de duración: repite los builds limpios y considera qué formato entiende y puede mantener el equipo. Revisa también cómo cada herramienta incorpora pruebas y dependencias al artefacto final.
+
+Ejecuta ambos para comparar:
+
+```bash
+mvn clean test
+./gradlew clean test
+```
+
+**Conexión con el proyecto integrador:** la decisión que documentes aquí (Maven o Gradle, y por qué) es la que vas a aplicar al construir el proyecto integrador real del track, no solo a este ejemplo de `Saludo`.
+
+**Límite:** una comparación de dos ejecuciones locales no reemplaza medir en CI con caché frío; la herramienta "más rápida" en tu máquina puede no serlo con el runner y la red del pipeline real.
+
+#### Practica
+
+Modifica el texto esperado del test solo en el proyecto Maven (no en el Gradle), ejecuta ambos y confirma que detectas cuál build falla sin mirar el nombre de la carpeta primero.
 
 ---
 

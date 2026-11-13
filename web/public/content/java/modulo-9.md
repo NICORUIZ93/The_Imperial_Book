@@ -75,6 +75,30 @@ Una prueba de error debe comprobar el tipo de fallo que forma parte del contrato
 
 Guarda el test válido y el fallo deliberado. Fuente: [anotaciones y assertions JUnit](https://docs.junit.org/current/user-guide/).
 
+#### Fragmento real
+
+```java
+// src/test/java/TarifaTest.java
+@Test
+void paquetePequenoCuestaCuatroMil() {
+    assertEquals(4000, Tarifa.calcular(300));
+}
+```
+
+Ejecuta:
+
+```bash
+mvn test
+```
+
+**Conexión con el proyecto integrador:** cada regla del motor de asignación de entregas (tu proyecto integrador) necesita un test como este antes de confiar en que la lógica no se rompió con el siguiente cambio.
+
+**Límite:** un test de este tamaño prueba una sola regla aislada; no detecta errores de integración entre varias reglas ni problemas de concurrencia, que exigen pruebas distintas (módulos posteriores).
+
+#### Practica
+
+Modifica `Tarifa.calcular` para que el límite sea `<` en vez de `<=` y ejecuta `mvn test` de nuevo; confirma cuál de los tres casos deja de pasar y por qué.
+
 ### Tema 2: Mockito — aislar dependencias
 
 **¿Por qué es importante?** una prueba de servicio debe poder comprobar una regla de negocio sin arrancar una base de datos ni llamar una API real.
@@ -147,6 +171,37 @@ El mock permite probar fallos raros sin apagar servicios reales; no demuestra po
 
 Guarda el resultado esperado y el error distinguido. Fuente: [documentación Mockito](https://github.com/mockito/mockito).
 
+#### Fragmento real
+
+```java
+// src/test/java/ServicioRutasTest.java
+@ExtendWith(MockitoExtension.class)
+class ServicioRutasTest {
+    @Mock RutaRepository repo;
+
+    @Test
+    void devuelveElEstadoDeLaRuta() {
+        when(repo.buscar("RT-1")).thenReturn(Optional.of(new Ruta("RT-1", "EN_RUTA")));
+        // ... servicio.buscar("RT-1") y la aserción sobre el estado
+        verify(repo).buscar("RT-1");
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+mvn test
+```
+
+**Conexión con el proyecto integrador:** en el motor de asignación de entregas, mockear el repositorio de rutas/guías es lo que te permite probar la lógica de asignación sin levantar la base de datos real en cada ejecución del test.
+
+**Límite:** un mock prueba que tu servicio llama al colaborador como esperas; no prueba que el repositorio real (JDBC, JPA) se comporte igual — eso exige una prueba de integración aparte (módulo 16).
+
+#### Practica
+
+Modifica el stub para que `repo.buscar("RT-1")` devuelva `Optional.empty()` en vez de una ruta, corre `mvn test` y decide qué debería responder `servicio.buscar` ante ese caso.
+
 ### Tema 3: Tests parametrizados y cobertura
 
 **¿Por qué es importante?** una regla con límites debe comprobar entradas representativas; la cobertura ayuda a encontrar código aún no ejercitado, pero no demuestra que el test sea correcto.
@@ -218,6 +273,31 @@ Combina cobertura de ramas con límites, errores y comportamiento de negocio exp
 **4. Cierra**
 
 Guarda el reporte y explica un límite de esa métrica. Fuentes: [JUnit User Guide](https://docs.junit.org/current/user-guide/) y [JaCoCo Java 25](https://www.jacoco.org/jacoco/trunk/doc/changes.html).
+
+#### Fragmento real
+
+```java
+// src/test/java/TarifaTest.java
+@ParameterizedTest
+@CsvSource({"100, 4000", "500, 4000", "501, 7000"})
+void calculaTarifa(int gramos, int esperado) {
+    assertEquals(esperado, Tarifa.calcular(gramos));
+}
+```
+
+Ejecuta:
+
+```bash
+mvn verify
+```
+
+**Conexión con el proyecto integrador:** las tarifas y reglas de asignación del proyecto integrador tienen varios casos límite (peso exacto, cero guías, capacidad llena); `@CsvSource` evita escribir un método de test por cada combinación.
+
+**Límite:** un reporte de cobertura al 100% no certifica que las aserciones sean correctas (Subtema 3.3); solo dice qué líneas se ejecutaron, no si el test habría detectado un resultado equivocado.
+
+#### Practica
+
+Modifica el valor esperado de la fila `"501, 7000"` a `"501, 4000"` (incorrecto a propósito), ejecuta `mvn test` y confirma que JUnit reporta la fila fallida con ambos valores.
 
 ---
 

@@ -4444,7 +4444,7 @@
         "https://openjdk.org/jeps/261"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 76,
+      "line": 100,
       "originalProseUrls": [
         "https://openjdk.org/jeps/261"
       ],
@@ -4583,7 +4583,7 @@
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 78,
+      "line": 110,
       "originalProseUrls": [
         "https://openjdk.org/projects/code-tools/jmh/"
       ],
@@ -4598,7 +4598,7 @@
         "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 150,
+      "line": 217,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html"
       ],
@@ -4614,7 +4614,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 220,
+      "line": 313,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/",
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
@@ -4744,7 +4744,7 @@
         "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 91,
+      "line": 124,
       "originalProseUrls": [
         "https://docs.hibernate.org/orm/6.6/introduction/html_single/",
         "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph"
@@ -4940,7 +4940,7 @@
         "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 76,
+      "line": 102,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/declaring_configurations.html",
         "https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html"
@@ -4957,7 +4957,7 @@
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 148,
+      "line": 201,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/multi_project_builds.html",
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html"
@@ -4974,7 +4974,7 @@
         "https://maven.apache.org/guides/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 220,
+      "line": 294,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/",
         "https://maven.apache.org/guides/"
@@ -5001,7 +5001,7 @@
       "topic": "Tema 2: Mockito — aislar dependencias",
       "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 78,
+      "line": 102,
       "originalProseUrls": [
         "https://github.com/mockito/mockito",
         "https://github.com/mockito/mockito/releases"
@@ -5017,7 +5017,7 @@
         "https://www.jacoco.org/jacoco/trunk/doc/changes.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 150,
+      "line": 205,
       "originalProseUrls": [
         "https://docs.junit.org/current/user-guide/",
         "https://www.jacoco.org/jacoco/trunk/doc/changes.html"

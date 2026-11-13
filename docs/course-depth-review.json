@@ -4,7 +4,7 @@
     "tracks": 15,
     "modules": 291,
     "topics": 1323,
-    "topicsWithSignals": 296,
+    "topicsWithSignals": 274,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
@@ -9465,9 +9465,7 @@
       "title": "Tema 1: module-info.java y encapsulación fuerte",
       "file": "web/public/content/java/modulo-10.md",
       "line": 6,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9478,10 +9476,8 @@
       "module": 10,
       "title": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 76,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 100,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9492,10 +9488,8 @@
       "module": 10,
       "title": "Tema 3: opens para acceso reflexivo controlado de frameworks",
       "file": "web/public/content/java/modulo-10.md",
-      "line": 148,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 188,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9647,9 +9641,7 @@
       "title": "Tema 1: Arquitectura por capas del proyecto integrador",
       "file": "web/public/content/java/modulo-13.md",
       "line": 6,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9660,10 +9652,8 @@
       "module": 13,
       "title": "Tema 2: Integrando concurrencia, modelado y testing",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 78,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 106,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9674,10 +9664,8 @@
       "module": 13,
       "title": "Tema 3: Build reproducible y cierre del track",
       "file": "web/public/content/java/modulo-13.md",
-      "line": 150,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 205,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9689,9 +9677,7 @@
       "title": "Tema 1: Compartir memoria requiere orden y visibilidad",
       "file": "web/public/content/java/modulo-14.md",
       "line": 8,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9702,10 +9688,8 @@
       "module": 14,
       "title": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 78,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 110,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9716,10 +9700,8 @@
       "module": 14,
       "title": "Tema 3: Deserializar es permitir construcción y comportamiento",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 150,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 217,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9730,10 +9712,8 @@
       "module": 14,
       "title": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "file": "web/public/content/java/modulo-14.md",
-      "line": 220,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 313,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9829,9 +9809,7 @@
       "title": "Tema 1: Entidades y relaciones JPA",
       "file": "web/public/content/java/modulo-16.md",
       "line": 14,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9842,10 +9820,8 @@
       "module": 16,
       "title": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 91,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 124,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9856,10 +9832,8 @@
       "module": 16,
       "title": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 165,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 221,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9870,7 +9844,7 @@
       "module": 16,
       "title": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 239,
+      "line": 325,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9884,10 +9858,8 @@
       "module": 16,
       "title": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 315,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 422,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9898,10 +9870,8 @@
       "module": 16,
       "title": "Tema 6: EntityGraph y cachés de persistencia",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 391,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 523,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9912,10 +9882,8 @@
       "module": 16,
       "title": "Tema 7: Concurrencia, transacciones y propagación",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 465,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 623,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9926,7 +9894,7 @@
       "module": 16,
       "title": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
       "file": "web/public/content/java/modulo-16.md",
-      "line": 541,
+      "line": 725,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10689,9 +10657,7 @@
       "title": "Tema 1: pom.xml vs build.gradle.kts",
       "file": "web/public/content/java/modulo-8.md",
       "line": 6,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10702,10 +10668,8 @@
       "module": 8,
       "title": "Tema 2: Ciclo de vida de build y scopes",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 76,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 102,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10716,7 +10680,7 @@
       "module": 8,
       "title": "Tema 3: Proyectos multi-módulo",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 148,
+      "line": 201,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10730,10 +10694,8 @@
       "module": 8,
       "title": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
       "file": "web/public/content/java/modulo-8.md",
-      "line": 220,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 294,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10745,9 +10707,7 @@
       "title": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
       "file": "web/public/content/java/modulo-9.md",
       "line": 6,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10758,10 +10718,8 @@
       "module": 9,
       "title": "Tema 2: Mockito — aislar dependencias",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 78,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 102,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10772,10 +10730,8 @@
       "module": 9,
       "title": "Tema 3: Tests parametrizados y cobertura",
       "file": "web/public/content/java/modulo-9.md",
-      "line": 150,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 205,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,

@@ -143,16 +143,16 @@
     "java": {
       "topics": 111,
       "explanation": 111,
-      "code": 72,
+      "code": 97,
       "visual": 19,
       "filePath": 111,
-      "runCommand": 53,
+      "runCommand": 76,
       "expectedResult": 111,
-      "practice": 64,
-      "project": 51,
+      "practice": 83,
+      "project": 75,
       "modelMental": 111,
-      "limitsDecision": 72,
-      "practicable": 42,
+      "limitsDecision": 88,
+      "practicable": 67,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -17320,19 +17320,19 @@
         "topic": "Tema 1: module-info.java y encapsulación fuerte",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17342,19 +17342,19 @@
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17364,19 +17364,19 @@
         "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17606,19 +17606,19 @@
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
+          "practice": true,
           "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17628,19 +17628,19 @@
         "topic": "Tema 2: Integrando concurrencia, modelado y testing",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17650,19 +17650,19 @@
         "topic": "Tema 3: Build reproducible y cierre del track",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17672,19 +17672,19 @@
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17694,19 +17694,19 @@
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17716,19 +17716,19 @@
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 8,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17738,19 +17738,19 @@
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17892,19 +17892,19 @@
         "topic": "Tema 1: Entidades y relaciones JPA",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17914,19 +17914,19 @@
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17936,19 +17936,19 @@
         "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17958,19 +17958,19 @@
         "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -17980,19 +17980,19 @@
         "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -18002,19 +18002,19 @@
         "topic": "Tema 6: EntityGraph y cachés de persistencia",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -18024,19 +18024,19 @@
         "topic": "Tema 7: Concurrencia, transacciones y propagación",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -18046,19 +18046,19 @@
         "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19344,19 +19344,19 @@
         "topic": "Tema 1: pom.xml vs build.gradle.kts",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
           "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19366,19 +19366,19 @@
         "topic": "Tema 2: Ciclo de vida de build y scopes",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19388,19 +19388,19 @@
         "topic": "Tema 3: Proyectos multi-módulo",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19410,19 +19410,19 @@
         "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19432,19 +19432,19 @@
         "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
           "practice": true,
-          "project": false,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 7,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19454,19 +19454,19 @@
         "topic": "Tema 2: Mockito — aislar dependencias",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
-          "limitsDecision": false
+          "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 5,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }
@@ -19476,19 +19476,19 @@
         "topic": "Tema 3: Tests parametrizados y cobertura",
         "criteria": {
           "explanation": true,
-          "code": false,
+          "code": true,
           "visual": false,
           "filePath": true,
-          "runCommand": false,
+          "runCommand": true,
           "expectedResult": true,
-          "practice": false,
-          "project": false,
+          "practice": true,
+          "project": true,
           "modelMental": true,
           "limitsDecision": true
         },
         "classification": {
-          "rubricScore": 6,
-          "practicable": false,
+          "rubricScore": 14,
+          "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
         }

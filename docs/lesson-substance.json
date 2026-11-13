@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "466a3af28c53a68742a9570364859d39456e50b2f6498c0c60da3b76ec7d85da",
+    "fingerprint": "af8a908f98520cbab55f2c4369d8471bb44087346ecddaa48043e0736288ab60",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7301,21 +7301,21 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 1: module-info.java y encapsulación fuerte",
-        "words": 512
+        "words": 667
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-        "words": 560
+        "words": 706
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
-        "words": 593
+        "words": 739
       },
       {
         "issues": [],
@@ -7392,49 +7392,49 @@
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-        "words": 607
+        "words": 762
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-        "words": 575
+        "words": 737
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 3: Build reproducible y cierre del track",
-        "words": 542
+        "words": 680
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-        "words": 524
+        "words": 681
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-        "words": 467
+        "words": 650
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-        "words": 489
+        "words": 649
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-        "words": 465
+        "words": 599
       },
       {
         "issues": [],
@@ -7483,56 +7483,56 @@
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 1: Entidades y relaciones JPA",
-        "words": 467
+        "words": 632
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-        "words": 468
+        "words": 625
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
-        "words": 465
+        "words": 617
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
-        "words": 504
+        "words": 634
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
-        "words": 494
+        "words": 663
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 6: EntityGraph y cachés de persistencia",
-        "words": 465
+        "words": 637
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 7: Concurrencia, transacciones y propagación",
-        "words": 487
+        "words": 633
       },
       {
         "issues": [],
         "module": 16,
         "tailWords": 0,
         "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
-        "words": 492
+        "words": 602
       },
       {
         "issues": [],
@@ -7945,49 +7945,49 @@
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 1: pom.xml vs build.gradle.kts",
-        "words": 456
+        "words": 596
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 2: Ciclo de vida de build y scopes",
-        "words": 472
+        "words": 627
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 3: Proyectos multi-módulo",
-        "words": 530
+        "words": 637
       },
       {
         "issues": [],
         "module": 8,
         "tailWords": 0,
         "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
-        "words": 502
+        "words": 617
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-        "words": 510
+        "words": 624
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 2: Mockito — aislar dependencias",
-        "words": 502
+        "words": 656
       },
       {
         "issues": [],
         "module": 9,
         "tailWords": 0,
         "topic": "Tema 3: Tests parametrizados y cobertura",
-        "words": 522
+        "words": 649
       }
     ],
     "javascript": [

@@ -73,6 +73,30 @@ Crea `src/cliente/cliente/module-info.java` con `module cliente { requires acade
 
 Conserva el diagnóstico del compilador y enumera el API que sí publicarías. Fuente: [sistema de módulos Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html).
 
+#### Fragmento real
+
+```java
+// src/academia.rutas/module-info.java
+module academia.rutas {
+    exports academia.rutas.api;
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out --module-source-path src $(find src -name '*.java')
+java --module-path out -m academia.rutas/academia.rutas.app.Main
+```
+
+**Conexión con el proyecto integrador:** si el motor de asignación de entregas crece lo suficiente para separarse en componentes (reglas de negocio vs. adaptadores de entrada/salida), `module-info.java` es la forma de que el compilador, no solo la convención, impida que un adaptador use una clase interna del dominio.
+
+**Límite:** JPMS solo controla accesibilidad entre módulos nombrados en tiempo de compilación/ejecución; no reemplaza pruebas de arquitectura (ArchUnit) ni detecta ciclos de diseño que no se expresen como `requires` circulares.
+
+#### Practica
+
+Modifica `module-info.java` para exportar `academia.rutas` (el paquete interno) en vez de `academia.rutas.api` y vuelve a compilar; confirma que `Main` deja de compilar aunque `Buscar` siga siendo `public`.
+
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor
 
 **¿Por qué es importante?** un módulo explícito mejora límites, pero migrar una aplicación sin mapa de dependencias puede romper builds y librerías.
@@ -145,6 +169,22 @@ Escribe una condición concreta que haría valiosa la migración en tu proyecto.
 
 **Comprobación de migración:** antes de convertir otro componente, registra sus `requires`, `exports` y `opens`. `requires java.sql` declara una dependencia; `exports academia.api` publica el contrato; `opens academia.modelo` permite reflexión donde se necesita. Migra una porción pequeña y compila su consumidor. No uses `opens` global como arreglo rápido: oculta qué librería necesita acceso y debilita el encapsulamiento. Fuente primaria: https://openjdk.org/jeps/261.
 
+#### Fragmento real
+
+```bash
+jar --describe-module --file lib/validador.jar
+jar tf lib/validador.jar | head
+javac -d out --module-source-path src $(find src -name '*.java')
+```
+
+**Conexión con el proyecto integrador:** antes de modularizar el proyecto integrador, inspecciona con este mismo comando las dependencias que ya usas (Jackson, JDBC) para saber si llegan como módulo automático o explícito antes de escribir un solo `requires`.
+
+**Límite:** migrar incrementalmente reduce el riesgo de romper todo el build a la vez, pero no elimina el trabajo de mapear cada dependencia; un proyecto con muchas librerías sin descriptor de módulo puede necesitar módulos automáticos como paso intermedio, no la migración completa de una vez.
+
+#### Practica
+
+Modifica el programa de una sola clase del Subtema 2.3 para que dependa de un paquete que no exportaste y confirma el error de compilación antes de decidir si vale la pena modularizarlo.
+
 ### Tema 3: opens para acceso reflexivo controlado de frameworks
 
 **¿Por qué es importante?** algunas librerías leen o escriben campos privados mediante reflexión; `opens` puede habilitar ese acceso de forma limitada.
@@ -214,6 +254,27 @@ Usa `opens` cuando el framework lo necesita para reflexión profunda. No es un s
 **4. Cierra**
 
 Guarda la excepción y el descriptor mínimo. Fuente: [documentación oficial de `java`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html).
+
+#### Fragmento real
+
+```java
+// module-info.java
+opens academia.rutas.modelo to com.fasterxml.jackson.databind;
+```
+
+Ejecuta:
+
+```bash
+javac -d out --module-source-path src $(find src -name '*.java')
+```
+
+**Conexión con el proyecto integrador:** si tu proyecto integrador usa Jackson para serializar las entidades del dominio y luego lo modularizas con JPMS, necesitarás exactamente esta declaración `opens` cualificada o Jackson no podrá leer los campos privados por reflexión.
+
+**Límite:** `opens` (incluso cualificado) habilita reflexión profunda, que puede romper invariantes del dominio si otra librería además del framework esperado la usa; abre el paquete al consumidor exacto, no a `opens academia.rutas.modelo;` sin calificar, salvo que de verdad lo necesites.
+
+#### Practica
+
+Modifica la apertura general `opens academia.rutas.modelo;` del Subtema 3.1 por la versión calificada `to com.fasterxml.jackson.databind` y confirma con `jar --describe-module` que el nombre del módulo de Jackson coincide exactamente.
 
 ---
 

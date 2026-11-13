@@ -86,8 +86,8 @@
     },
     "java": {
       "topics": 111,
-      "code": 72,
-      "commentedCode": 22,
+      "code": 97,
+      "commentedCode": 43,
       "mermaid": 18,
       "archifyVisual": 1,
       "asciiVisual": 0,
@@ -1480,23 +1480,9 @@
     {
       "track": "java",
       "module": 10,
-      "topic": "Tema 1: module-info.java y encapsulación fuerte",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 10,
       "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 10,
-      "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
@@ -1571,51 +1557,16 @@
     {
       "track": "java",
       "module": 13,
-      "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 13,
-      "topic": "Tema 2: Integrando concurrencia, modelado y testing",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 13,
       "topic": "Tema 3: Build reproducible y cierre del track",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 14,
-      "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
       "module": 14,
       "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
@@ -1656,62 +1607,6 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 1: Entidades y relaciones JPA",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 6: EntityGraph y cachés de persistencia",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 7: Concurrencia, transacciones y propagación",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 16,
-      "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
       "missingCode": true,
       "missingComments": false
     },
@@ -1970,51 +1865,9 @@
     {
       "track": "java",
       "module": 8,
-      "topic": "Tema 1: pom.xml vs build.gradle.kts",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "topic": "Tema 2: Ciclo de vida de build y scopes",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 8,
-      "topic": "Tema 3: Proyectos multi-módulo",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 8,
       "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 9,
-      "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 9,
-      "topic": "Tema 2: Mockito — aislar dependencias",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 9,
-      "topic": "Tema 3: Tests parametrizados y cobertura",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "spring-boot",
