@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "0955e7c30e63002ad96c219101f74a43cbe80e553f39f8df907db88d221c340c",
+    "fingerprint": "6aa352459b721e5e7ed7884670b3cfeb9cf3b6b11ce2e84bef11370be07703f8",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7819,14 +7819,14 @@
         "module": 4,
         "tailWords": 0,
         "topic": "Tema 1: Stream API — map, filter, reduce, collect",
-        "words": 585
+        "words": 874
       },
       {
         "issues": [],
         "module": 4,
         "tailWords": 0,
         "topic": "Tema 2: Optional — evitar null explícitamente",
-        "words": 576
+        "words": 594
       },
       {
         "issues": [],
@@ -7840,7 +7840,7 @@
         "module": 4,
         "tailWords": 0,
         "topic": "Tema 4: Stream Gatherers (Java 24)",
-        "words": 653
+        "words": 781
       },
       {
         "issues": [],

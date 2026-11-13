@@ -25,7 +25,9 @@ El reporte debe mostrar las guías activas, sin imprimir las canceladas.
 Crea `src/Reporte.java`:
 
 ```java
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Reporte {
     record Envio(String guia, boolean activo) {}
@@ -37,19 +39,25 @@ public class Reporte {
             .map(Envio::guia)
             .toList();
         System.out.println(activas);
+        var editables = envios.stream()
+            .filter(Envio::activo)
+            .map(Envio::guia)
+            .collect(Collectors.toCollection(ArrayList::new));
+        editables.add("RT-3");
+        System.out.println(editables);
     }
 }
 ```
 
 Desde la carpeta del proyecto ejecuta `javac -d out src/Reporte.java` y `java -cp out Reporte`.
 
-**Resultado esperado:** `[RT-1]`.
+**Resultado esperado:** `[RT-1]` y luego `[RT-1, RT-3]`. La segunda lista se puede ampliar porque elegiste explícitamente `ArrayList`; agregar `RT-3` no modifica los envíos originales.
 
 **Fallo deliberado:** cambia `filter(Envio::activo)` por `filter(envio -> !envio.activo())`. **Diagnóstico:** el filtro ahora conserva las inactivas; revisa la condición y restáurala.
 
 **3. Entiende**
 
-`filter` decide qué elementos siguen; `map` convierte cada elemento en otro valor; `toList` produce una lista con el resultado.
+`filter` decide qué elementos siguen; `map` convierte cada elemento en otro valor. Ambas tuberías vuelven a leer la colección original: un stream ya consumido no se reutiliza. `toList()` termina la primera tubería y devuelve una lista no modificable; `collect(Collectors.toCollection(ArrayList::new))` termina la segunda y construye una lista modificable cuando ese es el contrato que necesitas. `Collectors.toList()` no promete que su resultado sea modificable.
 
 **4. Cierra**
 
@@ -59,7 +67,7 @@ Explica qué datos recibe y produce cada operación.
 
 **1. Contexto**
 
-El cierre diario necesita el total de las tarifas cobradas.
+El cierre diario necesita el total de las tarifas cobradas. Conserva importes en centavos enteros para que la suma no dependa de redondeos de `double`.
 
 **2. Hazlo tú**
 
@@ -69,29 +77,35 @@ Reemplaza `src/Reporte.java` por:
 import java.util.List;
 
 public class Reporte {
-    record Envio(String guia, double tarifa) {}
+    record Envio(String guia, long centavos) {}
 
     public static void main(String[] args) {
-        var envios = List.of(new Envio("RT-1", 2.5), new Envio("RT-2", 3.0));
-        double total = envios.stream().mapToDouble(Envio::tarifa).sum();
-        System.out.println(total);
+        var envios = List.of(new Envio("RT-1", 250), new Envio("RT-2", 300));
+        long total = envios.stream()
+            .map(Envio::centavos)
+            .reduce(0L, Long::sum);
+        long totalPrimitivo = envios.stream()
+            .mapToLong(Envio::centavos)
+            .sum();
+        System.out.println("totalCentavos=" + total);
+        System.out.println("coinciden=" + (total == totalPrimitivo));
     }
 }
 ```
 
 Compila y ejecuta `javac -d out src/Reporte.java` y `java -cp out Reporte`.
 
-**Resultado esperado:** `5.5`.
+**Resultado esperado:** `totalCentavos=550` y `coinciden=true`: 250 + 300 centavos son 5,50 unidades monetarias.
 
-**Fallo deliberado:** cambia `mapToDouble(Envio::tarifa)` por `mapToInt(Envio::tarifa)`. **Diagnóstico:** el método devuelve `double`; conserva la precisión usando `mapToDouble`.
+**Fallo deliberado:** cambia el valor inicial de `reduce` de `0L` a `100L`, recompila y ejecuta. **Resultado observado:** `totalCentavos=650` y `coinciden=false`. **Diagnóstico:** el valor inicial debe ser la identidad de la suma, cero; restáuralo y vuelve a comparar.
 
 **3. Entiende**
 
-`mapToDouble` convierte cada tarifa en número y `sum` combina los valores sin que tú mantengas una variable mutable.
+`map` extrae centavos de cada envío y `reduce` combina los valores con una identidad y una operación. `Long::sum` suma dos `Long`; `0L` no cambia el resultado y también define el resultado vacío. `mapToLong` crea un stream primitivo que evita envolver cada importe en `Long`; su `sum()` expresa directamente la misma operación. `long` aún puede desbordarse: fija límites del dominio o usa una estrategia de suma exacta si los importes lo requieren.
 
 **4. Cierra**
 
-Registra el total y nombra la operación que produce cada tarifa.
+Prueba una lista vacía y verifica que ambos totales sean cero; explica por qué `100L` altera hasta ese caso. Fuente oficial: [Stream.reduce](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html#reduce(T,java.util.function.BinaryOperator)) y [LongStream.sum](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/LongStream.html#sum()).
 
 #### Subtema 1.3: No reutilices un stream consumido · 10 min
 
@@ -120,7 +134,7 @@ Compila y ejecuta `javac -d out src/UnaVez.java` y `java -cp out UnaVez`.
 
 **Resultado esperado:** la primera salida muestra `2`; la segunda operación falla con `IllegalStateException`.
 
-**Fallo deliberado:** elimina la segunda operación. **Diagnóstico:** cada stream se consume una sola vez; crea otro stream desde la lista para calcular una salida adicional.
+**Fallo deliberado:** mantén la segunda operación `guias.toList()` y observa el `IllegalStateException` después de imprimir `2`. **Diagnóstico:** `count()` ya consumió ese stream; para obtener otra salida, crea un stream nuevo desde la lista original en vez de reutilizar `guias`.
 
 **3. Entiende**
 
@@ -204,7 +218,12 @@ public class Buscar {
 }
 ```
 
-Ejecuta `java -cp out Buscar RT-9`.
+Desde la carpeta del proyecto, recompila el archivo reemplazado y luego ejecuta:
+
+```bash
+javac -d out src/Buscar.java
+java -cp out Buscar RT-9
+```
 
 **Resultado esperado:** imprime `Guía no encontrada`.
 
@@ -417,7 +436,7 @@ Con JDK 24 o posterior, desde el proyecto ejecuta `javac -d out src/Rachas.java`
 
 **Resultado esperado:** solo aparece la ventana `[true, true, true]`.
 
-**Fallo deliberado:** reemplaza `windowSliding(3)` por `windowSliding(2)`. **Diagnóstico:** ahora buscas rachas de dos, por lo que también aparece la última pareja de atrasos; restablece el tamaño tres.
+**Fallo deliberado:** reemplaza `windowSliding(3)` por `windowSliding(2)`, recompila y ejecuta. **Resultado observado:** aparecen dos ventanas `[true, true]`, formadas por las posiciones 1–2 y 2–3; la pareja final es `[false, true]` y no pasa el filtro. **Diagnóstico:** cambiaste la regla de tres atrasos seguidos por una de dos y contaste dos ventanas solapadas; restablece el tamaño tres.
 
 **3. Entiende**
 
@@ -446,7 +465,7 @@ System.out.println(bloques);
 
 Compila y ejecuta el archivo. Al pegarlo, coloca estas líneas dentro de `main` y usa el mismo `atrasadas`.
 
-**Resultado esperado:** para cinco valores se forman dos bloques completos de dos y un bloque final de uno.
+**Resultado esperado:** `[[true, true], [true, false], [true]]`: para cinco valores se forman dos bloques completos de dos y un bloque final de uno.
 
 **Fallo deliberado:** interpreta el último bloque parcial como si tuviera dos datos. **Diagnóstico:** el stream terminó con un elemento sin pareja; comprueba el tamaño antes de acceder a posiciones.
 
@@ -466,28 +485,48 @@ Un filtro mira cada evento por separado; una ventana sirve cuando la regla compa
 
 **2. Hazlo tú**
 
-En `src/Rachas.java`, prueba dos listas: una con tres atrasos seguidos y otra con tres atrasos separados por entregas a tiempo. Ejecuta la racha con `windowSliding(3)` y compara los resultados.
+Reemplaza `src/Rachas.java` por este archivo completo. Compara una secuencia con tres atrasos seguidos y otra con tres atrasos separados por entregas a tiempo:
 
 ```java
-var atrasadas = List.of(true, false, true, false, true);
-long cantidadAtrasada = atrasadas.stream().filter(Boolean::booleanValue).count();
-var rachas = atrasadas.stream()
-    .gather(Gatherers.windowSliding(3))
-    .filter(ventana -> ventana.stream().allMatch(Boolean::booleanValue))
-    .toList();
-System.out.println(cantidadAtrasada);
-System.out.println(rachas);
+import java.util.List;
+import java.util.stream.Gatherers;
+
+public class Rachas {
+    static List<List<Boolean>> detectar(List<Boolean> valores) {
+        return valores.stream()
+            .gather(Gatherers.windowSliding(3))
+            .filter(ventana -> ventana.size() == 3
+                && ventana.stream().allMatch(Boolean::booleanValue))
+            .toList();
+    }
+
+    public static void main(String[] args) {
+        List<Boolean> consecutivas = List.of(true, true, true, false, true);
+        List<Boolean> separadas = List.of(true, false, true, false, true);
+        List<Boolean> insuficientes = List.of(true, true);
+        System.out.println("individuales=" + separadas.stream()
+            .filter(Boolean::booleanValue).count());
+        System.out.println("separadas=" + detectar(separadas));
+        System.out.println("consecutivas=" + detectar(consecutivas));
+        System.out.println("insuficientes=" + detectar(insuficientes));
+    }
+}
 ```
 
-Ejecuta `java -cp out Rachas` con la lista separada y luego con tres valores `true` consecutivos.
+Con JDK 24 o posterior, desde la carpeta del proyecto ejecuta:
 
-**Resultado esperado:** solo la primera lista contiene una ventana en que los tres valores son `true`.
+```bash
+javac -d out src/Rachas.java
+java -cp out Rachas
+```
 
-**Fallo deliberado:** usa solo `filter(Boolean::booleanValue)` y cuenta los resultados como si fueran una racha. **Diagnóstico:** el filtro conserva atrasos individuales, pero descarta la posición de los elementos a tiempo; no puede detectar consecutividad.
+**Resultado esperado:** `individuales=3`, `separadas=[]`, `consecutivas=[[true, true, true]]` e `insuficientes=[]`, en ese orden. La primera cifra cuenta eventos aislados, no rachas.
+
+**Fallo deliberado:** elimina `ventana.size() == 3 &&`, recompila y usa `insuficientes`. **Resultado observado:** aparece `[[true, true]]` como si hubiera tres atrasos. **Diagnóstico:** si el stream tiene menos elementos que el tamaño solicitado, `windowSliding` emite una única ventana corta; exige tres elementos antes de comprobar que todos sean atrasos.
 
 **3. Entiende**
 
-Gatherers extiende los pipelines con operaciones intermedias con estado. Úsalo cuando la regla dependa de una secuencia; para filtrar elementos independientes, `filter` es más sencillo.
+Gatherers extiende los pipelines con operaciones intermedias con estado. Úsalo cuando la regla dependa de una secuencia; para filtrar elementos independientes, `filter` es más sencillo. `allMatch` por sí solo comprueba los valores presentes, no que haya suficientes observaciones para cumplir la regla.
 
 **4. Cierra**
 
@@ -501,14 +540,14 @@ Explica en una frase por qué un simple filtro no conserva la consecutividad. Fu
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Filtrar y transformar con `filter`/`map`/`collect` | Ver Tema 1 | Reemplaza un loop manual equivalente |
-| 2 | Sumar con `reduce`/`mapToDouble().sum()` | Ver Tema 1 | Agregación declarativa |
+| 1 | Filtrar y transformar con `filter`/`map`; elegir `toList` o `collect` | Ver Tema 1 | Conserva la misma lista de guías activas y decide si la salida debe ser modificable |
+| 2 | Sumar centavos con `reduce` y `mapToLong().sum()` | Ver Tema 1 | Comprueba identidad cero y equivalencia con el recorrido manual |
 | 3 | Reemplazar un método que devuelve `null` por `Optional` | Ver Tema 2 | Maneja el caso vacío con `orElseThrow` |
-| 4 | Comparar `stream()` vs `parallelStream()` con datos grandes | Ver Tema 3 | Mide el tiempo real, no asumas |
+| 4 | Comparar suma secuencial y paralela con los mismos datos | Ver Tema 3 | Comprueba igualdad; el ejemplo no mide rendimiento |
 | 5 | Reemplazar lambdas verbosas por referencias a métodos | Ver Tema 3 | Donde aplique directamente |
 | 6 | Detectar una racha con `Gatherers.windowSliding` | Ver Tema 4 | Lógica que `filter`/`map` no pueden expresar |
 
-**Verificación:** el laboratorio se considera exitoso si el pipeline con Streams produce el mismo resultado que el loop manual equivalente, si la comparación de `stream()` vs `parallelStream()` incluye una medición real de tiempo, y si el gatherer detecta correctamente solo las rachas reales de 3 elementos consecutivos.
+**Verificación:** el laboratorio se considera exitoso si el pipeline con Streams produce el mismo resultado que un recorrido manual equivalente, las dos sumas coinciden con identidad cero, la suma paralela conserva el valor y el gatherer detecta una racha real de tres elementos pero rechaza dos atrasos seguidos. Para afirmar una mejora de velocidad hace falta un benchmark aparte, con calentamiento de JVM y datos representativos.
 
 **Errores comunes y soluciones**
 

@@ -10392,7 +10392,7 @@
       "module": 4,
       "title": "Tema 2: Optional — evitar null explícitamente",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 133,
+      "line": 147,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10406,7 +10406,7 @@
       "module": 4,
       "title": "Tema 3: Streams paralelos y referencias a métodos",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 260,
+      "line": 279,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10420,7 +10420,7 @@
       "module": 4,
       "title": "Tema 4: Stream Gatherers (Java 24)",
       "file": "web/public/content/java/modulo-4.md",
-      "line": 379,
+      "line": 398,
       "signals": [
         "demostracion-no-delimitada"
       ],

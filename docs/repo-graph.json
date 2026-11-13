@@ -2375,6 +2375,19 @@
       ]
     },
     {
+      "path": "docs/java-m4-technical-review.md",
+      "lines": 31,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Java M4 \u2014 revisi\u00f3n t\u00e9cnica de Streams, Optional y Gatherers",
+        "## Cobertura comprobada",
+        "## Correcciones de esta revisi\u00f3n",
+        "## Puerta curricular pendiente antes de dar M4 por terminado"
+      ]
+    },
+    {
       "path": "docs/java-temario-completo.md",
       "lines": 583,
       "kind": "documentation",
@@ -17224,7 +17237,7 @@
     },
     {
       "path": "web/public/content/java/modulo-4.md",
-      "lines": 521,
+      "lines": 560,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
