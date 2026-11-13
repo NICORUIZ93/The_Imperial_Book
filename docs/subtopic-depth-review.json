@@ -1,9 +1,9 @@
 {
   "summary": {
     "topics": 1323,
-    "reviewed": 171,
-    "pending": 1152,
-    "priorityCandidates": 1004,
+    "reviewed": 175,
+    "pending": 1148,
+    "priorityCandidates": 1000,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -47,8 +47,8 @@
       },
       "java": {
         "topics": 111,
-        "reviewed": 18,
-        "pending": 93
+        "reviewed": 22,
+        "pending": 89
       },
       "javascript": {
         "topics": 88,
@@ -13692,7 +13692,7 @@
       "track": "java",
       "module": 1,
       "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [
         "Subtema 1.1: Crea una clase e instancia objetos · 10 min",
         "Subtema 1.2: Protege los datos con encapsulación · 10 min",
@@ -13701,14 +13701,29 @@
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 25.0.2: Guia.java con dos objetos imprimió 'RF-101 -> Medellin'/'RF-102 -> Envigado' (1.1). Se encontró un bug real en el 1.2: con main dentro de la propia clase Guia, 'guia.numero = \"RF-999\"' no da 'numero has private access' (private no bloquea acceso desde dentro de la misma clase) sino 'cannot assign a value to final variable numero'. Se corrigió moviendo main a una clase Principal separada: con esa clase, 'guia.destino = \"Otro\"' sí reprodujo exactamente 'destino has private access in Guia', verificado real. El 1.3 (validación en el constructor, 'Rechazada: El numero es obligatorio') se confirmó correcto sin cambios.",
+        "criticalSubtopics": [
+          "clase vs objeto/instancia",
+          "private solo bloquea entre clases distintas, no dentro de la misma clase",
+          "final bloquea reasignación con mensaje distinto a private",
+          "invariante validado en el constructor"
+        ],
+        "sources": [
+          "https://dev.java/learn/classes-objects/",
+          "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6"
+        ]
+      }
     },
     {
       "id": "java/modulo-1::Tema 2: Herencia y sobreescritura",
       "track": "java",
       "module": 1,
       "topic": "Tema 2: Herencia y sobreescritura",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [
         "Subtema 2.1: Extiende una clase y hereda su comportamiento · 10 min",
         "Subtema 2.2: Sobrescribe una operación · 10 min",
@@ -13718,14 +13733,29 @@
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 25.0.2: super() sin argumento reprodujo 'constructor cannot be applied... required: String' (2.1); @Override con nombre mal escrito reprodujo 'method does not override or implement a method from a supertype' (2.2); sin @Override, Furgoneta con entregarr() despachó el comportamiento base 'FU-2 entrega paquete' en vez de sobrescribir (2.3); sin @Retention(RUNTIME), marca.accion() reprodujo NullPointerException exacto (2.4). Las cuatro afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
+        "criticalSubtopics": [
+          "extends y super() con constructor propio",
+          "@Override detecta error de escritura en compilación",
+          "despacho dinámico por tipo concreto, no por tipo declarado",
+          "RetentionPolicy.RUNTIME requerido para leer anotaciones por reflexión"
+        ],
+        "sources": [
+          "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+          "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-1::Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "track": "java",
       "module": 1,
       "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [
         "Subtema 3.1: Define un contrato con una interfaz · 10 min",
         "Subtema 3.2: Comparte estado y comportamiento con una clase abstracta · 10 min",
@@ -13734,14 +13764,29 @@
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 25.0.2: 'class X extends InterfazY' reprodujo 'no interface expected here' (3.1); instanciar una clase abstracta con método abstracto pendiente reprodujo 'is abstract; cannot be instantiated' (3.2); una subclase concreta sin implementar el método abstracto heredado reprodujo 'is not abstract and does not override abstract method' (3.3). Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
+        "criticalSubtopics": [
+          "implements vs extends para interfaces",
+          "clase abstracta no instanciable con método pendiente",
+          "subclase concreta debe completar todos los métodos abstractos",
+          "interfaz + clase abstracta combinadas (contrato + estado compartido)"
+        ],
+        "sources": [
+          "https://dev.java/learn/interfaces/",
+          "https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-1::Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "track": "java",
       "module": 1,
       "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
-      "status": "pending",
+      "status": "reviewed",
       "semanticHeadings": [
         "Subtema 4.1: Sobrecarga según los parámetros · 10 min",
         "Subtema 4.2: Compara sobrecarga y sobreescritura · 10 min",
@@ -13750,7 +13795,22 @@
       "prioritySignals": [
         "título agrupa varios conceptos"
       ],
-      "review": null
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 25.0.2: calcular(3)/calcular(2.5) dieron 3600/3000.0 y dos sobrecargas que solo cambian el tipo de retorno reprodujeron 'method calcular(int) is already defined' (4.1). calculador.calcular(3) despachó dinámicamente a 'express=3' y el cast a CalculadorExpress.calcular(2.5) resolvió estáticamente a 'decimal=2.5'; sin @Override, calcularr dejó la llamada en 'base=3' por herencia simple (4.2). El caso más delicado se confirmó exacto: Bicicleta.resumen() (this.estado, protected por herencia) imprimió 'RF-302 estado=lista', pero 'new Guia(\"RF-303\").estado' desde Bicicleta (instancia arbitraria de la clase base, no this) reprodujo 'estado has protected access in Guia' — exactamente la regla JLS 6.6.2 que el tema explica. Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
+        "criticalSubtopics": [
+          "sobrecarga por parámetros, no por retorno",
+          "sobrecarga (estática) vs sobreescritura (dinámica)",
+          "private/package-private/protected/public",
+          "protected en subclase de otro paquete: solo a través de this, no de una instancia arbitraria de la base"
+        ],
+        "sources": [
+          "https://docs.oracle.com/javase/tutorial/java/IandI/override.html",
+          "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6.2"
+        ]
+      }
     },
     {
       "id": "java/modulo-10::Tema 1: module-info.java y encapsulación fuerte",

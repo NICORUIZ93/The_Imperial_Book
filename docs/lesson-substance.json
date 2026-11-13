@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "7a3875a7355e075959c8173ea527dd16ea1124d47cef9a51a184577dad12a77a",
+    "fingerprint": "7af1c56e1b533ba36cf3215cd4d07af78f248f76bce3a1c5933b6a3fc4fbac96",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7273,7 +7273,7 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-        "words": 918
+        "words": 1054
       },
       {
         "issues": [],

@@ -60,7 +60,7 @@ Señala cuáles dos líneas crean los objetos y qué diferencia sus datos.
 Si cualquier código puede reemplazar el destino directamente, una guía puede cambiar sin pasar por las reglas del modelo.
 
 **2. Hazlo tú**
-Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo:
+Reemplaza `java-motor-poo/src/Guia.java` por este archivo completo (nota que ya no tiene `main`: lo movemos a una clase aparte para probar el acceso desde afuera):
 
 ```java
 public final class Guia {
@@ -83,7 +83,13 @@ public final class Guia {
     public void cambiarDestino(String nuevoDestino) {
         destino = nuevoDestino;
     }
+}
+```
 
+Crea también `java-motor-poo/src/Principal.java`:
+
+```java
+public final class Principal {
     public static void main(String[] args) {
         Guia guia = new Guia("RF-101", "Medellin");
         guia.cambiarDestino("Envigado");
@@ -92,17 +98,22 @@ public final class Guia {
 }
 ```
 
-Compila y ejecuta con los mismos comandos del subtema 1.1.
+Desde `java-motor-poo/`, compila ambos archivos y ejecuta `Principal`:
+
+```bash
+javac -d out src/Guia.java src/Principal.java
+java -cp out Principal
+```
 
 **Resultado esperado:** `RF-101 -> Envigado`.
 
-**Fallo deliberado:** en `main`, intenta asignar `guia.numero = "RF-999"`. **Error esperado:** `numero has private access in Guia`. **Diagnóstico:** `private` limita el acceso al interior de la clase y `final` impide cambiar ese identificador después de construir el objeto.
+**Fallo deliberado:** agrega en `Principal.main` la línea `guia.destino = "Otro";` y vuelve a compilar. **Error esperado:** `destino has private access in Guia`. **Diagnóstico:** `private` bloquea el acceso desde cualquier clase distinta a `Guia`; como `Principal` es una clase separada, el compilador rechaza tocar `destino` directamente y obliga a pasar por `cambiarDestino`. (Si el intento de acceso estuviera dentro de la propia clase `Guia`, `private` no bloquearía nada —ese acceso siempre es válido desde adentro—; sería el modificador `final` el que impediría reasignar `numero`, con un mensaje distinto: `cannot assign a value to final variable numero`.)
 
 **3. Entiende**
-Los campos privados esconden el estado interno. Los métodos públicos forman una interfaz pequeña para leer datos o pedir un cambio; no hace falta publicar cada campo.
+Los campos privados esconden el estado interno **de otras clases**, no de la propia clase que los declara: el bloqueo de `private` solo se activa al cruzar la frontera de la clase. Los métodos públicos forman una interfaz pequeña para que ese código externo lea datos o pida un cambio; no hace falta publicar cada campo.
 
 **4. Cierra**
-Identifica qué campo no se puede cambiar y qué método permite cambiar el destino.
+Identifica qué campo no se puede cambiar desde fuera y qué método permite cambiar el destino sin romper el encapsulamiento.
 
 #### Subtema 1.3: Rechaza guías inválidas desde el constructor · 15 min
 

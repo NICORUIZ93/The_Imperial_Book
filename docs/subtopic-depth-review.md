@@ -3,9 +3,9 @@
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
 - Temas inventariados: 1323
-- Revisados humanamente para subtemas: 171
-- Pendientes: 1152
-- Candidatos prioritarios por señales: 1004
+- Revisados humanamente para subtemas: 175
+- Pendientes: 1148
+- Candidatos prioritarios por señales: 1000
 
 ## Cobertura por track
 
@@ -19,7 +19,7 @@
 | flutter | 106 | 63 | 43 |
 | foundations | 100 | 0 | 100 |
 | ios | 56 | 0 | 56 |
-| java | 111 | 18 | 93 |
+| java | 111 | 22 | 89 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
 | microservices | 23 | 17 | 6 |
@@ -572,10 +572,6 @@
 - `ios/modulo-9` — Tema 1: XCTest clásico y Swift Testing — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 2: Testing de código async — lista conceptos clave sin mapa interno verificable
 - `ios/modulo-9` — Tema 3: UI Tests con XCUITest — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
-- `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación — título agrupa varios conceptos
-- `java/modulo-1` — Tema 2: Herencia y sobreescritura — título agrupa varios conceptos
-- `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una — título agrupa varios conceptos
-- `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso — título agrupa varios conceptos
 - `java/modulo-10` — Tema 1: module-info.java y encapsulación fuerte — título agrupa varios conceptos
 - `java/modulo-10` — Tema 2: Migración incremental y cuándo JPMS aporta valor — título agrupa varios conceptos
 - `java/modulo-11` — Tema 1: Generaciones de memoria y recolectores — título agrupa varios conceptos
@@ -1179,6 +1175,10 @@
 - `java/modulo-0` — Tema 6: Operadores, precedencia y control de flujo — cortocircuito && vs & sin cortocircuito; switch expression exhaustivo sobre enum; límite de arreglo (length no es índice válido); precedencia && antes que || sin paréntesis
 - `java/modulo-0` — Tema 7: Arreglos, wrappers y paso de argumentos — longitud fija e índice 0-based; autoboxing/unboxing y NullPointerException con Integer null; paso por valor de una referencia (mutar vs. reasignar)
 - `java/modulo-0` — Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) — validar antes de convertir (hasNextInt); LocalDate.parse exige ISO yyyy-MM-dd; Instant vs ZonedDateTime (momento global vs. hora local); ZoneId rechaza identificadores de zona inválidos
+- `java/modulo-1` — Tema 1: Clases, objetos, constructores y encapsulación — clase vs objeto/instancia; private solo bloquea entre clases distintas, no dentro de la misma clase; final bloquea reasignación con mensaje distinto a private; invariante validado en el constructor
+- `java/modulo-1` — Tema 2: Herencia y sobreescritura — extends y super() con constructor propio; @Override detecta error de escritura en compilación; despacho dinámico por tipo concreto, no por tipo declarado; RetentionPolicy.RUNTIME requerido para leer anotaciones por reflexión
+- `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una — implements vs extends para interfaces; clase abstracta no instanciable con método pendiente; subclase concreta debe completar todos los métodos abstractos; interfaz + clase abstracta combinadas (contrato + estado compartido)
+- `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso — sobrecarga por parámetros, no por retorno; sobrecarga (estática) vs sobreescritura (dinámica); private/package-private/protected/public; protected en subclase de otro paquete: solo a través de this, no de una instancia arbitraria de la base
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada

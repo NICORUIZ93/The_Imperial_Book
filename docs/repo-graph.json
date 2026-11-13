@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22618,
+      "lines": 22678,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 2035,
+      "lines": 2067,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -16868,7 +16868,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 763,
+      "lines": 774,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
