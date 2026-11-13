@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "7af1c56e1b533ba36cf3215cd4d07af78f248f76bce3a1c5933b6a3fc4fbac96",
+    "fingerprint": "c18e324281337cdf04a5d5c3acd32070764c01523e4ea32ee40c62b5eac5f9e4",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7623,14 +7623,14 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 2: Genéricos, wildcards y type erasure",
-        "words": 1048
+        "words": 1177
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
-        "words": 948
+        "words": 1360
       },
       {
         "issues": [],

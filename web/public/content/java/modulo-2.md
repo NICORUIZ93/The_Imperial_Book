@@ -235,10 +235,10 @@ Compila y ejecuta con los comandos del subtema 2.1.
 **Fallo deliberado:** dentro del ciclo, intenta pesos.add(5). **Error esperado:** el compilador rechaza el argumento porque no conoce el subtipo concreto de la lista. **Diagnóstico:** ? extends Number permite leer elementos como Number; no agregar valores arbitrarios.
 
 **3. Entiende**
-El límite extends Number acepta listas de Number y de sus subtipos. Como el método solo lee esos valores, los trata como Number de forma segura.
+Una `List<Integer>` no es una `List<Number>`: si esa asignación se permitiera, otra parte del programa podría agregar un `Double` a la lista de enteros. Compruébalo en una copia del archivo: declara `List<Integer> enteros = List.of(2, 3);` y luego `List<Number> numeros = enteros;`; `javac` rechaza la segunda línea por tipos incompatibles. El comodín `? extends Number` permite recibir la lista sin prometer que se le puedan agregar números de cualquier subtipo. Como `sumarPesos` solo lee, puede tratar cada valor como `Number`. El límite no convierte los enteros en otro tipo ni copia la lista.
 
 **4. Cierra**
-Prueba una lista de Long y explica por qué el método no requiere una nueva sobrecarga.
+Prueba una lista de `Long` y explica por qué el método no requiere una nueva sobrecarga. Predice además si `List<Number> numeros = List.of(1, 2);` y `List<Number> numeros = enteros;` tienen la misma validez; compila ambos casos para comprobarlo.
 
 #### Subtema 2.3: Escribe con super y conserva seguridad · 10 min
 
@@ -311,7 +311,7 @@ Compila y ejecuta con los comandos del subtema 2.1.
 
 **Resultado esperado:** true, String y Integer.
 
-**Fallo deliberado:** intenta escribir texto instanceof Caja<String>. **Error esperado:** el compilador indica que no puede comprobar una instancia parametrizada de ese modo. **Diagnóstico:** la clase concreta no conserva String o Integer como una distinción de runtime para esa prueba; usa instanceof Caja<?> y valida el contenido si hace falta.
+**Fallo deliberado:** declara `Object desconocido = texto;` e intenta `System.out.println(desconocido instanceof Caja<String>);`. **Error esperado:** el compilador rechaza la prueba de un tipo parametrizado no reificable. **Diagnóstico:** desde una referencia `Object` no se puede comprobar en ejecución si la caja era `Caja<String>`; usa `desconocido instanceof Caja<?>` y valida el contenido por separado si hace falta. La expresión `texto instanceof Caja<String>` sí puede compilar porque el tipo estático de `texto` ya es `Caja<String>`; no demuestra que la JVM haya conservado `String`.
 
 **3. Entiende**
 El borrado de tipos hace que Caja<String> y Caja<Integer> compartan la clase Caja en ejecución. Java mantiene cierta información genérica en firmas declaradas para herramientas de reflexión, pero no puedes inspeccionar el parámetro de tipo de un objeto común como si fuera una clase distinta.
@@ -348,6 +348,7 @@ Crea java-motor-colecciones/src/OrdenDemo.java:
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 
 class Guia implements Comparable<Guia> {
     private final String codigo;
@@ -370,6 +371,9 @@ public class OrdenDemo {
             new Guia("RF-103"), new Guia("RF-101"), new Guia("RF-102")));
         Collections.sort(guias);
         System.out.println(guias);
+        TreeSet<Guia> unicasPorCodigo = new TreeSet<>(guias);
+        System.out.println("agrega mismo codigo=" + unicasPorCodigo.add(new Guia("RF-101")));
+        System.out.println("codigos distintos=" + unicasPorCodigo.size());
     }
 }
 ```
@@ -382,15 +386,15 @@ javac -d out src/OrdenDemo.java
 java -cp out OrdenDemo
 ```
 
-**Resultado esperado:** [RF-101, RF-102, RF-103].
+**Resultado esperado:** [RF-101, RF-102, RF-103], agrega mismo codigo=false y codigos distintos=3.
 
 **Fallo deliberado:** elimina implements Comparable<Guia> y la anotación @Override de compareTo; luego ejecuta Collections.sort(guias). **Error esperado:** el compilador no puede inferir un orden para Guia. **Diagnóstico:** el orden natural requiere que Guia implemente Comparable o que la llamada reciba un Comparator.
 
 **3. Entiende**
-compareTo devuelve un valor negativo, cero o positivo para indicar menor, igual o mayor. Comparar Strings directamente evita restar números y no tiene el riesgo de desbordamiento de restar enteros.
+compareTo devuelve un valor negativo, cero o positivo para indicar menor, igual o mayor. Comparar Strings directamente evita restar números y no tiene el riesgo de desbordamiento de restar enteros. En `TreeSet`, `compareTo` igual a cero significa que el segundo objeto ocupa la misma posición lógica y no se agrega, aunque sea otra instancia. Aquí dos guías con código `RF-101` cuentan como una. Esta clase didáctica aún hereda `equals` por identidad: un `HashSet` trataría esas dos instancias como distintas. No uses esta clase tal cual como modelo de dominio; antes de combinar conjuntos ordenados y conjuntos basados en hash, alinea `compareTo`, `equals` y `hashCode` con la misma identidad de guía. El contrato completo de igualdad se desarrolla en el módulo 22.
 
 **4. Cierra**
-Cambia los valores de entrada y confirma que el orden natural sigue comparando por código.
+Cambia los valores de entrada y confirma que el orden natural sigue comparando por código. Luego agrega una segunda instancia con código `RF-102` al `TreeSet` y predice el valor de `add` y el tamaño final antes de ejecutar.
 
 #### Subtema 3.2: Cambia el criterio con Comparator · 10 min
 
@@ -405,7 +409,32 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-record Guia(String codigo, String destino) { }
+class Guia {
+    private final String codigo;
+    private final String destino;
+
+    Guia(String codigo, String destino) {
+        this.codigo = codigo;
+        this.destino = destino;
+    }
+
+    String codigo() { return codigo; }
+    String destino() { return destino; }
+
+    @Override
+    public String toString() {
+        return "Guia[codigo=" + codigo + ", destino=" + destino + "]";
+    }
+}
+
+class PorDestinoYCodigo implements Comparator<Guia> {
+    @Override
+    public int compare(Guia primera, Guia segunda) {
+        int destino = primera.destino().compareTo(segunda.destino());
+        if (destino != 0) return destino;
+        return primera.codigo().compareTo(segunda.codigo());
+    }
+}
 
 public class OrdenDemo {
     public static void main(String[] args) {
@@ -414,9 +443,10 @@ public class OrdenDemo {
             new Guia("RF-101", "Bogota"),
             new Guia("RF-102", "Bogota")));
 
-        guias.sort(Comparator.comparing(Guia::destino)
-                             .thenComparing(Guia::codigo));
-        guias.forEach(System.out::println);
+        guias.sort(new PorDestinoYCodigo());
+        for (Guia guia : guias) {
+            System.out.println(guia);
+        }
     }
 }
 ```
@@ -425,13 +455,13 @@ Compila y ejecuta con los comandos del subtema 3.1.
 
 **Resultado esperado:** Guia[codigo=RF-101, destino=Bogota], Guia[codigo=RF-102, destino=Bogota] y Guia[codigo=RF-103, destino=Cali].
 
-**Fallo deliberado:** elimina thenComparing y cambia el orden de entrada para poner RF-102 antes que RF-101, aunque ambos tengan el mismo destino. **Resultado observado:** ese orden de entrada se conserva porque el comparator no desempata por código. **Diagnóstico:** si quieres una salida estable por código independientemente del orden inicial, agrega una segunda clave.
+**Fallo deliberado:** elimina las dos líneas que comparan `codigo` y devuelve `0` cuando los destinos coinciden; coloca `RF-102` antes de `RF-101` en la entrada. **Resultado observado:** ambas guías de Bogota conservan ese orden de entrada en esta ordenación estable, en vez de ordenarse por código. **Diagnóstico:** el comparador ya no distingue los códigos de un mismo destino; restaura el segundo criterio. Si usas ese comparador en un `TreeSet`, los dos códigos pasarían a considerarse equivalentes y solo se conservaría uno.
 
 **3. Entiende**
-Comparator define un criterio externo al objeto. comparing elige el destino y thenComparing completa el desempate por código; la clase no necesita cambiar su orden natural.
+`Comparator<Guia>` define un criterio externo al objeto. Su método `compare` recibe dos guías: primero compara destinos; solo si son iguales compara códigos. Así obtiene un orden total para este ejemplo sin cambiar la clase `Guia` ni depender de lambdas o referencias a métodos, que se estudian más adelante. Un resultado `0` debe reservarse para guías que este criterio considere equivalentes. Los campos usados para ordenar deben conservar su valor mientras el objeto permanezca en una colección ordenada.
 
 **4. Cierra**
-Agrega un criterio por destino invertido y explica qué parte del orden cambió.
+Cambia solo la comparación del destino a `segunda.destino().compareTo(primera.destino())`; predice qué ciudad aparecerá primero y comprueba que los códigos dentro de Bogota siguen ascendentes. Explica por qué no conviene restar números para implementar `compare`.
 
 #### Subtema 3.3: Recorre entradas y elimina con Iterator · 15 min
 
@@ -476,13 +506,13 @@ java -cp out OrdenDemo
 
 **Resultado esperado:** RF-102=EN_RUTA.
 
-**Fallo deliberado:** cambia equals por ==. **Resultado erróneo esperado:** también aparece RF-101=ENTREGADA. **Diagnóstico:** == compara si son la misma instancia String, no si contienen el mismo texto; usa equals para comparar estados.
+**Fallo deliberado:** reemplaza `iterador.remove()` por `estados.remove(entrada.getKey())` y deja el resto del ciclo intacto. **Error esperado en este `LinkedHashMap`:** al pedir el siguiente elemento aparece `ConcurrentModificationException`. **Diagnóstico:** se modificó estructuralmente el mapa fuera del iterador que lo recorre; restaura `iterador.remove()`. La detección de modificaciones concurrentes es un mecanismo de diagnóstico de mejor esfuerzo, no una estrategia para controlar concurrencia.
 
 **3. Entiende**
-entrySet entrega pares clave-valor para recorrer el Map. Iterator permite quitar el elemento actual mediante su método remove; no llames estados.remove desde el mismo ciclo. Para comparar texto, equals evalúa el contenido.
+`entrySet` entrega pares clave-valor para recorrer el `Map`. `hasNext` consulta si queda una entrada y `next` avanza a ella; `remove` quita exactamente la última entrada entregada por `next`, y no se puede llamar dos veces seguidas sin otro `next`. No llames `estados.remove` desde el mismo recorrido. La comparación del estado usa `equals` para leer contenido: el `new String("ENTREGADA")` del ejemplo impide que una comparación accidental con `==` parezca funcionar por compartir una instancia.
 
 **4. Cierra**
-Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
+Guarda el mapa antes y después, e identifica la entrada que quitó el iterador. Añade una segunda guía entregada, predice cuáles permanecen y compruébalo; luego intenta llamar `iterador.remove()` dos veces consecutivas e identifica la excepción.
 
 **Hito del tema:**
 
