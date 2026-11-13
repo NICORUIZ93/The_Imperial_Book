@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "93fbc9fd240155c02dd19c6450ea5ff341b877cb6518197765a8915f2a0686a5",
+    "fingerprint": "5d466ad894bdba0457b73ddbd5406871df91a65a6a71acb416842199fc3829de",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7798,21 +7798,21 @@
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 1: Checked vs unchecked exceptions",
-        "words": 757
+        "words": 1028
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 2: try-with-resources",
-        "words": 631
+        "words": 1049
       },
       {
         "issues": [],
         "module": 3,
         "tailWords": 0,
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
-        "words": 654
+        "words": 1340
       },
       {
         "issues": [],

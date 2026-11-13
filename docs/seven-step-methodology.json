@@ -155,12 +155,12 @@
     "java": {
       "topics": 111,
       "objective": 23,
-      "prerequisites": 43,
+      "prerequisites": 46,
       "context": 23,
       "theoryAnalogy": 13,
       "guidedDemo": 13,
       "codeExplanation": 111,
-      "execution": 110,
+      "execution": 109,
       "expectedResult": 111,
       "deliberateFailure": 111,
       "guidedPractice": 11,
@@ -21453,7 +21453,7 @@
         "topic": "Tema 1: Checked vs unchecked exceptions",
         "criteria": {
           "objective": false,
-          "prerequisites": false,
+          "prerequisites": true,
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
@@ -21469,7 +21469,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },
@@ -21478,7 +21478,7 @@
         "topic": "Tema 2: try-with-resources",
         "criteria": {
           "objective": false,
-          "prerequisites": false,
+          "prerequisites": true,
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
@@ -21494,7 +21494,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },
@@ -21503,12 +21503,12 @@
         "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
         "criteria": {
           "objective": false,
-          "prerequisites": false,
+          "prerequisites": true,
           "context": false,
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": true,
+          "execution": false,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,

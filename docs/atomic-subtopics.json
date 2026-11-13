@@ -58,10 +58,10 @@
     },
     "java": {
       "topics": 111,
-      "completeTopics": 101,
+      "completeTopics": 100,
       "topicsWith3to6Subtopics": 101,
-      "subtopics": 311,
-      "completeSubtopics": 311
+      "subtopics": 313,
+      "completeSubtopics": 312
     },
     "javascript": {
       "topics": 88,
@@ -9375,7 +9375,7 @@
           },
           {
             "id": "1.3",
-            "title": "#### Subtema 1.3: Trata una entrada inválida como error de programa · 10 min",
+            "title": "#### Subtema 1.3: Rechaza un argumento inválido antes de acceder a la lista · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -9393,7 +9393,7 @@
       {
         "module": 3,
         "topic": "### Tema 2: try-with-resources",
-        "subtopicCount": 3,
+        "subtopicCount": 4,
         "subtopics": [
           {
             "id": "2.1",
@@ -9436,18 +9436,10 @@
               "duration": true
             },
             "complete": true
-          }
-        ],
-        "complete": true
-      },
-      {
-        "module": 3,
-        "topic": "### Tema 3: Excepciones personalizadas y no tragar excepciones",
-        "subtopicCount": 3,
-        "subtopics": [
+          },
           {
-            "id": "3.1",
-            "title": "#### Subtema 3.1: Representa un saldo insuficiente · 10 min",
+            "id": "2.4",
+            "title": "#### Subtema 2.4: Conserva el fallo principal y examina los errores de cierre · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -9458,10 +9450,32 @@
               "duration": true
             },
             "complete": true
+          }
+        ],
+        "complete": true
+      },
+      {
+        "module": 3,
+        "topic": "### Tema 3: Excepciones personalizadas y no tragar excepciones",
+        "subtopicCount": 4,
+        "subtopics": [
+          {
+            "id": "3.1",
+            "title": "#### Subtema 3.1: Rechaza una asignación sin capacidad · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": false,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": false
           },
           {
             "id": "3.2",
-            "title": "#### Subtema 3.2: Atiende el error donde puedes informar al usuario · 10 min",
+            "title": "#### Subtema 3.2: Atiende el rechazo donde puedes informar al operador · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -9475,7 +9489,21 @@
           },
           {
             "id": "3.3",
-            "title": "#### Subtema 3.3: No ocultes fallos con un catch vacío · 10 min",
+            "title": "#### Subtema 3.3: Detecta el falso éxito de un catch vacío · 10 min",
+            "criteria": {
+              "context": true,
+              "action": true,
+              "expectedResult": true,
+              "deliberateFailure": true,
+              "understand": true,
+              "close": true,
+              "duration": true
+            },
+            "complete": true
+          },
+          {
+            "id": "3.4",
+            "title": "#### Subtema 3.4: Conserva la causa al traducir un fallo de lectura · 10 min",
             "criteria": {
               "context": true,
               "action": true,
@@ -9488,7 +9516,7 @@
             "complete": true
           }
         ],
-        "complete": true
+        "complete": false
       },
       {
         "module": 4,
