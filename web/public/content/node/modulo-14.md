@@ -559,6 +559,8 @@ Guarda la salida del test y explica qué estado comparte Kafka y cuál protege l
 
 **Fuentes oficiales:** [Confluent JavaScript client](https://docs.confluent.io/kafka-clients/javascript/current/overview.html) y [Apache Kafka](https://kafka.apache.org/documentation/).
 
+**Proyecto integrador:** el productor y el consumidor de `examples/node-messaging/kafka/` alimentan directamente la inbox de `examples/spring-kafka-rutaflow/`, el proyector real de pedidos de RutaFlow. **Límite:** usa Kafka cuando necesitas conservar el historial completo del flujo y varios consumidores independientes lean el mismo tópico a su propio ritmo; si solo necesitas repartir tareas una vez entre workers sin retener el historial, una cola de trabajo (RabbitMQ) es más simple que un log particionado.
+
 ### Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones
 
 **Duración estimada:** 35 min.
@@ -647,3 +649,5 @@ Guarda el mensaje de error y el nombre del exchange y la cola que lo recibieron.
 - [ ] Registro el límite de idempotencia en memoria.
 
 **Fuentes oficiales:** [tutorial de Node.js](https://www.rabbitmq.com/tutorials/tutorial-one-javascript), [confirmaciones, acknowledgements y prefetch](https://www.rabbitmq.com/docs/confirms) y [colas](https://www.rabbitmq.com/docs/queues).
+
+**Proyecto integrador:** este exchange/cola/DLQ es la topología real que RutaFlow usa para distribuir la generación de etiquetas entre varios workers sin perder los mensajes inválidos. **Práctica:** modifica `worker.mjs` para que, además de enrutar a `envios.dlq`, registre en consola el motivo exacto (`eventId` ausente, `pedidoId` ausente) antes de hacer `nack`, y confirma con un mensaje sin `pedidoId` que el motivo distinto también llega a la DLQ.

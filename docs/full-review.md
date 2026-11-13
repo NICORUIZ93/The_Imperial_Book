@@ -7,7 +7,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 | Capa | Cobertura y resultado registrado | Límite / pendiente | Evidencia detallada |
 |---|---|---|---|
 | Inventario estructural | 15 tracks, 291 módulos y 1323 temas en Markdown. | La paridad de archivos y metadatos no evalúa el aprendizaje. | [Curso por tema](./course-depth-review.md) |
-| Criterios editoriales | 1307/1323 temas muestran el perfil de presencia; 16 no lo completan. | Detector heurístico; no valida el contenido de cada criterio. | [Métricas](./topic-learning-quality.md) · [Deuda](./editorial-backlog.md) |
+| Criterios editoriales | 1323/1323 temas muestran el perfil de presencia; 0 no lo completan. | Detector heurístico; no valida el contenido de cada criterio. | [Métricas](./topic-learning-quality.md) · [Deuda](./editorial-backlog.md) |
 | Marcadores de siete pasos | 940/1323 cumplen todos los marcadores medidos. | Presencia de marcadores, no utilidad ni calidad de las prácticas. | [Metodología](./seven-step-methodology.md) |
 | Sustancia Markdown | 1/1323 temas presentan al menos una señal; 170/291 módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |
 | Código y visuales | 1253 temas revisados; 639 con Mermaid, 14 con Archify y 179 con visual ASCII pendiente. | La presencia no acredita que el código se compile o que un diagrama se renderice y sea correcto. | [Código y visuales](./code-visual-quality.md) |

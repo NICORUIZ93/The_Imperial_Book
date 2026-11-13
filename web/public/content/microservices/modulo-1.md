@@ -257,7 +257,7 @@ java -cp out MedirCohesion
 4. **Integración:** crea `evidence/cambios.csv` con motivo, clases, invariante y propietario.
 5. **Diseño:** compara organización por capas y por capacidad para el mismo caso.
 
-**Conexión con el proyecto:** el inventario justificará los módulos Envíos y Facturación antes de proteger sus APIs.
+**Conexión con el proyecto integrador:** el inventario justificará los módulos Envíos y Facturación antes de proteger sus APIs.
 
 #### Paso 6 · Práctica independiente
 
@@ -357,6 +357,8 @@ Diseña la API de Facturación con dos casos de uso. Explica qué campos no expo
 
 Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener reglas de dominio libres de frameworks» (referencia interna M1 T5). **Fuentes:** [Spring Modulith — módulos e interfaces](https://docs.spring.io/spring-modulith/reference/fundamentals.html).
 
+**Conexión con el proyecto integrador:** `RegistrarEnvio` es el contrato que el módulo Envíos de RutaFlow expone a Facturación; ningún otro módulo debe depender de `ServicioEnvios` ni de su entidad JPA.
+
 ### Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min
 
 **Prerrequisito:** tema «Proteger la API pública de un módulo» de este módulo (referencia interna M1 T4).
@@ -420,7 +422,7 @@ java -cp out CalcularTarifaPura
 4. **Integración:** traduce el error de dominio a HTTP 400 sólo en un adaptador.
 5. **Diseño:** inyecta un reloj para una tarifa nocturna reproducible.
 
-**Conexión con el proyecto:** esta regla será estable al cambiar persistencia y transporte.
+**Conexión con el proyecto integrador:** esta regla será estable al cambiar persistencia y transporte.
 
 #### Paso 6 · Práctica independiente
 
@@ -514,6 +516,8 @@ Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba
 
 **Siguiente tema:** «Representar dependencias de módulos como un grafo» (referencia interna M1 T7). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
+**Conexión con el proyecto integrador:** `RegistrarEnvio` del módulo Envíos recibe su puerto `GuardarEnvio` desde la composición de RutaFlow, no lo instancia; así la prueba del caso de uso usa `Memoria` y producción usa el adaptador JPA real.
+
 ### Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min
 
 **Prerrequisito:** tema «Sustituir adaptadores mediante puertos» de este módulo (referencia interna M1 T6).
@@ -581,6 +585,8 @@ Modela cinco módulos, incluye un ciclo transitivo y demuestra el camino. Propó
 
 **Siguiente tema:** «Romper ciclos según el tipo de acoplamiento» (referencia interna M1 T8). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
 
+**Conexión con el proyecto integrador:** el ciclo Envíos→Facturación→Notificaciones→Envíos es exactamente el riesgo que este grafo debe exponer antes de que RutaFlow extraiga cualquiera de esos tres módulos a un proceso independiente.
+
 ### Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min
 
 **Prerrequisito:** tema «Representar dependencias de módulos como un grafo» de este módulo (referencia interna M1 T7).
@@ -643,6 +649,8 @@ Rompe dos ciclos distintos: uno de código y otro de datos. Justifica estrategia
 - [ ] Mido coordinación antes y después.
 
 **Siguiente tema:** «Bloquear accesos a internals con ArchUnit» (referencia interna M1 T9). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
+
+**Conexión con el proyecto integrador:** reemplazar la llamada síncrona `notificaciones -> envios` por el evento `EnvioConfirmado` es la ruptura concreta que RutaFlow necesita antes de poder desplegar Notificaciones como proceso independiente.
 
 ### Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min
 
@@ -728,6 +736,8 @@ Protege internals de tres módulos y redacta mensajes accionables. Documenta una
 
 **Siguiente tema:** «Detectar ciclos de paquetes con ArchUnit» (referencia interna M1 T10). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
+**Conexión con el proyecto integrador:** esta prueba vive en `examples/archunit-hexagonal-rutaflow` y corre en cada pull request de RutaFlow; es la fitness function que convierte en fallo reproducible el límite que el Tema 4 solo describió en prosa.
+
 ### Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min
 
 **Prerrequisito:** tema «Bloquear accesos a internals con ArchUnit» de este módulo (referencia interna M1 T9).
@@ -790,6 +800,8 @@ Adapta el patrón a una estructura con prefijo `rutaflow.modulos.<nombre>`. Demu
 - [ ] No confundo API pública con ausencia de ciclo.
 
 **Siguiente tema:** «Evitar falsos verdes en fitness functions» (referencia interna M1 T11). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+
+**Conexión con el proyecto integrador:** este `beFreeOfCycles()` sobre `academia.rutaflow.modules` es la regla que RutaFlow necesita en verde antes de prometer que Envíos, Facturación y Notificaciones pueden desplegarse en un orden independiente. **Límite:** la regla solo cubre el ciclo que el patrón `slices().matching(...)` logra capturar; si el patrón tiene un error tipográfico o agrupa capas técnicas en vez de módulos de negocio, la prueba pasa en verde sin haber evaluado nada real — confirma siempre que el conteo de clases importadas no sea cero.
 
 ### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min
 
@@ -912,6 +924,8 @@ Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesi
 
 **Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T13). **Fuente:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
+**Conexión con el proyecto integrador:** `EvaluarExtraccion` reproduce la pregunta real sobre Facturación en RutaFlow; el Tema 13 convierte su salida (`MANTENER_MODULAR` o `REVISAR_EXTRACCION`) en el ADR que documenta la decisión.
+
 ### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min
 
 **Prerrequisito:** tema «Medir señales que justifican una extracción» de este módulo (referencia interna M1 T12).
@@ -979,6 +993,8 @@ Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias d
 - [ ] Registro consecuencias negativas.
 - [ ] Defino umbral, ventana y dueño.
 - [ ] Diseño reversión verificable.
+
+**Conexión con el proyecto integrador:** `ADR-0001` es el registro final del módulo Facturación de RutaFlow; cierra el módulo con una decisión auditable en vez de dejarla como una preferencia sin evidencia.
 
 **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 

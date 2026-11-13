@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "1eb2a9691d82b0b2d9222b2eb7f6a24264a1fba363829a12f95aa2d8518b7bb4",
+    "fingerprint": "7c07c718544b9462c10fc413b828d03784075ec1d01ecee444a0860901ff2813",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -2905,14 +2905,14 @@
         "module": 0,
         "tailWords": 209,
         "topic": "Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack",
-        "words": 742
+        "words": 743
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 128,
+        "tailWords": 163,
         "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
-        "words": 511
+        "words": 548
       },
       {
         "issues": [],
@@ -5741,7 +5741,7 @@
         "module": 19,
         "tailWords": 0,
         "topic": "Tema 1: estado de la jornada con Riverpod",
-        "words": 590
+        "words": 658
       },
       {
         "issues": [],
@@ -9006,9 +9006,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 97,
+        "tailWords": 137,
         "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
-        "words": 1081
+        "words": 1121
       },
       {
         "issues": [],
@@ -9092,56 +9092,56 @@
         "module": 1,
         "tailWords": 74,
         "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
-        "words": 653
+        "words": 654
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 65,
+        "tailWords": 95,
         "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
-        "words": 623
+        "words": 653
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 51,
         "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
-        "words": 580
+        "words": 581
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 58,
+        "tailWords": 95,
         "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
-        "words": 592
+        "words": 629
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 51,
+        "tailWords": 85,
         "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
-        "words": 519
+        "words": 553
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 51,
+        "tailWords": 81,
         "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
-        "words": 482
+        "words": 512
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 49,
+        "tailWords": 89,
         "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
-        "words": 550
+        "words": 590
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 52,
+        "tailWords": 137,
         "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
-        "words": 560
+        "words": 645
       },
       {
         "issues": [],
@@ -9153,16 +9153,16 @@
       {
         "issues": [],
         "module": 1,
-        "tailWords": 50,
+        "tailWords": 80,
         "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
-        "words": 536
+        "words": 566
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 70,
+        "tailWords": 102,
         "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
-        "words": 537
+        "words": 569
       }
     ],
     "node": [
@@ -9423,14 +9423,14 @@
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 7: Kafka desde Node: clave, grupo consumidor y offset",
-        "words": 595
+        "words": 671
       },
       {
         "issues": [],
         "module": 14,
         "tailWords": 0,
         "topic": "Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones",
-        "words": 622
+        "words": 691
       },
       {
         "issues": [],

@@ -2209,7 +2209,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 65,
+      "lines": 50,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -15944,7 +15944,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-19.md",
-      "lines": 444,
+      "lines": 446,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17939,7 +17939,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-0.md",
-      "lines": 1274,
+      "lines": 1276,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17960,7 +17960,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-1.md",
-      "lines": 1002,
+      "lines": 1018,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -18107,7 +18107,7 @@
     },
     {
       "path": "web/public/content/node/modulo-14.md",
-      "lines": 650,
+      "lines": 654,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

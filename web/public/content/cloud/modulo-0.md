@@ -243,7 +243,7 @@ const respuesta = await fetch("http://localhost:4566/_floci/health");
 
 console.log(`Floci respondió: ${respuesta.status}`);
 ```
-Ejecuta `node ejemplo-floci/revisar.mjs`. Debe imprimir `Floci respondió: 200`. `fetch` hace la misma pregunta que el comando anterior, y `respuesta.status` muestra el número que volvió. Cambia temporalmente `4566` por `4567` y ejecuta de nuevo: ahora Node mostrará un error de conexión. Devuelve el `4566` para corregirlo. Si el `200` no aparece, primero revisa el estado con `docker compose ps aws-local`.
+Ejecuta `node ejemplo-floci/revisar.mjs`. **Resultado esperado:** imprime `Floci respondió: 200`. `fetch` hace la misma pregunta que el comando anterior, y `respuesta.status` muestra el número que volvió. Cambia temporalmente `4566` por `4567` y ejecuta de nuevo: ahora Node mostrará un error de conexión. Devuelve el `4566` para corregirlo. Si el `200` no aparece, primero revisa el estado con `docker compose ps aws-local`.
 Una respuesta HTTP es una forma de contestar por la web. `200` quiere decir “recibí tu consulta y pude responder”. Si aparece “connection refused” o “no se pudo conectar”, revisa primero que Docker esté abierto y que `docker compose ps` diga `Up`. Si ves `404`, llegaste al servidor, pero la dirección escrita no existe. En este ejercicio usamos la ruta exacta `/_floci/health`; no es una página para crear buckets.
 #### Paso 5 · Práctica guiada
 Detén el servicio y repite la consulta de salud:
@@ -276,7 +276,7 @@ Desde la carpeta principal del proyecto ejecuta:
 ```bash
 docker compose config --services
 ```
-Verás `aws-local`, `azure-local` y `gcp-local`. En `docker-compose.yml`, busca `ports:` y lee las tres asignaciones. En esta versión son `4566`, `4577` y `4588`, respectivamente. El curso comienza con AWS; los otros dos se usan en el tema multi-nube.
+**Resultado esperado:** verás `aws-local`, `azure-local` y `gcp-local`. En `docker-compose.yml`, busca `ports:` y lee las tres asignaciones. En esta versión son `4566`, `4577` y `4588`, respectivamente. El curso comienza con AWS; los otros dos se usan en el tema multi-nube.
 Si el listado no coincide, comprueba que abriste la carpeta correcta: `pwd` muestra la ruta actual en macOS/Linux y `Get-Location` la muestra en PowerShell. `docker compose config --services` lee la configuración; no inicia contenedores. Esta es una ventaja para explorar el proyecto sin ocupar memoria.
 
 | Proveedor | Ejemplo de almacenamiento | Servicio local | Puerto |
@@ -301,7 +301,7 @@ Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus pala
 **Conceptos clave:** proveedor, servicio, puerto, endpoint.
 **¿Por qué es importante?** Leer el proveedor y su puerto antes de ejecutar un comando evita enviarlo al emulador equivocado y ayuda a entender mejor los ejemplos multi-nube posteriores.
 
-**Para el proyecto integrador:** al cambiar de proveedor tendrás que cambiar tanto el nombre del servicio como la dirección a la que tu programa envía la solicitud.
+**Para el proyecto integrador:** al cambiar de proveedor tendrás que cambiar tanto el nombre del servicio como la dirección a la que tu programa envía la solicitud. **Límite:** usa AWS (`4566`) mientras el curso no indique lo contrario; cambia a Azure o GCP solo cuando el tema lo pida explícitamente, para no confundir un error de proveedor con un error de código.
 
 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local
 

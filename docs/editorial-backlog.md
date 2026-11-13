@@ -12,12 +12,12 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Código | 1323 | 0 |
 | Ruta | 1323 | 0 |
 | Ejecución | 1323 | 0 |
-| Resultado | 1321 | 2 |
-| Modificación | 1322 | 1 |
-| Conexión con un proyecto | 1244 | 79 |
+| Resultado | 1323 | 0 |
+| Modificación | 1323 | 0 |
+| Conexión con un proyecto | 1258 | 65 |
 | Modelo mental | 1323 | 0 |
-| Límites | 1319 | 4 |
-| **Perfil de criterios detectado** | **1307** | **16** |
+| Límites | 1323 | 0 |
+| **Perfil de criterios detectado** | **1323** | **0** |
 
 ## Prioridad por track
 
@@ -25,39 +25,24 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | android | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| cloud | 156 | 0 | 0 | 0 | 2 | 0 | 0 | 1 |
+| cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | control-1 | 70 | 0 | 0 | 0 | 0 | 0 | 65 | 0 |
 | devops | 129 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| flutter | 106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | java | 111 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| microservices | 23 | 0 | 0 | 0 | 0 | 0 | 11 | 1 |
-| node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
+| microservices | 23 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| node | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | spring-boot | 113 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 
-- [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
-- [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
-- [flutter · módulo 19](../web/public/content/flutter/modulo-19.md) · Tema 1: estado de la jornada con Riverpod: conexión con un proyecto, límites.
-- [microservices · módulo 0](../web/public/content/microservices/modulo-0.md) · Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min: conexión con un proyecto, límites.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 12: Medir señales que justifican una extracción · Experto · 40 min: conexión con un proyecto.
-- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min: conexión con un proyecto.
-- [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
-- [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
+No hay criterios pendientes en esta auditoría de presencia editorial.
 
 ## Regla de cierre
 

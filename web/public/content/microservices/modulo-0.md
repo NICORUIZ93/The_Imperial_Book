@@ -138,6 +138,8 @@ Sin copiar el ejemplo, crea `src/ServidorVersion.java` que escuche en `127.0.0.1
 
 Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Siguiente tema:** «Imponer un presupuesto temporal a una solicitud HTTP» (referencia interna M0 T2). Fuente primaria: [Java 27 `HttpServer`](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
 
+**Conexión con el proyecto integrador RutaFlow Distribuido:** este servidor mínimo en `127.0.0.1:8081/health` es el primer proceso del proyecto; los siguientes temas lo dividen en servicios reales que se comunican por red, no por memoria compartida.
+
 ### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min
 
 **Prerrequisito:** tema «Ejecutar dos procesos Java y comprobar su socket HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T1).

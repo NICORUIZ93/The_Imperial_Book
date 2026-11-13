@@ -88,6 +88,8 @@ Entrega las salidas de ambas pruebas y anota un caso que todavía falta, como ca
 
 **Fuente oficial:** [Riverpod: providers y Notifier](https://riverpod.dev/docs/providers/notifier_provider).
 
+**Proyecto integrador:** `ShiftNotifier` es el estado real que `examples/flutter_rutaflow/` comparte entre la pantalla de mapa, la lista de paradas y las notificaciones de entrega del conductor. **Límite:** usa un `NotifierProvider` compartido cuando varias pantallas necesitan leer y reaccionar al mismo estado; si el dato solo vive dentro de un único widget y nadie más lo consulta, un `StatefulWidget` local es más simple que levantar un provider global.
+
 ### Tema 2: mapa y permiso de ubicación
 
 #### Paso 1 · Objetivo y preparación
