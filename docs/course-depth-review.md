@@ -11,7 +11,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | node | 83 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 111 | 57 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| java | 111 | 44 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 113 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | microservices | 23 | 2 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
@@ -806,14 +806,14 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 10 | [Tema 1: module-info.java y encapsulación fuerte](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 10 | [Tema 2: Migración incremental y cuándo JPMS aporta valor](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 10 | [Tema 3: opens para acceso reflexivo controlado de frameworks](../web/public/content/java/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 11 | [Tema 1: Generaciones de memoria y recolectores](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
-| java / 11 | [Tema 2: Java Flight Recorder y JIT compilation](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
-| java / 11 | [Tema 3: Referencias especiales y heap dumps](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
-| java / 11 | [Tema 4: Foreign Function & Memory API (Java 22)](../web/public/content/java/modulo-11.md) | demostracion-no-delimitada |
+| java / 11 | [Tema 1: Generaciones de memoria y recolectores](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 11 | [Tema 2: Java Flight Recorder y JIT compilation](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 11 | [Tema 3: Referencias especiales y heap dumps](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 11 | [Tema 4: Foreign Function & Memory API (Java 22)](../web/public/content/java/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 12 | [Tema 1: Builder — configuración paso a paso y validación](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
-| java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
-| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
-| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
+| java / 12 | [Tema 2: Factory Method y Strategy](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 12 | [Tema 3: Abstract Factory y familias de productos compatibles](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 12 | [Tema 4: SOLID y cuándo NO aplicar un patrón](../web/public/content/java/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 12 | [Tema 5: Prototype: copiar un objeto sin compartir sus datos](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
 | java / 12 | [Tema 6: Patrones estructurales para conectar piezas existentes](../web/public/content/java/modulo-12.md) | demostracion-no-delimitada |
 | java / 13 | [Tema 1: Arquitectura por capas del proyecto integrador](../web/public/content/java/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -823,12 +823,12 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 14 | [Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 14 | [Tema 3: Deserializar es permitir construcción y comportamiento](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 14 | [Tema 4: El runtime es parte del artefacto y necesita ciclo de vida](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
-| java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 5: Pruebas de integración reproducibles](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
-| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | demostracion-no-delimitada |
+| java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 15 | [Tema 4: JUnit 5, Mockito y assertions expresivas](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 15 | [Tema 5: Pruebas de integración reproducibles](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 15 | [Tema 6: SLF4J, Logback, MDC y logging estructurado](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 1: Entidades y relaciones JPA](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 2: FetchType.LAZY, EAGER y el problema N+1](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 16 | [Tema 3: Relaciones uno a uno, muchos a muchos y herencia](../web/public/content/java/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |

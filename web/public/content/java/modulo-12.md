@@ -75,6 +75,32 @@ Escribe el criterio que usaría el equipo antes de añadir Builder.
 
 **Decisión de diseño:** compara `new Envio("RT-1", true, "10-12", false)` con `new Envio.Builder("RT-1").prioritario(true).ventana("10-12").build()`. Builder ayuda si hay varias opciones o combinaciones que deben validarse juntas. Con dos campos obligatorios, un constructor directo puede ser más claro. Lee la llamada desde quien crea el objeto y pregunta si debe recordar el orden de varios booleanos. Prueba que `build()` rechace configuraciones incompletas antes de devolver el objeto. Fuente primaria: https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html.
 
+#### Fragmento real
+
+```java
+// src/Envio.java
+public class Envio {
+    static final class Builder {
+        private final String guia;
+        private boolean prioritario;
+        Builder(String guia) { this.guia = guia; }
+        Builder prioritario(boolean valor) { this.prioritario = valor; return this; }
+        Envio build() { return new Envio(guia, prioritario); }
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Envio.java
+java -cp out Envio
+```
+
+**Conexión con el proyecto integrador:** el motor de asignación de entregas (proyecto integrador) crea guías con varios datos opcionales (prioridad, ventana horaria, firma); Builder es la forma de que esa construcción sea legible sin un constructor de seis parámetros booleanos.
+
+**Límite:** Builder agrega una clase y varios métodos propios; para un objeto de uno o dos campos sin combinaciones que validar, un constructor directo o un `record` es más simple y no necesita este patrón.
+
 ### Tema 2: Factory Method y Strategy
 
 **¿Por qué es importante?** separar la creación de una regla intercambiable reduce condicionales repetidos en el servicio.
@@ -146,6 +172,36 @@ Separar selección, algoritmo y uso evita que el servicio acumule creación y re
 Guarda el ejemplo con estrategia inyectada y di cuál clase ensambla el sistema.
 
 **Comprueba los papeles:** Strategy cambia el cálculo; Factory Method escoge cuál implementación entregar. `Cotizador` recibe `Tarifa` y delega el cálculo, mientras una fábrica convierte el nombre de transportista en una estrategia conocida. Prueba ambas tarifas y un nombre desconocido. Rechaza ese nombre en el borde; no permitas que una cadena del usuario cargue clases arbitrarias. Si solo existe un algoritmo, no añadas fábrica e interfaz hasta que haya variación real que proteger. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html.
+
+#### Fragmento real
+
+```java
+// src/Tarifas.java
+interface Tarifa { int calcular(int gramos); }
+
+static Tarifa crear(String tipo) {
+    return switch (tipo) {
+        case "estandar" -> new Estandar();
+        case "prioritaria" -> new Prioritaria();
+        default -> throw new IllegalArgumentException("tipo desconocido: " + tipo);
+    };
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Tarifas.java src/Cotizador.java
+java -cp out Cotizador
+```
+
+**Conexión con el proyecto integrador:** el motor de asignación necesita calcular tarifas o prioridades según el tipo de envío; `Cotizador` recibiendo `Tarifa` por constructor es la misma forma en que el motor debe recibir su regla de asignación, sin crearla internamente.
+
+#### Practica
+
+Modifica `Tarifas.crear` para que un tipo desconocido devuelva `null` en vez de lanzar una excepción, llama `Cotizador` con ese resultado y observa dónde aparece el `NullPointerException` (lejos del error real).
+
+**Límite:** Factory Method centraliza la creación por nombre, pero si las implementaciones necesitan configuración distinta entre sí (no solo un `new`), conviene un registro de proveedores en vez de un `switch` que crece indefinidamente.
 
 ### Tema 3: Abstract Factory y familias de productos compatibles
 
@@ -219,6 +275,36 @@ Guarda la familia nueva y explica por qué es compatible.
 
 **Prueba la familia:** pide `crearMensaje()` y `crearPlantilla()` a la misma fábrica, imprime el proveedor de ambos y comprueba que coincida. Intenta combinar una plantilla cloud con un mensaje local para observar el error que evita la fábrica. Tiene sentido si varios objetos deben cambiar juntos según proveedor o configuración. Si solo hay un producto, la abstracción añade navegación sin proteger una variación real. Deja al cliente dependiente del contrato común. Fuente: https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html.
 
+#### Fragmento real
+
+```java
+// src/Notificaciones.java
+interface FabricaAvisos {
+    Mensaje crearMensaje();
+    Plantilla crearPlantilla();
+}
+
+static final class FabricaLocal implements FabricaAvisos {
+    public Mensaje crearMensaje() { return new Sms(); }
+    public Plantilla crearPlantilla() { return new PlantillaLocal(); }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Notificaciones.java
+java -cp out Notificaciones
+```
+
+**Conexión con el proyecto integrador:** si el motor de asignación notifica por distintos canales según el proveedor logístico (local vs. internacional), Abstract Factory garantiza que mensaje y plantilla siempre vengan del mismo proveedor, sin que el cliente los combine mal a mano.
+
+**Límite:** Abstract Factory solo aporta valor cuando existen varias familias reales de productos que deben mantenerse compatibles entre sí; con un único producto o una sola familia, es una capa de indirección sin variación que proteger.
+
+#### Practica
+
+Modifica el cliente para pedir `crearMensaje()` a `FabricaLocal` pero `crearPlantilla()` a `FabricaCloud` manualmente, y confirma el tipo de incompatibilidad que la fábrica evita cuando se usa correctamente.
+
 ### Tema 4: SOLID y cuándo NO aplicar un patrón
 
 **¿Por qué es importante?** SOLID ayuda a señalar responsabilidades mezcladas y dependencias rígidas; no exige crear una clase por cada línea.
@@ -288,6 +374,32 @@ La inversión de dependencias dirige ambos lados hacia una abstracción; no sign
 **4. Cierra**
 
 Dibuja la dependencia entre servicio, interfaz e implementación. Fuente: [SOLID en Dev.java](https://dev.java/learn/).
+
+#### Fragmento real
+
+```java
+// src/ServicioEnvios.java
+public class ServicioEnvios {
+    private final RepositorioEnvios repositorio;
+    ServicioEnvios(RepositorioEnvios repositorio) { this.repositorio = repositorio; }
+    void registrar(String guia) { repositorio.guardar(guia); }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Envio.java src/ServicioEnvios.java src/Main.java
+java -cp out Main
+```
+
+**Conexión con el proyecto integrador:** el motor de asignación necesita poder cambiar de repositorio en memoria (para test) a uno real (JPA, módulo 16) sin tocar la lógica de negocio; recibir `RepositorioEnvios` por constructor en vez de instanciarlo es exactamente la inversión de dependencias que lo permite.
+
+#### Practica
+
+Modifica `ServicioEnvios` para que cree `new RepositorioArchivo()` internamente en vez de recibirlo por constructor, e intenta escribir un test que use un repositorio en memoria; confirma por qué ya no puedes sustituirlo.
+
+**Límite:** SOLID son heurísticas para señalar acoplamiento rígido o responsabilidades mezcladas, no una regla que exija una interfaz por cada clase; una clase con un único motivo de cambio y sin necesidad de sustitución no necesita convertirse en abstracción.
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos
 
@@ -361,6 +473,32 @@ Escribe qué evidencia justificaría usar Prototype en el producto.
 
 **Alcance de la copia:** cambia una etiqueta en la copia y verifica que la lista original no cambie. `new ArrayList<>(original.etiquetas)` crea otra lista, pero no duplica cada objeto mutable que contiene. Para valores inmutables esa copia superficial suele bastar; para elementos modificables, copia también esos elementos o usa tipos inmutables. `List.copyOf` crea una lista no modificable. Documenta la regla antes de implementar `clone`. Fuente: https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html.
 
+#### Fragmento real
+
+```java
+// src/Paquete.java
+public class Paquete {
+    String guia;
+    List<String> etiquetas;
+
+    Paquete(Paquete original) {
+        this.guia = original.guia;
+        this.etiquetas = new ArrayList<>(original.etiquetas); // copia, no la misma lista
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Paquete.java
+java -cp out Paquete
+```
+
+**Conexión con el proyecto integrador:** si el motor de asignación parte de una plantilla de bloque de entrega ya configurada para crear variantes, Prototype evita que modificar una copia contamine la plantilla original que otros procesos siguen usando.
+
+**Límite:** el constructor de copia de este ejemplo es una copia superficial consciente (nueva lista, mismos `String` inmutables); si `Paquete` tuviera un campo mutable anidado (otro objeto con estado propio), copiar solo la referencia externa no bastaría — hay que decidir caso por caso qué se copia en profundidad.
+
 ### Tema 6: Patrones estructurales para conectar piezas existentes
 
 **¿Por qué es importante?** adapter, decorator y facade ayudan a integrar sistemas sin mezclar sus contratos y detalles.
@@ -430,6 +568,29 @@ Facade simplifica un flujo; no es obligatorio esconder por completo los componen
 **4. Cierra**
 
 Conserva la llamada externa y enumera las tareas coordinadas. Fuente: [catálogo de patrones GoF](https://refactoring.guru/design-patterns/catalog).
+
+#### Fragmento real
+
+```java
+// src/Integracion.java
+class AdaptadorProveedor implements Notificador {
+    private final ProveedorViejo proveedor = new ProveedorViejo();
+    public void enviar(Envio envio) {
+        proveedor.enviarTexto("GUIA:" + envio.guia());
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Integracion.java
+java -cp out Integracion
+```
+
+**Conexión con el proyecto integrador:** si el motor de asignación debe integrar un transportista con una API distinta a la que usa el resto del sistema, Adapter es la pieza que traduce esa diferencia sin ensuciar el contrato `Notificador` que ya usan los demás proveedores.
+
+**Límite:** Adapter, Decorator y Facade reducen el costo de integrar piezas que no controlas, pero cada capa agrega indirección; si el proveedor nuevo ya cumple el contrato existente, no necesitas un adaptador — solo úsalo directamente.
 
 ---
 

@@ -32,7 +32,12 @@ public class Archivos {
 }
 ```
 
-Desde la carpeta del proyecto ejecuta `javac -d out src/Archivos.java` y `java -cp out Archivos`.
+Desde la carpeta del proyecto ejecuta:
+
+```bash
+javac -d out src/Archivos.java
+java -cp out Archivos
+```
 
 **Resultado esperado:** crea `datos/RT-1.txt` e imprime `RT-1;ENTREGADO`.
 
@@ -75,7 +80,14 @@ public class ComprobanteSeguro {
 }
 ```
 
-Compila y ejecuta con `javac -d out src/ComprobanteSeguro.java` y `java -cp out ComprobanteSeguro RT-1.txt`. Repite con `../../secreto.txt`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/ComprobanteSeguro.java
+java -cp out ComprobanteSeguro RT-1.txt
+```
+
+Repite con `../../secreto.txt` como argumento.
 
 **Resultado esperado:** el nombre simple queda dentro de `comprobantes`; el otro se rechaza antes de leer.
 
@@ -105,7 +117,12 @@ try (var archivos = Files.list(Path.of("datos"))) {
 }
 ```
 
-Integra el bloque en una clase con `main`, crea dos archivos usando el Tema 1 y ejecuta `javac -d out src/Listar.java` y `java -cp out Listar`.
+Integra el bloque en una clase con `main`, crea dos archivos usando el Tema 1 y ejecuta:
+
+```bash
+javac -d out src/Listar.java
+java -cp out Listar
+```
 
 **Resultado esperado:** aparecen los nombres de ambos comprobantes; el stream del directorio queda cerrado.
 
@@ -119,7 +136,7 @@ Integra el bloque en una clase con `main`, crea dos archivos usando el Tema 1 y 
 
 Explica por qué este stream se cierra como un archivo. Fuente oficial: [Path y Files](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/nio/file/Files.html).
 
-**Proyecto integrador:** valida la carpeta de comprobantes y lista los archivos que puede procesar. **Límite:** la comprobación de ruta no sustituye los permisos del sistema operativo.
+**Proyecto integrador:** valida la carpeta de comprobantes y lista los archivos que puede procesar. **Límite:** la comprobación de ruta no sustituye los permisos del sistema operativo. **Práctica:** modifica `ComprobanteSeguro.java` para aceptar un segundo argumento con la carpeta base y confirma que sigue rechazando rutas que escapan de esa carpeta con `../`.
 
 ### Tema 2: Serialización con Jackson
 
@@ -166,7 +183,11 @@ public class EntregaJson {
 }
 ```
 
-Ejecuta `mvn -q compile exec:java -Dexec.mainClass=EntregaJson`.
+Ejecuta:
+
+```bash
+mvn -q compile exec:java -Dexec.mainClass=EntregaJson
+```
 
 **Resultado esperado:** aparece el JSON y luego `RT-1 EN_RUTA`.
 
@@ -198,7 +219,11 @@ try {
 }
 ```
 
-Vuelve a ejecutar con Maven.
+Vuelve a ejecutar:
+
+```bash
+mvn -q compile exec:java -Dexec.mainClass=EntregaJson
+```
 
 **Resultado esperado:** el programa informa el JSON inválido en vez de ocultar la excepción.
 
@@ -228,7 +253,11 @@ mapper.configure(
     false);
 ```
 
-Ejecuta `mvn -q compile exec:java -Dexec.mainClass=EntregaJson`.
+Ejecuta:
+
+```bash
+mvn -q compile exec:java -Dexec.mainClass=EntregaJson
+```
 
 **Resultado esperado:** la primera deserialización rechaza el campo extra; la segunda lo ignora y lee guía y estado.
 
@@ -243,6 +272,8 @@ La tolerancia a campos nuevos facilita despliegues graduales, pero también pued
 Anota si el lector de RutaFlow debe ser estricto o tolerante. Fuentes oficiales: [Jackson Databind](https://github.com/FasterXML/jackson-databind) y [release notes 2.22](https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.22).
 
 **Límite:** la versión indicada es Jackson 2.x; Jackson 3 cambia paquetes y coordenadas. No mezcles imports de las dos versiones.
+
+**Proyecto integrador:** el motor serializa cada guía de entrega a JSON para el API y la reconstruye con el mismo record al leer el cuerpo de la solicitud. **Práctica:** modifica `Envio` para agregar un campo `pesoKg` y confirma que la serialización y la deserialización siguen funcionando con el campo nuevo.
 
 ### Tema 3: Archivos grandes y recursos del classpath
 
@@ -274,7 +305,12 @@ public class ContarLineas {
 }
 ```
 
-Crea `reporte.txt` con varias líneas y ejecuta `javac -d out src/ContarLineas.java` y `java -cp out ContarLineas reporte.txt`.
+Crea `reporte.txt` con varias líneas y ejecuta:
+
+```bash
+javac -d out src/ContarLineas.java
+java -cp out ContarLineas reporte.txt
+```
 
 **Resultado esperado:** imprime la cantidad de líneas y no carga una lista con todo el archivo.
 
@@ -315,7 +351,11 @@ public class ConfigClasspath {
 }
 ```
 
-Empaqueta el recurso junto a la clase con Maven y ejecuta `mvn -q package`.
+Empaqueta el recurso junto a la clase con Maven y ejecuta:
+
+```bash
+mvn -q package
+```
 
 **Resultado esperado:** la salida es `demo` desde el recurso ubicado en el classpath.
 
@@ -350,7 +390,14 @@ public class ContarTodo {
 }
 ```
 
-Compila con `javac -d out src/ContarTodo.java` y ejecuta `java -cp out ContarTodo reporte.txt`; genera un archivo más grande repitiendo líneas antes de comparar.
+Compila y ejecuta:
+
+```bash
+javac -d out src/ContarTodo.java
+java -cp out ContarTodo reporte.txt
+```
+
+Genera un archivo más grande repitiendo líneas antes de comparar.
 
 **Resultado esperado:** ambas versiones cuentan lo mismo; la lista completa necesita memoria proporcional al archivo, mientras que el lector procesa progresivamente.
 
@@ -364,7 +411,7 @@ La lectura completa es cómoda para archivos chicos; el streaming mantiene bajo 
 
 Anota el tamaño del archivo y cuál lectura elegiste. Fuentes oficiales: [BufferedReader](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html) y [recursos de clase](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Class.html#getResourceAsStream(java.lang.String)).
 
-**Proyecto integrador:** procesa comprobantes grandes línea por línea y empaqueta la configuración con el JAR.
+**Proyecto integrador:** procesa comprobantes grandes línea por línea y empaqueta la configuración con el JAR. **Límite:** usa `readAllLines`/`Files.readString` solo cuando el archivo cabe con holgura en memoria; para reportes de cientos de miles de filas o tamaño desconocido, procesa línea por línea con `BufferedReader` en vez de materializar la lista completa. **Práctica:** modifica `ContarLineas.java` para además contar cuántas líneas contienen la palabra `ENTREGADO`, sin dejar de leer el archivo línea por línea.
 
 ## Construcción guiada del capítulo
 

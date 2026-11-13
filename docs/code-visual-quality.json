@@ -86,8 +86,8 @@
     },
     "java": {
       "topics": 111,
-      "code": 97,
-      "commentedCode": 43,
+      "code": 111,
+      "commentedCode": 55,
       "mermaid": 18,
       "archifyVisual": 1,
       "asciiVisual": 0,
@@ -1487,72 +1487,9 @@
     {
       "track": "java",
       "module": 11,
-      "topic": "Tema 1: Generaciones de memoria y recolectores",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 11,
-      "topic": "Tema 3: Referencias especiales y heap dumps",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 11,
       "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
       "missingCode": false,
       "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 1: Builder — configuración paso a paso y validación",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 2: Factory Method y Strategy",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 12,
-      "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-      "missingCode": true,
-      "missingComments": false
     },
     {
       "track": "java",
@@ -1572,29 +1509,15 @@
       "track": "java",
       "module": 15,
       "topic": "Tema 1: Maven avanzado",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
       "module": 15,
       "topic": "Tema 2: Gradle y builds reproducibles",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-      "missingCode": true,
-      "missingComments": false
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-      "missingCode": true,
-      "missingComments": false
+      "missingCode": false,
+      "missingComments": true
     },
     {
       "track": "java",
@@ -1602,13 +1525,6 @@
       "topic": "Tema 5: Pruebas de integración reproducibles",
       "missingCode": false,
       "missingComments": true
-    },
-    {
-      "track": "java",
-      "module": 15,
-      "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-      "missingCode": true,
-      "missingComments": false
     },
     {
       "track": "java",

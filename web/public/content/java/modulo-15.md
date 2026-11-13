@@ -76,6 +76,22 @@ Conserva la salida de ambas validaciones y anota el rango admitido.
 
 **Prueba el lifecycle:** compara `./mvnw test` con `./mvnw clean verify` y observa qué pasos adicionales corren. Instalar un plugin no ejecuta automáticamente sus objetivos: enlaza cada uno a una fase y guarda la decisión en `pom.xml`. Comprueba desde una copia limpia que pruebas, chequeos y empaquetado corren en el orden esperado. Así puedes explicar qué artefacto produces y evitas depender de comandos locales que CI desconoce. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
 
+#### Fragmento real
+
+```bash
+cp -R examples/java-maven ejemplo-maven-avanzado
+cd ejemplo-maven-avanzado
+mvn -pl app -am clean verify
+```
+
+**Conexión con el proyecto integrador:** el proyecto integrador (módulo 13) necesita este mismo reactor Maven (`domain`/`app` separados, `-pl -am`) si lo construyes con Maven en vez de Gradle; Enforcer evita que `app` y `domain` resuelvan versiones distintas de la misma librería.
+
+**Límite:** `-pl app -am` solo construye lo que falta en el reactor actual; sin un `install` previo de `domain` en el repositorio local, un comando que omita `-am` fallará aunque el código sea correcto.
+
+#### Practica
+
+Modifica `ejemplo-maven-avanzado/pom.xml` para usar el rango `[99,)` en `requireJavaVersion` y ejecuta `mvn validate`; confirma que Enforcer rechaza el build antes de intentar compilar nada.
+
 ### Tema 2: Gradle y builds reproducibles
 
 **¿Por qué es importante?** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
@@ -147,6 +163,23 @@ Dependency locking registra versiones; verification metadata controla integridad
 Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [Gradle dependency verification](https://docs.gradle.org/current/userguide/dependency_verification.html).
 
 **Prueba dos entornos:** usa el Gradle Wrapper y ejecuta `./gradlew clean build` en un checkout limpio. Si difiere la salida, compara JDK, wrapper y `./gradlew dependencies --configuration runtimeClasspath`. El caché acelera descargas, pero no fija la versión resuelta. Declara versiones en catálogo o plataforma y comparte convenciones cuando los módulos repiten configuración. Guarda la tarea que produce el artefacto desplegado. Fuente: https://docs.gradle.org/current/userguide/declaring_configurations.html.
+
+#### Fragmento real
+
+```bash
+cp -R examples/java-gradle ejemplo-gradle-reproducible
+cd ejemplo-gradle-reproducible
+gradle wrapper --gradle-version 9.1.0
+./gradlew clean build
+```
+
+**Conexión con el proyecto integrador:** si distribuyes el proyecto integrador con Gradle, el wrapper versionado (y `isReproducibleFileOrder`/sin timestamps) es lo que garantiza que el JAR que construye tu compañero sea bit a bit igual al tuyo para el mismo commit.
+
+**Límite:** la reproducibilidad del artefacto (mismo hash) no certifica que el build sea correcto ni rápido; solo dice que, dado el mismo código y configuración, el resultado no varía por azar (timestamps, orden de archivos).
+
+#### Practica
+
+Modifica `build.gradle.kts` para incluir la hora actual (`System.currentTimeMillis()`) en el manifest del JAR, ejecuta `./gradlew clean build` dos veces y compara los hashes SHA-256 antes y después de revertir el cambio.
 
 ### Tema 3: Proyectos multi-módulo sin ciclos
 
@@ -220,6 +253,33 @@ Guarda `projects` y una decisión de arquitectura. Fuente: [ArchUnit User Guide]
 
 **Revisa el grafo:** dibuja una flecha por dependencia, como `app → dominio → contratos`. Una flecha de regreso forma un ciclo y suele indicar que el contrato quedó en una capa equivocada. Maven construye dependencias con `./mvnw -pl app -am test`; Gradle declara `implementation(project(":dominio"))`. Mantén la raíz como agregadora y evita que un módulo bajo importe la aplicación. Fuentes: https://maven.apache.org/guides/mini/guide-multiple-modules.html y https://docs.gradle.org/current/userguide/multi_project_builds.html.
 
+#### Fragmento real
+
+```java
+// src/test/java/architecture/DependencyRulesTest.java
+@Test
+void dominioNoDependeDeInfraestructura() {
+    var clases = new ClassFileImporter().importPackages("com.academia");
+    noClasses().that().resideInAPackage("..domain..")
+        .should().dependOnClassesThat().resideInAPackage("..infrastructure..")
+        .check(clases);
+}
+```
+
+Ejecuta:
+
+```bash
+./gradlew test
+```
+
+**Conexión con el proyecto integrador:** el proyecto integrador separa dominio de infraestructura (módulo 13); esta misma regla ArchUnit es la que evita que, con el tiempo, alguien importe JDBC o Spring directamente dentro de la lógica de asignación de guías.
+
+**Límite:** ArchUnit prueba la estructura de dependencias entre paquetes compilados; no prueba que la lógica de negocio sea correcta, solo que no cruza el límite arquitectónico que declaraste.
+
+#### Practica
+
+Modifica una clase de `domain` para que importe algo de `infrastructure` a propósito, ejecuta `./gradlew test` y confirma que el mensaje de fallo señala exactamente el origen y destino de la dependencia prohibida.
+
 ### Tema 4: JUnit 5, Mockito y assertions expresivas
 
 **¿Por qué es importante?** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
@@ -291,6 +351,37 @@ Mocks ayudan a reproducir fallos; no prueban transporte real ni persistencia at�
 **4. Cierra**
 
 Guarda el contrato y la prueba de error. Fuente: [JUnit User Guide](https://docs.junit.org/current/user-guide/).
+
+#### Fragmento real
+
+```java
+// src/test/java/ConfirmarEntregaTest.java
+@Test
+void confirmarEnviaNotificacionYActualizaEstado() {
+    var repo = new RepositorioGuiasFake();
+    var notificacion = mock(PuertoNotificacion.class);
+    var caso = new ConfirmarEntrega(repo, notificacion);
+
+    caso.confirmar("RT-1");
+
+    assertEquals("ENTREGADA", repo.estadoDe("RT-1"));
+    verify(notificacion).enviar(any(EventoEntrega.class));
+}
+```
+
+Ejecuta:
+
+```bash
+./gradlew test
+```
+
+**Conexión con el proyecto integrador:** `ConfirmarEntrega` es el tipo de caso de uso que tendrás en el proyecto integrador; probarlo con un fake de repositorio y un mock de notificación (no una base real) es lo que te permite correr esta suite en segundos, no minutos.
+
+**Límite:** mockear `PuertoNotificacion` prueba que tu caso de uso llama al puerto correctamente; no prueba que el adaptador real (SMS, email) funcione — eso exige una prueba de integración aparte (Tema 5) contra el servicio real o un doble fiel a su contrato.
+
+#### Practica
+
+Modifica el mock para que `notificacion.enviar(...)` también se llame una segunda vez dentro del caso de uso, y confirma con `verifyNoMoreInteractions` si tu prueba empieza a fallar aunque el comportamiento visible para el usuario no cambió.
 
 ### Tema 5: Pruebas de integración reproducibles
 
@@ -383,6 +474,20 @@ Contenedores desechables y datos controlados eliminan dependencia del orden; en 
 
 Conserva los dos resultados y el comando usado.
 
+Ejecuta:
+
+```bash
+./gradlew integrationTest
+```
+
+**Conexión con el proyecto integrador:** si el proyecto integrador persiste en PostgreSQL (módulo 16), esta es la prueba que confirma que tus migraciones y consultas funcionan contra el motor real, no solo contra el fake en memoria del Tema 4.
+
+**Límite:** Testcontainers exige Docker disponible; en un entorno sin Docker (algunos runners de CI gratuitos) esta suite no puede correr y debe separarse de las pruebas unitarias rápidas, como ya hace el source set `integrationTest` distinto de `test`.
+
+#### Practica
+
+Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 5.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
+
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado
 
 **¿Por qué es importante?** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
@@ -454,6 +559,30 @@ Logs complementan métricas y trazas; un ID de alta cardinalidad puede ser útil
 **4. Cierra**
 
 Conserva la salida y una regla de datos que nunca registrarás.
+
+#### Fragmento real
+
+```java
+// src/main/java/ProcesarEntrega.java
+try (var ignored = MDC.putCloseable("traceId", traceId)) {
+    log.atInfo().addKeyValue("guia", guia).addKeyValue("estado", estado)
+       .log("delivery processed");
+}
+```
+
+Ejecuta:
+
+```bash
+./gradlew run
+```
+
+**Conexión con el proyecto integrador:** cuando el proyecto integrador reciba varias peticiones concurrentes para asignar guías, `traceId` por `MDC` es lo que te permite separar en los logs qué línea pertenece a cada petición, en vez de un bloque de texto mezclado.
+
+**Límite:** `MDC` asocia contexto al hilo actual; si el proyecto integrador usa `ExecutorService` o hilos virtuales para procesar en paralelo (módulo 13), el `traceId` no se propaga automáticamente al hilo hijo — hay que copiarlo explícitamente al crear cada tarea.
+
+#### Practica
+
+Modifica `ProcesarEntrega.java` para llamar `MDC.put("traceId", traceId)` sin el `try-with-resources` de `putCloseable`, procesa dos solicitudes con IDs distintos en el mismo hilo reutilizado y observa si el segundo evento conserva el `traceId` del primero.
 
 ---
 

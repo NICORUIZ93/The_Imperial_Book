@@ -4475,7 +4475,7 @@
         "https://docs.oracle.com/en/java/javase/25/jfapi/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 76,
+      "line": 104,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html",
         "https://docs.oracle.com/en/java/javase/25/jfapi/"
@@ -4491,7 +4491,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 148,
+      "line": 203,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html"
       ],
@@ -4507,7 +4507,7 @@
         "https://openjdk.org/jeps/454"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 218,
+      "line": 298,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/22/core/foreign-function-and-memory-api.html",
         "https://openjdk.org/jeps/454"
@@ -4538,7 +4538,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 78,
+      "line": 104,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Function.html"
       ],
@@ -4553,7 +4553,7 @@
         "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 150,
+      "line": 206,
       "originalProseUrls": [
         "https://docs.oracle.com/javase/specs/jls/se25/html/jls-9.html"
       ],
@@ -4648,7 +4648,7 @@
         "https://docs.gradle.org/current/userguide/dependency_verification.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 79,
+      "line": 95,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/declaring_configurations.html",
         "https://docs.gradle.org/current/userguide/dependency_verification.html"
@@ -4667,7 +4667,7 @@
         "https://www.archunit.org/userguide/html/000_Index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 151,
+      "line": 184,
       "originalProseUrls": [
         "https://docs.gradle.org/current/userguide/multi_project_builds.html",
         "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
@@ -4683,7 +4683,7 @@
       "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 223,
+      "line": 283,
       "originalProseUrls": [
         "https://docs.junit.org/current/user-guide/",
         "https://github.com/mockito/mockito/releases"
@@ -4700,7 +4700,7 @@
         "https://java.testcontainers.org/test_framework_integration/junit_5/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 295,
+      "line": 386,
       "originalProseUrls": [
         "https://java.testcontainers.org/modules/databases/postgres/",
         "https://java.testcontainers.org/test_framework_integration/junit_5/"
@@ -4714,7 +4714,7 @@
       "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "providerCitations": [],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 386,
+      "line": 491,
       "originalProseUrls": [
         "https://github.com/qos-ch/logback/releases"
       ],
@@ -4876,7 +4876,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 602,
+      "line": 604,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html",
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html"
@@ -4892,7 +4892,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 742,
+      "line": 751,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html"
       ],
@@ -4907,7 +4907,7 @@
         "https://openjdk.org/jeps/456"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 263,
+      "line": 317,
       "originalProseUrls": [
         "https://openjdk.org/jeps/456"
       ],

@@ -160,7 +160,7 @@
       "theoryAnalogy": 13,
       "guidedDemo": 13,
       "codeExplanation": 111,
-      "execution": 75,
+      "execution": 110,
       "expectedResult": 111,
       "deliberateFailure": 111,
       "guidedPractice": 11,
@@ -19758,7 +19758,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19769,7 +19769,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19783,7 +19783,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19794,7 +19794,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19808,7 +19808,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19819,7 +19819,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19833,7 +19833,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19844,7 +19844,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19858,7 +19858,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19869,7 +19869,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19883,7 +19883,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19894,7 +19894,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19908,7 +19908,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19919,7 +19919,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19933,7 +19933,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19944,7 +19944,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19958,7 +19958,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19969,7 +19969,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -19983,7 +19983,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -19994,7 +19994,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -20183,7 +20183,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20194,7 +20194,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -20208,7 +20208,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20219,7 +20219,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -20233,7 +20233,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20244,7 +20244,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -20258,7 +20258,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20269,7 +20269,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -20283,7 +20283,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20294,7 +20294,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -20308,7 +20308,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20319,7 +20319,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -20958,7 +20958,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20969,7 +20969,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -20983,7 +20983,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -20994,7 +20994,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21008,7 +21008,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21019,7 +21019,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21033,7 +21033,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21044,7 +21044,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21058,7 +21058,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21069,7 +21069,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21083,7 +21083,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21094,7 +21094,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21108,7 +21108,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21119,7 +21119,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21133,7 +21133,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21144,7 +21144,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21158,7 +21158,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21169,7 +21169,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 6,
+          "stepsPassed": 7,
           "complete": false
         }
       },
@@ -21183,7 +21183,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21194,7 +21194,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 7,
+          "stepsPassed": 8,
           "complete": false
         }
       },
@@ -21758,7 +21758,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21769,7 +21769,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -21783,7 +21783,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21794,7 +21794,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -21808,7 +21808,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21819,7 +21819,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -21833,7 +21833,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21844,7 +21844,7 @@
           "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 5,
+          "stepsPassed": 6,
           "complete": false
         }
       },
@@ -21858,7 +21858,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21869,7 +21869,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 4,
+          "stepsPassed": 5,
           "complete": false
         }
       },
@@ -21883,7 +21883,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21894,7 +21894,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -21908,7 +21908,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21919,7 +21919,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -21933,7 +21933,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21944,7 +21944,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },
@@ -21958,7 +21958,7 @@
           "theoryAnalogy": false,
           "guidedDemo": false,
           "codeExplanation": true,
-          "execution": false,
+          "execution": true,
           "expectedResult": true,
           "deliberateFailure": true,
           "guidedPractice": false,
@@ -21969,7 +21969,7 @@
           "standaloneExample": false
         },
         "classification": {
-          "stepsPassed": 3,
+          "stepsPassed": 4,
           "complete": false
         }
       },

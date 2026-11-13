@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "af8a908f98520cbab55f2c4369d8471bb44087346ecddaa48043e0736288ab60",
+    "fingerprint": "1eb2a9691d82b0b2d9222b2eb7f6a24264a1fba363829a12f95aa2d8518b7bb4",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7217,14 +7217,14 @@
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 1: Del código fuente a la JVM",
-        "words": 593
+        "words": 656
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
         "topic": "Tema 2: public static void main — qué significa cada palabra",
-        "words": 801
+        "words": 888
       },
       {
         "issues": [],
@@ -7273,21 +7273,21 @@
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
-        "words": 860
+        "words": 918
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 2: Herencia y sobreescritura",
-        "words": 1098
+        "words": 1165
       },
       {
         "issues": [],
         "module": 1,
         "tailWords": 0,
         "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
-        "words": 846
+        "words": 868
       },
       {
         "issues": [],
@@ -7322,70 +7322,70 @@
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 1: Generaciones de memoria y recolectores",
-        "words": 482
+        "words": 641
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 2: Java Flight Recorder y JIT compilation",
-        "words": 531
+        "words": 703
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 3: Referencias especiales y heap dumps",
-        "words": 471
+        "words": 623
       },
       {
         "issues": [],
         "module": 11,
         "tailWords": 0,
         "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
-        "words": 536
+        "words": 627
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Builder — configuración paso a paso y validación",
-        "words": 529
+        "words": 658
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 2: Factory Method y Strategy",
-        "words": 500
+        "words": 657
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
-        "words": 489
+        "words": 637
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
-        "words": 464
+        "words": 627
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
-        "words": 535
+        "words": 665
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
-        "words": 452
+        "words": 570
       },
       {
         "issues": [],
@@ -7441,42 +7441,42 @@
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 1: Maven avanzado",
-        "words": 497
+        "words": 623
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 2: Gradle y builds reproducibles",
-        "words": 490
+        "words": 627
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
-        "words": 505
+        "words": 640
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
-        "words": 455
+        "words": 627
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 5: Pruebas de integración reproducibles",
-        "words": 521
+        "words": 642
       },
       {
         "issues": [],
         "module": 15,
         "tailWords": 0,
         "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
-        "words": 485
+        "words": 635
       },
       {
         "issues": [],
@@ -7616,21 +7616,21 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 1: List, Set, Map y sus implementaciones",
-        "words": 835
+        "words": 905
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 2: Genéricos, wildcards y type erasure",
-        "words": 1017
+        "words": 1048
       },
       {
         "issues": [],
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
-        "words": 901
+        "words": 948
       },
       {
         "issues": [],
@@ -7656,72 +7656,72 @@
       {
         "issues": [],
         "module": 20,
-        "tailWords": 72,
+        "tailWords": 73,
         "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
-        "words": 728
+        "words": 756
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 59,
+        "tailWords": 106,
         "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
-        "words": 652
+        "words": 726
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 60,
+        "tailWords": 103,
         "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
-        "words": 694
+        "words": 764
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 62,
+        "tailWords": 63,
         "topic": "Tema 7: Optional: buscar un envío que puede no existir",
-        "words": 737
+        "words": 765
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 100,
+        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "words": 767
       },
       {
         "issues": [],
         "module": 20,
         "tailWords": 56,
-        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
-        "words": 696
-      },
-      {
-        "issues": [],
-        "module": 20,
-        "tailWords": 55,
         "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
-        "words": 608
+        "words": 636
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 50,
+        "tailWords": 51,
         "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
-        "words": 650
+        "words": 678
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 60,
+        "tailWords": 112,
         "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
-        "words": 667
+        "words": 746
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 68,
+        "tailWords": 110,
         "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
-        "words": 660
+        "words": 729
       },
       {
         "issues": [],
         "module": 20,
-        "tailWords": 78,
+        "tailWords": 79,
         "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
-        "words": 903
+        "words": 931
       },
       {
         "issues": [],
@@ -7875,70 +7875,70 @@
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
-        "words": 586
+        "words": 684
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
-        "words": 558
+        "words": 616
       },
       {
         "issues": [],
         "module": 5,
         "tailWords": 0,
         "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
-        "words": 740
+        "words": 768
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
         "topic": "Tema 1: NIO.2 — Path y Files",
-        "words": 585
+        "words": 611
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
         "topic": "Tema 2: Serialización con Jackson",
-        "words": 696
+        "words": 755
       },
       {
         "issues": [],
         "module": 6,
         "tailWords": 0,
         "topic": "Tema 3: Archivos grandes y recursos del classpath",
-        "words": 660
+        "words": 721
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 1: record — modelos inmutables sin boilerplate",
-        "words": 482
+        "words": 560
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
-        "words": 512
+        "words": 564
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
-        "words": 461
+        "words": 546
       },
       {
         "issues": [],
         "module": 7,
         "tailWords": 0,
         "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
-        "words": 478
+        "words": 573
       },
       {
         "issues": [],

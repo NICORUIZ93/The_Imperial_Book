@@ -119,6 +119,8 @@ Entrega la salida correcta, el error reproducido y la ruta que corregiste.
 
 **Fuentes oficiales:** [manual de `javac`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html) y [manual de `java`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html).
 
+**Proyecto integrador:** el motor de asignación de entregas parte de esta misma pareja `javac`/`java`: cada módulo del motor se compila una vez y se ejecuta muchas veces con distintos datos de entrada. **Límite:** `javac` recompila cuando cambia el código; no necesitas recompilar solo porque cambien los argumentos de entrada, y volver a compilar sin cambios reales no diagnostica ningún error de ejecución.
+
 ### Tema 2: public static void main — qué significa cada palabra
 
 **Duración estimada:** 30 min.
@@ -240,6 +242,8 @@ Anota las versiones con las que verificaste cada archivo y conserva las salidas.
 **Fuentes oficiales:** [guía de lanzamiento de aplicaciones Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) y [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512).
 
 **Diagrama interactivo:** [La firma que la JVM busca](/visuals/temas/java/modulo-0-tema-2-main.html).
+
+**Proyecto integrador:** el motor de entregas recibirá origen y destino exactamente como en el Subtema 2.2, por terminal y sin recompilar entre rutas distintas. **Límite:** no conviene usar la forma compacta de Java 25 (`void main()`) en el motor real, porque el proyecto debe seguir compilando en JDK 21; úsala solo para scripts de un solo archivo que no se distribuyen. **Práctica:** modifica `PuntoEntrada.java` para aceptar un tercer argumento opcional con el peso del paquete y valida que `args.length` lo cubra antes de leerlo.
 
 ### Tema 3: JDK, JRE y JVM
 

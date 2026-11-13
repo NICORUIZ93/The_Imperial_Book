@@ -73,6 +73,34 @@ El log permite formular hipótesis; requiere carga y objetivos del servicio para
 
 Guarda los dos comandos y una observación medida. Fuente: [logging de GC en Java](https://docs.oracle.com/en/java/javase/25/gctuning/garbage-collector-implementation.html).
 
+#### Fragmento real
+
+```java
+// src/Memoria.java
+public class Memoria {
+    public static void main(String[] args) throws Exception {
+        var datos = new byte[10_000_000];
+        System.out.println(datos.length);
+        Thread.sleep(30_000);
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/Memoria.java
+java -cp out Memoria
+```
+
+**Conexión con el proyecto integrador:** cuando el proyecto integrador procese muchas guías en memoria (módulo 13), `jcmd GC.heap_info` es la primera herramienta para confirmar si un consumo alto de memoria es heap vivo real o solo un heap reservado que todavía no se usó.
+
+**Límite:** `jcmd` da una foto puntual del heap; no identifica cuál objeto o campo estático retiene la memoria — para eso se necesita un heap dump (Tema 3), no solo el resumen agregado.
+
+#### Practica
+
+Modifica `src/Memoria.java` para crear el arreglo dentro de un bucle de 50 iteraciones sin retenerlo en ninguna variable externa, y compara la salida de `GC.heap_info` antes y después de que el GC recoja esos arreglos temporales.
+
 ### Tema 2: Java Flight Recorder y JIT compilation
 
 **¿Por qué es importante?** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
@@ -145,6 +173,33 @@ Guarda el comando y tres datos del resumen. Fuente: [Java Flight Recorder](https
 
 **Lee la grabación:** `jfr summary trabajo.jfr` muestra duración y eventos; `jfr print --events jdk.ExecutionSample trabajo.jfr` permite inspeccionar muestras. Busca patrones repetidos de CPU, esperas y bloqueos; una muestra no identifica la causa por sí sola. Para comparar JIT, conserva la misma carga y separa rondas de calentamiento de rondas medidas. Una microprueba manual ayuda a aprender, pero no reemplaza un benchmark controlado ni demuestra una mejora en producción. Fuente primaria: https://docs.oracle.com/en/java/javase/25/docs/specs/man/jfr.html.
 
+#### Fragmento real
+
+```java
+// src/Trabajo.java
+public class Trabajo {
+    public static void main(String[] args) throws Exception {
+        System.out.println("procesando");
+        Thread.sleep(5000);
+    }
+}
+```
+
+Ejecuta:
+
+```bash
+java -XX:StartFlightRecording=filename=trabajo.jfr,duration=8s -cp out Trabajo
+jfr summary trabajo.jfr
+```
+
+**Conexión con el proyecto integrador:** antes de optimizar el procesador concurrente del proyecto integrador (módulo 13), graba una sesión JFR mientras procesa una carga realista de guías; el resumen te dice dónde se va el tiempo real, no dónde crees que se va.
+
+**Límite:** JFR observa eventos de la JVM con bajo overhead, pero una sola grabación corta no es un benchmark: para comparar si un cambio mejoró algo necesitas la misma carga, mismos flags y, para el método en sí, JMH con warmup (módulo 14), no solo leer un resumen de JFR.
+
+#### Practica
+
+Modifica `src/Calentar.java` para medir el bucle con `System.nanoTime()` en la primera pasada y en la décima pasada por separado, y explica por qué la primera suele ser más lenta aunque el código no cambió.
+
 ### Tema 3: Referencias especiales y heap dumps
 
 **¿Por qué es importante?** retener objetos más tiempo del necesario puede agotar memoria; un heap dump ayuda a encontrar quién conserva referencias.
@@ -214,6 +269,31 @@ El dump captura objetos y referencias; puede contener datos sensibles de memoria
 **4. Cierra**
 
 Registra comando, PID y ruta del dump, sin compartirlo fuera del entorno autorizado. Fuente: [herramienta `jcmd`](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html).
+
+#### Fragmento real
+
+```java
+// src/ReferenciaDebil.java
+WeakReference<byte[]> ref = new WeakReference<>(new byte[1_000_000]);
+System.out.println(ref.get() != null);
+System.gc();
+System.out.println(ref.get());
+```
+
+Ejecuta:
+
+```bash
+javac -d out src/ReferenciaDebil.java
+java -cp out ReferenciaDebil
+```
+
+**Conexión con el proyecto integrador:** si el proyecto integrador cachea resultados de asignación en memoria, una `WeakReference` o `SoftReference` evita que esa caché crezca sin límite y provoque el mismo `OutOfMemoryError` que vas a provocar a propósito en este tema.
+
+**Límite:** una referencia débil permite que el GC recupere el objeto, pero no obliga a que lo haga en un momento dado; si necesitas liberar memoria bajo presión mientras conservas datos "mientras alcance", `SoftReference` es la herramienta, no `WeakReference`.
+
+#### Practica
+
+Modifica `src/Retencion.java` para que la lista `static final` use `SoftReference<byte[]>` en vez de guardar los arreglos directamente, repite `java -Xmx32m -cp out Retencion` y compara si sigue fallando con `OutOfMemoryError`.
 
 ### Tema 4: Foreign Function & Memory API (Java 22)
 
@@ -299,6 +379,18 @@ FFM hace explícita la gestión de memoria nativa; un acceso inválido puede fal
 **4. Cierra**
 
 Guarda el fallo tras el cierre y documenta quién es responsable de cerrar el arena. Fuente: [JEP 454](https://openjdk.org/jeps/454).
+
+Ejecuta de nuevo con el fallo deliberado activo:
+
+```bash
+java -cp out MemoriaNativa
+```
+
+**Conexión con el proyecto integrador:** FFM solo tiene sentido si el proyecto integrador necesita llamar una librería nativa real (por ejemplo, un validador de direcciones en C); para el resto del proyecto, un `record` o una clase normal sigue siendo la opción correcta.
+
+#### Practica
+
+Modifica `MemoriaNativa.java` para guardar el `MemorySegment` en un campo fuera del bloque `try` y vuelve a ejecutar; confirma que el acceso posterior lanza la excepción esperada en vez de silenciosamente devolver datos corruptos.
 
 ---
 

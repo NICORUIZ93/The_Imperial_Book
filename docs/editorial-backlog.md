@@ -9,15 +9,15 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
 | Explicación | 1323 | 0 |
-| Código | 1309 | 14 |
+| Código | 1323 | 0 |
 | Ruta | 1323 | 0 |
-| Ejecución | 1288 | 35 |
+| Ejecución | 1323 | 0 |
 | Resultado | 1321 | 2 |
-| Modificación | 1294 | 29 |
-| Conexión con un proyecto | 1208 | 115 |
+| Modificación | 1322 | 1 |
+| Conexión con un proyecto | 1244 | 79 |
 | Modelo mental | 1323 | 0 |
-| Límites | 1296 | 27 |
-| **Perfil de criterios detectado** | **1263** | **60** |
+| Límites | 1319 | 4 |
+| **Perfil de criterios detectado** | **1307** | **16** |
 
 ## Prioridad por track
 
@@ -31,7 +31,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | flutter | 106 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
 | foundations | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 111 | 14 | 0 | 35 | 0 | 28 | 36 | 23 |
+| java | 111 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | microservices | 23 | 0 | 0 | 0 | 0 | 0 | 11 | 1 |
@@ -45,50 +45,6 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack: resultado.
 - [cloud · módulo 0](../web/public/content/cloud/modulo-0.md) · Tema 5: Servicios que emula Floci — AWS, Azure y GCP: resultado, límites.
 - [flutter · módulo 19](../web/public/content/flutter/modulo-19.md) · Tema 1: estado de la jornada con Riverpod: conexión con un proyecto, límites.
-- [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 1: Del código fuente a la JVM: conexión con un proyecto, límites.
-- [java · módulo 0](../web/public/content/java/modulo-0.md) · Tema 2: public static void main — qué significa cada palabra: modificación, conexión con un proyecto, límites.
-- [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 1: Clases, objetos, constructores y encapsulación: modificación, conexión con un proyecto.
-- [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 2: Herencia y sobreescritura: modificación, límites.
-- [java · módulo 1](../web/public/content/java/modulo-1.md) · Tema 3: Interfaces, clases abstractas y cuándo usar cada una: modificación.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 1: Generaciones de memoria y recolectores: código, ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 2: Java Flight Recorder y JIT compilation: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 3: Referencias especiales y heap dumps: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 11](../web/public/content/java/modulo-11.md) · Tema 4: Foreign Function & Memory API (Java 22): ejecución, modificación, conexión con un proyecto.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 1: Builder — configuración paso a paso y validación: código, ejecución, conexión con un proyecto, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 2: Factory Method y Strategy: código, ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 3: Abstract Factory y familias de productos compatibles: código, ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 4: SOLID y cuándo NO aplicar un patrón: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 5: Prototype: copiar un objeto sin compartir sus datos: código, ejecución, conexión con un proyecto, límites.
-- [java · módulo 12](../web/public/content/java/modulo-12.md) · Tema 6: Patrones estructurales para conectar piezas existentes: código, ejecución, conexión con un proyecto, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 1: Maven avanzado: código, ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 2: Gradle y builds reproducibles: código, ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 3: Proyectos multi-módulo sin ciclos: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 4: JUnit 5, Mockito y assertions expresivas: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 5: Pruebas de integración reproducibles: ejecución, modificación, conexión con un proyecto.
-- [java · módulo 15](../web/public/content/java/modulo-15.md) · Tema 6: SLF4J, Logback, MDC y logging estructurado: código, ejecución, modificación, conexión con un proyecto.
-- [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 1: List, Set, Map y sus implementaciones: modificación, límites.
-- [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 2: Genéricos, wildcards y type erasure: modificación.
-- [java · módulo 2](../web/public/content/java/modulo-2.md) · Tema 3: Comparable vs Comparator, e iteración: límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 4: Function y BiFunction: transformar uno o dos datos: ejecución, conexión con un proyecto.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo: ejecución, conexión con un proyecto, límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 6: Referencias a métodos: escribir la operación sin repetirla: ejecución, conexión con un proyecto, límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 7: Optional: buscar un envío que puede no existir: ejecución, conexión con un proyecto.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar: ejecución, conexión con un proyecto, límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 9: Streams terminales: encontrar, contar y combinar resultados: ejecución, conexión con un proyecto.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 10: Collectors: formar listas, mapas, grupos y texto: ejecución, conexión con un proyecto.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 11: Streams paralelos: comparar antes de acelerarlos: ejecución, conexión con un proyecto, límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 12: Pureza y efectos: calcular separado de guardar o imprimir: ejecución, conexión con un proyecto, límites.
-- [java · módulo 20](../web/public/content/java/modulo-20.md) · Tema 13: Flow API: publicar datos con demanda y cierre: ejecución, conexión con un proyecto.
-- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 5: Structured Concurrency (StructuredTaskScope, Java 25): modificación, conexión con un proyecto, límites.
-- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 6: Scoped Values frente a ThreadLocal (Java 25): ejecución, modificación, conexión con un proyecto.
-- [java · módulo 5](../web/public/content/java/modulo-5.md) · Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos: ejecución, modificación.
-- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 1: NIO.2 — Path y Files: ejecución, modificación.
-- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 2: Serialización con Jackson: ejecución, modificación, conexión con un proyecto.
-- [java · módulo 6](../web/public/content/java/modulo-6.md) · Tema 3: Archivos grandes y recursos del classpath: ejecución, modificación, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 1: record — modelos inmutables sin boilerplate: ejecución, conexión con un proyecto, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 2: sealed — jerarquías cerradas y exhaustividad: ejecución, modificación, conexión con un proyecto.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 3: Pattern matching exhaustivo y para instanceof: ejecución, modificación, conexión con un proyecto, límites.
-- [java · módulo 7](../web/public/content/java/modulo-7.md) · Tema 4: Unnamed variables y patterns (_, Java 22): ejecución, modificación, conexión con un proyecto, límites.
 - [microservices · módulo 0](../web/public/content/microservices/modulo-0.md) · Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: conexión con un proyecto.
 - [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min: conexión con un proyecto.
 - [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min: conexión con un proyecto.

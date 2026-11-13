@@ -562,6 +562,11 @@ public class Peso {
 
 Ejecuta `cd java-funcional-t04 && java src/Peso.java`.
 
+```bash
+cd java-funcional-t04
+java src/Peso.java
+```
+
 **Resultado esperado:** `normal` y luego `pesado`.
 
 **Fallo deliberado:** cambia `apply(8.5)` por `apply("8.5")`. **Error esperado:** el compilador indica que `String` no se puede convertir a `Double`. **Diagnóstico:** el tipo de entrada de `Function<Double, String>` es `Double`.
@@ -593,6 +598,11 @@ public class Guia {
 ```
 
 Ejecuta `cd java-funcional-t04 && java src/Guia.java`.
+
+```bash
+cd java-funcional-t04
+java src/Guia.java
+```
 
 **Resultado esperado:** `RT-18`.
 
@@ -628,6 +638,11 @@ public class Tarifa {
 
 Ejecuta `cd java-funcional-t04 && java src/Tarifa.java`.
 
+```bash
+cd java-funcional-t04
+java src/Tarifa.java
+```
+
 **Resultado esperado:** `3000.00`.
 
 **Fallo deliberado:** cambia `multiplicar.apply` a `multiplicar.apply("1250", new BigDecimal("2.4"))`. **Error esperado:** argumento `String` no compatible con `BigDecimal`. **Diagnóstico:** crea valores decimales desde texto antes de pasarlos.
@@ -642,7 +657,7 @@ Anota la entrada, la salida y la firma funcional que permitió calcularla.
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** corre los tres archivos; muestra el resultado de cada uno; reproduce y diagnostica un error de tipo; explica cuándo la regla necesita una entrada y cuándo dos. **Proyecto RutaFlow:** usa una función para describir el peso y una bifunción para calcular la tarifa. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+**Hito de 4 puntos:** corre los tres archivos; muestra el resultado de cada uno; reproduce y diagnostica un error de tipo; explica cuándo la regla necesita una entrada y cuándo dos. **Proyecto integrador (RutaFlow):** usa una función para describir el peso y una bifunción para calcular la tarifa. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
 ### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo
 
@@ -678,6 +693,11 @@ public class Ciudad {
 
 Ejecuta `cd java-funcional-t05 && java src/Ciudad.java`.
 
+```bash
+cd java-funcional-t05
+java src/Ciudad.java
+```
+
 **Resultado esperado:** `bogotá`.
 
 **Fallo deliberado:** cambia la lambda a `texto -> texto.length()`. **Error esperado:** `int cannot be converted to String`. **Diagnóstico:** la salida de `UnaryOperator<String>` también debe ser `String`.
@@ -710,6 +730,11 @@ public class Total {
 ```
 
 Ejecuta `cd java-funcional-t05 && java src/Total.java`.
+
+```bash
+cd java-funcional-t05
+java src/Total.java
+```
 
 **Resultado esperado:** `1550.00`.
 
@@ -744,6 +769,11 @@ public class Minimo {
 
 Ejecuta `cd java-funcional-t05 && java src/Minimo.java`.
 
+```bash
+cd java-funcional-t05
+java src/Minimo.java
+```
+
 **Resultado esperado:** `4800`.
 
 **Fallo deliberado:** cambia `BigDecimal::compareTo` por `(a, b) -> a`. **Error esperado:** el compilador rechaza que la comparación devuelva `BigDecimal` en vez de `int`. **Diagnóstico:** el comparador debe indicar cuál valor va primero.
@@ -758,7 +788,7 @@ Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** demuestra una transformación del mismo tipo; una suma; una selección de mínimo; diagnostica el fallo de tipo. **Proyecto RutaFlow:** normaliza el destino y escoge la menor tarifa entre dos opciones. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+**Hito de 4 puntos:** demuestra una transformación del mismo tipo; una suma; una selección de mínimo; diagnostica el fallo de tipo. **Proyecto integrador (RutaFlow):** normaliza el destino y escoge la menor tarifa entre dos opciones. **Límite:** `UnaryOperator`/`BinaryOperator` solo aplican cuando entrada y salida comparten exactamente el mismo tipo `T`; si la tarifa final debe ser otro tipo (por ejemplo un `Resultado` con motivo de rechazo), usa `Function`/`BiFunction` normales en vez de forzar el mismo tipo de entrada y salida. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
 ### Tema 6: Referencias a métodos: escribir la operación sin repetirla
 
@@ -794,6 +824,11 @@ public class Parsear {
 
 Ejecuta `cd java-funcional-t06 && java src/Parsear.java`.
 
+```bash
+cd java-funcional-t06
+java src/Parsear.java
+```
+
 **Resultado esperado:** `42`.
 
 **Fallo deliberado:** reemplaza por `Integer::sum`. **Error esperado:** el método requiere dos argumentos. **Diagnóstico:** `Function<String,Integer>` entrega un solo argumento; `parseInt` coincide.
@@ -826,6 +861,11 @@ public class Prefijo {
 ```
 
 Ejecuta `cd java-funcional-t06 && java src/Prefijo.java`.
+
+```bash
+cd java-funcional-t06
+java src/Prefijo.java
+```
 
 **Resultado esperado:** `RT-42`.
 
@@ -866,6 +906,11 @@ public class CrearEnvio {
 
 Ejecuta `cd java-funcional-t06 && java src/CrearEnvio.java`.
 
+```bash
+cd java-funcional-t06
+java src/CrearEnvio.java
+```
+
 **Resultado esperado:** `RT-7`, `Envio[guia=RT-7]`, `Envio[guia=SIN-GUIA]`.
 
 **Fallo deliberado:** cambia `Function<String, Envio> crear = Envio::new` por `Supplier<Envio> crear = Envio::new`. **Error esperado:** el constructor necesita un `String`. **Diagnóstico:** usa `Function` cuando el constructor recibe el dato, `Supplier` cuando no recibe ninguno.
@@ -880,7 +925,7 @@ Guarda la salida y explica si la referencia necesitó un objeto, una clase o cre
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** muestra las cuatro formas; asocia cada forma con su sintaxis; ejecuta la conversión de guía; diagnostica la referencia de constructor incompatible. **Proyecto RutaFlow:** normaliza y construye una guía con referencias legibles. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+**Hito de 4 puntos:** muestra las cuatro formas; asocia cada forma con su sintaxis; ejecuta la conversión de guía; diagnostica la referencia de constructor incompatible. **Proyecto integrador (RutaFlow):** normaliza y construye una guía con referencias legibles. **Límite:** usa una referencia a método solo cuando ya existe un método o constructor que calza exactamente con la firma de la interfaz funcional; si necesitas transformar un argumento antes de llamarlo, escribe una lambda explícita en vez de forzar una referencia. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
 ### Tema 7: Optional: buscar un envío que puede no existir
 
@@ -919,6 +964,11 @@ public class Buscar {
 
 Ejecuta `cd java-funcional-t07 && java src/Buscar.java`.
 
+```bash
+cd java-funcional-t07
+java src/Buscar.java
+```
+
 **Resultado esperado:** `false` y `No existe`.
 
 **Fallo deliberado:** cambia `orElse` por `get()`. **Error esperado:** `NoSuchElementException: No value present`. **Diagnóstico:** `get()` exige un valor, pero esta búsqueda está vacía.
@@ -954,6 +1004,11 @@ public class Transformar {
 
 Ejecuta `cd java-funcional-t07 && java src/Transformar.java`.
 
+```bash
+cd java-funcional-t07
+java src/Transformar.java
+```
+
 **Resultado esperado:** `en_ruta`.
 
 **Fallo deliberado:** cambia `contains("ruta")` por `contains("pago")`. **Resultado del fallo:** `sin estado`. **Diagnóstico:** el valor existe, pero `filter` lo descarta cuando la condición no coincide.
@@ -988,6 +1043,11 @@ public class Exigir {
 
 Ejecuta `cd java-funcional-t07 && java src/Exigir.java`.
 
+```bash
+cd java-funcional-t07
+java src/Exigir.java
+```
+
 **Resultado esperado:** el programa termina con `IllegalArgumentException: Guía RT-404 no existe`.
 
 **Fallo deliberado:** quita el mensaje y usa `orElseThrow()`. **Resultado del fallo:** la excepción ya no dice qué guía faltó. **Diagnóstico:** incluye contexto que ayude a encontrar el dato incorrecto.
@@ -1002,7 +1062,7 @@ Guarda los casos con valor y vacío y explica qué decisión tomó el programa e
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** demuestra una búsqueda vacía; transforma un valor presente; muestra el error útil de una búsqueda obligatoria; explica por qué `Optional` no reemplaza una lista. **Proyecto RutaFlow:** busca el estado de una guía e informa cuál referencia falta. Fuente: [Optional de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html).
+**Hito de 4 puntos:** demuestra una búsqueda vacía; transforma un valor presente; muestra el error útil de una búsqueda obligatoria; explica por qué `Optional` no reemplaza una lista. **Proyecto integrador (RutaFlow):** busca el estado de una guía e informa cuál referencia falta. Fuente: [Optional de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html).
 
 ### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar
 
@@ -1042,6 +1102,11 @@ public class Pesados {
 
 Ejecuta `cd java-funcional-t08 && java src/Pesados.java`.
 
+```bash
+cd java-funcional-t08
+java src/Pesados.java
+```
+
 **Resultado esperado:** `[RT-2]`.
 
 **Fallo deliberado:** cambia `.filter` por `.map`. **Error esperado:** el compilador dice que el resultado de `map` no es `boolean`. **Diagnóstico:** `filter` recibe una condición; `map` necesita producir un valor.
@@ -1076,6 +1141,11 @@ public class Paradas {
 
 Ejecuta `cd java-funcional-t08 && java src/Paradas.java`.
 
+```bash
+cd java-funcional-t08
+java src/Paradas.java
+```
+
 **Resultado esperado:** `[Cali, Pasto, Bogotá]`.
 
 **Fallo deliberado:** cambia `flatMap` por `map`. **Resultado del fallo:** imprime dos listas internas, no una lista de ciudades. **Diagnóstico:** `map` conserva un resultado por ruta; `flatMap` combina las listas.
@@ -1108,6 +1178,11 @@ public class Ordenar {
 
 Ejecuta `cd java-funcional-t08 && java src/Ordenar.java`.
 
+```bash
+cd java-funcional-t08
+java src/Ordenar.java
+```
+
 **Resultado esperado:** `[Envio[guia=RT-1, kg=8], Envio[guia=RT-2, kg=20], Envio[guia=RT-3, kg=32]]`.
 
 **Fallo deliberado:** elimina `.sorted(java.util.Comparator.comparingInt(Envio::kg))`. **Error esperado:** el resultado deja de estar ordenado; este código no lanza excepción porque `Stream.toList()` conserva el orden de encuentro. **Diagnóstico:** `sorted` necesita una regla de comparación para cambiar el orden; elimina también la salida esperada anterior y comprueba que el orden original se conserva.
@@ -1120,7 +1195,7 @@ Guarda la colección inicial, la salida final y el orden de operaciones que la p
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** filtra por peso; transforma a guía; aplana paradas; ordena una lista con criterio explícito. **Proyecto RutaFlow:** genera el resumen de paquetes pesados y paradas de la ruta. Fuente: [java.util.stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
+**Hito de 4 puntos:** filtra por peso; transforma a guía; aplana paradas; ordena una lista con criterio explícito. **Proyecto integrador (RutaFlow):** genera el resumen de paquetes pesados y paradas de la ruta. **Límite:** encadena operaciones intermedias solo mientras cada paso siga siendo legible; si la cadena supera cuatro o cinco operadores o mezcla responsabilidades distintas (filtrar, transformar y agrupar a la vez), divídela en variables intermedias con nombre en vez de un único stream ilegible. Fuente: [java.util.stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
 
 ### Tema 9: Streams terminales: encontrar, contar y combinar resultados
 
@@ -1158,6 +1233,11 @@ public class Encontrar {
 
 Ejecuta `cd java-funcional-t09 && java src/Encontrar.java`.
 
+```bash
+cd java-funcional-t09
+java src/Encontrar.java
+```
+
 **Resultado esperado:** `RT-2`.
 
 **Fallo deliberado:** cambia el límite a 50. **Resultado del fallo:** `ninguno`. **Diagnóstico:** `findFirst` devuelve vacío si ningún elemento cumple.
@@ -1188,6 +1268,11 @@ public class Sumar {
 
 Ejecuta `cd java-funcional-t09 && java src/Sumar.java`.
 
+```bash
+cd java-funcional-t09
+java src/Sumar.java
+```
+
 **Resultado esperado:** `25`.
 
 **Fallo deliberado:** elimina el `0` inicial. **Resultado del fallo:** Java devuelve `Optional<Integer>`, por lo que no puedes guardarlo directamente en `int`. **Diagnóstico:** sin valor inicial, la lista podría estar vacía.
@@ -1217,6 +1302,11 @@ public class Imprimir {
 
 Ejecuta `cd java-funcional-t09 && java src/Imprimir.java`.
 
+```bash
+cd java-funcional-t09
+java src/Imprimir.java
+```
+
 **Resultado esperado:** tres guías en tres líneas, en el orden indicado.
 
 **Fallo deliberado:** cambia a `parallelStream().forEach(...)`. **Resultado del fallo:** el orden puede cambiar. **Diagnóstico:** si necesitas conservar el orden, usa `forEachOrdered` o un bucle normal.
@@ -1229,7 +1319,7 @@ Guarda el resultado terminal y explica si produjo un valor, un conteo, una combi
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** encuentra el primer envío; suma los pesos; imprime el lote; explica por qué cada terminal consume el Stream. **Proyecto RutaFlow:** busca guías urgentes y suma la carga del vehículo. Fuente: [Stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html).
+**Hito de 4 puntos:** encuentra el primer envío; suma los pesos; imprime el lote; explica por qué cada terminal consume el Stream. **Proyecto integrador (RutaFlow):** busca guías urgentes y suma la carga del vehículo. Fuente: [Stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html).
 
 ### Tema 10: Collectors: formar listas, mapas, grupos y texto
 
@@ -1270,6 +1360,11 @@ public class Mapa {
 
 Ejecuta `cd java-funcional-t10 && java src/Mapa.java`.
 
+```bash
+cd java-funcional-t10
+java src/Mapa.java
+```
+
 **Resultado esperado:** `[RT-1, RT-2]` y `{RT-1=Cali, RT-2=Pasto}`.
 
 **Fallo deliberado:** cambia la primera guía a `RT-2`. **Error esperado:** `IllegalStateException: Duplicate key`. **Diagnóstico:** `toMap` exige llaves únicas o una regla para resolver choques.
@@ -1303,6 +1398,11 @@ public class Agrupar {
 
 Ejecuta `cd java-funcional-t10 && java src/Agrupar.java`.
 
+```bash
+cd java-funcional-t10
+java src/Agrupar.java
+```
+
 **Resultado esperado:** `{Cali=2, Pasto=1}`.
 
 **Fallo deliberado:** usa `Collectors.toMap(Envio::ciudad, Envio::guia)` sin regla de duplicados. **Error esperado:** `Duplicate key Cali`. **Diagnóstico:** varias guías pueden compartir la ciudad; agrupa una colección por llave.
@@ -1335,6 +1435,11 @@ public class Unir {
 
 Ejecuta `cd java-funcional-t10 && java src/Unir.java`.
 
+```bash
+cd java-funcional-t10
+java src/Unir.java
+```
+
 **Resultado esperado:** `Ruta: Cali -> Pasto -> Bogotá`.
 
 **Fallo deliberado:** elimina el delimitador. **Resultado del fallo:** los nombres quedan pegados. **Diagnóstico:** `joining` necesita un separador que haga visible el límite entre elementos.
@@ -1347,7 +1452,7 @@ Guarda la estructura final y anota qué datos se usaron como elemento, clave o g
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** crea una lista; crea un mapa sin duplicados; agrupa por ciudad; une textos con separador. **Proyecto RutaFlow:** produce un resumen de destinos por lote. Fuente: [Collectors de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Collectors.html).
+**Hito de 4 puntos:** crea una lista; crea un mapa sin duplicados; agrupa por ciudad; une textos con separador. **Proyecto integrador (RutaFlow):** produce un resumen de destinos por lote. Fuente: [Collectors de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Collectors.html).
 
 ### Tema 11: Streams paralelos: comparar antes de acelerarlos
 
@@ -1385,6 +1490,11 @@ public class Comparar {
 
 Ejecuta `cd java-funcional-t11 && java src/Comparar.java`.
 
+```bash
+cd java-funcional-t11
+java src/Comparar.java
+```
+
 **Resultado esperado:** ambos muestran `5000050000`.
 
 **Fallo deliberado:** cambia la suma por restas en una combinación paralela. **Resultado del fallo:** el resultado deja de ser una suma estable. **Diagnóstico:** la operación de combinación debe tener el mismo sentido cuando Java junta grupos distintos.
@@ -1413,6 +1523,11 @@ public class OrdenParalelo {
 ```
 
 Ejecuta `cd java-funcional-t11 && java src/OrdenParalelo.java`.
+
+```bash
+cd java-funcional-t11
+java src/OrdenParalelo.java
+```
 
 **Resultado esperado:** tres guías en el orden `RT-1`, `RT-2`, `RT-3`.
 
@@ -1450,6 +1565,11 @@ public class Medir {
 
 Ejecuta `cd java-funcional-t11 && java src/Medir.java` varias veces.
 
+```bash
+cd java-funcional-t11
+java src/Medir.java
+```
+
 **Resultado esperado:** `iguales=true` y dos tiempos medidos. No esperes el mismo tiempo en cada corrida.
 
 **Fallo deliberado:** mide una lista de tres elementos y concluye que esa prueba representa producción. **Diagnóstico:** una muestra pequeña y una sola corrida no describen el costo real de la aplicación.
@@ -1462,7 +1582,7 @@ Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** iguala resultados; conserva orden con `forEachOrdered`; registra tiempos repetidos; explica por qué no se promete que paralelo sea más rápido. **Proyecto RutaFlow:** evalúa paralelismo solo en un cálculo grande sin efectos externos. Fuente: [Parallelism de Streams, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
+**Hito de 4 puntos:** iguala resultados; conserva orden con `forEachOrdered`; registra tiempos repetidos; explica por qué no se promete que paralelo sea más rápido. **Proyecto integrador (RutaFlow):** evalúa paralelismo solo en un cálculo grande sin efectos externos. **Límite:** no conviene usar `parallelStream()` en colecciones pequeñas, con efectos secundarios (I/O, impresión, acceso a estado compartido) o cuando no mediste antes un cuello de botella real; el paralelismo solo gana frente al stream secuencial en cómputo puro y grande, y tiene costo de coordinación que puede hacerlo más lento. Fuente: [Parallelism de Streams, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
 
 ### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir
 
@@ -1500,6 +1620,11 @@ public class Calcular {
 
 Ejecuta `cd java-funcional-t12 && java src/Calcular.java`.
 
+```bash
+cd java-funcional-t12
+java src/Calcular.java
+```
+
 **Resultado esperado:** `[7500, 15000, 30000]` y la lista original `[5, 10, 20]`.
 
 **Fallo deliberado:** reemplaza la lista con `new ArrayList` y cambia sus elementos dentro de un `forEach` paralelo. **Resultado del fallo:** las modificaciones no tienen un orden fiable. **Diagnóstico:** el cálculo comparte y altera un contenedor externo.
@@ -1532,6 +1657,11 @@ public class Registrar {
 
 Ejecuta `cd java-funcional-t12 && java src/Registrar.java`.
 
+```bash
+cd java-funcional-t12
+java src/Registrar.java
+```
+
 **Resultado esperado:** `costo=7500` y `costo=15000`.
 
 **Fallo deliberado:** mueve el `println` dentro de `map`. **Resultado del fallo:** `map` deja de expresar una transformación sencilla y retorna `null` si el lambda no devuelve un valor. **Diagnóstico:** `map` debe transformar; `Consumer` puede hacer el efecto al final.
@@ -1563,6 +1693,11 @@ public class ReglaPura {
 
 Ejecuta `cd java-funcional-t12 && java src/ReglaPura.java`.
 
+```bash
+cd java-funcional-t12
+java src/ReglaPura.java
+```
+
 **Resultado esperado:** `5000` dos veces.
 
 **Fallo deliberado:** agrega una variable externa que se sume cada vez que corre la regla. **Resultado del fallo:** la segunda salida cambia aunque la entrada sea igual. **Diagnóstico:** el resultado ahora depende de un estado compartido.
@@ -1575,7 +1710,7 @@ Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto exte
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** muestra que la lista de entrada no cambia; realiza el registro después del cálculo; repite una entrada y obtiene la misma salida; señala qué línea produce el efecto. **Proyecto RutaFlow:** separa el costo de envío del envío de notificaciones. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+**Hito de 4 puntos:** muestra que la lista de entrada no cambia; realiza el registro después del cálculo; repite una entrada y obtiene la misma salida; señala qué línea produce el efecto. **Proyecto integrador (RutaFlow):** separa el costo de envío del envío de notificaciones. **Límite:** mantén la lambda pura (sin leer ni escribir estado externo) mientras calcula; cuando el paso realmente necesite guardar, notificar o imprimir, sepáralo en una llamada aparte después del cálculo en vez de mezclar cómputo y efecto en la misma función. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
 ### Tema 13: Flow API: publicar datos con demanda y cierre
 
@@ -1624,6 +1759,11 @@ public class Estados {
 
 Ejecuta `cd java-funcional-t13 && java src/Estados.java`.
 
+```bash
+cd java-funcional-t13
+java src/Estados.java
+```
+
 **Resultado esperado:** `RECIBIDO`, `EN_RUTA`, `fin`, en ese orden.
 
 **Fallo deliberado:** omite `publisher.close()`. **Resultado del fallo:** el callback `onComplete` no llega antes del tiempo límite. **Diagnóstico:** el suscriptor no sabe que el productor terminó.
@@ -1667,6 +1807,11 @@ public class Demanda {
 ```
 
 Ejecuta `cd java-funcional-t13 && java src/Demanda.java`.
+
+```bash
+cd java-funcional-t13
+java src/Demanda.java
+```
 
 **Resultado esperado:** llegan `1`, `2` y luego `fin`; el suscriptor solicita el siguiente después de procesar cada uno.
 
@@ -1712,6 +1857,11 @@ public class Cancelar {
 
 Ejecuta `cd java-funcional-t13 && java src/Cancelar.java`.
 
+```bash
+cd java-funcional-t13
+java src/Cancelar.java
+```
+
 **Resultado esperado:** se procesa el primer estado; no aparece el segundo para ese suscriptor.
 
 **Fallo deliberado:** comenta `cancel()` y solicita `Long.MAX_VALUE`. **Resultado del fallo:** el suscriptor sigue recibiendo estados después de que la pantalla ya no los necesita. **Diagnóstico:** deja de pedir cuando se cancela el trabajo.
@@ -1724,7 +1874,7 @@ Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o 
 
 #### Paso 7 · Cierre y evidencia
 
-**Hito de 4 puntos:** conecta publisher y subscriber; recibe estados en orden; procesa bajo demanda; cancela un suscriptor. **Proyecto RutaFlow:** adapta el ejemplo a cambios de estado visibles en una pantalla y conserva un límite de demanda. Fuente: [Flow de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) y [SubmissionPublisher](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/SubmissionPublisher.html).
+**Hito de 4 puntos:** conecta publisher y subscriber; recibe estados en orden; procesa bajo demanda; cancela un suscriptor. **Proyecto integrador (RutaFlow):** adapta el ejemplo a cambios de estado visibles en una pantalla y conserva un límite de demanda. Fuente: [Flow de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/Flow.html) y [SubmissionPublisher](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/SubmissionPublisher.html).
 
 ## Laboratorio práctico
 

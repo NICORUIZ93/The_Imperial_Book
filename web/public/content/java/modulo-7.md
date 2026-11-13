@@ -29,7 +29,12 @@ public record Guia(String numero, double pesoKg) {
 }
 ```
 
-Desde la raíz ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+Desde la raíz ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
 
 **Resultado esperado:** imprime `Guia[numero=RT-1, pesoKg=2.5]`.
 
@@ -51,7 +56,12 @@ Dos servicios pueden construir dos objetos distintos que representen la misma gu
 
 **2. Hazlo tú**
 
-En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
 
 **Resultado esperado:** `equals` imprime `true`; `==` imprime `false` porque son objetos diferentes.
 
@@ -73,7 +83,12 @@ La guía no se modifica en sitio cuando cambia el peso medido: se emite un nuevo
 
 **2. Hazlo tú**
 
-En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta `javac -d out src/Guia.java` y `java -cp out Guia`.
+En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
 
 **Resultado esperado:** `2.5` y `3.0`; el objeto original conserva sus datos.
 
@@ -86,6 +101,8 @@ Usa records para valores que se describen por sus datos. Una entidad con identid
 **4. Cierra**
 
 Entrega los dos valores y explica por qué elegiste record. Fuente: [records en Dev.java](https://dev.java/learn/classes-objects/records/).
+
+**Proyecto integrador:** el motor de asignación de entregas representa cada guía como un `record` inmutable, igual que en este tema, para poder comparar y compartir guías entre hilos sin riesgo de mutación. **Límite:** usa `record` para un valor que se describe completamente por sus componentes; si la guía necesita identidad propia que persiste aunque cambien sus datos (por ejemplo, un historial de estados a lo largo del tiempo), modélala como una clase tradicional con identidad, no como record.
 
 ### Tema 2: sealed — jerarquías cerradas y exhaustividad
 
@@ -115,7 +132,12 @@ public class EstadoEntregaDemo {
 }
 ```
 
-Ejecuta `javac -d out src/EstadoEntrega.java` y `java -cp out EstadoEntregaDemo`.
+Ejecuta:
+
+```bash
+javac -d out src/EstadoEntrega.java
+java -cp out EstadoEntregaDemo
+```
 
 **Resultado esperado:** imprime `EnRuta[zona=Norte]`.
 
@@ -137,7 +159,14 @@ Operaciones necesita representar una entrega cancelada y revisar todos los punto
 
 **2. Hazlo tú**
 
-En `src/EstadoEntrega.java`, añade `Cancelada(String motivo)` a `permits` y declara el record correspondiente. Ejecuta `javac -d out src/EstadoEntrega.java` y `java -cp out EstadoEntregaDemo`. Después busca `EstadoEntrega` en el archivo para revisar consumidores.
+En `src/EstadoEntrega.java`, añade `Cancelada(String motivo)` a `permits` y declara el record correspondiente. Ejecuta:
+
+```bash
+javac -d out src/EstadoEntrega.java
+java -cp out EstadoEntregaDemo
+```
+
+Después busca `EstadoEntrega` en el archivo para revisar consumidores.
 
 **Resultado esperado:** la jerarquía compila y la cancelación solo puede crearse con el motivo indicado.
 
@@ -159,7 +188,13 @@ El equipo debe decidir si transportistas externos podrán añadir sus propios es
 
 **2. Hazlo tú**
 
-En `src/EstadoEntrega.java`, comenta `sealed` y `permits`, compila con `javac -d out src/EstadoEntrega.java` y observa que una implementación nueva deja de ser rechazada por la jerarquía. Restaura `sealed` y recompila.
+En `src/EstadoEntrega.java`, comenta `sealed` y `permits` y compila:
+
+```bash
+javac -d out src/EstadoEntrega.java
+```
+
+Observa que una implementación nueva deja de ser rechazada por la jerarquía. Restaura `sealed` y recompila.
 
 **Resultado esperado:** identificas el cambio de contrato entre jerarquía abierta y cerrada.
 
@@ -174,6 +209,8 @@ La decisión afecta extensibilidad y exhaustividad; `sealed` no es una mejora au
 Escribe una frase que justifique la decisión de RutaFlow. Fuente: [JEP 409](https://openjdk.org/jeps/409).
 
 **Decide cuándo cerrar:** `sealed` sirve si el equipo controla los estados y puede revisar consumidores al añadir uno. Una interfaz abierta conviene si otras aplicaciones aportan implementaciones. Añade `Cancelada`, busca cada `switch` que usa `EstadoEntrega` y crea una prueba para ese estado. `permits` restringe quién implementa la jerarquía, pero no valida los datos del record. Fuente: https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html.
+
+**Proyecto integrador:** el motor de asignación de entregas modela sus estados de guía con esta misma jerarquía `sealed`, porque el equipo controla exactamente qué estados existen. **Práctica:** agrega un cuarto estado `Rechazada(String motivo)` a `permits`, declara su record y corrige el `switch` del Tema 3 hasta que vuelva a ser exhaustivo.
 
 ### Tema 3: Pattern matching exhaustivo y para instanceof
 
@@ -202,7 +239,12 @@ public static void main(String[] args) {
 }
 ```
 
-Compila `EstadoEntrega.java` y `Reprogramar.java` juntos: `javac -d out src/EstadoEntrega.java src/Reprogramar.java`; ejecuta `java -cp out Reprogramar`.
+Compila ambos archivos juntos y ejecuta:
+
+```bash
+javac -d out src/EstadoEntrega.java src/Reprogramar.java
+java -cp out Reprogramar
+```
 
 **Resultado esperado:** `true`, sin casteos manuales ni rama `default`.
 
@@ -224,7 +266,12 @@ Un resumen necesita mostrar la zona solo cuando el estado es `EnRuta`.
 
 **2. Hazlo tú**
 
-En `src/Reprogramar.java` agrega `if (estado instanceof EnRuta ruta) System.out.println(ruta.zona());` y ejecútalo con `new EnRuta("Norte")`. Usa `javac -d out src/EstadoEntrega.java src/Reprogramar.java` y `java -cp out Reprogramar`.
+En `src/Reprogramar.java` agrega `if (estado instanceof EnRuta ruta) System.out.println(ruta.zona());` y ejecútalo con `new EnRuta("Norte")`:
+
+```bash
+javac -d out src/EstadoEntrega.java src/Reprogramar.java
+java -cp out Reprogramar
+```
 
 **Resultado esperado:** imprime `Norte` sin casteo posterior.
 
@@ -246,7 +293,12 @@ Revisas código heredado que comprueba el tipo y después realiza un cast explí
 
 **2. Hazlo tú**
 
-En `src/Reprogramar.java` implementa una segunda versión con `if (estado instanceof EnRuta) { EnRuta ruta = (EnRuta) estado; ... }`. Ejecuta ambas variantes con `EnRuta` y `Entregada` usando `javac -d out src/EstadoEntrega.java src/Reprogramar.java` y `java -cp out Reprogramar`.
+En `src/Reprogramar.java` implementa una segunda versión con `if (estado instanceof EnRuta) { EnRuta ruta = (EnRuta) estado; ... }`. Ejecuta ambas variantes con `EnRuta` y `Entregada`:
+
+```bash
+javac -d out src/EstadoEntrega.java src/Reprogramar.java
+java -cp out Reprogramar
+```
 
 **Resultado esperado:** ambas dan el mismo resultado; pattern matching elimina el cast repetido.
 
@@ -259,6 +311,8 @@ Usa switch para clasificar todos los casos; usa `instanceof` cuando solo necesit
 **4. Cierra**
 
 Elige una forma para la regla completa y justifica tu elección. Fuente: [pattern matching en Java](https://docs.oracle.com/en/java/javase/25/language/pattern-matching.html).
+
+**Proyecto integrador:** la regla de reprogramación del motor de entregas usa exactamente este `switch` exhaustivo sobre `EstadoEntrega`, de modo que agregar un estado nuevo obliga a actualizar la regla en tiempo de compilación. **Límite:** usa `switch` con pattern matching cuando necesitas cubrir todos los subtipos de una jerarquía `sealed`; usa `instanceof` suelto solo para una comprobación puntual de un único tipo, no para clasificar varios casos a la vez. **Práctica:** agrega el estado `Rechazada` (del Tema 2) a `sePuedeReprogramar` y confirma que el compilador exige la rama nueva.
 
 ### Tema 4: Unnamed variables y patterns (_, Java 22)
 
@@ -290,7 +344,12 @@ public class ResumenPaquete {
 }
 ```
 
-Compila y ejecuta con `javac -d out src/ResumenPaquete.java` y `java -cp out ResumenPaquete`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/ResumenPaquete.java
+java -cp out ResumenPaquete
+```
 
 **Resultado esperado:** `Destino: Norte`.
 
@@ -312,7 +371,12 @@ El programa convierte una cantidad opcional y usa un valor predeterminado ante t
 
 **2. Hazlo tú**
 
-Crea `src/Convertir.java` con `try { System.out.println(Integer.parseInt(args[0])); } catch (NumberFormatException _) { System.out.println("Cantidad inválida"); }`. Ejecuta `javac -d out src/Convertir.java`, luego `java -cp out Convertir abc`.
+Crea `src/Convertir.java` con `try { System.out.println(Integer.parseInt(args[0])); } catch (NumberFormatException _) { System.out.println("Cantidad inválida"); }`. Ejecuta:
+
+```bash
+javac -d out src/Convertir.java
+java -cp out Convertir abc
+```
 
 **Resultado esperado:** imprime `Cantidad inválida` sin declarar una excepción que no se usa.
 
@@ -334,7 +398,12 @@ Una consulta SQL de reporte es más fácil de revisar en varias líneas que como
 
 **2. Hazlo tú**
 
-Crea `src/Consulta.java` y asigna a `String sql` el text block `"""\nSELECT numero, estado\nFROM entregas\nWHERE estado = 'EN_RUTA'\n""";`. Imprime el texto y ejecuta `javac -d out src/Consulta.java` y `java -cp out Consulta`.
+Crea `src/Consulta.java` y asigna a `String sql` el text block `"""\nSELECT numero, estado\nFROM entregas\nWHERE estado = 'EN_RUTA'\n""";`. Imprime el texto y ejecuta:
+
+```bash
+javac -d out src/Consulta.java
+java -cp out Consulta
+```
 
 **Resultado esperado:** tres líneas legibles; no necesitas concatenar ni escapar cada salto de línea.
 
@@ -347,6 +416,8 @@ Los text blocks sirven para texto multilínea; no validan ni parametrizan una co
 **4. Cierra**
 
 Guarda la consulta y anota qué mecanismo usarías para valores dinámicos. Fuente: [variables y patrones sin nombre](https://openjdk.org/jeps/456).
+
+**Proyecto integrador:** el resumen de paquetes del motor de entregas descarta las dimensiones con `_` en el record pattern cuando el reporte solo necesita el destino, igual que en el Subtema 4.1. **Límite:** usa `_` solo cuando de verdad no vas a leer ese valor en ningún punto del bloque; si existe la posibilidad de necesitarlo más adelante, dale un nombre real en vez de descartarlo prematuramente. **Práctica:** modifica `ResumenPaquete.java` para agregar un segundo caso que también muestre el volumen (`x * y * z`) cuando el destino sea `"Norte"`, sin descartar `Dimensiones` en ese caso.
 
 ---
 

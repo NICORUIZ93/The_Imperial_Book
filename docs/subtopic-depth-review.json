@@ -13686,7 +13686,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Observa el heap de una JVM · 10 min",
         "Subtema 1.2: Distingue objetos vivos de basura · 10 min",
-        "Subtema 1.3: Compara logs antes de ajustar · 10 min"
+        "Subtema 1.3: Compara logs antes de ajustar · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13702,7 +13703,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Captura una grabación JFR · 10 min",
         "Subtema 2.2: Observa compilación caliente · 10 min",
-        "Subtema 2.3: Resume la grabación para comparar · 10 min"
+        "Subtema 2.3: Resume la grabación para comparar · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13718,7 +13720,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Prueba una referencia débil · 10 min",
         "Subtema 3.2: Detecta una referencia fuerte accidental · 10 min",
-        "Subtema 3.3: Crea un heap dump para investigarlo · 10 min"
+        "Subtema 3.3: Crea un heap dump para investigarlo · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13748,7 +13751,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Crea un envío con un builder · 10 min",
         "Subtema 1.2: Valida reglas en build() · 10 min",
-        "Subtema 1.3: Decide si Builder es necesario · 10 min"
+        "Subtema 1.3: Decide si Builder es necesario · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13764,7 +13768,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Elige estrategia por interfaz · 10 min",
         "Subtema 2.2: Crea el objeto con Factory Method · 10 min",
-        "Subtema 2.3: Inyecta la estrategia en el servicio · 10 min"
+        "Subtema 2.3: Inyecta la estrategia en el servicio · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13780,7 +13785,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Define una familia de notificaciones · 10 min",
         "Subtema 3.2: Construye familias compatibles · 10 min",
-        "Subtema 3.3: Añade una familia nueva sin cambiar el cliente · 10 min"
+        "Subtema 3.3: Añade una familia nueva sin cambiar el cliente · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13796,7 +13802,8 @@
       "semanticHeadings": [
         "Subtema 4.1: Separa responsabilidades · 10 min",
         "Subtema 4.2: Sustituye una implementación sin romper el contrato · 10 min",
-        "Subtema 4.3: Invierte la dependencia hacia una abstracción · 10 min"
+        "Subtema 4.3: Invierte la dependencia hacia una abstracción · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13812,7 +13819,8 @@
       "semanticHeadings": [
         "Subtema 5.1: Implementa una copia independiente · 10 min",
         "Subtema 5.2: Copia solo lo que el contrato necesita · 10 min",
-        "Subtema 5.3: Compara Prototype con una fábrica · 10 min"
+        "Subtema 5.3: Compara Prototype con una fábrica · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13828,7 +13836,8 @@
       "semanticHeadings": [
         "Subtema 6.1: Adapta un proveedor antiguo · 10 min",
         "Subtema 6.2: Añade comportamiento con Decorator · 10 min",
-        "Subtema 6.3: Simplifica una operación con Facade · 10 min"
+        "Subtema 6.3: Simplifica una operación con Facade · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -13959,7 +13968,8 @@
       "semanticHeadings": [
         "Subtema 1.1: Construye el reactor Maven · 10 min",
         "Subtema 1.2: Detecta versiones divergentes · 10 min",
-        "Subtema 1.3: Bloquea un JDK incompatible · 10 min"
+        "Subtema 1.3: Bloquea un JDK incompatible · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -13973,7 +13983,8 @@
       "semanticHeadings": [
         "Subtema 2.1: Genera y usa el Gradle Wrapper · 10 min",
         "Subtema 2.2: Repite el build y compara artefactos · 10 min",
-        "Subtema 2.3: Verifica dependencias descargadas · 10 min"
+        "Subtema 2.3: Verifica dependencias descargadas · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -13989,7 +14000,8 @@
       "semanticHeadings": [
         "Subtema 3.1: Escribe una regla de dependencias con ArchUnit · 10 min",
         "Subtema 3.2: Detecta ciclos entre paquetes · 10 min",
-        "Subtema 3.3: Comprueba el grafo del build · 10 min"
+        "Subtema 3.3: Comprueba el grafo del build · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [],
       "review": null
@@ -14003,7 +14015,8 @@
       "semanticHeadings": [
         "Subtema 4.1: Prueba un caso de uso real · 10 min",
         "Subtema 4.2: Expresa el resultado sin atarte a llamadas internas · 10 min",
-        "Subtema 4.3: Aísla una excepción del colaborador · 10 min"
+        "Subtema 4.3: Aísla una excepción del colaborador · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
@@ -14033,7 +14046,8 @@
       "semanticHeadings": [
         "Subtema 6.1: Emite campos estructurados · 10 min",
         "Subtema 6.2: Correlaciona solicitudes con MDC · 10 min",
-        "Subtema 6.3: Evita registrar el mismo error en todas las capas · 10 min"
+        "Subtema 6.3: Evita registrar el mismo error en todas las capas · 10 min",
+        "Fragmento real"
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"

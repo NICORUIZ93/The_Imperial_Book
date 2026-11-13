@@ -4,7 +4,7 @@
     "tracks": 15,
     "modules": 291,
     "topics": 1323,
-    "topicsWithSignals": 274,
+    "topicsWithSignals": 261,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
@@ -9310,7 +9310,7 @@
       "module": 0,
       "title": "Tema 2: public static void main — qué significa cada palabra",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 122,
+      "line": 124,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9324,7 +9324,7 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 244,
+      "line": 248,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9338,7 +9338,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 351,
+      "line": 355,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9352,7 +9352,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 466,
+      "line": 470,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9366,7 +9366,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 584,
+      "line": 588,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9380,7 +9380,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 711,
+      "line": 715,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9394,7 +9394,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 824,
+      "line": 828,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9422,7 +9422,7 @@
       "module": 1,
       "title": "Tema 2: Herencia y sobreescritura",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 179,
+      "line": 181,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9436,7 +9436,7 @@
       "module": 1,
       "title": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 389,
+      "line": 391,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9450,7 +9450,7 @@
       "module": 1,
       "title": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
       "file": "web/public/content/java/modulo-1.md",
-      "line": 567,
+      "line": 569,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9501,9 +9501,7 @@
       "title": "Tema 1: Generaciones de memoria y recolectores",
       "file": "web/public/content/java/modulo-11.md",
       "line": 6,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9514,10 +9512,8 @@
       "module": 11,
       "title": "Tema 2: Java Flight Recorder y JIT compilation",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 76,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 104,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9528,10 +9524,8 @@
       "module": 11,
       "title": "Tema 3: Referencias especiales y heap dumps",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 148,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 203,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9542,10 +9536,8 @@
       "module": 11,
       "title": "Tema 4: Foreign Function & Memory API (Java 22)",
       "file": "web/public/content/java/modulo-11.md",
-      "line": 218,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 298,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9570,10 +9562,8 @@
       "module": 12,
       "title": "Tema 2: Factory Method y Strategy",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 78,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 104,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9584,10 +9574,8 @@
       "module": 12,
       "title": "Tema 3: Abstract Factory y familias de productos compatibles",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 150,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 206,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9598,10 +9586,8 @@
       "module": 12,
       "title": "Tema 4: SOLID y cuándo NO aplicar un patrón",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 222,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 308,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9612,7 +9598,7 @@
       "module": 12,
       "title": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 292,
+      "line": 404,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9626,7 +9612,7 @@
       "module": 12,
       "title": "Tema 6: Patrones estructurales para conectar piezas existentes",
       "file": "web/public/content/java/modulo-12.md",
-      "line": 364,
+      "line": 502,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9725,9 +9711,7 @@
       "title": "Tema 1: Maven avanzado",
       "file": "web/public/content/java/modulo-15.md",
       "line": 7,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9738,10 +9722,8 @@
       "module": 15,
       "title": "Tema 2: Gradle y builds reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 79,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 95,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9752,10 +9734,8 @@
       "module": 15,
       "title": "Tema 3: Proyectos multi-módulo sin ciclos",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 151,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 184,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9766,10 +9746,8 @@
       "module": 15,
       "title": "Tema 4: JUnit 5, Mockito y assertions expresivas",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 223,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 283,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9780,10 +9758,8 @@
       "module": 15,
       "title": "Tema 5: Pruebas de integración reproducibles",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 295,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 386,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -9794,10 +9770,8 @@
       "module": 15,
       "title": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
       "file": "web/public/content/java/modulo-15.md",
-      "line": 386,
-      "signals": [
-        "demostracion-no-delimitada"
-      ],
+      "line": 491,
+      "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
@@ -10134,7 +10108,7 @@
       "module": 20,
       "title": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 647,
+      "line": 662,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10146,7 +10120,7 @@
       "module": 20,
       "title": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 763,
+      "line": 793,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10158,7 +10132,7 @@
       "module": 20,
       "title": "Tema 7: Optional: buscar un envío que puede no existir",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 885,
+      "line": 930,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10170,7 +10144,7 @@
       "module": 20,
       "title": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1007,
+      "line": 1067,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10182,7 +10156,7 @@
       "module": 20,
       "title": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1125,
+      "line": 1200,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10194,7 +10168,7 @@
       "module": 20,
       "title": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1234,
+      "line": 1324,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10206,7 +10180,7 @@
       "module": 20,
       "title": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1352,
+      "line": 1457,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10218,7 +10192,7 @@
       "module": 20,
       "title": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1467,
+      "line": 1587,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10230,7 +10204,7 @@
       "module": 20,
       "title": "Tema 13: Flow API: publicar datos con demanda y cierre",
       "file": "web/public/content/java/modulo-20.md",
-      "line": 1580,
+      "line": 1715,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -10530,7 +10504,7 @@
       "module": 5,
       "title": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 602,
+      "line": 604,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10544,7 +10518,7 @@
       "module": 5,
       "title": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
       "file": "web/public/content/java/modulo-5.md",
-      "line": 742,
+      "line": 751,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10572,7 +10546,7 @@
       "module": 6,
       "title": "Tema 2: Serialización con Jackson",
       "file": "web/public/content/java/modulo-6.md",
-      "line": 124,
+      "line": 141,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10586,7 +10560,7 @@
       "module": 6,
       "title": "Tema 3: Archivos grandes y recursos del classpath",
       "file": "web/public/content/java/modulo-6.md",
-      "line": 247,
+      "line": 278,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10614,7 +10588,7 @@
       "module": 7,
       "title": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 90,
+      "line": 107,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10628,7 +10602,7 @@
       "module": 7,
       "title": "Tema 3: Pattern matching exhaustivo y para instanceof",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 178,
+      "line": 215,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -10642,7 +10616,7 @@
       "module": 7,
       "title": "Tema 4: Unnamed variables y patterns (_, Java 22)",
       "file": "web/public/content/java/modulo-7.md",
-      "line": 263,
+      "line": 317,
       "signals": [
         "demostracion-no-delimitada"
       ],

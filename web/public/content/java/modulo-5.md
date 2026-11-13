@@ -599,6 +599,8 @@ Preview puede cambiar o retirarse en una versión futura. Registra la versión d
 
 Guarda el comando reproducible y la versión usada. Fuente oficial: [StructuredTaskScope, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/StructuredTaskScope.html).
 
+**Proyecto integrador:** la cotización del motor de entregas usa exactamente este patrón: distancia y disponibilidad se calculan juntas y, si una falla, la otra se cancela en vez de seguir trabajando para una respuesta que ya no se va a usar. **Límite:** no conviene usar `StructuredTaskScope` solo para lanzar una única tarea en paralelo (un hilo normal o `CompletableFuture` basta); úsalo cuando varias subtareas deben vivir y morir juntas como una sola unidad de trabajo. **Práctica:** modifica `Cotizar.java` para agregar una tercera subtarea (`scope.fork(() -> "tarifa")`) y confirma que las tres se esperan juntas con `scope.join()`.
+
 ### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
 
 **¿Por qué es importante?** El contexto de una solicitud debe acompañar su ejecución y dejar de estar disponible al terminar, para no mezclarse con la petición que reutilice el mismo hilo.
@@ -630,7 +632,12 @@ public class Contexto {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Contexto.java` y `java -cp out Contexto`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/Contexto.java
+java -cp out Contexto
+```
 
 **Resultado esperado:** imprime `registro RT-8` y después `false`; el valor solo está ligado durante la llamada.
 
@@ -707,6 +714,8 @@ ScopedValue es de solo lectura y ligado a un bloque; ThreadLocal permite mutaci�
 **4. Cierra**
 
 Elige una opción para un identificador de solicitud inmutable y explica tu decisión. Fuentes oficiales: [ScopedValue, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html) y [ThreadLocal](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html).
+
+**Proyecto integrador:** el identificador de guía que acompaña una solicitud de cotización en el motor de entregas se transporta con `ScopedValue`, nunca con un campo mutable compartido entre hilos reutilizados. **Práctica:** modifica `Contexto.java` para anidar un tercer nivel de `ScopedValue.where` con una guía distinta y confirma que, al salir, se restaura el valor del nivel anterior.
 
 ## Construcción guiada del capítulo
 
@@ -787,7 +796,12 @@ public class Plazo {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Plazo.java` y `java -cp out Plazo`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/Plazo.java
+java -cp out Plazo
+```
 
 **Resultado esperado:** imprime `Plazo agotado` y `Executor terminado`; el ejecutor confirma que la tarea respondió a la interrupción.
 
@@ -834,7 +848,12 @@ public class Cooperar {
 }
 ```
 
-Compila y ejecuta `javac -d out src/Cooperar.java` y `java -cp out Cooperar`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/Cooperar.java
+java -cp out Cooperar
+```
 
 **Resultado esperado:** imprime `trabajo detenido` y sale del bloque sin esperar los cinco segundos.
 
@@ -879,7 +898,12 @@ public class FuturoConPlazo {
 }
 ```
 
-Compila y ejecuta `javac -d out src/FuturoConPlazo.java` y `java -cp out FuturoConPlazo`.
+Compila y ejecuta:
+
+```bash
+javac -d out src/FuturoConPlazo.java
+java -cp out FuturoConPlazo
+```
 
 **Resultado esperado:** la salida para el llamador es `servicio lento`. El timeout completa el futuro excepcionalmente; no prueba por sí solo que una operación externa se haya cancelado.
 
@@ -893,4 +917,4 @@ Compila y ejecuta `javac -d out src/FuturoConPlazo.java` y `java -cp out FuturoC
 
 Explica qué terminó: la espera del llamador, el futuro local o el trabajo remoto. Fuente oficial: [CompletableFuture](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
 
-**Proyecto integrador:** aplica límites a las consultas de tarifa y ubicación, y registra si hubo respuesta, timeout o cancelación cooperativa.
+**Proyecto integrador:** aplica límites a las consultas de tarifa y ubicación, y registra si hubo respuesta, timeout o cancelación cooperativa. **Práctica:** modifica `Plazo.java` para reducir el timeout a 5 milisegundos y confirma que el mensaje `Plazo agotado` sigue apareciendo antes de que la tarea de fondo termine.

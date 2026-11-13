@@ -2133,7 +2133,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3092,
+      "lines": 3008,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16518,
+      "lines": 16492,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2209,7 +2209,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 109,
+      "lines": 65,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22480,
+      "lines": 22494,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -16847,7 +16847,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 994,
+      "lines": 998,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16868,7 +16868,7 @@
     },
     {
       "path": "web/public/content/java/modulo-1.md",
-      "lines": 761,
+      "lines": 763,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16910,7 +16910,7 @@
     },
     {
       "path": "web/public/content/java/modulo-11.md",
-      "lines": 330,
+      "lines": 422,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16921,17 +16921,17 @@
         "#### Subtema 1.1: Observa el heap de una JVM \u00b7 10 min",
         "#### Subtema 1.2: Distingue objetos vivos de basura \u00b7 10 min",
         "#### Subtema 1.3: Compara logs antes de ajustar \u00b7 10 min",
+        "#### Fragmento real",
+        "#### Practica",
         "### Tema 2: Java Flight Recorder y JIT compilation",
         "#### Subtema 2.1: Captura una grabaci\u00f3n JFR \u00b7 10 min",
         "#### Subtema 2.2: Observa compilaci\u00f3n caliente \u00b7 10 min",
-        "#### Subtema 2.3: Resume la grabaci\u00f3n para comparar \u00b7 10 min",
-        "### Tema 3: Referencias especiales y heap dumps",
-        "#### Subtema 3.1: Prueba una referencia d\u00e9bil \u00b7 10 min"
+        "#### Subtema 2.3: Resume la grabaci\u00f3n para comparar \u00b7 10 min"
       ]
     },
     {
       "path": "web/public/content/java/modulo-12.md",
-      "lines": 733,
+      "lines": 894,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16942,12 +16942,12 @@
         "#### Subtema 1.1: Crea un env\u00edo con un builder \u00b7 10 min",
         "#### Subtema 1.2: Valida reglas en build() \u00b7 10 min",
         "#### Subtema 1.3: Decide si Builder es necesario \u00b7 10 min",
+        "#### Fragmento real",
         "### Tema 2: Factory Method y Strategy",
         "#### Subtema 2.1: Elige estrategia por interfaz \u00b7 10 min",
         "#### Subtema 2.2: Crea el objeto con Factory Method \u00b7 10 min",
         "#### Subtema 2.3: Inyecta la estrategia en el servicio \u00b7 10 min",
-        "### Tema 3: Abstract Factory y familias de productos compatibles",
-        "#### Subtema 3.1: Define una familia de notificaciones \u00b7 10 min"
+        "#### Fragmento real"
       ]
     },
     {
@@ -16994,7 +16994,7 @@
     },
     {
       "path": "web/public/content/java/modulo-15.md",
-      "lines": 470,
+      "lines": 599,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17005,12 +17005,12 @@
         "#### Subtema 1.1: Construye el reactor Maven \u00b7 10 min",
         "#### Subtema 1.2: Detecta versiones divergentes \u00b7 10 min",
         "#### Subtema 1.3: Bloquea un JDK incompatible \u00b7 10 min",
+        "#### Fragmento real",
+        "#### Practica",
         "### Tema 2: Gradle y builds reproducibles",
         "#### Subtema 2.1: Genera y usa el Gradle Wrapper \u00b7 10 min",
         "#### Subtema 2.2: Repite el build y compara artefactos \u00b7 10 min",
-        "#### Subtema 2.3: Verifica dependencias descargadas \u00b7 10 min",
-        "### Tema 3: Proyectos multi-m\u00f3dulo sin ciclos",
-        "#### Subtema 3.1: Escribe una regla de dependencias con ArchUnit \u00b7 10 min"
+        "#### Subtema 2.3: Verifica dependencias descargadas \u00b7 10 min"
       ]
     },
     {
@@ -17120,7 +17120,7 @@
     },
     {
       "path": "web/public/content/java/modulo-20.md",
-      "lines": 1757,
+      "lines": 1907,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17225,7 +17225,7 @@
     },
     {
       "path": "web/public/content/java/modulo-5.md",
-      "lines": 897,
+      "lines": 921,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17246,7 +17246,7 @@
     },
     {
       "path": "web/public/content/java/modulo-6.md",
-      "lines": 392,
+      "lines": 439,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17267,7 +17267,7 @@
     },
     {
       "path": "web/public/content/java/modulo-7.md",
-      "lines": 379,
+      "lines": 450,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

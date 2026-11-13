@@ -176,6 +176,8 @@ Entrega el archivo, la salida válida y el fallo reproducido. Para una clase que
 
 **Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/) y [herencia y clases en Java](https://docs.oracle.com/javase/tutorial/java/IandI/).
 
+**Proyecto integrador:** `Guia` es el primer modelo real del motor de asignación de entregas; los módulos siguientes construyen sobre esta clase protegida. **Práctica:** modifica `Guia.java` para agregar un campo `pesoKg` validado (rechaza valores menores o iguales a cero en el constructor) y repite la ejecución para comprobar que el rechazo funciona igual que con el número vacío.
+
 ### Tema 2: Herencia y sobreescritura
 
 **Duración estimada:** 40 min.
@@ -384,7 +386,7 @@ Entrega la salida, la excepción reproducida y una frase que explique qué compo
 
 **Fuentes oficiales:** [clases y objetos en dev.java](https://dev.java/learn/classes-objects/), [herencia en Java](https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html) y [política de retención de anotaciones](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html).
 
-**Transferencia al proyecto integrador:** sustituye distintos tipos de vehículo mediante un mismo ciclo de asignación y registra qué acción queda marcada para auditoría.
+**Transferencia al proyecto integrador:** sustituye distintos tipos de vehículo mediante un mismo ciclo de asignación y registra qué acción queda marcada para auditoría. **Límite:** hereda solo cuando la subclase es realmente un tipo más específico del padre (una bicicleta "es un" vehículo); si solo quieres reutilizar código sin esa relación "es-un", usa composición en vez de herencia. **Práctica:** modifica `Bicicleta` (o el vehículo del ejercicio) para agregar un tercer tipo `Dron` que sobrescriba `entregar` con su propio mensaje, y confirma el despacho polimórfico al recorrer la lista de vehículos.
 
 ### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
 
@@ -562,7 +564,7 @@ Entrega el archivo y la salida. Justifica por qué `Confirmable` es una interfaz
 
 **Fuentes oficiales:** [interfaces en dev.java](https://dev.java/learn/interfaces/) y [clases abstractas e interfaces](https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html).
 
-**Transferencia al proyecto integrador:** define un contrato de asignación que admita una implementación real y una falsa para practicar sin heredar datos innecesarios.
+**Transferencia al proyecto integrador:** define un contrato de asignación que admita una implementación real y una falsa para practicar sin heredar datos innecesarios. **Práctica:** modifica `ServicioEntrega` para agregar un segundo método abstracto `costoBase()` y crea una tercera implementación concreta que lo complete junto con `minutosEstimados()`.
 
 ### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
 
