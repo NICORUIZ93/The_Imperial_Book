@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1313,
-    "reviewed": 148,
+    "topics": 1314,
+    "reviewed": 149,
     "pending": 1165,
-    "priorityCandidates": 1018,
+    "priorityCandidates": 1017,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -61,8 +61,8 @@
         "pending": 56
       },
       "microservices": {
-        "topics": 13,
-        "reviewed": 2,
+        "topics": 14,
+        "reviewed": 3,
         "pending": 11
       },
       "node": {
@@ -17707,23 +17707,54 @@
       }
     },
     {
-      "id": "microservices/modulo-0::Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "id": "microservices/modulo-0::Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
       "status": "pending",
-      "semanticHeadings": [],
-      "prioritySignals": [
-        "título agrupa varios conceptos",
-        "menos de dos encabezados semánticos internos"
+      "semanticHeadings": [
+        "Objetivo y preparación"
       ],
+      "prioritySignals": [],
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "id": "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-13",
+        "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+        "execution": "Temurin 27.0.1: ProyeccionOrden clasificó v1 como APLICADO, v3 como HUECO_ESPERABA_v2, v2 como APLICADO, la repetición v2 como OBSOLETO_O_DUPLICADO y ENV-2:v1 como APLICADO.",
+        "criticalSubtopics": [
+          "agregado como unidad de orden",
+          "versión de dominio",
+          "duplicado exacto",
+          "evento obsoleto",
+          "hueco de secuencia",
+          "concurrencia de escritores",
+          "compare-and-set",
+          "buffer acotado",
+          "cuarentena y reconciliación"
+        ],
+        "sources": [
+          "https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy",
+          "https://opentelemetry.io/docs/specs/otel/context/"
+        ]
+      }
+    },
+    {
+      "id": "microservices/modulo-0::Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "status": "pending",
       "semanticHeadings": [],
       "prioritySignals": [

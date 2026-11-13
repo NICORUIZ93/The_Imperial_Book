@@ -210,23 +210,23 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 13,
-      "objective": 4,
-      "prerequisites": 9,
-      "context": 5,
-      "theoryAnalogy": 5,
-      "guidedDemo": 5,
-      "codeExplanation": 13,
-      "execution": 10,
-      "expectedResult": 12,
-      "deliberateFailure": 12,
-      "guidedPractice": 5,
-      "independentPractice": 5,
-      "closure": 5,
-      "commonErrors": 4,
-      "resources": 4,
-      "standaloneExample": 6,
-      "complete": 4
+      "topics": 14,
+      "objective": 6,
+      "prerequisites": 10,
+      "context": 7,
+      "theoryAnalogy": 7,
+      "guidedDemo": 7,
+      "codeExplanation": 14,
+      "execution": 11,
+      "expectedResult": 13,
+      "deliberateFailure": 14,
+      "guidedPractice": 7,
+      "independentPractice": 7,
+      "closure": 7,
+      "commonErrors": 6,
+      "resources": 6,
+      "standaloneExample": 8,
+      "complete": 6
     },
     "node": {
       "topics": 83,
@@ -25881,32 +25881,57 @@
       },
       {
         "module": 0,
-        "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
         "criteria": {
-          "objective": false,
+          "objective": true,
           "prerequisites": true,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 4,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {
         "module": 0,
-        "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "criteria": {
           "objective": false,
           "prerequisites": false,

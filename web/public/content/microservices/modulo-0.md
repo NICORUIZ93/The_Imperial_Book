@@ -761,61 +761,201 @@ Implementa `PROCESSING`, `SUCCEEDED` y `FAILED` con un fallo después de reserva
 
 Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar orden causal por agregado» (referencia interna M0 T6). **Errores comunes:** generar clave nueva en cada retry, aceptar otra huella, usar `get`+`put` y confiar en memoria local. **Fuentes oficiales:** [AWS Powertools — idempotency](https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/) y [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry).
 
-### Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min
+### Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min
 
-**Al terminar podrás:** evitar decisiones de negocio basadas en un reloj global inexistente y preservar orden donde realmente importa.
+**Prerrequisito:** tema «Evitar efectos duplicados con una clave idempotente» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T5).
 
-**¿Por qué es importante?** Los eventos concurrentes y tardíos pueden corromper una proyección si el sistema usa timestamps como si probaran causalidad.
+**Al finalizar podrás:** usar un reloj de pared para fechas auditables y uno monotónico para duraciones locales, explicar por qué ninguno establece por sí solo causalidad distribuida y diseñar pruebas con un `Clock` inyectable sin comparar valores `nanoTime` entre procesos.
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-| Subtema | Papel | Evidencia observable |
+Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/relojes/{src,out,evidence}` desde una carpeta vacía. Debes distinguir «cuándo ocurrió según este host» de «cuánto tardó dentro de este proceso»; si aún usas un timeout como prueba de resultado, vuelve al tema «Clasificar un resultado desconocido antes de reintentar».
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Un ajuste NTP, una zona horaria o dos hosts desincronizados pueden hacer que marcas de pared parezcan retroceder. Usarlas para medir duración o decidir el orden del negocio genera latencias negativas y sobrescrituras incorrectas.
+
+RutaFlow necesita registrar la fecha de confirmación y medir cuánto tarda una consulta. `Instant` responde la primera pregunta y `System.nanoTime()` la segunda. La fecha se comparte, pero puede ajustarse; el contador monotónico no retrocede dentro del proceso, pero su origen es arbitrario y no puede enviarse a otro host. La causalidad se modelará en el tema siguiente mediante versión del agregado, no mediante «el timestamp más grande gana».
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
 |---|---|---|
-| Reloj de pared | Prerrequisito | dos timestamps pueden retroceder o diferir |
-| Reloj monotónico | Variante | `nanoTime` mide duración, no fecha |
-| Causalidad | Núcleo | respuesta ocurre después de petición aunque los relojes discrepen |
-| Concurrencia | Núcleo | dos eventos no tienen relación causal demostrada |
-| Orden por agregado | Decisión | versión 3 no puede ser reemplazada por versión 2 |
-| Duplicado y tardío | Diagnóstico | consumidor ignora versión ya aplicada |
+| Reloj de pared | Núcleo | `Instant` representa fecha UTC; ajustes y sesgo impiden usarlo como cronómetro infalible |
+| Reloj monotónico | Núcleo | `nanoTime` mide intervalos locales; su origen no representa una fecha ni es portable |
+| Zona y calendario | Variante | `ZonedDateTime` presenta reglas humanas; no sustituye `Instant` para intercambio |
+| Clock inyectable | Prueba | Permite fijar y desplazar el tiempo sin dormir ni depender del reloj real |
+| Precisión y exactitud | Límite | Más dígitos no significan un reloj mejor sincronizado |
+| Causalidad | Decisión | Dos timestamps no prueban que un evento influyó en otro |
 
-`Instant.now()` sirve para registrar fecha, pero sincronización imperfecta y ajustes impiden usarlo como único orden de negocio. `System.nanoTime()` sirve para duraciones dentro de un proceso; su origen no es compartible. Causalidad significa «A pudo influir en B»; concurrencia significa que no se conoce tal relación.
+Analogía: el reloj de pared es la fecha escrita en un recibo; el cronómetro mide una carrera. Un cronómetro con «12345» no dice qué día es, y dos recibos de relojes distintos no prueban cuál acción causó la otra.
 
-No necesitas orden global para todo. Kafka, por ejemplo, solo puede preservar orden dentro de la unidad que su contrato defina; el dominio suele necesitar orden por agregado. Incluye `aggregateId` y `aggregateVersion`: aplica una transición solo si la versión sigue a la última confirmada. Un timestamp más reciente no rescata una secuencia inválida.
+```text
+fecha/auditoría -> Clock/Instant -> compartible, sujeto a sesgo
+duración local  -> nanoTime      -> monotónico, origen privado
+orden negocio   -> versión/causa -> no se deduce de los anteriores
+```
 
-#### Practica
+#### Paso 4 · Demostración guiada desde cero
 
-Crea `src/Proyeccion.java` con `ultimaVersion` por envío:
+Crea `relojes/src/RelojesDistribuidos.java` copiando el archivo completo de `examples/professional-bridges/microservices/RelojesDistribuidos.java`:
 
 ```java
-import java.util.*;
-public class Proyeccion {
-  record Evento(String id, long version) {}
+import java.time.*;
+public final class RelojesDistribuidos {
+  private RelojesDistribuidos() { }
+  public static void main(String[] args) throws Exception {
+    Clock pared = Clock.systemUTC();
+    Instant inicioPared = pared.instant();
+    long inicioMonotono = System.nanoTime();
+    Thread.sleep(120);
+    Instant finPared = pared.instant();
+    long transcurridoMs = (System.nanoTime() - inicioMonotono) / 1_000_000;
+    System.out.println("pared_ordenable=" + !finPared.isBefore(inicioPared));
+    System.out.println("monotono_entre_100_y_500_ms=" + (transcurridoMs >= 100 && transcurridoMs <= 500));
+    System.out.println("nanoTime_no_es_fecha=true");
+  }
+}
+```
+
+```bash
+mkdir -p academia-labs/microservices/relojes/{src,out,evidence}
+cp examples/professional-bridges/microservices/RelojesDistribuidos.java academia-labs/microservices/relojes/src/
+cd academia-labs/microservices/relojes
+javac --release 27 -d out src/RelojesDistribuidos.java
+java -cp out RelojesDistribuidos
+```
+
+**Resultado esperado:** tres líneas terminan en `true`. **Fallo deliberado:** convierte `System.nanoTime()` a `Instant.ofEpochMilli(...)` → **Error esperado:** obtienes una fecha sin significado real → **Diagnóstico:** el origen de `nanoTime` es arbitrario; sólo las diferencias dentro de la misma JVM son válidas.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta y explica las tres afirmaciones. Pista: no compares el valor absoluto de `nanoTime`.
+2. **Variación:** usa `Clock.fixed` para una fecha repetible sin cambiar el cronómetro.
+3. **Diagnóstico:** registra inicio con `currentTimeMillis` y fin con `nanoTime`; explica por qué la resta no tiene unidad común.
+4. **Integración:** guarda fecha UTC y duración local de una cotización en `evidence/relojes.txt`.
+5. **Diseño:** elige tipo de reloj para auditoría, TTL, timeout y orden de estados; justifica cada elección.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** registra `occurredAt` como fecha de observabilidad y duración monotónica como métrica; no uses ninguno como versión del envío.
+
+#### Paso 6 · Práctica independiente
+
+Crea una política de vencimiento que reciba `Clock` y expire una reserva tras 30 minutos. Pruébala con `Clock.fixed` y `Clock.offset`, sin `sleep`. Explica por qué esa prueba no valida sincronización entre hosts.
+
+#### Paso 7 · Cierre
+
+- [ ] Uso `Instant` para fecha y `nanoTime` para duración local.
+- [ ] No convierto el valor absoluto de `nanoTime` en fecha.
+- [ ] Inyecto `Clock` para probar políticas temporales.
+- [ ] Distingo precisión, exactitud y sincronización.
+- [ ] No deduzco causalidad sólo por timestamps.
+
+Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar el orden de eventos por versión del agregado» (referencia interna M0 T7). **Errores comunes:** medir duración con pared, comparar `nanoTime` entre JVM y ordenar negocio por fecha. **Fuentes oficiales:** [Java 27 `Clock`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/Clock.html) y [`System.nanoTime`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#nanoTime()).
+
+### Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min
+
+**Prerrequisito:** tema «Seleccionar un reloj según la evidencia temporal» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T6).
+
+**Al finalizar podrás:** clasificar un evento como aplicable, duplicado/obsoleto o hueco mediante ID y versión del agregado; impedir que una llegada tardía sobrescriba estado nuevo y decidir cuándo reconciliar, aparcar o rechazar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usarás **JDK 27.0.1** y una proyección en memoria. Crea `academia-labs/microservices/orden-agregado/{src,out,evidence}`. Debes saber que timestamps describen relojes y que una versión expresa la secuencia aceptada por el dominio.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Brokers, retries y redes pueden entregar duplicados o eventos fuera de orden. Aplicar «lo último que llegó» puede devolver un envío de `ENTREGADO` a `EN_RUTA`.
+
+RutaFlow necesita orden por envío, no un orden global de toda la empresa. Cada evento lleva `aggregateId` y `aggregateVersion`. La proyección acepta exactamente la versión siguiente, ignora versiones ya aplicadas y detecta huecos. La llegada de versión 3 antes de versión 2 no autoriza aplicar 3 ni descartar 2; exige buffer acotado, relectura o cuarentena según el contrato.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación, límite y evidencia |
+|---|---|---|
+| Agregado | Prerrequisito | Define la unidad cuya invariante necesita secuencia propia |
+| Versión | Núcleo | Aumenta al aceptar una transición; no es timestamp ni offset del broker |
+| Duplicado/obsoleto | Diagnóstico | Versión menor o igual ya no debe cambiar la proyección |
+| Hueco | Diagnóstico | Versión mayor que la siguiente señala evento faltante |
+| Concurrencia de escritores | Límite | Dos escritores pueden proponer la misma versión; la escritura necesita compare-and-set |
+| Buffer/cuarentena | Variante | Retiene temporalmente o aparta huecos con límite, alerta y reconciliación |
+
+Analogía: cada envío tiene páginas numeradas. Recibir la página 3 después de la 1 revela que falta la 2; la fecha impresa no repara el libro. El orden global tampoco es necesario: las páginas de otro envío forman otro libro.
+
+```text
+ENV-1 v1 -> APLICADO
+ENV-1 v3 -> HUECO, esperaba v2
+ENV-1 v2 -> APLICADO
+ENV-1 v2 -> OBSOLETO_O_DUPLICADO
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `orden-agregado/src/ProyeccionOrden.java` copiando el archivo completo desde `examples/professional-bridges/microservices/ProyeccionOrden.java`.
+
+```java
+import java.util.HashMap;
+import java.util.List;
+public final class ProyeccionOrden {
+  record Evento(String id, long version) { }
+  private ProyeccionOrden() { }
   public static void main(String[] args) {
-    var ultima = new HashMap<String, Long>();
-    var eventos = List.of(new Evento("ENV-1",1), new Evento("ENV-1",3),
-        new Evento("ENV-1",2), new Evento("ENV-2",1));
-    for (var e : eventos) {
-      long actual = ultima.getOrDefault(e.id(), 0L);
-      String resultado = e.version() == actual + 1 ? "APLICADO" : e.version() <= actual ? "OBSOLETO" : "HUECO";
-      if (resultado.equals("APLICADO")) ultima.put(e.id(), e.version());
-      System.out.printf("%s %s:v%d%n", resultado, e.id(), e.version());
+    var ultima = new HashMap<String,Long>();
+    var eventos = List.of(new Evento("ENV-1",1),new Evento("ENV-1",3),
+        new Evento("ENV-1",2),new Evento("ENV-1",2),new Evento("ENV-2",1));
+    for (var evento : eventos) {
+      long actual = ultima.getOrDefault(evento.id(),0L);
+      String resultado;
+      if (evento.version() == actual + 1) {
+        ultima.put(evento.id(),evento.version());
+        resultado = "APLICADO";
+      } else if (evento.version() <= actual) {
+        resultado = "OBSOLETO_O_DUPLICADO";
+      } else {
+        resultado = "HUECO_ESPERABA_v" + (actual + 1);
+      }
+      System.out.printf("%s %s:v%d%n",resultado,evento.id(),evento.version());
     }
   }
 }
 ```
 
 ```bash
-javac -d out src/Proyeccion.java
-java -cp out Proyeccion
+mkdir -p academia-labs/microservices/orden-agregado/{src,out,evidence}
+cp examples/professional-bridges/microservices/ProyeccionOrden.java academia-labs/microservices/orden-agregado/src/
+cd academia-labs/microservices/orden-agregado
+javac --release 27 -d out src/ProyeccionOrden.java
+java -cp out ProyeccionOrden
 ```
 
-**Resultado esperado:** imprime `APLICADO ENV-1:v1`, `HUECO ENV-1:v3`, `APLICADO ENV-1:v2` y `APLICADO ENV-2:v1`. **Error:** ordenar toda la lista por timestamp oculta que `v2` llegó tarde y puede sobrescribir `v3`. **Transferencia al proyecto integrador RutaFlow Distribuido:** añade un buffer acotado para huecos; si falta una versión pasado el deadline, envía a cuarentena y dispara reconciliación. Decide el límite para no retener memoria sin fin.
+**Resultado esperado:** `APLICADO ENV-1:v1`, `HUECO_ESPERABA_v2 ENV-1:v3`, `APLICADO ENV-1:v2`, `OBSOLETO_O_DUPLICADO ENV-1:v2` y `APLICADO ENV-2:v1`.
 
-**Interacciones profesionales.** Una versión detecta orden por agregado, pero no resuelve conflictos entre escritores que aceptaron la misma versión base; la escritura necesita compare-and-set, bloqueo optimista o un único propietario. Tampoco uses el offset del broker como versión del dominio: describe posición dentro de una partición, no la validez de la transición. Si replicas entre regiones, declara qué conflictos pueden ocurrir y qué actor decide; «última escritura gana» puede perder una confirmación válida.
+**Fallo deliberado:** aplica siempre el evento con timestamp mayor → **Error esperado:** una versión 3 puede ocultar el hueco y una versión 2 tardía puede sobrescribirla → **Diagnóstico:** la fecha no representa la secuencia del agregado; restaura `version == actual + 1`.
 
-**Diagnóstico y seguridad.** Registra `eventId`, agregado, versión esperada/recibida y correlation ID, evitando payloads sensibles. Distingue duplicado exacto, evento obsoleto y hueco: requieren ignorar, reconciliar o aparcar, respectivamente. Una cola de cuarentena sin alerta ni procedimiento solo es almacenamiento de deuda. Fuente: [OpenTelemetry — contexto](https://opentelemetry.io/docs/specs/otel/context/) y [Azure Architecture Center — Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy).
+#### Paso 5 · Práctica guiada
 
-### Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min
+1. **Reproducción:** ejecuta la secuencia y explica cada clasificación. Pista: conserva `actual` por ID.
+2. **Variación:** agrega `ENV-2:v3`; confirma que el hueco es independiente de ENV-1. Pista: no existe versión global.
+3. **Diagnóstico:** procesa dos veces v1 y distingue duplicado exacto de evento obsoleto con distinto `eventId`. Pista: versión y evento responden preguntas distintas.
+4. **Integración:** registra esperado, recibido y decisión en `evidence/orden.txt`. Pista: incluye agregado y correlation ID.
+5. **Diseño:** fija tamaño/tiempo del buffer, alerta y procedimiento de reconciliación. Pista: una cuarentena sin responsable no resuelve el hueco.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** añade versión a eventos de envío y compare-and-set al escritor; no uses offset del broker como versión del dominio.
+
+#### Paso 6 · Práctica independiente
+
+Implementa un buffer acotado que reciba v1, v3 y v2, aplique v1, espere v2 y luego drene v2/v3. Cuando falte una versión más de cinco eventos, envía el agregado a cuarentena con razón verificable.
+
+#### Paso 7 · Cierre
+
+- [ ] Ordeno por agregado, no globalmente.
+- [ ] Aplico sólo la versión siguiente.
+- [ ] Distingo duplicado, obsoleto y hueco.
+- [ ] Limito buffer y defino reconciliación.
+- [ ] Protejo escritores con compare-and-set.
+
+Si fallas 2 o más puntos, repite la secuencia. **Siguiente tema:** «Evolucionar contratos serializados sin romper consumidores» (referencia interna M0 T8). **Errores comunes:** ordenar por timestamp, usar offset como versión y acumular huecos sin límite. **Fuentes oficiales:** [Azure Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy) y [OpenTelemetry Context](https://opentelemetry.io/docs/specs/otel/context/).
+
+### Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min
 
 **Al terminar podrás:** evolucionar un mensaje compatible, limitar su costo y convertir una falacia distribuida en una prueba reproducible.
 

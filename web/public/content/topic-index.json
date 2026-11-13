@@ -4558,12 +4558,16 @@
         "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente-integracion-45-min"
       },
       {
-        "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
-        "fragment": "tema-6-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
+        "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+        "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal-integracion-40-min"
+      },
+      {
+        "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
       },
       {
         "title": "Serialización, evolución y falacias distribuidas",
-        "fragment": "tema-7-serializacion-evolucion-y-falacias-distribuidas"
+        "fragment": "tema-8-serializacion-evolucion-y-falacias-distribuidas"
       }
     ],
     "1": [

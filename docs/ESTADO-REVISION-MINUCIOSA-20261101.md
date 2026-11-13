@@ -1046,3 +1046,14 @@ Ejecución JDK 27.0.1: el primer laboratorio produjo curl 28 y luego `ENV-001 CO
 segundo devolvió `numero=1` tanto en original como replay, 409 ante otra huella y `efectos=1`.
 Idempotencia recibió revisión semántica manual trazable para que el tema nuevo no aumente la deuda;
 no se confunde el mapa local con una implementación durable multi-réplica.
+
+## 35. Relojes y orden por agregado separados
+
+Fecha: 2026-11-13. El tema de 80 minutos se dividió en «Seleccionar un reloj según la evidencia
+temporal» (40 min) y «Preservar el orden de eventos por versión del agregado» (45 min). Se separó
+fecha/duración de causalidad/orden y se conservaron reloj de pared, monotónico, `Clock`, sesgo,
+versión, duplicado, hueco, compare-and-set, buffer y cuarentena.
+
+Con JDK 27.0.1 se ejecutaron ambos ejemplos: las tres invariantes de reloj fueron `true`; la
+proyección produjo aplicación v1, hueco v3, aplicación v2, duplicado v2 y orden independiente para
+ENV-2. El tema nuevo de orden recibió revisión semántica trazable; la deuda no aumenta.

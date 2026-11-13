@@ -78,7 +78,7 @@
       "completeSubtopics": 0
     },
     "microservices": {
-      "topics": 13,
+      "topics": 14,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -11735,14 +11735,21 @@
       },
       {
         "module": 0,
-        "topic": "### Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "### Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
       },
       {
         "module": 0,
-        "topic": "### Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "### Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

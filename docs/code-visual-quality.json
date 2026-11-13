@@ -109,16 +109,16 @@
       "officialSource": 112
     },
     "microservices": {
-      "topics": 13,
-      "code": 13,
+      "topics": 14,
+      "code": 14,
       "commentedCode": 6,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 12,
-      "runCommand": 11,
-      "officialSource": 13
+      "filePath": 13,
+      "runCommand": 12,
+      "officialSource": 14
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -2537,14 +2537,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "missingCode": false,
       "missingComments": true
     },

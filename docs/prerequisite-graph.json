@@ -5513,7 +5513,7 @@
       "track": "microservices",
       "module": 0,
       "position": 6,
-      "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:5"
@@ -5524,10 +5524,21 @@
       "track": "microservices",
       "module": 0,
       "position": 7,
-      "title": "Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:6"
+      ]
+    },
+    {
+      "id": "microservices:0:8",
+      "track": "microservices",
+      "module": 0,
+      "position": 8,
+      "title": "Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "requires": [
+        "microservices:0:7"
       ]
     },
     {
@@ -5538,7 +5549,7 @@
       "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
-        "microservices:0:7"
+        "microservices:0:8"
       ]
     },
     {

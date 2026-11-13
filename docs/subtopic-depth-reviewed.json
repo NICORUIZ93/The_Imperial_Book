@@ -2,6 +2,14 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: ProyeccionOrden clasificó v1 como APLICADO, v3 como HUECO_ESPERABA_v2, v2 como APLICADO, la repetición v2 como OBSOLETO_O_DUPLICADO y ENV-2:v1 como APLICADO.",
+      "criticalSubtopics": ["agregado como unidad de orden", "versión de dominio", "duplicado exacto", "evento obsoleto", "hueco de secuencia", "concurrencia de escritores", "compare-and-set", "buffer acotado", "cuarentena y reconciliación"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy", "https://opentelemetry.io/docs/specs/otel/context/"]
+    },
     "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",

@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1313,
+    "topics": 1314,
     "topicsWithSignals": 365,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1313,
+    "total": 1314,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -12730,7 +12730,7 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+      "title": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "line": 764,
       "signals": [],
@@ -12742,9 +12742,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "title": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 818,
+      "line": 855,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "microservices",
+      "module": 0,
+      "title": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+      "file": "web/public/content/microservices/modulo-0.md",
+      "line": 958,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

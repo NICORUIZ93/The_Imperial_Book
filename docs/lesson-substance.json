@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "f2428c23f340505311c8d89c1f457fdd0d3c8053cdc291b7ce9682eb0b4c7395",
+    "fingerprint": "c928f909f4d394825f7b30eddbf126fb728141b8a7c184e32c30f9792f628c30",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1313,
+    "topics": 1314,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9041,15 +9041,22 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
-        "words": 544
+        "tailWords": 116,
+        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+        "words": 835
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 87,
+        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "words": 848
       },
       {
         "issues": [],
         "module": 0,
         "tailWords": 0,
-        "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "words": 586
       },
       {

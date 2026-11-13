@@ -189,18 +189,18 @@
       "repeatedDemo": 0
     },
     "microservices": {
-      "topics": 13,
-      "explanation": 13,
-      "code": 13,
+      "topics": 14,
+      "explanation": 14,
+      "code": 14,
       "visual": 1,
-      "filePath": 13,
-      "runCommand": 13,
-      "expectedResult": 13,
-      "practice": 13,
-      "project": 12,
-      "modelMental": 13,
-      "limitsDecision": 13,
-      "practicable": 12,
+      "filePath": 14,
+      "runCommand": 14,
+      "expectedResult": 14,
+      "practice": 14,
+      "project": 13,
+      "modelMental": 14,
+      "limitsDecision": 14,
+      "practicable": 13,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -22779,7 +22779,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
+        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22801,7 +22801,29 @@
       },
       {
         "module": 0,
-        "topic": "Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min",
+        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": false,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min",
         "criteria": {
           "explanation": true,
           "code": true,

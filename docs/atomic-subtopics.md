@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1313**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1314**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -17,7 +17,7 @@ Temas conformes a cuatro pasos: **215/1313**. Tracks inventariados: **16**.
 | java | 101 | 111 | 307 | 307 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
-| microservices | 0 | 13 | 0 | 0 |
+| microservices | 0 | 14 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
@@ -980,8 +980,9 @@ Temas conformes a cuatro pasos: **215/1313**. Tracks inventariados: **16**.
 - M0 ### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min: tiene 0 subtemas
 - M0 ### Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min: tiene 0 subtemas
 - M0 ### Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min: tiene 0 subtemas
-- M0 ### Tema 6: Relojes, causalidad, concurrencia y orden · Integración · 80 min: tiene 0 subtemas
-- M0 ### Tema 7: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas
+- M0 ### Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min: tiene 0 subtemas
+- M0 ### Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min: tiene 0 subtemas
+- M0 ### Tema 8: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas
 - M1 ### Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min: tiene 0 subtemas
 - M1 ### Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min: tiene 0 subtemas
 - M1 ### Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min: tiene 0 subtemas

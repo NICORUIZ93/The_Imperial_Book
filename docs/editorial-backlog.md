@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1313 | 0 |
-| Código | 1274 | 39 |
-| Ruta | 1313 | 0 |
-| Ejecución | 1255 | 58 |
-| Resultado | 1311 | 2 |
-| Modificación | 1265 | 48 |
-| Conexión con un proyecto | 1179 | 134 |
-| Modelo mental | 1313 | 0 |
-| Límites | 1271 | 42 |
-| **Perfil de criterios detectado** | **1168** | **145** |
+| Explicación | 1314 | 0 |
+| Código | 1275 | 39 |
+| Ruta | 1314 | 0 |
+| Ejecución | 1256 | 58 |
+| Resultado | 1312 | 2 |
+| Modificación | 1266 | 48 |
+| Conexión con un proyecto | 1180 | 134 |
+| Modelo mental | 1314 | 0 |
+| Límites | 1272 | 42 |
+| **Perfil de criterios detectado** | **1169** | **145** |
 
 ## Prioridad por track
 
@@ -34,7 +34,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | java | 111 | 39 | 0 | 58 | 0 | 47 | 60 | 39 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| microservices | 13 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| microservices | 14 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
