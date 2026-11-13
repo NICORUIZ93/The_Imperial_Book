@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-31",
+  "date": "2026-11-13",
   "scope": "Verificación técnica delimitada; no certifica aprendizaje, producción ni todos los ejemplos históricos.",
   "laboratories": [
     {
@@ -86,6 +86,14 @@
       "lesson": "web/public/content/spring-boot/modulo-2.md",
       "status": "checked-with-limits",
       "evidence": "Proyecto Initializr Spring Boot 4.0.9 con JDK25: Maven package correcto; HTTP devuelve IDs 3 y 4 para segunda página y 400 para size=1000000."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "M0 T2 — Imponer un presupuesto temporal a una solicitud HTTP",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: javac --release 27 correcto; /health devolvió UP; el cliente devolvió TIMEOUT_SOLICITUD HttpTimeoutException a 500 ms y el servidor imprimió SERVIDOR_TERMINO_LENTO después. El puerto local sin escucha produjo java.net.ConnectException: Connection refused (connect failed). Límite: loopback con latencia artificial; no representa pérdida de paquetes, carga ni cancelación cooperativa."
     }
   ],
   "additionalRepair": {

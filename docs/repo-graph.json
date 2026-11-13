@@ -241,7 +241,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 985,
+      "lines": 1009,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2133,7 +2133,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3169,
+      "lines": 3162,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22016,
+      "lines": 22020,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2917,7 +2917,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1201,
+      "lines": 1200,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -3434,6 +3434,32 @@
       "symbols": [],
       "imports": [
         "node:http"
+      ],
+      "headings": []
+    },
+    {
+      "path": "examples/control-1-tanque/README.md",
+      "lines": 29,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Proyecto integrador Control 1: nivel de un tanque"
+      ]
+    },
+    {
+      "path": "examples/control-1-tanque/simular.py",
+      "lines": 54,
+      "kind": "example",
+      "symbols": [
+        "simular",
+        "guardar_csv",
+        "main"
+      ],
+      "imports": [
+        "argparse",
+        "csv",
+        "pathlib"
       ],
       "headings": []
     },
@@ -6312,7 +6338,7 @@
     },
     {
       "path": "examples/professional-bridges/verification.json",
-      "lines": 95,
+      "lines": 103,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12369,7 +12395,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 95,
+      "lines": 96,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -17664,7 +17690,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-0.md",
-      "lines": 352,
+      "lines": 480,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -20484,7 +20510,7 @@
     },
     {
       "path": "web/src/app/learning-activities.ts",
-      "lines": 29,
+      "lines": 30,
       "kind": "angular-app",
       "symbols": [
         "TrackProject",

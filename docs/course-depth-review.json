@@ -12680,7 +12680,7 @@
     {
       "track": "microservices",
       "module": 0,
-      "title": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "title": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "line": 141,
       "signals": [],
@@ -12694,7 +12694,7 @@
       "module": 0,
       "title": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 198,
+      "line": 326,
       "signals": [
         "clase-java-no-visible"
       ],
@@ -12708,7 +12708,7 @@
       "module": 0,
       "title": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 235,
+      "line": 363,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -12720,7 +12720,7 @@
       "module": 0,
       "title": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
       "file": "web/public/content/microservices/modulo-0.md",
-      "line": 289,
+      "line": 417,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",

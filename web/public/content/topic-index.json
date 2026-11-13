@@ -4542,8 +4542,8 @@
         "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http-fundamentos-45-min"
       },
       {
-        "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
-        "fragment": "tema-2-latencia-deadline-y-timeouts-por-fase-aplicacion-80-min"
+        "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+        "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
       },
       {
         "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",

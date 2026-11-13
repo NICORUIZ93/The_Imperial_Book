@@ -5,7 +5,7 @@
 - Temas inventariados: 1311
 - Revisados humanamente para subtemas: 146
 - Pendientes: 1165
-- Candidatos prioritarios por señales: 1019
+- Candidatos prioritarios por señales: 1018
 
 ## Cobertura por track
 
@@ -798,7 +798,6 @@
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
 - `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `microservices/modulo-1` — Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos

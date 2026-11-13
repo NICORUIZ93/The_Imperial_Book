@@ -138,62 +138,190 @@ Sin copiar el ejemplo, crea `src/ServidorVersion.java` que escuche en `127.0.0.1
 
 Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Prerrequisito de:** M0 T2 (diagnosticar DNS, conexión y ruta HTTP). Fuente primaria: [Java 25 `HttpServer`](https://docs.oracle.com/en/java/javase/25/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
 
-### Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min
+### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min
 
-**Al terminar podrás:** imponer un presupuesto total, distinguir conexión de respuesta y cancelar trabajo que ya perdió utilidad.
+**Prerrequisito:** M0 T1 (ejecutar dos procesos Java y comprobar su socket HTTP).
 
-**¿Por qué es importante?** Una dependencia lenta retiene threads, conexiones y memoria; sin límites, un fallo local se convierte en agotamiento en cascada.
+**Al finalizar podrás:** medir por separado el tiempo de una respuesta saludable y una lenta, configurar límites para establecer una conexión y esperar una respuesta, identificar la excepción que corresponde a cada fase y explicar por qué abandonar la espera del cliente no cancela automáticamente el trabajo del servidor.
 
-#### Aprende
+#### Paso 1 · Objetivo y preparación
 
-| Subtema | Papel | Evidencia observable |
+Usarás **JDK 27.0.1** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor de M0 T1; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Un timeout mal ubicado permite que una dependencia lenta retenga recursos o fabrica fallos y reintentos innecesarios. Distinguir la fase que agotó el presupuesto evita diagnosticar como caída del servidor lo que realmente fue rechazo TCP, respuesta tardía o un límite demasiado agresivo.
+
+RutaFlow consulta una tarifa antes de confirmar un envío. El servidor de tarifas puede aceptar TCP inmediatamente y tardar segundos en responder porque espera su base de datos. Si el cliente configura únicamente el tiempo de conexión, la petición permanece ocupando un hilo, memoria y una conexión aunque la respuesta ya no tenga valor para quien espera. Bajo carga, muchas esperas largas agotan recursos y convierten una dependencia lenta en una caída en cascada. Para diagnosticar correctamente debes separar cuatro hechos: cuánto tardó la operación completa, si TCP llegó a conectarse, si HTTP entregó una respuesta y si el servidor continuó trabajando después de que el cliente abandonó.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Mapa de subtemas críticos**
+
+| Subtema | Papel | Explicación causal, límite y evidencia |
 |---|---|---|
-| Latencia | Núcleo | `/lento` tarda más que `/health` |
-| Timeout de conexión | Variante | cliente falla si no establece conexión a tiempo |
-| Timeout de solicitud | Núcleo | respuesta tardía produce `HttpTimeoutException` |
-| Deadline | Profundización | llamadas encadenadas consumen un presupuesto común |
-| Cancelación | Límite | cliente abandona, pero servidor debe detener su propio trabajo |
-| Presupuesto y fan-out | Decisión | el máximo no es la suma simple cuando llamadas son paralelas |
+| Latencia observada | Núcleo | Mide tiempo extremo a extremo e incluye conexión, colas, ejecución y transporte; una cifra aislada no identifica la fase lenta |
+| Timeout de conexión | Núcleo | Limita crear una conexión TCP nueva; una conexión reutilizada puede omitir esta fase, por lo que no limita toda la petición |
+| Timeout de solicitud | Núcleo | Limita cuánto espera esa petición por la respuesta y produce `HttpTimeoutException` cuando `/lento` supera 500 ms |
+| Rechazo frente a espera | Diagnóstico | Un puerto local sin escucha suele fallar inmediatamente con `ConnectException`; no demuestra que venció el timeout configurado |
+| Cancelación local | Límite | El cliente deja de esperar, pero el handler puede terminar después; limitar espera no revierte efectos ni interrumpe trabajo remoto |
+| Selección del límite | Decisión | Debe derivarse del presupuesto extremo a extremo y percentiles medidos; demasiado corto crea falsos fallos y demasiado largo consume capacidad |
 
-**Latencia** es tiempo transcurrido; no es solo «red»: incluye colas, serialización, ejecución y dependencias. **Timeout** es una duración configurada para una fase. **Deadline** es el instante límite de toda la operación. Si cada salto recibe cinco segundos nuevos, una cadena puede exceder ampliamente el objetivo original.
+La **latencia** es una medición; un **timeout** es una decisión que termina una espera al superar una duración. `HttpClient.Builder.connectTimeout` gobierna el establecimiento de una conexión nueva. `HttpRequest.Builder.timeout` gobierna la espera de una solicitud completa. No son intercambiables: conectarse rápido a un servidor lento satisface el primero y puede incumplir el segundo.
 
-El `connectTimeout` de `HttpClient` limita establecer una conexión nueva; `HttpRequest.timeout` limita recibir la respuesta de esa solicitud. Una conexión reutilizada puede no pasar por la primera fase. Error profesional: configurar solo conexión y dejar que una respuesta espere indefinidamente.
+##### Medir la latencia observada
 
-Cancelar al cliente libera su espera, no revierte automáticamente el servidor. El servidor debe observar cancelación o deadline antes de iniciar efectos costosos. En fan-out paralelo, reserva margen para agregación y degradación; no asignes el SLO entero a cada dependencia.
+Mide desde antes de enviar hasta recibir o fallar. Ese total permite comparar experiencias, pero no atribuir por sí solo la demora: resolución, conexión, cola, cómputo y descarga pueden contribuir. Conserva fase, resultado y unidad; un promedio sin percentiles oculta las peticiones lentas.
 
-#### Practica
+##### Limitar la conexión y la solicitud
 
-Agrega al servidor un contexto `/lento` que ejecute `Thread.sleep(1500)` antes de responder. Crea `src/Cliente.java`:
+El timeout de conexión protege únicamente una conexión nueva. El timeout de solicitud protege la espera completa que ve el cliente. Debes configurar ambos porque una conexión aceptada no garantiza una respuesta oportuna, y la reutilización puede hacer que una petición ni siquiera ejecute una conexión nueva.
+
+##### Diagnosticar rechazo y respuesta tardía
+
+`ConnectException` significa que no se estableció la conexión en este experimento; `HttpTimeoutException` significa que la solicitud excedió su límite. Un estado HTTP 500 es distinto: hubo conexión y respuesta HTTP. Esta clasificación decide si inspeccionas escucha/ruta, saturación/latencia o lógica de aplicación.
+
+##### Reconocer el límite de la cancelación local
+
+Abandonar la espera libera recursos del cliente, pero no constituye una transacción distribuida ni revierte efectos. El servidor necesita su propio mecanismo de deadline o cancelación cooperativa. Por eso no debes reintentar una escritura solo porque el cliente recibió un timeout.
+
+##### Decidir el presupuesto profesional
+
+Parte del objetivo extremo a extremo, reserva margen al llamador y contrasta percentiles bajo carga. Un límite demasiado corto fabrica fallos y reintentos; uno demasiado largo retiene capacidad. Registra duración, fase y resultado, evitando identificadores sensibles como etiquetas métricas de alta cardinalidad.
+
+Piensa en una llamada telefónica: el tiempo de conexión limita cuánto esperas a que contesten; el tiempo de solicitud limita cuánto permaneces en la conversación esperando el dato. Colgar libera tu teléfono, pero no obliga a la otra persona a dejar de preparar el informe. Del mismo modo, un timeout del cliente no prueba que el servidor no produjo un efecto.
+
+```text
+Cliente                 TCP                  Servidor
+  |--- connect --------->| aceptado             |
+  |--- GET /lento ------------------------------>|
+  |         espera 500 ms                        | duerme 1500 ms
+  |--- HttpTimeoutException                      |
+  | deja de esperar                              | intenta responder después
+```
+
+Este tema no propaga un presupuesto entre servicios ni diseña reintentos: esas evidencias requieren objetivos propios y aparecen después.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `m0-t2/src/ServidorLatencia.java`:
 
 ```java
-import java.net.URI;
-import java.net.http.*;
-import java.time.Duration;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 
-public class Cliente {
-  public static void main(String[] args) throws Exception {
-    try (var client = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(300)).build()) {
-      var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8081/lento"))
-          .timeout(Duration.ofMillis(500)).build();
-      try { client.send(request, HttpResponse.BodyHandlers.ofString()); }
-      catch (HttpTimeoutException e) { System.out.println("TIMEOUT_SOLICITUD"); }
+public final class ServidorLatencia {
+  private ServidorLatencia() { }
+
+  public static void main(String[] args) throws IOException {
+    var servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8082), 16);
+    servidor.createContext("/health", intercambio -> responder(intercambio, "UP"));
+    servidor.createContext("/lento", intercambio -> {
+      try {
+        Thread.sleep(1500);
+        responder(intercambio, "TARIFA=12000");
+        System.out.println("SERVIDOR_TERMINO_LENTO");
+      } catch (InterruptedException error) {
+        Thread.currentThread().interrupt();
+        intercambio.close();
+      }
+    });
+    servidor.start();
+    System.out.println("LISTEN http://127.0.0.1:8082");
+  }
+
+  private static void responder(HttpExchange intercambio, String texto) throws IOException {
+    byte[] cuerpo = texto.getBytes(StandardCharsets.UTF_8);
+    intercambio.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
+    intercambio.sendResponseHeaders(200, cuerpo.length);
+    try (var salida = intercambio.getResponseBody()) {
+      salida.write(cuerpo);
     }
   }
 }
 ```
 
-Compila y ejecuta:
+Crea `m0-t2/src/ClienteTimeout.java`:
 
-```bash
-javac -d out src/Servidor.java src/Cliente.java
-java -cp out Cliente
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+
+public final class ClienteTimeout {
+  private ClienteTimeout() { }
+
+  public static void main(String[] args) throws Exception {
+    try (var cliente = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofMillis(300))
+        .build()) {
+      var solicitud = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8082/lento"))
+          .timeout(Duration.ofMillis(500))
+          .GET()
+          .build();
+      try {
+        var respuesta = cliente.send(solicitud, HttpResponse.BodyHandlers.ofString());
+        System.out.printf("HTTP_%d %s%n", respuesta.statusCode(), respuesta.body());
+      } catch (HttpTimeoutException error) {
+        System.out.println("TIMEOUT_SOLICITUD HttpTimeoutException");
+      }
+    }
+  }
+}
 ```
 
-**Resultado esperado:** debes observar `TIMEOUT_SOLICITUD` cerca de 500 ms, no 1500 ms. Mide también con `time java -cp out Cliente`.
+Desde una **carpeta vacía**, crea el ejemplo independiente con `mkdir -p academia-labs/microservices/m0-t2/{src,out,evidence}`, guarda ambos archivos y ejecuta:
 
-**Límite:** el ejemplo no simula pérdida, colas ni una red real; solo hace observable el presupuesto. **Transferencia al proyecto integrador RutaFlow Distribuido:** recibe un header `X-Deadline-Epoch-Millis`, calcula tiempo restante antes de dormir y responde `504` si ya no alcanza. Prueba 100 ms y 2000 ms. Documenta por qué propagar tiempo restante es más seguro que reiniciar el timeout.
+```bash
+javac --release 27 -d out src/ServidorLatencia.java src/ClienteTimeout.java
+java -cp out ServidorLatencia
+# En la segunda terminal:
+curl -fsS http://127.0.0.1:8082/health
+java -cp out ClienteTimeout
+```
 
-**Decisión profesional:** calcula el valor desde mediciones de latencia y el presupuesto extremo a extremo, no desde un número copiado. Un timeout demasiado corto crea falsos fallos y reintentos; uno demasiado largo consume capacidad. Registra duración, deadline restante y resultado sin convertir identificadores sensibles en etiquetas métricas de alta cardinalidad. Fuente: [gRPC — deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 25 `HttpClient`](https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html).
+**Resultado esperado — salida exacta del cliente:**
+
+```text
+UP
+TIMEOUT_SOLICITUD HttpTimeoutException
+```
+
+Aproximadamente un segundo después, la terminal del servidor imprime `SERVIDOR_TERMINO_LENTO`: esa línea demuestra que el timeout liberó al cliente, pero no canceló el handler.
+
+**Fallo deliberado:** cambia la URI del cliente a `http://127.0.0.1:65534/lento`, verifica antes que el puerto no tenga escucha y ejecuta → **Error esperado:** termina con `java.net.ConnectException` en vez de `HttpTimeoutException` → **Diagnóstico:** el sistema operativo rechazó la conexión; un rechazo inmediato no ejercita el timeout de respuesta ni demuestra una red que descarta paquetes.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta `/health` y `/lento`; predice cuál supera 500 ms y conserva ambas salidas en `evidence/tema-2.txt`. Pista: el sueño ocurre solo en un handler.
+2. **Variación:** aumenta el timeout de solicitud a 2000 ms. Predice y confirma `HTTP_200 TARIFA=12000`. Pista: no cambies la latencia del servidor.
+3. **Diagnóstico:** detén el servidor y ejecuta el cliente. Clasifica `ConnectException` como rechazo de conexión, no como respuesta HTTP lenta. Pista: busca si existe un PID escuchando en 8082.
+4. **Integración:** mide cinco llamadas con `curl -o /dev/null -sS -w '%{time_total}\n'`; registra mínimo, máximo y limitación de la muestra. Pista: cinco observaciones no forman un SLO.
+5. **Diseño:** para un presupuesto total de 1000 ms, asigna conexión, respuesta y margen del llamador. Justifica qué señal revisarías antes de reducir el límite; no copies 300/500 ms sin evidencia.
+
+**Conexión con el proyecto integrador RutaFlow Distribuido:** conserva en `evidence/tema-2.txt` los tres resultados, la medición y la asignación de presupuesto. Esa evidencia fijará después el timeout de la consulta de tarifas del proyecto real; todavía no autoriza reintentos ni efectos de negocio.
+
+#### Paso 6 · Práctica independiente
+
+Crea un endpoint `/variable?ms=N` que acepte únicamente valores entre 0 y 2000, y un cliente con timeout de 700 ms. Entrega tres ejecuciones: 200 ms con HTTP 200, 900 ms con `HttpTimeoutException` y una entrada inválida con HTTP 400. Explica por qué ninguna de esas pruebas demuestra todavía cancelación cooperativa del trabajo remoto.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingo latencia medida de timeout configurado.
+- [ ] Explico qué fase limita `connectTimeout` y cuál limita `HttpRequest.timeout`.
+- [ ] Diferencio `ConnectException`, `HttpTimeoutException` y una respuesta HTTP de error.
+- [ ] Demuestro que el servidor puede continuar después del abandono del cliente.
+- [ ] Justifico un límite mediante presupuesto y mediciones, no por intuición.
+
+Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desde una carpeta limpia. **Siguiente tema y prerrequisito de:** M0 T3 (propagar un deadline sin reiniciar el presupuesto). Fuentes primarias: [Java 27 `HttpClient`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html), [`HttpRequest.Builder.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)) y [`HttpTimeoutException`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpTimeoutException.html).
+
+**Errores comunes:** interpretar todo timeout como «el servidor no hizo nada», medir solo el promedio, usar el timeout de conexión como límite total o aumentar valores sin observar saturación. **Fuentes oficiales:** la API de Java 27 enlazada arriba define el alcance y las excepciones; la elección numérica sigue dependiendo del presupuesto y de mediciones propias.
 
 ### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min
 

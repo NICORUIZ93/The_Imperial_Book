@@ -1047,7 +1047,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 9 | [Tema 2: Fakes en vez de mocks](../web/public/content/kotlin-multiplatform/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | kotlin-multiplatform / 9 | [Tema 3: runTest para coroutines](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
 | microservices / 0 | [Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

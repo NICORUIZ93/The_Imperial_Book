@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "0fc4c431da0d74cfa2843d7c7f1805e349a1da65c0bbd52209da22ba182fed76",
+    "fingerprint": "63485859e83e7ea2d8e3b03f58b2466a0fb890a0faf2f041895a03fe05668b2d",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -9013,9 +9013,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
-        "words": 510
+        "tailWords": 203,
+        "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+        "words": 1699
       },
       {
         "issues": [],

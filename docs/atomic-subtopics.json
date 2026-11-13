@@ -11707,7 +11707,7 @@
       },
       {
         "module": 0,
-        "topic": "### Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "topic": "### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

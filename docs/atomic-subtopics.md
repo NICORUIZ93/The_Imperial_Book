@@ -976,7 +976,7 @@ Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 ### microservices
 
 - M0 ### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: tiene 0 subtemas
-- M0 ### Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min: tiene 0 subtemas
+- M0 ### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min: tiene 0 subtemas
 - M0 ### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min: tiene 0 subtemas
 - M0 ### Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min: tiene 0 subtemas
 - M0 ### Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas

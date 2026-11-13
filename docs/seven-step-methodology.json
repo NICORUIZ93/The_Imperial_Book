@@ -211,22 +211,22 @@
     },
     "microservices": {
       "topics": 11,
-      "objective": 0,
-      "prerequisites": 5,
-      "context": 1,
-      "theoryAnalogy": 1,
-      "guidedDemo": 1,
+      "objective": 1,
+      "prerequisites": 6,
+      "context": 2,
+      "theoryAnalogy": 2,
+      "guidedDemo": 2,
       "codeExplanation": 11,
       "execution": 8,
       "expectedResult": 10,
-      "deliberateFailure": 9,
-      "guidedPractice": 1,
-      "independentPractice": 1,
-      "closure": 0,
-      "commonErrors": 0,
-      "resources": 0,
-      "standaloneExample": 2,
-      "complete": 0
+      "deliberateFailure": 10,
+      "guidedPractice": 2,
+      "independentPractice": 2,
+      "closure": 1,
+      "commonErrors": 1,
+      "resources": 1,
+      "standaloneExample": 3,
+      "complete": 1
     },
     "node": {
       "topics": 83,
@@ -25781,27 +25781,27 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+        "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
         "criteria": {
-          "objective": false,
-          "prerequisites": false,
-          "context": false,
-          "theoryAnalogy": false,
-          "guidedDemo": false,
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
           "codeExplanation": true,
           "execution": true,
           "expectedResult": true,
-          "deliberateFailure": false,
-          "guidedPractice": false,
-          "independentPractice": false,
-          "closure": false,
-          "commonErrors": false,
-          "resources": false,
-          "standaloneExample": false
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
         },
         "classification": {
-          "stepsPassed": 3,
-          "complete": false
+          "stepsPassed": 15,
+          "complete": true
         }
       },
       {

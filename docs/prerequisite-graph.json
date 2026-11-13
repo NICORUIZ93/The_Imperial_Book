@@ -5469,7 +5469,7 @@
       "track": "microservices",
       "module": 0,
       "position": 2,
-      "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
+      "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:1"

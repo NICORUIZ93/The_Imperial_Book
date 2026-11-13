@@ -2,7 +2,7 @@
 
 Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.
 
-Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-12 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 503 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
+Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-13 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 503 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -15,13 +15,13 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | react | 58 | 58 | 42 | 37 | 0 | 9 | 0 | 58 | 58 | 58 |
 | java | 111 | 72 | 22 | 18 | 1 | 0 | 0 | 111 | 111 | 106 |
 | spring-boot | 113 | 113 | 40 | 36 | 1 | 0 | 0 | 113 | 113 | 112 |
-| microservices | 11 | 11 | 3 | 0 | 0 | 0 | 0 | 10 | 8 | 11 |
+| microservices | 11 | 11 | 4 | 0 | 0 | 0 | 0 | 10 | 8 | 11 |
 | kotlin-multiplatform | 56 | 56 | 45 | 32 | 0 | 22 | 0 | 56 | 56 | 56 |
 | android | 74 | 74 | 65 | 27 | 0 | 40 | 0 | 72 | 71 | 73 |
 | ios | 56 | 56 | 40 | 34 | 0 | 16 | 0 | 55 | 56 | 56 |
 | flutter | 106 | 106 | 61 | 82 | 0 | 14 | 0 | 103 | 103 | 99 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 29 |
-| **Total** | **1241** | **1202** | **815** | **639** | **14** | **179** | **0** | **1226** | **1228** | **1222** |
+| **Total** | **1241** | **1202** | **816** | **639** | **14** | **179** | **0** | **1226** | **1228** | **1222** |
 
 ## Regla editorial
 

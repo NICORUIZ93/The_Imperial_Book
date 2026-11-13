@@ -111,7 +111,7 @@
     "microservices": {
       "topics": 11,
       "code": 11,
-      "commentedCode": 3,
+      "commentedCode": 4,
       "mermaid": 0,
       "archifyVisual": 0,
       "asciiVisual": 0,
@@ -2524,13 +2524,6 @@
       "track": "spring-boot",
       "module": 9,
       "topic": "Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "microservices",
-      "module": 0,
-      "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
       "missingCode": false,
       "missingComments": true
     },

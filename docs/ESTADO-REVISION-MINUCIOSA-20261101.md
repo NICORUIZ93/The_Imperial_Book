@@ -982,3 +982,27 @@ regla ArchUnit que prohíbe acceder a `envios.internal`. La ejecución quedó in
 shell no pudo resolver `repo.maven.apache.org` y ArchUnit no estaba en la caché local; Maven falló
 antes de compilar por `DependencyResolutionException`. No se presenta como prueba superada. Las
 fuentes contrastadas fueron Spring Modulith, ArchUnit y Azure Architecture Center.
+
+## 31. Migración estricta del prompt maestro — Microservicios M0 T2
+
+Fecha: 2026-11-13. Tras integrar `main`, la validación reveló que
+`docs/topic-source-review.json` estaba desactualizado y que Microservicios M0/M1 conservaba temas
+de 75–110 minutos sin los siete pasos estrictos. No se avanzó a M2.
+
+M0 T2 se sustituyó por **«Imponer un presupuesto temporal a una solicitud HTTP»**, 45 minutos,
+con prerrequisito exacto M0 T1, siete pasos, mapa clasificado y explicación individual de latencia,
+timeout de conexión, timeout de solicitud, rechazo, cancelación local y selección profesional del
+presupuesto. Incluye dos archivos Java completos, diagrama, cinco prácticas de tipos distintos,
+reto independiente, fallo deliberado, checklist, conexión con RutaFlow y fuentes de Java 27.
+
+Evidencia ejecutada con Temurin 27.0.1: compilación con `--release 27`; `/health` produjo `UP`;
+el cliente produjo `TIMEOUT_SOLICITUD HttpTimeoutException`; el servidor imprimió
+`SERVIDOR_TERMINO_LENTO` después del abandono; un puerto local sin escucha produjo
+`java.net.ConnectException: Connection refused (connect failed)`. Esto verifica el laboratorio
+local, no redes con pérdida, carga real ni cancelación cooperativa.
+
+Los detectores registran T2 con 15/15 marcadores de siete pasos, perfil practicable y sin señales
+prioritarias de profundidad. El registro humano continúa `pending`: la detección y esta ejecución
+no se presentan como firma pedagógica externa. Siguiente trabajo: separar y redactar M0 T3 para
+propagación de deadlines; después corregir fallo parcial/idempotencia y renumerar el resto sin
+perder conceptos. M1 sigue íntegramente pendiente de migración estricta.
