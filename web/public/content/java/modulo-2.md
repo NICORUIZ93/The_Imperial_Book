@@ -334,7 +334,9 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** El orden natural sirve cuando una clase tiene un criterio principal; un Comparator permite cambiarlo para una vista concreta. La iteración permite procesar colecciones sin depender de su implementación.
-**Prerrequisitos:** M2 T1 y M1 T2. Proyecto continuo: ordenar guías por código o destino y retirar entregas completadas con seguridad.
+**Prerrequisitos:** M2 T1 (colecciones) y M1 T3 (interfaces). Proyecto continuo: ordenar guías por código o destino y retirar entregas completadas con seguridad.
+
+**Mapa de subtemas críticos:** `Comparable` y el criterio de equivalencia por código (núcleo, subtema 3.1); `Comparator` externo, desempate y estabilidad del resultado (variante y límite, subtema 3.2); recorrido de `entrySet`, contrato de `Iterator.remove` y modificación estructural indebida (núcleo y diagnóstico, subtema 3.3). Cada bloque muestra una salida, un fallo comprobable y una transferencia distinta.
 
 #### Subtema 3.1: Define el orden natural con Comparable · 10 min
 
@@ -521,7 +523,7 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 - [ ] Recorrí pares de un Map mediante entrySet.
 - [ ] Eliminé la entrada actual con Iterator y corregí una comparación de String con ==.
 
-**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación de colecciones](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html#sort(java.util.Comparator)) y [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html).
+**Fuentes oficiales:** [Collections Framework en dev.java](https://dev.java/learn/api/collections-framework/), [ordenación estable de listas](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/List.html#sort(java.util.Comparator)), [contrato Comparable](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Comparable.html), [contrato de Iterator.remove](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Iterator.html#remove()) y [límites de fail-fast en LinkedHashMap](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/LinkedHashMap.html).
 
 **Transferencia al proyecto integrador:** ordena las guías por el criterio natural acordado, agrega vistas alternativas con Comparator y elimina del registro entradas completadas durante su recorrido seguro. **Límite:** implementa `Comparable` solo cuando la clase tiene un único orden natural y obvio (por ejemplo el código de guía); si necesitas varios criterios de orden distintos según la pantalla o el reporte, usa `Comparator` externos en vez de forzar varios "órdenes naturales" en la misma clase.
 

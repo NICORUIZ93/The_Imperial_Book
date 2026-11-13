@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "c18e324281337cdf04a5d5c3acd32070764c01523e4ea32ee40c62b5eac5f9e4",
+    "fingerprint": "071a5305fd510c39eea402422df1bb351ad8e32b3d3902663c3619a92e417e1e",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -7630,7 +7630,7 @@
         "module": 2,
         "tailWords": 0,
         "topic": "Tema 3: Comparable vs Comparator, e iteración",
-        "words": 1360
+        "words": 1464
       },
       {
         "issues": [],
