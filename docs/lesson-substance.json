@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "fff6acfaa86f97d76632e56b47bb5546da2dad12b4113645751468ab2d171d81",
+    "fingerprint": "d7a02e7d7d2599daa41a5c65ca5f7f77dbcd6abd03cca3091f21947389405914",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1311,
+    "topics": 1323,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -9006,79 +9006,163 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 93,
+        "tailWords": 97,
         "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
-        "words": 1079
+        "words": 1081
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min",
-        "words": 510
+        "tailWords": 202,
+        "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+        "words": 1718
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
-        "words": 489
+        "tailWords": 125,
+        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "words": 1608
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min",
-        "words": 544
+        "tailWords": 97,
+        "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+        "words": 818
       },
       {
         "issues": [],
         "module": 0,
-        "tailWords": 0,
-        "topic": "Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min",
-        "words": 586
+        "tailWords": 103,
+        "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+        "words": 1372
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 116,
+        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+        "words": 835
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 87,
+        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "words": 848
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 98,
+        "topic": "Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min",
+        "words": 779
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 97,
+        "topic": "Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min",
+        "words": 758
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 103,
+        "topic": "Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min",
+        "words": 719
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
-        "words": 478
+        "tailWords": 71,
+        "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+        "words": 710
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
-        "words": 460
+        "tailWords": 73,
+        "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "words": 641
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "words": 466
+        "tailWords": 74,
+        "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+        "words": 653
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "words": 480
+        "tailWords": 65,
+        "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+        "words": 623
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 5: Fitness functions con ArchUnit · Integración · 110 min",
-        "words": 499
+        "tailWords": 51,
+        "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "words": 580
       },
       {
         "issues": [],
         "module": 1,
-        "tailWords": 0,
-        "topic": "Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min",
-        "words": 456
+        "tailWords": 58,
+        "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "words": 592
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 51,
+        "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "words": 519
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 51,
+        "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "words": 482
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 49,
+        "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "words": 550
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 52,
+        "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "words": 560
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 44,
+        "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "words": 635
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 50,
+        "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+        "words": 536
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 70,
+        "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
+        "words": 537
       }
     ],
     "node": [

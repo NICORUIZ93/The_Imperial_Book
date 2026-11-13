@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -17,7 +17,7 @@ Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 | java | 101 | 111 | 307 | 307 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
-| microservices | 0 | 11 | 0 | 0 |
+| microservices | 0 | 23 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
@@ -976,16 +976,28 @@ Temas conformes a cuatro pasos: **215/1311**. Tracks inventariados: **16**.
 ### microservices
 
 - M0 ### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: tiene 0 subtemas
-- M0 ### Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min: tiene 0 subtemas
-- M0 ### Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min: tiene 0 subtemas
-- M0 ### Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min: tiene 0 subtemas
-- M0 ### Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min: tiene 0 subtemas
-- M1 ### Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min: tiene 0 subtemas
-- M1 ### Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min: tiene 0 subtemas
-- M1 ### Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min: tiene 0 subtemas
-- M1 ### Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min: tiene 0 subtemas
-- M1 ### Tema 5: Fitness functions con ArchUnit · Integración · 110 min: tiene 0 subtemas
-- M1 ### Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min: tiene 0 subtemas
+- M0 ### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min: tiene 0 subtemas
+- M0 ### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min: tiene 0 subtemas
+- M0 ### Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min: tiene 0 subtemas
+- M0 ### Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min: tiene 0 subtemas
+- M0 ### Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min: tiene 0 subtemas
+- M0 ### Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min: tiene 0 subtemas
+- M0 ### Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min: tiene 0 subtemas
+- M0 ### Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min: tiene 0 subtemas
+- M0 ### Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min: tiene 0 subtemas
+- M1 ### Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min: tiene 0 subtemas
+- M1 ### Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min: tiene 0 subtemas
+- M1 ### Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min: tiene 0 subtemas
+- M1 ### Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min: tiene 0 subtemas
+- M1 ### Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min: tiene 0 subtemas
+- M1 ### Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min: tiene 0 subtemas
+- M1 ### Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min: tiene 0 subtemas
+- M1 ### Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min: tiene 0 subtemas
+- M1 ### Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min: tiene 0 subtemas
+- M1 ### Tema 12: Medir señales que justifican una extracción · Experto · 40 min: tiene 0 subtemas
+- M1 ### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min: tiene 0 subtemas
 
 ### node
 

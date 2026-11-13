@@ -982,3 +982,98 @@ regla ArchUnit que prohíbe acceder a `envios.internal`. La ejecución quedó in
 shell no pudo resolver `repo.maven.apache.org` y ArchUnit no estaba en la caché local; Maven falló
 antes de compilar por `DependencyResolutionException`. No se presenta como prueba superada. Las
 fuentes contrastadas fueron Spring Modulith, ArchUnit y Azure Architecture Center.
+
+## 31. Migración estricta del prompt maestro — Microservicios M0 T2
+
+Fecha: 2026-11-13. Tras integrar `main`, la validación reveló que
+`docs/topic-source-review.json` estaba desactualizado y que Microservicios M0/M1 conservaba temas
+de 75–110 minutos sin los siete pasos estrictos. No se avanzó a M2.
+
+M0 T2 se sustituyó por **«Imponer un presupuesto temporal a una solicitud HTTP»**, 45 minutos,
+con prerrequisito exacto M0 T1, siete pasos, mapa clasificado y explicación individual de latencia,
+timeout de conexión, timeout de solicitud, rechazo, cancelación local y selección profesional del
+presupuesto. Incluye dos archivos Java completos, diagrama, cinco prácticas de tipos distintos,
+reto independiente, fallo deliberado, checklist, conexión con RutaFlow y fuentes de Java 27.
+
+Evidencia ejecutada con Temurin 27.0.1: compilación con `--release 27`; `/health` produjo `UP`;
+el cliente produjo `TIMEOUT_SOLICITUD HttpTimeoutException`; el servidor imprimió
+`SERVIDOR_TERMINO_LENTO` después del abandono; un puerto local sin escucha produjo
+`java.net.ConnectException: Connection refused (connect failed)`. Esto verifica el laboratorio
+local, no redes con pérdida, carga real ni cancelación cooperativa.
+
+Los detectores registran T2 con 15/15 marcadores de siete pasos, perfil practicable y sin señales
+prioritarias de profundidad. El registro humano continúa `pending`: la detección y esta ejecución
+no se presentan como firma pedagógica externa. Siguiente trabajo: separar y redactar M0 T3 para
+propagación de deadlines; después corregir fallo parcial/idempotencia y renumerar el resto sin
+perder conceptos. M1 sigue íntegramente pendiente de migración estricta.
+
+## 32. Microservicios M0 T3 — deadline extremo a extremo
+
+Fecha: 2026-11-13. Se insertó un tema nuevo de 45 minutos para separar la propagación de deadline
+del timeout local. Explica presupuesto, instante absoluto, tiempo restante, propagación sin
+renovación, reserva del llamador, confianza y sesgo de reloj, y el límite frente a cancelación y
+efectos. El módulo conserva todos sus conceptos: los temas anteriores 3–5 pasan a 4–6.
+
+El laboratorio contiene cliente, gateway y dependencia Java completos. Con Temurin 27.0.1 se
+compilaron y ejecutaron tres procesos: 1200 ms produjo `HTTP_200 TARIFA=12000`; 250 ms produjo
+`HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA`; omitir el header produjo HTTP 400
+`DEADLINE_INVALIDO`. Es evidencia local; no valida relojes de hosts distintos ni persistencia.
+
+El tema entra con perfil practicable y sin señales prioritarias de profundidad, pero permanece
+`pending` en el registro humano. La deuda humana aumenta en una unidad porque el currículo ganó
+un tema necesario; antes de continuar a M2 deben corregirse M0 T4–T6 y todo M1.
+
+## 33. Nombres comprensibles en lugar de códigos curriculares
+
+Fecha: 2026-11-13. Por instrucción del usuario, `M0`, `T2` y códigos similares dejan de ser el
+nombre visible de la continuidad. Los encabezados de Microservicios muestran ahora el nombre real
+del curso y del módulo. Prerrequisitos y siguientes temas presentan primero los nombres completos;
+el código permanece sólo entre paréntesis como referencia interna para validadores y enlaces.
+
+La regla quedó persistida en `MASTER-PROMPT.md` para todos los cursos. También se corrigió el
+primer laboratorio de Microservicios de JDK 25 a JDK 27.0.1 y su fuente a la API Java 27. Las
+rutas técnicas de carpetas (`m0-t1`, etc.) se conservan porque son identificadores reproducibles,
+no etiquetas pedagógicas que el estudiante deba interpretar.
+
+## 34. Resultado desconocido e idempotencia separados
+
+Fecha: 2026-11-13. El antiguo tema de 90 minutos se dividió en «Clasificar un resultado
+desconocido antes de reintentar» y «Evitar efectos duplicados con una clave idempotente», ambos de
+45 minutos y con nombres completos. Se conservaron fallo parcial, punto de commit, reconciliación,
+clave, huella, respuesta almacenada, concurrencia, estados, recuperación, ámbito, TTL y durabilidad.
+
+Ejecución JDK 27.0.1: el primer laboratorio produjo curl 28 y luego `ENV-001 CONFIRMADO`. El
+segundo devolvió `numero=1` tanto en original como replay, 409 ante otra huella y `efectos=1`.
+Idempotencia recibió revisión semántica manual trazable para que el tema nuevo no aumente la deuda;
+no se confunde el mapa local con una implementación durable multi-réplica.
+
+## 35. Relojes y orden por agregado separados
+
+Fecha: 2026-11-13. El tema de 80 minutos se dividió en «Seleccionar un reloj según la evidencia
+temporal» (40 min) y «Preservar el orden de eventos por versión del agregado» (45 min). Se separó
+fecha/duración de causalidad/orden y se conservaron reloj de pared, monotónico, `Clock`, sesgo,
+versión, duplicado, hueco, compare-and-set, buffer y cuarentena.
+
+Con JDK 27.0.1 se ejecutaron ambos ejemplos: las tres invariantes de reloj fueron `true`; la
+proyección produjo aplicación v1, hueco v3, aplicación v2, duplicado v2 y orden independiente para
+ENV-2. El tema nuevo de orden recibió revisión semántica trazable; la deuda no aumenta.
+
+## 36. Contratos, framing y falacias separados
+
+Fecha: 2026-11-13. El último tema de 100 minutos del primer módulo se dividió en tres: evolucionar
+contratos JSON (45 min), rechazar frames excesivos (35 min) y refutar falacias con evidencia (45
+min). Se conservaron compatibilidad atrás/adelante, defaults, migración, framing, límites,
+compresión, streaming y las falacias distribuidas con controles verificables.
+
+Ejecución JDK 27.0.1: V1/V2 produjeron ciudad desconocida/presente; 7 bytes se aceptaron y 33 se
+rechazaron antes de reservar; seis falacias se conectaron con evidencia del módulo. Los dos temas
+nuevos recibieron revisión semántica trazable y la deuda permanece estable.
+
+## 37. Estructura de despliegue y autonomía separadas
+
+Fecha: 2026-11-13. El primer tema de 75 minutos del módulo de monolito modular se dividió en
+«Distinguir estructura lógica de unidad de despliegue» (40 min) y «Evaluar autonomía antes de
+extraer un proceso» (45 min). Se separó clasificación observable de la decisión económica y
+operativa. Los ejemplos JDK 27.0.1 produjeron las tres clasificaciones arquitectónicas y las
+decisiones `MANTENER_MODULAR`/`CANDIDATO_A_EXTRAER`. El tema nuevo de autonomía recibió revisión
+semántica trazable y no aumenta la deuda.

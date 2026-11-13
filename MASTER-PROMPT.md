@@ -51,6 +51,12 @@ reescribir la academia completa de cero a experto, sin perder ningún tema.
 
 **PAUTA 6 — Prerrequisitos.** Formato: `**Prerrequisito:** M<N> T<M> (<tema específico>)`. Nunca "Módulo 0" a secas.
 
+**Regla de nombres comprensibles.** `M<N> T<M>` es únicamente una referencia interna secundaria.
+La interfaz y la prosa deben mostrar primero el nombre real del módulo y del tema: por ejemplo,
+`tema «Propagar un deadline absoluto entre servicios HTTP» del módulo «Antes de distribuir:
+proceso, red y falacias» (referencia interna M0 T3)`. Nunca obligues al estudiante a recordar qué
+significa un código para saber de dónde viene o qué debe estudiar después.
+
 **PAUTA 7 — Ejemplos de código.** Completo (sin `// ...`), ejecutable con versión fijada (**JDK 27, Spring Boot 4.1**), con salida esperada exacta, comentado por bloques, con fallo deliberado específico.
 
 **PAUTA 8 — Fallos deliberados.** `**Fallo deliberado:** [acción] → **Error esperado:** [mensaje exacto] → **Diagnóstico:** [por qué + qué enseña]`.

@@ -8,16 +8,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1311 | 0 |
-| Código | 1272 | 39 |
-| Ruta | 1311 | 0 |
-| Ejecución | 1253 | 58 |
-| Resultado | 1309 | 2 |
-| Modificación | 1263 | 48 |
-| Conexión con un proyecto | 1177 | 134 |
-| Modelo mental | 1311 | 0 |
-| Límites | 1269 | 42 |
-| **Perfil de criterios detectado** | **1236** | **75** |
+| Explicación | 1323 | 0 |
+| Código | 1284 | 39 |
+| Ruta | 1323 | 0 |
+| Ejecución | 1265 | 58 |
+| Resultado | 1321 | 2 |
+| Modificación | 1275 | 48 |
+| Conexión con un proyecto | 1179 | 144 |
+| Modelo mental | 1323 | 0 |
+| Límites | 1280 | 43 |
+| **Perfil de criterios detectado** | **1238** | **85** |
 
 ## Prioridad por track
 
@@ -34,7 +34,7 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 | java | 111 | 39 | 0 | 58 | 0 | 47 | 60 | 39 |
 | javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| microservices | 11 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
+| microservices | 23 | 0 | 0 | 0 | 0 | 0 | 11 | 1 |
 | node | 83 | 0 | 0 | 0 | 0 | 1 | 2 | 1 |
 | react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -115,6 +115,16 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 - [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 2: Mockito — aislar dependencias: código, ejecución, modificación, conexión con un proyecto, límites.
 - [java · módulo 9](../web/public/content/java/modulo-9.md) · Tema 3: Tests parametrizados y cobertura: código, ejecución, modificación, conexión con un proyecto.
 - [microservices · módulo 0](../web/public/content/microservices/modulo-0.md) · Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min: conexión con un proyecto, límites.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 12: Medir señales que justifican una extracción · Experto · 40 min: conexión con un proyecto.
+- [microservices · módulo 1](../web/public/content/microservices/modulo-1.md) · Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min: conexión con un proyecto.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 7: Kafka desde Node: clave, grupo consumidor y offset: conexión con un proyecto, límites.
 - [node · módulo 14](../web/public/content/node/modulo-14.md) · Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones: modificación, conexión con un proyecto.
 

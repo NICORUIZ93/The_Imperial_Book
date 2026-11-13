@@ -4542,46 +4542,94 @@
         "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http-fundamentos-45-min"
       },
       {
-        "title": "Latencia, deadline y timeouts por fase · Aplicación · 80 min",
-        "fragment": "tema-2-latencia-deadline-y-timeouts-por-fase-aplicacion-80-min"
+        "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+        "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
       },
       {
-        "title": "Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min",
-        "fragment": "tema-3-fallo-parcial-resultado-desconocido-e-idempotencia-integracion-90-min"
+        "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http-aplicacion-45-min"
       },
       {
-        "title": "Relojes, causalidad, concurrencia y orden · Integración · 80 min",
-        "fragment": "tema-4-relojes-causalidad-concurrencia-y-orden-integracion-80-min"
+        "title": "Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+        "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar-integracion-45-min"
       },
       {
-        "title": "Serialización, evolución y falacias distribuidas",
-        "fragment": "tema-5-serializacion-evolucion-y-falacias-distribuidas"
+        "title": "Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+        "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente-integracion-45-min"
+      },
+      {
+        "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+        "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal-integracion-40-min"
+      },
+      {
+        "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
+      },
+      {
+        "title": "Evolucionar un contrato JSON sin romper consumidores",
+        "fragment": "tema-8-evolucionar-un-contrato-json-sin-romper-consumidores"
+      },
+      {
+        "title": "Rechazar un frame excesivo antes de reservar memoria",
+        "fragment": "tema-9-rechazar-un-frame-excesivo-antes-de-reservar-memoria"
+      },
+      {
+        "title": "Refutar falacias distribuidas mediante evidencia reproducible",
+        "fragment": "tema-10-refutar-falacias-distribuidas-mediante-evidencia-reproducible"
       }
     ],
     "1": [
       {
-        "title": "Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min",
-        "fragment": "tema-1-monolito-monolito-modular-servicio-y-microservicio-fundamentos-75-min"
+        "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+        "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue-fundamentos-40-min"
       },
       {
-        "title": "Cohesión, acoplamiento y API del módulo · Aplicación · 90 min",
-        "fragment": "tema-2-cohesion-acoplamiento-y-api-del-modulo-aplicacion-90-min"
+        "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
       },
       {
-        "title": "Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min",
-        "fragment": "tema-3-arquitectura-hexagonal-dominio-puertos-y-adaptadores-aplicacion-95-min"
+        "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
+        "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio-aplicacion-40-min"
       },
       {
-        "title": "Dependencias, ciclos y costo de coordinación · Integración · 80 min",
-        "fragment": "tema-4-dependencias-ciclos-y-costo-de-coordinacion-integracion-80-min"
+        "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
+        "fragment": "tema-4-proteger-la-api-publica-de-un-modulo-aplicacion-45-min"
       },
       {
-        "title": "Fitness functions con ArchUnit · Integración · 110 min",
-        "fragment": "tema-5-fitness-functions-con-archunit-integracion-110-min"
+        "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks-aplicacion-40-min"
       },
       {
-        "title": "Evidencia y ADR para decidir una extracción",
-        "fragment": "tema-6-evidencia-y-adr-para-decidir-una-extraccion"
+        "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "fragment": "tema-6-sustituir-adaptadores-mediante-puertos-aplicacion-45-min"
+      },
+      {
+        "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo-integracion-35-min"
+      },
+      {
+        "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento-integracion-45-min"
+      },
+      {
+        "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit-integracion-40-min"
+      },
+      {
+        "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit-integracion-35-min"
+      },
+      {
+        "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions-integracion-35-min"
+      },
+      {
+        "title": "Medir señales que justifican una extracción",
+        "fragment": "tema-12-medir-senales-que-justifican-una-extraccion"
+      },
+      {
+        "title": "Registrar una decisión reversible en un ADR",
+        "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
       }
     ]
   },

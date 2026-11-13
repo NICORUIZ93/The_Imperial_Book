@@ -13,7 +13,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 111 | 79 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
 | spring-boot | 113 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| microservices | 11 | 1 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
+| microservices | 23 | 2 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
 | flutter | 106 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
@@ -24,7 +24,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1311 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1323 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -1047,16 +1047,28 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 9 | [Tema 2: Fakes en vez de mocks](../web/public/content/kotlin-multiplatform/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | kotlin-multiplatform / 9 | [Tema 3: runTest para coroutines](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 3: Fallo parcial, resultado desconocido e idempotencia · Integración · 90 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
-| microservices / 0 | [Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 5: Fitness functions con ArchUnit · Integración · 110 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
+| microservices / 0 | [Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | ejemplo-breve-revisar-contexto |
+| microservices / 1 | [Tema 12: Medir señales que justifican una extracción · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 2: Fases del Event Loop de Node · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 3: process, global y módulos core · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

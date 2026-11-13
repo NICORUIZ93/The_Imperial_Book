@@ -57,8 +57,9 @@ for track in TRACKS:
 
 viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-8")
 activities = (ROOT / "web/src/app/learning-activities.ts").read_text(encoding="utf-8")
-if activities.count("trackId: '") != 14:
-    errors.append("learning-activities.ts: deben existir exactamente 14 proyectos integradores")
+project_tracks = len(TRACKS) - 2  # Fundamentos y RutaFlow no tienen capstone propio.
+if activities.count("trackId: '") != project_tracks:
+    errors.append(f"learning-activities.ts: deben existir exactamente {project_tracks} proyectos integradores")
 for requirement in ("addTopicTroubleshooting", "Errores comunes y cómo diagnosticarlos"):
     if requirement not in viewer:
         errors.append(f"lesson-viewer.ts: falta soporte global {requirement}")
@@ -91,4 +92,4 @@ if errors:
         print(f"- {error}")
     raise SystemExit(1)
 
-print(f"Prioridades educativas OK: {modules} módulos, {topics} temas, 12 proyectos y progreso persistente sin evaluaciones generadas ni gamificación.")
+print(f"Prioridades educativas OK: {modules} módulos, {topics} temas, {project_tracks} proyectos y progreso persistente sin evaluaciones generadas ni gamificación.")

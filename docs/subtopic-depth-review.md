@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1311
-- Revisados humanamente para subtemas: 146
-- Pendientes: 1165
-- Candidatos prioritarios por señales: 1019
+- Temas inventariados: 1323
+- Revisados humanamente para subtemas: 163
+- Pendientes: 1160
+- Candidatos prioritarios por señales: 1010
 
 ## Cobertura por track
 
@@ -22,7 +22,7 @@
 | java | 111 | 10 | 101 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
-| microservices | 11 | 0 | 11 |
+| microservices | 23 | 17 | 6 |
 | node | 83 | 0 | 83 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
@@ -798,15 +798,6 @@
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
 - `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-0` — Tema 2: Latencia, deadline y timeouts por fase · Aplicación · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-0` — Tema 4: Relojes, causalidad, concurrencia y orden · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-0` — Tema 5: Serialización, evolución y falacias distribuidas · Experto · 100 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 1: Monolito, monolito modular, servicio y microservicio · Fundamentos · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 2: Cohesión, acoplamiento y API del módulo · Aplicación · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 3: Arquitectura hexagonal — dominio, puertos y adaptadores · Aplicación · 95 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 4: Dependencias, ciclos y costo de coordinación · Integración · 80 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 5: Fitness functions con ArchUnit · Integración · 110 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 6: Evidencia y ADR para decidir una extracción · Experto · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -1196,5 +1187,22 @@
 - `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — copia superficial comparte referencias; constructor de copia defensiva; copiar colecciones internas (List.copyOf/new ArrayList); clone() superficial y Cloneable; inmutabilidad como alternativa a copiar; copiar en el getter frente a en el constructor; fuga de estado mutable por referencia compartida
 - `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — campo propio y constructor privado; comportamiento por constante (método abstracto); ordinal inestable frente a código estable; switch exhaustivo sin default; values() devuelve arreglo nuevo; EnumMap/EnumSet con orden de declaración; serialización por nombre devuelve la misma instancia
 - `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — clase interna no estática y su exterior; campo sintético this$0; clase anidada static sin exterior; retención del exterior por la interna; this en clase anónima frente a lambda; interna inconstruible sin exterior; static por defecto como decisión de diseño
+- `microservices/modulo-0` — Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min — presupuesto inicial convertido una sola vez; deadline absoluto compartido; cálculo de tiempo restante por salto; propagación sin renovar el instante límite; reserva del llamador para completar la respuesta; rechazo temprano por presupuesto insuficiente; sesgo y sincronización de relojes; límite de confianza para deadlines externos; cancelación local frente a efectos remotos
+- `microservices/modulo-0` — Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min — intención de negocio y clave estable; huella canónica y conflicto de payload; reserva atómica bajo concurrencia; respuesta original almacenada; estados PROCESSING/SUCCEEDED/FAILED; recuperación de reservas huérfanas; ámbito por actor y autorización; TTL según ventana de reintentos; durabilidad y restricción única transaccional
+- `microservices/modulo-0` — Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min — agregado como unidad de orden; versión de dominio; duplicado exacto; evento obsoleto; hueco de secuencia; concurrencia de escritores; compare-and-set; buffer acotado; cuarentena y reconciliación
+- `microservices/modulo-0` — Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min — serialización a bytes; framing por longitud; límite antes de reservar; frame truncado; bytes UTF-8 frente a caracteres; tamaño descomprimido; streaming frente a memoria
+- `microservices/modulo-0` — Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min — hipótesis comprobable; perturbación reproducible; señal observable; impacto; mitigación específica; límites del laboratorio; prueba operativa y responsable
+- `microservices/modulo-1` — Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min — contrato compatible; propiedad de datos; despliegue independiente; operación y on-call; beneficio medido; costo distribuido; decisión reversible
+- `microservices/modulo-1` — Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min — motivo de cambio; cohesión funcional; invariante; vocabulario; acoplamiento aferente/eferente; cohesión accidental
+- `microservices/modulo-1` — Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min — API proporcionada; implementación interna; DTO de contrato; modelo compartido; dependencia no Java
+- `microservices/modulo-1` — Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min — política y mecanismo; invariante; tipo de dominio; error de dominio; dependencia hacia dentro; pureza pragmática
+- `microservices/modulo-1` — Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min — puerto de entrada; puerto de salida; adaptador de entrada; adaptador de salida; inversión de dependencias; abstracción accidental
+- `microservices/modulo-1` — Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min — grafo dirigido; dependencia estable; ciclo directo/transitivo; acoplamiento temporal; acoplamiento de datos; ruptura de ciclo
+- `microservices/modulo-1` — Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min — mover responsabilidad; invertir dependencia; evento pasado; acoplamiento temporal; acoplamiento de datos; consistencia eventual; costo de coordinación
+- `microservices/modulo-1` — Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min — importación de bytecode; regla de internals real y ejecutada; mensaje de violación con origen y destino; proyecto compartido con spring-boot/modulo-15 no modificado
+- `microservices/modulo-1` — Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min — slices().matching(...) con el import real de SlicesRuleDefinition; ciclo directo vs transitivo; camino circular completo en el reporte; falso verde por patrón que no captura módulos
+- `microservices/modulo-1` — Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min — failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1; aserción explícita de alcance no vacío como documentación de intención; exclusiones con dueño y vencimiento; controles complementarios fuera de bytecode
+- `microservices/modulo-1` — Tema 12: Medir señales que justifican una extracción · Experto · 40 min — cadencia de cambio; perfil de capacidad atribuido; aislamiento de fallo; ownership completo; acoplamiento de datos; costo distribuido; umbral de revisión
+- `microservices/modulo-1` — Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min — opción de mantener como alternativa real; disparador de revisión cuantificable; consecuencias negativas explícitas; reversión verificable
 - `spring-boot/modulo-26` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
 - `spring-boot/modulo-26` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor

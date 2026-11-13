@@ -92,7 +92,7 @@
     },
     {
       "path": "MASTER-PROMPT.md",
-      "lines": 143,
+      "lines": 149,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -241,7 +241,7 @@
     },
     {
       "path": "docs/ESTADO-REVISION-MINUCIOSA-20261101.md",
-      "lines": 985,
+      "lines": 1080,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19469,
+      "lines": 19553,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1858,7 +1858,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1171,
+      "lines": 1183,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2133,7 +2133,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3169,
+      "lines": 3239,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16556,
+      "lines": 16702,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2176,7 +2176,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1343,
+      "lines": 1355,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2209,7 +2209,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 124,
+      "lines": 134,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2385,7 +2385,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11075,
+      "lines": 11159,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2578,7 +2578,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13660,
+      "lines": 13792,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2743,7 +2743,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33118,
+      "lines": 33418,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2909,7 +2909,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22017,
+      "lines": 22456,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2917,7 +2917,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1201,
+      "lines": 1209,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2930,7 +2930,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 1809,
+      "lines": 1971,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2998,7 +2998,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29149,
+      "lines": 29413,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3420,8 +3420,88 @@
       "headings": []
     },
     {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/envios/api/ConsultarEstadoEnvio.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/envios/api/EstadoEnvio.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/envios/api/RegistrarEnvio.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/envios/internal/ServicioEnvios.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/facturacion/api/EmitirFactura.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/facturacion/api/EstadoFactura.java",
+      "lines": 4,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/facturacion/internal/ServicioFacturacion.java",
+      "lines": 21,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/notificaciones/api/NotificarEntrega.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/modules/notificaciones/internal/ServicioNotificaciones.java",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java",
       "lines": 39,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/modules/RutaflowModulesArchitectureTest.java",
+      "lines": 44,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6269,8 +6349,176 @@
       "headings": []
     },
     {
+      "path": "examples/professional-bridges/microservices/CalcularTarifaPura.java",
+      "lines": 13,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ClasificarArquitectura.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ClienteDeadline.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ClienteTimeout.java",
+      "lines": 28,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/CompatibilidadContrato.java",
+      "lines": 18,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/DependenciaDeadline.java",
+      "lines": 51,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/DetectarCiclo.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/EvaluarAutonomia.java",
+      "lines": 15,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/EvaluarExtraccion.java",
+      "lines": 6,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/FalaciasDistribuidas.java",
+      "lines": 17,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/GatewayDeadline.java",
+      "lines": 59,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/LimitePayload.java",
+      "lines": 25,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/MedirCohesion.java",
+      "lines": 24,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ProtegerApiModulo.java",
+      "lines": 22,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ProyeccionOrden.java",
+      "lines": 32,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/RelojesDistribuidos.java",
+      "lines": 19,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/RomperCiclo.java",
+      "lines": 11,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "examples/professional-bridges/microservices/Servidor.java",
       "lines": 35,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ServidorIdempotente.java",
+      "lines": 47,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ServidorLatencia.java",
+      "lines": 36,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/ServidorResultadoDesconocido.java",
+      "lines": 38,
+      "kind": "example",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "examples/professional-bridges/microservices/SustituirAdaptador.java",
+      "lines": 22,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -6338,7 +6586,7 @@
     },
     {
       "path": "examples/professional-bridges/verification.json",
-      "lines": 95,
+      "lines": 143,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12395,7 +12643,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 95,
+      "lines": 96,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -17690,12 +17938,12 @@
     },
     {
       "path": "web/public/content/microservices/modulo-0.md",
-      "lines": 352,
+      "lines": 1274,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 0: Antes de distribuir \u2014 proceso, red y falacias",
+        "# Curso Microservicios \u00b7 Antes de distribuir: proceso, red y falacias",
         "## Aprende construyendo",
         "## Entorno del m\u00f3dulo",
         "### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP \u00b7 Fundamentos \u00b7 45 min",
@@ -17711,23 +17959,23 @@
     },
     {
       "path": "web/public/content/microservices/modulo-1.md",
-      "lines": 290,
+      "lines": 1002,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# M\u00f3dulo 1: Monolito modular antes de microservicios",
+        "# Curso Microservicios \u00b7 Construir un monolito modular antes de extraer servicios",
         "## Aprende construyendo",
         "## Entorno reproducible",
-        "### Tema 1: Monolito, monolito modular, servicio y microservicio \u00b7 Fundamentos \u00b7 75 min",
-        "#### Aprende",
-        "#### Practica",
-        "# Clasificaci\u00f3n de RutaFlow",
-        "### Tema 2: Cohesi\u00f3n, acoplamiento y API del m\u00f3dulo \u00b7 Aplicaci\u00f3n \u00b7 90 min",
-        "#### Aprende",
-        "#### Practica",
-        "### Tema 3: Arquitectura hexagonal \u2014 dominio, puertos y adaptadores \u00b7 Aplicaci\u00f3n \u00b7 95 min",
-        "#### Aprende"
+        "### Tema 1: Distinguir estructura l\u00f3gica de unidad de despliegue \u00b7 Fundamentos \u00b7 40 min",
+        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
+        "#### Paso 2 \u00b7 Contexto y caso real",
+        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
+        "#### Paso 7 \u00b7 Cierre",
+        "### Tema 2: Evaluar autonom\u00eda antes de extraer un proceso \u00b7 Fundamentos \u00b7 45 min"
       ]
     },
     {
@@ -19117,7 +19365,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5861,
+      "lines": 5909,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

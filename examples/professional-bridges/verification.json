@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-31",
+  "date": "2026-11-13",
   "scope": "Verificación técnica delimitada; no certifica aprendizaje, producción ni todos los ejemplos históricos.",
   "laboratories": [
     {
@@ -86,6 +86,54 @@
       "lesson": "web/public/content/spring-boot/modulo-2.md",
       "status": "checked-with-limits",
       "evidence": "Proyecto Initializr Spring Boot 4.0.9 con JDK25: Maven package correcto; HTTP devuelve IDs 3 y 4 para segunda página y 400 para size=1000000."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "M0 T2 — Imponer un presupuesto temporal a una solicitud HTTP",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: javac --release 27 correcto; /health devolvió UP; el cliente devolvió TIMEOUT_SOLICITUD HttpTimeoutException a 500 ms y el servidor imprimió SERVIDOR_TERMINO_LENTO después. El puerto local sin escucha produjo java.net.ConnectException: Connection refused (connect failed). Límite: loopback con latencia artificial; no representa pérdida de paquetes, carga ni cancelación cooperativa."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "M0 T3 — Propagar un deadline absoluto entre servicios HTTP",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: tres clases compilaron con --release 27; cliente con 1200 ms obtuvo HTTP_200 TARIFA=12000; con 250 ms obtuvo HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA; omitir el header produjo HTTP 400 DEADLINE_INVALIDO. Límite: loopback y System.currentTimeMillis; no se probó sesgo entre hosts, carga ni efectos persistentes."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "Clasificar un resultado desconocido y evitar duplicados con idempotencia",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: timeout curl 28 seguido de ENV-001 CONFIRMADO; idempotencia devolvió numero=1 para original y replay, HTTP 409 para misma clave con otra huella y efectos=1. Límite: mapas en una JVM; no prueba durabilidad, concurrencia entre réplicas ni recuperación tras caída."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "Seleccionar reloj y preservar orden por agregado",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: reloj de pared ordenable, duración monotónica dentro de 100–500 ms y nanoTime no tratado como fecha; la proyección clasificó aplicación, hueco y duplicado para dos agregados. Límite: una JVM; no se probó sesgo real entre hosts ni broker."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-0.md",
+      "topic": "Contratos, framing y falacias distribuidas",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: V1/V2 produjeron ciudad DESCONOCIDA/PRESENTE; frame de 7 bytes aceptado y 33 bytes rechazado con PAYLOAD_EXCESIVO; seis falacias imprimieron REFUTADA con mitigación. Límite: parser JSON didáctico y loopback; no sustituye schema registry ni prueba de red real."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-1.md",
+      "topic": "Clasificar arquitectura y evaluar autonomía",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-13",
+      "evidence": "Temurin JDK 27.0.1: clasificación produjo MONOLITO_MODULAR, MONOLITO_DISTRIBUIDO y SERVICIOS_AUTONOMOS; matriz produjo MANTENER_MODULAR y CANDIDATO_A_EXTRAER. Límite: modelo didáctico; la decisión real requiere métricas, ownership y ADR."
     }
   ],
   "additionalRepair": {

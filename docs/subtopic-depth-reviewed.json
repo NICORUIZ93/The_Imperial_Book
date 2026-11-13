@@ -2,6 +2,168 @@
   "schemaVersion": 1,
   "description": "Registro humano de mapas de subtemas. Una entrada sólo se marca revisada después de comprobar explicación, evidencia y práctica de cada subtema crítico.",
   "reviews": {
+    "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: evidencia parcial sin datos/despliegue/operación/beneficio produjo MANTENER_MODULAR; cinco señales completas produjeron CANDIDATO_A_EXTRAER.",
+      "criticalSubtopics": ["contrato compatible", "propiedad de datos", "despliegue independiente", "operación y on-call", "beneficio medido", "costo distribuido", "decisión reversible"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-1::Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: MedirCohesion.agruparPorMotivo agrupó tres cambios por motivo de negocio y produjo regla-envio=2, regla-factura=1 (orden de iteración del Map puede variar, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/MedirCohesion.java).",
+      "criticalSubtopics": ["motivo de cambio", "cohesión funcional", "invariante", "vocabulario", "acoplamiento aferente/eferente", "cohesión accidental"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-1::Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: ProtegerApiModulo produjo Resultado[id=env-001, estado=REGISTRADO] y contrato=RegistrarEnvio, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/ProtegerApiModulo.java.",
+      "criticalSubtopics": ["API proporcionada", "implementación interna", "DTO de contrato", "modelo compartido", "dependencia no Java"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis", "https://docs.spring.io/spring-modulith/reference/fundamentals.html"]
+    },
+    "microservices/modulo-1::Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: CalcularTarifaPura produjo 2040 para una tarifa con distancia/peso válidos y el mensaje 'distancia/peso inválidos' al rechazar un peso cero, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/CalcularTarifaPura.java sin Spring ni JPA en el classpath.",
+      "criticalSubtopics": ["política y mecanismo", "invariante", "tipo de dominio", "error de dominio", "dependencia hacia dentro", "pureza pragmática"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-1::Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: SustituirAdaptador produjo Envio[id=env-7, estado=REGISTRADO] y guardados=1 con un adaptador en memoria inyectado por composición al caso de uso, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/SustituirAdaptador.java.",
+      "criticalSubtopics": ["puerto de entrada", "puerto de salida", "adaptador de entrada", "adaptador de salida", "inversión de dependencias", "abstracción accidental"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-1::Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: DetectarCiclo produjo ciclo=true sobre el grafo Envíos->Facturación->Notificaciones->Envíos, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/DetectarCiclo.java.",
+      "criticalSubtopics": ["grafo dirigido", "dependencia estable", "ciclo directo/transitivo", "acoplamiento temporal", "acoplamiento de datos", "ruptura de ciclo"],
+      "sources": ["https://docs.spring.io/spring-modulith/reference/verification.html"]
+    },
+    "microservices/modulo-1::Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: RomperCiclo produjo eventos=1 tras sustituir la llamada síncrona de retorno por un evento pasado desacoplado, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/RomperCiclo.java.",
+      "criticalSubtopics": ["mover responsabilidad", "invertir dependencia", "evento pasado", "acoplamiento temporal", "acoplamiento de datos", "consistencia eventual", "costo de coordinación"],
+      "sources": ["https://docs.spring.io/spring-modulith/reference/verification.html"]
+    },
+    "microservices/modulo-1::Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "CORRECCIÓN REAL: el borrador original citaba un paquete/clase (rutaflow.*, ArquitecturaTest) que no existe en examples/archunit-hexagonal-rutaflow -- ese proyecto solo tenía HexagonalArchitectureTest sobre academia.rutaflow.hexagonal.domain/application/infrastructure, sin módulos envios/facturacion/notificaciones ni regla de internals/slices. Verificado ejecutando mvn test contra el proyecto real antes de escribir la lección. Se añadieron, de forma aditiva (sin tocar HexagonalArchitectureTest, usado también por spring-boot/modulo-15 Tema 3), los paquetes academia.rutaflow.modules.{envios,facturacion,notificaciones}.{api,internal} y la clase RutaflowModulesArchitectureTest. mvn test -Dtest=RutaflowModulesArchitectureTest -> BUILD SUCCESS (3/3). Fallo deliberado verificado realmente: una clase en facturacion.internal con ServicioEnvios por constructor produce 'Architecture Violation' nombrando el constructor, la clase origen y el tipo destino exactos; revertido tras confirmar. mvn test en el proyecto completo -> 6/6 (3 hexagonal + 3 modules), sin romper el ejemplo que usa Spring Boot.",
+      "criticalSubtopics": ["importación de bytecode", "regla de internals real y ejecutada", "mensaje de violación con origen y destino", "proyecto compartido con spring-boot/modulo-15 no modificado"],
+      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+    },
+    "microservices/modulo-1::Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Import corregido de 'com.tngtech.archunit.lang.syntax.ArchRuleDefinition.slices' (no existe) a 'com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices', confirmado por javap sobre archunit-1.5.1.jar en ~/.m2. slices().matching(\"academia.rutaflow.modules.(*)..\").should().beFreeOfCycles() verificado verde (mvn test -> BUILD SUCCESS) sobre los tres módulos reales del Tema 9. Fallo deliberado verificado realmente: una clase en envios.internal con notificaciones.api.NotificarEntrega por constructor produce 'Cycle detected: Slice envios -> Slice notificaciones -> Slice envios' con el constructor/campo/método exactos del camino; revertido tras confirmar.",
+      "criticalSubtopics": ["slices().matching(...) con el import real de SlicesRuleDefinition", "ciclo directo vs transitivo", "camino circular completo en el reporte", "falso verde por patrón que no captura módulos"],
+      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+    },
+    "microservices/modulo-1::Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "CORRECCIÓN REAL: el borrador original afirmaba que un import vacío 'pasa sin analizar el sistema'. Verificado empíricamente contra ArchUnit 1.5.1 real: apuntar ClassFileImporter a un paquete inexistente hace que las TRES pruebas fallen explícitamente ('failed to check any classes'), porque failOnEmptyShould=true es el valor por defecto en esta versión -- la lección se corrigió para reflejar esto y enseñar en cambio que esa protección por defecto puede deshabilitarse (allowEmptyShould(true) / archRule.failOnEmptyShould=false) y que una aserción propia documenta la intención sin depender silenciosamente de la configuración por defecto. mvn test confirmó ambos estados (vacío -> 3 fallos explícitos; paquete real -> 3/3 verde).",
+      "criticalSubtopics": ["failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1", "aserción explícita de alcance no vacío como documentación de intención", "exclusiones con dueño y vencimiento", "controles complementarios fuera de bytecode"],
+      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+    },
+    "microservices/modulo-1::Tema 12: Medir señales que justifican una extracción · Experto · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1.0.2: EvaluarExtraccion produjo MANTENER_MODULAR para evidencia parcial y REVISAR_EXTRACCION para la combinación completa de señales, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/EvaluarExtraccion.java.",
+      "criticalSubtopics": ["cadencia de cambio", "perfil de capacidad atribuido", "aislamiento de fallo", "ownership completo", "acoplamiento de datos", "costo distribuido", "umbral de revisión"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-1::Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Verificados los cuatro comandos (test -s, tres grep -q sobre Opciones/Revisar cuando/Reversión) contra el ADR de ejemplo mostrado en la lección: los cuatro terminan en código 0 porque el markdown incluye las cuatro secciones exigidas.",
+      "criticalSubtopics": ["opción de mantener como alternativa real", "disparador de revisión cuantificable", "consecuencias negativas explícitas", "reversión verificable"],
+      "sources": ["https://docs.spring.io/spring-modulith/reference/fundamentals.html", "https://www.archunit.org/userguide/html/000_Index.html", "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+    },
+    "microservices/modulo-0::Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: ENVIO-1 produjo FRAME_OK bytes=7; 33 bytes fueron rechazados antes de leer el cuerpo con IllegalArgumentException: PAYLOAD_EXCESIVO y exit 1.",
+      "criticalSubtopics": ["serialización a bytes", "framing por longitud", "límite antes de reservar", "frame truncado", "bytes UTF-8 frente a caracteres", "tamaño descomprimido", "streaming frente a memoria"],
+      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html", "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload"]
+    },
+    "microservices/modulo-0::Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: seis líneas REFUTADA conectaron confiabilidad, latencia, ancho, seguridad, topología y homogeneidad con evidencia/mitigación del módulo.",
+      "criticalSubtopics": ["hipótesis comprobable", "perturbación reproducible", "señal observable", "impacto", "mitigación específica", "límites del laboratorio", "prueba operativa y responsable"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/patterns/", "https://aws.amazon.com/builders-library/"]
+    },
+    "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: ProyeccionOrden clasificó v1 como APLICADO, v3 como HUECO_ESPERABA_v2, v2 como APLICADO, la repetición v2 como OBSOLETO_O_DUPLICADO y ENV-2:v1 como APLICADO.",
+      "criticalSubtopics": ["agregado como unidad de orden", "versión de dominio", "duplicado exacto", "evento obsoleto", "hueco de secuencia", "concurrencia de escritores", "compare-and-set", "buffer acotado", "cuarentena y reconciliación"],
+      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy", "https://opentelemetry.io/docs/specs/otel/context/"]
+    },
+    "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: primera solicitud OP-001/huella Bogotá produjo HTTP 201, numero=1 y replay=false; repetición idéntica devolvió numero=1 y replay=true; misma clave con huella Cali produjo HTTP 409; /metricas terminó en efectos=1.",
+      "criticalSubtopics": [
+        "intención de negocio y clave estable",
+        "huella canónica y conflicto de payload",
+        "reserva atómica bajo concurrencia",
+        "respuesta original almacenada",
+        "estados PROCESSING/SUCCEEDED/FAILED",
+        "recuperación de reservas huérfanas",
+        "ámbito por actor y autorización",
+        "TTL según ventana de reintentos",
+        "durabilidad y restricción única transaccional"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/",
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry"
+      ]
+    },
+    "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-13",
+      "reviewer": "Codex — revisión semántica manual del contenido y ejecución; no equivale a prueba con estudiantes",
+      "execution": "Temurin 27.0.1: cliente, gateway y dependencia compilaron con --release 27. El presupuesto de 1200 ms produjo HTTP_200 TARIFA=12000; 250 ms produjo HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA; omitir X-Deadline-Epoch-Millis produjo HTTP 400 DEADLINE_INVALIDO. Revisión manual confirmó explicación causal, ejemplo, límite y transferencia para cada subtema. No se probaron hosts con relojes sesgados, carga ni efectos persistentes.",
+      "criticalSubtopics": [
+        "presupuesto inicial convertido una sola vez",
+        "deadline absoluto compartido",
+        "cálculo de tiempo restante por salto",
+        "propagación sin renovar el instante límite",
+        "reserva del llamador para completar la respuesta",
+        "rechazo temprano por presupuesto insuficiente",
+        "sesgo y sincronización de relojes",
+        "límite de confianza para deadlines externos",
+        "cancelación local frente a efectos remotos"
+      ],
+      "sources": [
+        "https://grpc.io/docs/guides/deadlines/",
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)"
+      ]
+    },
     "java/modulo-22::Tema 1: El contrato de equals y hashCode · Básico · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-02",
