@@ -135,7 +135,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `F(s): 1/(s + 2)`, igual al \(\dfrac{1}{s+2}\) calculado a mano en el Ejemplo 1.
 
-**Práctica:** cambia `exp(-2 * t)` por `t**2` y vuelve a ejecutar. Resultado esperado: `2/s**3`.
+#### Practica
+
+cambia `exp(-2 * t)` por `t**2` y vuelve a ejecutar. Resultado esperado: `2/s**3`. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la integral de la definición solo converge para \(s\) mayor que cierto valor (aquí \(s>-2\)); por eso la tabla y sus propiedades existen, para no repetir esa integral (y su análisis de convergencia) en cada ejercicio.
 
@@ -296,7 +298,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `F(s): (s + 4)**(-2)`, igual al \(\dfrac{1}{(s+4)^2}\) del Ejemplo 6.
 
-**Práctica:** cambia `t * exp(-4 * t)` por `3*exp(-2*t)*sympy.sin(5*t)` (importa `sin` de sympy) y confirma que da \(\dfrac{15}{(s+2)^2+25}\).
+#### Practica
+
+cambia `t * exp(-4 * t)` por `3*exp(-2*t)*sympy.sin(5*t)` (importa `sin` de sympy) y confirma que da \(\dfrac{15}{(s+2)^2+25}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la tabla solo cubre las formas listadas (escalón, rampa, exponencial, seno/coseno y sus combinaciones); una función que no se pueda descomponer en esos bloques exige volver a la integral de definición o usar una tabla más amplia.
 
@@ -552,7 +556,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `fracciones parciales: -1/(s + 2) + 2/(s + 1)`, que invertido da \(y(t) = 2e^{-t} - e^{-2t}\), igual al Ejemplo 8. SymPy puede cambiar el orden de los sumandos sin cambiar la expresión.
 
-**Práctica:** cambia `Y` por la transformada de \(y''+5y'+6y=0\) con \(y(0)=2\), \(y'(0)=0\) (debes construir \(Y(s)\) primero) y confirma sus fracciones parciales.
+#### Practica
+
+cambia `Y` por la transformada de \(y''+5y'+6y=0\) con \(y(0)=2\), \(y'(0)=0\) (debes construir \(Y(s)\) primero) y confirma sus fracciones parciales. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la propiedad de la derivada \(sF(s)-f(0)\) exige que \(f\) y sus derivadas sean continuas por tramos y de orden exponencial; con discontinuidades o condiciones iniciales en \(t\neq0\) hay que desplazar el origen antes de aplicarla.
 
@@ -731,6 +737,10 @@ python3 verificacion.py
 ```
 
 **Resultado esperado:** `valor_final: 5`, igual al Ejemplo 1.
+
+#### Practica
+
+Cambia `sY` por \(\dfrac{3}{s-1}\) (el caso inestable del Ejemplo 6) y confirma que `limit(sY, s, 0)` sigue dando un número aunque el teorema no se pueda aplicar: el script no distingue estabilidad por sí solo. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script no revisa estabilidad; antes de confiar en el número hay que verificar a mano (como en los Ejemplos 6 y 7) que todos los polos de \(sY(s)\) están en el semiplano izquierdo, o el resultado numérico será engañoso.
 

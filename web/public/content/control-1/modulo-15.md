@@ -116,7 +116,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `polos: [-3, -1]` y `estable: True`, igual al Ejemplo 1.
 
-**Práctica:** cambia el polinomio a `(s - 2) * (s + 1)` y confirma que `estable` da `False` (Ejemplo 2).
+#### Practica
+
+cambia el polinomio a `(s - 2) * (s + 1)` y confirma que `estable` da `False` (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este criterio de "mirar el signo de la parte real" solo funciona cuando ya conoces los polos; para polinomios de tercer orden o más, calcular las raíces a mano es difícil — por eso existe el criterio de Routh-Hurwitz (Tema 2), que decide la estabilidad sin resolver el polinomio.
 
@@ -327,7 +329,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `raices: [-3, -2, -1]` y `raices_en_semiplano_derecho: 0`, confirmando el arreglo del Ejemplo 3 (0 cambios de signo → estable).
 
-**Práctica:** cambia el polinomio a `s**3 + 2*s**2 + 3*s + 10` y confirma `raices_en_semiplano_derecho: 2` (Ejemplo 4).
+#### Practica
+
+cambia el polinomio a `s**3 + 2*s**2 + 3*s + 10` y confirma `raices_en_semiplano_derecho: 2` (Ejemplo 4). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script resuelve el polinomio exactamente con sympy, algo que no se puede hacer a mano para orden 3 o más; el valor real del arreglo de Routh es que da el conteo de raíces inestables **sin** tener que resolver el polinomio.
 
@@ -454,7 +458,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `raices: [-2, -2*I, 2*I]`, igual al Ejemplo 4 (\(s=\pm2j\) y \(s=-2\): marginalmente estable).
 
-**Práctica:** cambia el polinomio a `s**4 + s**3 + 2*s**2 + 2*s + 3` y confirma que hay 2 raíces con parte real positiva (Ejemplo 3).
+#### Practica
+
+cambia el polinomio a `s**4 + s**3 + 2*s**2 + 2*s + 3` y confirma que hay 2 raíces con parte real positiva (Ejemplo 3). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** resolver el polinomio directamente (como hace este script) es la comprobación, no el método; en el examen debes llegar al mismo conteo de raíces inestables construyendo el arreglo con el truco de \(\varepsilon\) o el polinomio auxiliar, sin resolver el polinomio completo.
 
@@ -509,7 +515,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `raices en K=6: [-3, -sqrt(2)*I, sqrt(2)*I]`, confirmando que en \(K=6\) el sistema oscila a \(\sqrt2\approx1{,}41\) rad/s.
 
-**Práctica:** cambia `char` a \(s(s+1)(s+5)+K\) y evalúa en `K=30` para confirmar la oscilación a \(\sqrt5\) rad/s (práctica 2 de esta sección).
+#### Practica
+
+cambia `char` a \(s(s+1)(s+5)+K\) y evalúa en `K=30` para confirmar la oscilación a \(\sqrt5\) rad/s (práctica 2 de esta sección). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script confirma el límite de estabilidad sustituyendo un valor numérico de \(K\); no reemplaza construir el arreglo de Routh con \(K\) simbólico, que es lo que realmente da el rango completo (\(0<K<6\)), no solo el punto límite.
 

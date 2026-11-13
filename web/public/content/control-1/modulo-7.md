@@ -161,7 +161,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Z(s): 0.5*s + 2000`, igual a \(\dfrac{s}{2}+2000\) del Ejemplo 2.
 
-**Práctica:** usa sympy (`from sympy import symbols, simplify, Rational`) para construir \(Z = \dfrac{R \cdot Z_C}{R+Z_C}\) con \(R=1000\), \(C=\)`Rational(1, 1000000)` y confirma el resultado del Ejemplo 3: \(\dfrac{1000000}{s+1000}\).
+#### Practica
+
+usa sympy (`from sympy import symbols, simplify, Rational`) para construir \(Z = \dfrac{R \cdot Z_C}{R+Z_C}\) con \(R=1000\), \(C=\)`Rational(1, 1000000)` y confirma el resultado del Ejemplo 3: \(\dfrac{1000000}{s+1000}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la tabla de impedancias asume condiciones iniciales cero; un capacitor con carga inicial o una bobina con corriente inicial aportan una fuente extra en serie que esta fórmula no incluye.
 
@@ -294,7 +296,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `G(s): 1/(s + 1)`, igual al Ejemplo 1 (\(\tau=1\) s).
 
-**Práctica:** cambia a la red RLC del Ejemplo 3 (\(L=1\), \(R=2\), \(C=\)`Rational(1, 5)`) construyendo \(Z_{total}=Ls+R+1/(Cs)\) y \(Z_{salida}=1/(Cs)\); confirma que da \(\dfrac{5}{s^2+2s+5}\).
+#### Practica
+
+cambia a la red RLC del Ejemplo 3 (\(L=1\), \(R=2\), \(C=\)`Rational(1, 5)`) construyendo \(Z_{total}=Ls+R+1/(Cs)\) y \(Z_{salida}=1/(Cs)\); confirma que da \(\dfrac{5}{s^2+2s+5}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** el divisor de voltaje asume que no se extrae corriente en la salida (carga de impedancia infinita); si conectas una carga comparable a \(Z_{salida}\), hay que incluirla en el cálculo o el resultado deja de ser válido.
 
@@ -482,7 +486,9 @@ python3 verificacion.py
 
 **Resultado esperado:** algo equivalente a `-10 - 10/s`, igual al Ejemplo 2 (\(K_p=10\), \(K_i=10\)).
 
-**Práctica:** cambia a \(Z_i=C\), \(Z_f=R\) con \(R=1\,000\,000\) y \(C=\)`Rational(1, 1000000)` (práctica 2 de esta sección) y confirma que da \(-s\): un derivador puro.
+#### Practica
+
+cambia a \(Z_i=C\), \(Z_f=R\) con \(R=1\,000\,000\) y \(C=\)`Rational(1, 1000000)` (práctica 2 de esta sección) y confirma que da \(-s\): un derivador puro. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la fórmula \(-Z_f/Z_i\) asume un op-amp ideal (ganancia infinita, sin corriente de entrada); con ganancia finita \(A\) aparece el factor de corrección demostrado arriba, y a frecuencias cercanas al ancho de banda del op-amp real el inversor deja de comportarse como el modelo ideal.
 

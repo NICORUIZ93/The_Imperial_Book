@@ -177,7 +177,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 6.083`, `zeta: 0.1644` y `K: 10`, igual al Ejemplo 1 (\(K=10\), \(\omega_n=6{,}08\), \(\zeta=0{,}164\)).
 
-**Práctica:** cambia `num, b, c` por `16, 4, 16` y confirma \(K=1\), \(\omega_n=4\), \(\zeta=0{,}5\) (Ejemplo 2).
+#### Practica
+
+cambia `num, b, c` por `16, 4, 16` y confirma \(K=1\), \(\omega_n=4\), \(\zeta=0{,}5\) (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta lectura directa solo aplica cuando el coeficiente de \(s^2\) ya es 1; si no lo es (como en el Ejemplo 4 de este tema), primero hay que dividir todo el denominador por ese coeficiente.
 
@@ -295,7 +297,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Mp%: 72.9`, `ts: 20.0` y `tp: 1.58`, igual al Ejemplo 1.
 
-**Práctica:** cambia `zeta, wn` a `0.5, 2` y confirma \(M_p\approx16{,}3\,\%\), \(t_s=4\) s (Ejemplo 2).
+#### Practica
+
+cambia `zeta, wn` a `0.5, 2` y confirma \(M_p\approx16{,}3\,\%\), \(t_s=4\) s (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script solo predice; verificar que coincide con el simulador no prueba que entendiste de dónde salen las fórmulas — ese es el objetivo de las demostraciones del Tema 4.
 
@@ -427,7 +431,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 3` y `zeta: 0.333`, confirmando el caso **subamortiguado** (\(0<\zeta<1\)) del Ejemplo 1.
 
-**Práctica:** cambia `b` a `6` y confirma que da \(\zeta=1\) (Ejemplo 2, críticamente amortiguado).
+#### Practica
+
+cambia `b` a `6` y confirma que da \(\zeta=1\) (Ejemplo 2, críticamente amortiguado). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta clasificación por \(\zeta\) solo aplica a un sistema de segundo orden estándar (sin ceros); un cero en el numerador, cercano a los polos, puede hacer que la respuesta real se vea distinta de lo que predice solo \(\zeta\) (capítulo 14).
 
@@ -796,7 +802,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `sigma: 3.0 wd: 4.0` y `Mp%: 9.48 tp: 0.785 ts: 1.33` (el 9,48 ≈ 9,5 % del texto, por redondeo), igual al Ejemplo 1.
 
-**Práctica:** cambia `wn, zeta` a `10, 0.25` y confirma los valores del Ejemplo 9 (\(M_p\approx44{,}4\,\%\), \(t_s\approx1{,}6\) s).
+#### Practica
+
+cambia `wn, zeta` a `10, 0.25` y confirma los valores del Ejemplo 9 (\(M_p\approx44{,}4\,\%\), \(t_s\approx1{,}6\) s). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** \(t_s\approx4/\sigma\) es una aproximación válida para \(\zeta\) entre 0 y 0,7 aproximadamente (demostración 5); fuera de ese rango el tiempo de establecimiento real se aleja de \(4/\sigma\) y conviene usar la fórmula exacta con el logaritmo.
 
@@ -945,7 +953,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `zeta: 0.5912`, `wn: 3.383` y `wn^2: 11.446`, igual al Ejemplo 1.
 
-**Práctica:** cambia `Mp, ts` a `0.05, 4` y confirma el Ejemplo 2 (\(\zeta\approx0{,}69\), \(\omega_n\approx1{,}449\)).
+#### Practica
+
+cambia `Mp, ts` a `0.05, 4` y confirma el Ejemplo 2 (\(\zeta\approx0{,}69\), \(\omega_n\approx1{,}449\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este camino inverso asume que las especificaciones (\(M_p\), \(t_s\)) provienen de un sistema de segundo orden puro; si el sistema real tiene polos adicionales o ceros, el \(\zeta\) y \(\omega_n\) calculados son solo una aproximación del comportamiento dominante.
 

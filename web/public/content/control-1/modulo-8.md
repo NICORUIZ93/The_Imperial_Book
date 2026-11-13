@@ -143,7 +143,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 4.47`, `zeta: 0.447` y `final: 1/2`, igual al Ejemplo 1.
 
-**Práctica:** cambia `m, b, k` a `2, 8, 50` y confirma \(\omega_n=5\), \(\zeta=0{,}4\) (práctica 1 de esta sección).
+#### Practica
+
+cambia `m, b, k` a `2, 8, 50` y confirma \(\omega_n=5\), \(\zeta=0{,}4\) (práctica 1 de esta sección). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** estas fórmulas valen para un sistema lineal de un solo grado de libertad; con dos masas acopladas (Ejemplo 5) el sistema es de cuarto orden y \(\zeta\), \(\omega_n\) ya no se leen de un solo término cuadrático.
 
@@ -248,7 +250,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 4.472`, igual al Ejemplo 2.
 
-**Práctica:** cambia `J, K` a `2, 8` y confirma \(\omega_n=2\) (Ejemplo 4).
+#### Practica
+
+cambia `J, K` a `2, 8` y confirma \(\omega_n=2\) (Ejemplo 4). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esto asume el eje rígido conectado directamente a la carga; con engranajes (Ejemplo 5) la inercia y la fricción de la carga deben reflejarse multiplicando por el cuadrado de la relación de transmisión antes de aplicar esta fórmula.
 
@@ -383,7 +387,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `polos: [-10.0, -2.00]`, igual al Ejemplo 1 (polo eléctrico rápido en −10, polo mecánico lento en −2).
 
-**Práctica:** usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin inductancia) para construir \(G=\dfrac{K}{JR_as+BR_a+K^2}\) y confirma \(\tau\approx0{,}37\) s.
+#### Practica
+
+usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin inductancia) para construir \(G=\dfrac{K}{JR_as+BR_a+K^2}\) y confirma \(\tau\approx0{,}37\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** cuando \(L\) no es despreciable el sistema es de segundo orden con dos polos (eléctrico y mecánico); la aproximación de primer orden de los Ejemplos 2 a 5 solo es válida si el polo eléctrico \(R/L\) es mucho más rápido que el mecánico.
 
@@ -490,7 +496,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `G(s): 5/(10*s + 1)`, igual a \(K=5\), \(\tau=10\) del Ejemplo 1.
 
-**Práctica:** cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando \(G=R_t/(R_tC_ts+1)\)) y confirma \(\tau=100\) s.
+#### Practica
+
+cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando \(G=R_t/(R_tC_ts+1)\)) y confirma \(\tau=100\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este modelo de primer orden asume mezcla perfecta y una pérdida lineal con la salida; un tanque con válvula de salida turbulenta real (\(q\propto\sqrt h\)) no es lineal y esta fórmula es solo una linealización alrededor de un punto de operación.
 
@@ -596,7 +604,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 4.47` y `zeta: 0.447`, igual al Ejemplo 4.
 
-**Práctica:** usa la analogía del Ejemplo 5 (\(J=0{,}5\), \(B=2\) ↔ \(L=0{,}5\), \(R=2\)) y confirma que \(\tau=L/R=J/B=0{,}25\) s.
+#### Practica
+
+usa la analogía del Ejemplo 5 (\(J=0{,}5\), \(B=2\) ↔ \(L=0{,}5\), \(R=2\)) y confirma que \(\tau=L/R=J/B=0{,}25\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la analogía fuerza-voltaje empareja masa↔inductancia y resorte↔capacitancia; existe otra convención (fuerza-corriente) que empareja al revés — mezclar las dos convenciones en el mismo problema da un modelo incorrecto.
 

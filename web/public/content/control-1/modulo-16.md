@@ -139,7 +139,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 2.828` y `zeta: 0.7071`, igual al Ejemplo 1 (\(\omega_n\approx2{,}83\), \(\zeta\approx0{,}707\)).
 
-**Práctica:** cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx0{,}316\) (Ejemplo 2).
+#### Practica
+
+cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx0{,}316\) (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (capítulo 13), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
 
@@ -265,7 +267,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `raices: [1/2 - sqrt(7)*I/2, 1/2 + sqrt(7)*I/2]` y `estable: False`, igual al caso (b) del Ejemplo 1 (parte real positiva → inestable).
 
-**Práctica:** cambia el polinomio a `(s+1)*(s+4)` (caso a) y confirma `estable: True`.
+#### Practica
+
+cambia el polinomio a `(s+1)*(s+4)` (caso a) y confirma `estable: True`. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `re(r) < 0` para cada raíz exacta es la definición misma de estabilidad; en un examen sin software hay que decidirlo mirando los coeficientes (atajo de segundo orden) o con Routh-Hurwitz (capítulo 15) para polinomios más grandes, sin resolver las raíces.
 
@@ -347,7 +351,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `zeta_min: 0.456`, `theta_max: 62.9` y `sigma_min: 2.0`, igual al Ejemplo 1.
 
-**Práctica:** cambia `Mp, ts` a `0.05, 0.8` y confirma \(\zeta_{\min}\approx0{,}69\), \(\theta_{\max}\approx46{,}4°\), \(\sigma_{\min}=5\) (Ejemplo 2).
+#### Practica
+
+cambia `Mp, ts` a `0.05, 0.8` y confirma \(\zeta_{\min}\approx0{,}69\), \(\theta_{\max}\approx46{,}4°\), \(\sigma_{\min}=5\) (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta zona define condiciones **necesarias** sobre un polo dominante de segundo orden; verificar que un candidato cae dentro de la zona (Ejemplo 3) no reemplaza comprobar que de verdad es el polo dominante del sistema completo (capítulo 13).
 

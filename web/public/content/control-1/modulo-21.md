@@ -162,4 +162,10 @@ Con el entorno del módulo 0 activo, ejecuta:
 python3 verificacion.py
 ```
 
-**Resultado esperado:** `impulso_correcto: True`; verifica a mano que \(s^2+2s+37=(s+1)^2+36\) y que el factor del seno es \(370/6\). **Práctica:** cambia el numerador a 185 y predice cómo cambia la amplitud antes de ejecutar. **Límite:** la igualdad simbólica comprueba este punto, pero no sustituye la explicación del retardo en el otro inciso ni la interpretación física del sistema.
+**Resultado esperado:** `impulso_correcto: True`; verifica a mano que \(s^2+2s+37=(s+1)^2+36\) y que el factor del seno es \(370/6\).
+
+#### Practica
+
+Cambia el numerador a 185 y predice cómo cambia la amplitud antes de ejecutar. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
+
+**Límite:** la igualdad simbólica comprueba este punto, pero no sustituye la explicación del retardo en el otro inciso ni la interpretación física del sistema.

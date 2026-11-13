@@ -110,7 +110,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Ti: 2.0` y `Td: 0.125`, igual al Ejemplo 5.
 
-**Práctica:** cambia `Kp, Ki, Kd` a `2, 0.5, 1` y calcula \(T_i\) y \(T_d\) para ese controlador (práctica 3 de la sección final del módulo, con \(T_i=4\)).
+#### Practica
+
+cambia `Kp, Ki, Kd` a `2, 0.5, 1` y calcula \(T_i\) y \(T_d\) para ese controlador (práctica 3 de la sección final del módulo, con \(T_i=4\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta conversión entre \((K_p,K_i,K_d)\) y \((K_p,T_i,T_d)\) es solo notación; ninguna de las dos formas dice todavía si esas ganancias son buenas — eso depende de cómo responde el lazo cerrado (Tema 3).
 
@@ -222,7 +224,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `e_ss: 1/3`, igual al Ejemplo 1 (33,3 %).
 
-**Práctica:** cambia `C` a `4 + 2/s` (PI) y confirma `e_ss: 0` (Ejemplo 3): la integral lo elimina.
+#### Practica
+
+cambia `C` a `4 + 2/s` (PI) y confirma `e_ss: 0` (Ejemplo 3): la integral lo elimina. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este cálculo solo da el error en **estado estacionario**; no dice nada sobre el sobrepico o el tiempo de establecimiento del transitorio, que hay que revisar aparte (Tema 3).
 
@@ -395,7 +399,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `e_ss: 1/10`, igual al Ejemplo 1.
 
-**Práctica:** cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor: el error baja pero nunca llega a cero).
+#### Practica
+
+cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor: el error baja pero nunca llega a cero). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la fórmula \(1/(1+K_p)\) solo aplica a sistemas tipo 0 (sin integrador en la planta); con un integrador en la planta misma, el error ante escalón ya es cero incluso con solo P (como en el Ejemplo 4 de este tema, donde la planta es \(1/s^2\)).
 
@@ -504,7 +510,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Kv: 2` y `error_rampa: 1/2`, igual al Ejemplo 1 (escalón 0, rampa 0,5).
 
-**Práctica:** cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\), usando \(K_d=4\)) y calcula de nuevo \(K_v\).
+#### Practica
+
+cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\), usando \(K_d=4\)) y calcula de nuevo \(K_v\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta tabla de ventajas/desventajas es una guía general; la elección real de controlador (Ejemplos 2-5) siempre depende del caso concreto — ruido del sensor, velocidad del proceso y tolerancia al sobrepico — no de aplicar la tabla mecánicamente.
 
@@ -625,7 +633,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `P: 5.0`, `PI: 4.5 1.6666666666666667` y `PID: 6.0 1.0 0.25`, igual al Ejemplo 3.
 
-**Práctica:** cambia `Ku, Pu` a `4.8, 1.2` y confirma los valores del Ejemplo 4 (\(K_p=2{,}4\) para P).
+#### Practica
+
+cambia `Ku, Pu` a `4.8, 1.2` y confirma los valores del Ejemplo 4 (\(K_p=2{,}4\) para P). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** Ziegler-Nichols da un punto de partida, no el ajuste final; en la práctica casi siempre hay que afinar a mano después (reducir sobrepico, verificar saturación del actuador), sobre todo si la planta tiene mucho retardo.
 

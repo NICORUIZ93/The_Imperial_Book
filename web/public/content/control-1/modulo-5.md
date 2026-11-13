@@ -139,7 +139,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `lazo_abierto: 1` y `lazo_cerrado: 0.0099...`, mostrando que el lazo cerrado reduce el efecto de la perturbación unas 100 veces.
 
-**Práctica:** cambia `C` a 1 y a 100 y observa cómo cambia `y_cerrado`. ¿Qué pasa con la perturbación cuando `C` crece mucho?
+#### Practica
+
+cambia `C` a 1 y a 100 y observa cómo cambia `y_cerrado`. ¿Qué pasa con la perturbación cuando `C` crece mucho? Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta comparación asume que el lazo cerrado es estable; si al cerrar el lazo el sistema se vuelve inestable (puede pasar con \(C\) muy grande en sistemas de orden alto), la fórmula \(1/(1+CG_p)\) deja de tener sentido físico aunque el álgebra la calcule igual.
 
@@ -318,7 +320,9 @@ python3 verificacion.py
 
 **Resultado esperado:** seis líneas, una por elemento, igual a la lista del Ejemplo 2.
 
-**Práctica:** construye el mismo diccionario para «nivel de un tanque de agua» (Ejemplo 3) y ejecútalo.
+#### Practica
+
+construye el mismo diccionario para «nivel de un tanque de agua» (Ejemplo 3) y ejecútalo. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta lista nombra los elementos pero no es el diagrama de bloques del Tema 1; dos sistemas pueden compartir los mismos nombres de elementos y tener dinámicas (funciones de transferencia) completamente distintas.
 
@@ -547,7 +551,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `T(s): 10/(s + 12)`, igual al Ejemplo 3.
 
-**Práctica:** cambia `G` por \(\dfrac{4}{s(s+1)}\) y confirma que da \(\dfrac{4}{s^2+s+4}\) (práctica 1 de esta sección).
+#### Practica
+
+cambia `G` por \(\dfrac{4}{s(s+1)}\) y confirma que da \(\dfrac{4}{s^2+s+4}\) (práctica 1 de esta sección). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la fórmula \(G/(1+GH)\) reduce un solo lazo; con lazos anidados (Ejemplo 6) hay que aplicarla una vez por cada lazo, siempre de adentro hacia afuera — aplicarla directamente al sistema completo da un resultado incorrecto.
 

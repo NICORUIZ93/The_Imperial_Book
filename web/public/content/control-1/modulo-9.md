@@ -152,7 +152,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `f(4): 2` y `f'(4): 1/4`, igual al Ejemplo 5.
 
-**Práctica:** cambia `f` por `x**2` y evalúa en `x0 = 3` (usa `.subs(x, 3)`) para confirmar el Ejemplo 6: \(f(3)=9\), \(f'(3)=6\).
+#### Practica
+
+cambia `f` por `x**2` y evalúa en `x0 = 3` (usa `.subs(x, 3)`) para confirmar el Ejemplo 6: \(f(3)=9\), \(f'(3)=6\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la aproximación lineal solo es válida para desviaciones pequeñas (\(\delta x\)) alrededor del punto de operación; lejos de \(x_0\) el error crece y hay que volver al modelo no lineal o re-linealizar en otro punto (como en el péndulo invertido del Ejemplo 2).
 

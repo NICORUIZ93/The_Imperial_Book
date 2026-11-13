@@ -125,7 +125,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `alpha: 0.333`, igual al Ejemplo 2 (el polo queda 3 veces más lejos que el cero).
 
-**Práctica:** cambia `phi` a `pi*45/180` y confirma \(\alpha\approx0{,}172\) (Ejemplo 3, 45° de fase).
+#### Practica
+
+cambia `phi` a `pi*45/180` y confirma \(\alpha\approx0{,}172\) (Ejemplo 3, 45° de fase). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta fórmula de \(\alpha\) da la relación cero/polo para la fase **máxima** de un adelanto simple; no dice dónde ubicar ese cero en \(s\) — eso sale de la condición de ángulo en el polo deseado \(s_d\) (procedimiento completo del Ejemplo 1).
 
@@ -241,7 +243,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `beta: 10.0`, igual al Ejemplo 2 (\(K_v\) se multiplica por 10).
 
-**Práctica:** cambia `z, p` a `0.1, 0.0125` y confirma `beta: 8.0` (Ejemplo 4).
+#### Practica
+
+cambia `z, p` a `0.1, 0.0125` y confirma `beta: 8.0` (Ejemplo 4). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta multiplicación de \(K_v\) solo es válida si el cero y el polo quedan mucho más cerca del origen que los polos dominantes (regla práctica: a menos de 5° de desviación, como se comprueba en el Ejemplo 1); si \(z\) o \(p\) se acercan demasiado a \(s_d\), sí mueven el transitorio.
 
@@ -302,7 +306,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `cero: -10.0` y `polo: -100.0`, igual al Ejemplo 1 (cero más cerca del origen que el polo: es un adelanto).
 
-**Práctica:** cambia los valores a los del Ejemplo 3 (\(R_1=1\text{k}\Omega, C_1=1\mu F, R_2=10\text{k}\Omega, C_2=1\mu F\)) y confirma que ahora el polo (\(-100\)) queda más cerca del origen que el cero (\(-1000\)): es un atraso.
+#### Practica
+
+cambia los valores a los del Ejemplo 3 (\(R_1=1\text{k}\Omega, C_1=1\mu F, R_2=10\text{k}\Omega, C_2=1\mu F\)) y confirma que ahora el polo (\(-100\)) queda más cerca del origen que el cero (\(-1000\)): es un atraso. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script solo ubica el cero y el polo; la ganancia de alta frecuencia (\(C_1/C_2\)) y el signo (dos inversores en cascada) hay que calcularlos aparte, como en la demostración de este tema.
 

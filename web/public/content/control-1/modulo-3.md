@@ -234,7 +234,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `fracciones: -2/(s + 3) + 2/s`, igual a \(A=2\), \(B=-2\) del Ejemplo 1. El orden de los sumandos puede variar.
 
-**Práctica:** cambia `Y` por \(\dfrac{10}{(s+1)(s+4)}\) y confirma los coeficientes del Ejemplo 4.
+#### Practica
+
+cambia `Y` por \(\dfrac{10}{(s+1)(s+4)}\) y confirma los coeficientes del Ejemplo 4. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `apart` solo separa factores reales distintos tal cual están escritos; si el denominador tiene un factor cuadrático irreducible (polos complejos, Tema 3) no lo descompone en seno/coseno — hay que completar el cuadrado a mano.
 
@@ -413,7 +415,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `fracciones: -1/(s + 1) - 1/(s + 1)**2 + 1/s`, igual a \(A=1\), \(B=-1\), \(C=-1\) del Ejemplo 1. El orden de los sumandos puede variar.
 
-**Práctica:** cambia `Y` por \(\dfrac{4}{s^2(s+2)}\) y confirma los coeficientes del Ejemplo 4.
+#### Practica
+
+cambia `Y` por \(\dfrac{4}{s^2(s+2)}\) y confirma los coeficientes del Ejemplo 4. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** el coeficiente \(B\) de la potencia más baja sale de derivar lo que queda tras tapar; con multiplicidad 3 o más hay que derivar varias veces y dividir por el factorial correspondiente, no solo una vez.
 
@@ -679,7 +683,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `completado: s**2 + 2*s + 37`, igual al denominador original del Ejemplo 2.
 
-**Práctica:** completa el cuadrado de \(s^2+4s+13\) a mano, confirma con el script (`(s + 2) ** 2 + 9`) y verifica que expande de vuelta a `s**2 + 4*s + 13`.
+#### Practica
+
+completa el cuadrado de \(s^2+4s+13\) a mano, confirma con el script (`(s + 2) ** 2 + 9`) y verifica que expande de vuelta a `s**2 + 4*s + 13`. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** completar el cuadrado solo aplica a un factor cuadrático; si el denominador tiene un factor cúbico o mayor con raíces complejas, se necesita descomposición en fracciones parciales de orden superior o un cambio de variable distinto.
 
@@ -825,7 +831,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `y(t): Eq(y(t), 2 - 2*exp(-2*t))`, igual al Ejemplo 1.
 
-**Práctica:** cambia la ecuación y las condiciones iniciales para resolver \(y''+4y=8\) con \(y(0)=0,\ y'(0)=0\) (usa `Derivative(y(t), t, 2)`) y confirma el Ejemplo 4.
+#### Practica
+
+cambia la ecuación y las condiciones iniciales para resolver \(y''+4y=8\) con \(y(0)=0,\ y'(0)=0\) (usa `Derivative(y(t), t, 2)`) y confirma el Ejemplo 4. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `dsolve` resuelve la ecuación completa de un tirón; en el examen debes mostrar el camino (transformar, despejar, partir en fracciones, invertir) paso a paso, no solo el resultado final.
 

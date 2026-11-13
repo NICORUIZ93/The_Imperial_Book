@@ -53,7 +53,9 @@ En PowerShell, desde la misma carpeta, crea el entorno con `py -m venv .venv`, i
 
 **Resultado esperado:** dos líneas con los números de versión instalados (por ejemplo `sympy: 1.14.0`). Si ves `ModuleNotFoundError`, confirma que ejecutaste el Python de `.venv` y repite la instalación allí.
 
-**Práctica:** añade `import matplotlib; print("matplotlib:", matplotlib.__version__)` al script y confirma que también está disponible — lo necesitarás para graficar respuestas en el capítulo 13.
+#### Practica
+
+añade `import matplotlib; print("matplotlib:", matplotlib.__version__)` al script y confirma que también está disponible — lo necesitarás para graficar respuestas en el capítulo 13. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** verificar que una cuenta numérica coincide con el cálculo manual no demuestra que entendiste el procedimiento; sigue resolviendo cada ejemplo a mano antes de comprobarlo con código.
 

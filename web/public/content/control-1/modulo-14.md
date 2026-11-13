@@ -137,7 +137,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `e_ss: 1/6`, igual al Ejemplo 1.
 
-**Práctica:** cambia `G` a `10/(s*(s+2))` y `R` a `1/s**2` (rampa) y confirma \(e_{ss}=1/5\) (Ejemplo 3).
+#### Practica
+
+cambia `G` a `10/(s*(s+2))` y `R` a `1/s**2` (rampa) y confirma \(e_{ss}=1/5\) (Ejemplo 3). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta fórmula exige confirmar primero que el lazo cerrado es estable; en el Ejemplo 5 de este tema el número que da el límite (\(1/4\)) es engañoso porque el sistema en lazo cerrado en realidad es inestable — el error final no tiene sentido físico ahí.
 
@@ -344,7 +346,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Kp: 5` y `e_ss: 0.167`, igual al Ejemplo 1 (16,7 % de error).
 
-**Práctica:** cambia `G` a `10/(s*(s+2))` y calcula \(K_v=\lim_{s\to0}sG\) (Ejemplo 2) para confirmar \(K_v=5\), \(e=0{,}2\).
+#### Practica
+
+cambia `G` a `10/(s*(s+2))` y calcula \(K_v=\lim_{s\to0}sG\) (Ejemplo 2) para confirmar \(K_v=5\), \(e=0{,}2\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** estas constantes (\(K_p\), \(K_v\), \(K_a\)) se calculan sobre \(G\) de **lazo abierto**, no sobre la función de lazo cerrado; mezclarlas es uno de los errores comunes señalados al final de esta sección.
 

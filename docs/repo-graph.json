@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16702,
+      "lines": 16562,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -14412,7 +14412,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-0.md",
-      "lines": 117,
+      "lines": 119,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14422,6 +14422,7 @@
         "### Tema 1: C\u00f3mo est\u00e1 armado cada cap\u00edtulo",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# academia-labs/control-1/verificacion.py",
+        "#### Practica",
         "#### El temario",
         "#### Qu\u00e9 falt\u00f3 en el Parcial 1",
         "#### Plan de dos semanas"
@@ -14429,7 +14430,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-1.md",
-      "lines": 811,
+      "lines": 819,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14450,7 +14451,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-10.md",
-      "lines": 273,
+      "lines": 277,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14466,12 +14467,12 @@
         "#### Ejemplo 5 \u00b7 Forma can\u00f3nica de \\(\\frac{1}{s^{2} + 9}\\) \u00b7 *Intermedio*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
-        "### Tema 2: De estados a funci\u00f3n de transferencia"
+        "#### Practica"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-11.md",
-      "lines": 625,
+      "lines": 633,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14492,7 +14493,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-12.md",
-      "lines": 952,
+      "lines": 962,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14513,7 +14514,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-13.md",
-      "lines": 401,
+      "lines": 407,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14534,7 +14535,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-14.md",
-      "lines": 353,
+      "lines": 357,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14555,7 +14556,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-15.md",
-      "lines": 612,
+      "lines": 620,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14576,7 +14577,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-16.md",
-      "lines": 522,
+      "lines": 528,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14597,7 +14598,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-17.md",
-      "lines": 492,
+      "lines": 498,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14618,7 +14619,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-18.md",
-      "lines": 692,
+      "lines": 702,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14634,12 +14635,12 @@
         "#### Ejemplo 5 \u00b7 Leer un PID escrito en s \u00b7 *Intermedio*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
-        "### Tema 2: Error en estado estacionario"
+        "#### Practica"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-19.md",
-      "lines": 365,
+      "lines": 371,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14655,12 +14656,12 @@
         "#### Ejemplo 5 \u00b7 Adelanto que aporta 20\u00b0 de fase \u00b7 *B\u00e1sico*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
-        "### Tema 2: Dise\u00f1o de un atraso"
+        "#### Practica"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-2.md",
-      "lines": 771,
+      "lines": 781,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14676,12 +14677,12 @@
         "#### Ejemplo 5 \u00b7 \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definici\u00f3n \u00b7 *Intermedio*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
-        "### Tema 2: La tabla"
+        "#### Practica"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-20.md",
-      "lines": 548,
+      "lines": 558,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14702,7 +14703,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-21.md",
-      "lines": 166,
+      "lines": 172,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14723,7 +14724,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-22.md",
-      "lines": 150,
+      "lines": 152,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14744,7 +14745,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-3.md",
-      "lines": 832,
+      "lines": 840,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14765,7 +14766,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-4.md",
-      "lines": 289,
+      "lines": 291,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14777,16 +14778,16 @@
         "#### Ejemplo 1 \u00b7 Primer orden \u00b7 *B\u00e1sico*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
+        "#### Practica",
         "#### Ejemplo 2 \u00b7 Con condici\u00f3n inicial \u00b7 *B\u00e1sico*",
         "#### Ejemplo 3 \u00b7 Segundo orden \u00b7 *Intermedio*",
         "#### Ejemplo 4 \u00b7 Un sistema f\u00edsico \u00b7 *Intermedio*",
-        "#### Ejemplo 5 \u00b7 Resolver completa \u00b7 *Nivel parcial*",
-        "#### Errores comunes"
+        "#### Ejemplo 5 \u00b7 Resolver completa \u00b7 *Nivel parcial*"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-5.md",
-      "lines": 580,
+      "lines": 586,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14807,7 +14808,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-6.md",
-      "lines": 543,
+      "lines": 551,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14823,12 +14824,12 @@
         "#### Ejemplo 5 \u00b7 Lazo menor dentro de un lazo mayor \u00b7 *Intermedio*",
         "#### Verificaci\u00f3n con c\u00f3digo",
         "# verificacion.py",
-        "### Tema 2: Grafos de flujo de se\u00f1al"
+        "#### Practica"
       ]
     },
     {
       "path": "web/public/content/control-1/modulo-7.md",
-      "lines": 523,
+      "lines": 529,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14849,7 +14850,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-8.md",
-      "lines": 621,
+      "lines": 631,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -14870,7 +14871,7 @@
     },
     {
       "path": "web/public/content/control-1/modulo-9.md",
-      "lines": 159,
+      "lines": 161,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

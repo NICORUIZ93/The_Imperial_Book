@@ -135,7 +135,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `G(s): 1/(s**2 + 3*s + 2)` y un diccionario de valores propios con `-1` y `-2` (cada uno con multiplicidad 1), igual al Ejemplo 2 (polos \(-1,-2\)); el orden en que sympy los imprime puede variar.
 
-**Práctica:** repite con las matrices del Ejemplo 4 (3×3, denominador \(s^3+6s^2+11s+6\)) y confirma que los valores propios son \(-1,-2,-3\).
+#### Practica
+
+repite con las matrices del Ejemplo 4 (3×3, denominador \(s^3+6s^2+11s+6\)) y confirma que los valores propios son \(-1,-2,-3\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `A.eigenvals()` da los polos directamente porque esta representación es la forma canónica controlable; con otra elección de estados, \(A\) cambia de forma pero sus valores propios (los polos) son siempre los mismos.
 
@@ -266,7 +268,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `G(s): 1/(s**2 + 2*s + 5)`, igual al Ejemplo 3.
 
-**Práctica:** repite con las matrices del Ejemplo 5 (\(A=[[-2,1],[0,-4]]\), \(B=[[0],[2]]\), \(C=[[1,1]]\)) y confirma \(\dfrac{2(s+3)}{s^2+6s+8}\).
+#### Practica
+
+repite con las matrices del Ejemplo 5 (\(A=[[-2,1],[0,-4]]\), \(B=[[0],[2]]\), \(C=[[1,1]]\)) y confirma \(\dfrac{2(s+3)}{s^2+6s+8}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la fórmula \(G=C(sI-A)^{-1}B+D\) exige invertir \((sI-A)\) simbólicamente, lo que crece mucho con el tamaño del sistema; para órdenes altos se prefiere calcular solo el polinomio característico \(\det(sI-A)\) y los residuos, no la inversa completa.
 

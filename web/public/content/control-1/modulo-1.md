@@ -174,7 +174,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `magnitud: 5.00000000000000` y `angulo_grados: 53.1301023541560`, igual al \(5\,\angle\,53{,}1^\circ\) del Ejemplo 1.
 
-**Práctica:** cambia `z` por \(-5+12j\) y vuelve a ejecutar. Resultado esperado: magnitud 13 y ángulo ≈ \(112{,}62^\circ\) (segundo cuadrante).
+#### Practica
+
+cambia `z` por \(-5+12j\) y vuelve a ejecutar. Resultado esperado: magnitud 13 y ángulo ≈ \(112{,}62^\circ\) (segundo cuadrante). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la forma polar no está definida en \(z=0\) (el ángulo queda indeterminado); ese caso se trata aparte, no con esta fórmula.
 
@@ -422,7 +424,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `producto: 17 - 7*I`, `division: -1/5 + 2*I/5` y `potencia: -8*I`, iguales a los resultados manuales de los Ejemplos 2, 4 y 8.
 
-**Práctica:** calcula \((1+j)(2+3j)\) y \(\dfrac{4+2j}{1+j}\) a mano y confirma modificando `verificacion.py`. Resultado esperado: \(-1+5j\) y \(3-j\).
+#### Practica
+
+calcula \((1+j)(2+3j)\) y \(\dfrac{4+2j}{1+j}\) a mano y confirma modificando `verificacion.py`. Resultado esperado: \(-1+5j\) y \(3-j\).
 
 **Límite:** la regla "multiplica magnitudes y suma ángulos" en polar exige que ambos ángulos estén en el mismo rango (p. ej. \((-180°,180°]\)); si no, hay que normalizar sumando o restando 360° antes de sumar.
 
@@ -666,7 +670,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `raices: [-1 - 6*I, -1 + 6*I]`, igual al \(s=-1\pm6j\) del Ejemplo 3 (atajo).
 
-**Práctica:** cambia el polinomio a \(s^2+8s+41\) y vuelve a ejecutar. Resultado esperado: \(s=-4\pm5j\).
+#### Practica
+
+cambia el polinomio a \(s^2+8s+41\) y vuelve a ejecutar. Resultado esperado: \(s=-4\pm5j\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** el atajo \(-b/2 \pm j\sqrt{c-b^2/4}\) solo aplica a polinomios de segundo orden con coeficiente 1 en \(s^2\); para orden 3 o mayor no existe una fórmula cerrada general y se recurre a factorización por inspección o métodos numéricos.
 
@@ -804,7 +810,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `magnitud: 3.53553390593274` y `fase_grados: -45.0000000000000`, igual al Ejemplo 1 (\(|G|\approx3{,}536\), \(\angle G\approx-45^\circ\)).
 
-**Práctica:** evalúa \(G(s)=\dfrac{20}{s+5}\) en \(\omega=5\) modificando el script. Resultado esperado: magnitud ≈ 2,83 y fase ≈ −45°.
+#### Practica
+
+evalúa \(G(s)=\dfrac{20}{s+5}\) en \(\omega=5\) modificando el script. Resultado esperado: magnitud ≈ 2,83 y fase ≈ −45°. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** evaluar \(G(j\omega)\) para describir la respuesta en frecuencia en estado estacionario solo tiene sentido si \(G(s)\) es estable; con un polo en el semiplano derecho la salida no converge a una senoidal y la sustitución \(s=j\omega\) pierde su interpretación física.
 

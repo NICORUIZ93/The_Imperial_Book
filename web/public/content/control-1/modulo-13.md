@@ -151,7 +151,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `zeta: 0.316` y `Mp_approx%: 35.1`, igual a la aproximación del Ejemplo 1 (el valor exacto es 33,2 %; el error es de unos 2 puntos).
 
-**Práctica:** repite el cálculo del Ejemplo 6 (tercer polo en \(-3\), solo 3 veces más a la izquierda) y observa por qué el enunciado dice que esa aproximación **no es confiable**.
+#### Practica
+
+repite el cálculo del Ejemplo 6 (tercer polo en \(-3\), solo 3 veces más a la izquierda) y observa por qué el enunciado dice que esa aproximación **no es confiable**. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la regla de "5 veces más a la izquierda" es heurística, no exacta; con una relación de 3 a 4 veces (Ejemplos 4 y 6) el error ya es significativo, así que siempre conviene comparar contra la respuesta exacta antes de confiar en la aproximación.
 
@@ -277,7 +279,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `Gz simplificada: 4*(s + 1)/(s**2 + 2*s + 4)`, que es \(\dfrac{4s+4}{s^2+2s+4}\) del Ejemplo 3.
 
-**Práctica:** cambia `a` a `10` y confirma que da \(\dfrac{2s}{5}+4\) sobre el mismo denominador (Ejemplo 1, cero lejano con casi ningún efecto en \(M_p\)).
+#### Practica
+
+cambia `a` a `10` y confirma que da \(\dfrac{2s}{5}+4\) sobre el mismo denominador (Ejemplo 1, cero lejano con casi ningún efecto en \(M_p\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta fórmula asume un cero real simple en \(-a\) sobre un sistema de segundo orden; con un sistema de orden mayor o un cero complejo, el efecto sobre \(M_p\) ya no sigue esta tabla exacta y hay que simular la respuesta completa.
 
@@ -394,7 +398,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `valor_final: 1` y `pendiente_inicial: -2`, igual al Ejemplo 2 (termina positivo pero empieza bajando).
 
-**Práctica:** cambia `G` por la del Ejemplo 3 (\(\dfrac{4-2s}{(s+2)(2s+2)}\)) y confirma `valor_final: 1` y `pendiente_inicial: -1`.
+#### Practica
+
+cambia `G` por la del Ejemplo 3 (\(\dfrac{4-2s}{(s+2)(2s+2)}\)) y confirma `valor_final: 1` y `pendiente_inicial: -1`. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `valor_final` y `pendiente_inicial` solo dicen el signo de arranque y el destino; no dicen cuánto se hunde la respuesta antes de subir — para ese detalle hay que invertir \(Y(s)\) completa, como en el resultado de cada ejemplo.
 

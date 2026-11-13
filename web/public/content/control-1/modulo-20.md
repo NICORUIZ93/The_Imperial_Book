@@ -105,7 +105,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `mag: 0.7071` y `fase_grados: -45.00`, igual al Ejemplo 1.
 
-**Práctica:** cambia `s` a `1*I` con `G = 5/(s+1)` y confirma el Ejemplo 2 (\(|G|\approx3{,}536\), fase \(\approx-45°\)).
+#### Practica
+
+cambia `s` a `1*I` con `G = 5/(s+1)` y confirma el Ejemplo 2 (\(|G|\approx3{,}536\), fase \(\approx-45°\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta fórmula solo describe la salida en **régimen permanente** (\(y_{ss}\)); no incluye el transitorio inicial, que depende de las condiciones iniciales y se apaga con el tiempo (capítulo 13).
 
@@ -244,7 +246,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `dB: 20.00` (Ejemplo 1) y `magnitud: 0.5012` (Ejemplo 7, −6 dB ≈ la mitad).
 
-**Práctica:** cambia `log(10, 10)` a `log(50, 10)` y confirma `dB: 33.98` (Ejemplo 6).
+#### Practica
+
+cambia `log(10, 10)` a `log(50, 10)` y confirma `dB: 33.98` (Ejemplo 6). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta conversión es exacta pero solo para la **magnitud**; los ángulos no se convierten a dB, se suman directamente en grados (o radianes) al combinar bloques en serie.
 
@@ -355,7 +359,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `dB: 26.0`, igual a la recta horizontal del Ejemplo 1.
 
-**Práctica:** calcula en cuántos dB se cruza el eje 0 dB el integrador \(1/s\) del Ejemplo 2: ¿en qué \(\omega\) pasa de positivo a negativo?
+#### Practica
+
+calcula en cuántos dB se cruza el eje 0 dB el integrador \(1/s\) del Ejemplo 2: ¿en qué \(\omega\) pasa de positivo a negativo? Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta tabla da las **asíntotas** (rectas aproximadas); el valor real en la esquina del polo/cero se desvía hasta 3 dB (demostración de este tema), y la curva real es suave, no angulosa como la asíntota.
 
@@ -447,7 +453,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `omega=1: -0.0432` (≈0 dB), `omega=10: -3.01` y `omega=100: -20.0`, igual al Ejemplo 1.
 
-**Práctica:** cambia `G` a `100/(s*(s+10))` y evalúa en `omega=7.86` para confirmar que la magnitud está cerca de 0 dB (el \(\omega_c\) del Ejemplo 2).
+#### Practica
+
+cambia `G` a `100/(s*(s+10))` y evalúa en `omega=7.86` para confirmar que la magnitud está cerca de 0 dB (el \(\omega_c\) del Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script evalúa la magnitud exacta en puntos concretos; el margen de fase del Ejemplo 2 exige además encontrar \(\omega_c\) resolviendo \(|G(j\omega)|=1\), que no es una simple sustitución sino resolver una ecuación.
 
@@ -543,5 +551,7 @@ python3 verificacion.py
 
 **Resultado esperado:** `cruce: 7.86`, `fase: -128.2`, `margen: 51.8`. Si aparece una frecuencia imaginaria, revisa que elegiste la raíz positiva de \(x\).
 
-**Práctica:** cambia la ganancia de 100 a 25. Sustituye `10000` por `625` en la ecuación de `x` y calcula de nuevo \(\omega_c\), fase y margen antes de ejecutar. **Límite:** este cálculo cubre un cruce de ganancia del Ejemplo 2; para sistemas con varios cruces también hay que inspeccionar todos los cruces y el margen de ganancia.
+#### Practica
+
+cambia la ganancia de 100 a 25. Sustituye `10000` por `625` en la ecuación de `x` y calcula de nuevo \(\omega_c\), fase y margen antes de ejecutar. **Límite:** este cálculo cubre un cruce de ganancia del Ejemplo 2; para sistemas con varios cruces también hay que inspeccionar todos los cruces y el margen de ganancia. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 

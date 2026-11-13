@@ -87,7 +87,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `G(s) simplificado: 6/(s + 3)`, igual al Ejemplo 1 y evita el error común de dejarlo como \(12/(2s+6)\).
 
-**Práctica:** cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simplifica a \(\dfrac{4}{s+2}\).
+#### Practica
+
+cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simplifica a \(\dfrac{4}{s+2}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta simplificación algebraica supone condiciones iniciales cero; si hay una condición inicial distinta de cero (Ejemplo 2), \(G(s)\) no describe toda la salida — hay que sumar aparte la respuesta libre que produce esa condición inicial.
 

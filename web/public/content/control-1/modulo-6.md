@@ -111,7 +111,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `T: G1*G2/(G1*G2 + G2*H + 1)`, igual al resultado del Ejemplo 5.
 
-**Práctica:** repite el Ejemplo 1 (tres bloques, dos realimentaciones) construyendo `T` paso a paso con sympy y confirma \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\).
+#### Practica
+
+repite el Ejemplo 1 (tres bloques, dos realimentaciones) construyendo `T` paso a paso con sympy y confirma \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** estas reglas de movimiento valen para diagramas de una sola entrada y una sola salida (SISO); con varias entradas (referencia y perturbación juntas, Tema 4) hay que aplicar superposición, no mover bloques a ciegas.
 
@@ -222,7 +224,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `x2/x1: 1`, lo que coincide con Mason: \(P/(1-L) = 3/(1-(-2)) = 1\), usando el lazo de ganancia \(-2\) del Ejemplo 1.
 
-**Práctica:** arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que \(Y/R = G/(1+GH)\) con `H` simbólico.
+#### Practica
+
+arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que \(Y/R = G/(1+GH)\) con `H` simbólico. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este método de resolver el sistema lineal de nodos es exacto pero no escala a mano para grafos grandes; por eso existe la regla de Mason (Tema 3), que cuenta trayectorias y lazos sin resolver el sistema completo.
 
@@ -395,7 +399,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `coincide_con_factorizado: True`, confirmando que \(\Delta = (1+G_1H_1)(1+G_2H_2)\) como dice el Ejemplo 2.
 
-**Práctica:** cambia `L1, L2` por lazos que sí se tocan (por ejemplo ambos con el factor `G2`) y comprueba que ya no se puede factorizar igual.
+#### Practica
+
+cambia `L1, L2` por lazos que sí se tocan (por ejemplo ambos con el factor `G2`) y comprueba que ya no se puede factorizar igual. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** el término \(+L_iL_j\) de \(\Delta\) solo aparece entre lazos que **no comparten ningún nodo**; contar un producto entre lazos que sí se tocan es el error más común de Mason (ver "Errores comunes" más abajo).
 
@@ -452,7 +458,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `y_D_infinito: 1/10`, igual al Ejemplo 1 (la perturbación queda reducida 10 veces).
 
-**Práctica:** cambia `K` a 99 y confirma que la reducción pasa a ser de 100 veces (compara con el Tema 1 de este capítulo).
+#### Practica
+
+cambia `K` a 99 y confirma que la reducción pasa a ser de 100 veces (compara con el Tema 1 de este capítulo). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** la superposición exige que el sistema sea lineal; con un actuador que satura (por ejemplo, una válvula que no puede abrir más del 100%), la salida real ante \(R\) y \(D\) juntos ya no es la suma de los efectos por separado.
 

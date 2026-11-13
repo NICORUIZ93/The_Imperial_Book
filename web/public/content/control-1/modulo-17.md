@@ -130,7 +130,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `angulo: -180.0` y `K: 8.00`, igual al Ejemplo 1 (está en el lugar, con \(K\approx8\)).
 
-**Práctica:** cambia `s` a `-1 + 1*I` y confirma que el ángulo da aproximadamente \(-153{,}4°\) (Ejemplo 2): no está en el lugar.
+#### Practica
+
+cambia `s` a `-1 + 1*I` y confirma que el ángulo da aproximadamente \(-153{,}4°\) (Ejemplo 2): no está en el lugar. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script evalúa un punto a la vez; para **dibujar** el lugar completo se usan las reglas de construcción (Tema 2), no se prueba punto por punto si está en el lugar.
 
@@ -352,7 +354,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `centroide: -1.0`, igual al Ejemplo 1 (\(\sigma_a=-1\)).
 
-**Práctica:** cambia `poles` a `[0, -1, -5]` y confirma el centroide \(-2\) del Ejemplo 4.
+#### Practica
+
+cambia `poles` a `[0, -1, -5]` y confirma el centroide \(-2\) del Ejemplo 4. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este cálculo del centroide no verifica si un punto del eje real pertenece al lugar (regla 4) ni dónde está el punto de ruptura (regla 6); ambas exigen aplicar las reglas específicas de este tema, no solo promediar los polos.
 
@@ -413,7 +417,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `wn: 4.0` y `K: 16.0`, igual al Ejemplo 1.
 
-**Práctica:** cambia `a, zeta` a `6, 0.6` y confirma `K: 25.0` (Ejemplo 2).
+#### Practica
+
+cambia `a, zeta` a `6, 0.6` y confirma `K: 25.0` (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta receta (comparar con \(s^2+2\zeta\omega_ns+\omega_n^2\)) solo funciona para un lazo de **segundo orden** sin ceros; con un cero en \(G\) o un tercer polo, el punto del lugar para un \(\zeta\) dado ya no cae exactamente sobre esta parábola simple y hay que usar la recta de \(\zeta\) constante descrita arriba.
 

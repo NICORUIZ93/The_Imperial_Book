@@ -138,7 +138,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `K: 5` y `tau: 2`, igual al Ejemplo 1.
 
-**Práctica:** cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3).
+#### Practica
+
+cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (capítulo 13).
 
@@ -332,7 +334,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `y(t): 3 - 3*exp(-2*t)`, igual a \(3(1-e^{-2t})\) del Ejemplo 1.
 
-**Práctica:** cambia `K, tau` por `1, 1` y la entrada a rampa (`Y = K/(s**2*(tau*s+1))`) y confirma el Ejemplo 4: \(y(t) = t - 1 + e^{-t}\).
+#### Practica
+
+cambia `K, tau` por `1, 1` y la entrada a rampa (`Y = K/(s**2*(tau*s+1))`) y confirma el Ejemplo 4: \(y(t) = t - 1 + e^{-t}\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** `inverse_laplace_transform` asume condiciones iniciales cero y una entrada estándar (impulso, escalón, rampa); con una entrada arbitraria medida en laboratorio hay que calcular su transformada primero, no se puede invertir directamente una señal sin fórmula cerrada.
 
@@ -456,7 +460,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `y0(t): 2 - 2*exp(-t/4)` y `y(t) con retardo 1.5 s: 2 - 2*exp(3/8 - t/4)` (es la misma exponencial corrida: \(3/8 = 1{,}5/4\)), igual al Ejemplo 1 (falta multiplicar por \(u(t-1{,}5)\), que el script no incluye).
 
-**Práctica:** cambia `K, tau` a `4, 5` con retardo `1` s y confirma el Ejemplo 3: \(y(t)=2(1-e^{-(t-1)/5})u(t-1)\).
+#### Practica
+
+cambia `K, tau` a `4, 5` con retardo `1` s y confirma el Ejemplo 3: \(y(t)=2(1-e^{-(t-1)/5})u(t-1)\). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** este script calcula la forma \(y_0(t-T)\) pero no impone que valga cero antes de \(T\); olvidar el factor \(u(t-T)\) a mano (como aquí) es exactamente el error común de esta sección — la expresión sin el escalón unitario predice una salida que no existe antes del retardo.
 
@@ -582,7 +588,9 @@ python3 verificacion.py
 
 **Resultado esperado:** `K: 10.0` y `tau: 4.00...` (≈4, el pequeño error viene de redondear 63,2 %), igual al Ejemplo 2.
 
-**Práctica:** cambia los datos a los del Ejemplo 3 (`y_inf=2.5, t_obs=12, y_obs=1.58`) y confirma \(\tau\approx12\) s.
+#### Practica
+
+cambia los datos a los del Ejemplo 3 (`y_inf=2.5, t_obs=12, y_obs=1.58`) y confirma \(\tau\approx12\) s. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** esta fórmula identifica un modelo de primer orden sin retardo; si la curva tarda en arrancar (Ejemplo 5), primero hay que restar ese retardo \(T\) del tiempo observado antes de aplicar la fórmula, o \(\tau\) saldrá sobreestimado.
 
