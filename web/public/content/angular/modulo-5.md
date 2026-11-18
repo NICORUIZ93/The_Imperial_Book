@@ -62,6 +62,7 @@ Parte de una carpeta vacía (o continúa en `demo-routing` del Módulo 4):
 
 ```bash
 npx -y @angular/cli@22 new demo-forms --standalone --skip-git --defaults
+cd demo-forms
 mkdir -p src/app
 ```
 
@@ -140,7 +141,7 @@ email: new FormControl('', { nonNullable: true, validators: [Validators.required
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que cada validador reporta su clave de error específica. El siguiente tema confirma con `fakeAsync`/`tick` el estado `PENDING` real que Angular gestiona mientras un validador asíncrono resuelve. Fuentes oficiales: [Angular — Reactive forms](https://angular.dev/guide/forms/reactive-forms).
+Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que cada validador reporta su clave de error específica. El siguiente tema confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) el estado `PENDING` real que Angular gestiona mientras un validador asíncrono resuelve. Fuentes oficiales: [Angular — Reactive forms](https://angular.dev/guide/forms/reactive-forms).
 
 **Errores comunes:** testear un `FormGroup` únicamente a través de renderizar su template y simular eventos del DOM, perdiendo la ventaja real de una prueba unitaria directa y más rápida; mostrar un único mensaje de error genérico en vez de consultar la clave específica del validador que falló.
 
@@ -152,13 +153,13 @@ Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con `fakeAsync`/`tick`, que un control con un validador asíncrono real permanece en estado `PENDING` mientras la petición simulada está en curso, y se resuelve a `VALID` o `INVALID` exactamente cuando el Observable emite.
+Al finalizar podrás confirmar, con el reloj simulado de Vitest (`vi.useFakeTimers()` y `vi.advanceTimersByTime()`), que un control con un validador asíncrono real permanece en estado `PENDING` mientras la petición simulada está en curso, y se resuelve a `VALID` o `INVALID` exactamente cuando el Observable emite.
 
 **Conocimiento previo:** Tema 1 de este módulo; RxJS básico (`Observable`, `map`, `delay`).
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** En un formulario de registro, mostrar "verificando disponibilidad..." mientras se consulta si un email ya existe (en vez de dejar el formulario en un estado ambiguo) depende de que el estado `PENDING` de Angular se gestione correctamente; confirmar esto con un test real que controla el tiempo (`tick`) es más confiable que confiar en una revisión manual en el navegador.
+**¿Por qué es importante?** En un formulario de registro, mostrar "verificando disponibilidad..." mientras se consulta si un email ya existe (en vez de dejar el formulario en un estado ambiguo) depende de que el estado `PENDING` de Angular se gestione correctamente; confirmar esto con un test real que controla el tiempo (`vi.advanceTimersByTime`) es más confiable que confiar en una revisión manual en el navegador.
 
 #### Paso 3 · Teoría con analogía
 
@@ -196,7 +197,7 @@ new FormControl('', { asyncValidators: [emailDisponibleValidator(servicio)] });
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-async --standalone --skip-git --defaults`), crea `src/app/email-disponible.validator.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-async --standalone --skip-git --defaults` y luego `cd demo-async`), crea `src/app/email-disponible.validator.ts`:
 
 ```bash
 mkdir -p src/app
@@ -220,11 +221,10 @@ export function emailDisponibleValidator(servicio: UsuariosService): AsyncValida
 }
 ```
 
-Confirma el ciclo `VALID → PENDING → INVALID/VALID` con `fakeAsync`/`tick`, controlando el tiempo de forma determinista:
+Confirma el ciclo `VALID → PENDING → INVALID/VALID` con el reloj simulado de Vitest, controlando el tiempo de forma determinista. (Los tutoriales antiguos usan `fakeAsync`/`tick` de `@angular/core/testing`; en un proyecto nuevo de Angular 22, que es *zoneless* y usa Vitest, `fakeAsync` falla con `zone-testing.js is needed for the fakeAsync() test helper but could not be found`.)
 
 ```ts
 // src/app/email-disponible.validator.spec.ts
-import { fakeAsync, tick } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { of } from 'rxjs';
 import { delay } from 'rxjs/operators';
@@ -237,7 +237,10 @@ class UsuariosServiceSimulado implements UsuariosService {
 }
 
 describe('validador asincrono gestiona PENDING mientras el Observable esta en curso', () => {
-  it('el control queda PENDING de inmediato, y se resuelve a INVALID tras 300ms si el email existe', fakeAsync(() => {
+  beforeEach(() => vi.useFakeTimers()); // reloj simulado de Vitest
+  afterEach(() => vi.useRealTimers());
+
+  it('el control queda PENDING de inmediato, y se resuelve a INVALID tras 300ms si el email existe', () => {
     const control = new FormControl('ocupado@example.com', {
       nonNullable: true,
       asyncValidators: [emailDisponibleValidator(new UsuariosServiceSimulado())],
@@ -245,22 +248,22 @@ describe('validador asincrono gestiona PENDING mientras el Observable esta en cu
 
     expect(control.status).toBe('PENDING');
 
-    tick(300);
+    vi.advanceTimersByTime(300);
 
     expect(control.status).toBe('INVALID');
     expect(control.errors?.['emailOcupado']).toBe(true);
-  }));
+  });
 
-  it('se resuelve a VALID si el email no existe', fakeAsync(() => {
+  it('se resuelve a VALID si el email no existe', () => {
     const control = new FormControl('libre@example.com', {
       nonNullable: true,
       asyncValidators: [emailDisponibleValidator(new UsuariosServiceSimulado())],
     });
 
-    tick(300);
+    vi.advanceTimersByTime(300);
 
     expect(control.status).toBe('VALID');
-  }));
+  });
 });
 ```
 
@@ -268,35 +271,35 @@ describe('validador asincrono gestiona PENDING mientras el Observable esta en cu
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; `control.status` es literalmente `'PENDING'` de forma síncrona inmediatamente después de crear el control (antes de que `tick(300)` avance el reloj simulado), confirmando que Angular gestiona ese estado automáticamente mientras el Observable del validador asíncrono no ha emitido todavía.
+**Resultado esperado:** ambos tests pasan; `control.status` es literalmente `'PENDING'` de forma síncrona inmediatamente después de crear el control (antes de que `vi.advanceTimersByTime(300)` avance el reloj simulado), confirmando que Angular gestiona ese estado automáticamente mientras el Observable del validador asíncrono no ha emitido todavía.
 
-**Fallo deliberado:** cambia `tick(300)` por `tick(100)` (menos que el `delay(300)` real del servicio simulado) y ejecuta de nuevo el primer test. FALLA porque `control.status` sigue siendo `'PENDING'` en vez de `'INVALID'` — diagnosticando que el tiempo simulado avanzado por `tick()` debe igualar o superar el delay real del Observable para que la validación asíncrona efectivamente resuelva. Restaura `tick(300)` antes de continuar.
+**Fallo deliberado:** cambia `vi.advanceTimersByTime(300)` por `vi.advanceTimersByTime(100)` (menos que el `delay(300)` real del servicio simulado) en el primer test y ejecuta de nuevo. FALLA con `Expected: "INVALID"` y `Received: "PENDING"` — diagnosticando que el tiempo simulado debe igualar o superar el delay real del Observable para que la validación asíncrona efectivamente resuelva. Restaura `300` antes de continuar.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un validador síncrono (`Validators.email`) al mismo control y confirma con un test que Angular NO invoca el validador asíncrono si el síncrono ya falló (verifica que `emailExiste` de un espía no se llamó).
-2. Documenta, en un comentario, por qué `fakeAsync`/`tick` es preferible a `setTimeout` real con un test asíncrono (`async`/`await`) para verificar temporización exacta de forma determinista.
+2. Documenta, en un comentario, por qué el reloj simulado (`vi.useFakeTimers()`) es preferible a `setTimeout` real con un test asíncrono (`async`/`await`) para verificar temporización exacta de forma determinista.
 3. Escribe un test que confirme que dos validaciones asíncronas consecutivas y rápidas (simulando teclas presionadas rápidamente) no dejan el control en un estado inconsistente al resolver fuera de orden.
-4. Escribe de memoria (sin mirar) un `AsyncValidatorFn` y un test con `fakeAsync`/`tick` que confirme el ciclo `PENDING → INVALID`. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `AsyncValidatorFn` y un test con `vi.useFakeTimers()`/`vi.advanceTimersByTime()` que confirme el ciclo `PENDING → INVALID`. Compara después contra el patrón del Paso 4.
 
 **Pista:** `control.status === 'PENDING'` es la aserción clave que demuestra que el estado se está gestionando correctamente; olvidar verificarlo (y solo comprobar el resultado final) deja sin probar la parte de la experiencia de usuario que muestra el indicador de "verificando...".
 
 #### Paso 6 · Práctica independiente
 
-**Completa el código:** rellena el espacio con la función real de `@angular/core/testing` que avanza el reloj simulado dentro de una zona `fakeAsync`:
+**Completa el código:** rellena el espacio con la función real de Vitest que avanza el reloj simulado tras `vi.useFakeTimers()`:
 
 ```ts
-____(300);
+vi.____(300);
 expect(control.status).toBe('INVALID');
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AsyncValidatorFn` y un test `fakeAsync` que confirme el estado `PENDING` inmediato y la resolución tras `tick`. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `AsyncValidatorFn` y un test con reloj simulado de Vitest que confirme el estado `PENDING` inmediato y la resolución tras avanzar 300 ms. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con `fakeAsync`/`tick`, el ciclo completo de estado `VALID → PENDING → INVALID/VALID` que Angular gestiona automáticamente para validadores asíncronos. El siguiente tema confirma con `push`/`removeAt` reales que un `FormArray` crece y decrece dinámicamente, con validación independiente por control. Fuentes oficiales: [Angular — Async validators](https://angular.dev/guide/forms/reactive-forms#async-validators).
+Ya confirmas, con el reloj simulado de Vitest, el ciclo completo de estado `VALID → PENDING → INVALID/VALID` que Angular gestiona automáticamente para validadores asíncronos. El siguiente tema confirma con `push`/`removeAt` reales que un `FormArray` crece y decrece dinámicamente, con validación independiente por control. Fuentes oficiales: [Angular — Async validators](https://angular.dev/guide/forms/reactive-forms#async-validators).
 
-**Errores comunes:** verificar solo el resultado final de una validación asíncrona sin confirmar el estado `PENDING` intermedio, dejando sin probar el indicador visual de carga; usar `setTimeout` real en un test en vez de `fakeAsync`/`tick`, haciendo la prueba lenta e indeterminista.
+**Errores comunes:** verificar solo el resultado final de una validación asíncrona sin confirmar el estado `PENDING` intermedio, dejando sin probar el indicador visual de carga; usar `setTimeout` real en un test en vez de `vi.useFakeTimers()`, haciendo la prueba lenta e indeterminista.
 
 **Cuándo no usarlo:** para una validación que puede resolverse instantáneamente con datos ya disponibles en el cliente (sin ninguna consulta externa real), un validador síncrono normal es más simple y no introduce ningún estado `PENDING` innecesario.
 
@@ -349,7 +352,7 @@ agregarTelefono() {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-arrays --standalone --skip-git --defaults`), crea `src/app/telefonos-form.model.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-arrays --standalone --skip-git --defaults` y luego `cd demo-arrays`), crea `src/app/telefonos-form.model.ts`:
 
 ```bash
 mkdir -p src/app
@@ -489,7 +492,7 @@ Reactive Forms: estructura explícita en TypeScript, testeable sin DOM,
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ngmodel --standalone --skip-git --defaults`), crea `src/app/busqueda-template.component.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ngmodel --standalone --skip-git --defaults` y luego `cd demo-ngmodel`), crea `src/app/busqueda-template.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -547,7 +550,7 @@ npx ng test --watch=false
 
 1. Agrega un segundo campo con `ngModel` (por ejemplo un checkbox `[(ngModel)]="soloActivas"`) y confirma con un test que ambos campos sincronizan de forma independiente.
 2. Documenta, en un comentario, por qué el test del Paso 4 despacha un evento `input` real del DOM en vez de asignar la propiedad directamente — ¿qué dirección de la sincronización quedaría sin probar si se hiciera al revés?
-3. Reproduce el error `NG8002` real (Paso 4) y documenta, con tus propias palabras, en qué se diferencia de los errores `NG0203`/`NG0304`/`NullInjectorError` de módulos anteriores (todos ocurren en tiempo distinto: compilación de plantilla vs. tiempo de ejecución).
+3. Reproduce el error `NG8002` real (Paso 4) y documenta, con tus propias palabras, en qué se diferencia de los errores `NG0203`/`NG0201`/`NG0950` de módulos anteriores (todos ocurren en tiempo distinto: compilación de plantilla vs. tiempo de ejecución).
 4. Escribe de memoria (sin mirar) un componente standalone con `[(ngModel)]`, sus `imports`, y un test que simule un evento `input` real. Compara después contra el patrón del Paso 4.
 
 **Pista:** un test que simplemente asigna `fixture.componentInstance.busqueda = 'Angular'` y verifica que el input lo refleja prueba la dirección componente → DOM; despachar un evento `input` real prueba la dirección DOM → componente — ambas direcciones deben probarse para confirmar la sincronización bidireccional completa que `ngModel` promete.

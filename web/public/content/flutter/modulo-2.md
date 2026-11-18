@@ -12,7 +12,7 @@ Al finalizar vas a decidir el layout de `PanelEnvios` usando `LayoutBuilder` en 
 En la versión tablet de RutaFlow, `PanelEnvios` vive al lado de un mapa, ocupando solo una fracción del ancho de la pantalla — usar `MediaQuery.of(context).size.width` ahí mediría el ancho de la pantalla completa, no el espacio real disponible para el panel.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-`MediaQuery` da el tamaño de la pantalla completa; `LayoutBuilder` da las constraints del espacio específicamente disponible para ese widget en su posición actual — preguntar por el edificio completo, no por la habitación en la que estás.
+`MediaQuery` da el tamaño de la ventana de la app; `LayoutBuilder` da las constraints del espacio específicamente disponible para ese widget en su posición actual — preguntar por el edificio completo, no por la habitación en la que estás.
 **Conceptos clave:** tamaño de la pantalla completa frente a espacio disponible para un widget específico.
 
 ```dart
@@ -25,7 +25,7 @@ LayoutBuilder(builder: (context, constraints) {
 });
 ```
 
-`MediaQuery.of(context).size` da el tamaño de la pantalla física completa del dispositivo, independientemente de cuánto espacio ocupe efectivamente el widget que consulta esa información; `LayoutBuilder` en cambio da las constraints del espacio específicamente disponible para ese widget en particular dentro de su posición actual en el árbol, lo que resulta considerablemente más preciso cuando el widget bajo consideración no ocupa la pantalla completa (por ejemplo, un panel lateral dentro de un layout más amplio), dado que ese panel podría tener un espacio disponible completamente distinto al ancho total de la pantalla del dispositivo.
+`MediaQuery.sizeOf(context)` (equivalente recomendado de `MediaQuery.of(context).size`, porque solo reconstruye cuando cambia el tamaño) da el tamaño, en píxeles lógicos, de la ventana o vista donde corre la app —no de la pantalla física: en pantalla dividida o en una pestaña del navegador es solo esa porción—, independientemente de cuánto espacio ocupe efectivamente el widget que consulta esa información; `LayoutBuilder` en cambio da las constraints del espacio específicamente disponible para ese widget en particular dentro de su posición actual en el árbol, lo que resulta considerablemente más preciso cuando el widget bajo consideración no ocupa la pantalla completa (por ejemplo, un panel lateral dentro de un layout más amplio), dado que ese panel podría tener un espacio disponible completamente distinto al ancho total de la pantalla del dispositivo.
 
 Elegir incorrectamente entre ambos mecanismos es una fuente común de bugs sutiles de responsive design: usar `MediaQuery` para decidir el layout de un widget anidado profundamente dentro de otros contenedores puede producir decisiones de layout incorrectas si ese widget específico no ocupa realmente el ancho completo de la pantalla, mientras que `LayoutBuilder` siempre refleja el espacio real y específico disponible para ese widget en su contexto actual.
 
@@ -36,7 +36,7 @@ Elegir incorrectamente entre ambos mecanismos es una fuente común de bugs sutil
 **Código del ejemplo:**
 
 ```dart
-MediaQuery.of(context).size.width       // tamaño de la PANTALLA completa
+MediaQuery.sizeOf(context).width       // tamaño de la VENTANA de la app
 LayoutBuilder(builder: (context, constraints) => ...)  // espacio disponible para ESTE widget específico
 ```
 
@@ -128,7 +128,7 @@ sequenceDiagram
     Expanded->>Column: tamaño final elegido
 ```
 
-En el proyecto integrador RutaFlow, este patrón vive en `lib/features/deliveries/presentation/lista_envios.dart`. Práctica: corré `flutter analyze lib/features/deliveries/presentation/lista_envios.dart` tras cada cambio de layout para detectar este tipo de error antes de ejecutar la app.
+En el proyecto integrador RutaFlow, este patrón vive en `lib/features/deliveries/presentation/lista_envios.dart`. Práctica: `flutter analyze` **no** detecta este tipo de error, porque las constraints se resuelven durante el layout, en ejecución. Para atraparlo antes de llegar al dispositivo, escribe un widget test con `tester.pumpWidget(...)` y `expect(tester.takeException(), isFlutterError)` sobre la versión sin `Expanded`, y ejecútalo con `flutter test`.
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
@@ -152,7 +152,7 @@ Para las pruebas de widget: `flutter test`.
 Resultado esperado: envolver el `ListView` en `Expanded` le comunica una constraint de alto máximo finito (el espacio restante de la `Column` después de `Text`), permitiendo que el `ListView` decida su tamaño dentro de ese límite y haga scroll internamente sin romper el layout.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column` — ese es el fallo deliberado: Flutter lanza una excepción en tiempo de ejecución porque `Column` no impone ningún límite de alto máximo a sus hijos por defecto, y `ListView` recibe una constraint de alto infinito que no puede satisfacer.
+Pista: quitá `Expanded` y dejá el `ListView` directamente como hijo de `Column` — ese es el fallo deliberado: Flutter lanza una excepción en tiempo de ejecución (`Vertical viewport was given unbounded height.`) porque `Column` no impone ningún límite de alto máximo a sus hijos por defecto, y `ListView` recibe una constraint de alto infinito que no puede satisfacer.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propias palabras, por qué el error específico menciona constraints no acotadas y de dónde debería haber venido el límite faltante.

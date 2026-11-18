@@ -22,6 +22,8 @@ flutter run
 
 Selecciona Chrome o un emulador si hay varios dispositivos. Cambia el texto en `lib/main.dart` y usa hot reload (`r` en la terminal). Si `flutter` no se reconoce, el problema es `PATH`; si no aparecen dispositivos, el SDK funciona pero falta configurar un destino.
 
+> **Aviso de versión (Flutter 3.50, 11-11-2026).** Los módulos 0 a 14 importan `package:flutter/material.dart`. Desde Flutter 3.50 esa librería, y `package:flutter/cupertino.dart`, están formalmente obsoletas (*deprecated*, no eliminadas): siguen compilando, pero el analizador te mostrará avisos. Su reemplazo son los paquetes `material_ui` y `cupertino_ui` (`import 'package:material_ui/material_ui.dart';`). Puedes seguir los ejemplos tal como están y migrar después con `dart fix --apply --code=migrate_design_widgets`, como enseña el Tema 7 del Módulo 15. Fuente: https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui.
+
 ## Mapa de la ruta
 
 «Flutter» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
@@ -284,7 +286,7 @@ Ejecuta `dart lib/rastreo.dart`. **Resultado esperado:** `Lat: 4.6, Lon: -74.1` 
 **Fallo deliberado:** quitá `with Rastreable` de `Vehiculo` pero dejá una llamada a `vehiculo.reportarPosicion()` en `main`. El analizador reporta que `Vehiculo` no tiene ningún miembro `reportarPosicion`, exactamente el error que confirma que el mixin no se aplicó.
 
 #### Paso 5 · Práctica guiada
-Pista: restaurá `with Rastreable` en `Vehiculo`, y ahora intentá declarar `class Vehiculo extends Conductor with Rastreable` — el analizador rechaza esto porque `Vehiculo` no es conceptualmente un `Conductor`; documentá por qué forzar una relación `extends` solo para obtener un comportamiento compartido es la decisión equivocada.
+Pista: restaura `with Rastreable` en `Vehiculo`, y ahora intenta declarar `class Vehiculo extends Conductor with Rastreable` — el analizador lo rechaza con `The superclass 'Conductor' doesn't have a zero argument constructor.` (`no_default_super_constructor`): el constructor `Vehiculo(this.placa)` llama implícitamente a `super()`, y `Conductor` solo tiene `Conductor(this.nombre)`. El analizador no razona sobre si un vehículo «es» un conductor; eso lo decides tú. Documenta por qué forzar una relación `extends` (y tener que inventar un `nombre` para un vehículo solo para que compile) para obtener un comportamiento compartido es la decisión equivocada.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `class Vehiculo with Rastreable` (sin `extends`), y agregá una tercera clase `Paquete` que también use `with Rastreable` para reportar la posición de un paquete en tránsito, confirmando que las tres clases no relacionadas comparten el mismo comportamiento sin ninguna jerarquía común.
@@ -506,6 +508,14 @@ Activa la regla `unawaited_futures` y escribe una función que llame a un `Futur
 Agrega un paso `dart analyze --fatal-infos` al pipeline de CI del Módulo 11 y documenta qué reglas decidió el equipo y por qué.
 
 #### Paso 7 · Cierre
+Antes de seguir, confirma estas cuatro evidencias:
+
+- [ ] `dart analyze` termina con `No issues found!` con tu `analysis_options.yaml`.
+- [ ] El `print` del fallo deliberado produce un `error` de `avoid_print` y un código de salida distinto de cero.
+- [ ] La regla `unawaited_futures` del Paso 5 señala tu `Future` sin `await` y el aviso desaparece con `await` o `unawaited(...)`.
+- [ ] Documentaste, tras el Paso 6, qué reglas eligió el equipo y por qué.
+
+Fuentes oficiales: https://dart.dev/tools/analysis y https://dart.dev/tools/linter-rules.
 
 ### Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min
 

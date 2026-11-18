@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-Cada tema verifica su garantía con comparaciones reales de identidad de objeto (`toBe`) y errores genuinos de Angular: el singleton real de `providedIn: 'root'`, el error real `NG0203` al usar `inject()` fuera de contexto, la jerarquía real de inyectores con overrides a nivel de componente, y `NullInjectorError` real al faltar un `InjectionToken`.
+Cada tema verifica su garantía con comparaciones reales de identidad de objeto (`toBe`) y errores genuinos de Angular: el singleton real de `providedIn: 'root'`, el error real `NG0203` al usar `inject()` fuera de contexto, la jerarquía real de inyectores con overrides a nivel de componente, y `NG0201` (*No provider found*) real al faltar un `InjectionToken`.
 
 ### Tema 1: @Injectable y providedIn: root
 
@@ -207,7 +207,7 @@ export class ListaTareas {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-inject --standalone --skip-git --defaults`), confirma con un test real el error `NG0203` al invocar `inject()` fuera de un contexto de inyección válido:
+Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-inject --standalone --skip-git --defaults` y luego `cd demo-inject`), confirma con un test real el error `NG0203` al invocar `inject()` fuera de un contexto de inyección válido:
 
 ```bash
 mkdir -p src/app
@@ -252,7 +252,7 @@ npx ng test --watch=false
 3. Escribe un test que confirme que `inject()` funciona correctamente dentro de la inicialización de un campo de clase (`private servicio = inject(TareasService);`), sin necesitar `runInInjectionContext` en ese caso.
 4. Escribe de memoria (sin mirar) una función que invoque `inject()` fuera de contexto, y un test que confirme el error real `NG0203`. Compara después contra el patrón del Paso 4.
 
-**Pista:** el mensaje real de `NG0203` incluye la frase "injection context" — reconocerla en una consola real confirma inmediatamente que el problema es la ausencia de un contexto válido, no un servicio mal registrado (que produciría en cambio un `NullInjectorError` distinto).
+**Pista:** el mensaje real de `NG0203` incluye la frase "injection context" — reconocerla en una consola real confirma inmediatamente que el problema es la ausencia de un contexto válido, no un servicio mal registrado (que produciría en cambio un `NG0201` distinto).
 
 #### Paso 6 · Práctica independiente
 
@@ -268,7 +268,7 @@ ____(injector, () => inject(TareasService));
 
 Ya confirmas, con el error real `NG0203`, que `inject()` requiere un contexto de inyección activo, mientras la inyección por constructor lo obtiene automáticamente de Angular. El siguiente tema confirma con overrides reales de provider por nivel cómo la jerarquía de inyectores resuelve dependencias. Fuentes oficiales: [Angular — Dependency injection](https://angular.dev/guide/di), [Angular — inject()](https://angular.dev/guide/di/dependency-injection#injecting-services).
 
-**Errores comunes:** invocar `inject()` dentro de un callback asíncrono (como un `setTimeout` o un `.then()`) sin capturar la dependencia antes, produciendo `NG0203` porque ese callback ya no ejecuta dentro del contexto de inyección original; confundir `NG0203` (falta contexto) con `NullInjectorError` (falta provider), dos errores reales pero distintos.
+**Errores comunes:** invocar `inject()` dentro de un callback asíncrono (como un `setTimeout` o un `.then()`) sin capturar la dependencia antes, produciendo `NG0203` porque ese callback ya no ejecuta dentro del contexto de inyección original; confundir `NG0203` (falta contexto) con `NG0201` (falta provider), dos errores reales pero distintos.
 
 **Cuándo no usarlo:** para un componente o servicio tradicional sin necesidad de reutilizar lógica en contextos funcionales, la elección entre `inject()` e inyección por constructor es principalmente de estilo; ninguna es "incorrecta" en ese caso.
 
@@ -309,7 +309,7 @@ flowchart TD
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-jerarquia --standalone --skip-git --defaults`), crea `src/app/contador-intentos.service.ts`:
+Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-jerarquia --standalone --skip-git --defaults` y luego `cd demo-jerarquia`), crea `src/app/contador-intentos.service.ts`:
 
 ```bash
 mkdir -p src/app
@@ -398,7 +398,7 @@ npx ng test --watch=false
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regla exacta de resolución jerárquica: el inyector más cercano al punto de solicitud gana. El siguiente y último tema de este módulo confirma con `NullInjectorError` real por qué un `InjectionToken` sin provider produce un fallo explícito. Fuentes oficiales: [Angular — Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection).
+Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regla exacta de resolución jerárquica: el inyector más cercano al punto de solicitud gana. El siguiente y último tema de este módulo confirma con `NG0201` real por qué un `InjectionToken` sin provider produce un fallo explícito. Fuentes oficiales: [Angular — Hierarchical injectors](https://angular.dev/guide/di/hierarchical-dependency-injection).
 
 **Errores comunes:** esperar una única instancia global de un servicio provisto a nivel de ruta o componente, sin considerar que ese registro local crea una instancia independiente; olvidar que un override local "gana" incluso si el mismo servicio también está registrado en `root`.
 
@@ -410,13 +410,13 @@ Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regl
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con el error real `NullInjectorError` de Angular, que un `InjectionToken` sin ningún provider registrado produce un fallo explícito al inyectarlo, y que `@Optional()` cambia genuinamente ese comportamiento a `null` en vez de un error.
+Al finalizar podrás confirmar, con el error real `NG0201` de Angular, que un `InjectionToken` sin ningún provider registrado produce un fallo explícito al inyectarlo, y que `@Optional()` cambia genuinamente ese comportamiento a `null` en vez de un error.
 
 **Conocimiento previo:** Temas 1-3 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** En una app de entregas, una URL de API de configuración (`API_URL`) no tiene una "clase" propia que inyectar; un `InjectionToken` permite inyectarla de forma desacoplada, pero omitir su provider produce un `NullInjectorError` real e inmediato, evitando que la aplicación arranque con una configuración silenciosamente ausente.
+**¿Por qué es importante?** En una app de entregas, una URL de API de configuración (`API_URL`) no tiene una "clase" propia que inyectar; un `InjectionToken` permite inyectarla de forma desacoplada, pero omitir su provider produce un error real e inmediato (`NG0201`), evitando que la aplicación arranque con una configuración silenciosamente ausente.
 
 #### Paso 3 · Teoría con analogía
 
@@ -432,7 +432,7 @@ Estos decoradores de resolución son herramientas relativamente especializadas, 
 
 ```mermaid
 flowchart LR
-  T["new InjectionToken(API_URL)"] -->|"SIN provider"| E["NullInjectorError real"]
+  T["new InjectionToken(API_URL)"] -->|"SIN provider"| E["NG0201 real"]
   T -->|"CON provider useValue"| V["valor inyectable real"]
   T -->|"inject(TOKEN, optional:true)"| N["null, sin error"]
 ```
@@ -449,7 +449,7 @@ private apiUrl = inject(API_URL);
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tokens --standalone --skip-git --defaults`), crea `src/app/api-url.token.ts`:
+Continuando en `demo-di` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tokens --standalone --skip-git --defaults` y luego `cd demo-tokens`), crea `src/app/api-url.token.ts`:
 
 ```bash
 mkdir -p src/app
@@ -462,7 +462,7 @@ import { InjectionToken } from '@angular/core';
 export const API_URL = new InjectionToken<string>('API_URL');
 ```
 
-Confirma con un test real que inyectar `API_URL` SIN ningún provider registrado produce el error real `NullInjectorError`, y que `@Optional()` cambia genuinamente ese comportamiento a `null`:
+Confirma con un test real que inyectar `API_URL` SIN ningún provider registrado produce el error real `NG0201`, y que `@Optional()` cambia genuinamente ese comportamiento a `null`:
 
 ```ts
 // src/app/api-url.spec.ts
@@ -480,11 +480,11 @@ class ConfigOpcionalComponent {
   apiUrl = inject(API_URL, { optional: true }); // CON optional: no lanza error
 }
 
-describe('InjectionToken sin provider (NullInjectorError real)', () => {
-  it('inyectar API_URL sin provider registrado lanza NullInjectorError real', () => {
+describe('InjectionToken sin provider (NG0201 real)', () => {
+  it('inyectar API_URL sin provider registrado lanza NG0201 real', () => {
     TestBed.configureTestingModule({ imports: [ConfigObligatoriaComponent] });
 
-    expect(() => TestBed.createComponent(ConfigObligatoriaComponent)).toThrowError(/NullInjectorError|No provider for/);
+    expect(() => TestBed.createComponent(ConfigObligatoriaComponent)).toThrowError(/NG0201/);
   });
 
   it('con optional:true, la ausencia de provider resuelve a null, sin error', () => {
@@ -500,18 +500,20 @@ describe('InjectionToken sin provider (NullInjectorError real)', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza REALMENTE `NullInjectorError` (con el nombre del token `API_URL` incluido en el mensaje) cuando no existe ningún provider registrado para ese `InjectionToken`; el segundo confirma que `{ optional: true }` (la forma funcional equivalente a `@Optional()`) cambia genuinamente ese comportamiento a `null`, sin lanzar ningún error.
+**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza ``NG0201: No provider found for `InjectionToken API_URL` `` (con el nombre del token incluido en el mensaje) cuando no existe ningún provider registrado para ese `InjectionToken`; el segundo confirma que `{ optional: true }` (la forma funcional equivalente a `@Optional()`) cambia genuinamente ese comportamiento a `null`, sin lanzar ningún error.
 
-**Fallo deliberado:** agrega `providers: [{ provide: API_URL, useValue: 'https://api.demo.test' }]` al `TestBed.configureTestingModule` del primer test (proveyendo el token que faltaba) y ejecuta de nuevo. El test ahora FALLA porque `.toThrowError(...)` esperaba un error que ya no ocurre — diagnostica confirmando que registrar el provider es exactamente lo que resuelve el `NullInjectorError` real, no un ajuste cosmético. Revierte a `TestBed.configureTestingModule` sin ese provider para dejar el ejemplo en su estado de fallo deliberado documentado.
+En tutoriales de versiones anteriores verás este mismo fallo como `NullInjectorError: No provider for ...`; con Angular 22 el mensaje es el de `NG0201`, por eso la prueba busca el código y no el texto antiguo.
+
+**Fallo deliberado:** agrega `providers: [{ provide: API_URL, useValue: 'https://api.demo.test' }]` al `TestBed.configureTestingModule` del primer test (proveyendo el token que faltaba) y ejecuta de nuevo. El test ahora FALLA porque `.toThrowError(...)` esperaba un error que ya no ocurre — diagnostica confirmando que registrar el provider es exactamente lo que resuelve el `NG0201` real, no un ajuste cosmético. Revierte a `TestBed.configureTestingModule` sin ese provider para dejar el ejemplo en su estado de fallo deliberado documentado.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un segundo `InjectionToken` para una configuración distinta (por ejemplo, `MAX_REINTENTOS`) y confirma con el mismo patrón el error real sin provider y la resolución con `@Optional()`.
 2. Documenta, en un comentario, la diferencia real entre `@Optional()` (permite `null`) y `@SkipSelf()` (fuerza buscar desde el siguiente nivel superior, sin cambiar si es obligatorio o no).
 3. Escribe un test que confirme que un `InjectionToken` CON un `useFactory` (en vez de `useValue`) también resuelve correctamente, ejecutando la función factory al momento de la inyección.
-4. Escribe de memoria (sin mirar) un `InjectionToken` sin provider, y un test que confirme el `NullInjectorError` real. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un `InjectionToken` sin provider, y un test que confirme el `NG0201` real. Compara después contra el patrón del Paso 4.
 
-**Pista:** el mensaje real de `NullInjectorError` incluye el nombre EXACTO del token o clase que Angular no pudo resolver — leerlo con atención (`No provider for API_URL!`) es más rápido que adivinar cuál dependencia falta entre varias posibles.
+**Pista:** el mensaje real de `NG0201` incluye el nombre EXACTO del token o clase que Angular no pudo resolver — leerlo con atención (``No provider found for `InjectionToken API_URL` ``) es más rápido que adivinar cuál dependencia falta entre varias posibles.
 
 #### Paso 6 · Práctica independiente
 
@@ -521,13 +523,13 @@ npx ng test --watch=false
 export const API_URL = new ____<string>('API_URL');
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `InjectionToken` sin provider y un test que confirme tanto el `NullInjectorError` real como su resolución con `{ optional: true }`. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `InjectionToken` sin provider y un test que confirme tanto el `NG0201` real como su resolución con `{ optional: true }`. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con `NullInjectorError` real y su resolución real mediante `@Optional()`, que un `InjectionToken` sin provider es un fallo explícito y diagnosticable, no un valor silenciosamente ausente. Esto cierra el módulo de servicios e inyección de dependencias; como siguiente paso, continúa con el módulo 4 de este track (routing y guards). Fuentes oficiales: [Angular — InjectionToken](https://angular.dev/guide/di/dependency-injection-providers#using-an-injectiontoken-object).
+Ya confirmas, con `NG0201` real y su resolución real mediante `@Optional()`, que un `InjectionToken` sin provider es un fallo explícito y diagnosticable, no un valor silenciosamente ausente. Esto cierra el módulo de servicios e inyección de dependencias; como siguiente paso, continúa con el módulo 4 de este track (routing y guards). Fuentes oficiales: [Angular — InjectionToken](https://angular.dev/guide/di/dependency-injection-providers#using-an-injectiontoken-object).
 
-**Errores comunes:** declarar un `InjectionToken` y olvidar registrar su provider en `app.config.ts`, descubriendo el `NullInjectorError` solo en tiempo de ejecución; usar `@Optional()` para ocultar un error de configuración real que debería ser obligatorio y explícito.
+**Errores comunes:** declarar un `InjectionToken` y olvidar registrar su provider en `app.config.ts`, descubriendo el `NG0201` solo en tiempo de ejecución; usar `@Optional()` para ocultar un error de configuración real que debería ser obligatorio y explícito.
 
 **Cuándo no usarlo:** para un valor que siempre debería tener un provider registrado en cualquier configuración razonable de la aplicación (una URL de API base, por ejemplo), marcar la dependencia como opcional con `@Optional()` puede ocultar un error de configuración real que debería fallar ruidosamente en vez de degradar silenciosamente.
 

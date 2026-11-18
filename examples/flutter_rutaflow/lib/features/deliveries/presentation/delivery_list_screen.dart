@@ -1,6 +1,7 @@
 // lib/features/deliveries/presentation/delivery_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/models.dart';
 import '../domain/delivery_providers.dart';
 
 /// Tema 4: List view with Riverpod state management
@@ -165,6 +166,3 @@ class _DetailRow extends StatelessWidget {
     );
   }
 }
-
-// Importing delivery_providers to make Delivery accessible
-import '../../../core/models.dart';

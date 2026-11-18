@@ -9,7 +9,7 @@ Cada tema verifica su garantía con código real: el error genuino de Angular al
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con un error real de Angular (`NG0950`), que `input.required()` hace cumplir su contrato en tiempo de ejecución: un componente padre que omite un input requerido produce un fallo real y diagnosticable, no un valor silenciosamente `undefined`.
+Al finalizar podrás confirmar que `input.required()` hace cumplir su contrato en dos momentos: en una plantilla padre, el compilador rechaza la omisión en el build (`NG8008`); al crear el componente dinámicamente sin el input, Angular lanza `NG0950` en ejecución. Nunca obtienes un valor silenciosamente `undefined`.
 
 **Conocimiento previo:** Módulo 0 de este track.
 
@@ -19,7 +19,7 @@ Al finalizar podrás confirmar, con un error real de Angular (`NG0950`), que `in
 
 #### Paso 3 · Teoría con analogía
 
-**Conceptos clave:** `input()`, `input.required()`, `output()`, comparación con los decoradores clásicos, `NG0950`.
+**Conceptos clave:** `input()`, `input.required()`, `output()`, comparación con los decoradores clásicos, `NG8008` (compilación) y `NG0950` (ejecución).
 
 `input()` y `output()`, las funciones modernas para declarar propiedades de entrada y salida de un componente, reemplazan a los decoradores clásicos `@Input()` y `@Output()` con una integración nativa con el modelo de signals estudiado en profundidad en el Módulo 2. `titulo = input.required<string>();` declara un input obligatorio de tipo `string` (el componente padre debe proporcionarlo, o Angular lanza un error de compilación de plantilla si se omite), accesible dentro del componente como una función de lectura reactiva (`titulo()`, con paréntesis, exactamente como cualquier signal), en vez de una propiedad de clase simple que los decoradores clásicos exponían directamente sin necesidad de invocarla como función.
 
@@ -34,7 +34,8 @@ Esta integración con signals significa que un input declarado con `input()` par
 ```mermaid
 flowchart LR
   P["componente padre"] -->|"[titulo]=valor"| I["input.required titulo"]
-  I -->|"falta el valor"| E["NG0950 error real"]
+  I -->|"falta en plantilla"| E["NG8008 en el build"]
+  I -->|"falta al crear dinámicamente"| F["NG0950 en ejecución"]
   C["click del usuario"] --> O["seleccionar.emit"]
   O -->|"(seleccionar)=manejador"| P
 ```
@@ -85,7 +86,7 @@ export class TarjetaPedidoComponent {
 }
 ```
 
-Confirma con un test real que omitir el input requerido produce el error genuino `NG0950` de Angular, y que emitir el output es recibido realmente por el padre:
+Confirma con un test que crear el componente sin su input requerido produce el error `NG0950` de Angular, y que emitir el output es recibido realmente por el padre:
 
 ```ts
 // src/app/tarjeta-pedido.component.spec.ts
@@ -94,19 +95,11 @@ import { TestBed } from '@angular/core/testing';
 import { TarjetaPedidoComponent } from './tarjeta-pedido.component';
 
 describe('TarjetaPedidoComponent (input.required real y output real)', () => {
-  it('omitir el input requerido lanza el error real NG0950', () => {
-    @Component({
-      selector: 'app-padre-sin-input',
-      standalone: true,
-      imports: [TarjetaPedidoComponent],
-      template: `<app-tarjeta-pedido />`, // falta [titulo], deliberadamente
-    })
-    class PadreSinInputComponent {}
+  it('crear el componente sin su input requerido lanza el error real NG0950', () => {
+    // Creación dinámica: ninguna plantilla padre que el compilador pueda revisar.
+    const fixture = TestBed.createComponent(TarjetaPedidoComponent); // sin setInput('titulo', ...)
 
-    TestBed.configureTestingModule({ imports: [PadreSinInputComponent] });
-    const fixture = TestBed.createComponent(PadreSinInputComponent);
-
-    expect(() => fixture.detectChanges()).toThrowError(/NG0950|required/i);
+    expect(() => fixture.detectChanges()).toThrowError(/NG0950/);
   });
 
   it('emitir el output real es recibido por el padre', () => {
@@ -137,18 +130,20 @@ describe('TarjetaPedidoComponent (input.required real y output real)', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza REALMENTE `NG0950` cuando un componente padre omite `[titulo]`, el segundo confirma que un clic real dispara `seleccionar.emit()` y el padre lo recibe genuinamente a través del binding `(seleccionar)`.
+**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza `NG0950: Input "titulo" is required but no value is available yet.` al renderizar un componente creado sin `titulo`, el segundo confirma que un clic real dispara `seleccionar.emit()` y el padre lo recibe genuinamente a través del binding `(seleccionar)`.
 
-**Fallo deliberado:** en el primer test, agrega `titulo="PED-001"` a la plantilla del padre (completando el input requerido) y ejecuta de nuevo. El test ahora FALLA porque `.toThrowError(...)` esperaba un error que ya no ocurre — diagnostica confirmando que proveer el input requerido es exactamente lo que resuelve el error real `NG0950`, no un detalle cosmético. Revierte a la plantilla sin `[titulo]` para dejar el ejemplo en su estado de fallo deliberado documentado.
+**Fallo deliberado:** en el primer test, agrega `fixture.componentRef.setInput('titulo', 'PED-001');` antes del `expect` y ejecuta de nuevo. El test ahora FALLA (`expected [Function] to throw an error`) porque el error ya no ocurre: proveer el input requerido es exactamente lo que resuelve `NG0950`. Revierte el cambio.
+
+**¿Y en una plantilla padre?** Si un padre escribe `<app-tarjeta-pedido />` sin `[titulo]`, ni siquiera llegas a ejecutar: el compilador AOT detiene `ng test` y `ng build` con `NG8008: Required input 'titulo' from component TarjetaPedidoComponent must be specified.` Por eso el ejemplo usa creación dinámica para ver el error de ejecución.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un segundo input opcional (sin `.required`) y confirma con un test que su ausencia NO produce ningún error, a diferencia del input requerido.
 2. Documenta, en un comentario, la diferencia entre `input<string>()` (opcional, puede ser `undefined`) e `input.required<string>()` (obligatorio, error real si falta).
 3. Escribe un test que confirme que `seleccionar.emit()` puede dispararse múltiples veces y el padre recibe cada emisión de forma independiente.
-4. Escribe de memoria (sin mirar) un componente con `input.required()` y `output()`, y un test que confirme el error real `NG0950` al omitir el input. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un componente con `input.required()` y `output()`, un test que confirme `NG0950` al crearlo sin el input y un padre sin el input que provoque `NG8008` en el build. Compara después contra el patrón del Paso 4.
 
-**Pista:** el error real `NG0950` incluye la palabra "required" en su mensaje — es la forma más rápida de reconocer en una consola real que un input obligatorio quedó sin proveer, sin tener que adivinar cuál de los inputs del componente falta.
+**Pista:** tanto `NG0950` (ejecución) como `NG8008` (compilación) incluyen la palabra "required" en su mensaje — es la forma más rápida de reconocer en una consola real que un input obligatorio quedó sin proveer, sin tener que adivinar cuál de los inputs del componente falta.
 
 #### Paso 6 · Práctica independiente
 
@@ -162,9 +157,9 @@ titulo = input.____<string>();
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con el error real `NG0950` de Angular, que `input.required()` hace cumplir su contrato en tiempo de ejecución, no solo en la documentación. El siguiente tema confirma con una comprobación real sobre el DOM por qué `track` con un identificador estable preserva la identidad de los nodos al reordenar una lista. Fuentes oficiales: [Angular — Inputs](https://angular.dev/guide/components/inputs), [Angular — Signals](https://angular.dev/guide/signals).
+Ya confirmas que `input.required()` hace cumplir su contrato: `NG8008` en el build cuando una plantilla lo omite y `NG0950` en ejecución cuando el componente se crea dinámicamente sin él. El siguiente tema confirma con una comprobación real sobre el DOM por qué `track` con un identificador estable preserva la identidad de los nodos al reordenar una lista. Fuentes oficiales: [Angular — Inputs](https://angular.dev/guide/components/inputs), [Angular — Signals](https://angular.dev/guide/signals).
 
-**Errores comunes:** olvidar los paréntesis al leer un input declarado con `input()` (confundir `titulo`, la función, con `titulo()`, su valor); asumir que un input requerido se valida en tiempo de compilación cuando en realidad el error `NG0950` ocurre en tiempo de ejecución, durante la detección de cambios.
+**Errores comunes:** olvidar los paréntesis al leer un input declarado con `input()` (confundir `titulo`, la función, con `titulo()`, su valor); confundir los dos momentos de validación: en plantillas el compilador detecta el input faltante (`NG8008`), mientras que `NG0950` solo aparece en ejecución al crear el componente dinámicamente (por ejemplo con `TestBed.createComponent` o `ViewContainerRef.createComponent`) sin llamar a `setInput`.
 
 **Cuándo no usarlo:** para un input que genuinamente puede estar ausente y el componente debe manejar ese caso con un valor por defecto razonable, `input.required()` es la herramienta incorrecta; usa `input()` con un valor inicial en su lugar.
 
@@ -219,7 +214,7 @@ Usar `track tarea.id` (un identificador único y estable de cada elemento) en ve
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-track --standalone --skip-git --defaults`), crea `src/app/lista-pedidos.component.ts`:
+Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-track --standalone --skip-git --defaults` y luego `cd demo-track`), crea `src/app/lista-pedidos.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -361,7 +356,7 @@ export class Modal {}
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-content-projection --standalone --skip-git --defaults`), crea `src/app/modal-generico.component.ts` con dos slots nombrados:
+Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-content-projection --standalone --skip-git --defaults` y luego `cd demo-content-projection`), crea `src/app/modal-generico.component.ts` con dos slots nombrados:
 
 ```bash
 mkdir -p src/app
@@ -461,7 +456,7 @@ Ya confirmas, con contenido proyectado real verificado sobre el DOM, que `ng-con
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con un espía real (`vi.fn()` o `jasmine.createSpy()`) registrado en cada hook, el orden EXACTO en que Angular invoca los hooks de ciclo de vida de un componente, y que `ngOnDestroy` se invoca realmente al destruir el fixture.
+Al finalizar podrás confirmar, con un espía real (`vi.fn()` de Vitest, el runner que configura `ng new` en Angular 22) registrado en cada hook, el orden EXACTO en que Angular invoca los hooks de ciclo de vida de un componente, y que `ngOnDestroy` se invoca realmente al destruir el fixture.
 
 **Conocimiento previo:** Temas 1-3 de este módulo.
 
@@ -508,7 +503,7 @@ export class MiComponente implements OnChanges, OnInit, AfterViewInit, OnDestroy
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ciclo-vida --standalone --skip-git --defaults`), crea `src/app/seguimiento-conductor.component.ts` con un registro real de cada hook invocado:
+Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ciclo-vida --standalone --skip-git --defaults` y luego `cd demo-ciclo-vida`), crea `src/app/seguimiento-conductor.component.ts` con un registro real de cada hook invocado:
 
 ```bash
 mkdir -p src/app
@@ -638,9 +633,10 @@ sequenceDiagram
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
-Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tracking --standalone --skip-git --defaults`), crea la carpeta de la feature `tracking` con sus archivos relacionados:
+Continuando en `demo-input-output` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tracking --standalone --skip-git --defaults` y luego `cd demo-tracking`), crea la carpeta de la feature `tracking` con sus archivos relacionados:
 
 ```text
 src/app/features/tracking/
@@ -658,6 +654,18 @@ src/app/features/tracking/
   </header>
   <div class="map" [style.height.px]="mapHeight()" aria-label="Mapa de seguimiento"></div>
 </section>
+```
+
+```css
+/* src/app/features/tracking/tracking-panel.component.css */
+.tracking-panel {
+  display: block;
+  min-height: 400px;
+}
+
+.map {
+  background: #e5e7eb;
+}
 ```
 
 ```ts
@@ -772,6 +780,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 ```typescript
@@ -989,6 +998,14 @@ Reemplaza `camiones$ | async` por `toSignal(camiones$)` y compara las dos formas
 
 #### Paso 7 · Cierre
 
+Antes de seguir, confirma estas cuatro evidencias:
+
+- [ ] `npx ng test --watch=false` pasa con las dos pruebas del Paso 4 y ves en consola el pipe puro desactualizado (7 kg).
+- [ ] Quitar `AsyncPipe` de `imports` produce `NG8004: No pipe found with name 'async'.`
+- [ ] La prueba de `agregarCopiando` del Paso 5 muestra `Puro: 17 kg`.
+- [ ] Tras el Paso 6 puedes explicar qué cambia entre `| async` y `toSignal(...)` en el manejo de la suscripción.
+
+Fuentes oficiales: [Angular — Pipes](https://angular.dev/guide/templates/pipes) y [Angular — RxJS interop](https://angular.dev/ecosystem/rxjs-interop).
 
 ## Laboratorio práctico
 

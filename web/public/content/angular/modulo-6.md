@@ -7,7 +7,7 @@
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con espías reales y `fakeAsync`/`tick`, dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscribirse detiene efectivamente la operación en curso).
+Al finalizar podrás confirmar, con espías reales (`vi.fn()`) y el reloj simulado de Vitest (`vi.useFakeTimers()`), dos propiedades de los Observables que las Promesas nativas NO tienen: evaluación perezosa (no producen nada hasta que alguien se suscribe) y cancelación real (desuscribirse detiene efectivamente la operación en curso).
 
 **Conocimiento previo:** Módulo 5 del track de JavaScript (Promesas); RxJS básico.
 
@@ -46,6 +46,7 @@ Parte de una carpeta vacía (o continúa en `demo-forms` del Módulo 5):
 
 ```bash
 npx -y @angular/cli@22 new demo-rxjs --standalone --skip-git --defaults
+cd demo-rxjs
 mkdir -p src/app
 ```
 
@@ -72,31 +73,33 @@ export function crearObservableCancelable(
 
 ```ts
 // src/app/observable-vs-promise.spec.ts
-import { fakeAsync, tick } from '@angular/core/testing';
 import { crearObservableCancelable } from './observable-vs-promise';
 
 describe('Observable es perezoso y cancelable, a diferencia de una Promise', () => {
+  beforeEach(() => vi.useFakeTimers()); // reloj simulado de Vitest
+  afterEach(() => vi.useRealTimers());
+
   it('NO ejecuta su logica productora hasta que alguien se suscribe', () => {
-    const alProducir = jasmine.createSpy('alProducir');
+    const alProducir = vi.fn();
     crearObservableCancelable(alProducir, () => {});
 
     expect(alProducir).not.toHaveBeenCalled();
   });
 
-  it('desuscribirse ANTES de que emita ejecuta la limpieza real y el valor nunca llega', fakeAsync(() => {
-    const alProducir = jasmine.createSpy('alProducir');
-    const alLimpiar = jasmine.createSpy('alLimpiar');
-    const receptor = jasmine.createSpy('receptor');
+  it('desuscribirse ANTES de que emita ejecuta la limpieza real y el valor nunca llega', () => {
+    const alProducir = vi.fn();
+    const alLimpiar = vi.fn();
+    const receptor = vi.fn();
 
     const suscripcion = crearObservableCancelable(alProducir, alLimpiar).subscribe(receptor);
     expect(alProducir).toHaveBeenCalledTimes(1);
 
     suscripcion.unsubscribe();
-    tick(1000);
+    vi.advanceTimersByTime(1000);
 
     expect(alLimpiar).toHaveBeenCalledTimes(1);
     expect(receptor).not.toHaveBeenCalled();
-  }));
+  });
 });
 ```
 
@@ -106,7 +109,7 @@ npx ng test --watch=false
 
 **Resultado esperado:** ambos tests pasan; el segundo confirma con `receptor` (un espía separado del valor emitido) que desuscribirse ANTES de que el `setTimeout` interno complete impide que `next(42)` llegue jamás — cancelación real, no solo ignorar un resultado que de todas formas se produciría.
 
-**Fallo deliberado:** quita la línea `clearTimeout(id);` de la función de limpieza (dejando solo `alLimpiar();`) y ejecuta de nuevo el segundo test. El test sigue pasando en apariencia, pero agrega esta aserción extra al final: `tick(1000); expect(receptor).not.toHaveBeenCalled();` con un `tick(1000)` adicional — FALLA porque, sin `clearTimeout`, el `setTimeout` original sigue vivo y `subscriber.next(42)` se invoca de todas formas después del `unsubscribe()` (aunque el Observable ya no tiene un suscriptor activo escuchando, el temporizador subyacente nunca se canceló realmente) — diagnosticando que la cancelación de RxJS depende completamente de que la función de limpieza del productor libere los recursos reales subyacentes; RxJS no cancela mágicamente un `setTimeout` por sí solo. Restaura `clearTimeout(id);` antes de continuar.
+**Fallo deliberado:** quita la línea `clearTimeout(id);` de la función de limpieza (dejando solo `alLimpiar();`) y ejecuta de nuevo el segundo test. El test sigue pasando en apariencia, pero agrega esta aserción extra al final: `vi.advanceTimersByTime(1000); expect(receptor).not.toHaveBeenCalled();` con un avance adicional de 1000 ms — FALLA porque, sin `clearTimeout`, el `setTimeout` original sigue vivo y `subscriber.next(42)` se invoca de todas formas después del `unsubscribe()` (aunque el Observable ya no tiene un suscriptor activo escuchando, el temporizador subyacente nunca se canceló realmente) — diagnosticando que la cancelación de RxJS depende completamente de que la función de limpieza del productor libere los recursos reales subyacentes; RxJS no cancela mágicamente un `setTimeout` por sí solo. Restaura `clearTimeout(id);` antes de continuar.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -130,7 +133,7 @@ suscripcion.____();
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada sin suscriptor) y genuinamente cancelable (la limpieza real detiene el trabajo subyacente), a diferencia de una Promesa. El siguiente tema confirma con `fakeAsync`/`tick` cómo `switchMap` cancela automáticamente un Observable interno cuando llega un nuevo valor. Fuentes oficiales: [RxJS — Observable](https://rxjs.dev/guide/observable).
+Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada sin suscriptor) y genuinamente cancelable (la limpieza real detiene el trabajo subyacente), a diferencia de una Promesa. El siguiente tema confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) cómo `switchMap` cancela automáticamente un Observable interno cuando llega un nuevo valor. Fuentes oficiales: [RxJS — Observable](https://rxjs.dev/guide/observable).
 
 **Errores comunes:** asumir que `unsubscribe()` cancela automáticamente cualquier operación asíncrona subyacente sin que el productor implemente su propia función de limpieza; confundir "nadie está escuchando el resultado" con "la operación se detuvo realmente".
 
@@ -142,7 +145,7 @@ Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con `fakeAsync`/`tick` sobre un `Subject` real, que `switchMap` cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condiciones de carrera en un buscador en vivo.
+Al finalizar podrás confirmar, con el reloj simulado de Vitest (`vi.useFakeTimers()`) sobre un `Subject` real, que `switchMap` cancela efectivamente el Observable interno anterior cuando llega un nuevo valor antes de que ese interno complete — la garantía exacta que resuelve condiciones de carrera en un buscador en vivo.
 
 **Conocimiento previo:** Tema 1 de este módulo.
 
@@ -191,7 +194,7 @@ resultados = toSignal(
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-switchmap --standalone --skip-git --defaults`), crea `src/app/buscador.pipeline.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-switchmap --standalone --skip-git --defaults` y luego `cd demo-switchmap`), crea `src/app/buscador.pipeline.ts`:
 
 ```bash
 mkdir -p src/app
@@ -211,17 +214,19 @@ export function crearPipelineBusqueda(entrada$: Subject<string>, api: ApiBusqued
 }
 ```
 
-Confirma con `fakeAsync`/`tick` que la respuesta de la primera búsqueda NUNCA llega si una segunda búsqueda se dispara antes de que la primera complete:
+Confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) que la respuesta de la primera búsqueda NUNCA llega si una segunda búsqueda se dispara antes de que la primera complete:
 
 ```ts
 // src/app/buscador.pipeline.spec.ts
-import { fakeAsync, tick } from '@angular/core/testing';
 import { Subject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { crearPipelineBusqueda, ApiBusqueda } from './buscador.pipeline';
 
 describe('switchMap cancela el Observable interno anterior', () => {
-  it('si "tarea" llega antes de que resuelva "ta", solo el resultado de "tarea" se propaga', fakeAsync(() => {
+  beforeEach(() => vi.useFakeTimers()); // reloj simulado de Vitest
+  afterEach(() => vi.useRealTimers());
+
+  it('si "tarea" llega antes de que resuelva "ta", solo el resultado de "tarea" se propaga', () => {
     const apiSimulada: ApiBusqueda = {
       buscar: (texto) => of([`resultado-${texto}`]).pipe(delay(300)),
     };
@@ -230,13 +235,13 @@ describe('switchMap cancela el Observable interno anterior', () => {
     crearPipelineBusqueda(entrada$, apiSimulada).subscribe((r) => resultados.push(r));
 
     entrada$.next('ta');
-    tick(100); // "ta" sigue en curso (delay de 300ms)
+    vi.advanceTimersByTime(100); // "ta" sigue en curso (delay de 300ms)
     entrada$.next('tarea'); // switchMap cancela la busqueda de "ta"
 
-    tick(300); // ahora "tarea" completa
+    vi.advanceTimersByTime(300); // ahora "tarea" completa
 
     expect(resultados).toEqual([['resultado-tarea']]);
-  }));
+  });
 });
 ```
 
@@ -253,7 +258,7 @@ npx ng test --watch=false
 1. Agrega `debounceTime(300)` y `distinctUntilChanged()` antes del `switchMap` en el pipeline, y ajusta el test para confirmar que emitir el mismo texto dos veces consecutivas no dispara una segunda llamada a `buscar`.
 2. Repite el experimento del fallo deliberado pero con `concatMap` en vez de `mergeMap`, y documenta en un comentario en qué orden llegan ambos resultados con `concatMap` (a diferencia de `mergeMap`).
 3. Escribe un test con `combineLatest` que confirme que cambiar CUALQUIERA de dos Subjects de entrada (`filtro$`, `orden$`) dispara una nueva emisión combinada.
-4. Escribe de memoria (sin mirar) un pipeline con `switchMap` sobre un `Subject`, y un test `fakeAsync` que confirme la cancelación del interno anterior. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un pipeline con `switchMap` sobre un `Subject`, y un test con reloj simulado (`vi.useFakeTimers()`) que confirme la cancelación del interno anterior. Compara después contra el patrón del Paso 4.
 
 **Pista:** la diferencia entre `switchMap`, `mergeMap`, `concatMap` y `exhaustMap` (Tema 4) es completamente verificable con la misma estructura de test que el Paso 4 — solo cambia el operador y observa qué resultados terminan en el array.
 
@@ -265,11 +270,11 @@ npx ng test --watch=false
 entrada$.pipe(____((texto) => api.buscar(texto)))
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `switchMap` y un test `fakeAsync` que confirme que solo la respuesta más reciente se propaga. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `switchMap` y un test con reloj simulado (`vi.useFakeTimers()`) que confirme que solo la respuesta más reciente se propaga. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con `fakeAsync`/`tick` sobre un `Subject` real, que `switchMap` cancela el Observable interno anterior cuando llega un nuevo valor, resolviendo condiciones de carrera reales. El siguiente tema confirma con un componente real destruido que `takeUntilDestroyed` completa automáticamente una suscripción, evitando la fuga de memoria clásica. Fuentes oficiales: [RxJS — switchMap](https://rxjs.dev/api/operators/switchMap).
+Ya confirmas, con el reloj simulado de Vitest (`vi.useFakeTimers()`) sobre un `Subject` real, que `switchMap` cancela el Observable interno anterior cuando llega un nuevo valor, resolviendo condiciones de carrera reales. El siguiente tema confirma con un componente real destruido que `takeUntilDestroyed` completa automáticamente una suscripción, evitando la fuga de memoria clásica. Fuentes oficiales: [RxJS — switchMap](https://rxjs.dev/api/operators/switchMap).
 
 **Errores comunes:** usar `mergeMap` donde la semántica correcta es "solo me interesa la respuesta más reciente" (caso de uso de `switchMap`); olvidar `debounceTime`/`distinctUntilChanged` antes de `switchMap`, disparando peticiones innecesarias en cada tecla.
 
@@ -327,7 +332,7 @@ this.eventos$.pipe(takeUntilDestroyed()).subscribe(evento => this.procesar(event
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-cleanup --standalone --skip-git --defaults`), crea `src/app/eventos.component.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-cleanup --standalone --skip-git --defaults` y luego `cd demo-cleanup`), crea `src/app/eventos.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -403,7 +408,7 @@ this.eventos$.pipe(____()).subscribe(evento => this.procesar(evento));
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed()` completa automáticamente una suscripción exactamente al destruirse el componente, sin ningún `ngOnDestroy` manual. El siguiente y último tema confirma con `fakeAsync`/`tick` cómo `exhaustMap` previene el doble envío de un formulario ignorando clics mientras una petición sigue en curso. Fuentes oficiales: [Angular — takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed).
+Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed()` completa automáticamente una suscripción exactamente al destruirse el componente, sin ningún `ngOnDestroy` manual. El siguiente y último tema confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) cómo `exhaustMap` previene el doble envío de un formulario ignorando clics mientras una petición sigue en curso. Fuentes oficiales: [Angular — takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed).
 
 **Errores comunes:** usar `subscribe()` manual sin `takeUntilDestroyed()` ni `async` pipe, dejando la limpieza a la memoria del desarrollador en vez de al framework; usar `takeUntilDestroyed()` fuera de un contexto de inyección sin pasar explícitamente un `DestroyRef`.
 
@@ -415,7 +420,7 @@ Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con `fakeAsync`/`tick` y un espía real sobre la función de envío, que `exhaustMap` ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental de un formulario.
+Al finalizar podrás confirmar, con el reloj simulado de Vitest (`vi.useFakeTimers()`) y un espía real sobre la función de envío, que `exhaustMap` ignora efectivamente un segundo clic de envío mientras el primero sigue en curso — la técnica real para prevenir el doble envío accidental de un formulario.
 
 **Conocimiento previo:** Temas 1-2 de este módulo.
 
@@ -448,7 +453,7 @@ Un `Subject` es simultáneamente un Observable y un "emisor" activo: a diferenci
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-exhaustmap --standalone --skip-git --defaults`), crea `src/app/envio.pipeline.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-exhaustmap --standalone --skip-git --defaults` y luego `cd demo-exhaustmap`), crea `src/app/envio.pipeline.ts`:
 
 ```bash
 mkdir -p src/app
@@ -468,32 +473,34 @@ export function crearPipelineEnvio(click$: Subject<void>, api: ApiEnvio) {
 }
 ```
 
-Confirma con `fakeAsync`/`tick` y un espía real que un segundo clic durante el envío en curso NUNCA dispara una segunda llamada:
+Confirma con el reloj simulado de Vitest (`vi.useFakeTimers()`) y un espía real que un segundo clic durante el envío en curso NUNCA dispara una segunda llamada:
 
 ```ts
 // src/app/envio.pipeline.spec.ts
-import { fakeAsync, tick } from '@angular/core/testing';
 import { Subject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { crearPipelineEnvio, ApiEnvio } from './envio.pipeline';
 
 describe('exhaustMap ignora clics mientras un envio esta en curso', () => {
-  it('el segundo clic durante el envio se ignora; solo un envio real ocurre', fakeAsync(() => {
-    const enviarSpy = jasmine.createSpy('enviar').and.callFake(() => of('ok').pipe(delay(300)));
+  beforeEach(() => vi.useFakeTimers()); // reloj simulado de Vitest
+  afterEach(() => vi.useRealTimers());
+
+  it('el segundo clic durante el envio se ignora; solo un envio real ocurre', () => {
+    const enviarSpy = vi.fn(() => of('ok').pipe(delay(300)));
     const apiSimulada: ApiEnvio = { enviar: enviarSpy };
     const click$ = new Subject<void>();
     const resultados: string[] = [];
     crearPipelineEnvio(click$, apiSimulada).subscribe((r) => resultados.push(r));
 
     click$.next();
-    tick(100); // el envio sigue en curso (delay de 300ms)
+    vi.advanceTimersByTime(100); // el envio sigue en curso (delay de 300ms)
     click$.next(); // IGNORADO por exhaustMap
 
-    tick(300);
+    vi.advanceTimersByTime(300);
 
     expect(enviarSpy).toHaveBeenCalledTimes(1);
     expect(resultados).toEqual(['ok']);
-  }));
+  });
 });
 ```
 
@@ -510,7 +517,7 @@ npx ng test --watch=false
 1. Repite el mismo test pero con `concatMap`, y confirma que en ese caso `enviarSpy` SÍ se invoca dos veces (a diferencia de `exhaustMap`), pero en estricta secuencia una después de la otra.
 2. Crea un `BehaviorSubject` con un valor inicial y confirma con un test que un suscriptor que se une DESPUÉS de la primera emisión recibe inmediatamente el último valor emitido, sin esperar una nueva emisión futura.
 3. Escribe un test con `shareReplay()` que confirme que dos suscriptores independientes al mismo Observable comparten una única ejecución de la lógica productora (usa un espía para contar cuántas veces se invoca).
-4. Escribe de memoria (sin mirar) un pipeline con `exhaustMap` y un test `fakeAsync` que confirme que un segundo clic durante un envío en curso se ignora. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un pipeline con `exhaustMap` y un test con reloj simulado (`vi.useFakeTimers()`) que confirme que un segundo clic durante un envío en curso se ignora. Compara después contra el patrón del Paso 4.
 
 **Pista:** la diferencia de comportamiento entre `switchMap`, `mergeMap`, `concatMap` y `exhaustMap` es completamente verificable contando cuántas veces se invoca un espía y en qué orden llegan los resultados — no necesitas memorizar la diferencia en abstracto, puedes reproducirla en un test cada vez que la olvides.
 
@@ -522,11 +529,11 @@ npx ng test --watch=false
 click$.pipe(____(() => api.enviar()))
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `exhaustMap` y un test `fakeAsync` con un espía que confirme exactamente una invocación ante dos clics rápidos. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un pipeline con `exhaustMap` y un test con reloj simulado (`vi.useFakeTimers()`) con un espía que confirme exactamente una invocación ante dos clics rápidos. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un espía real y `fakeAsync`/`tick`, que `exhaustMap` previene el doble envío ignorando clics mientras una operación sigue en curso. Con esto cierras el módulo de RxJS: Observable vs Promise (Tema 1), `switchMap` cancela condiciones de carrera (Tema 2), `takeUntilDestroyed` evita fugas de memoria (Tema 3), y los operadores de aplanamiento correctos según la semántica deseada (Tema 4). El siguiente módulo aplica estos flujos a peticiones HTTP reales con `HttpClient` e interceptores. Fuentes oficiales: [RxJS — exhaustMap](https://rxjs.dev/api/operators/exhaustMap).
+Ya confirmas, con un espía real y el reloj simulado de Vitest, que `exhaustMap` previene el doble envío ignorando clics mientras una operación sigue en curso. Con esto cierras el módulo de RxJS: Observable vs Promise (Tema 1), `switchMap` cancela condiciones de carrera (Tema 2), `takeUntilDestroyed` evita fugas de memoria (Tema 3), y los operadores de aplanamiento correctos según la semántica deseada (Tema 4). El siguiente módulo aplica estos flujos a peticiones HTTP reales con `HttpClient` e interceptores. Fuentes oficiales: [RxJS — exhaustMap](https://rxjs.dev/api/operators/exhaustMap).
 
 **Errores comunes:** usar `mergeMap` o `concatMap` para prevenir doble envío (ambos SÍ ejecutan ambas llamadas, solo cambia el orden/paralelismo, no la prevención); asumir que `exhaustMap` "cancela" la nueva emisión en vez de simplemente ignorarla (no la cancela, ni siquiera la procesa).
 

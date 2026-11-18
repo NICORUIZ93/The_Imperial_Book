@@ -10,19 +10,19 @@ No necesitas haber programado antes. Solo necesitas saber crear una carpeta y co
 1. Instala [Visual Studio Code](https://code.visualstudio.com/), [Git](https://git-scm.com/download/win) y la versión **LTS** de [Node.js](https://nodejs.org/). Acepta las opciones predeterminadas.
 2. Reinicia VS Code y abre **Terminal → New Terminal**. Debe aparecer PowerShell.
 3. Ejecuta `node --version`, `npm --version` y `git --version`. Cada comando debe mostrar una versión, no “no se reconoce”.
-4. Instala Angular CLI con `npm install -g @angular/cli` y comprueba `ng version`.
+4. Instala Angular CLI con `npm install -g @angular/cli@22` y comprueba `ng version`.
 
 ### macOS
 
 1. Abre Terminal e instala Homebrew con el comando publicado en [brew.sh](https://brew.sh/).
 2. Ejecuta `brew install node git` y descarga Visual Studio Code.
-3. Comprueba `node --version`, `npm --version`, `git --version` e instala Angular CLI con `npm install -g @angular/cli`.
+3. Comprueba `node --version`, `npm --version`, `git --version` e instala Angular CLI con `npm install -g @angular/cli@22`.
 
 ### Linux (Ubuntu/Debian)
 
 1. Instala Git con `sudo apt update && sudo apt install -y git`.
 2. Instala Node.js LTS desde [nodejs.org](https://nodejs.org/) o mediante `nvm`; evita versiones antiguas del repositorio de tu distribución.
-3. Instala VS Code, abre su terminal y verifica las versiones. Luego ejecuta `npm install -g @angular/cli`.
+3. Instala VS Code, abre su terminal y verifica las versiones. Luego ejecuta `npm install -g @angular/cli@22`.
 
 ### Tu primer proyecto verificable
 
@@ -101,6 +101,7 @@ Recorrer la estructura generada por `ng new` —`src/app` con el componente raí
 
 ```bash
 ng new mi-app
+cd mi-app
 ng generate component tarjeta   # standalone, sin tocar ningún módulo
 ng serve                         # dev server con hot-reload
 ```
@@ -130,7 +131,7 @@ npx -y @angular/cli@22 new . --standalone --style=css --routing=false --skip-git
 
 `npx` es el comando que ejecuta un paquete (aquí, una versión específica del CLI de Angular) sin instalarlo globalmente. `--standalone` es la bandera que genera componentes standalone por defecto; `--style` fija el lenguaje de estilos (`css`); `--routing` activa o desactiva el enrutamiento inicial; `--skip-git` evita que el CLI inicialice un repositorio Git; y `--defaults` es la bandera que acepta el resto de las opciones sin preguntar interactivamente.
 
-Crea `src/app/tarjeta-legacy.component.ts`, deliberadamente SIN `standalone: true` (simulando un componente de una era anterior de Angular):
+Crea `src/app/tarjeta-legacy.component.ts`, deliberadamente con `standalone: false` (simulando un componente de una era anterior de Angular):
 
 ```ts
 // src/app/tarjeta-legacy.component.ts
@@ -144,28 +145,33 @@ import { Component } from '@angular/core';
 export class TarjetaLegacyComponent {}
 ```
 
-Confirma con un test real que Angular RECHAZA agregar un componente no-standalone al `imports` de un componente standalone, con un error genuino y específico:
+Crea el componente moderno que intenta usarlo, `src/app/tarjeta-moderna.component.ts`:
+
+```ts
+// src/app/tarjeta-moderna.component.ts
+import { Component } from '@angular/core';
+import { TarjetaLegacyComponent } from './tarjeta-legacy.component';
+
+@Component({
+  selector: 'app-tarjeta-moderna',
+  imports: [TarjetaLegacyComponent], // TarjetaLegacyComponent NO es standalone
+  template: `<app-tarjeta-legacy></app-tarjeta-legacy>`,
+})
+export class TarjetaModernaComponent {}
+```
+
+Y una prueba que lo renderiza:
 
 ```ts
 // src/app/tarjeta-moderna.component.spec.ts
-import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TarjetaLegacyComponent } from './tarjeta-legacy.component';
+import { TarjetaModernaComponent } from './tarjeta-moderna.component';
 
-describe('Standalone components y componentes no-standalone', () => {
-  it('agregar un componente NO standalone a imports lanza un error real de Angular', () => {
-    @Component({
-      selector: 'app-tarjeta-moderna',
-      standalone: true,
-      imports: [TarjetaLegacyComponent], // ERROR: TarjetaLegacyComponent no es standalone
-      template: `<app-tarjeta-legacy></app-tarjeta-legacy>`,
-    })
-    class TarjetaModernaComponent {}
-
-    expect(() => {
-      TestBed.configureTestingModule({ imports: [TarjetaModernaComponent] });
-      TestBed.createComponent(TarjetaModernaComponent);
-    }).toThrowError(/standalone/i);
+describe('TarjetaModernaComponent', () => {
+  it('muestra la tarjeta importada', () => {
+    const fixture = TestBed.createComponent(TarjetaModernaComponent);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Tarjeta legacy');
   });
 });
 ```
@@ -176,16 +182,25 @@ npx ng test --watch=false
 
 `--watch=false` es la bandera que corre los tests una sola vez y termina, en vez de quedarse observando cambios en los archivos.
 
-**Resultado esperado:** el test pasa; Angular lanza un error REAL (no simulado) que menciona explícitamente "standalone" al intentar agregar `TarjetaLegacyComponent` (declarado con `standalone: false`) al `imports` de otro componente standalone — la prueba concreta de que ambos mundos (componentes con y sin `NgModule`) no se mezclan libremente sin una migración explícita.
+**Resultado esperado:** ninguna prueba llega a ejecutarse. El compilador AOT de Angular rechaza el proyecto al construirlo, antes de abrir el navegador simulado:
 
-**Fallo deliberado:** cambia `standalone: false` a `standalone: true` en `TarjetaLegacyComponent` (completando su migración) y ejecuta de nuevo. El test ahora FALLA porque `.toThrowError(...)` esperaba un error que ya no ocurre — diagnostica confirmando que declarar `standalone: true` explícitamente es exactamente lo que resuelve el error real observado, no un detalle cosmético. Revierte a `standalone: false` para dejar el ejemplo en su estado de fallo deliberado documentado.
+```text
+Application bundle generation failed.
+✘ [ERROR] NG2011: The component 'TarjetaLegacyComponent' appears in 'imports', but is not standalone and cannot be imported directly. It must be imported via an NgModule.
+```
+
+Es la prueba concreta de que ambos mundos (componentes con y sin `NgModule`) no se mezclan libremente: Angular lo detecta en **compilación**, no en ejecución. `npx ng build` muestra el mismo `NG2011`.
+
+**Corrección:** completa la migración de `TarjetaLegacyComponent` borrando la línea `standalone: false` (desde Angular 19 un componente es standalone por defecto; escribir `standalone: true` también funciona). Ejecuta de nuevo `npx ng test --watch=false`: ahora compila y la prueba `muestra la tarjeta importada` pasa.
+
+**Fallo deliberado:** con el componente ya migrado, quita `TarjetaLegacyComponent` del arreglo `imports` de `TarjetaModernaComponent` y ejecuta otra vez. El build falla con `NG8001: 'app-tarjeta-legacy' is not a known element`: un componente standalone solo conoce lo que declara en sus propios `imports`. Repón el import para dejar el ejemplo en verde.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Ejecuta `ng generate component --dry-run` real sobre un componente nuevo y confirma en la salida del comando que NO se menciona ningún archivo de módulo entre los archivos que se crearían.
 2. Documenta, en un comentario, qué error real esperarías si intentaras registrar `TarjetaModernaComponent` (standalone) dentro de `declarations` de un `@NgModule` tradicional, en vez de usar `imports`.
 3. Escribe un test que confirme que un componente standalone puede importar OTRO componente standalone sin ningún error, contrastando con el fallo deliberado de este tema.
-4. Escribe de memoria (sin mirar) dos componentes, uno standalone y otro no, y un test que confirme el error real al mezclarlos incorrectamente. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) dos componentes, uno standalone y otro no, mézclalos incorrectamente y confirma con `npx ng build` el `NG2011`. Compara después contra el patrón del Paso 4.
 
 **Pista:** el mensaje de error real de Angular al mezclar componentes standalone y no-standalone incluye la palabra "standalone" explícitamente — es una de las formas más rápidas y confiables de reconocer este problema específico en un mensaje de error real de consola.
 
@@ -197,7 +212,7 @@ npx ng test --watch=false
 @Component({ selector: 'app-tarjeta', ____: true, template: `...` })
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente no-standalone y un intento de agregarlo a `imports` de un componente standalone, con un test que confirme el error real de Angular. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente no-standalone y un intento de agregarlo a `imports` de un componente standalone, y confirma con `npx ng build` el error `NG2011` que produce el compilador. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
@@ -252,7 +267,7 @@ Elegir correctamente entre interpolación y property binding no es una cuestión
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-standalone-cli` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-binding --standalone --skip-git --defaults`), crea `src/app/campo-cantidad.component.ts`:
+Continuando en `demo-standalone-cli` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-binding --standalone --skip-git --defaults` y luego `cd demo-binding`), crea `src/app/campo-cantidad.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -545,7 +560,7 @@ AOT es el modo por defecto y recomendado para producción desde hace ya varias v
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-standalone-cli` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-aot --standalone --skip-git --defaults`), crea `src/app/resumen-envio-roto.component.ts` con un error deliberado de plantilla (una propiedad que no existe en la clase):
+Continuando en `demo-standalone-cli` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-aot --standalone --skip-git --defaults` y luego `cd demo-aot`), crea `src/app/resumen-envio-roto.component.ts` con un error deliberado de plantilla (una propiedad que no existe en la clase):
 
 ```bash
 mkdir -p src/app
@@ -659,7 +674,7 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 
 **Objetivo del laboratorio:** crear un proyecto Angular nuevo, generar un componente propio, y renderizar datos dinámicos usando interpolación y property binding correctamente.
 
-**Requisitos previos:** Node.js instalado, Angular CLI instalado globalmente (`npm install -g @angular/cli`).
+**Requisitos previos:** Node.js instalado, Angular CLI instalado globalmente (`npm install -g @angular/cli@22`).
 
 | Paso | Acción | Comando/Código | Explicación |
 |---|---|---|---|

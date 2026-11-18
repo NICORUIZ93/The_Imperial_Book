@@ -192,3 +192,66 @@ Nota global de 0 a 3. «Prueba» indica el resultado de `ng test` en Angular 22.
 - **Plataformas nativas, tiendas y SDKs de anuncios** (Flutter M7, M11, M16, M21 y M22): Kotlin, Swift, Play Console, StoreKit, AdMob y LevelPlay no se pueden verificar sin dispositivos ni cuentas.
 - **Profundidad de lectura:** se leyó completo al menos un tema por módulo. El resto se revisó de forma parcial (lista de temas, Paso 4 y cierre). Los defectos que no aparecen en §3–§5 no garantizan que esos temas estén libres de ellos.
 - **Extracción automática de Angular:** se descartaron dos fallos atribuibles al extractor y no al contenido: el HTML separado de `tracking-panel.component.html` (modulo-1.md:654) y la ruta con comentario de `tarjeta.component.ts` (modulo-8.md:325). Este último se repitió a mano y el resultado fue NG8001.
+
+---
+
+## Correcciones aplicadas (specs/014)
+
+Fecha: 2026-11-18. Angular: cada bloque `// src/app/*.ts` tocado se copió a un proyecto limpio creado con `npx -y @angular/cli@22 new` (Angular 22.3, Vitest 5, TypeScript 6.0, más `@ngrx/store`, `@testing-library/angular`, `@angular/material@22`, `@angular/platform-server@22`, `vitest-axe`, `axe-core`) y se ejecutó `npx ng test --watch=false` por módulo: M1–M7 y M9–M15 en verde; M0 y M8 muestran a propósito `NG2011`/`NG8001` tal como está escrito y pasan al aplicar la corrección que indica el tema. El módulo 16 (Expo) no se ejecutó. Flutter: no hay SDK (proxy), así que todo se verificó contra docs.flutter.dev, dart.dev, riverpod.dev, pub.dev y el repositorio de dio; nada de Dart se ejecutó.
+
+| Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|
+| Bloqueante 1 · ningún ejercicio tiene solución (40 módulos) | pendiente: es la reescritura con soluciones plegadas de specs/013 P5, fuera del alcance de 014 | — |
+| Bloqueante 2 · código Angular que no compila con @angular/cli@22 (M0, M1, M3, M4, M5, M6, M8, M11, M14) | corregido | `ng test` en proyecto limpio Angular 22.3 (ver filas 15–25) |
+| Bloqueante 3 · `examples/flutter_rutaflow/.../delivery_list_screen.dart:170` `import` tras las declaraciones | corregido (import movido arriba; comentario residual eliminado) | lectura; regla de Dart «directives must appear before any declarations». `flutter analyze` del ejemplo pendiente: sin SDK |
+| Bloqueante 4 · errores técnicos base de Flutter | corregido (filas 1–14) | fuentes oficiales |
+| Bloqueante 5 · módulos duplicados 13/18, 14/19, 15/20 | pendiente: fusionar módulos es reescritura (specs/013 P5) | — |
+| Bloqueante 6 · contenido interno: flutter/modulo-17.md:23, flutter/modulo-15.md:707, angular/modulo-15.md:735 | corregido | grep de B2 sin coincidencias |
+| §5.1 Skia (flutter/modulo-12.md:188, 197, 209, 231) | corregido: Impeller en iOS/Android API 29+, Skia solo en web | docs.flutter.dev/perf/impeller |
+| «Completaste el track entero» (flutter/modulo-12.md:191) y tema «Cierre del track» antes de 10 módulos | corregido: «Llevas doce módulos…», tema renombrado «Retrospectiva del proyecto integrador» | lectura |
+| §5.2 deep links sin configuración (flutter/modulo-3.md:95, 107, 111, 142) | corregido: App Links (intent-filter `autoVerify`, `assetlinks.json`), Universal Links (`applinks:`, `apple-app-site-association`), web sin configuración; `flutter pub add go_router` y `MaterialApp.router` en los tres bloques | cookbooks set-up-app-links y set-up-universal-links de docs.flutter.dev |
+| §5.3 `flutter analyze` frente a layout (flutter/modulo-2.md:131) | corregido: se aclara que es error de ejecución y se propone widget test con `takeException()`; Paso 5 cita `Vertical viewport was given unbounded height.` | docs.flutter.dev/testing/common-errors; el widget test no se ejecutó (sin SDK) |
+| §5.4 `MediaQuery` = pantalla física (flutter/modulo-2.md:15, 28, 39) | corregido: `MediaQuery.sizeOf`, tamaño lógico de la ventana | api.flutter.dev MediaQuery.sizeOf y MediaQueryData.size |
+| §5.5 `StateProvider` con Riverpod 3 (flutter/modulo-4.md:89, 142, 166, 174, 661) | corregido: migrado a `Notifier`/`NotifierProvider`, nota sobre `legacy.dart`, `main()` completo y `flutter pub add flutter_riverpod` | riverpod.dev/docs/3.0_migration; constructor `NotifierProvider(create)` en pub.dev riverpod 3.5.0 |
+| §5.6 cola de refresh (flutter/modulo-5.md:318, 333–343) | corregido: compara el `Authorization` usado con el token vigente antes de refrescar | ejemplo oficial `queued_interceptor_crsftoken.dart` del repositorio cfug/dio |
+| §5.7 `compute` y closures (flutter/modulo-8.md:254) | corregido | docs.flutter.dev/perf/isolates; api.dart.dev SendPort.send |
+| §5.8 `compute` en web (flutter/modulo-8.md:283, 312) | corregido: en web corre en el hilo principal | docs.flutter.dev/perf/isolates |
+| §5.9 render en el isolate principal (flutter/modulo-8.md:243) | corregido: hilo de UI y hilo raster | docs.flutter.dev/perf/ui-performance («Review the threads») |
+| §5.10 error falso del analizador (flutter/modulo-0.md:287) | corregido: `The superclass 'Conductor' doesn't have a zero argument constructor.` | dart.dev/tools/diagnostic-messages (`no_default_super_constructor`) |
+| §5.11 Hive sin constructor ni adaptador (flutter/modulo-6.md:100–107) | corregido: constructor, `part`, `registerAdapter`, `Hive.initFlutter`, dependencias y aviso de que 2.2.3 es de 2022. Sustituir Hive en todo el módulo queda pendiente (reescritura) | pub.dev/packages/hive; no ejecutado |
+| §5.12 `SharedPreferences.getInstance()` (flutter/modulo-6.md:19, 52) | corregido: `SharedPreferencesAsync` | pub.dev/packages/shared_preferences 2.5.6 |
+| §5.13 Material obsoleto en 3.50 sin aviso (M0–M14) | corregido: aviso en flutter/modulo-0.md (entorno) y `flutter pub add material_ui` tras `dart fix` en flutter/modulo-15.md, Tema 7 | docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui |
+| §5.14 «Flutter 3.44, Dart 3.12.2» (flutter/modulo-13.md:379–383) | corregido: Flutter 3.50 (11-11-2026) con Dart 3.14, sin fecha de revisión de julio | docs.flutter.dev/release/whats-new |
+| §5.15 NG2011 (angular/modulo-0.md:179) | corregido: el tema espera `NG2011` en el build, corrige con la migración y usa `NG8001` como fallo deliberado | `ng test`: NG2011 tal como está; 3/3 tras corregir; NG8001 al quitar el import |
+| §5.16 NG0950 (angular/modulo-1.md:140) | corregido: `NG0950` con creación dinámica y `NG8008` para plantillas | `ng test`: mensaje `NG0950: Input "titulo" is required…`; `NG8008` reproducido con un padre sin input |
+| §5.17 NG0304 (angular/modulo-8.md:356) | corregido: `NG8001` en compilación, con `BadgeComponent` y la corrección | `ng test`: NG8001 tal como está; 5/5 tras corregir |
+| §5.18 `TestBed.runInInjectionContext(injector, fn)` (angular/modulo-4.md:259, 273) | corregido | `ng test` M4 8/8 |
+| §5.19 `render()` sin estado (angular/modulo-11.md:336; modulo-14.md:478) | corregido: `render(DeferBlockState.Error/Complete)`; se quitó el `if` que hacía pasar la prueba sin comprobar nada | `ng test` M11 7/7, M14 11/11 |
+| §5.20 `fakeAsync` sin zone.js (angular/modulo-5.md T2, modulo-6.md T1, T2, T4) | corregido: `vi.useFakeTimers()` / `vi.advanceTimersByTime()` | `ng test` M5 10/10, M6 7/7; los fallos deliberados (`100 ms`, `mergeMap`) siguen fallando como dice el texto |
+| §5.21 «TestBed por defecto, basado en Zone.js» (angular/modulo-11.md:485) | corregido | coherente con la línea 406 y con el proyecto de prueba, que no instala zone.js |
+| §5.22 regex `NullInjectorError` (angular/modulo-3.md:487) | corregido: `/NG0201/` y texto actualizado | `ng test` M3 9/9; mensaje `NG0201: No provider found for \`InjectionToken API_URL\`` |
+| §5.23 «`setInput` es la única forma» (angular/modulo-10.md:10, 139) | corregido: se añade la prueba con `inputBinding` | `ng test` M10 9/9 |
+| §5.24 `npx vitest run …` (angular/modulo-2.md:110, 249) | corregido: `npx ng test --watch=false --include …` | ejecutado: 2/2 en cada archivo |
+| §5.25 `vitest-axe` «oficial» y `toHaveNoViolations` (angular/modulo-14.md:40, 75) | corregido: se presenta como paquete de la comunidad 0.1.0 y se usa `expect(resultados.violations).toEqual([])` | `ng test` M14 11/11; al quitar `for` del label fallan 2 pruebas; README del paquete leído en node_modules |
+| §5.26 `@angular/animations` / `provideAnimations` (angular/modulo-15.md:6; modulo-8.md:116) | corregido en el texto. Pendiente: reescribir el Tema 4 de M15 con `animate.enter`/`animate.leave` y un token `PREFERS_REDUCED_MOTION` (reescritura del tema) | lectura |
+| Nuevo · angular/modulo-8.md T1: «sin `provideHttpClient()` → NullInjectorError» | corregido: `HttpClient` se inyecta por defecto desde v21; el ejemplo usa un servicio sin `providedIn` y espera `NG0201` | `ng test`: la versión original fallaba («expected [Function] to throw»); 4/4 tras corregir; angular.dev/guide/http/setup |
+| Nuevo · angular/modulo-11.md:65–80 `renderApplication(() => bootstrapApplication(...))` | corregido: se pasa el `BootstrapContext` | `ng test`: NG0401 antes y 7/7 después |
+| Nuevo · angular/modulo-1.md T5 `tracking-panel.component.css` citado y no dado (NG2008) | corregido: se añadió el archivo CSS | `ng test` M1 8/8 |
+| Nuevo · angular/modulo-2.md:750 prueba de `httpResource` | corregido: `value()?.id` (TS2532) y `await fixture.whenStable()` (antes recibía `undefined`) | `ng test` M2 9/9 |
+| Mayor · `cd` ausente tras `ng new` (angular M5–M7, M9, M10 y bloques `ng new ejemplo`) | corregido en todos los bloques e indicaciones en línea | lectura |
+| Mayor · `npm install -g @angular/cli` sin versión (angular/modulo-0.md:13, 19, 25) | corregido: `@angular/cli@22` | lectura |
+| Mayor · `jasmine.createSpy` (angular/modulo-1.md:464, modulo-2.md:124, modulo-4.md:399, 441, modulo-6.md:80–90, 483) | corregido: `vi.fn()` | `ng test` |
+| Mayor · prerrequisito futuro (angular/modulo-2.md:428) y voseo (modulo-2.md:608, 703 y otros cinco) | corregido | lectura |
+| Mayor · Vitest como «nuevo builder» (angular/modulo-10.md:304, 322, 437) | corregido: builder predeterminado `@angular/build:unit-test`, Karma heredado | angular.json del proyecto generado; angular.dev/guide/testing |
+| Mayor · secciones fechadas (angular/modulo-14.md:796) | corregido el título. La fecha de angular/modulo-12.md («julio de 2026») queda pendiente: no se verificó el estado de soporte actual | — |
+| Mayor · angular/modulo-16.md:41 «Crea» frente a «Abre», Expo 57 / RN 0.86 | corregido: se quitó «Crea», se marcó el tema como opcional y experimental y se fecharon las versiones (`npm view`: expo 58.0.26, react-native 0.88.1, template 0.24.0) | `npm view`; plantilla Expo no ejecutada |
+| Mayor · Pasos 7 vacíos: flutter/modulo-0.md:508, modulo-4.md:647, modulo-8.md:473, modulo-11.md:434; angular/modulo-1.md:990, modulo-10.md:618 | corregido: checklist de cuatro evidencias | lectura |
+| Mayor · flutter/modulo-1.md:184–202 `State` sin `build` y `Stack` suelto | corregido: `lib/main.dart` completo | lectura; no compilado (sin SDK) |
+| Mayor · flutter/modulo-9.md:224 prueba de integración sin `main` ni binding | corregido: archivo `integration_test/` completo, `flutter pub add "dev:integration_test:{sdk: flutter}"` y comando con `-d` | docs.flutter.dev/testing/integration-tests; no ejecutado |
+| Mayor · flutter/modulo-7.md `obtenerNivelReal()` indefinido, sin iOS ni `notImplemented` | corregido: `MainActivity.kt` y `AppDelegate.swift` completos (plantilla 3.41+ con `FlutterImplicitEngineDelegate`) y mención de Pigeon | docs.flutter.dev/platform-integration/platform-channels; no ejecutado |
+| Mayor · flutter/modulo-15.md T7 falta `flutter pub add material_ui` | corregido | guía de cambios incompatibles de 3.50 |
+| Mayor · flutter/modulo-19.md:5 frente a :14 (nombre de proyecto y Riverpod ^2.4.0) | corregido: un solo proyecto, `examples/flutter_rutaflow/`, y se aclara que fija Riverpod 2 | lectura del `pubspec.yaml` |
+| Mayor · versiones de Flutter dispersas (3.24, 3.38, 3.41, 3.47.2) | pendiente: requiere `specs/NNN-version-flutter.md` | — |
+| Mayor · 22 temas de Flutter sin código (M14, M20, M21 con `play_entitlement_test.dart`, M22) | pendiente: escribir código nuevo sin SDK no cumple la regla de exactitud | — |
+| Mayor · orden roto (angular/modulo-4.md:584–611, flutter/modulo-6.md:283) y voseo en Flutter M0–M15 | pendiente: reordenamiento y estilo (specs/013 P5); las líneas editadas ya usan tú | — |
+| Mayor · angular/modulo-15.md T4: setter de prueba que no prueba `matchMedia` | pendiente: reescritura del tema (ver §5.26) | — |

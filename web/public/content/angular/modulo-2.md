@@ -107,7 +107,7 @@ describe('computed() memoiza realmente (conteo exacto de invocaciones)', () => {
 ```
 
 ```bash
-npx vitest run src/app/estado-pedido.spec.ts
+npx ng test --watch=false --include src/app/estado-pedido.spec.ts
 ```
 
 **Resultado esperado:** ambos tests pasan; el espía `calculo` (una función REAL envuelta con `vi.fn()`, no una simulación de su comportamiento) confirma con un conteo exacto que `computed()` memoiza genuinamente: 3 lecturas sin cambios producen 1 sola invocación real, y 2 cambios reales de la dependencia producen exactamente 2 recálculos adicionales, nunca más.
@@ -121,7 +121,7 @@ npx vitest run src/app/estado-pedido.spec.ts
 3. Escribe un test que confirme, con `TestBed.runInInjectionContext`, que un `effect()` real se dispara automáticamente cuando su dependencia cambia, contando invocaciones con un espía.
 4. Escribe de memoria (sin mirar) un `signal` y un `computed()` con un espía que confirme memoización real mediante conteo exacto de invocaciones. Compara después contra el patrón del Paso 4.
 
-**Pista:** `vi.fn()` (o `jasmine.createSpy()`) envuelve una función real preservando su comportamiento, pero además registra cada invocación — `toHaveBeenCalledTimes(n)` es la aserción que convierte "memoiza" de una afirmación teórica a un número exacto y verificable.
+**Pista:** `vi.fn()` envuelve una función real preservando su comportamiento, pero además registra cada invocación — `toHaveBeenCalledTimes(n)` es la aserción que convierte "memoiza" de una afirmación teórica a un número exacto y verificable.
 
 #### Paso 6 · Práctica independiente
 
@@ -188,7 +188,7 @@ tareas.update(lista => [...lista, nuevaTarea]);
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-inmutabilidad --standalone --skip-git --defaults`), crea `src/app/lista-paquetes.ts`:
+Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-inmutabilidad --standalone --skip-git --defaults` y luego `cd demo-inmutabilidad`), crea `src/app/lista-paquetes.ts`:
 
 ```bash
 mkdir -p src/app
@@ -246,7 +246,7 @@ describe('Mutacion in-place vs actualizacion inmutable (conteo real)', () => {
 ```
 
 ```bash
-npx vitest run src/app/lista-paquetes.spec.ts
+npx ng test --watch=false --include src/app/lista-paquetes.spec.ts
 ```
 
 **Resultado esperado:** ambos tests pasan; el primero confirma con un conteo REAL que mutar con `push()` deja al `computed()` completamente ciego al cambio (cero invocaciones adicionales, valor viejo `0`); el segundo confirma que `update()` con una nueva referencia dispara el recálculo real, reflejando el valor correcto `1`.
@@ -330,7 +330,7 @@ const observableDeVuelta = toObservable(unSignal);
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tosignal --standalone --skip-git --defaults`), crea `src/app/estado-conexion.ts`:
+Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-tosignal --standalone --skip-git --defaults` y luego `cd demo-tosignal`), crea `src/app/estado-conexion.ts`:
 
 ```bash
 mkdir -p src/app
@@ -425,7 +425,7 @@ Ya confirmas, con los puentes oficiales reales `toSignal()`/`toObservable()`, qu
 
 Al finalizar podrás confirmar, con espías reales contando invocaciones sobre DOS signals independientes, que el grafo de dependencias de signals es preciso: un `effect()` solo se dispara por el signal específico del que depende, nunca por cambios en signals no relacionados — la base real que hace viable eliminar Zone.js.
 
-**Conocimiento previo:** Temas 1-3 de este módulo; Módulo 11 de este track (SSR y zoneless en la práctica).
+**Conocimiento previo:** Temas 1-3 de este módulo. El Módulo 11 retoma zoneless en profundidad.
 
 #### Paso 2 · Contexto y caso real
 
@@ -456,7 +456,7 @@ Adoptar zoneless no es simplemente activar una bandera de configuración sin nin
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-precision --standalone --skip-git --defaults`), crea `src/app/estado-independiente.ts`. La función recibe dos callbacks (`alCambiarPedido`, `alCambiarFiltro`) en vez de crear sus propios espías: el código de producción nunca debe depender de utilidades de testing, así que quien llama decide qué ocurre en cada cambio, y es el test quien, más abajo, pasa espías reales como esos callbacks:
+Continuando en `demo-signals` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-precision --standalone --skip-git --defaults` y luego `cd demo-precision`), crea `src/app/estado-independiente.ts`. La función recibe dos callbacks (`alCambiarPedido`, `alCambiarFiltro`) en vez de crear sus propios espías: el código de producción nunca debe depender de utilidades de testing, así que quien llama decide qué ocurre en cada cambio, y es el test quien, más abajo, pasa espías reales como esos callbacks:
 
 ```bash
 mkdir -p src/app
@@ -582,6 +582,7 @@ flowchart LR
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/carrito/cantidad.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 
@@ -605,15 +606,15 @@ Abre http://localhost:4200; corre las pruebas con `ng test`.
 
 **Resultado esperado:** el usuario escribe `3` en el input, `cantidad()` pasa a valer `3` (sobrescritura manual); mientras `stockDisponible` no cambie, `cantidad()` se mantiene en `3`. En cuanto `stockDisponible` cambia (de 5 a 0 porque se agotó el stock), `cantidad()` se recalcula automáticamente a `0`, descartando la sobrescritura de `3` sin que nadie llame a `.set()` manualmente para resetearla.
 
-**Fallo deliberado:** reemplazá `linkedSignal` por un `computed()` normal y agregá un signal separado para "sobrescribir" la cantidad. Ese es el fallo: ahora hay que sincronizar manualmente DOS signals (el computed y el override) con lógica adicional para decidir cuál mostrar y cuándo resetear el override, exactamente la complejidad que `linkedSignal` resuelve con una sola declaración.
+**Fallo deliberado:** reemplaza `linkedSignal` por un `computed()` normal y agrega un signal separado para "sobrescribir" la cantidad. Ese es el fallo: ahora hay que sincronizar manualmente DOS signals (el computed y el override) con lógica adicional para decidir cuál mostrar y cuándo resetear el override, exactamente la complejidad que `linkedSignal` resuelve con una sola declaración.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
-1. Agregá un test que confirme explícitamente que tras `cantidad.set(3)`, cambiar `stockDisponible` a `0` resetea `cantidad()` a `0` sin ninguna llamada manual adicional.
-2. Documentá, en un comentario, qué pasaría si `linkedSignal` NO existiera y tuvieras que mantener manualmente la sincronización entre el valor calculado y el override del usuario.
+1. Agrega un test que confirme explícitamente que tras `cantidad.set(3)`, cambiar `stockDisponible` a `0` resetea `cantidad()` a `0` sin ninguna llamada manual adicional.
+2. Documenta, en un comentario, qué pasaría si `linkedSignal` NO existiera y tuvieras que mantener manualmente la sincronización entre el valor calculado y el override del usuario.
 3. Escribe de memoria (sin mirar) un `linkedSignal` derivado de otro signal, con su reseteo automático confirmado por un test. Compara después contra el Paso 4.
 
-**Pista:** `linkedSignal` resetea su valor completo (no lo combina) con el nuevo resultado calculado — si necesitás preservar parte del override anterior, tenés que escribir esa lógica explícitamente dentro de la función de cómputo.
+**Pista:** `linkedSignal` resetea su valor completo (no lo combina) con el nuevo resultado calculado — si necesitás preservar parte del override anterior, tienes que escribir esa lógica explícitamente dentro de la función de cómputo.
 
 #### Paso 6 · Práctica independiente
 
@@ -627,7 +628,7 @@ cantidad = linkedSignal(____);
 
 #### Paso 7 · Cierre
 
-Ya usás `linkedSignal` para estado derivado pero sobrescribible, confirmado con un test de reseteo automático; este mismo patrón es el que usará el carrito del proyecto propio del track para cantidades editables ligadas al stock real. El siguiente tema usa `resource()` para traer datos asíncronos reactivos ligados a un signal. Fuentes oficiales: [Angular — linkedSignal](https://angular.dev/guide/signals/linked-signal).
+Ya usas `linkedSignal` para estado derivado pero sobrescribible, confirmado con un test de reseteo automático; este mismo patrón es el que usará el carrito del proyecto propio del track para cantidades editables ligadas al stock real. El siguiente tema usa `resource()` para traer datos asíncronos reactivos ligados a un signal. Fuentes oficiales: [Angular — linkedSignal](https://angular.dev/guide/signals/linked-signal).
 
 **Errores comunes:** usar `computed()` cuando el valor necesita ser sobrescribible por el usuario; sincronizar manualmente un signal derivado con un signal de "override" en vez de usar `linkedSignal`.
 
@@ -673,6 +674,7 @@ sequenceDiagram
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 ```ts
@@ -700,7 +702,7 @@ Abre http://localhost:4200; corre las pruebas con `ng test`.
 
 **Resultado esperado:** cambiar `conductorId.set('c-2')` mientras la petición de `c-1` todavía está en curso descarta automáticamente esa respuesta pendiente cuando finalmente llega, y solo `conductor.value()` refleja los datos de `c-2`, sin ninguna condición de carrera ni código manual de cancelación.
 
-**Fallo deliberado:** reemplazá `resource()` por un `effect()` manual que llame a `fetch()` directamente y asigne el resultado a un signal con `.set()`, sin ningún mecanismo de cancelación. Simulá una respuesta lenta para `c-1` (con un delay artificial) y cambiá rápido a `c-2` (con una respuesta rápida) — el signal termina mostrando los datos de `c-1`, porque su respuesta, aunque pedida primero, llegó después y sobrescribió sin control los datos correctos de `c-2`.
+**Fallo deliberado:** reemplaza `resource()` por un `effect()` manual que llame a `fetch()` directamente y asigne el resultado a un signal con `.set()`, sin ningún mecanismo de cancelación. Simula una respuesta lenta para `c-1` (con un delay artificial) y cambia rápido a `c-2` (con una respuesta rápida) — el signal termina mostrando los datos de `c-1`, porque su respuesta, aunque pedida primero, llegó después y sobrescribió sin control los datos correctos de `c-2`.
 
 **`httpResource()` — la misma garantía integrada con `HttpClient`.** `resource()` con `fetch()` manual (como arriba) funciona, pero pierde la integración con `HttpClient` (interceptores, `provideHttpClientTesting()` en tests, etc.). `httpResource()` resuelve exactamente el mismo problema de condición de carrera, con la misma API de `.value()`/`.isLoading()`/`.error()`, pero usando `HttpClient` por debajo:
 
@@ -735,7 +737,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ConductorPanel } from './conductor-panel';
 
 describe('httpResource descarta respuestas obsoletas', () => {
-  it('conserva el valor del id más reciente aunque su respuesta llegue primero', () => {
+  it('conserva el valor del id más reciente aunque su respuesta llegue primero', async () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -746,8 +748,9 @@ describe('httpResource descarta respuestas obsoletas', () => {
 
     const peticiones = http.match(() => true);
     peticiones[peticiones.length - 1].flush({ id: 'c-2', nombre: 'Rocío' });
+    await fixture.whenStable(); // deja que la respuesta llegue al httpResource
 
-    expect(fixture.componentInstance.conductor.value().id).toBe('c-2');
+    expect(fixture.componentInstance.conductor.value()?.id).toBe('c-2');
     http.verify();
   });
 });
@@ -757,8 +760,8 @@ describe('httpResource descarta respuestas obsoletas', () => {
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
-1. Agregá un test que simule exactamente esa carrera (respuesta lenta para la primera petición, rápida para la segunda) confirmando que el valor final corresponde siempre a la petición más reciente.
-2. Documentá, basándote en el Paso 3, la diferencia entre `conductor.isLoading()` siendo `true` y `conductor.value()` todavía en su estado inicial antes de la primera carga.
+1. Agrega un test que simule exactamente esa carrera (respuesta lenta para la primera petición, rápida para la segunda) confirmando que el valor final corresponde siempre a la petición más reciente.
+2. Documenta, basándote en el Paso 3, la diferencia entre `conductor.isLoading()` siendo `true` y `conductor.value()` todavía en su estado inicial antes de la primera carga.
 3. Escribe de memoria (sin mirar) un `resource()` ligado a un signal de entrada, con un test que confirme que descarta una respuesta obsoleta. Compara después contra el Paso 4.
 
 **Pista:** `effect()` + `fetch()` manual no previene por sí solo que una respuesta obsoleta sobrescriba una más reciente; esa garantía específica es exactamente lo que `resource()` resuelve internamente.
@@ -775,7 +778,7 @@ conductor = resource({ ____: () => this.conductorId(), loader: /* ... */ });
 
 #### Paso 7 · Cierre
 
-Ya usás `resource()` y `httpResource()` para datos asíncronos ligados reactivamente a un signal, confirmado con tests que reproducen y corrigen la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, el módulo de interceptores (Módulo 7) profundiza en `HttpClient` para peticiones que no se modelan como `resource()` (mutaciones, envíos de formulario). Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/http/http-resource).
+Ya usas `resource()` y `httpResource()` para datos asíncronos ligados reactivamente a un signal, confirmado con tests que reproducen y corrigen la condición de carrera de respuestas obsoletas; esta misma garantía es la que necesitará el proyecto propio del track al cargar datos de un conductor o pedido seleccionado dinámicamente. Esto cierra el módulo de signals; como siguiente paso, el módulo de interceptores (Módulo 7) profundiza en `HttpClient` para peticiones que no se modelan como `resource()` (mutaciones, envíos de formulario). Fuentes oficiales: [Angular — resource](https://angular.dev/guide/signals/resource) y [Angular — httpResource](https://angular.dev/guide/http/http-resource).
 
 **Errores comunes:** usar `effect()`+`fetch()` manual para datos reactivos sin ningún mecanismo de cancelación de respuestas obsoletas; no distinguir `isLoading()` de un `value()` todavía en su estado inicial.
 

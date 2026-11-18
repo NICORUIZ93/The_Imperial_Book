@@ -72,7 +72,8 @@ import { ResumenEnvioComponent } from './resumen-envio.component';
 describe('SSR con renderApplication', () => {
   it('el HTML generado por el servidor ya contiene el contenido, sin ejecutar JS de cliente', async () => {
     const html = await renderApplication(
-      () => bootstrapApplication(ResumenEnvioComponent),
+      // en Angular 22, en el servidor bootstrapApplication debe recibir el BootstrapContext (si no: NG0401)
+      (context) => bootstrapApplication(ResumenEnvioComponent, { providers: [] }, context),
       { document: '<app-resumen-envio></app-resumen-envio>' }
     );
 
@@ -105,7 +106,7 @@ npx ng test --watch=false
 
 ```ts
 const html = await ____(
-  () => bootstrapApplication(ResumenEnvioComponent),
+  (context) => bootstrapApplication(ResumenEnvioComponent, { providers: [] }, context),
   { document: '<app-resumen-envio></app-resumen-envio>' }
 );
 ```
@@ -153,7 +154,7 @@ La hidratación "toma posesión" del HTML ya existente: adjunta listeners de eve
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-hidratacion --standalone --skip-git --defaults --ssr`), crea `src/app/marca-tiempo.component.ts`:
+Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-hidratacion --standalone --skip-git --defaults --ssr` y luego `cd demo-hidratacion`), crea `src/app/marca-tiempo.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -291,7 +292,7 @@ stateDiagram-v2
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-defer-error --standalone --skip-git --defaults`), crea `src/app/grafico-diferido.component.ts`:
+Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-defer-error --standalone --skip-git --defaults` y luego `cd demo-defer-error`), crea `src/app/grafico-diferido.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -323,7 +324,7 @@ Confirma con la API de test de bloques diferidos que el estado `Error` se maneja
 
 ```ts
 // src/app/grafico-diferido.component.spec.ts
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { GraficoDiferidoComponent } from './grafico-diferido.component';
 
 describe('GraficoDiferidoComponent', () => {
@@ -333,10 +334,8 @@ describe('GraficoDiferidoComponent', () => {
     fixture.detectChanges();
 
     const [bloqueDeferido] = await fixture.getDeferBlocks();
-    await bloqueDeferido.render(); // por defecto simula el estado Complete; forzamos Error explicitamente abajo
 
-    // la API real de Angular permite forzar el estado Error para probar ese camino sin una falla de red real
-    const DeferBlockState = (await import('@angular/core/testing')).DeferBlockState;
+    // render(estado) exige el estado: aquí forzamos Error para probar ese camino sin una falla de red real
     await bloqueDeferido.render(DeferBlockState.Error);
     fixture.detectChanges();
 
@@ -418,7 +417,7 @@ Cuando el estado de una aplicación está modelado con signals, cada uno notific
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-zoneless --standalone --skip-git --defaults`), crea `src/app/contador-zoneless.component.ts`:
+Continuando en `demo-ssr` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-zoneless --standalone --skip-git --defaults` y luego `cd demo-zoneless`), crea `src/app/contador-zoneless.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -482,7 +481,7 @@ npx ng test --watch=false
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un segundo signal derivado con `computed()` y confirma que también se actualiza correctamente en modo zoneless tras `whenStable()`.
-2. Compara, documentando la diferencia en un comentario, el mismo test SIN `provideZonelessChangeDetection()` (usando el TestBed por defecto, basado en Zone.js) — confirma que también funciona, pero por un mecanismo distinto (Zone.js interceptando el cambio, en vez de la precisión directa de signals).
+2. Documenta en un comentario qué cambia si quitas `provideZonelessChangeDetection()` del test: en un proyecto creado con Angular 21 o posterior el TestBed ya es zoneless por defecto (el proyecto no instala `zone.js`), así que la prueba sigue pasando por el mismo mecanismo; solo un proyecto que todavía cargue `zone.js` usaría la detección basada en zonas.
 3. Simula una actualización mediante `setTimeout` (una operación async que Zone.js SÍ interceptaría automáticamente) dentro del componente, y confirma que en modo zoneless también funciona correctamente con `whenStable()`, sin necesitar ninguna intercepción de Zone.js.
 4. Escribe de memoria (sin mirar) un componente con un signal, configurado con `provideZonelessChangeDetection()`, y un test que confirme la actualización del DOM tras `whenStable()`. Compara después contra el patrón del Paso 4.
 

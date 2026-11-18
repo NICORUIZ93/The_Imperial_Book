@@ -547,6 +547,7 @@ flutter --version
 flutter test > evidencia-antes.txt || true
 dart migrate --dry-run
 dart fix --apply --code=migrate_design_widgets
+flutter pub add material_ui   # si dart fix no lo agregó a pubspec.yaml (y cupertino_ui si usas Cupertino)
 git diff --stat
 flutter analyze
 flutter test
@@ -703,11 +704,3 @@ Activa App Check en el proyecto y en la app, y demuestra que una petición sin t
 **Transferencia al proyecto integrador «App de entregas»:** resume la nota de cada envío al cargar la ruta del día y guarda el resultado en caché local.
 
 **Fuente oficial:** [Firebase AI Logic: primeros pasos con Flutter](https://firebase.google.com/docs/ai-logic/get-started?platform=flutter) y [Flutter AI Toolkit](https://docs.flutter.dev/ai/ai-toolkit).
-
-## Trazabilidad de la auditoría original
-
-- **Pruebas en Flutter**: cubierto en los Temas 1 (WidgetTester) y 2 (pumpAndSettle, golden e integration tests) de este módulo.
-- **Rendimiento en Flutter**: cubierto en el Tema 3 (RepaintBoundary y Keys) de este módulo.
-- **Clean Architecture**: cubierto en el Tema 4 de este módulo.
-- **Internacionalización**: cubierto en el Tema 5 de este módulo.
-- **Despliegue**: cubierto en el Tema 6 (builds, firma y despliegue) de este módulo.

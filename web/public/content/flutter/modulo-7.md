@@ -6,7 +6,7 @@
 ### Tema 1: MethodChannel
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a crear un `MethodChannel` que consulte el nivel de batería del dispositivo, implementado tanto en Android (Kotlin) como en iOS (Swift). Prerrequisitos: Módulo 6 completo.
+Al finalizar vas a crear un `MethodChannel` que consulte el nivel de batería del dispositivo (el Paso 3 lo introduce con un canal más simple que lee la versión del sistema operativo), implementado tanto en Android (Kotlin) como en iOS (Swift). Prerrequisitos: Módulo 6 completo.
 
 #### Paso 2 · Contexto y caso real
 Flutter no tiene acceso directo a las APIs nativas de batería de cada sistema operativo — necesitás un puente explícito que invoque código Kotlin en Android y Swift en iOS, cada uno con su propia forma de leer ese dato, para avisarle al conductor que cargue el teléfono antes de iniciar una ruta larga.
@@ -87,12 +87,75 @@ flutter run
 ```
 Para las pruebas de widget: `flutter test`.
 
+Reemplaza `android/app/src/main/kotlin/<tu/paquete>/MainActivity.kt` (conserva la línea `package` que generó `flutter create`):
+
 ```kotlin
-MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rutaflow/bateria")
-    .setMethodCallHandler { call, result ->
-        if (call.method == "obtenerNivelBateria") result.success(obtenerNivelReal())
+import android.content.Context
+import android.os.BatteryManager
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+
+class MainActivity : FlutterActivity() {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.rutaflow/bateria")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "obtenerNivelBateria") {
+                    val nivel = obtenerNivelReal()
+                    if (nivel != -1) result.success(nivel)
+                    else result.error("NO_DISPONIBLE", "Nivel de batería no disponible.", null)
+                } else {
+                    result.notImplemented()
+                }
+            }
     }
+
+    private fun obtenerNivelReal(): Int {
+        val bateria = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+        return bateria.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+    }
+}
 ```
+
+Y en iOS, `ios/Runner/AppDelegate.swift` (plantilla de Flutter 3.41+ con `UISceneDelegate`, según la guía oficial):
+
+```swift
+import Flutter
+import UIKit
+
+@main
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    let canal = FlutterMethodChannel(
+      name: "com.rutaflow/bateria",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    canal.setMethodCallHandler { [weak self] call, result in
+      guard call.method == "obtenerNivelBateria" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      self?.obtenerNivelReal(result: result)
+    }
+  }
+
+  private func obtenerNivelReal(result: FlutterResult) {
+    let dispositivo = UIDevice.current
+    dispositivo.isBatteryMonitoringEnabled = true
+    if dispositivo.batteryState == .unknown {
+      result(FlutterError(code: "NO_DISPONIBLE", message: "Nivel de batería no disponible.", details: nil))
+    } else {
+      result(Int(dispositivo.batteryLevel * 100))
+    }
+  }
+}
+```
+
+Si tu `AppDelegate.swift` generado es distinto (versiones anteriores a 3.41), conserva su estructura y agrega solo el canal; la guía oficial muestra ambas variantes: https://docs.flutter.dev/platform-integration/platform-channels. Para canales con tipos verificados en ambos lados, el paquete oficial `pigeon` genera este código por ti.
+
 Resultado esperado: llamar a `canal.invokeMethod<int>('obtenerNivelBateria')` desde Dart dispara la lógica nativa de Android, que lee el nivel real de batería del dispositivo y lo devuelve a Dart de forma asíncrona.
 
 #### Paso 5 · Práctica guiada

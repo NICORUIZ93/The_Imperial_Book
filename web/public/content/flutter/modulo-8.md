@@ -240,7 +240,7 @@ Al finalizar podrás mover un cálculo pesado a un **isolate** con `compute()` p
 En RutaFlow, procesar el historial completo de posiciones GPS de un repartidor para calcular estadísticas (distancia total, tiempo detenido) es un cálculo pesado. Si lo haces en el hilo principal, la UI se **congela** varios segundos: los botones no responden y la animación se traba. Un isolate hace ese trabajo en paralelo, y la interfaz sigue fluida.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Dart es de un solo hilo: todo tu código (incluido el render) corre en el **isolate principal**. `async/await` sirve para esperar operaciones de E/S (red, disco) sin bloquear, pero NO para trabajo de CPU: un bucle que tritura números durante 3 segundos bloquea el hilo aunque sea `async`. Un **isolate** es un hilo de ejecución independiente con su propia memoria; `compute(funcion, dato)` ejecuta `funcion` en un isolate aparte y devuelve el resultado sin tocar la UI.
+Dart ejecuta tu código en un solo hilo: todo tu código Dart (y el del framework: `build`, layout, pintado del árbol de capas) corre en el **isolate principal**, sobre el hilo de UI. La rasterización hacia la GPU ocurre aparte, en el hilo *raster* (ahí corren Impeller o Skia), pero depende de que el hilo de UI le entregue cada frame a tiempo. `async/await` sirve para esperar operaciones de E/S (red, disco) sin bloquear, pero NO para trabajo de CPU: un bucle que tritura números durante 3 segundos bloquea el hilo aunque sea `async`. Un **isolate** es un hilo de ejecución independiente con su propia memoria; `compute(funcion, dato)` ejecuta `funcion` en un isolate aparte y devuelve el resultado sin tocar la UI.
 
 **Analogía:** el isolate principal es un cocinero que también atiende a los clientes. Si se pone a pelar 10 kg de papas (trabajo de CPU), nadie es atendido. Un isolate es un segundo cocinero en otra cocina: pela las papas en paralelo mientras el primero sigue atendiendo. No comparten la misma tabla (memoria), se pasan los resultados por una ventanilla (mensajes).
 
@@ -251,7 +251,7 @@ Dart es de un solo hilo: todo tu código (incluido el render) corre en el **isol
 
 ---
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** pasar a `compute()` un método de instancia o una función anidada en vez de una función top-level o `static` como `sumaPesada` — el isolate nuevo no puede copiar referencias como `this`, así que `compute` falla al intentar enviar la función en vez de simplemente ejecutarla.
+**Errores comunes:** pasar a `compute()` (o a `Isolate.run`) una closure que captura objetos que no se pueden enviar a otro isolate —un `Socket`, un `ReceivePort` o un `this` que los contiene—: todo lo que la función captura se copia al isolate nuevo, y si algo no es enviable la llamada falla. `compute` sí acepta closures y métodos (en móvil y escritorio `await compute(fun, msg)` equivale a `await Isolate.run(() => fun(msg))`), pero una función top-level o `static` como `sumaPesada` deja claro que no arrastra estado. Otro error: suponer que `compute` libera la UI en Flutter web: allí no hay isolates y `compute` corre en el hilo principal.
 **Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
 
 #### Paso 4 · Demostración guiada desde cero
@@ -280,7 +280,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
 
   Future<void> calcular() async {
     setState(() => estado = 'Calculando…');
-    // compute() corre sumaPesada en un ISOLATE aparte: la UI NO se congela.
+    // compute() corre sumaPesada en un ISOLATE aparte (móvil y escritorio): la UI NO se congela.
     final resultado = await compute(sumaPesada, 500000000);
     setState(() => estado = 'Resultado: $resultado');
   }
@@ -309,7 +309,7 @@ cd demo_flutter
 flutter run
 ```
 
-**Resultado esperado:** al pulsar "Calcular", el texto cambia a "Calculando…" y, tras un momento, muestra el resultado — y durante todo ese tiempo la interfaz sigue respondiendo (puedes seguir interactuando, no hay jank). **Fallo deliberado:** reemplaza `await compute(sumaPesada, 500000000)` por una llamada directa `final resultado = sumaPesada(500000000);`. Ahora, al pulsar el botón, la UI se **congela** completamente durante el cálculo: el texto "Calculando…" ni siquiera llega a pintarse hasta que termina. Confirma con el DevTools (Tema 2) el frame gigante bloqueado, y diagnostica por qué `async` no salvó a la UI: el trabajo era de CPU, no de E/S.
+**Resultado esperado:** al pulsar "Calcular", el texto cambia a "Calculando…" y, tras un momento, muestra el resultado — y durante todo ese tiempo la interfaz sigue respondiendo (puedes seguir interactuando, no hay jank). Ejecútalo en Android, iOS o escritorio: en Flutter web (Chrome) no hay isolates y `compute` corre en el hilo principal, así que ahí la UI también se congela. **Fallo deliberado:** reemplaza `await compute(sumaPesada, 500000000)` por una llamada directa `final resultado = sumaPesada(500000000);`. Ahora, al pulsar el botón, la UI se **congela** completamente durante el cálculo: el texto "Calculando…" ni siquiera llega a pintarse hasta que termina. Confirma con el DevTools (Tema 2) el frame gigante bloqueado, y diagnostica por qué `async` no salvó a la UI: el trabajo era de CPU, no de E/S.
 
 #### Paso 5 · Práctica guiada
 Añade un `CircularProgressIndicator` girando mientras `estado == 'Calculando…'`. Con `compute`, el spinner gira suavemente; con la versión directa (fallo deliberado), el spinner se congela. Pista: el spinner es la prueba visual más clara de si el hilo de UI está libre.
@@ -471,7 +471,14 @@ Agrega un parámetro `fallidas` y dibuja en rojo las paradas fallidas. Actualiza
 Anima el avance con un `AnimationController` pasando `repaint: animacion` al `CustomPainter`, y mide con Flutter DevTools que solo se repinta la capa del `RepaintBoundary`.
 
 #### Paso 7 · Cierre
+Antes de seguir, confirma estas cuatro evidencias:
 
+- [ ] `flutter test` pasa con las dos pruebas del Paso 4 y la primera falla al forzar `shouldRepaint` a `false`.
+- [ ] Las paradas fallidas del Paso 5 se dibujan en rojo y `shouldRepaint` y la etiqueta semántica incluyen `fallidas`.
+- [ ] En DevTools ves que, al animar (Paso 6), solo se repinta la capa del `RepaintBoundary`.
+- [ ] Puedes explicar con tus palabras por qué `shouldRepaint` debe comparar todos los campos que cambian el dibujo.
+
+Fuentes oficiales: https://api.flutter.dev/flutter/rendering/CustomPainter-class.html y https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html.
 
 ## Laboratorio práctico
 

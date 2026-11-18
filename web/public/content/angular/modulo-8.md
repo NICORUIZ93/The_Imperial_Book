@@ -9,7 +9,7 @@ Cada tema verifica su garantía con código real: un error de DI genuino de Angu
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con un error real de inyección de dependencias de Angular (`NullInjectorError`), que `bootstrapApplication` y `ApplicationConfig` reemplazan completamente al `AppModule`: sin ningún módulo central que "arrastre" providers implícitamente, cada provider debe declararse explícitamente o la aplicación falla al iniciar.
+Al finalizar podrás confirmar, con un error real de inyección de dependencias de Angular (`NG0201`), que `bootstrapApplication` y `ApplicationConfig` reemplazan completamente al `AppModule`: sin ningún módulo central que "arrastre" providers implícitamente, cada provider debe declararse explícitamente o la aplicación falla al iniciar.
 
 **Conocimiento previo:** Módulo 0 de este track (standalone components); Módulo 4 (providers e inyección de dependencias).
 
@@ -19,7 +19,7 @@ Al finalizar podrás confirmar, con un error real de inyección de dependencias 
 
 #### Paso 3 · Teoría con analogía
 
-**Conceptos clave:** `bootstrapApplication`, ausencia de `AppModule`, `ApplicationConfig`, `NullInjectorError`.
+**Conceptos clave:** `bootstrapApplication`, ausencia de `AppModule`, `ApplicationConfig`, `NG0201`.
 
 Antes de que existieran los standalone components (Módulo 0), toda aplicación Angular requería un `AppModule` raíz decorado con `@NgModule({ declarations: [...], imports: [...], bootstrap: [AppComponent] })`, que actuaba como el punto de entrada obligatorio de la aplicación, declarando explícitamente qué componentes pertenecían a ese módulo y qué otros módulos importaba. Con `bootstrapApplication(App, appConfig)` en `main.ts`, ese `AppModule` raíz desaparece por completo: el componente raíz se arranca directamente, y su configuración global (proveedores de routing, HTTP, animaciones, etc.) se declara en un objeto `ApplicationConfig` plano (típicamente en `app.config.ts`), sin ninguna clase de módulo de por medio.
 
@@ -60,12 +60,18 @@ cd demo-standalone
 npx -y @angular/cli@22 new . --standalone --style=css --routing=false --skip-git --defaults
 ```
 
-Crea `src/app/panel-entregas.component.ts`, que depende de `HttpClient` para confirmar que la inyección de dependencias real requiere el provider explícito:
+> **Angular 21+:** `HttpClient` ya se puede inyectar sin declarar `provideHttpClient()`; esa función sigue sirviendo para **configurarlo** (`withInterceptors`, `withFetch`…). Por eso este ejemplo usa un servicio propio sin `providedIn`, que sí exige un provider explícito (fuente: https://angular.dev/guide/http/setup).
+
+Crea `src/app/panel-entregas.component.ts`, que depende de un servicio sin `providedIn` para confirmar que la inyección de dependencias real requiere el provider explícito:
 
 ```ts
 // src/app/panel-entregas.component.ts
-import { Component, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, Injectable, inject } from '@angular/core';
+
+@Injectable() // sin providedIn: alguien debe declararlo en providers
+export class TarifasService {
+  base = 4500;
+}
 
 @Component({
   selector: 'app-panel-entregas',
@@ -73,29 +79,28 @@ import { HttpClient } from '@angular/common/http';
   template: `<p>Panel de entregas listo</p>`,
 })
 export class PanelEntregasComponent {
-  private http = inject(HttpClient); // requiere provideHttpClient() en ApplicationConfig
+  private tarifas = inject(TarifasService); // requiere TarifasService en ApplicationConfig
 }
 ```
 
-Confirma con un test real que, sin `provideHttpClient()` en los providers, Angular lanza un `NullInjectorError` genuino al intentar crear el componente:
+Confirma con un test real que, sin `TarifasService` en los providers, Angular lanza el error de inyección `NG0201` al intentar crear el componente:
 
 ```ts
 // src/app/panel-entregas.component.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { PanelEntregasComponent } from './panel-entregas.component';
+import { PanelEntregasComponent, TarifasService } from './panel-entregas.component';
 
 describe('PanelEntregasComponent y ApplicationConfig', () => {
-  it('SIN provideHttpClient(), crear el componente lanza NullInjectorError real', () => {
+  it('SIN el provider, crear el componente lanza NG0201 real', () => {
     TestBed.configureTestingModule({ imports: [PanelEntregasComponent], providers: [] });
 
-    expect(() => TestBed.createComponent(PanelEntregasComponent)).toThrowError(/NullInjectorError|No provider for HttpClient/);
+    expect(() => TestBed.createComponent(PanelEntregasComponent)).toThrowError(/NG0201/);
   });
 
-  it('CON provideHttpClient() explicito, el componente se crea sin errores', () => {
+  it('CON el provider explicito, el componente se crea sin errores', () => {
     TestBed.configureTestingModule({
       imports: [PanelEntregasComponent],
-      providers: [provideHttpClient()],
+      providers: [TarifasService],
     });
 
     expect(() => TestBed.createComponent(PanelEntregasComponent)).not.toThrow();
@@ -107,34 +112,34 @@ describe('PanelEntregasComponent y ApplicationConfig', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza un `NullInjectorError` REAL (no simulado) cuando falta `provideHttpClient()` en los providers, exactamente el mismo tipo de error que aparecería en producción sin ese provider — sin ningún `AppModule` que "recuerde" configurarlo implícitamente. El segundo confirma que declararlo explícitamente resuelve el error.
+**Resultado esperado:** ambos tests pasan; el primero confirma que Angular lanza `NG0201: No provider found for ...` (con el nombre de la clase; en las pruebas puede verse como `_TarifasService` por cómo el empaquetador renombra clases) cuando falta `TarifasService` en los providers, exactamente el mismo tipo de error que aparecería en producción sin ese provider — sin ningún `AppModule` que "recuerde" configurarlo implícitamente. El segundo confirma que declararlo explícitamente resuelve el error.
 
-**Fallo deliberado:** en el segundo test, quita `provideHttpClient()` de los `providers` (dejando el array vacío) y ejecuta de nuevo. La aserción `.not.toThrow()` FALLA porque ahora sí se lanza `NullInjectorError` — diagnostica confirmando que, sin `AppModule` central, Angular NUNCA "adivina" ni provee configuración implícita: cada dependencia debe declararse explícitamente en `ApplicationConfig`, o el fallo es inmediato y explícito en tiempo de creación del componente. Restaura `provideHttpClient()` antes de continuar.
+**Fallo deliberado:** en el segundo test, quita `TarifasService` de los `providers` (dejando el array vacío) y ejecuta de nuevo. La aserción `.not.toThrow()` FALLA porque ahora sí se lanza `NG0201` — diagnostica confirmando que, sin `AppModule` central, Angular NUNCA "adivina" ni provee configuración implícita: cada dependencia debe declararse explícitamente en `ApplicationConfig`, o el fallo es inmediato y explícito en tiempo de creación del componente. Restaura `TarifasService` en `providers` antes de continuar.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
-1. Agrega un segundo provider (`provideAnimations` o equivalente) y escribe un test que confirme su ausencia también produce un error real y específico.
-2. Documenta, en un comentario, la diferencia entre un `NullInjectorError` (falta un provider) y un error de compilación de plantilla (falta un `import` en `@Component`).
-3. Escribe un test que confirme que dos componentes distintos, ambos dependientes de `HttpClient`, comparten la MISMA instancia inyectada cuando `provideHttpClient()` se declara una sola vez en `ApplicationConfig` (confirmando el alcance singleton del provider raíz).
-4. Escribe de memoria (sin mirar) un componente con una dependencia inyectada y un test que confirme el `NullInjectorError` real al omitir su provider. Compara después contra el patrón del Paso 4.
+1. Agrega un segundo servicio sin `providedIn` (por ejemplo `ZonasService`) y escribe un test que confirme que su ausencia también produce `NG0201`.
+2. Documenta, en un comentario, la diferencia entre un `NG0201` (falta un provider) y un error de compilación de plantilla (falta un `import` en `@Component`).
+3. Escribe un test que confirme que dos componentes distintos, ambos dependientes de `TarifasService`, comparten la MISMA instancia inyectada cuando el servicio se declara una sola vez en los providers raíz (confirmando el alcance singleton del provider raíz).
+4. Escribe de memoria (sin mirar) un componente con una dependencia inyectada y un test que confirme el `NG0201` real al omitir su provider. Compara después contra el patrón del Paso 4.
 
-**Pista:** el mensaje exacto de `NullInjectorError` incluye el nombre del token que Angular no pudo resolver (`No provider for HttpClient!`) — leer ese mensaje con atención evita adivinar qué provider falta.
+**Pista:** el mensaje exacto de `NG0201` incluye el nombre del token que Angular no pudo resolver (`No provider found for ...TarifasService`) — leer ese mensaje con atención evita adivinar qué provider falta.
 
 #### Paso 6 · Práctica independiente
 
-**Completa el código:** rellena el espacio con la función real que provee `HttpClient` en un `ApplicationConfig` standalone:
+**Completa el código:** rellena el espacio con la función real que configura `HttpClient` (por ejemplo, para agregarle interceptores) en un `ApplicationConfig` standalone:
 
 ```ts
 providers: [provideRouter(routes), ____()],
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `ApplicationConfig` con dos providers y un test que confirme el `NullInjectorError` real al quitar uno de ellos. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un `ApplicationConfig` con dos providers y un test que confirme el `NG0201` real al quitar uno de ellos. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un `NullInjectorError` real y reproducible, que `bootstrapApplication` y `ApplicationConfig` reemplazan por completo al `AppModule`, sin proveer nada de forma implícita. El siguiente tema aplica un script Node real para auditar que la organización por feature mantiene junto lo que cambia junto. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular — Application configuration](https://angular.dev/reference/configs/application-structure).
+Ya confirmas, con un `NG0201` real y reproducible, que `bootstrapApplication` y `ApplicationConfig` reemplazan por completo al `AppModule`, sin proveer nada de forma implícita. El siguiente tema aplica un script Node real para auditar que la organización por feature mantiene junto lo que cambia junto. Fuentes oficiales: [Angular — Standalone components](https://angular.dev/guide/standalone-components), [Angular — Application configuration](https://angular.dev/reference/configs/application-structure).
 
-**Errores comunes:** asumir que un provider usado en desarrollo seguirá funcionando en producción sin declararlo explícitamente; confundir un `NullInjectorError` (falta un provider) con un error de plantilla (falta un import en el componente).
+**Errores comunes:** asumir que un provider usado en desarrollo seguirá funcionando en producción sin declararlo explícitamente; confundir un `NG0201` (falta un provider) con un error de plantilla (falta un import en el componente).
 
 **Cuándo no usarlo:** para un prototipo descartable de una sola pantalla sin llamadas HTTP ni routing, declarar `ApplicationConfig` completo con múltiples providers puede ser trabajo innecesario frente a un `bootstrapApplication` con providers mínimos.
 
@@ -178,7 +183,7 @@ Organizar por feature en cambio agrupa bajo una única carpeta (`tareas/`) todos
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-standalone` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-features --standalone --skip-git --defaults`), crea la carpeta de la feature `entregas` con sus tres archivos relacionados:
+Continuando en `demo-standalone` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-features --standalone --skip-git --defaults` y luego `cd demo-features`), crea la carpeta de la feature `entregas` con sus tres archivos relacionados:
 
 ```bash
 mkdir -p src/app/entregas
@@ -273,7 +278,7 @@ Ya confirmas, con un script Node real basado en `fs`, que una carpeta de feature
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás aplicar el esquema oficial `ng generate @angular/core:standalone` y confirmar, con un error real de plantilla de Angular (`NG0304`, "is not a known element"), por qué una migración incompleta —donde un componente se convierte a standalone pero olvida declarar una dependencia en su propio `imports`— produce un fallo real y diagnosticable, no un comportamiento silencioso.
+Al finalizar podrás aplicar el esquema oficial `ng generate @angular/core:standalone` y confirmar, con un error real de plantilla del compilador de Angular (`NG8001`, "is not a known element"), por qué una migración incompleta —donde un componente se convierte a standalone pero olvida declarar una dependencia en su propio `imports`— produce un fallo real y diagnosticable, no un comportamiento silencioso.
 
 **Conocimiento previo:** Temas 1-2 de este módulo.
 
@@ -283,7 +288,7 @@ Al finalizar podrás aplicar el esquema oficial `ng generate @angular/core:stand
 
 #### Paso 3 · Teoría con analogía
 
-**Conceptos clave:** conversión gradual, `ng generate @angular/core:standalone`, compatibilidad durante la transición, `NG0304`.
+**Conceptos clave:** conversión gradual, `ng generate @angular/core:standalone`, compatibilidad durante la transición, `NG8001`.
 
 Migrar un proyecto existente basado en NgModules hacia standalone components es un proceso incremental, no un "big bang" que deba completarse de una sola vez: el primer paso consiste en convertir cada componente declarado en un `NgModule` a `standalone: true`, moviendo sus dependencias desde el arreglo `imports` del módulo contenedor hacia el propio decorador `@Component` de cada componente individual, un cambio que puede hacerse componente por componente mientras el resto de la aplicación sigue usando NgModules normalmente (Angular soporta la coexistencia de componentes standalone y basados en módulos durante la transición).
 
@@ -319,7 +324,20 @@ Aplica el esquema oficial de migración automática del CLI:
 npx ng generate @angular/core:standalone
 ```
 
-Confirma con un test real que, tras convertir el componente a `standalone: true` PERO olvidar mover una dependencia (por ejemplo, `CommonModule` para `*ngIf`) al `imports` propio del componente, Angular lanza un error real de plantilla. Actualiza `src/app/legacy/tarjeta.component.ts`:
+Comprueba qué pasa cuando, tras convertir el componente a standalone, olvidas mover una dependencia que su plantilla usa al `imports` propio del componente. Crea primero el componente que la tarjeta necesita, `src/app/legacy/badge.component.ts`:
+
+```ts
+// src/app/legacy/badge.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-badge',
+  template: `<span class="badge">Nuevo</span>`,
+})
+export class BadgeComponent {}
+```
+
+Y deja `src/app/legacy/tarjeta.component.ts` como quedaría tras una migración incompleta:
 
 ```ts
 // src/app/legacy/tarjeta.component.ts (tras una migracion INCOMPLETA)
@@ -340,11 +358,11 @@ import { TestBed } from '@angular/core/testing';
 import { TarjetaComponent } from './tarjeta.component';
 
 describe('Migracion NgModule -> standalone', () => {
-  it('una migracion incompleta (falta un import) lanza un error real de plantilla', () => {
-    TestBed.configureTestingModule({ imports: [TarjetaComponent] });
+  it('la tarjeta migrada renderiza su badge', () => {
     const fixture = TestBed.createComponent(TarjetaComponent);
+    fixture.detectChanges();
 
-    expect(() => fixture.detectChanges()).toThrowError(/is not a known element|NG0304/);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Nuevo');
   });
 });
 ```
@@ -353,18 +371,27 @@ describe('Migracion NgModule -> standalone', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el test pasa; Angular lanza un error REAL (`NG0304`, "'app-badge' is not a known element") al intentar renderizar una plantilla que referencia un elemento no declarado en `imports` — el error genuino y específico que ocurre cuando una migración a standalone queda incompleta, no una falla silenciosa.
+**Resultado esperado:** ninguna prueba llega a ejecutarse. El compilador AOT detiene el build con el error de plantilla:
 
-**Fallo deliberado:** agrega `BadgeComponent` a `imports: [BadgeComponent]` (completando correctamente la migración) y ejecuta de nuevo. El test ahora FALLA porque `.toThrowError(...)` esperaba un error que ya no ocurre — diagnostica confirmando que declarar explícitamente cada dependencia en el propio componente (el paso que el esquema automático del CLI facilita, pero no siempre completa perfectamente) es lo que resuelve el error real de plantilla. Revierte a `imports: []` para dejar el ejemplo en su estado de fallo deliberado documentado, o complétalo con el import real como corrección final.
+```text
+✘ [ERROR] NG8001: 'app-badge' is not a known element:
+1. If 'app-badge' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+```
+
+Es el error genuino y específico de una migración a standalone incompleta, y aparece en **compilación** (`ng test` y `ng build`), no al renderizar. Por eso la prueba no puede «esperar» el error con `toThrowError`: el compilador AOT lo detiene antes.
+
+**Corrección:** importa `BadgeComponent` en `tarjeta.component.ts` y declara `imports: [BadgeComponent]`. Ejecuta de nuevo: compila y la prueba `la tarjeta migrada renderiza su badge` pasa — declarar explícitamente cada dependencia en el propio componente (el paso que el esquema automático del CLI facilita, pero no siempre completa) es lo que resuelve el error.
+
+**Fallo deliberado:** vuelve a dejar `imports: []` y comprueba que reaparece `NG8001`; después restaura `imports: [BadgeComponent]`.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Repite la migración con un componente que use una `pipe` personalizada (en vez de un componente hijo) y confirma el mismo tipo de error real si la pipe no se agrega a `imports`.
 2. Documenta, en un comentario, qué hace exactamente `ng generate @angular/core:standalone` de forma automática y qué debe revisarse manualmente después.
 3. Escribe un test que confirme que, una vez completada la migración (todos los `imports` correctos), el `NgModule` original queda con `declarations: []` vacío, y por tanto es seguro eliminarlo.
-4. Escribe de memoria (sin mirar) un componente migrado incompletamente a standalone y un test que confirme el error real `NG0304` al faltar un import. Compara después contra el patrón del Paso 4.
+4. Escribe de memoria (sin mirar) un componente migrado incompletamente a standalone y confirma con `npx ng build` el error `NG8001` al faltar un import. Compara después contra el patrón del Paso 4.
 
-**Pista:** el esquema `ng generate @angular/core:standalone` automatiza gran parte del trabajo mecánico, pero SIEMPRE ejecuta los tests después de aplicarlo — el error `NG0304` es la señal más clara y rápida de una dependencia que el esquema no logró migrar automáticamente.
+**Pista:** el esquema `ng generate @angular/core:standalone` automatiza gran parte del trabajo mecánico, pero SIEMPRE ejecuta los tests después de aplicarlo — el error `NG8001` es la señal más clara y rápida de una dependencia que el esquema no logró migrar automáticamente.
 
 #### Paso 6 · Práctica independiente
 
@@ -374,11 +401,11 @@ npx ng test --watch=false
 npx ng generate @angular/core:____
 ```
 
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente migrado incompletamente a standalone (con un `imports` vacío que debería tener contenido) y un test que confirme el error real `NG0304`. Compara después contra el patrón del Paso 4.
+**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente migrado incompletamente a standalone (con un `imports` vacío que debería tener contenido) y confirma con `npx ng build` el error `NG8001`. Compara después contra el patrón del Paso 4.
 
 #### Paso 7 · Cierre
 
-Ya aplicas el esquema oficial de migración y confirmas, con un error real y específico de Angular (`NG0304`), exactamente qué falla cuando una migración a standalone queda incompleta. Esto cierra el módulo de standalone components y arquitectura sin NgModules; como siguiente paso, continúa con el módulo 13 de este track. Fuentes oficiales: [Angular — Migrating to standalone](https://angular.dev/reference/migrations/standalone).
+Ya aplicas el esquema oficial de migración y confirmas, con un error real y específico del compilador de Angular (`NG8001`), exactamente qué falla cuando una migración a standalone queda incompleta. Esto cierra el módulo de standalone components y arquitectura sin NgModules; como siguiente paso, continúa con el módulo 13 de este track. Fuentes oficiales: [Angular — Migrating to standalone](https://angular.dev/reference/migrations/standalone).
 
 **Errores comunes:** ejecutar el esquema automático y asumir que la migración quedó completa sin correr los tests; migrar toda la aplicación de una sola vez en vez de componente por componente.
 

@@ -376,11 +376,11 @@ Corregí el Paso 5 reutilizando siempre el mismo `PendingMutation` (y su `id` or
 Entregá la outbox con clave de idempotencia estable del Paso 4, la duplicación provocada al generar un nuevo `id` en cada reintento del Paso 5, y el test de clave estable del Paso 6; explicá por qué la conectividad solo dispara intentos, pero no prueba disponibilidad real del servidor, y por qué eso hace indispensable la idempotencia en cada reintento. Siguiente paso: cerrá el módulo integrando seguridad, isolates y outbox en un release real auditado. Errores comunes: generar una nueva clave de idempotencia en cada reintento, publicar sin símbolos de depuración, y desplegar a todos los usuarios de una vez en vez de por cohortes observables. Fuente oficial: https://docs.flutter.dev/app-architecture/design-patterns/offline-first.
 **Implicación práctica:** La capacidad de detectar y contener un fallo determina su impacto real; una clave de idempotencia estable evita que la conectividad intermitente duplique efectos reales en el servidor.
 
-## Revisión oficial de plataforma — julio de 2026
+## Revisión oficial de plataforma
 
-### Flutter 3.44, Dart 3.12.2 y migraciones controladas
+### Versiones y migraciones controladas
 
-La documentación estable revisada refleja **Flutter 3.44** y **Dart 3.12.2**. Dart 3.12 añade **private named parameters** y conserva `dot shorthand`, introducido en 3.10; una sintaxis más corta no debe ocultar tipos en lugares ambiguos. Flutter publica cambios incompatibles y guías de migración por separado de las notas de parches. Verifica las versiones realmente acopladas con `flutter --version`, porque Flutter incluye su propio SDK de Dart. Actualiza SDK, Gradle/AGP, CocoaPods/Xcode y plugins con una matriz de dispositivos y plataformas.
+A noviembre de 2026 la versión estable es **Flutter 3.50** (11-11-2026), que incluye **Dart 3.14** (fuente: https://docs.flutter.dev/release/whats-new); la migración a esa versión se practica en el Tema 7 del Módulo 15. Dart 3.12 añadió **private named parameters** y conserva `dot shorthand`, introducido en 3.10; una sintaxis más corta no debe ocultar tipos en lugares ambiguos. Flutter publica cambios incompatibles y guías de migración por separado de las notas de parches. Verifica las versiones realmente acopladas con `flutter --version`, porque Flutter incluye su propio SDK de Dart. Actualiza SDK, Gradle/AGP, CocoaPods/Xcode y plugins con una matriz de dispositivos y plataformas.
 
 **Aplicación al proyecto:** ejecuta `flutter analyze`, pruebas y builds antes/después, migra un caso legible a dot shorthand, revisa breaking changes desde la versión origen y conserva rollback del lockfile y artefactos firmados.
 

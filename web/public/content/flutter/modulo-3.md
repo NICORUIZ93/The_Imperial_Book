@@ -66,8 +66,10 @@ context.go('/envios/RF-4471'); // navegación declarativa, la URL es la fuente d
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add go_router
 flutter run
 ```
+El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
 Para las pruebas de widget: `flutter test`.
 
 Resultado esperado: tocar un envío en la lista llama a `context.go('/envios/RF-4471')`, y `DetalleEnvio` lee el id directamente de `state.pathParameters['id']` — la URL `/envios/RF-4471` representa exactamente qué se está mostrando, sin ningún stack imperativo oculto.
@@ -91,8 +93,8 @@ Al finalizar vas a proteger `/admin` de RutaFlow con un `redirect` declarativo, 
 La pantalla de administración de conductores debería ser inaccesible para cualquier operador sin sesión de supervisor — y un link de WhatsApp compartido con un conductor debería abrir directamente ese envío sin navegación manual.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un `redirect` en la definición de la ruta centraliza el guard; con go_router, un deep link usa exactamente el mismo mecanismo que la navegación interna, sin lógica paralela.
-**Conceptos clave:** protección declarativa de rutas, deep linking sin lógica especial adicional.
+Un `redirect` en la definición de la ruta centraliza el guard; con go_router, un deep link que ya llegó a la app usa el mismo mecanismo que la navegación interna, sin lógica paralela en Dart.
+**Conceptos clave:** protección declarativa de rutas, deep linking con el mismo router (más la configuración de plataforma).
 
 ```dart
 GoRoute(
@@ -104,11 +106,11 @@ GoRoute(
 
 Un `redirect` declarado directamente en la definición de la ruta intercepta cualquier intento de navegar a esa ruta y decide, según una condición (típicamente el estado de autenticación), si permitir la navegación (devolviendo `null`) o redirigir hacia otra ruta en su lugar (devolviendo la ruta de destino alternativa, como `/login`); esta protección declarativa centraliza la lógica de guard directamente en la definición de la ruta, en vez de dispersar verificaciones manuales de autenticación repetidas en cada widget de pantalla protegida, un enfoque más mantenible y menos propenso a que se olvide proteger una ruta nueva agregada posteriormente.
 
-Con go_router, un link externo (`miapp://tareas/42`) simplemente navega a la ruta correspondiente usando exactamente el mismo mecanismo que la navegación interna dentro de la app, sin ninguna lógica especial adicional de manejo de deep links por separado: dado que la navegación ya es una función de la URL (Tema 1), un deep link es simplemente otra forma de proveer esa URL de entrada al sistema de rutas ya existente, en vez de requerir un mecanismo paralelo de traducción de URLs externas hacia operaciones imperativas de push, como sería necesario con el Navigator 1.0.
+Con go_router, un link externo (`https://rutaflow.example/envios/42`), una vez que el sistema operativo lo entrega a la app, navega a la ruta correspondiente usando el mismo mecanismo que la navegación interna, sin lógica de Dart paralela para deep links. Ojo: que el sistema operativo entregue el enlace a tu app **sí** requiere configuración de plataforma. En Android configuras App Links: un `<intent-filter android:autoVerify="true">` con `action VIEW`, categorías `DEFAULT` y `BROWSABLE` y tu dominio en `android/app/src/main/AndroidManifest.xml`, más el archivo `https://<tu-dominio>/.well-known/assetlinks.json`. En iOS configuras Universal Links: la capacidad *Associated Domains* con `applinks:<tu-dominio>` y el archivo `https://<tu-dominio>/.well-known/apple-app-site-association`. Solo en web no hace falta configuración adicional (guías oficiales: https://docs.flutter.dev/cookbook/navigation/set-up-app-links y https://docs.flutter.dev/cookbook/navigation/set-up-universal-links). Dentro de Dart, dado que la navegación ya es una función de la URL (Tema 1), un deep link es simplemente otra forma de proveer esa URL de entrada al sistema de rutas ya existente, en vez de requerir un mecanismo paralelo de traducción de URLs externas hacia operaciones imperativas de push, como sería necesario con el Navigator 1.0.
 
 **Analogía:** un guard con `redirect` es como un control de acceso automatizado en la entrada de un edificio que verifica credenciales antes de permitir el paso, redirigiendo automáticamente a quienes no las tienen hacia la recepción en vez de dejarlos entrar; el deep linking con go_router es como que cualquier dirección postal válida (interna o proveniente de una fuente externa) se procese exactamente por el mismo sistema de entrega, sin un canal de procesamiento separado según el origen de la dirección.
 
-**¿Por qué es importante?** Los guards declarativos centralizan la protección de rutas directamente en su definición, evitando verificaciones dispersas y propensas a omisión; el deep linking es más directo de configurar con un router declarativo porque la navegación ya es una función de la URL, sin requerir un mecanismo paralelo separado.
+**¿Por qué es importante?** Los guards declarativos centralizan la protección de rutas directamente en su definición, evitando verificaciones dispersas y propensas a omisión; el deep linking es más directo con un router declarativo porque la navegación ya es una función de la URL: configuras la plataforma (App Links / Universal Links) una vez y el router resuelve el resto.
 
 **Diagrama: guard declarativo con redirect**
 
@@ -135,11 +137,13 @@ GoRoute(
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add go_router
 flutter run
 ```
+El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
 Para las pruebas de widget: `flutter test`.
 
-Resultado esperado: un operador sin sesión de supervisor que navega a `/admin` es redirigido automáticamente a `/login`; un deep link externo a `/envios/RF-4471` abre `DetalleEnvio` directamente, porque esa URL ya coincide con una ruta existente del router, sin ningún código adicional de "manejo de deep links".
+Resultado esperado: un operador sin sesión de supervisor que navega a `/admin` es redirigido automáticamente a `/login`; con App Links (Android) o Universal Links (iOS) ya configurados —o en web, que no los necesita—, un deep link externo a `/envios/RF-4471` abre `DetalleEnvio` directamente, porque esa URL ya coincide con una ruta existente del router, sin código Dart adicional de "manejo de deep links". Para probarlo en Android: `adb shell am start -a android.intent.action.VIEW -d "https://<tu-dominio>/envios/RF-4471"`; en el simulador de iOS: `xcrun simctl openurl booted https://<tu-dominio>/envios/RF-4471`.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá el `redirect` de `/admin` y en su lugar agregá una verificación manual dentro del `build()` de `AdminScreen` — ese es el fallo deliberado: funciona para esa pantalla específica, pero cuando alguien agrega una segunda ruta de administración (`/admin/reportes`) y se olvida de copiar esa misma verificación manual ahí, esa nueva ruta queda completamente desprotegida.
@@ -210,8 +214,10 @@ GoRoute(
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add go_router
 flutter run
 ```
+El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
 Para las pruebas de widget: `flutter test`.
 
 Resultado esperado: al confirmar una entrega, la navegación hacia `ConfirmacionExitosa` usa un fundido de opacidad en vez del deslizamiento estándar, comunicando visualmente que ese flujo concluyó, distinto de navegar "un paso más adentro" en la jerarquía habitual.

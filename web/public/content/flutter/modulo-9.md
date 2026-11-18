@@ -221,25 +221,36 @@ flutter test integration_test/confirmar_entrega_test.dart
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-testWidgets('flujo completo: confirmar una entrega', (tester) async {
-  await tester.pumpWidget(RutaFlowApp());
-  await tester.tap(find.text('RF-4471'));
-  await tester.pumpAndSettle();
-  await tester.enterText(find.byType(TextField), '837201');
-  await tester.tap(find.text('Confirmar'));
-  await tester.pumpAndSettle();
-  expect(find.text('Entrega confirmada'), findsOneWidget);
-});
+// integration_test/confirmar_entrega_test.dart (archivo completo)
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:rutaflow_flutter/main.dart'; // define RutaFlowApp
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('flujo completo: confirmar una entrega', (tester) async {
+    await tester.pumpWidget(const RutaFlowApp());
+    await tester.tap(find.text('RF-4471'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '837201');
+    await tester.tap(find.text('Confirmar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Entrega confirmada'), findsOneWidget);
+  });
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** en el proyecto integrador `rutaflow_flutter` (Módulo 4), cuyo `lib/main.dart` define `RutaFlowApp` con la lista, el detalle y la confirmación. Este archivo **no** va en `lib/main.dart`: va en la carpeta `integration_test/` y necesita la dependencia `integration_test`:
 
 ```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
+cd rutaflow_flutter
+flutter pub add "dev:integration_test:{sdk: flutter}"
+flutter devices
+flutter test integration_test/confirmar_entrega_test.dart -d <id-del-dispositivo>
 ```
-Para las pruebas de widget: `flutter test`.
+Fuente: https://docs.flutter.dev/testing/integration-tests.
 
 Resultado esperado: corriendo este test contra un emulador o dispositivo real, el flujo completo navega desde la lista hasta la confirmación exitosa, validando la integración real entre pantallas, formulario y backend de staging.
 

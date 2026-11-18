@@ -7,7 +7,7 @@
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás confirmar, con `TestBed` real, que `fixture.componentRef.setInput(...)` es la única forma soportada de asignar un `input()` signal desde una prueba, reproduciendo el error real que ocurre al intentar el atajo incorrecto.
+Al finalizar podrás confirmar, con `TestBed` real, que un `input()` signal se asigna desde una prueba con `fixture.componentRef.setInput(...)` o, al crear el componente, con `bindings: [inputBinding(...)]` —nunca escribiéndolo directamente—, reproduciendo el error real que ocurre al intentar el atajo incorrecto.
 
 **Conocimiento previo:** Módulo 1 de este track (`input()` signal).
 
@@ -58,6 +58,7 @@ Parte de una carpeta vacía (o continúa en `demo-comparacion` del Módulo 9):
 
 ```bash
 npx -y @angular/cli@22 new demo-testbed --standalone --skip-git --defaults
+cd demo-testbed
 mkdir -p src/app
 ```
 
@@ -82,9 +83,10 @@ Confirma con `TestBed` real tanto el uso correcto (`setInput`) como el error rea
 ```ts
 // src/app/tarjeta.spec.ts
 import { TestBed } from '@angular/core/testing';
+import { inputBinding, signal } from '@angular/core';
 import { Tarjeta } from './tarjeta';
 
-describe('setInput es la unica forma soportada de asignar un input signal en un test', () => {
+describe('formas soportadas de asignar un input signal en un test', () => {
   it('setInput propaga el valor y se refleja en el DOM renderizado', async () => {
     await TestBed.configureTestingModule({ imports: [Tarjeta] }).compileComponents();
     const fixture = TestBed.createComponent(Tarjeta);
@@ -92,6 +94,17 @@ describe('setInput es la unica forma soportada de asignar un input signal en un 
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toContain('Hola mundo');
+  });
+
+  it('inputBinding asigna el input al crear el componente y sigue a su signal', async () => {
+    const titulo = signal('Desde inputBinding');
+    const fixture = TestBed.createComponent(Tarjeta, { bindings: [inputBinding('titulo', titulo)] });
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Desde inputBinding');
+
+    titulo.set('Cambiado');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Cambiado');
   });
 
   it('intentar llamar .set() directamente sobre el input signal falla en tiempo de ejecucion', async () => {
@@ -111,7 +124,7 @@ describe('setInput es la unica forma soportada de asignar un input signal en un 
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** ambos tests pasan; el segundo confirma con `expect(...).toThrow()` que un `input()` signal NO expone `.set()` (a diferencia de un `signal()` normal del Módulo 2), porque es un `InputSignal` de solo lectura, no un `WritableSignal` — la razón real, verificada en código, de por qué `setInput` es indispensable.
+**Resultado esperado:** los tres tests pasan; el segundo muestra la alternativa a `setInput`: `inputBinding` enlaza el input a un signal desde la creación, como haría una plantilla padre; el tercero confirma con `expect(...).toThrow()` que un `input()` signal NO expone `.set()` (a diferencia de un `signal()` normal del Módulo 2), porque es un `InputSignal` de solo lectura, no un `WritableSignal` — la razón real, verificada en código, de por qué necesitas `setInput` o `inputBinding`.
 
 **Fallo deliberado:** quita el `await fixture.whenStable();` inmediatamente después de `fixture.componentRef.setInput('titulo', 'Hola mundo');` en el primer test, y ejecuta de nuevo. El test se vuelve intermitente/falla dependiendo del entorno porque la aserción sobre `fixture.nativeElement.textContent` puede ejecutarse ANTES de que Angular complete la detección de cambios que actualiza el DOM tras `setInput` — diagnosticando por qué la teoría insiste en `whenStable()` como paso obligatorio, no opcional. Restaura el `await` antes de continuar.
 
@@ -136,7 +149,7 @@ fixture.componentRef.____('titulo', 'Hola mundo');
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con `TestBed` real, que `setInput` es la única forma soportada de asignar un `input()` signal desde una prueba, y reproduces el error real de intentar el atajo incorrecto. El siguiente tema confirma con Angular Testing Library que consultar el DOM por rol/texto (en vez de por selector CSS interno) hace que una prueba sobreviva a un refactor puramente cosmético. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
+Ya confirmas, con `TestBed` real, que un `input()` signal se asigna desde una prueba con `setInput` o con `inputBinding` al crear el componente, y reproduces el error real de intentar el atajo incorrecto. El siguiente tema confirma con Angular Testing Library que consultar el DOM por rol/texto (en vez de por selector CSS interno) hace que una prueba sobreviva a un refactor puramente cosmético. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
 
 **Errores comunes:** asignar un input signal como propiedad directa en vez de usar `setInput`; olvidar `await fixture.whenStable()` tras `setInput`, produciendo aserciones que se ejecutan antes de que la vista termine de actualizarse.
 
@@ -196,7 +209,7 @@ it('emite el evento al hacer click', async () => {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-testing-library --standalone --skip-git --defaults`):
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-testing-library --standalone --skip-git --defaults` y luego `cd demo-testing-library`):
 
 ```bash
 npm install @testing-library/angular @testing-library/user-event --save-dev
@@ -288,7 +301,7 @@ Ya confirmas, con un refactor cosmético real aplicado a un componente, que una 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Prueba asignar una entrega mediante etiquetas y botones visibles. Cambia la estructura interna del componente: la prueba debe seguir pasando mientras el operador pueda completar la tarea.
 
-### Tema 3: Mockear HttpClient y el nuevo builder basado en Vitest
+### Tema 3: Mockear HttpClient y el builder predeterminado basado en Vitest
 
 #### Paso 1 · Objetivo y preparación
 
@@ -306,7 +319,7 @@ Al finalizar podrás confirmar, con `HttpTestingController` real, tanto una resp
 
 `HttpTestingController` es el mecanismo de Angular para interceptar peticiones HTTP realizadas durante una prueba sin que lleguen a un servidor real: `httpMock.expectOne('/api/usuarios')` verifica que exactamente una petición a esa URL fue realizada por el código bajo prueba, devolviendo un objeto `req` sobre el que se puede llamar `req.flush([{ id: 1, nombre: 'Ana' }])` para simular la respuesta exacta del servidor que la prueba necesita, permitiendo probar cómo el servicio o componente maneja esa respuesta específica (incluyendo casos de error simulados con `req.flush(null, { status: 500, statusText: 'Error' })`) sin ninguna dependencia de un backend real disponible ni de datos reales impredecibles.
 
-Históricamente, las pruebas de Angular se ejecutaban con Karma (un ejecutor de pruebas que abre un navegador real, típicamente Chrome, para ejecutar las pruebas dentro de él) combinado con Jasmine como framework de aserciones; el nuevo builder de pruebas de Angular (`@angular/build:unit-test`) reemplaza esta combinación usando Vitest por debajo, un ejecutor de pruebas considerablemente más rápido para arrancar y para el modo watch de desarrollo (re-ejecutar automáticamente solo las pruebas afectadas por un cambio de archivo), dado que Vitest puede ejecutar pruebas en un entorno simulado de DOM sin necesidad de abrir un navegador real completo para cada ejecución, aunque sigue siendo posible ejecutar contra un navegador real cuando es necesario verificar comportamiento específico de un motor de renderizado particular.
+Históricamente, las pruebas de Angular se ejecutaban con Karma (un ejecutor de pruebas que abre un navegador real, típicamente Chrome, para ejecutar las pruebas dentro de él) combinado con Jasmine como framework de aserciones; hoy `ng new` configura por defecto el builder `@angular/build:unit-test`, que usa Vitest y jsdom (Karma sigue soportado como opción heredada; fuente: https://angular.dev/guide/testing). Vitest es un ejecutor de pruebas considerablemente más rápido para arrancar y para el modo watch de desarrollo (re-ejecutar automáticamente solo las pruebas afectadas por un cambio de archivo), dado que Vitest puede ejecutar pruebas en un entorno simulado de DOM sin necesidad de abrir un navegador real completo para cada ejecución, aunque sigue siendo posible ejecutar contra un navegador real cuando es necesario verificar comportamiento específico de un motor de renderizado particular.
 
 **Analogía:** `HttpTestingController` es como un actor que se hace pasar por el servidor real durante un ensayo teatral, respondiendo exactamente las líneas que el guion de la prueba requiere, sin necesidad de que el servidor real (y todos sus datos reales impredecibles) esté presente en el ensayo; migrar de Karma a Vitest es como reemplazar un ensayo que requiere montar el escenario físico completo cada vez por uno que puede simularse rápidamente en una sala más simple, llegando al mismo resultado con mucha menor fricción de configuración.
 
@@ -337,7 +350,7 @@ req.flush([{ id: 1, nombre: 'Ana' }]);
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-http-testing --standalone --skip-git --defaults`), crea `src/app/usuarios-error.service.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-http-testing --standalone --skip-git --defaults` y luego `cd demo-http-testing`), crea `src/app/usuarios-error.service.ts`:
 
 ```bash
 mkdir -p src/app
@@ -421,7 +434,7 @@ npx ng test --watch=false
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un tercer test que simule un error 404 (`flush(null, { status: 404, statusText: 'Not Found' })`) y confirma si el servicio actual lo distingue de un 500 o los trata igual (documenta la decisión).
-2. Investiga (leyendo el README del repositorio) qué comando ejecuta el nuevo builder basado en Vitest, y documenta en un comentario la diferencia de tiempo de arranque frente al builder anterior basado en Karma, si puedes medirla localmente.
+2. Abre `angular.json` y confirma que `test` usa `@angular/build:unit-test` (el builder predeterminado con Vitest); documenta en un comentario la diferencia de tiempo de arranque frente al builder anterior basado en Karma, si puedes medirla localmente.
 3. Escribe un test que confirme que `controlador.verify()` en `afterEach` detectaría una petición extra no esperada si el servicio, por error, hiciera una segunda llamada HTTP no anticipada.
 4. Escribe de memoria (sin mirar) un servicio con manejo de error vía `catchError`, y dos tests con `HttpTestingController` que confirmen el caso exitoso y el caso de error. Compara después contra el patrón del Paso 4.
 
@@ -617,6 +630,14 @@ Activa un lector de pantalla (VoiceOver o NVDA), pulsa el botón y verifica que 
 
 #### Paso 7 · Cierre
 
+Antes de seguir, confirma estas cuatro evidencias:
+
+- [ ] `npx ng test --watch=false` pasa con la prueba de harnesses del Paso 4.
+- [ ] Quitar `MatTableModule` produce `NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'.`
+- [ ] La prueba con `MatSortHarness` del Paso 5 verifica el orden por barrio.
+- [ ] Documentaste, tras el Paso 6, qué anuncia el lector de pantalla y qué pasaría sin `LiveAnnouncer`.
+
+Fuente oficial: [Angular — Component harnesses](https://angular.dev/guide/testing/component-harnesses-overview).
 
 ## Laboratorio práctico
 

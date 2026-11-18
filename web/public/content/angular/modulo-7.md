@@ -59,6 +59,7 @@ Parte de una carpeta vacía (o continúa en `demo-exhaustmap` del Módulo 6):
 
 ```bash
 npx -y @angular/cli@22 new demo-http --standalone --skip-git --defaults
+cd demo-http
 mkdir -p src/app
 ```
 
@@ -210,7 +211,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-interceptor --standalone --skip-git --defaults`), crea `src/app/auth-token.service.ts` y `src/app/auth.interceptor.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-interceptor --standalone --skip-git --defaults` y luego `cd demo-interceptor`), crea `src/app/auth-token.service.ts` y `src/app/auth.interceptor.ts`:
 
 ```bash
 mkdir -p src/app
@@ -355,7 +356,7 @@ provideHttpClient(withInterceptors([authInterceptor, errorInterceptor]))
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-orden --standalone --skip-git --defaults`), crea `src/app/orden.interceptor.ts`:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-orden --standalone --skip-git --defaults` y luego `cd demo-orden`), crea `src/app/orden.interceptor.ts`:
 
 ```bash
 mkdir -p src/app

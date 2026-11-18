@@ -20,7 +20,7 @@ mkdir -p lib
 ```
 
 #### Paso 2 · Contexto y caso real
-El equipo necesita convertir entregas a JSON y mantener tipos en vez de escribir mapas a mano. El prompt menciona macros experimentales, así que antes de diseñar la solución comprobamos si el lenguaje los publica como característica soportada.
+El equipo necesita convertir entregas a JSON y mantener tipos en vez de escribir mapas a mano. Quizá leíste que Dart tendría macros para generar ese código, así que antes de diseñar la solución comprueba si el lenguaje los publica como característica soportada.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Los macros de Dart intentaban inspeccionar y ampliar programas durante compilación; el equipo de Dart detuvo ese trabajo por sus dificultades técnicas y de rendimiento. **No escribas un `macro class` esperando que Flutter lo compile.** `build_runner` y generadores como `json_serializable` sí leen anotaciones y producen archivos antes de ejecutar. Es como preparar una lista de piezas antes de armar el vehículo, no pedir al vehículo en marcha que invente partes nuevas.

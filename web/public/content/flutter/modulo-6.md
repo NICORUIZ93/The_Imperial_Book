@@ -16,10 +16,12 @@ Cada vez que el conductor abre RutaFlow, el filtro de zona vuelve a "todas" por 
 **Conceptos clave:** almacenamiento clave-valor simple, no apropiado para datos estructurados grandes.
 
 ```dart
-final prefs = await SharedPreferences.getInstance();
+final prefs = SharedPreferencesAsync();
 await prefs.setBool('tema_oscuro', true);
-final temaOscuro = prefs.getBool('tema_oscuro') ?? false;
+final temaOscuro = await prefs.getBool('tema_oscuro') ?? false;
 ```
+
+> `SharedPreferences.getInstance()` aparece en muchos tutoriales, pero el paquete la declara *legacy* («will be deprecated in the future») y recomienda `SharedPreferencesAsync` o `SharedPreferencesWithCache` para código nuevo. Con `SharedPreferencesAsync` cada lectura es `await` (fuente: https://pub.dev/packages/shared_preferences).
 
 `shared_preferences` provee una API simple de almacenamiento clave-valor persistente, ideal específicamente para configuración pequeña y de tipos primitivos (un booleano de tema oscuro, un string de idioma preferido, un entero de contador de sesiones); no es apropiado para guardar una lista grande de objetos estructurados (como una colección completa de tareas de usuario), dado que su modelo de almacenamiento no está diseñado para consultas eficientes sobre datos relacionales o estructurados en volumen, y forzar ese caso de uso hacia `shared_preferences` (por ejemplo, serializando manualmente una lista completa a un único string JSON gigante) sacrifica tanto el rendimiento como la capacidad de consultar o modificar elementos individuales de forma eficiente.
 
@@ -49,9 +51,9 @@ En el proyecto integrador RutaFlow, `zona_preferida` vive en `lib/features/deliv
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final prefs = await SharedPreferences.getInstance();
+final prefs = SharedPreferencesAsync();
 await prefs.setString('zona_preferida', 'norte');
-final zona = prefs.getString('zona_preferida') ?? 'todas';
+final zona = await prefs.getString('zona_preferida') ?? 'todas';
 ```
 
 **Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
@@ -97,15 +99,30 @@ final tareas = await db.query('tarea');
 ```
 
 ```dart
+// lib/tarea.dart
+import 'package:hive/hive.dart';
+
+part 'tarea.g.dart'; // lo genera: dart run build_runner build
+
 @HiveType(typeId: 0)
 class Tarea extends HiveObject {
-  @HiveField(0) String titulo;
-  @HiveField(1) bool completada;
+  Tarea({required this.titulo, required this.completada});
+
+  @HiveField(0)
+  String titulo;
+
+  @HiveField(1)
+  bool completada;
 }
 
+// En main(), antes de abrir la caja (Hive.initFlutter viene de hive_flutter):
+await Hive.initFlutter();
+Hive.registerAdapter(TareaAdapter()); // clase generada en tarea.g.dart
 final box = await Hive.openBox<Tarea>('tareas');
-box.add(Tarea(titulo: 'Comprar leche', completada: false));
+await box.add(Tarea(titulo: 'Comprar leche', completada: false));
 ```
+
+Dependencias: `flutter pub add hive hive_flutter` y `flutter pub add dev:hive_generator dev:build_runner`. **Estado del paquete:** la última versión estable de `hive` es la 2.2.3, publicada en 2022 (https://pub.dev/packages/hive). Aquí se usa para comparar modelos; en un proyecto nuevo evalúa primero `sqflite` o una alternativa mantenida.
 
 `sqflite` expone SQL real sobre SQLite, apropiado cuando la app necesita queries relacionales complejas, joins entre tablas, o agregaciones (`GROUP BY`, `COUNT`), capacidades del modelo relacional que Hive, como base NoSQL embebida más simple centrada en almacenar objetos directamente sin un motor de consultas relacional completo, no ofrece de la misma forma nativa; Hive es considerablemente más simple y directo para modelos de objetos sin relaciones complejas entre entidades (guardar y recuperar objetos completos por clave), con una API más cercana al modelo mental de "una colección de objetos Dart persistidos directamente", sin la capa intermedia de mapear entre filas SQL y objetos Dart que `sqflite` requiere.
 

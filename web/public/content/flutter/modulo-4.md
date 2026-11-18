@@ -86,7 +86,7 @@ Entregá el prop drilling funcional del Paso 4, el acoplamiento sin beneficio pr
 ### Tema 2: Riverpod
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un `StateProvider` de Riverpod, consumido desde `BarraSuperior` y `DetalleEnvio` sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un `NotifierProvider` de Riverpod, consumido desde `BarraSuperior` y `DetalleEnvio` sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 El prop drilling de tres niveles del Tema 1 ya se sentía insostenible — ahora `BarraSuperior` y `DetalleEnvio` necesitan leer y modificar el mismo contador sin que ningún widget intermedio lo reenvíe manualmente.
@@ -139,22 +139,37 @@ graph LR
 **Conceptos clave:** verificación de providers en tiempo de compilación, no dependiente del árbol de widgets en runtime.
 
 ```dart
-final contadorProvider = StateProvider<int>((ref) => 0);
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Contador extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void incrementar() => state++;
+}
+
+final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
 
 class PantallaContador extends ConsumerWidget {
+  const PantallaContador({super.key});
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final contador = ref.watch(contadorProvider);
     return ElevatedButton(
-      onPressed: () => ref.read(contadorProvider.notifier).state++,
-      child: Text("$contador"),
+      onPressed: () => ref.read(contadorProvider.notifier).incrementar(),
+      child: Text('$contador'),
     );
   }
 }
 ```
 
+> **Riverpod 3.** `flutter pub add flutter_riverpod` instala la versión 3. En ella `StateProvider`, `StateNotifierProvider` y `ChangeNotifierProvider` son *legacy*: siguen existiendo, pero solo si importas `package:flutter_riverpod/legacy.dart`. Este curso usa la API principal, `Notifier` + `NotifierProvider` (fuente: https://riverpod.dev/docs/3.0_migration).
+
 Riverpod (evolución de Provider, el paquete de gestión de estado más antiguo del ecosistema Flutter) declara providers como objetos globales independientes del árbol de widgets, verificados en tiempo de **compilación**: intentar leer un provider que no existe o que tiene un tipo incorrecto produce un error de compilación inmediato, a diferencia de Provider (el paquete anterior), donde un provider se busca en runtime recorriendo el árbol de widgets hacia arriba (`context.watch<T>()`), de modo que un error de "provider no encontrado" (porque el widget que lo provee no está en el ancestro esperado en el árbol) solo se manifiesta como una excepción en tiempo de ejecución, potencialmente descubierta tarde durante pruebas manuales o incluso en producción.
 
-`ref.watch(contadorProvider)` suscribe el widget a reconstruirse cuando ese provider cambia; `ref.read(contadorProvider.notifier).state++` modifica el estado sin suscribirse a cambios (apropiado dentro de callbacks de eventos, donde no se necesita observar el propio cambio que se está provocando). Consumir el mismo provider desde dos widgets distintos y distantes entre sí simplemente requiere que ambos llamen `ref.watch(contadorProvider)`, sin ningún prop drilling manual entre ellos, resolviendo directamente el problema descrito en el Tema 1.
+`ref.watch(contadorProvider)` suscribe el widget a reconstruirse cuando ese provider cambia; `ref.read(contadorProvider.notifier).incrementar()` modifica el estado sin suscribirse a cambios (apropiado dentro de callbacks de eventos, donde no se necesita observar el propio cambio que se está provocando). Consumir el mismo provider desde dos widgets distintos y distantes entre sí simplemente requiere que ambos llamen `ref.watch(contadorProvider)`, sin ningún prop drilling manual entre ellos, resolviendo directamente el problema descrito en el Tema 1.
 
 **Analogía:** Riverpod es como un directorio centralizado de servicios verificado formalmente antes de la apertura de un edificio, donde cualquier intento de referenciar un servicio inexistente se detecta durante la inspección previa (compilación), en vez de descubrirse recién cuando alguien intenta usar ese servicio en el día a día de operación del edificio ya abierto al público (runtime).
 
@@ -163,7 +178,7 @@ Riverpod (evolución de Provider, el paquete de gestión de estado más antiguo 
 **Código del ejemplo:**
 
 ```dart
-final contadorProvider = StateProvider<int>((ref) => 0);
+final contadorProvider = NotifierProvider<Contador, int>(Contador.new);
 // Verificado en COMPILACIÓN, independiente de dónde esté ubicado en el árbol de widgets
 ```
 
@@ -171,17 +186,46 @@ En el proyecto integrador RutaFlow, `pendientesProvider` vive en `lib/features/d
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final pendientesProvider = StateProvider<int>((ref) => 3);
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Pendientes extends Notifier<int> {
+  @override
+  int build() => 3;
+
+  void entregar() => state--;
+}
+
+final pendientesProvider = NotifierProvider<Pendientes, int>(Pendientes.new);
 
 class BarraSuperior extends ConsumerWidget {
+  const BarraSuperior({super.key});
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pendientes = ref.watch(pendientesProvider);
-    return Text("$pendientes pendientes");
+    return Text('$pendientes pendientes');
   }
 }
+
 class DetalleEnvio extends ConsumerWidget {
-  Widget build(BuildContext context, WidgetRef ref) =>
-    ElevatedButton(onPressed: () => ref.read(pendientesProvider.notifier).state--, child: Text("Entregado"));
+  const DetalleEnvio({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ElevatedButton(
+        onPressed: () => ref.read(pendientesProvider.notifier).entregar(),
+        child: const Text('Entregado'),
+      );
+}
+
+void main() {
+  runApp(
+    const ProviderScope(
+      child: MaterialApp(
+        home: Scaffold(body: Column(children: [BarraSuperior(), DetalleEnvio()])),
+      ),
+    ),
+  );
 }
 ```
 
@@ -190,6 +234,7 @@ class DetalleEnvio extends ConsumerWidget {
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add flutter_riverpod
 flutter run
 ```
 Para las pruebas de widget: `flutter test`.
@@ -197,7 +242,7 @@ Para las pruebas de widget: `flutter test`.
 Resultado esperado: `BarraSuperior` y `DetalleEnvio` leen y modifican `pendientesProvider` sin que ningún widget entre ellos conozca ni reenvíe ese valor — el acoplamiento sin beneficio del Tema 1 desaparece.
 
 #### Paso 5 · Práctica guiada
-Pista: en `DetalleEnvio`, usá `ref.watch(pendientesProvider.notifier).state--` (con `watch` en vez de `read`) dentro del `onPressed` — ese es el fallo deliberado: `ref.watch` dentro de un callback de evento no tiene el efecto esperado de suscripción y es un uso incorrecto que el propio analizador de Riverpod señala, dado que espera `watch` solo durante la construcción del widget.
+Pista: en `DetalleEnvio`, usa `ref.watch(pendientesProvider.notifier).entregar()` (con `watch` en vez de `read`) dentro del `onPressed` — ese es el fallo deliberado: `ref.watch` dentro de un callback de evento no tiene el efecto esperado de suscripción y es un uso incorrecto que el propio analizador de Riverpod señala, dado que espera `watch` solo durante la construcción del widget.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `ref.read(pendientesProvider.notifier).state--` dentro del callback, y agregá un tercer widget (`ResumenZona`) que también observe `pendientesProvider`, confirmando que los tres widgets reflejan siempre el mismo valor sin ninguna sincronización manual.
@@ -298,7 +343,7 @@ flutter test test/pendientes_cubit_test.dart
 # 00:01 +1: PendientesCubit nunca baja de 0
 ```
 
-Límite de la decisión: Bloc/Cubit no conviene para un contador trivial de un solo widget — ahí el boilerplate de clases Cubit/evento supera el beneficio; frente a esa escala, `setState` o un `StateProvider` de Riverpod siguen siendo la opción correcta.
+Límite de la decisión: Bloc/Cubit no conviene para un contador trivial de un solo widget — ahí el boilerplate de clases Cubit/evento supera el beneficio; frente a esa escala, `setState` o un `NotifierProvider` sencillo de Riverpod siguen siendo la opción correcta.
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
@@ -645,7 +690,14 @@ Agrega `RepositorioEnviosCache` que envuelva a otro repositorio y guarde la últ
 Implementa el mismo ejemplo con `get_it` y compara cómo se reemplaza la dependencia en pruebas y qué tan visibles quedan las dependencias de cada clase.
 
 #### Paso 7 · Cierre
+Antes de seguir, confirma estas cuatro evidencias:
 
+- [ ] `flutter test` pasa con el `override` del Paso 4 y falla con `UnimplementedError` al quitarlo.
+- [ ] `RepositorioEnviosCache` del Paso 5 se inyecta sin modificar `pendientesProvider`.
+- [ ] Puedes explicar con tus palabras por qué `pendientesProvider` depende de la interfaz `RepositorioEnvios` y no de `RepositorioEnviosHttp`.
+- [ ] Anotaste, tras el Paso 6, una diferencia concreta entre reemplazar la dependencia con `overrides` de Riverpod y con `get_it`.
+
+Fuentes oficiales: https://riverpod.dev/docs/concepts2/overrides y https://pub.dev/packages/get_it.
 
 ## Aplicación guiada: RutaFlow Flutter
 
@@ -658,7 +710,7 @@ flutter pub add flutter_riverpod
 
 Crea manualmente `lib/features/deliveries/domain/delivery_providers.dart` con los proveedores de los Temas 2-4:
 - Riverpod providers para estado compartido.
-- StateNotifier para operaciones de actualización.
+- `Notifier` + `NotifierProvider` para operaciones de actualización (`StateNotifier` es legacy en Riverpod 3).
 - Uso deliberado de `ref.watch()` y `ref.read()`.
 - Invalidación de providers para sincronización.
 

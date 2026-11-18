@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-Este módulo cierra el nivel "master" del track con seis técnicas avanzadas, cada una verificada con la herramienta real del ecosistema Angular actual (Vitest + `TestBed`, Playwright, `@angular/animations`, `TransferState`, `isPlatformBrowser`), sin sustituir código por descripción.
+Este módulo cierra el nivel "master" del track con seis técnicas avanzadas, cada una verificada con la herramienta real del ecosistema Angular actual (Vitest + `TestBed`, Playwright, transiciones CSS que respetan `prefers-reduced-motion`, `TransferState`, `isPlatformBrowser`), sin sustituir código por descripción.
 
 ### Tema 1: TestBed y ComponentFixture
 
@@ -154,7 +154,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-signals --standalone --skip-git --defaults`), crea `src/app/carrito.signals.spec.ts`:
+Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-signals --standalone --skip-git --defaults` y luego `cd demo-signals`), crea `src/app/carrito.signals.spec.ts`:
 
 ```bash
 mkdir -p src/app
@@ -367,7 +367,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-animaciones --standalone --skip-git --defaults`), crea `src/app/notificacion-animada.component.ts`:
+Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-animaciones --standalone --skip-git --defaults` y luego `cd demo-animaciones`), crea `src/app/notificacion-animada.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -500,7 +500,7 @@ sequenceDiagram
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-ssr --standalone --skip-git --defaults`), crea `src/app/entregas-transfer-state.spec.ts`:
+Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-ssr --standalone --skip-git --defaults` y luego `cd demo-ssr`), crea `src/app/entregas-transfer-state.spec.ts`:
 
 ```bash
 mkdir -p src/app
@@ -634,7 +634,7 @@ export const appConfig: ApplicationConfig = {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-hidratacion --standalone --skip-git --defaults`), crea `src/app/preferencias.service.ts`:
+Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-hidratacion --standalone --skip-git --defaults` y luego `cd demo-hidratacion`), crea `src/app/preferencias.service.ts`:
 
 ```bash
 mkdir -p src/app
@@ -731,10 +731,3 @@ Ya proteges código específico del navegador con `isPlatformBrowser`, y configu
 **Cuándo no usarlo:** para una aplicación sin SSR habilitado (SPA pura, siempre en el navegador), `isPlatformBrowser` siempre devolvería `true` y la comprobación sería código muerto sin ningún propósito real.
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Protege con `isPlatformBrowser` la lectura del filtro de ruta guardado en `localStorage` del operador, y confirma con `TestBed` que el panel se renderiza en el servidor sin lanzar ningún error antes de hidratarse en el navegador.
-
-## Trazabilidad de la auditoría original
-
-- **Pruebas Unitarias**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Pruebas E2E**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Animaciones**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Angular Universal (SSR)**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

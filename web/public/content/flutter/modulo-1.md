@@ -182,27 +182,56 @@ En el proyecto integrador RutaFlow, este layout y los hooks de ciclo de vida viv
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Stack(children: [
-  Row(children: [Text(guia), Spacer(), Text(estado)]),
-  if (urgente) Positioned(top: 0, right: 0, child: Icon(Icons.priority_high)),
-])
+// lib/main.dart (archivo completo)
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: ListaEnvios()));
+
+class ListaEnvios extends StatefulWidget {
+  const ListaEnvios({super.key});
+
+  @override
+  State<ListaEnvios> createState() => _ListaEnviosState();
+}
 
 class _ListaEnviosState extends State<ListaEnvios> {
+  static const guia = 'RF-4471';
+  static const estado = 'En ruta';
+  static const urgente = true;
   Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(minutes: 1), (_) => setState(() {}));
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) => setState(() {}));
   }
+
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            const Row(children: [Text(guia), Spacer(), Text(estado)]),
+            if (urgente)
+              const Positioned(top: 0, right: 0, child: Icon(Icons.priority_high)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo anterior y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter

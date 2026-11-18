@@ -315,7 +315,8 @@ Archivo `lib/auth/interceptor_auth.dart`:
 import 'package:dio/dio.dart';
 import 'almacen_tokens.dart';
 
-// QueuedInterceptor procesa una petición a la vez: si diez fallan con 401, solo se renueva una vez.
+// QueuedInterceptor procesa los errores de uno en uno. Para que diez 401 simultáneos renueven una sola vez,
+// cada error compara el token con el que salió con el token vigente antes de refrescar.
 class InterceptorAuth extends QueuedInterceptor {
   InterceptorAuth(this._dio, this._tokens, {required this.alCerrarSesion});
   final Dio _dio;
@@ -333,6 +334,18 @@ class InterceptorAuth extends QueuedInterceptor {
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     final esRefresh = err.requestOptions.path.endsWith('/auth/refresh');
     if (err.response?.statusCode != 401 || esRefresh) return handler.next(err);
+
+    // Si otra petición de la cola ya renovó el token, reintenta con el vigente sin volver a refrescar.
+    final usado = err.requestOptions.headers['Authorization'];
+    final vigente = await _tokens.acceso();
+    if (vigente != null && usado != 'Bearer $vigente') {
+      final reintento = err.requestOptions..headers['Authorization'] = 'Bearer $vigente';
+      try {
+        return handler.resolve(await _dio.fetch(reintento));
+      } on DioException catch (e) {
+        return handler.next(e);
+      }
+    }
 
     final renovacion = await _tokens.renovacion();
     if (renovacion == null) return _terminar(err, handler);
@@ -376,7 +389,7 @@ class ServicioAuth {
 }
 ```
 
-**Explicación por bloques:** `AlmacenTokens` encapsula el almacenamiento seguro para que el resto de la app no sepa dónde viven los tokens; `onRequest` agrega el token de acceso a cada petición; `onError` solo actúa ante un 401 que no venga del propio refresh, renueva con un cliente `Dio` aparte (para no entrar en un ciclo), guarda los tokens nuevos y repite la petición original con `fetch`; si la renovación falla, `_terminar` borra todo y avisa a la UI; `ServicioAuth` hace el login y nunca guarda la clave.
+**Explicación por bloques:** `AlmacenTokens` encapsula el almacenamiento seguro para que el resto de la app no sepa dónde viven los tokens; `onRequest` agrega el token de acceso a cada petición; `onError` solo actúa ante un 401 que no venga del propio refresh; si el `Authorization` de la petición fallida ya no coincide con el token guardado, otra petición de la cola renovó antes, así que solo reintenta; si coincide, renueva con un cliente `Dio` aparte (para no entrar en un ciclo), guarda los tokens nuevos y repite la petición original con `fetch`; si la renovación falla, `_terminar` borra todo y avisa a la UI; `ServicioAuth` hace el login y nunca guarda la clave.
 
 **Resultado esperado:** al iniciar sesión, las peticiones llevan `Authorization: Bearer …`; cuando el backend responde 401 por token vencido, ves una sola llamada a `/auth/refresh` y luego la petición original con 200, sin pantalla de error; al cerrar sesión, `acceso()` devuelve `null`.
 

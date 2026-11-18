@@ -179,22 +179,22 @@ Pista: reemplazá `.when(...)` por `.maybeWhen(data: ..., orElse: () => Text('Ca
 Corregí el Paso 5 devolviendo `.when(...)` con un caso `error` explícito con un mensaje específico de RutaFlow, y agregá un botón de "reintentar" que invalide `enviosProvider` dentro de ese caso de error.
 
 #### Paso 7 · Cierre
-Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cerrá el track reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/case_studies/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
+Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cierra el proyecto integrador reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/case_studies/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
 **Implicación práctica:** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado se combinan naturalmente en un sistema coherente.
 
-### Tema 3: Cierre del track
+### Tema 3: Retrospectiva del proyecto integrador
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor Skia, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2 de este módulo.
+Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2 de este módulo.
 
 #### Paso 2 · Contexto y caso real
-Completaste el track entero construyendo RutaFlow en Flutter — nadie te pidió todavía que articules qué de esa experiencia es específico de que Flutter dibuje sus propios widgets con Skia, y qué es un principio universal de UI declarativa.
+Llevas doce módulos construyendo RutaFlow en Flutter — nadie te pidió todavía que articules qué de esa experiencia es específico de que Flutter dibuje sus propios widgets con su propio motor (Impeller), y qué es un principio universal de UI declarativa. Los módulos 13 a 22 profundizan en producción y temas avanzados.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Flutter logra apariencia y rendimiento consistentes en ambas plataformas renderizando con su propio motor gráfico, en vez de envolver componentes nativos, a costa de requerir aprender un ecosistema de widgets propio.
 **Conceptos clave:** una sola base de código, apariencia y rendimiento consistentes, el costo de un ecosistema propio.
 
-Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Skia, el mismo motor mencionado en Compose Multiplatform, Módulo 7 del track de Kotlin Multiplatform), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
+Flutter cumple su promesa central de forma bastante directa: una sola base de código Dart, con widgets propios que Flutter renderiza directamente con su propio motor gráfico (Impeller, el motor por defecto en iOS —donde es el único— y en Android API 29+; en web Flutter todavía usa Skia), en vez de simplemente envolver componentes nativos de cada plataforma (a diferencia de otros frameworks multiplataforma históricos que traducían hacia widgets nativos subyacentes), corriendo con apariencia y rendimiento consistentes en Android e iOS sin las diferencias sutiles de comportamiento que podrían surgir de depender de implementaciones nativas distintas por plataforma.
 
 El costo de esta consistencia es aprender un ecosistema de widgets completamente propio de Flutter, distinto tanto de las tecnologías web (HTML/CSS/JavaScript) como de cada plataforma nativa (UIKit/SwiftUI en iOS, Views/Compose en Android): un desarrollador que ya domina Compose o SwiftUI reconocerá los mismos principios conceptuales de UI declarativa (estado como fuente de verdad, composición de widgets, reconstrucción en respuesta a cambios), pero necesitará aprender la sintaxis y las convenciones específicas del ecosistema de widgets propio de Flutter para aplicarlos efectivamente.
 
@@ -206,7 +206,7 @@ El costo de esta consistencia es aprender un ecosistema de widgets completamente
 
 ```
 Flutter = una base de código Dart
-        + motor gráfico propio (Skia)
+        + motor gráfico propio (Impeller en móvil)
         + widgets propios (NO wrappers de componentes nativos)
         = apariencia y rendimiento consistentes en Android e iOS
 ```
@@ -215,7 +215,7 @@ Flutter = una base de código Dart
 
 ```mermaid
 flowchart LR
-    A["Retrospectiva de RutaFlow"] --> B["Específico de Flutter:\nmotor Skia propio"]
+    A["Retrospectiva de RutaFlow"] --> B["Específico de Flutter:\nmotor Impeller propio"]
     A --> C["Principio universal:\nUI como función del estado"]
     C --> D["SwiftUI (iOS)"]
     C --> E["Compose (Android/KMP)"]
@@ -228,10 +228,10 @@ En el proyecto integrador RutaFlow, escribe esta retrospectiva comparando tu arc
 #### Paso 4 · Demostración guiada desde cero
 ```text
 Decisión: TarjetaEnvio se ve y se comporta idéntica en Android e iOS,
-porque Flutter la dibuja con Skia, no con componentes nativos de cada
+porque Flutter la dibuja con Impeller, no con componentes nativos de cada
 plataforma.
 
-Específico de Flutter: el motor Skia propio, que elimina diferencias
+Específico de Flutter: el motor Impeller propio, que elimina diferencias
 sutiles de comportamiento entre implementaciones nativas distintas.
 
 Principio universal: declarar la UI como función del estado actual

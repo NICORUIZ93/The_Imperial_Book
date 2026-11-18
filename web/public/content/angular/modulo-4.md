@@ -218,7 +218,7 @@ navegación → /admin
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-routing` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-guards --standalone --skip-git --defaults`), crea `src/app/auth.guard.ts`:
+Continuando en `demo-routing` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-guards --standalone --skip-git --defaults` y luego `cd demo-guards`), crea `src/app/auth.guard.ts`:
 
 ```bash
 mkdir -p src/app
@@ -248,17 +248,13 @@ Confirma la ventaja real de testabilidad: invoca `authGuard` DIRECTAMENTE como f
 ```ts
 // src/app/auth.guard.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { Injector } from '@angular/core';
 import { authGuard, AuthService } from './auth.guard';
 
 describe('authGuard invocado directamente como funcion pura (sin componente ni router completo)', () => {
   it('SIN sesion, el guard devuelve una UrlTree hacia /login', () => {
     TestBed.configureTestingModule({});
-    const injector = TestBed.inject(Injector);
 
-    const resultado = TestBed.runInInjectionContext(injector, () =>
-      authGuard({} as any, {} as any)
-    );
+    const resultado = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
 
     expect(resultado).not.toBe(true);
     expect((resultado as any).toString()).toContain('/login');
@@ -266,13 +262,10 @@ describe('authGuard invocado directamente como funcion pura (sin componente ni r
 
   it('CON sesion activa, el guard devuelve true', () => {
     TestBed.configureTestingModule({});
-    const injector = TestBed.inject(Injector);
     const auth = TestBed.inject(AuthService);
     auth.iniciarSesion();
 
-    const resultado = TestBed.runInInjectionContext(injector, () =>
-      authGuard({} as any, {} as any)
-    );
+    const resultado = TestBed.runInInjectionContext(() => authGuard({} as any, {} as any));
 
     expect(resultado).toBe(true);
   });
@@ -362,7 +355,7 @@ carga inicial de la app
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-lazy --standalone --skip-git --defaults`), crea `src/app/lazy-demo.ts` con un componente lazy y un espía que envuelve la función de importación dinámica, para confirmar programáticamente (sin depender de leer la pestaña Network a simple vista) exactamente cuándo Angular la invoca:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-lazy --standalone --skip-git --defaults` y luego `cd demo-lazy`), crea `src/app/lazy-demo.ts` con un componente lazy y un espía que envuelve la función de importación dinámica, para confirmar programáticamente (sin depender de leer la pestaña Network a simple vista) exactamente cuándo Angular la invoca:
 
 ```bash
 mkdir -p src/app
@@ -396,9 +389,7 @@ import { AdminLazyComponent, crearRutasLazy } from './lazy-demo';
 
 describe('loadComponent invoca el import dinamico solo al navegar', () => {
   it('NO invoca el factory antes de navegar, y lo invoca UNA vez al navegar a /admin', async () => {
-    const factorySpy = jasmine.createSpy('cargarAdmin').and.callFake(() =>
-      Promise.resolve({ AdminLazyComponent })
-    );
+    const factorySpy = vi.fn(() => Promise.resolve({ AdminLazyComponent }));
 
     TestBed.configureTestingModule({
       providers: [provideRouter(crearRutasLazy(() => factorySpy().then((m: any) => m.AdminLazyComponent)))],
@@ -435,10 +426,10 @@ npx ng test --watch=false
 
 #### Paso 6 · Práctica independiente
 
-**Completa el código:** rellena el espacio con el nombre real del método de Jasmine usado para crear una función espía:
+**Completa el código:** rellena el espacio con el nombre real de la función de Vitest usada para crear una función espía:
 
 ```ts
-const factorySpy = jasmine.____('cargarAdmin').and.callFake(() => Promise.resolve({ AdminLazyComponent }));
+const factorySpy = vi.____(() => Promise.resolve({ AdminLazyComponent }));
 ```
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, una ruta con `loadComponent` envuelta en un espía y un test con `RouterTestingHarness` que confirme que el chunk no se descarga antes de navegar. Compara después contra el patrón del Paso 4.
@@ -500,7 +491,7 @@ export class Detalle {
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-params --standalone --skip-git --defaults`), crea `src/app/param-demo.ts` con un componente que declara `id` como `input()`, y navega hacia él con `RouterTestingHarness` para confirmar que Angular lo llena automáticamente:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-params --standalone --skip-git --defaults` y luego `cd demo-params`), crea `src/app/param-demo.ts` con un componente que declara `id` como `input()`, y navega hacia él con `RouterTestingHarness` para confirmar que Angular lo llena automáticamente:
 
 ```bash
 mkdir -p src/app

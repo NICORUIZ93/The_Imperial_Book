@@ -37,7 +37,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Parte de una carpeta vacía, instala `vitest-axe` (la integración oficial de axe-core para Vitest) y crea `src/app/campo-con-error.component.ts`:
+Parte de una carpeta vacía, instala `vitest-axe` (un paquete de la comunidad, versión 0.1.0, que ejecuta axe-core desde Vitest; no es un paquete oficial de Angular ni de Vitest) y crea `src/app/campo-con-error.component.ts`:
 
 ```bash
 mkdir demo-a11y
@@ -72,10 +72,8 @@ Confirma con `vitest-axe` (auditoría real de accesibilidad, no una inspección 
 ```ts
 // src/app/campo-con-error.component.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { axe, toHaveNoViolations } from 'vitest-axe';
+import { axe } from 'vitest-axe';
 import { CampoConErrorComponent } from './campo-con-error.component';
-
-expect.extend(toHaveNoViolations);
 
 describe('CampoConErrorComponent', () => {
   it('sin errores axe no reporta ninguna violacion de accesibilidad', async () => {
@@ -84,7 +82,7 @@ describe('CampoConErrorComponent', () => {
     fixture.detectChanges();
 
     const resultados = await axe(fixture.nativeElement);
-    expect(resultados).toHaveNoViolations(); // auditoria REAL de axe-core, no una suposicion
+    expect(resultados.violations).toEqual([]); // auditoria REAL de axe-core: la lista de violaciones debe quedar vacia
   });
 
   it('con error visible el mensaje esta asociado correctamente al input', async () => {
@@ -100,7 +98,7 @@ describe('CampoConErrorComponent', () => {
     expect(mensaje.textContent).toContain('La dirección es obligatoria');
 
     const resultados = await axe(fixture.nativeElement);
-    expect(resultados).toHaveNoViolations();
+    expect(resultados.violations).toEqual([]);
   });
 });
 ```
@@ -111,7 +109,9 @@ npx ng test --watch=false
 
 **Resultado esperado:** ambos tests pasan; `axe(fixture.nativeElement)` ejecuta una auditoría REAL de accesibilidad (el mismo motor que Lighthouse usa internamente) sobre el DOM renderizado real, confirmando cero violaciones tanto en el estado normal como en el estado de error, con el mensaje correctamente asociado vía `aria-describedby`.
 
-**Fallo deliberado:** quita el atributo `for="destino"` del `<label>` (dejando `<label>Dirección de destino</label>` sin asociación) y ejecuta de nuevo el primer test. FALLA con una violación REAL de axe (`label` rule: "Form elements must have labels") — diagnostica confirmando que la desconexión entre `<label>` e `<input>`, invisible para alguien que ve la pantalla (el texto sigue apareciendo junto al campo), es detectada automáticamente porque rompe la asociación programática que un lector de pantalla necesita. Restaura `for="destino"` antes de continuar.
+El matcher `toHaveNoViolations` que documenta el README de `vitest-axe` se importa desde `vitest-axe/matchers` (no desde `vitest-axe`) y sus tipos no se integran con Vitest 5; comparar `resultados.violations` con `[]` da la misma garantía sin configuración extra y, si falla, Vitest imprime cada violación.
+
+**Fallo deliberado:** quita el atributo `for="destino"` del `<label>` (dejando `<label>Dirección de destino</label>` sin asociación) y ejecuta de nuevo. Fallan las dos pruebas (ambas renderizan el label) con una violación REAL de axe (`label` rule: "Form elements must have labels") — diagnostica confirmando que la desconexión entre `<label>` e `<input>`, invisible para alguien que ve la pantalla (el texto sigue apareciendo junto al campo), es detectada automáticamente porque rompe la asociación programática que un lector de pantalla necesita. Restaura `for="destino"` antes de continuar.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -128,7 +128,7 @@ npx ng test --watch=false
 
 ```ts
 const resultados = await ____(fixture.nativeElement);
-expect(resultados).toHaveNoViolations();
+expect(resultados.violations).toEqual([]);
 ```
 
 **Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente con un campo de error accesible, y un test `vitest-axe` que confirme cero violaciones. Compara después contra el patrón del Paso 4.
@@ -174,7 +174,7 @@ Angular trata los valores enlazados como no confiables y sanitiza según el cont
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-seguridad --standalone --skip-git --defaults`), crea `src/app/comentario.component.ts`:
+Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-seguridad --standalone --skip-git --defaults` y luego `cd demo-seguridad`), crea `src/app/comentario.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -307,7 +307,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-i18n --standalone --skip-git --defaults`), crea `src/app/pluralizar-tareas.ts`:
+Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía y genera un proyecto nuevo con `npx -y @angular/cli@22 new demo-i18n --standalone --skip-git --defaults` y luego `cd demo-i18n`), crea `src/app/pluralizar-tareas.ts`:
 
 ```bash
 mkdir -p src/app
@@ -420,7 +420,7 @@ Al finalizar podrás confirmar, con la API oficial de test de bloques `@defer` d
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-defer --standalone --skip-git --defaults`), crea `src/app/panel-metricas.component.ts`:
+Continuando en `demo-a11y` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-defer --standalone --skip-git --defaults` y luego `cd demo-defer`), crea `src/app/panel-metricas.component.ts`:
 
 ```bash
 mkdir -p src/app
@@ -449,7 +449,7 @@ Confirma con la API oficial de test de bloques diferidos que el contenido pesado
 
 ```ts
 // src/app/panel-metricas.component.spec.ts
-import { TestBed } from '@angular/core/testing';
+import { DeferBlockState, TestBed } from '@angular/core/testing';
 import { PanelMetricasComponent } from './panel-metricas.component';
 
 describe('PanelMetricasComponent', () => {
@@ -470,17 +470,14 @@ describe('PanelMetricasComponent', () => {
     const fixture = TestBed.createComponent(PanelMetricasComponent);
     fixture.detectChanges();
 
-    const [bloqueDeferido] = fixture.getDeferBlocks
-      ? await fixture.getDeferBlocks()
-      : []; // API real de Angular >=17 para inspeccionar y controlar bloques @defer en tests
+    // API oficial para inspeccionar y controlar bloques @defer en tests
+    const [bloqueDeferido] = await fixture.getDeferBlocks();
 
-    if (bloqueDeferido) {
-      await bloqueDeferido.render(); // dispara manualmente el estado "completo" del bloque, sin esperar un timer real
-      fixture.detectChanges();
+    await bloqueDeferido.render(DeferBlockState.Complete); // fuerza el estado "completo" sin esperar el disparador real
+    fixture.detectChanges();
 
-      const metricas = fixture.nativeElement.querySelector('[data-testid="metricas-pesadas"]');
-      expect(metricas.textContent).toContain('Métricas detalladas cargadas');
-    }
+    const metricas = fixture.nativeElement.querySelector('[data-testid="metricas-pesadas"]');
+    expect(metricas.textContent).toContain('Métricas detalladas cargadas');
   });
 });
 ```
@@ -489,18 +486,18 @@ describe('PanelMetricasComponent', () => {
 npx ng test --watch=false
 ```
 
-**Resultado esperado:** el primer test confirma que, inmediatamente tras el render inicial, el contenido pesado del `@defer` NO existe en el DOM (`querySelector` devuelve `null`) y solo el placeholder ligero está presente; el segundo confirma que, tras invocar `bloqueDeferido.render()` (la API oficial de test que fuerza el estado "cargado" sin depender de un disparador real de interacción del usuario), el contenido pesado SÍ aparece — el beneficio real de `@defer` (JavaScript inicial reducido) confirmado en código, no solo asumido por usar la sintaxis.
+**Resultado esperado:** el primer test confirma que, inmediatamente tras el render inicial, el contenido pesado del `@defer` NO existe en el DOM (`querySelector` devuelve `null`) y solo el placeholder ligero está presente; el segundo confirma que, tras invocar `bloqueDeferido.render(DeferBlockState.Complete)` (la API oficial de test que fuerza el estado "cargado" sin depender de un disparador real de interacción del usuario), el contenido pesado SÍ aparece — el beneficio real de `@defer` (JavaScript inicial reducido) confirmado en código, no solo asumido por usar la sintaxis.
 
 **Fallo deliberado:** cambia `@defer (on interaction)` por simplemente eliminar el bloque `@defer` (dejando el contenido pesado directamente en la plantilla, sin ningún diferimiento) y ejecuta de nuevo el primer test. FALLA porque `metricas` ya NO es `null` — está presente desde el primer render — diagnostica confirmando en código, no solo en documentación, que sin `@defer` todo el contenido se renderiza (y su JavaScript asociado se descarga) en la carga inicial, exactamente el costo que `@defer` está diseñado para evitar. Restaura el bloque `@defer` antes de continuar.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
-1. Cambia el disparador a `on timer(2s)` y documenta, con la API de test (`bloqueDeferido.render()` sigue funcionando independientemente del disparador real configurado), por qué la API de test permite verificar el comportamiento SIN esperar 2 segundos reales en el test.
+1. Cambia el disparador a `on timer(2s)` y documenta, con la API de test (`bloqueDeferido.render(DeferBlockState.Complete)` sigue funcionando independientemente del disparador real configurado), por qué la API de test permite verificar el comportamiento SIN esperar 2 segundos reales en el test.
 2. Agrega un bloque `@loading` (mostrado mientras el contenido diferido está cargándose activamente) y confirma con un test que aparece en el estado intermedio.
 3. Agrega un bloque `@error` (mostrado si la carga del contenido diferido falla) y documenta, en un comentario, en qué escenarios reales un `@defer` podría fallar (por ejemplo, un chunk que no se pudo descargar por un problema de red).
 4. Escribe de memoria (sin mirar) un componente con `@defer (on interaction)` y `@placeholder`, y dos tests que confirmen el estado inicial y el estado tras disparar el render. Compara después contra el patrón del Paso 4.
 
-**Pista:** la API de test de bloques diferidos de Angular (`fixture.getDeferBlocks()` + `.render()`) es la forma oficial de controlar el estado de un `@defer` en un test SIN depender de temporizadores reales, scroll simulado o eventos de interacción reales del DOM — mucho más rápido y determinista que intentar simular el disparador real.
+**Pista:** la API de test de bloques diferidos de Angular (`fixture.getDeferBlocks()` + `.render(estado)`) es la forma oficial de controlar el estado de un `@defer` en un test SIN depender de temporizadores reales, scroll simulado o eventos de interacción reales del DOM — mucho más rápido y determinista que intentar simular el disparador real.
 
 #### Paso 6 · Práctica independiente
 
@@ -793,7 +790,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** optimizar sin graba
 
 **Fuente oficial:** [Angular — DevTools: Profiler](https://angular.dev/tools/devtools/profiler) y [Angular — enableProfiling](https://angular.dev/api/core/enableProfiling).
 
-## Revisión oficial de plataforma — julio de 2026
+## Revisión oficial de plataforma
 
 ### Angular v22 y adopción según estabilidad
 

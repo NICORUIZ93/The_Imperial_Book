@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Construirás una app de conductor desde una lista vacía hasta una entrega sincronizada. El foco es operar con señal inestable y ubicaciones cambiantes, no repetir el mapa del módulo 14. Trabaja en el proyecto `rutaflow_driver`; no uses credenciales de producción.
+Construirás una app de conductor desde una lista vacía hasta una entrega sincronizada. El foco es operar con señal inestable y ubicaciones cambiantes, no repetir el mapa del módulo 14. Trabaja sobre el proyecto de referencia `examples/flutter_rutaflow/` (fija `flutter_riverpod: ^2.4.0`, por eso todavía usa `StateProvider` sin la importación `legacy.dart` de Riverpod 3); no uses credenciales de producción.
 
 ---
 

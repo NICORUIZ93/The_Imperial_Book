@@ -38,10 +38,7 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/app/app.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-Requisitos reales del proyecto (alpha, pueden cambiar entre versiones `0.x`): Angular 22, Expo SDK 57, React Native 0.86 con la New Architecture, y Node 22.18 o posterior. Crea el proyecto con el template oficial:
+Requisitos del proyecto (alpha, pueden cambiar entre versiones `0.x`; este tema es **opcional y experimental**): Angular 22, React Native con la New Architecture y Node 22.18 o posterior. El tema se escribió con Expo SDK 57 y React Native 0.86; el 18-11-2026 `npm view` ya muestra `expo` 58 y `react-native` 0.88 (template `@ng-native/template` 0.24.0), así que usa las versiones que instale el template y no actualices Expo por tu cuenta. Crea el proyecto con el template oficial:
 
 ```bash
 npx create-expo-app@latest rutaflow-conductor --template @ng-native/template
@@ -153,6 +150,7 @@ flowchart TD
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/lista-entregas.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 
@@ -264,6 +262,7 @@ flowchart TD
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/app.routes.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 **Crea** el archivo `src/app/app.routes.ts` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
@@ -397,6 +396,7 @@ flowchart TD
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/app/detalle-entrega.test.ts` con el contenido de este tema.
 ```bash
 ng new ejemplo
+cd ejemplo
 ```
 
 

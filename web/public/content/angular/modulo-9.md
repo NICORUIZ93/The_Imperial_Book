@@ -59,6 +59,7 @@ Parte de una carpeta vacía (o continúa en `demo-orden` del Módulo 7):
 
 ```bash
 npx -y @angular/cli@22 new demo-store --standalone --skip-git --defaults
+cd demo-store
 mkdir -p src/app
 ```
 
@@ -204,7 +205,7 @@ const selectTotal = createSelector(selectCarrito, (estado) =>
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ngrx --standalone --skip-git --defaults`):
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-ngrx --standalone --skip-git --defaults` y luego `cd demo-ngrx`):
 
 ```bash
 npm install @ngrx/store --save
@@ -348,7 +349,7 @@ Para la mayoría de features de tamaño moderado, sin embargo, un store de signa
 
 #### Paso 4 · Demostración guiada desde cero
 
-Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-comparacion --standalone --skip-git --defaults`), crea `src/app/comparacion-store.spec.ts` reutilizando ambos módulos anteriores:
+Continuando en el mismo proyecto (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-comparacion --standalone --skip-git --defaults` y luego `cd demo-comparacion`), crea `src/app/comparacion-store.spec.ts` reutilizando ambos módulos anteriores:
 
 ```bash
 mkdir -p src/app

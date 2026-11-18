@@ -432,6 +432,14 @@ Crea `config/qa.json` y una prueba que verifique que en QA los logs detallados e
 Configura `productFlavors` dev y prod en `android/app/build.gradle.kts` con `applicationIdSuffix = ".dev"` y un nombre visible distinto, e instala ambas versiones en el mismo emulador.
 
 #### Paso 7 · Cierre
+Antes de seguir, confirma estas cuatro evidencias:
+
+- [ ] `flutter test --dart-define-from-file=config/dev.json` pasa y, sin el archivo, falla con `Actual: 'desconocido'`.
+- [ ] `validar()` se llama en `main` y una compilación sin configuración se detiene al arrancar.
+- [ ] La prueba de QA del Paso 5 pasa con `config/qa.json`.
+- [ ] Las versiones dev y prod del Paso 6 conviven instaladas en el mismo emulador.
+
+Fuentes oficiales: https://docs.flutter.dev/deployment/flavors y https://dart.dev/libraries/core/environment-declarations.
 
 ### Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min
 
