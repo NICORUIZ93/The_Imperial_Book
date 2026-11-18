@@ -21,6 +21,43 @@ adb devices
 
 El emulador debe aparecer como `device`. Si figura `unauthorized`, acepta el diálogo del dispositivo; si no aparece, reinicia ADB desde Device Manager. La primera sincronización puede tardar porque descarga dependencias: no la canceles mientras haya actividad de red.
 
+## Mapa de la ruta
+
+«Android con Jetpack Compose» tiene 19 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–2"]
+    E1["Aplicación<br/>módulos 3–5"]
+    E2["Integración<br/>módulos 6–8, 15 y 17"]
+    E3["Experto<br/>módulos 9–14, 16 y 18"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Kotlin aplicado a Android](/curso/android/0) |
+| 1 | Fundamentos | [Ciclo de vida: Activities y ViewModel](/curso/android/1) |
+| 2 | Fundamentos | [Jetpack Compose: UI declarativa](/curso/android/2) |
+| 3 | Aplicación | [Navegación con Navigation Compose y Predictive Back](/curso/android/3) |
+| 4 | Aplicación | [Estado con StateFlow y Compose](/curso/android/4) |
+| 5 | Aplicación | [Networking con Retrofit/Ktor](/curso/android/5) |
+| 6 | Integración | [Persistencia local con Room](/curso/android/6) |
+| 7 | Integración | [Inyección de dependencias con Hilt](/curso/android/7) |
+| 8 | Integración | [Trabajo en segundo plano](/curso/android/8) |
+| 9 | Experto | [Testing en Android](/curso/android/9) |
+| 10 | Experto | [Performance, Material 3 y accesibilidad](/curso/android/10) |
+| 11 | Experto | [Publicación en Google Play](/curso/android/11) |
+| 12 | Experto | [Proyecto integrador: app Android completa](/curso/android/12) |
+| 13 | Experto | [Android en producción: seguridad, sincronización y calidad](/curso/android/13) |
+| 14 | Experto | [Compose Master: pruebas, accesibilidad y animación](/curso/android/14) |
+| 15 | Integración | [Android como plataforma: Intents, broadcasts, servicios y content providers](/curso/android/15) |
+| 16 | Experto | [Android profesional: privacidad, datos, escala e identidad](/curso/android/16) |
+| 17 | Integración | [Compose profesional: layouts, formularios, listas y efectos](/curso/android/17) |
+| 18 | Experto | [Build profesional: variantes, módulos, optimización y CI](/curso/android/18) |
+
 ## Aprende construyendo
 
 ### Tema 1: Estructura de un proyecto Android Studio

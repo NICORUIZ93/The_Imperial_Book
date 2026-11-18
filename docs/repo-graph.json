@@ -1851,7 +1851,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 20386,
+      "lines": 20400,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1859,7 +1859,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1290,
+      "lines": 1292,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2134,7 +2134,7 @@
     },
     {
       "path": "docs/capture-intake.json",
-      "lines": 509,
+      "lines": 578,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2177,7 +2177,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 17783,
+      "lines": 17807,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2185,7 +2185,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1462,
+      "lines": 1464,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2439,7 +2439,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11904,
+      "lines": 11918,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2659,7 +2659,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 14969,
+      "lines": 14991,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2824,7 +2824,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 36093,
+      "lines": 36143,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3008,7 +3008,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 25510,
+      "lines": 25567,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3016,7 +3016,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1327,
+      "lines": 1329,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -3029,7 +3029,7 @@
     },
     {
       "path": "docs/subtopic-depth-reviewed.json",
-      "lines": 3516,
+      "lines": 3543,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3037,7 +3037,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 1123441,
+      "lines": 1123463,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3045,7 +3045,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 162571,
+      "lines": 162573,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -3115,7 +3115,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 31767,
+      "lines": 31811,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12431,6 +12431,27 @@
       "headings": []
     },
     {
+      "path": "scripts/build_route_maps.py",
+      "lines": 114,
+      "kind": "automation-script",
+      "symbols": [
+        "unescape",
+        "modules_by_constant",
+        "ranges",
+        "section",
+        "apply",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "sys",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/build_spring_topic_review.py",
       "lines": 96,
       "kind": "automation-script",
@@ -12894,7 +12915,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 231,
+      "lines": 233,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -13263,8 +13284,20 @@
       ]
     },
     {
+      "path": "specs/007-mejoras-del-informe-de-capturas.md",
+      "lines": 42,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 007 \u00b7 Mejoras del informe de capturas del 2026-11-18",
+        "## Contexto y l\u00edmites",
+        "## Criterios"
+      ]
+    },
+    {
       "path": "specs/README.md",
-      "lines": 47,
+      "lines": 48,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -13486,7 +13519,7 @@
     },
     {
       "path": "specs/visual-aids-scope.json",
-      "lines": 728,
+      "lines": 740,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -13575,13 +13608,14 @@
     },
     {
       "path": "web/public/content/android/modulo-0.md",
-      "lines": 787,
+      "lines": 824,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Kotlin aplicado a Android",
         "## Antes de comenzar: instala Android Studio y un dispositivo de prueba",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Estructura de un proyecto Android Studio",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -13590,8 +13624,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "# (genera el proyecto \"Empty Activity\" con Android Studio dentro de esta carpeta)",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
@@ -13974,7 +14007,7 @@
     },
     {
       "path": "web/public/content/angular/modulo-0.md",
-      "lines": 646,
+      "lines": 681,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -13985,12 +14018,12 @@
         "### macOS",
         "### Linux (Ubuntu/Debian)",
         "### Tu primer proyecto verificable",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: El CLI ya no genera NgModules",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
+        "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda"
       ]
     },
     {
@@ -14331,13 +14364,14 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 536,
+      "lines": 589,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Introducci\u00f3n y preparaci\u00f3n",
         "## Antes de comenzar: prepara solo lo que necesitas",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Fundamentos absolutos \u2014 qu\u00e9 es una terminal, un comando y un sistema operativo",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -14346,8 +14380,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre y evidencia",
-        "### Tema 2: Fundamentos de redes \u2014 direcciones IP, puertos, HTTP y APIs"
+        "#### Paso 7 \u00b7 Cierre y evidencia"
       ]
     },
     {
@@ -14898,7 +14931,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-33.md",
-      "lines": 539,
+      "lines": 559,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -15066,12 +15099,13 @@
     },
     {
       "path": "web/public/content/control-1/modulo-0.md",
-      "lines": 119,
+      "lines": 160,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: C\u00f3mo estudiar Control 1",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: C\u00f3mo est\u00e1 armado cada cap\u00edtulo",
         "#### Verificaci\u00f3n con c\u00f3digo",
@@ -15682,7 +15716,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-0.md",
-      "lines": 1094,
+      "lines": 1135,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -15692,13 +15726,13 @@
         "### Windows",
         "### macOS",
         "### Linux (Ubuntu/Debian)",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Sistema de archivos y permisos (chmod/chown)",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda con analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
+        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero"
       ]
     },
     {
@@ -15934,7 +15968,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-2.md",
-      "lines": 749,
+      "lines": 906,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16279,13 +16313,14 @@
     },
     {
       "path": "web/public/content/flutter/modulo-0.md",
-      "lines": 885,
+      "lines": 926,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Fundamentos de Dart",
         "## Antes de comenzar: instala Flutter y valida todo",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Sound null safety",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -16294,8 +16329,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Clases y mixins"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -16762,7 +16796,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-0.md",
-      "lines": 428,
+      "lines": 462,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16770,6 +16804,7 @@
         "# M\u00f3dulo 0: C\u00f3mo funciona tu entorno de desarrollo",
         "## Antes de comenzar: prepara tu primera sesi\u00f3n",
         "### Instala y comprueba",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Computador, sistema operativo, programa y proceso \u00b7 B\u00e1sico \u00b7 90 min",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -16777,8 +16812,7 @@
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y mapa de subtemas",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
@@ -17035,7 +17069,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 665,
+      "lines": 875,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17098,7 +17132,7 @@
     },
     {
       "path": "web/public/content/ios/modulo-0.md",
-      "lines": 673,
+      "lines": 706,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17107,14 +17141,14 @@
         "## Antes de comenzar: qu\u00e9 equipo necesitas realmente",
         "### macOS: entorno completo recomendado",
         "### Windows y Linux: etapa de fundamentos",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Optionals y unwrapping seguro",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
       ]
     },
     {
@@ -17413,7 +17447,7 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 1190,
+      "lines": 1231,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17421,6 +17455,7 @@
         "# M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
         "## Antes de comenzar: instala Java correctamente",
         "## Ruta recomendada: recorrido del desarrollador Java en 17 pasos",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Del c\u00f3digo fuente a la JVM",
         "#### Subtema 1.1: Compila y ejecuta tu primera clase \u00b7 10 min",
@@ -17428,8 +17463,7 @@
         "#### Subtema 1.3: Diagnostica d\u00f3nde busca la JVM \u00b7 10 min",
         "#### Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente \u00b7 10 min",
         "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra",
-        "#### Subtema 2.1: Identifica cada parte de la firma cl\u00e1sica \u00b7 10 min",
-        "#### Subtema 2.2: Recibe argumentos sin recompilar \u00b7 10 min"
+        "#### Subtema 2.1: Identifica cada parte de la firma cl\u00e1sica \u00b7 10 min"
       ]
     },
     {
@@ -17896,12 +17930,13 @@
     },
     {
       "path": "web/public/content/javascript/modulo-0.md",
-      "lines": 405,
+      "lines": 438,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Fundamentos de JavaScript con ejemplos independientes",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "## Antes de comenzar: preparaci\u00f3n del entorno",
         "### Tema 1: Variables \u2014 `const`, `let` y `var`",
@@ -17911,8 +17946,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
         "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Tipos primitivos y `typeof`"
+        "#### Paso 7 \u00b7 Cierre"
       ]
     },
     {
@@ -18211,13 +18245,14 @@
     },
     {
       "path": "web/public/content/kotlin-multiplatform/modulo-0.md",
-      "lines": 607,
+      "lines": 639,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Fundamentos de Kotlin",
         "## Antes de comenzar: entorno Kotlin Multiplatform",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Null safety real",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -18226,8 +18261,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "# compila el m\u00f3dulo compartido de Kotlin Multiplatform con Gradle",
         "# ejecuta el test Kotlin del m\u00f3dulo compartido",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada \u2014 repetici\u00f3n progresiva"
       ]
     },
     {
@@ -18505,12 +18539,13 @@
     },
     {
       "path": "web/public/content/microservices/modulo-0.md",
-      "lines": 1276,
+      "lines": 1290,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# Curso Microservicios \u00b7 Antes de distribuir: proceso, red y falacias",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "## Entorno del m\u00f3dulo",
         "### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP \u00b7 B\u00e1sico \u00b7 45 min",
@@ -18520,8 +18555,7 @@
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "# Esperado: LISTEN http://127.0.0.1:8081/health pid=<n\u00famero>",
         "# Esperado: HTTP/1.1 200 OK ... Content-type: text/plain; charset=utf-8 ... UP",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
       ]
     },
     {
@@ -18547,13 +18581,14 @@
     },
     {
       "path": "web/public/content/node/modulo-0.md",
-      "lines": 497,
+      "lines": 531,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: El runtime de Node \u2014 V8, libuv y el Event Loop",
         "## Antes de comenzar:",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Node no es \"JavaScript en el servidor\" sin m\u00e1s \u00b7 B\u00e1sico \u00b7 75 min",
         "#### Aprende",
@@ -18562,8 +18597,7 @@
         "### Tema 2: Fases del Event Loop de Node \u00b7 Intermedio \u00b7 75 min",
         "#### Aprende",
         "#### Practica",
-        "#### Aplica",
-        "### Tema 3: process, global y m\u00f3dulos core \u00b7 B\u00e1sico \u00b7 75 min"
+        "#### Aplica"
       ]
     },
     {
@@ -18883,7 +18917,7 @@
     },
     {
       "path": "web/public/content/react/modulo-0.md",
-      "lines": 454,
+      "lines": 487,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -18891,6 +18925,7 @@
         "# M\u00f3dulo 0: JSX, componentes y props",
         "## Antes de comenzar: instala el entorno",
         "### Crea tu primera aplicaci\u00f3n",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: JSX es az\u00facar sint\u00e1ctica sobre createElement",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
@@ -18898,8 +18933,7 @@
         "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
         "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre"
+        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
       ]
     },
     {
@@ -19198,7 +19232,7 @@
     },
     {
       "path": "web/public/content/rutaflow/modulo-0.md",
-      "lines": 326,
+      "lines": 352,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19207,14 +19241,14 @@
         "## Antes de comenzar: instala y comprueba el entorno",
         "### Si la instalaci\u00f3n falla, no contin\u00faes a ciegas",
         "## Ruta de proyecto progresivo desde carpeta vac\u00eda",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: El proceso log\u00edstico como sistema",
         "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
         "#### Paso 2 \u00b7 Contexto y caso real",
         "#### Paso 3 \u00b7 Teor\u00eda, conceptos y analog\u00eda",
         "#### Paso 4 \u00b7 Demostraci\u00f3n guiada desde cero",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente"
+        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada"
       ]
     },
     {
@@ -19366,7 +19400,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-0.md",
-      "lines": 736,
+      "lines": 781,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19375,14 +19409,14 @@
         "## Antes de comenzar: del equipo vac\u00edo a Spring Boot",
         "# macOS/Linux",
         "# Windows PowerShell",
+        "## Mapa de la ruta",
         "## Aprende construyendo",
         "### Tema 1: Inversi\u00f3n de control y el contenedor de Spring",
         "#### Subtema 1.1: Declara el contrato y la primera implementaci\u00f3n \u00b7 10 min",
         "#### Subtema 1.2: Deja que Spring conecte el servicio \u00b7 10 min",
         "#### Subtema 1.3: Observa el cableado con una petici\u00f3n HTTP \u00b7 10 min",
         "### Tema 2: Inyecci\u00f3n por constructor vs por campo",
-        "#### Subtema 2.1: Prueba la regla sin iniciar Spring \u00b7 10 min",
-        "#### Subtema 2.2: Observa la inyecci\u00f3n de campo con el contexto \u00b7 10 min"
+        "#### Subtema 2.1: Prueba la regla sin iniciar Spring \u00b7 10 min"
       ]
     },
     {
@@ -19932,7 +19966,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 6337,
+      "lines": 6345,
       "kind": "course-content",
       "symbols": [],
       "imports": [],

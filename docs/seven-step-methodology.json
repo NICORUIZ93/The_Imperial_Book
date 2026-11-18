@@ -77,21 +77,21 @@
       "complete": 0
     },
     "devops": {
-      "topics": 138,
-      "objective": 138,
-      "prerequisites": 138,
-      "context": 138,
-      "theoryAnalogy": 138,
+      "topics": 139,
+      "objective": 139,
+      "prerequisites": 139,
+      "context": 139,
+      "theoryAnalogy": 139,
       "guidedDemo": 137,
-      "codeExplanation": 138,
-      "execution": 137,
-      "expectedResult": 138,
-      "deliberateFailure": 138,
-      "guidedPractice": 138,
-      "independentPractice": 138,
-      "closure": 138,
-      "commonErrors": 138,
-      "resources": 138,
+      "codeExplanation": 139,
+      "execution": 138,
+      "expectedResult": 139,
+      "deliberateFailure": 139,
+      "guidedPractice": 139,
+      "independentPractice": 139,
+      "closure": 139,
+      "commonErrors": 139,
+      "resources": 139,
       "standaloneExample": 131,
       "complete": 131
     },
@@ -115,21 +115,21 @@
       "complete": 109
     },
     "foundations": {
-      "topics": 102,
-      "objective": 101,
-      "prerequisites": 102,
-      "context": 101,
-      "theoryAnalogy": 101,
-      "guidedDemo": 101,
-      "codeExplanation": 102,
-      "execution": 102,
-      "expectedResult": 102,
-      "deliberateFailure": 101,
-      "guidedPractice": 100,
-      "independentPractice": 101,
-      "closure": 100,
-      "commonErrors": 101,
-      "resources": 101,
+      "topics": 103,
+      "objective": 102,
+      "prerequisites": 103,
+      "context": 102,
+      "theoryAnalogy": 102,
+      "guidedDemo": 102,
+      "codeExplanation": 103,
+      "execution": 103,
+      "expectedResult": 103,
+      "deliberateFailure": 102,
+      "guidedPractice": 101,
+      "independentPractice": 102,
+      "closure": 101,
+      "commonErrors": 102,
+      "resources": 102,
       "standaloneExample": 101,
       "complete": 97
     },
@@ -12166,6 +12166,31 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
         "module": 20,
         "topic": "Tema 1: Eventos de dominio e integración: hechos, no comandos",
         "criteria": {
@@ -19042,6 +19067,31 @@
         "classification": {
           "stepsPassed": 15,
           "complete": true
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
         }
       },
       {

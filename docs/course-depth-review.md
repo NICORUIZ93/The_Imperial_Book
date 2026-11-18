@@ -6,7 +6,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 102 | 14 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 103 | 14 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 92 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 90 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 78 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
@@ -19,12 +19,12 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | flutter | 119 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 66 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 168 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 138 | 4 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 139 | 4 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1430 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1432 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -503,6 +503,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 2 | [Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 2 | [Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 1: Eventos de dominio e integración: hechos, no comandos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
@@ -778,6 +779,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | foundations / 7 | [Tema 4: Decisiones, documentación, deuda y evolución](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 6: Desarrollo guiado por especificación con agentes de IA](../web/public/content/foundations/modulo-7.md) | comprobar-fragmento-incompleto |
+| foundations / 7 | [Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 1: El sistema operativo como administrador y frontera](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 2: Memoria y concurrencia sin magia](../web/public/content/foundations/modulo-8.md) | archivo-ejemplo-no-presentado |
 | foundations / 8 | [Tema 3: Linux como entorno observable](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |

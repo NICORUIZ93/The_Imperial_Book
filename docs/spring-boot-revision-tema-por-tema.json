@@ -72,13 +72,13 @@
         {
           "topic": 1,
           "title": "Tema 1: Inversión de control y el contenedor de Spring",
-          "line": 37,
+          "line": 82,
           "review": "Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente.",
           "buildRoute": "Maven y alternativa Gradle",
           "subtopics": [
             {
               "heading": "Subtema 1.1: Declara el contrato y la primera implementación · 10 min",
-              "line": 45,
+              "line": 90,
               "proseWords": 172,
               "codeLines": 17,
               "hasBodyBeyondHeading": true,
@@ -89,7 +89,7 @@
             },
             {
               "heading": "Subtema 1.2: Deja que Spring conecte el servicio · 10 min",
-              "line": 99,
+              "line": 144,
               "proseWords": 143,
               "codeLines": 17,
               "hasBodyBeyondHeading": true,
@@ -100,7 +100,7 @@
             },
             {
               "heading": "Subtema 1.3: Observa el cableado con una petición HTTP · 10 min",
-              "line": 148,
+              "line": 193,
               "proseWords": 294,
               "codeLines": 20,
               "hasBodyBeyondHeading": true,
@@ -114,13 +114,13 @@
         {
           "topic": 2,
           "title": "Tema 2: Inyección por constructor vs por campo",
-          "line": 206,
+          "line": 251,
           "review": "Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo.",
           "buildRoute": "Maven y alternativa Gradle",
           "subtopics": [
             {
               "heading": "Subtema 2.1: Prueba la regla sin iniciar Spring · 10 min",
-              "line": 212,
+              "line": 257,
               "proseWords": 136,
               "codeLines": 15,
               "hasBodyBeyondHeading": true,
@@ -131,7 +131,7 @@
             },
             {
               "heading": "Subtema 2.2: Observa la inyección de campo con el contexto · 10 min",
-              "line": 259,
+              "line": 304,
               "proseWords": 155,
               "codeLines": 32,
               "hasBodyBeyondHeading": true,
@@ -142,7 +142,7 @@
             },
             {
               "heading": "Subtema 2.3: Elige la prueba que responde tu pregunta · 10 min",
-              "line": 326,
+              "line": 371,
               "proseWords": 290,
               "codeLines": 6,
               "hasBodyBeyondHeading": true,
@@ -156,13 +156,13 @@
         {
           "topic": 3,
           "title": "Tema 3: Estereotipos, autoconfiguración y scopes",
-          "line": 364,
+          "line": 409,
           "review": "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request.",
           "buildRoute": "Maven y alternativa Gradle",
           "subtopics": [
             {
               "heading": "Subtema 3.1: Asigna a cada estereotipo un papel claro · 10 min",
-              "line": 372,
+              "line": 417,
               "proseWords": 176,
               "codeLines": 6,
               "hasBodyBeyondHeading": true,
@@ -172,7 +172,7 @@
             },
             {
               "heading": "Subtema 3.2: Inspecciona lo que aporta una dependencia · 10 min",
-              "line": 407,
+              "line": 452,
               "proseWords": 232,
               "codeLines": 6,
               "hasBodyBeyondHeading": true,
@@ -183,7 +183,7 @@
             },
             {
               "heading": "Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min",
-              "line": 443,
+              "line": 488,
               "proseWords": 313,
               "codeLines": 56,
               "hasBodyBeyondHeading": true,
@@ -197,7 +197,7 @@
         {
           "topic": 4,
           "title": "Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
-          "line": 547,
+          "line": 592,
           "review": "Ciclo de vida del contexto → SmartLifecycle y apagado ordenado; demuestra graceful shutdown con un request en vuelo; no confunde @PreDestroy con drenar tráfico.",
           "buildRoute": "Maven y alternativa Gradle",
           "subtopics": []

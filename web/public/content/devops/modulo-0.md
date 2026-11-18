@@ -28,6 +28,47 @@ docker run --rm hello-world
 
 Aprende antes estos cuatro comandos seguros: `pwd` muestra dónde estás, `ls` lista archivos, `cd` cambia de carpeta y `mkdir` crea una carpeta. Comprueba siempre `pwd` antes de usar comandos que borren o cambien permisos. Nunca pegues un comando con `sudo` sin entender cada argumento.
 
+## Mapa de la ruta
+
+«DevOps» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–3"]
+    E1["Aplicación<br/>módulos 4–5"]
+    E2["Integración<br/>módulos 6–8"]
+    E3["Experto<br/>módulos 9–22"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Linux y shell scripting para DevOps](/curso/devops/0) |
+| 1 | Fundamentos | [Git avanzado y estrategias de branching](/curso/devops/1) |
+| 2 | Fundamentos | [Docker: imágenes y buenas prácticas](/curso/devops/2) |
+| 3 | Fundamentos | [Docker Compose y orquestación local](/curso/devops/3) |
+| 4 | Aplicación | [CI: pipelines automatizados](/curso/devops/4) |
+| 5 | Aplicación | [CD: estrategias de despliegue](/curso/devops/5) |
+| 6 | Integración | [Kubernetes: fundamentos](/curso/devops/6) |
+| 7 | Integración | [Kubernetes avanzado: Helm e Ingress](/curso/devops/7) |
+| 8 | Integración | [Infraestructura como código con Terraform](/curso/devops/8) |
+| 9 | Experto | [Observabilidad: Prometheus y Grafana](/curso/devops/9) |
+| 10 | Experto | [Logging centralizado](/curso/devops/10) |
+| 11 | Experto | [Seguridad DevSecOps](/curso/devops/11) |
+| 12 | Experto | [DevOps y este curso: del laboratorio a la nube](/curso/devops/12) |
+| 13 | Experto | [Proyecto integrador: pipeline CI/CD completo](/curso/devops/13) |
+| 14 | Experto | [SRE y plataforma: confiabilidad, incidentes y supply chain](/curso/devops/14) |
+| 15 | Experto | [DevOps Master: GitOps, Service Mesh y DevSecOps](/curso/devops/15) |
+| 16 | Experto | [QA Automation: Postman, Newman y Jenkins](/curso/devops/16) |
+| 17 | Experto | [Diseño de sistemas distribuidos: borde, datos y capacidad](/curso/devops/17) |
+| 18 | Experto | [Servidor propio: VPS endurecido, TLS y recuperación](/curso/devops/18) |
+| 19 | Experto | [Arquitectura moderna y DDD: límites que sobreviven al cambio](/curso/devops/19) |
+| 20 | Experto | [Eventos de dominio y consistencia eventual](/curso/devops/20) |
+| 21 | Experto | [Microservicios: contratos, datos y operación](/curso/devops/21) |
+| 22 | Experto | [Laboratorio DevOps con Floci: ejercicios verificables](/curso/devops/22) |
+
 ## Aprende construyendo
 
 ### Tema 1: Sistema de archivos y permisos (chmod/chown)

@@ -27,6 +27,40 @@ Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abr
 
 **Al terminar conservarás:** `saludo.py`, `presentacion.py` y un `README.md` con tus comandos, resultados y diagnóstico. Serán el primer registro de trabajo de tu futuro gestor de tareas por terminal. No necesitas construir ese gestor todavía.
 
+## Mapa de la ruta
+
+«Fundamentos de Ingeniería de Software» tiene 16 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–3"]
+    E1["Aplicación<br/>módulos 4–5 y 12–13"]
+    E2["Integración<br/>módulos 6–8 y 14–15"]
+    E3["Experto<br/>módulos 9–11"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Cómo funciona tu entorno de desarrollo](/curso/foundations/0) |
+| 1 | Fundamentos | [Pensamiento computacional y programación](/curso/foundations/1) |
+| 2 | Fundamentos | [Estructuras de datos, algoritmos y complejidad](/curso/foundations/2) |
+| 3 | Fundamentos | [Fundamentos de web, redes y accesibilidad](/curso/foundations/3) |
+| 4 | Aplicación | [Modelado de datos, SQL y persistencia](/curso/foundations/4) |
+| 5 | Aplicación | [Testing, depuración, Git y CI](/curso/foundations/5) |
+| 6 | Integración | [Seguridad, privacidad y modelado de amenazas](/curso/foundations/6) |
+| 7 | Integración | [Requisitos, diseño, arquitectura y mantenimiento](/curso/foundations/7) |
+| 8 | Integración | [Sistemas operativos, concurrencia, Linux y contenedores](/curso/foundations/8) |
+| 9 | Experto | [Matemáticas discretas, lógica y probabilidad para software](/curso/foundations/9) |
+| 10 | Experto | [Sistemas distribuidos, resiliencia y observabilidad](/curso/foundations/10) |
+| 11 | Experto | [Ciencias de la Computación: mapa de especializaciones](/curso/foundations/11) |
+| 12 | Aplicación | [Electrónica, sensores y control para software e IoT](/curso/foundations/12) |
+| 13 | Aplicación | [Algoritmos clásicos](/curso/foundations/13) |
+| 14 | Integración | [Catálogo de patrones de diseño](/curso/foundations/14) |
+| 15 | Integración | [Código limpio](/curso/foundations/15) |
+
 ## Aprende construyendo
 
 ### Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min

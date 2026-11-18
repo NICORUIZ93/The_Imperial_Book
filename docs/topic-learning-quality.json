@@ -77,18 +77,18 @@
       "repeatedDemo": 0
     },
     "devops": {
-      "topics": 138,
-      "explanation": 138,
-      "code": 138,
-      "visual": 131,
-      "filePath": 138,
-      "runCommand": 138,
-      "expectedResult": 138,
-      "practice": 138,
-      "project": 138,
-      "modelMental": 138,
-      "limitsDecision": 138,
-      "practicable": 138,
+      "topics": 139,
+      "explanation": 139,
+      "code": 139,
+      "visual": 132,
+      "filePath": 139,
+      "runCommand": 139,
+      "expectedResult": 139,
+      "practice": 139,
+      "project": 139,
+      "modelMental": 139,
+      "limitsDecision": 139,
+      "practicable": 139,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -109,18 +109,18 @@
       "repeatedDemo": 0
     },
     "foundations": {
-      "topics": 102,
-      "explanation": 102,
-      "code": 102,
-      "visual": 77,
-      "filePath": 102,
-      "runCommand": 102,
-      "expectedResult": 102,
-      "practice": 102,
-      "project": 102,
-      "modelMental": 102,
-      "limitsDecision": 102,
-      "practicable": 102,
+      "topics": 103,
+      "explanation": 103,
+      "code": 103,
+      "visual": 78,
+      "filePath": 103,
+      "runCommand": 103,
+      "expectedResult": 103,
+      "practice": 103,
+      "project": 103,
+      "modelMental": 103,
+      "limitsDecision": 103,
+      "practicable": 103,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -10708,6 +10708,28 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 20,
         "topic": "Tema 1: Eventos de dominio e integración: hechos, no comandos",
         "criteria": {
@@ -16742,6 +16764,28 @@
       {
         "module": 7,
         "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,

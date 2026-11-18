@@ -19,6 +19,32 @@ No reinstales todo como primer intento. Anota: sistema operativo, comando ejecut
 
 Cada módulo agrega una vertical ejecutable al mismo repositorio: primero dominio; luego persistencia; API; web; móvil; optimización y tiempo real; finanzas; finalmente despliegue y operación. Cada entrega conserva README, ADR, prueba automatizada, comandos de ejecución y una demostración breve. No se copia una solución final: se avanza con commits pequeños y se registra por qué cambió el diseño.
 
+## Mapa de la ruta
+
+«RutaFlow — Proyecto integrador logístico» tiene 8 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulo 0"]
+    E1["Aplicación<br/>módulo 1"]
+    E2["Integración<br/>módulos 2–4"]
+    E3["Experto<br/>módulos 5–7"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [RutaFlow desde cero: producto, entorno y dominio](/curso/rutaflow/0) |
+| 1 | Aplicación | [Datos, geografía y contabilidad de una entrega](/curso/rutaflow/1) |
+| 2 | Integración | [Backend: envíos, asignación e idempotencia](/curso/rutaflow/2) |
+| 3 | Integración | [Frontend web: cliente y centro de operaciones](/curso/rutaflow/3) |
+| 4 | Integración | [Aplicación Flutter del conductor: GPS, batería y offline](/curso/rutaflow/4) |
+| 5 | Experto | [Rutas, mapas y seguimiento en tiempo real](/curso/rutaflow/5) |
+| 6 | Experto | [Facturación, recaudo, liquidaciones y fraude](/curso/rutaflow/6) |
+| 7 | Experto | [Producción: cloud, DevOps, seguridad y operación](/curso/rutaflow/7) |
+
 ## Aprende construyendo
 
 ### Tema 1: El proceso logístico como sistema

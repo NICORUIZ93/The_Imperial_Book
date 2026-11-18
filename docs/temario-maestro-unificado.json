@@ -1,11 +1,11 @@
 {
   "summary": {
-    "currentTopics": 1430,
+    "currentTopics": 1432,
     "currentTopicsWithExactBookEvidence": 3,
     "additionalUniqueBookTopics": 73027,
     "additionalCourseTopics": 54,
     "courses": 7,
-    "unifiedTopics": 74511,
+    "unifiedTopics": 74513,
     "booksRequiringOcr": 109,
     "rule": "Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack."
   },
@@ -560,6 +560,17 @@
                 "module": "7",
                 "order": 6,
                 "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 7,
+                "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
               },
               "bookSources": [],
               "courseSources": []
@@ -335324,6 +335335,17 @@
                 "module": "2",
                 "order": 8,
                 "fragment": "tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 9,
+                "fragment": "tema-9-elegir-el-motor-de-contenedores-local-docker-desktop-podman-colima-y-rancher-desktop"
               },
               "bookSources": [],
               "courseSources": []

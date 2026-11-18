@@ -64,7 +64,7 @@
     {
       "track": "devops",
       "modules": 23,
-      "topics": 138,
+      "topics": 139,
       "levels": {
         "Fundamentos": 4,
         "Aplicación": 2,
@@ -73,8 +73,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 131,
-      "projectTopics": 138
+      "visualTopics": 132,
+      "projectTopics": 139
     },
     {
       "track": "flutter",
@@ -94,7 +94,7 @@
     {
       "track": "foundations",
       "modules": 16,
-      "topics": 102,
+      "topics": 103,
       "levels": {
         "Fundamentos": 4,
         "Aplicación": 4,
@@ -103,8 +103,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": false,
-      "visualTopics": 77,
-      "projectTopics": 102
+      "visualTopics": 78,
+      "projectTopics": 103
     },
     {
       "track": "ios",

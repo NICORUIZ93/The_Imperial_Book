@@ -2,6 +2,39 @@
 
 Cada tema comienza en su propia carpeta vacía. El proyecto integrador existe aparte y no es requisito para estudiar estas lecciones.
 
+## Mapa de la ruta
+
+«JavaScript: fundamentos y temas avanzados» tiene 15 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–4"]
+    E1["Aplicación<br/>módulos 5–8"]
+    E2["Integración<br/>módulos 9–10"]
+    E3["Experto<br/>módulos 11–14"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos del lenguaje y el entorno](/curso/javascript/0) |
+| 1 | Fundamentos | [Operadores, control de flujo y funciones](/curso/javascript/1) |
+| 2 | Fundamentos | [Scope, closures y el modelo de ejecución](/curso/javascript/2) |
+| 3 | Fundamentos | [Objetos, prototipos y clases](/curso/javascript/3) |
+| 4 | Fundamentos | [Arrays y estructuras de datos funcionales](/curso/javascript/4) |
+| 5 | Aplicación | [Asincronía I: Event Loop y Promesas](/curso/javascript/5) |
+| 6 | Aplicación | [Asincronía II: async/await y fetch](/curso/javascript/6) |
+| 7 | Aplicación | [Módulos modernos y herramientas de build](/curso/javascript/7) |
+| 8 | Aplicación | [El DOM y eventos del navegador](/curso/javascript/8) |
+| 9 | Integración | [Testing y calidad de código](/curso/javascript/9) |
+| 10 | Integración | [Patrones avanzados y rendimiento](/curso/javascript/10) |
+| 11 | Experto | [TypeScript esencial para devs de JavaScript](/curso/javascript/11) |
+| 12 | Experto | [Proyecto integrador: SPA sin framework](/curso/javascript/12) |
+| 13 | Experto | [JavaScript en producción: seguridad, memoria y compatibilidad](/curso/javascript/13) |
+| 14 | Experto | [JavaScript Master: TypeScript, WASM y cómputo emergente](/curso/javascript/14) |
+
 ## Aprende construyendo
 
 Cada tema se estudia en su propia carpeta y termina con una comprobación ejecutable; el orden importa porque cada uno reutiliza el modelo del anterior.

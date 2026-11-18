@@ -3510,6 +3510,33 @@
         "https://docs.spring.io/spring-boot/maven-plugin/build-image.html",
         "https://paketo.io/docs/howto/java/"
       ]
+    },
+    "devops/modulo-2::Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/devops/motor-contenedores-local.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop"
+      ],
+      "sources": [
+        "https://docs.docker.com/subscription/desktop-license/",
+        "https://docs.podman.io/en/latest/",
+        "https://github.com/abiosoft/colima",
+        "https://docs.rancherdesktop.io/",
+        "https://github.com/libracoder/kiri"
+      ]
+    },
+    "foundations/modulo-7::Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/foundations/evaluar-skill-agente.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir"
+      ],
+      "sources": [
+        "https://github.com/NVIDIA/skillevaluator",
+        "https://agentskills.io/specification"
+      ]
     }
   }
 }

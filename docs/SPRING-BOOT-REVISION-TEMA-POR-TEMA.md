@@ -90,10 +90,10 @@ revisión; el script no las genera a partir de palabras clave.
 
 | Módulo.tema | Tema real | Subtemas | Revisión de secuencia, ejemplo y límite |
 |---|---|---:|---|
-| 0.1 | [Tema 1: Inversión de control y el contenedor de Spring](../web/public/content/spring-boot/modulo-0.md#L37) | 3 | Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente. |
-| 0.2 | [Tema 2: Inyección por constructor vs por campo](../web/public/content/spring-boot/modulo-0.md#L206) | 3 | Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo. |
-| 0.3 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md#L364) | 3 | Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request. |
-| 0.4 | [Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min](../web/public/content/spring-boot/modulo-0.md#L547) | 0 | Ciclo de vida del contexto → SmartLifecycle y apagado ordenado; demuestra graceful shutdown con un request en vuelo; no confunde @PreDestroy con drenar tráfico. |
+| 0.1 | [Tema 1: Inversión de control y el contenedor de Spring](../web/public/content/spring-boot/modulo-0.md#L82) | 3 | Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente. |
+| 0.2 | [Tema 2: Inyección por constructor vs por campo](../web/public/content/spring-boot/modulo-0.md#L251) | 3 | Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo. |
+| 0.3 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md#L409) | 3 | Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request. |
+| 0.4 | [Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min](../web/public/content/spring-boot/modulo-0.md#L592) | 0 | Ciclo de vida del contexto → SmartLifecycle y apagado ordenado; demuestra graceful shutdown con un request en vuelo; no confunde @PreDestroy con drenar tráfico. |
 | 1.1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md#L55) | 3 | Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven original y alternativa Gradle con Wrapper y comandos propios. |
 | 1.2 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md#L189) | 3 | YAML → Properties → sobrescritura CLI; clean evita recursos antiguos y las claves tienen salida comprobable. |
 | 1.3 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md#L325) | 3 | Base → perfil dev → capas. Corregido el resumen que pedía JPA/PostgreSQL antes de enseñarlos. |

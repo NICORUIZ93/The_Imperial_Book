@@ -8,6 +8,47 @@ Este curso va desde los números complejos hasta el diseño de compensadores. Ca
 - Qué capítulo cubre cada punto de los parciales.
 - En qué orden estudiar en las próximas dos semanas.
 
+## Mapa de la ruta
+
+«Control 1 — Sistemas de control desde cero» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–5"]
+    E1["Aplicación<br/>módulos 6–7, 11–12 y 14"]
+    E2["Integración<br/>módulos 8, 13, 15–18 y 21–22"]
+    E3["Experto<br/>módulos 9–10 y 19–20"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Cómo estudiar Control 1](/curso/control-1/0) |
+| 1 | Fundamentos | [Números complejos](/curso/control-1/1) |
+| 2 | Fundamentos | [Transformada de Laplace](/curso/control-1/2) |
+| 3 | Fundamentos | [Transformada inversa](/curso/control-1/3) |
+| 4 | Fundamentos | [Ecuaciones diferenciales y función de transferencia](/curso/control-1/4) |
+| 5 | Fundamentos | [Sistemas de control y diagramas de bloques](/curso/control-1/5) |
+| 6 | Aplicación | [Reducción de diagramas de bloques y regla de Mason](/curso/control-1/6) |
+| 7 | Aplicación | [Circuitos y amplificadores operacionales](/curso/control-1/7) |
+| 8 | Integración | [Modelado de sistemas físicos](/curso/control-1/8) |
+| 9 | Experto | [Linealización](/curso/control-1/9) |
+| 10 | Experto | [Introducción al espacio de estados](/curso/control-1/10) |
+| 11 | Aplicación | [Sistemas de primer orden y retardo](/curso/control-1/11) |
+| 12 | Aplicación | [Sistemas de segundo orden](/curso/control-1/12) |
+| 13 | Integración | [Polos dominantes, polos adicionales y ceros](/curso/control-1/13) |
+| 14 | Aplicación | [Error en estado estacionario](/curso/control-1/14) |
+| 15 | Integración | [Estabilidad y criterio de Routh-Hurwitz](/curso/control-1/15) |
+| 16 | Integración | [Plano s, estabilidad y zona de diseño](/curso/control-1/16) |
+| 17 | Integración | [Lugar geométrico de las raíces](/curso/control-1/17) |
+| 18 | Integración | [Acciones básicas de control: P, I, D](/curso/control-1/18) |
+| 19 | Experto | [Compensadores de adelanto y atraso](/curso/control-1/19) |
+| 20 | Experto | [Respuesta en frecuencia y diagramas de Bode](/curso/control-1/20) |
+| 21 | Integración | [Parciales resueltos](/curso/control-1/21) |
+| 22 | Integración | [Simulacro y formulario](/curso/control-1/22) |
+
 ## Aprende construyendo
 
 ### Tema 1: Cómo está armado cada capítulo

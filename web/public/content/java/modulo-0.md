@@ -44,7 +44,7 @@ flowchart LR
 | 02 | Conceptos de OOP | Fundamentos | [Clases, objetos, constructores y encapsulación](/curso/java/1#tema-1-clases-objetos-constructores-y-encapsulacion) |
 | 03 | Marco de colecciones | Fundamentos | [List, Set, Map y sus implementaciones](/curso/java/2#tema-1-list-set-map-y-sus-implementaciones) |
 | 04 | Manejo de excepciones | Fundamentos | [Excepciones personalizadas y no tragar excepciones](/curso/java/3#tema-3-excepciones-personalizadas-y-no-tragar-excepciones) |
-| 05 | Multihilo | Fundamentos | [Integrando concurrencia, modelado y testing](/curso/java/13#tema-2-integrando-concurrencia-modelado-y-testing) |
+| 05 | Multihilo | Fundamentos | [ExecutorService y gestión de hilos](/curso/java/5#tema-1-executorservice-y-gestion-de-hilos), [Virtual threads](/curso/java/5#tema-3-virtual-threads) y [Condiciones de carrera y sincronización](/curso/java/5#tema-4-condiciones-de-carrera-y-sincronizacion) |
 | 06 | JDBC | Base de datos | [JDBC, PreparedStatement y DAO](/curso/java/17#tema-1-jdbc-preparedstatement-y-dao) |
 | 07 | SQL | Base de datos | [SQL para definir, escribir, consultar y relacionar](/curso/foundations/4#tema-2-sql-para-definir-escribir-consultar-y-relacionar) |
 | 08 | Spring Core | Ecosistema Spring | [Inversión de control y el contenedor de Spring](/curso/spring-boot/0#tema-1-inversion-de-control-y-el-contenedor-de-spring) |
@@ -56,6 +56,47 @@ flowchart LR
 | 15 | Kubernetes | Grado de producción | [Pod, ReplicaSet, Deployment](/curso/devops/6#tema-1-pod-replicaset-deployment) |
 | 16 | AWS en la nube | Grado de producción | [Contenedores vs Lambda, y EKS](/curso/cloud/14#tema-3-contenedores-vs-lambda-y-eks) |
 | 17 | Diseño de sistemas | Grado de producción | [Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](/curso/foundations/10#tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella) |
+
+## Mapa de la ruta
+
+«Java: fundamentos y temas avanzados» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–3"]
+    E1["Aplicación<br/>módulos 4–6 y 20"]
+    E2["Integración<br/>módulos 7–9, 16–17, 19 y 22"]
+    E3["Experto<br/>módulos 10–15, 18 y 21"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Sintaxis, tipos y el modelo de la JVM](/curso/java/0) |
+| 1 | Fundamentos | [Programación orientada a objetos](/curso/java/1) |
+| 2 | Fundamentos | [Colecciones y genéricos](/curso/java/2) |
+| 3 | Fundamentos | [Excepciones y manejo de recursos](/curso/java/3) |
+| 4 | Aplicación | [Streams, programación funcional y Stream Gatherers](/curso/java/4) |
+| 5 | Aplicación | [Concurrencia: hilos, virtual threads y structured concurrency](/curso/java/5) |
+| 6 | Aplicación | [I/O, NIO.2 y serialización](/curso/java/6) |
+| 7 | Integración | [Records, sealed classes, pattern matching y unnamed patterns](/curso/java/7) |
+| 8 | Integración | [Build tools: Maven y Gradle](/curso/java/8) |
+| 9 | Integración | [Testing con JUnit 5 y Mockito](/curso/java/9) |
+| 10 | Experto | [Módulos (JPMS) y proyectos grandes](/curso/java/10) |
+| 11 | Experto | [JVM interna: GC, profiling, JIT y Foreign Function & Memory API](/curso/java/11) |
+| 12 | Experto | [Buenas prácticas y patrones de diseño](/curso/java/12) |
+| 13 | Experto | [Proyecto integrador](/curso/java/13) |
+| 14 | Experto | [Java en producción: memoria, benchmarks y runtime seguro](/curso/java/14) |
+| 15 | Experto | [Java Master: builds, testing y logging operacional](/curso/java/15) |
+| 16 | Integración | [JPA, Hibernate, consultas y persistencia en producción](/curso/java/16) |
+| 17 | Integración | [JDBC, DAO y transacciones](/curso/java/17) |
+| 18 | Experto | [HTTP, seguridad y backend con Java](/curso/java/18) |
+| 19 | Integración | [Java del día a día: reflexión, regex, dinero, contratos, plugins e i18n](/curso/java/19) |
+| 20 | Aplicación | [Java funcional: interfaces que componen comportamiento](/curso/java/20) |
+| 21 | Experto | [APIs públicas, compatibilidad y evolución](/curso/java/21) |
+| 22 | Integración | [El objeto por dentro: igualdad, copia, enums y tipos anidados](/curso/java/22) |
 
 ## Aprende construyendo
 

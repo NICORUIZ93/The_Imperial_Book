@@ -29,7 +29,7 @@
       "completeSubtopics": 0
     },
     "devops": {
-      "topics": 138,
+      "topics": 139,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -43,7 +43,7 @@
       "completeSubtopics": 3
     },
     "foundations": {
-      "topics": 102,
+      "topics": 103,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -3442,6 +3442,13 @@
         "complete": false
       },
       {
+        "module": 2,
+        "topic": "### Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
         "module": 20,
         "topic": "### Tema 1: Eventos de dominio e integración: hechos, no comandos",
         "subtopicCount": 0,
@@ -5409,6 +5416,13 @@
       {
         "module": 7,
         "topic": "### Tema 6: Desarrollo guiado por especificación con agentes de IA",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 7,
+        "topic": "### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

@@ -32,6 +32,51 @@ Cada laboratorio del inventario `docs/spring-gradle-labs.json` incorpora su buil
 
 **Referencia al cerrar M0–M1:** `examples/spring-fundamentos-rutaflow/README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
 
+## Mapa de la ruta
+
+«Spring Boot» tiene 27 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–1"]
+    E1["Aplicación<br/>módulos 2–3"]
+    E2["Integración<br/>módulos 4–6, 16–17 y 20"]
+    E3["Experto<br/>módulos 7–15, 18–19 y 21–26"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos de Spring: IoC y DI](/curso/spring-boot/0) |
+| 1 | Fundamentos | [Spring Boot CLI y estructura de proyecto](/curso/spring-boot/1) |
+| 2 | Aplicación | [REST APIs con Spring Web](/curso/spring-boot/2) |
+| 3 | Aplicación | [Persistencia con Spring Data JPA](/curso/spring-boot/3) |
+| 4 | Integración | [Spring Security y protección SSRF](/curso/spring-boot/4) |
+| 5 | Integración | [Configuración, perfiles y manejo de errores](/curso/spring-boot/5) |
+| 6 | Integración | [Testing en Spring Boot](/curso/spring-boot/6) |
+| 7 | Experto | [Observabilidad con Actuator](/curso/spring-boot/7) |
+| 8 | Experto | [Mensajería profesional: Kafka, RabbitMQ y contratos](/curso/spring-boot/8) |
+| 9 | Experto | [Programación reactiva con WebFlux](/curso/spring-boot/9) |
+| 10 | Experto | [Microservicios Spring Cloud: diseño, comunicación y operación](/curso/spring-boot/10) |
+| 11 | Experto | [Empaquetado y despliegue](/curso/spring-boot/11) |
+| 12 | Experto | [Proyecto integrador: microservicio productivo](/curso/spring-boot/12) |
+| 13 | Experto | [Consistencia, contratos y operación distribuida](/curso/spring-boot/13) |
+| 14 | Experto | [Backend de entregas: MySQL espacial, archivos y tiempo real](/curso/spring-boot/14) |
+| 15 | Experto | [Spring Master: hexagonal, reactivo y microservicios](/curso/spring-boot/15) |
+| 16 | Integración | [JPA de Spring Boot: Hibernate, Lazy vs Eager y N+1](/curso/spring-boot/16) |
+| 17 | Integración | [JDBC, DAO y transacciones en Spring Boot](/curso/spring-boot/17) |
+| 18 | Experto | [Autenticación, JWT y backend seguro con Spring Security](/curso/spring-boot/18) |
+| 19 | Experto | [Spring Batch: jobs, chunks y procesamiento masivo](/curso/spring-boot/19) |
+| 20 | Integración | [Integraciones Spring: scheduling, eventos, correo y caché](/curso/spring-boot/20) |
+| 21 | Experto | [Apache Kafka con Spring Boot: eventos, consumidores y recuperación](/curso/spring-boot/21) |
+| 22 | Experto | [Arquitectura: puertos, C4 y decisiones](/curso/spring-boot/22) |
+| 23 | Experto | [Spring Modulith: límites, eventos y pruebas modulares](/curso/spring-boot/23) |
+| 24 | Experto | [Spring GraphQL: schema, data fetchers y subscriptions](/curso/spring-boot/24) |
+| 25 | Experto | [Spring Cloud Stream: bindings Kafka y RabbitMQ](/curso/spring-boot/25) |
+| 26 | Experto | [Concurrencia avanzada en Spring](/curso/spring-boot/26) |
+
 ## Aprende construyendo
 
 ### Tema 1: Inversión de control y el contenedor de Spring

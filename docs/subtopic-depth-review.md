@@ -2,8 +2,8 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1430
-- Revisados humanamente para subtemas: 274
+- Temas inventariados: 1432
+- Revisados humanamente para subtemas: 276
 - Pendientes: 1156
 - Candidatos prioritarios por señales: 1017
 
@@ -15,9 +15,9 @@
 | angular | 78 | 78 | 0 |
 | cloud | 168 | 12 | 156 |
 | control-1 | 70 | 0 | 70 |
-| devops | 138 | 8 | 130 |
+| devops | 139 | 9 | 130 |
 | flutter | 119 | 73 | 46 |
-| foundations | 102 | 0 | 102 |
+| foundations | 103 | 1 | 102 |
 | ios | 69 | 13 | 56 |
 | java | 117 | 28 | 89 |
 | javascript | 92 | 4 | 88 |
@@ -1151,6 +1151,7 @@
 - `cloud/modulo-5` — Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min — deprecations
 - `devops/modulo-12` — Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min — FinOps
 - `devops/modulo-2` — Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min — rootless; runtime security
+- `devops/modulo-2` — Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min — Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop
 - `devops/modulo-4` — Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min — quality gates; promotion
 - `devops/modulo-6` — Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min — architecture
 - `devops/modulo-6` — Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min — scheduling
@@ -1230,6 +1231,7 @@
 - `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
 - `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
 - `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
+- `foundations/modulo-7` — Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min — Evaluar una skill de agente antes de usarla: validar, deduplicar y medir
 - `ios/modulo-0` — Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min — ownership
 - `ios/modulo-10` — Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min — localization
 - `ios/modulo-12` — Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min — Swift packages

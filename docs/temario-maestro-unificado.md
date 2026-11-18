@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1430
+- Temas actuales conservados: 1432
 - Temas actuales con evidencia exacta en libros: 3
 - Temas adicionales únicos de libros: 73027
 - Temas candidatos provenientes de cursos: 54
 - Cursos externos inventariados: 7
-- Total unificado provisional: 74511
+- Total unificado provisional: 74513
 - Libros pendientes de OCR: 109
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -20,7 +20,7 @@
 
 ## Stack: foundations
 
-Total provisional: 2429 temas.
+Total provisional: 2430 temas.
 
 ### Módulo actual 0
 
@@ -91,6 +91,7 @@ Total provisional: 2429 temas.
 4. **Decisiones, documentación, deuda y evolución** — `actual`
 5. **Records de C#: igualdad por valor no implica inmutabilidad profunda** — `actual`
 6. **Desarrollo guiado por especificación con agentes de IA** — `actual`
+7. **Evaluar una skill de agente antes de usarla: validar, deduplicar y medir** — `actual`
 
 ### Módulo actual 8
 
@@ -48559,7 +48560,7 @@ Total provisional: 2836 temas.
 
 ## Stack: devops
 
-Total provisional: 357 temas.
+Total provisional: 358 temas.
 
 ### Módulo actual 0
 
@@ -48595,6 +48596,7 @@ Total provisional: 357 temas.
 6. **Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor** — `actual`
 7. **Operación diaria: inspect, stats, events y respaldo de volúmenes** — `actual`
 8. **Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas** — `actual`
+9. **Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop** — `actual`
 
 ### Módulo actual 3
 

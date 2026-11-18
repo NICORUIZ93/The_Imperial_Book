@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "dc05e1dcbf82fedf6d75f02c631d529bca060e10ed4e01c761ef6add1231dc1c",
+    "fingerprint": "dc8af5c980f0167d0795e6f2718e96f40e9a4c50ad7aed7817f32d29cb0a9559",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 39,
@@ -1853,7 +1853,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1430,
+    "topics": 1432,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -3834,7 +3834,7 @@
         "module": 33,
         "tailWords": 80,
         "topic": "Tema 2: Kubernetes administrado, ECS y Service Mesh",
-        "words": 830
+        "words": 1229
       },
       {
         "issues": [],
@@ -5183,6 +5183,13 @@
         "tailWords": 149,
         "topic": "Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",
         "words": 1091
+      },
+      {
+        "issues": [],
+        "module": 2,
+        "tailWords": 160,
+        "topic": "Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+        "words": 1286
       },
       {
         "issues": [],
@@ -7112,6 +7119,13 @@
         "tailWords": 171,
         "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
         "words": 1269
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 134,
+        "topic": "Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
+        "words": 1600
       },
       {
         "issues": [],

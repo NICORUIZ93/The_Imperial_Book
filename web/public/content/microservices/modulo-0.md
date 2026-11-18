@@ -2,6 +2,20 @@
 
 Este módulo no presupone que «microservicio» signifique Spring Boot, Docker o una API pequeña. Primero separas dos procesos y observas qué se pierde al cruzar la red: llamadas instantáneas, memoria compartida, resultado inequívoco y orden global.
 
+## Mapa de la ruta
+
+«Microservicios: sistemas distribuidos» tiene 2 módulos, todos de la etapa Fundamentos; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–1"]
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Antes de distribuir: proceso, red y falacias](/curso/microservices/0) |
+| 1 | Fundamentos | [Construir un monolito modular antes de extraer servicios](/curso/microservices/1) |
+
 ## Aprende construyendo
 
 El laboratorio crece de un servidor local a un flujo que hace visibles latencia, ambigüedad, orden y compatibilidad. Conserva cada evidencia: el objetivo no es completar comandos, sino poder explicar qué cambió y por qué.

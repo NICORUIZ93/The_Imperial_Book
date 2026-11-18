@@ -19,6 +19,39 @@ Instala Swift desde [swift.org/install](https://www.swift.org/install/) y VS Cod
 
 Si Xcode indica que no encuentra un runtime, instálalo en Settings → Platforms. Si falla la licencia, ejecuta `sudo xcodebuild -license accept`. Conserva espacio libre suficiente: Xcode y los simuladores pueden ocupar decenas de GB.
 
+## Mapa de la ruta
+
+«iOS con SwiftUI» tiene 15 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–2"]
+    E1["Aplicación<br/>módulos 3–5"]
+    E2["Integración<br/>módulos 6–8"]
+    E3["Experto<br/>módulos 9–14"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos de Swift](/curso/ios/0) |
+| 1 | Fundamentos | [SwiftUI: vistas y layout declarativo](/curso/ios/1) |
+| 2 | Fundamentos | [Estado y data flow](/curso/ios/2) |
+| 3 | Aplicación | [Navegación](/curso/ios/3) |
+| 4 | Aplicación | [Concurrencia moderna: async/await](/curso/ios/4) |
+| 5 | Aplicación | [Networking con URLSession](/curso/ios/5) |
+| 6 | Integración | [Persistencia con SwiftData](/curso/ios/6) |
+| 7 | Integración | [Combine y programación reactiva](/curso/ios/7) |
+| 8 | Integración | [Arquitectura MVVM](/curso/ios/8) |
+| 9 | Experto | [Testing en iOS](/curso/ios/9) |
+| 10 | Experto | [Performance, accesibilidad y HIG](/curso/ios/10) |
+| 11 | Experto | [Publicación en App Store](/curso/ios/11) |
+| 12 | Experto | [Proyecto integrador: app SwiftUI completa](/curso/ios/12) |
+| 13 | Experto | [iOS en producción: seguridad, sincronización y operación](/curso/ios/13) |
+| 14 | Experto | [SwiftUI Master: pruebas, animación e interoperabilidad](/curso/ios/14) |
+
 ## Aprende construyendo
 
 ### Tema 1: Optionals y unwrapping seguro

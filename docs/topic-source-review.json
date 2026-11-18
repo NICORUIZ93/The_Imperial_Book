@@ -177,7 +177,7 @@
         "https://docs.python.org/3/tutorial/interpreter.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 136,
+      "line": 170,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/python/run",
         "https://docs.python.org/3/tutorial/interpreter.html",
@@ -195,7 +195,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 201,
+      "line": 235,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/terminal/basics",
         "https://docs.python.org/3/using/cmdline.html"
@@ -211,7 +211,7 @@
         "https://docs.python.org/3/using/cmdline.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 258,
+      "line": 292,
       "originalProseUrls": [
         "https://docs.python.org/3/using/cmdline.html"
       ],
@@ -227,7 +227,7 @@
         "https://docs.python.org/3/tutorial/inputoutput.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 315,
+      "line": 349,
       "originalProseUrls": [
         "https://docs.python.org/3/library/functions.html",
         "https://docs.python.org/3/tutorial/inputoutput.html"
@@ -243,7 +243,7 @@
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 383,
+      "line": 417,
       "originalProseUrls": [
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
@@ -1544,7 +1544,7 @@
         "https://git-scm.com/doc"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 342,
+      "line": 395,
       "originalProseUrls": [
         "https://git-scm.com/doc"
       ],
@@ -1739,7 +1739,7 @@
         "https://aws.amazon.com/architecture/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 322,
+      "line": 342,
       "originalProseUrls": [
         "https://aws.amazon.com/architecture/"
       ],
@@ -1784,7 +1784,7 @@
         "https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 33,
+      "line": 74,
       "originalProseUrls": [
         "https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html"
       ],
@@ -1799,7 +1799,7 @@
         "https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 115,
+      "line": 156,
       "originalProseUrls": [
         "https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html"
       ],
@@ -1814,7 +1814,7 @@
         "https://www.gnu.org/software/gawk/manual/gawk.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 192,
+      "line": 233,
       "originalProseUrls": [
         "https://www.gnu.org/software/gawk/manual/gawk.html"
       ],
@@ -1829,7 +1829,7 @@
         "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 273,
+      "line": 314,
       "originalProseUrls": [
         "https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html"
       ],
@@ -1844,7 +1844,7 @@
         "https://man7.org/linux/man-pages/man5/crontab.5.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 354,
+      "line": 395,
       "originalProseUrls": [
         "https://man7.org/linux/man-pages/man5/crontab.5.html"
       ],
@@ -1859,7 +1859,7 @@
         "https://man.openbsd.org/sshd_config"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 434,
+      "line": 475,
       "originalProseUrls": [
         "https://man.openbsd.org/sshd_config"
       ],
@@ -1874,7 +1874,7 @@
         "https://www.rfc-editor.org/rfc/rfc1035"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 507,
+      "line": 548,
       "originalProseUrls": [
         "https://www.rfc-editor.org/rfc/rfc1035"
       ],
@@ -1889,7 +1889,7 @@
         "https://www.atlassian.com/devops"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 578,
+      "line": 619,
       "originalProseUrls": [
         "https://www.atlassian.com/devops"
       ],
@@ -1904,7 +1904,7 @@
         "https://nginx.org/en/docs/http/ngx_http_proxy_module.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 650,
+      "line": 691,
       "originalProseUrls": [
         "http://demo_api/",
         "http://localhost:8080/api/health",
@@ -1922,7 +1922,7 @@
         "https://man7.org/linux/man-pages/man5/sudoers.5.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 804,
+      "line": 845,
       "originalProseUrls": [
         "https://documentation.ubuntu.com/server/how-to/security/user-management/",
         "https://man7.org/linux/man-pages/man5/sudoers.5.html"
@@ -1940,7 +1940,7 @@
         "https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 923,
+      "line": 964,
       "originalProseUrls": [
         "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html",
         "https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html",
@@ -3924,7 +3924,7 @@
         "https://www.typescriptlang.org/docs/handbook/utility-types.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 329,
+      "line": 364,
       "originalProseUrls": [
         "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type",
         "https://www.typescriptlang.org/docs/handbook/utility-types.html"
@@ -4426,7 +4426,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 62,
+      "line": 103,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html"
@@ -5626,7 +5626,7 @@
         "https://dart.dev/tools/linter-rules"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 366,
+      "line": 407,
       "originalProseUrls": [
         "https://dart.dev/tools/analysis",
         "https://dart.dev/tools/linter-rules"
@@ -5811,7 +5811,7 @@
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 24,
+      "line": 50,
       "originalProseUrls": [
         "https://martinfowler.com/eaaDev/EventSourcing.html"
       ],
@@ -5826,7 +5826,7 @@
         "https://owasp.org/www-community/Threat_Modeling"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 230,
+      "line": 256,
       "originalProseUrls": [
         "https://owasp.org/www-community/Threat_Modeling"
       ],

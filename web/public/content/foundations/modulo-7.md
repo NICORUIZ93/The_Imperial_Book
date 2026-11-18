@@ -662,3 +662,213 @@ Entregá la salida del verificador con `C3` sin prueba, la salida corregida con 
 **Cuándo no usarlo:** en prototipos desechables o en exploraciones de una tarde; ahí basta un criterio de salida claro y se borra el código al terminar.
 
 **Fuente oficial:** [GitHub Docs — Prácticas recomendadas para usar Copilot en tareas](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/best-practices-for-using-copilot-to-work-on-tasks).
+
+### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min
+
+**Prerrequisito:** tema «Desarrollo guiado por especificación con agentes de IA» de este módulo.
+
+**Al finalizar podrás:** revisar un conjunto de skills de un agente de IA en tres niveles: que estén bien formadas y sin datos personales, que no repitan otra skill, y que mejoren el resultado en una prueba A/B.
+
+**¿Por qué es importante?** Una skill es una instrucción que el agente sigue sin preguntar. Si filtra datos personales, choca con otra parecida o no mejora nada, el agente trabaja peor y nadie lo nota. Evaluarla antes de publicarla es como revisar código antes de fusionarlo.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea la carpeta `academia-labs/fundamentos/evaluar-skills` con una subcarpeta `skills/` que tenga una carpeta por skill y su `SKILL.md`.
+
+#### Paso 2 · Contexto y caso real
+
+El equipo de RutaFlow tenía tres skills para su agente. Una tenía en su ejemplo el correo y la cédula de un revisor real, y otra hacía casi lo mismo que una existente. La evaluación las encontró antes de publicarlas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** skill de agente, `SKILL.md`, cabecera YAML, datos personales (PII), duplicado, índice de Jaccard, prueba A/B, tasa de éxito, mejora mínima.
+
+NVIDIA publicó SkillEvaluator con tres niveles, de más barato a más caro:
+
+| Nivel | Pregunta | Qué revisa | Costo |
+|---|---|---|---|
+| 1 · Validación | ¿Está bien formada y es segura? | cabecera, nombre igual a la carpeta, largo de la descripción, datos personales | sin modelo de IA |
+| 2 · Duplicados | ¿Ya existe otra igual? | parecido entre descripciones | embeddings o comparación de palabras |
+| 3 · Evaluación | ¿Ayuda de verdad? | las mismas tareas con y sin la skill (A/B) | muchas ejecuciones del agente |
+
+Se corre en orden: no tiene sentido medir con A/B una skill que ni siquiera está bien escrita.
+
+Este tema implementa los tres niveles en pequeño. El nivel 2 usa el **índice de Jaccard** (palabras en común divididas entre todas las palabras) en lugar de embeddings, y el nivel 3 lee resultados ya medidos.
+
+**Analogía:** es la revisión de una receta antes de imprimirla en el menú: que tenga ingredientes y pasos claros (nivel 1), que no sea otro plato con distinto nombre (nivel 2) y que los clientes la prefieran en una cata a ciegas (nivel 3).
+
+**Límite de uso:** Jaccard solo ve palabras iguales: dos descripciones con sinónimos parecen distintas. Para eso SkillEvaluator usa embeddings. Una prueba A/B con 10 tareas es una señal, no una prueba estadística; con pocas tareas la diferencia puede ser suerte.
+
+```mermaid
+flowchart LR
+    S["skills/*/SKILL.md"] --> N1{"Nivel 1<br/>¿bien formada y sin PII?"}
+    N1 -->|no| X["corregir antes de seguir"]
+    N1 -->|sí| N2{"Nivel 2<br/>¿se parece a otra?"}
+    N2 -->|sí| M["fusionar o separar"]
+    N2 -->|no| N3{"Nivel 3<br/>¿mejora el A/B?"}
+    N3 -->|sí| P["publicar"]
+    N3 -->|no| R["reescribir o descartar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/fundamentos/evaluar-skills/skills/resumir-pr/SKILL.md`:
+
+```markdown
+---
+name: resumir-pr
+description: Revisa un pull request de RutaFlow buscando errores de lógica y pruebas faltantes en el diff.
+---
+1. Lee el diff.
+2. Resume los cambios. Contacto del equipo: soporte@rutaflow.co, cédula del revisor 1020304050.
+```
+
+Archivo `academia-labs/fundamentos/evaluar-skills/resultados-ab.json`:
+
+```json
+{
+  "skill": "generar-changelog",
+  "tareas": 10,
+  "sin_skill": [1, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+  "con_skill": [1, 1, 1, 1, 0, 1, 1, 1, 1, 0]
+}
+```
+
+Archivo `academia-labs/fundamentos/evaluar-skills/evaluar_skill.py`:
+
+```python
+"""Evalúa skills de agentes en tres niveles, como SkillEvaluator de NVIDIA.
+
+Nivel 1: ¿está bien formada y es segura?  Nivel 2: ¿ya existe otra igual?
+Nivel 3: ¿mejora el resultado frente a no usarla (prueba A/B)?
+"""
+import json
+import re
+import sys
+from pathlib import Path
+
+PII = re.compile(r"[\w.-]+@[\w-]+\.\w+|\b\d{8,10}\b")  # correos y números tipo cédula
+UMBRAL_DUPLICADO = 0.6   # parecido de descripciones a partir del cual se revisa a mano
+MEJORA_MINIMA = 0.2      # la skill debe subir la tasa de éxito al menos 20 puntos
+
+
+def leer(ruta: Path) -> dict:
+    texto = ruta.read_text(encoding="utf-8")
+    cabecera = re.match(r"---\n(.*?)\n---\n(.*)", texto, re.S)
+    if not cabecera:
+        return {"nombre": ruta.parent.name, "error": "sin cabecera YAML", "cuerpo": texto}
+    campos = dict(re.findall(r"^(\w+):\s*(.+)$", cabecera.group(1), re.M))
+    return {"nombre": campos.get("name", ""), "descripcion": campos.get("description", ""),
+            "cuerpo": cabecera.group(2), "carpeta": ruta.parent.name}
+
+
+def nivel1(skill: dict) -> list[str]:
+    problemas = []
+    if "error" in skill:
+        return [skill["error"]]
+    if skill["nombre"] != skill["carpeta"]:
+        problemas.append("el nombre no coincide con la carpeta")
+    if not 20 <= len(skill["descripcion"]) <= 1024:
+        problemas.append("la descripción debe tener entre 20 y 1024 caracteres")
+    if PII.search(skill["cuerpo"]):
+        problemas.append("contiene datos personales")
+    return problemas
+
+
+def palabras(texto: str) -> set[str]:
+    return {p for p in re.findall(r"\w+", texto.lower()) if len(p) > 3}
+
+
+def parecido(a: str, b: str) -> float:
+    pa, pb = palabras(a), palabras(b)
+    return len(pa & pb) / len(pa | pb)  # índice de Jaccard
+
+
+def nivel2(skills: list[dict]) -> list[str]:
+    avisos = []
+    for i, a in enumerate(skills):
+        for b in skills[i + 1:]:
+            valor = parecido(a["descripcion"], b["descripcion"])
+            if valor >= UMBRAL_DUPLICADO:
+                avisos.append(f"{a['nombre']} y {b['nombre']} se parecen {valor:.0%}")
+    return avisos
+
+
+def nivel3(ruta: Path) -> str:
+    datos = json.loads(ruta.read_text(encoding="utf-8"))
+    sin = sum(datos["sin_skill"]) / datos["tareas"]
+    con = sum(datos["con_skill"]) / datos["tareas"]
+    veredicto = "aporta" if con - sin >= MEJORA_MINIMA else "no aporta lo suficiente"
+    return f"{datos['skill']}: éxito {sin:.0%} sin la skill -> {con:.0%} con ella ({veredicto})"
+
+
+skills = [leer(p) for p in sorted(Path("skills").glob("*/SKILL.md"))]
+fallas = 0
+print("Nivel 1 · validación")
+for skill in skills:
+    problemas = nivel1(skill)
+    fallas += bool(problemas)
+    print(f"  {skill['nombre']:<18} {'ok' if not problemas else '; '.join(problemas)}")
+print("Nivel 2 · duplicados")
+duplicados = nivel2(skills)
+for aviso in duplicados or ["sin duplicados"]:
+    print(f"  {aviso}")
+print("Nivel 3 · prueba A/B")
+print(f"  {nivel3(Path('resultados-ab.json'))}")
+sys.exit(1 if fallas or duplicados else 0)
+```
+
+Crea también `skills/revisar-pr/SKILL.md` (revisa un PR buscando errores, pruebas faltantes y secretos) y `skills/generar-changelog/SKILL.md` (genera el CHANGELOG desde los commits), con la misma cabecera.
+
+```bash
+cd academia-labs/fundamentos/evaluar-skills
+python3 evaluar_skill.py; echo "salida: $?"
+```
+
+**Explicación por bloques:** `leer` separa la cabecera YAML del cuerpo de cada `SKILL.md`. `nivel1` exige que el nombre coincida con la carpeta, que la descripción tenga entre 20 y 1024 caracteres (la especificación de Agent Skills pide de 1 a 1024; el mínimo de 20 es una regla propia contra descripciones vagas) y que el cuerpo no tenga correos ni números de 8 a 10 dígitos. `nivel2` compara cada par de descripciones con Jaccard y avisa desde el 60 %. `nivel3` calcula la tasa de éxito con y sin la skill y exige una mejora de 20 puntos. El script termina con código 1 si hay fallas o duplicados, para que un pipeline lo detenga.
+
+![Captura de terminal: resumir-pr falla por datos personales, se parece 91 % a revisar-pr, y generar-changelog sube del 40 % al 80 % de éxito](content/figures/foundations/evaluar-skill-agente.svg)
+
+**Resultado esperado:**
+
+```text
+Nivel 1 · validación
+  generar-changelog  ok
+  resumir-pr         contiene datos personales
+  revisar-pr         ok
+Nivel 2 · duplicados
+  resumir-pr y revisar-pr se parecen 91%
+Nivel 3 · prueba A/B
+  generar-changelog: éxito 40% sin la skill -> 80% con ella (aporta)
+salida: 1
+```
+
+**Fallo deliberado:** sube `UMBRAL_DUPLICADO` a 0.95. **Error esperado:** el nivel 2 dice «sin duplicados» aunque `resumir-pr` y `revisar-pr` tienen casi la misma descripción. **Diagnóstico:** un umbral muy alto deja pasar duplicados reales. Ajusta el umbral con pares que sepas que son duplicados y pares que no.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el evaluador y explica cada línea.
+2. **Variación:** quita el correo y la cédula de `resumir-pr` y vuelve a ejecutar.
+3. **Diagnóstico:** reproduce el fallo deliberado con el umbral en 0.95.
+4. **Integración:** cambia la descripción de `resumir-pr` para que diga qué la diferencia de `revisar-pr` y comprueba que el parecido baja.
+5. **Diseño:** cambia `con_skill` en `resultados-ab.json` para que la mejora sea de 10 puntos y explica el nuevo veredicto.
+
+**Pista:** una descripción buena dice cuándo usar la skill y en qué se diferencia de las otras; eso también baja el parecido del nivel 2.
+
+#### Paso 6 · Práctica independiente
+
+Evalúa las skills de este repositorio (`.claude/skills/`) con el nivel 1 de SkillEvaluator: `skillevaluator quality-check`. Compara su reporte con el tuyo y anota qué revisa que tu script no revisa.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras los tres niveles y por qué van en ese orden.
+- [ ] El evaluador detecta los datos personales y el duplicado.
+- [ ] Reprodujiste el duplicado perdido con un umbral alto.
+- [ ] Sabes por qué 10 tareas no bastan para una conclusión fuerte.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** publicar skills sin revisarlas, poner datos reales en ejemplos y medir solo con el promedio de pocas tareas. **Siguiente paso:** el módulo 8 aplica la misma idea de puerta de calidad a las pruebas del código.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega la evaluación de skills al pipeline del repositorio de RutaFlow para que una skill con datos personales o duplicada no llegue a la rama principal.
+
+**Fuente oficial:** [NVIDIA SkillEvaluator](https://github.com/NVIDIA/skillevaluator) y [Agent Skills — especificación](https://agentskills.io/specification).
+

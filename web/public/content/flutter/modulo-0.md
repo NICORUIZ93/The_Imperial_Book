@@ -22,6 +22,47 @@ flutter run
 
 Selecciona Chrome o un emulador si hay varios dispositivos. Cambia el texto en `lib/main.dart` y usa hot reload (`r` en la terminal). Si `flutter` no se reconoce, el problema es `PATH`; si no aparecen dispositivos, el SDK funciona pero falta configurar un destino.
 
+## Mapa de la ruta
+
+«Flutter» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–2"]
+    E1["Aplicación<br/>módulos 3–5"]
+    E2["Integración<br/>módulos 6–7"]
+    E3["Experto<br/>módulos 8–22"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos de Dart](/curso/flutter/0) |
+| 1 | Fundamentos | [Widgets: stateless vs stateful](/curso/flutter/1) |
+| 2 | Fundamentos | [Layout y diseño responsive](/curso/flutter/2) |
+| 3 | Aplicación | [Navegación y rutas](/curso/flutter/3) |
+| 4 | Aplicación | [Gestión de estado](/curso/flutter/4) |
+| 5 | Aplicación | [Networking](/curso/flutter/5) |
+| 6 | Integración | [Persistencia local](/curso/flutter/6) |
+| 7 | Integración | [Integración con plataformas nativas](/curso/flutter/7) |
+| 8 | Experto | [Animaciones y rendimiento](/curso/flutter/8) |
+| 9 | Experto | [Testing en Flutter](/curso/flutter/9) |
+| 10 | Experto | [Theming, accesibilidad y Material/Cupertino](/curso/flutter/10) |
+| 11 | Experto | [Publicación en App Store y Google Play](/curso/flutter/11) |
+| 12 | Experto | [Proyecto integrador: app Flutter completa](/curso/flutter/12) |
+| 13 | Experto | [Flutter en producción: seguridad, isolates y operación](/curso/flutter/13) |
+| 14 | Experto | [Flutter para entregas: mapas, GPS y tiempo real](/curso/flutter/14) |
+| 15 | Experto | [Flutter Master: calidad, arquitectura y despliegue](/curso/flutter/15) |
+| 16 | Experto | [Flutter FFI: Dart con código nativo](/curso/flutter/16) |
+| 17 | Experto | [Dart avanzado: generación, AST y paquetes](/curso/flutter/17) |
+| 18 | Experto | [Flutter en producción: secretos, calidad y rendimiento](/curso/flutter/18) |
+| 19 | Experto | [Flutter para entregas: mapa, conexión y trabajo offline](/curso/flutter/19) |
+| 20 | Experto | [Flutter Master: pruebas, arquitectura y release](/curso/flutter/20) |
+| 21 | Experto | [Flutter IAP: compras y suscripciones](/curso/flutter/21) |
+| 22 | Experto | [Flutter Ads: anuncios, mediación y privacidad](/curso/flutter/22) |
+
 ## Aprende construyendo
 
 ### Tema 1: Sound null safety

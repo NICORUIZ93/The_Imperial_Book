@@ -34,6 +34,41 @@ ng serve --open
 
 Si ves la aplicación en `http://localhost:4200`, el entorno funciona. Detén el servidor con `Ctrl+C`. Si `ng` no existe, cierra y abre la terminal; si aún falla, ejecuta `npx ng version` para distinguir un problema de instalación de uno de `PATH`.
 
+## Mapa de la ruta
+
+«Angular — última versión y migraciones» tiene 17 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–3"]
+    E1["Aplicación<br/>módulos 4–7"]
+    E2["Integración<br/>módulos 8–10"]
+    E3["Experto<br/>módulos 11–16"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos y Angular CLI](/curso/angular/0) |
+| 1 | Fundamentos | [Componentes, plantillas y data binding](/curso/angular/1) |
+| 2 | Fundamentos | [Signals: reactividad, linkedSignal y resource()](/curso/angular/2) |
+| 3 | Fundamentos | [Servicios e inyección de dependencias](/curso/angular/3) |
+| 4 | Aplicación | [Routing y navegación](/curso/angular/4) |
+| 5 | Aplicación | [Formularios reactivos y template-driven](/curso/angular/5) |
+| 6 | Aplicación | [RxJS esencial para Angular](/curso/angular/6) |
+| 7 | Aplicación | [HttpClient e interceptores](/curso/angular/7) |
+| 8 | Integración | [Standalone components y arquitectura sin NgModules](/curso/angular/8) |
+| 9 | Integración | [Gestión de estado](/curso/angular/9) |
+| 10 | Integración | [Testing en Angular](/curso/angular/10) |
+| 11 | Experto | [Performance, SSR y zoneless](/curso/angular/11) |
+| 12 | Experto | [Apéndice: qué cambió entre versiones mayores](/curso/angular/12) |
+| 13 | Experto | [Proyecto integrador: aplicación standalone completa](/curso/angular/13) |
+| 14 | Experto | [Angular en producción: accesibilidad, seguridad e i18n](/curso/angular/14) |
+| 15 | Experto | [Angular Master: pruebas, animación y SSR](/curso/angular/15) |
+| 16 | Experto | [Angular Native: componentes Angular como vistas nativas reales](/curso/angular/16) |
+
 ## Aprende construyendo
 
 Cada tema verifica su garantía con código real: un error genuino de Angular al mezclar componentes standalone y no-standalone, una comprobación real de propiedad del DOM frente a atributo HTML, el compilador TypeScript real (`tsc`) exigiendo narrowing en `unknown`, y `ng build` real fallando ante un error de plantilla detectado en tiempo de compilación (AOT).

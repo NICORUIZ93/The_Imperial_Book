@@ -22,6 +22,39 @@ npm run dev
 
 Abre la dirección que muestra la terminal, normalmente `http://localhost:5173`. Edita `src/App.jsx`, guarda y confirma que el navegador cambia sin reiniciar el servidor. `npm install` descarga dependencias; `npm run dev` inicia el entorno de desarrollo; `Ctrl+C` lo detiene. Si aparece un error de permisos, no uses `sudo npm`: instala Node mediante `nvm` y vuelve a intentarlo.
 
+## Mapa de la ruta
+
+«React: fundamentos y aplicaciones» tiene 15 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–2"]
+    E1["Aplicación<br/>módulos 3–5"]
+    E2["Integración<br/>módulos 6–8"]
+    E3["Experto<br/>módulos 9–14"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [JSX, componentes y props](/curso/react/0) |
+| 1 | Fundamentos | [Estado local y el ciclo de render](/curso/react/1) |
+| 2 | Fundamentos | [Hooks esenciales](/curso/react/2) |
+| 3 | Aplicación | [Formularios y eventos](/curso/react/3) |
+| 4 | Aplicación | [Context API y composición](/curso/react/4) |
+| 5 | Aplicación | [React Router: navegación](/curso/react/5) |
+| 6 | Integración | [Data fetching moderno](/curso/react/6) |
+| 7 | Integración | [Gestión de estado global](/curso/react/7) |
+| 8 | Integración | [Testing en React](/curso/react/8) |
+| 9 | Experto | [Performance en React](/curso/react/9) |
+| 10 | Experto | [Server Components y Next.js](/curso/react/10) |
+| 11 | Experto | [TypeScript con React](/curso/react/11) |
+| 12 | Experto | [Proyecto integrador: SPA con datos reales](/curso/react/12) |
+| 13 | Experto | [React en producción: resiliencia, accesibilidad y seguridad](/curso/react/13) |
+| 14 | Experto | [React Master: servidor, Next.js, a11y e i18n](/curso/react/14) |
+
 ## Aprende construyendo
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.

@@ -1,15 +1,15 @@
 {
   "tracks": {
     "foundations": {
-      "topics": 102,
-      "code": 102,
-      "commentedCode": 96,
-      "mermaid": 73,
+      "topics": 103,
+      "code": 103,
+      "commentedCode": 97,
+      "mermaid": 74,
       "archifyVisual": 6,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 101,
-      "runCommand": 102,
+      "filePath": 102,
+      "runCommand": 103,
       "officialSource": 102
     },
     "cloud": {
@@ -25,16 +25,16 @@
       "officialSource": 166
     },
     "devops": {
-      "topics": 138,
-      "code": 138,
-      "commentedCode": 97,
-      "mermaid": 91,
+      "topics": 139,
+      "code": 139,
+      "commentedCode": 98,
+      "mermaid": 92,
       "archifyVisual": 2,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 138,
-      "runCommand": 137,
-      "officialSource": 137
+      "filePath": 139,
+      "runCommand": 138,
+      "officialSource": 138
     },
     "javascript": {
       "topics": 92,

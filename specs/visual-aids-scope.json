@@ -722,6 +722,18 @@
       "module": 5,
       "topic": 7,
       "capture": "requerida"
+    },
+    {
+      "track": "devops",
+      "module": 2,
+      "topic": 9,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 7,
+      "topic": 7,
+      "capture": "requerida"
     }
   ]
 }

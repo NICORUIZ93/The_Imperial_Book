@@ -14,6 +14,40 @@ git --version
 
 En Windows puedes usar PowerShell; los tres comandos son iguales. Debes ver una versión de Node con prefijo `v`, una versión de npm y una versión de Git. Si un comando no se reconoce, confirma que el instalador terminó y vuelve a abrir la terminal; no continúes hasta que `node` y `npm` respondan.
 
+## Mapa de la ruta
+
+«Node.js: fundamentos de backend» tiene 16 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–2"]
+    E1["Aplicación<br/>módulos 3–5"]
+    E2["Integración<br/>módulos 6–7"]
+    E3["Experto<br/>módulos 8–15"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [El runtime de Node: V8, libuv y el Event Loop](/curso/node/0) |
+| 1 | Fundamentos | [Módulos, npm/pnpm y gestión de dependencias](/curso/node/1) |
+| 2 | Fundamentos | [Sistema de archivos y streams](/curso/node/2) |
+| 3 | Aplicación | [Servidores HTTP nativos](/curso/node/3) |
+| 4 | Aplicación | [Express/Fastify: routing y middleware](/curso/node/4) |
+| 5 | Aplicación | [Bases de datos: drivers y ORMs](/curso/node/5) |
+| 6 | Integración | [Autenticación y autorización](/curso/node/6) |
+| 7 | Integración | [Testing e integración continua](/curso/node/7) |
+| 8 | Experto | [Patrones asíncronos avanzados](/curso/node/8) |
+| 9 | Experto | [Observabilidad y manejo de errores en producción](/curso/node/9) |
+| 10 | Experto | [Seguridad en Node](/curso/node/10) |
+| 11 | Experto | [Despliegue y contenedores](/curso/node/11) |
+| 12 | Experto | [Proyecto integrador: API productiva](/curso/node/12) |
+| 13 | Experto | [TypeScript, contratos e integraciones confiables](/curso/node/13) |
+| 14 | Experto | [Node.js avanzado: GraphQL, sagas y mensajería](/curso/node/14) |
+| 15 | Experto | [Deno y Bun: permisos, compatibilidad y decisión](/curso/node/15) |
+
 ## Aprende construyendo
 
 Instala una versión **LTS** de Node.js, Git y Visual Studio Code. Un administrador de versiones permite cambiar de Node entre proyectos: `nvm-windows` en Windows y `nvm` en macOS/Linux. Comprueba `node --version`, `npm --version` y `git --version` antes de empezar.

@@ -73,8 +73,18 @@
               "where": [
                 {
                   "track": "java",
-                  "module": 13,
-                  "topic": 2
+                  "module": 5,
+                  "topic": 1
+                },
+                {
+                  "track": "java",
+                  "module": 5,
+                  "topic": 3
+                },
+                {
+                  "track": "java",
+                  "module": 5,
+                  "topic": 4
                 }
               ]
             },
@@ -377,7 +387,9 @@
                 }
               ],
               "inventoryCourse": "devtalles-spring-boot-harness",
-              "reason": "Solo hay un anuncio sin temario público. Lo más cercano que enseña la academia es Spring AI (M20 Temas 7 y 8). La primera revisión lo marcó como hueco por un error de búsqueda; el hueco real era MCP, que se agrega en specs/005 E3."
+              "reason": "Solo hay un anuncio sin temario público. Lo más cercano que enseña la academia es Spring AI (M20 Temas 7 y 8). La primera revisión lo marcó como hueco por un error de búsqueda; el hueco real era MCP, que se agrega en specs/005 E3. Búsqueda del 2026-11-18: DevTalles aún no publica temario; se vuelve a revisar el 2027-01-15.",
+              "lastSyllabusSearch": "2026-11-18",
+              "reviewAgainOn": "2027-01-15"
             },
             {
               "title": "Mitos y verdades de Domain-Driven Design (DAS Academy)",
@@ -499,6 +511,63 @@
                   "topic": 4
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capturas-2026-11-18",
+      "receivedAt": "2026-11-18",
+      "reviewedAt": "2026-11-18",
+      "note": "Revisión de Descargas: 21 capturas, 13 copias idénticas borradas (mismo SHA-1). Estas son las 3 únicas que faltaban en el registro.",
+      "captures": [
+        {
+          "file": "1135CCFD-7562-4F64-A7F6-A75C09479DC4.PNG",
+          "kind": "herramienta",
+          "source": "Publicación de Brais Moure: NVIDIA SkillEvaluator, pipeline de tres niveles (validación, deduplicación y evaluación A/B)",
+          "topics": [
+            {
+              "title": "Evaluar skills de agentes (SkillEvaluator de NVIDIA)",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "foundations",
+                  "module": 7,
+                  "topic": 7
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "92A44112-DB6A-4B92-9C68-6FDBF6752F3F.PNG",
+          "kind": "herramienta",
+          "source": "Publicación de Midudev: Kiri, motor de contenedores en Rust, alternativa a Docker Desktop (github.com/libracoder/kiri)",
+          "topics": [
+            {
+              "title": "Elegir el motor de contenedores local (Kiri, Podman, Colima, Rancher Desktop)",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 2,
+                  "topic": 9
+                }
+              ],
+              "reason": "Kiri se cita como proyecto nuevo, no como recomendación: el 2026-11-18 GitHub mostraba 5 estrellas, 1 fork y ninguna versión estable."
+            }
+          ]
+        },
+        {
+          "file": "5380F6D6-8DE7-423A-A761-C91576722AE5.PNG",
+          "kind": "entretenimiento",
+          "source": "Publicación de Ricardo Buendía: lista de 10 películas sobre «trabajo»",
+          "topics": [
+            {
+              "title": "Lista de películas",
+              "decision": "fuera-de-alcance",
+              "reason": "No es contenido técnico."
             }
           ]
         }

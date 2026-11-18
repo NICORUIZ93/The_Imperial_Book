@@ -205,7 +205,7 @@
     },
     {
       "track": "devops",
-      "topics": 138,
+      "topics": 139,
       "status": {
         "T1": true,
         "T2": true,
@@ -258,11 +258,11 @@
             "restore"
           ]
         },
-        "visual": 131,
-        "easy": 137,
-        "measuredTopics": 138,
-        "captureScope": 0,
-        "project": 138
+        "visual": 132,
+        "easy": 138,
+        "measuredTopics": 139,
+        "captureScope": 1,
+        "project": 139
       }
     },
     {
@@ -328,7 +328,7 @@
     },
     {
       "track": "foundations",
-      "topics": 102,
+      "topics": 103,
       "status": {
         "T1": true,
         "T2": false,
@@ -349,11 +349,11 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
-        "visual": 77,
-        "easy": 102,
-        "measuredTopics": 102,
-        "captureScope": 2,
-        "project": 102
+        "visual": 78,
+        "easy": 103,
+        "measuredTopics": 103,
+        "captureScope": 3,
+        "project": 103
       }
     },
     {

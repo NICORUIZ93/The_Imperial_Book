@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1430**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1432**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -10,9 +10,9 @@ Temas conformes a cuatro pasos: **215/1430**. Tracks inventariados: **16**.
 | angular | 0 | 78 | 0 | 0 |
 | cloud | 0 | 168 | 0 | 0 |
 | control-1 | 0 | 70 | 0 | 0 |
-| devops | 0 | 138 | 0 | 0 |
+| devops | 0 | 139 | 0 | 0 |
 | flutter | 1 | 119 | 3 | 3 |
-| foundations | 0 | 102 | 0 | 0 |
+| foundations | 0 | 103 | 0 | 0 |
 | ios | 0 | 69 | 0 | 0 |
 | java | 101 | 117 | 313 | 313 |
 | javascript | 0 | 92 | 0 | 0 |
@@ -513,6 +513,7 @@ Temas conformes a cuatro pasos: **215/1430**. Tracks inventariados: **16**.
 - M2 ### Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor: tiene 0 subtemas
 - M2 ### Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes: tiene 0 subtemas
 - M2 ### Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min: tiene 0 subtemas
+- M2 ### Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min: tiene 0 subtemas
 - M20 ### Tema 1: Eventos de dominio e integración: hechos, no comandos: tiene 0 subtemas
 - M20 ### Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos: tiene 0 subtemas
 - M20 ### Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos: tiene 0 subtemas
@@ -793,6 +794,7 @@ Temas conformes a cuatro pasos: **215/1430**. Tracks inventariados: **16**.
 - M7 ### Tema 4: Decisiones, documentación, deuda y evolución: tiene 0 subtemas
 - M7 ### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda: tiene 0 subtemas
 - M7 ### Tema 6: Desarrollo guiado por especificación con agentes de IA: tiene 0 subtemas
+- M7 ### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min: tiene 0 subtemas
 - M8 ### Tema 1: El sistema operativo como administrador y frontera: tiene 0 subtemas
 - M8 ### Tema 2: Memoria y concurrencia sin magia: tiene 0 subtemas
 - M8 ### Tema 3: Linux como entorno observable: tiene 0 subtemas

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "topics": 1430,
-    "reviewed": 274,
+    "topics": 1432,
+    "reviewed": 276,
     "pending": 1156,
     "priorityCandidates": 1017,
     "byTrack": {
@@ -26,8 +26,8 @@
         "pending": 70
       },
       "devops": {
-        "topics": 138,
-        "reviewed": 8,
+        "topics": 139,
+        "reviewed": 9,
         "pending": 130
       },
       "flutter": {
@@ -36,8 +36,8 @@
         "pending": 46
       },
       "foundations": {
-        "topics": 102,
-        "reviewed": 0,
+        "topics": 103,
+        "reviewed": 1,
         "pending": 102
       },
       "ios": {
@@ -8783,6 +8783,36 @@
       }
     },
     {
+      "id": "devops/modulo-2::Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+      "track": "devops",
+      "module": 2,
+      "topic": "Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/devops/motor-contenedores-local.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop"
+        ],
+        "sources": [
+          "https://docs.docker.com/subscription/desktop-license/",
+          "https://docs.podman.io/en/latest/",
+          "https://github.com/abiosoft/colima",
+          "https://docs.rancherdesktop.io/",
+          "https://github.com/libracoder/kiri"
+        ]
+      }
+    },
+    {
       "id": "devops/modulo-20::Tema 1: Eventos de dominio e integración: hechos, no comandos",
       "track": "devops",
       "module": 20,
@@ -13810,6 +13840,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "foundations/modulo-7::Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
+      "track": "foundations",
+      "module": 7,
+      "topic": "Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/foundations/evaluar-skill-agente.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir"
+        ],
+        "sources": [
+          "https://github.com/NVIDIA/skillevaluator",
+          "https://agentskills.io/specification"
+        ]
+      }
     },
     {
       "id": "foundations/modulo-8::Tema 1: El sistema operativo como administrador y frontera",

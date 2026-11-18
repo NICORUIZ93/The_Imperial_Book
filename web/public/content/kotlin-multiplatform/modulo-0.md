@@ -25,6 +25,38 @@ Verifica `java --version`, `./gradlew --version` (Gradle 9.8 o superior) y `git 
 Si Gradle no encuentra Java, configura `JAVA_HOME` hacia el JDK, no hacia una JRE. No intentes resolver problemas de lógica común y de toolchain iOS al mismo tiempo: haz funcionar primero `commonTest`, después cada plataforma por separado.
 
 
+## Mapa de la ruta
+
+«Kotlin Multiplatform» tiene 14 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+
+```mermaid
+flowchart LR
+    E0["Fundamentos<br/>módulos 0–1"]
+    E1["Aplicación<br/>módulos 2–3"]
+    E2["Integración<br/>módulos 4–6"]
+    E3["Experto<br/>módulos 7–13"]
+    E0 --> E1
+    E1 --> E2
+    E2 --> E3
+```
+
+| Módulo | Etapa | Qué aprendes |
+|---|---|---|
+| 0 | Fundamentos | [Fundamentos de Kotlin](/curso/kotlin-multiplatform/0) |
+| 1 | Fundamentos | [Programación funcional en Kotlin](/curso/kotlin-multiplatform/1) |
+| 2 | Aplicación | [Coroutines y Flow](/curso/kotlin-multiplatform/2) |
+| 3 | Aplicación | [Arquitectura de un proyecto KMP](/curso/kotlin-multiplatform/3) |
+| 4 | Integración | [Lógica de negocio compartida](/curso/kotlin-multiplatform/4) |
+| 5 | Integración | [Networking compartido con Ktor Client](/curso/kotlin-multiplatform/5) |
+| 6 | Integración | [Persistencia compartida con SQLDelight](/curso/kotlin-multiplatform/6) |
+| 7 | Experto | [Compose Multiplatform: UI compartida](/curso/kotlin-multiplatform/7) |
+| 8 | Experto | [Interoperabilidad con iOS](/curso/kotlin-multiplatform/8) |
+| 9 | Experto | [Testing multiplataforma](/curso/kotlin-multiplatform/9) |
+| 10 | Experto | [CI/CD para KMP](/curso/kotlin-multiplatform/10) |
+| 11 | Experto | [Proyecto integrador: app KMP completa](/curso/kotlin-multiplatform/11) |
+| 12 | Experto | [KMP en producción: fronteras, compatibilidad y observabilidad](/curso/kotlin-multiplatform/12) |
+| 13 | Experto | [KMP Master: Native, Swift Export y publicación](/curso/kotlin-multiplatform/13) |
+
 ## Aprende construyendo
 
 ### Tema 1: Null safety real

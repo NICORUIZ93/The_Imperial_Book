@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 18:49 UTC
+Generated: 2026-11-18 19:11 UTC
 Root: `the_imperial_book`
-Indexed files: 1688
+Indexed files: 1690
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,18 +16,18 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 71 files
-- `automation-script`: 61 files
+- `automation-script`: 62 files
 - `course-content`: 320 files
-- `documentation`: 180 files
+- `documentation`: 181 files
 - `example`: 962 files
 - `local-infra`: 1 files
 - `project-file`: 93 files
 
 ## File Types
 
-- `.md`: 544
+- `.md`: 545
 - `.java`: 417
-- `.py`: 190
+- `.py`: 191
 - `.json`: 120
 - `.ts`: 74
 - `.js`: 54
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (231 lines, automation-script)
+- `scripts/validate.sh` (233 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -206,15 +206,15 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_prerequisite_graph.py` (115 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
-- `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
-- ... 43 more files
+- `scripts/build_route_maps.py` (114 lines) - symbols: unescape, modules_by_constant, ranges, section, apply, main; imports: __future__, argparse, re, sys, pathlib
+- ... 44 more files
 
 ### course-content
 
 - `web/public/content/ATRIBUCION.md` (39 lines) - headings: # Atribucion y licencia, ## Fuentes consultadas para la ampliacion de DevOps
 - `web/public/content/LICENCIA-CONTENIDO.md` (44 lines) - headings: # Licencia del contenido original, ## Exclusiones y avisos, ## Inventario de recursos de terceros de la aplicación
 - `web/public/content/LICENSE-FLOCI.txt` (21 lines)
-- `web/public/content/android/modulo-0.md` (787 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Aprende construyendo, ### Tema 1: Estructura de un proyecto Android Studio
+- `web/public/content/android/modulo-0.md` (824 lines) - headings: # Módulo 0: Kotlin aplicado a Android, ## Antes de comenzar: instala Android Studio y un dispositivo de prueba, ## Mapa de la ruta, ## Aprende construyendo
 - `web/public/content/android/modulo-1.md` (343 lines) - headings: # Módulo 1: Ciclo de vida: Activities y ViewModel, ## Aprende construyendo, ### Tema 1: Ciclo de vida de una Activity, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-10.md` (408 lines) - headings: # Módulo 10: Performance, Material 3 y accesibilidad, ## Aprende construyendo, ### Tema 1: Detectar y corregir recomposición innecesaria, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-11.md` (343 lines) - headings: # Módulo 11: Publicación en Google Play, ## Aprende construyendo, ### Tema 1: Firma de la app, #### Paso 1 · Objetivo y preparación
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 162 more files
+- ... 163 more files
 
 ### example
 
@@ -295,7 +295,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
-- `docs/atomic-subtopics.json` (20386 lines)
+- `docs/atomic-subtopics.json` (20400 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)

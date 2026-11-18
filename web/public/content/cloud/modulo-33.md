@@ -112,6 +112,26 @@ instalarlo sin el problema real que resuelve (múltiples servicios internos con 
 y reintentos compartidas) — la diferencia frente a adoptarlo "porque está de moda" es justamente
 esa condición concreta de 3+ servicios del Paso 6.
 
+**Kubernetes administrado en las tres nubes.** Si algún día la condición se cumple, estas son las
+diferencias que más pesan al elegir (datos revisados el 2026-11-18 en la documentación oficial):
+
+| Servicio | Tarifa del plano de control | Red de los pods | Identidad de los pods |
+|---|---|---|---|
+| EKS | 0,10 USD por clúster y hora con soporte estándar de la versión; 0,60 USD en soporte extendido | Amazon VPC CNI: cada pod recibe una IP privada de la subred de la VPC | EKS Pod Identity (o IAM roles for service accounts): un rol de IAM asociado a una service account |
+| AKS | nivel Free sin tarifa de gestión y sin SLA respaldado; Standard y Premium cobran por clúster e incluyen SLA (99,95 % con zonas de disponibilidad) | Azure CNI Overlay, recomendado para la mayoría de casos; Azure CNI Pod Subnet si los pods deben ser alcanzables desde la red; kubenet se retira el 31 de marzo de 2028 | Microsoft Entra Workload ID: el token de la service account se cambia por un token de Entra mediante identidad federada |
+| GKE | 0,10 USD por clúster y hora; crédito gratis de 74,40 USD al mes por cuenta de facturación, que cubre un clúster Autopilot o zonal | VPC-native por defecto: los pods toman IPs de un rango secundario de la subred (alias IP) | Workload Identity Federation for GKE: el servidor de metadatos cambia el token de la service account por un token de acceso de corta duración |
+
+La tarifa es solo la del plano de control: los nodos, la red y el almacenamiento se pagan aparte en las
+tres nubes. Fuentes: [precios de EKS](https://aws.amazon.com/eks/pricing/),
+[EKS Pod Identity](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html),
+[Amazon VPC CNI](https://docs.aws.amazon.com/eks/latest/best-practices/vpc-cni.html),
+[niveles de precio de AKS](https://learn.microsoft.com/en-us/azure/aks/free-standard-pricing-tiers),
+[redes CNI de AKS](https://learn.microsoft.com/en-us/azure/aks/concepts-network-cni-overview),
+[Microsoft Entra Workload ID en AKS](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview),
+[precios de GKE](https://cloud.google.com/kubernetes-engine/pricing),
+[clústeres VPC-native de GKE](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/alias-ips) y
+[Workload Identity Federation for GKE](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/workload-identity).
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash

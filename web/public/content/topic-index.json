@@ -2116,6 +2116,10 @@
       {
         "title": "Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas",
         "fragment": "tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+      },
+      {
+        "title": "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop",
+        "fragment": "tema-9-elegir-el-motor-de-contenedores-local-docker-desktop-podman-colima-y-rancher-desktop"
       }
     ],
     "20": [
@@ -3314,6 +3318,10 @@
       {
         "title": "Desarrollo guiado por especificación con agentes de IA",
         "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
+      },
+      {
+        "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir",
+        "fragment": "tema-7-evaluar-una-skill-de-agente-antes-de-usarla-validar-deduplicar-y-medir"
       }
     ],
     "8": [

@@ -23,7 +23,7 @@
     },
     "foundations": {
       "originalModules": 16,
-      "originalTopics": 102,
+      "originalTopics": 103,
       "migratedModules": []
     },
     "cloud": {
@@ -33,7 +33,7 @@
     },
     "devops": {
       "originalModules": 23,
-      "originalTopics": 138,
+      "originalTopics": 139,
       "migratedModules": []
     },
     "javascript": {

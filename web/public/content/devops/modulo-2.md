@@ -721,6 +721,163 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** correr como root «
 
 **Fuente oficial:** [Docker Docs — Rootless mode](https://docs.docker.com/engine/security/rootless/) y [Docker Docs — Docker security](https://docs.docker.com/engine/security/) y [Kubernetes — Configure a Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
 
+### Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min
+
+**Prerrequisito:** temas «Dockerfile multi-stage» y «Contenedores sin privilegios» de este módulo.
+
+**Al finalizar podrás:** comparar los motores de contenedores para el computador de desarrollo por sistema operativo, licencia y compatibilidad con `docker` y Compose, y elegir uno para tu equipo con un script que aplica la regla de licencia de Docker Desktop.
+
+**¿Por qué es importante?** Docker Desktop no es gratis para todas las empresas. Si tu empresa supera el límite y nadie lo revisa, el equipo usa software sin licencia. Hay alternativas libres que ejecutan las mismas imágenes y los mismos `docker compose`.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior para el script. Para probar un motor alternativo instala uno: `brew install podman` o `brew install colima docker` en macOS, o Rancher Desktop desde su página. Crea la carpeta `academia-labs/devops/motor-local`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tiene 40 personas, así que hoy puede usar Docker Desktop gratis. Un cliente grande pidió que su equipo de 900 personas usara el mismo entorno de RutaFlow: para ellos Docker Desktop exige suscripción, y el entorno debía funcionar igual con un motor libre.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** motor de contenedores, máquina virtual de Linux en macOS y Windows, CLI compatible con `docker`, Compose, licencia, rootless, Kubernetes local.
+
+En macOS y Windows los contenedores de Linux necesitan una máquina virtual de Linux. Cada motor la crea y la administra por ti:
+
+| Motor | Sistemas | Licencia | Cómo usas `docker` y Compose | Kubernetes local |
+|---|---|---|---|---|
+| Docker Desktop | macOS, Windows, Linux | gratis para personas, educación, código abierto no comercial y empresas con menos de 250 empleados y menos de 10 M USD al año; suscripción para el resto | nativo | sí |
+| Podman (y Podman Desktop) | macOS, Windows, Linux | Apache-2.0 | `alias docker=podman` funciona para la mayoría de comandos; corre sin demonio | sí (con kind) |
+| Colima | macOS, Linux | MIT | instala Docker o containerd dentro de la máquina virtual y usas el `docker` de siempre | opcional, con `--kubernetes` |
+| Rancher Desktop | macOS, Windows, Linux | Apache-2.0 | eliges Moby (CLI `docker`) o containerd (CLI `nerdctl`) | sí, con k3s |
+
+Las imágenes son estándar OCI: una imagen construida con un motor corre en cualquier otro.
+
+**Proyectos nuevos:** aparecen motores como Kiri (Rust, Apache-2.0, compatible con `docker`, Compose y buildx). Antes de usarlos en un equipo, revisa estrellas, versiones publicadas y quién lo mantiene: el 2026-11-18 Kiri mostraba 5 estrellas, 1 fork y ninguna versión estable en GitHub.
+
+**Analogía:** los motores son distintas marcas de horno: todos cocinan la misma receta (la imagen OCI) a la misma temperatura. Lo que cambia es el precio, el tamaño y quién da el servicio técnico.
+
+**Límite de uso:** las condiciones de licencia cambian: revisa la página oficial antes de decidir. Algunas opciones de Docker Desktop (extensiones, ciertos montajes de archivos) no existen en los otros motores; prueba tu `docker compose` completo antes de migrar al equipo.
+
+```mermaid
+flowchart TB
+    A["¿Empresa con 250+ empleados<br/>o 10 M USD+ al año?"] -->|sí| B["Docker Desktop con suscripción<br/>o un motor libre"]
+    A -->|no| C["Docker Desktop gratis<br/>o un motor libre"]
+    B --> D{"¿Sistema?"}
+    C --> D
+    D -->|"macOS"| E["Podman, Colima o Rancher Desktop"]
+    D -->|"Windows"| F["Podman o Rancher Desktop"]
+    D -->|"Linux"| G["Docker Engine o Podman nativo"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/motor-local/elegir_runtime.py`:
+
+```python
+"""Recomienda un motor de contenedores local según el equipo y la empresa.
+
+Los datos de licencia vienen de las páginas oficiales (revisadas el 2026-11-18).
+"""
+from dataclasses import dataclass
+
+# Docker Desktop es gratis para empresas con menos de 250 empleados Y menos de 10 M USD al año.
+LIMITE_EMPLEADOS = 250
+LIMITE_INGRESOS_MUSD = 10
+
+# Sistemas donde corre cada motor.
+MOTORES = {
+    "Docker Desktop": {"macos", "windows", "linux"},
+    "Podman": {"macos", "windows", "linux"},
+    "Colima": {"macos", "linux"},
+    "Rancher Desktop": {"macos", "windows", "linux"},
+}
+
+
+@dataclass
+class Equipo:
+    nombre: str
+    so: str
+    empleados: int
+    ingresos_musd: float
+
+
+def docker_desktop_gratis(equipo: Equipo) -> bool:
+    return equipo.empleados < LIMITE_EMPLEADOS and equipo.ingresos_musd < LIMITE_INGRESOS_MUSD
+
+
+def opciones(equipo: Equipo) -> list[str]:
+    elegibles = []
+    for nombre, sistemas in MOTORES.items():
+        if equipo.so not in sistemas:
+            continue
+        if nombre == "Docker Desktop" and not docker_desktop_gratis(equipo):
+            continue  # se puede usar, pero exige pagar una suscripción
+        elegibles.append(nombre)
+    return elegibles
+
+
+EQUIPOS = [
+    Equipo("estudiante", "macos", 1, 0),
+    Equipo("RutaFlow (40 personas)", "windows", 40, 3),
+    Equipo("empresa de 900 personas", "macos", 900, 120),
+]
+
+for equipo in EQUIPOS:
+    lista = ", ".join(opciones(equipo))
+    pago = "" if docker_desktop_gratis(equipo) else "  (Docker Desktop exige suscripción)"
+    print(f"{equipo.nombre:<26} {equipo.so:<8} -> {lista}{pago}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/devops/motor-local
+python3 elegir_runtime.py
+# con el motor elegido instalado, comprueba que tu Compose funciona igual:
+docker compose up -d && docker compose ps
+```
+
+**Explicación por bloques:** `LIMITE_EMPLEADOS` y `LIMITE_INGRESOS_MUSD` copian la regla oficial de Docker Desktop: es gratis solo si la empresa está por debajo de los dos límites a la vez. `MOTORES` dice en qué sistemas corre cada motor. `opciones` descarta los motores que no corren en el sistema del equipo y quita Docker Desktop cuando exigiría pagar. El script imprime tres casos: un estudiante, RutaFlow con 40 personas y una empresa de 900.
+
+![Captura de terminal: para la empresa de 900 personas el script descarta Docker Desktop y propone Podman, Colima y Rancher Desktop](content/figures/devops/motor-contenedores-local.svg)
+
+**Resultado esperado:**
+
+```text
+estudiante                 macos    -> Docker Desktop, Podman, Colima, Rancher Desktop
+RutaFlow (40 personas)     windows  -> Docker Desktop, Podman, Rancher Desktop
+empresa de 900 personas    macos    -> Podman, Colima, Rancher Desktop  (Docker Desktop exige suscripción)
+```
+
+**Fallo deliberado:** cambia `and` por `or` en `docker_desktop_gratis`. **Error esperado:** la empresa de 900 personas vuelve a recibir Docker Desktop como opción gratis, porque el script ya no exige cumplir los dos límites. **Diagnóstico:** la regla oficial pide estar por debajo de los dos límites a la vez. Vuelve a poner `and`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el script y explica por qué Colima no aparece para Windows.
+2. **Variación:** agrega tu propio equipo a `EQUIPOS` con su sistema, número de personas e ingresos.
+3. **Diagnóstico:** reproduce el fallo deliberado con `or`.
+4. **Integración:** instala Podman o Colima y ejecuta `docker run --rm hello-world` con ese motor.
+5. **Diseño:** levanta el `docker compose` de RutaFlow con el motor nuevo y anota qué cambió.
+
+**Pista:** si un comando falla con el motor nuevo, revisa primero `docker context ls`: puede que la CLI siga apuntando al motor anterior.
+
+#### Paso 6 · Práctica independiente
+
+Escribe la guía de instalación del entorno de RutaFlow para un equipo que no puede usar Docker Desktop: motor elegido, comandos de instalación, cómo verificar y qué hacer si `docker compose` falla.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué macOS y Windows necesitan una máquina virtual.
+- [ ] Conoces la regla de licencia de Docker Desktop.
+- [ ] El script descarta Docker Desktop para la empresa grande.
+- [ ] Probaste al menos un motor libre con `docker compose`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** asumir que Docker Desktop es gratis para cualquier empresa, adoptar un motor nuevo sin revisar su madurez y migrar sin probar el `docker compose` completo. **Siguiente paso:** el módulo 3 construye la imagen en un pipeline de CI, donde el motor local ya no importa.
+
+**Transferencia al proyecto integrador «RutaFlow»:** documenta en el README de RutaFlow qué motores están probados para el entorno local y cómo verificar cada uno.
+
+**Fuente oficial:** [Docker — Docker Desktop license agreement](https://docs.docker.com/subscription/desktop-license/) y [Podman — documentación](https://docs.podman.io/en/latest/) y [Colima](https://github.com/abiosoft/colima) y [Rancher Desktop](https://docs.rancherdesktop.io/) y [Kiri](https://github.com/libracoder/kiri).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir la imagen de una API propia en una sola etapa, medir su tamaño, reescribirla como multi-stage con una imagen base optimizada, y comparar ambos resultados.

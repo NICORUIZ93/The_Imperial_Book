@@ -32,7 +32,7 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   await page.goto('/temario');
 
   await expect(page.getByRole('heading', { name: /Todos los temas, cada uno con su lección/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText('1430');
+  await expect(page.locator('.curriculum-stats')).toContainText('1432');
   await expect(page.locator('.stack-row')).toHaveCount(16);
   await expect(page.locator('body')).not.toContainText('candidato');
 

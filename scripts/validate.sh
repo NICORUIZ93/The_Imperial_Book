@@ -221,6 +221,8 @@ python3 scripts/validate_rutaflow_material.py
 python3 scripts/validate_specs.py
 # specs/006: temario sin temas fantasmas ni huecos (I1–I6).
 python3 scripts/audit_topic_integrity.py
+# specs/007 C6: mapa de cada ruta generado desde las definiciones de módulos.
+python3 scripts/build_route_maps.py --check
 python3 scripts/audit_lesson_assets.py
 python3 scripts/audit_lesson_substance.py --strict
 python3 scripts/audit_visual_aids.py

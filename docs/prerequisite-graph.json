@@ -519,6 +519,17 @@
       ]
     },
     {
+      "id": "foundations:7:7",
+      "track": "foundations",
+      "module": 7,
+      "position": 7,
+      "title": "Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",
+      "file": "web/public/content/foundations/modulo-7.md",
+      "requires": [
+        "foundations:7:6"
+      ]
+    },
+    {
       "id": "foundations:8:1",
       "track": "foundations",
       "module": 8,
@@ -526,7 +537,7 @@
       "title": "El sistema operativo como administrador y frontera",
       "file": "web/public/content/foundations/modulo-8.md",
       "requires": [
-        "foundations:7:6"
+        "foundations:7:7"
       ]
     },
     {
@@ -11566,6 +11577,17 @@
       ]
     },
     {
+      "id": "devops:2:9",
+      "track": "devops",
+      "module": 2,
+      "position": 9,
+      "title": "Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min",
+      "file": "web/public/content/devops/modulo-2.md",
+      "requires": [
+        "devops:2:8"
+      ]
+    },
+    {
       "id": "devops:3:1",
       "track": "devops",
       "module": 3,
@@ -11573,7 +11595,7 @@
       "title": "Servicios, dependencias y healthchecks",
       "file": "web/public/content/devops/modulo-3.md",
       "requires": [
-        "devops:2:8"
+        "devops:2:9"
       ]
     },
     {
