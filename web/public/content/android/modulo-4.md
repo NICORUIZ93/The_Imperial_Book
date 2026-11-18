@@ -3,6 +3,10 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`, `implementation(libs.androidx.lifecycle.viewmodel.compose)` (si no lo hiciste en el Módulo 1) e `implementation(libs.androidx.lifecycle.runtime.compose)`; esta última trae `collectAsStateWithLifecycle`, que el Tema 2 importa. Pulsa **Sync Now**.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la app en el emulador: rotar, enviar a segundo plano y observar qué se muestra.
+
 ### Tema 1: StateFlow en el ViewModel
 
 #### Paso 1 · Objetivo y preparación
@@ -40,12 +44,12 @@ Al finalizar podrás exponer un estado de pantalla desde un `ViewModel` con `Sta
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt`:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt <<'EOF'
 package com.academia.android
 
@@ -56,13 +60,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Contrato mínimo de este módulo. El repositorio completo (Room + Retrofit) llega en el Módulo 6
+// con otro nombre, TareaRepository; mantenerlos separados evita que un módulo rompa al otro.
+interface FuenteDeTareas {
+    suspend fun obtenerTareas(): List<String>
+}
+
 sealed class EstadoUI {
     object Cargando : EstadoUI()
     data class Exito(val datos: List<String>) : EstadoUI()
     data class Error(val mensaje: String?) : EstadoUI()
 }
 
-class TareasViewModelConEstado(private val repo: TareaRepository) : ViewModel() {
+class TareasViewModelConEstado(private val repo: FuenteDeTareas) : ViewModel() {
     private val _estado = MutableStateFlow<EstadoUI>(EstadoUI.Cargando)
     val estado: StateFlow<EstadoUI> = _estado.asStateFlow()
 
@@ -118,7 +128,7 @@ Ya expones un estado de pantalla con `StateFlow`, garantizando un valor actual s
 
 **Errores comunes:** exponer `MutableStateFlow` directamente en vez de su versión de solo lectura, permitiendo que la UI mute el estado sin pasar por el `ViewModel`; olvidar el valor inicial de `MutableStateFlow`, lo cual ni siquiera compila porque `StateFlow` exige un valor desde su creación.
 
-**Cuándo no usarlo:** para un evento efímero de un solo uso (mostrar un mensaje puntual), `StateFlow` no es el tipo correcto porque retendría ese "último valor" indefinidamente; ese caso corresponde a `SharedFlow` (Tema 3).
+**Cuándo no usarlo:** un mensaje puntual en el `StateFlow` necesita además una confirmación de la UI (`mensajeMostrado()`), o se mostraría tras cada rotación; el Tema 3 enseña ese patrón.
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Expón un estado inmutable de la ruta desde StateFlow. Simula carga y fallo de red y verifica que la pantalla no combina un indicador de éxito con datos de una consulta anterior.
 
@@ -152,12 +162,12 @@ Al finalizar podrás observar un `StateFlow` desde Compose de forma consciente d
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt <<'EOF'
 package com.academia.android
 
@@ -221,21 +231,21 @@ Ya observas un `StateFlow` de forma consciente del ciclo de vida, y explicas por
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás modelar un evento de un solo uso (como mostrar un Snackbar) con `SharedFlow`, evitando que se repita incorrectamente tras una recomposición.
+Al finalizar podrás explicar por qué un `SharedFlow` puede perder un evento de un solo uso (como mostrar un Snackbar) y modelarlo, como recomienda la guía oficial de eventos de UI, como **estado** que la UI consume y confirma, sin que se repita tras una rotación ni se pierda.
 
 **Conocimiento previo:** Temas 1 y 2 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** Modelar un evento de "mostrar Snackbar" con `SharedFlow` en vez de `StateFlow` evita que ese evento se repita incorrectamente en una recomposición posterior, dado que `SharedFlow` no retiene un "último valor" que un nuevo observador recibiría automáticamente.
+**¿Por qué es importante?** Un mensaje como «Tarea guardada» o una navegación tras un pago son resultados que el usuario no debe perder. La guía oficial de Android sobre eventos de UI establece que los eventos que nacen en el `ViewModel` deben producir siempre una actualización del estado de UI, y advierte que exponerlos con `Channel` u otros streams reactivos no garantiza su entrega cuando el `ViewModel` vive más que la UI que los recolecta (por ejemplo, durante una rotación o con la app en segundo plano).
 
 #### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** eventos que no deben repetirse en una recomposición, a diferencia del estado persistente.
 
-Un evento como "mostrar un Snackbar" tiene una naturaleza distinta al estado de `StateFlow`: un `StateFlow` siempre tiene un valor actual que cualquier nuevo observador recibe de inmediato (Tema 1), lo cual sería incorrecto para un evento de un solo uso, ya que una recomposición posterior (tras rotar) volvería a entregar ese mismo "valor actual" a un nuevo observador, mostrando el Snackbar repetidamente sin que ocurriera ningún evento nuevo. `SharedFlow` modela correctamente esta semántica: cada emisión se entrega una única vez a los observadores activos en ese momento, sin quedar retenida.
+Un `MutableSharedFlow()` sin `replay` entrega cada emisión solo a los recolectores activos en ese instante y no la retiene. Eso parece ideal para «mostrar un Snackbar», pero es justo el problema: si el evento se emite mientras la Activity se está recreando o la UI está detenida, nadie lo recolecta y se pierde. Un `StateFlow` con un campo `mensaje = "Tarea guardada"` tampoco basta por sí solo, porque tras rotar el nuevo observador lo vería otra vez. La solución de la guía oficial combina ambas ideas: el mensaje forma parte del estado (`mensajeUsuario: String?`), así que sobrevive a la rotación y nunca se pierde, y la UI llama a `mensajeMostrado()` cuando ya lo enseñó, lo que lo pone a `null` y evita repetirlo. Un cambio de configuración no es una recomposición: la recomposición vuelve a ejecutar composables con el mismo estado; la rotación destruye y recrea la Activity.
 
-**Analogía:** `StateFlow` es como un letrero permanente que muestra el estado actual de un semáforo; `SharedFlow` para eventos es como el sonido de una campana que suena una única vez — quien no estaba escuchando en ese instante simplemente no la escucha, y no hay forma de recuperar ese sonido pasado.
+**Analogía:** un `SharedFlow` para eventos es una campana que suena una sola vez: si el destinatario estaba fuera de la sala, el aviso se pierde. El estado con confirmación es una nota en el tablón: sigue ahí hasta que alguien la lee y la retira (`mensajeMostrado()`). La analogía termina aquí: la nota solo sobrevive a la muerte del proceso si además la guardas con `SavedStateHandle`.
 
 **Diagrama:**
 
@@ -244,49 +254,71 @@ Un evento como "mostrar un Snackbar" tiene una naturaleza distinta al estado de 
 │ nuevo observador SIEMPRE recibe el valor actual     │
 │ (correcto para "lista de tareas actual")               │
 └─────────────────────────────────────────┘
-┌── SharedFlow (evento de un solo uso) ─────────┐
-│ cada emisión se entrega UNA vez a quien esté escuchando │
-│ (correcto para "mostrar Snackbar de éxito")               │
+┌── SharedFlow sin replay (evento) ─────────────┐
+│ se entrega solo a quien escucha EN ESE INSTANTE      │
+│ (riesgo: se pierde durante rotación o background)       │
+└─────────────────────────────────────────┘
+┌── Estado + confirmación (recomendado) ────────┐
+│ mensajeUsuario = "Tarea guardada" hasta que la UI    │
+│ llama mensajeMostrado() → null (ni se pierde ni repite) │
 └─────────────────────────────────────────┘
 ```
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt <<'EOF'
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed class EventoTarea {
-    object TareaGuardada : EventoTarea()
-}
+data class EdicionTareaUiState(
+    val guardando: Boolean = false,
+    val mensajeUsuario: String? = null,
+)
 
 class EventosTareasViewModel : ViewModel() {
-    private val _eventos = MutableSharedFlow<EventoTarea>()
-    val eventos = _eventos.asSharedFlow()
+    private val _estado = MutableStateFlow(EdicionTareaUiState())
+    val estado = _estado.asStateFlow()
 
     fun guardarTarea() = viewModelScope.launch {
+        _estado.update { it.copy(guardando = true) }
         // ... lógica de guardado real ...
-        _eventos.emit(EventoTarea.TareaGuardada)
+        _estado.update { it.copy(guardando = false, mensajeUsuario = "Tarea guardada") }
+    }
+
+    // La UI lo llama cuando ya mostró el mensaje: así no se repite tras rotar
+    fun mensajeMostrado() {
+        _estado.update { it.copy(mensajeUsuario = null) }
     }
 }
 EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `_eventos` es `MutableSharedFlow`, sin ningún valor inicial retenido (a diferencia de `MutableStateFlow` del Tema 1, que exige uno); `guardarTarea()` emite `EventoTarea.TareaGuardada` una única vez mediante `_eventos.emit(...)`, y esa emisión solo llega a quien esté observando `eventos` en ese instante exacto.
+**Explicación línea por línea:** el resultado del guardado no se «emite»: se escribe en el estado (`mensajeUsuario = "Tarea guardada"`), así que cualquier observador, también el que llega tras una rotación, lo ve mientras no se haya mostrado. `mensajeMostrado()` es la confirmación de la UI: pone el mensaje a `null`. En la pantalla lo consumes así (patrón de la guía oficial):
 
-Simula la diferencia de comportamiento entre `StateFlow` y `SharedFlow` cuando un observador se suscribe DESPUÉS de que ocurrió el evento:
+```kotlin
+val estado by viewModel.estado.collectAsStateWithLifecycle()
+estado.mensajeUsuario?.let { mensaje ->
+    LaunchedEffect(mensaje) {
+        snackbarHostState.showSnackbar(mensaje)
+        viewModel.mensajeMostrado()
+    }
+}
+```
+
+Este script es un **modelo** (no ejecuta Android) de por qué no conviene un `SharedFlow` para el mensaje: un observador que se suscribe DESPUÉS de la emisión, como la Activity recreada tras rotar, no recibe nada:
 
 ```bash
 python3 -c "
@@ -319,25 +351,27 @@ print('SharedFlow -> observador tardío vio el evento:', observador_tardio_vio_a
 "
 ```
 
-**Resultado esperado:** el observador tardío de `StateFlow` recibe `lista_cargada` (el valor actual, siempre disponible); el observador tardío de `SharedFlow` NO ve ningún evento (`False`), porque `SharedFlow` no retiene la emisión pasada para nadie que se suscriba después, confirmando exactamente la distinción del diagrama del Paso 3.
+**Resultado esperado:** el observador tardío de `StateFlow` recibe `lista_cargada` (el valor actual, siempre disponible); el observador tardío de `SharedFlow` NO ve ningún evento (`False`): si «Tarea guardada» se hubiera emitido así mientras la Activity se recreaba, el usuario nunca vería el aviso. Por eso el `ViewModel` del Paso 4 guarda el mensaje en el estado y lo retira solo cuando la UI confirma que lo mostró.
 
-**Fallo deliberado:** modela incorrectamente el evento "mostrar Snackbar" con un `StateFlowSimulado` en vez de `SharedFlowSimulado` (`estado_snackbar = StateFlowSimulado('ninguno'); estado_snackbar.actualizar('TareaGuardada')`), y simula una rotación (un nuevo observador que se suscribe después, como ocurriría tras recrear la Activity). El nuevo observador recibe `'TareaGuardada'` de nuevo — diagnostica confirmando el bug real que este Tema previene: modelar un evento efímero con `StateFlow` haría que el Snackbar reaparezca en cada recomposición posterior a la rotación, aunque no haya ocurrido ningún guardado nuevo.
+**Verificación real en Android:** muestra la pantalla con un botón que llama a `guardarTarea()` y el `SnackbarHost` del bloque anterior. Pulsa el botón: aparece «Tarea guardada» una vez. Rota el emulador cuando el Snackbar ya se cerró: no vuelve a aparecer, porque `mensajeMostrado()` lo puso a `null`. Pulsa de nuevo el botón y rota **mientras** el Snackbar está visible: tras la recreación se muestra otra vez, porque aún no se había confirmado; no se pierde.
+
+**Fallo deliberado:** comenta la llamada `viewModel.mensajeMostrado()` en la pantalla, instala y repite: tras cada rotación el Snackbar reaparece aunque no hayas guardado nada. **Diagnóstico:** el mensaje sigue en el estado porque nadie lo confirmó; la corrección no es volver a un `SharedFlow` (que lo perdería), sino confirmar el consumo. Restaura la llamada.
 
 #### Paso 5 · Práctica guiada
 
-Agrega un segundo evento a `EventoTarea` (`data class TareaEliminada(val id: String)`) y una función `eliminarTarea(id: String)` que lo emita, confirmando con el script de simulación que este evento también desaparece para cualquier observador tardío. **Pista:** sigue exactamente el mismo patrón de `emit()` ya usado para `TareaGuardada`.
+Agrega una función `eliminarTarea(id: String)` que, al terminar, deje en el estado `mensajeUsuario = "Tarea $id eliminada"`, y comprueba en el emulador que el Snackbar se muestra una vez y no se repite al rotar. **Pista:** sigue el mismo patrón de `update { it.copy(...) }` y reutiliza `mensajeMostrado()`.
 
 #### Paso 6 · Práctica independiente
 
-Documenta en una tabla de dos columnas, para tres señales reales de tu propio proyecto (por ejemplo: lista de resultados, mensaje de error puntual, navegación tras pago exitoso), si cada una debería modelarse con `StateFlow` o `SharedFlow`, justificando la decisión según si un observador tardío debería o no recibir ese valor/evento.
+Documenta en una tabla de dos columnas, para tres señales reales de tu propio proyecto (por ejemplo: lista de resultados, mensaje de error puntual, navegación tras pago exitoso), cómo la modelarías como estado de UI (por ejemplo, `pagoConfirmado: Boolean` que la UI observa para navegar, como el `isUserLoggedIn` de la guía oficial), justificando qué pasaría con cada una si se perdiera durante una rotación.
 
 #### Paso 7 · Cierre
 
-Ya modelas eventos de un solo uso con `SharedFlow`, evitando que se repitan incorrectamente tras una recomposición, y distingues claramente cuándo usar `StateFlow` frente a `SharedFlow`. Esto cierra el módulo de estado con StateFlow y Compose; el siguiente módulo del track aborda networking con Retrofit para conectar este estado con datos reales de red. Fuente oficial: [Android Developers — SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow#sharedflow).
+Ya sabes por qué un `SharedFlow` puede perder un evento de un solo uso y lo modelas como estado con confirmación, de modo que ni se pierde ni se repite tras una rotación. Esto cierra el módulo de estado con StateFlow y Compose; el siguiente módulo del track aborda networking con Retrofit para conectar este estado con datos reales de red. Fuentes oficiales: [Android Developers — UI events](https://developer.android.com/topic/architecture/ui-layer/events) y [StateFlow y SharedFlow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow#sharedflow).
 
-**Errores comunes:** modelar un evento de un solo uso con `StateFlow`, causando que se repita en recomposiciones posteriores; olvidar recolectar `eventos` dentro de un `LaunchedEffect` en la UI, perdiendo emisiones si el composable aún no está observando.
+**Errores comunes:** exponer el aviso con un `SharedFlow` o `Channel` y perderlo cuando la UI no está recolectando (rotación, segundo plano); guardar el mensaje en el estado pero olvidar `mensajeMostrado()`, con lo que reaparece tras cada rotación.
 
-**Cuándo no usarlo:** para el estado persistente de una pantalla completa (una lista, un formulario en progreso), `SharedFlow` no es la herramienta correcta porque no garantiza un valor actual disponible para un observador nuevo; ese caso corresponde a `StateFlow` (Tema 1).
+**Cuándo no usarlo:** `SharedFlow` sigue siendo útil para difundir datos a varios recolectores cuando perder una emisión no importa (por ejemplo, actualizaciones de progreso que se reemplazan); no lo uses para resultados que el usuario debe ver o para navegar.
 
 ---
 
@@ -354,14 +388,14 @@ Ya modelas eventos de un solo uso con `SharedFlow`, evitando que se repitan inco
 | 1 | Exponer un `StateFlow<EstadoUI>` desde un `ViewModel` | Ver Tema 1 | `_estado` privado, `estado` público |
 | 2 | Observarlo con `collectAsStateWithLifecycle` | Ver Tema 2 | En vez de `collectAsState` simple |
 | 3 | Implementar el flujo UDF completo | Ver Tema 2 | Click → ViewModel → StateFlow → recomposición |
-| 4 | Emitir un evento de un solo uso con `SharedFlow` | Ver Tema 3 | Ej. mostrar un Snackbar |
+| 4 | Mostrar un aviso de un solo uso como estado con confirmación | Ver Tema 3 | `mensajeUsuario` + `mensajeMostrado()` |
 | 5 | Verificar la pausa automática de recolección en background | Ver Tema 2 | Con `collectAsStateWithLifecycle` |
 
-**Verificación:** el laboratorio se considera exitoso si un evento emitido con `SharedFlow` se muestra exactamente una vez (no se repite tras rotar la pantalla), y si toda actualización de estado sigue el flujo UDF completo sin que la UI modifique el `StateFlow` directamente.
+**Verificación:** el laboratorio se considera exitoso si el aviso se muestra exactamente una vez (no se repite tras rotar la pantalla ni se pierde si rotas mientras está visible), y si toda actualización de estado sigue el flujo UDF completo sin que la UI modifique el `StateFlow` directamente.
 
 **Errores comunes y soluciones**
 
-- **Usar `StateFlow` para un evento de un solo uso como un Snackbar.** El evento se repetiría en una recomposición posterior; usa `SharedFlow`.
+- **Usar un `SharedFlow` o `Channel` para un aviso de un solo uso como un Snackbar.** Se pierde si la UI no está recolectando; guárdalo en el estado y confírmalo con `mensajeMostrado()`.
 - **Usar `collectAsState` simple en vez de `collectAsStateWithLifecycle`.** Desperdicia recursos recolectando mientras la app está en background.
 - **Modificar el estado directamente desde la UI en vez de notificar una intención al `ViewModel`.** Rompe UDF; toda mutación de estado debe pasar por el `ViewModel`.
 

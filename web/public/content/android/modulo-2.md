@@ -3,6 +3,10 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** No necesitas dependencias nuevas: la plantilla Empty Activity ya declara el BOM de Compose, `ui`, `material3` y `activity-compose`.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: para ver la recomposición de verdad, muestra el composable con `setContent { … }` desde `MainActivity`, ejecuta la app y abre **Layout Inspector** con el contador de recomposiciones activado; el número de `TarjetaTarea` solo sube cuando cambia un parámetro que lee.
+
 ### Tema 1: Composables y recomposición
 
 #### Paso 1 · Objetivo y preparación
@@ -39,12 +43,12 @@ Al finalizar podrás explicar qué activa `@Composable` en el compilador, y pred
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/TarjetaTarea.kt`:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/TarjetaTarea.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TarjetaTarea.kt <<'EOF'
 package com.academia.android
 
@@ -142,12 +146,12 @@ State hoisting es el patrón de elevar el estado desde un composable hijo hacia 
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/CampoTitulo.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/CampoTitulo.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/CampoTitulo.kt <<'EOF'
 package com.academia.android
 
@@ -248,12 +252,12 @@ Al finalizar podrás elegir entre `remember` y `rememberSaveable` según si un v
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/PantallaContador.kt` comparando ambos mecanismos y combinando `Column`/`Row`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/PantallaContador.kt` comparando ambos mecanismos y combinando `Column`/`Row`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/PantallaContador.kt <<'EOF'
 package com.academia.android
 

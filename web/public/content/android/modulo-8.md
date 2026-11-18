@@ -3,13 +3,25 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`:
+>
+> ```kotlin
+> implementation(libs.androidx.work.runtime.ktx)
+> androidTestImplementation(libs.androidx.work.testing)
+> androidTestImplementation(libs.kotlinx.coroutines.test)
+> ```
+>
+> Pulsa **Sync Now**. Sin `work-runtime-ktx`, `import androidx.work.CoroutineWorker` no compila.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas de WorkManager.** Escribir un JSON en `/tmp` ilustra la idea de «persistir la solicitud», pero no demuestra que WorkManager lo haga. La evidencia real es la **Verificación real en Android** del Tema 1: una prueba instrumentada del `Worker` y la consulta del planificador del sistema con `adb`.
+
 ### Tema 1: CoroutineWorker y garantía de ejecución
 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás escribir un `CoroutineWorker` y explicar por qué WorkManager garantiza su ejecución eventual incluso si el proceso de la app termina.
 
-**Conocimiento previo:** coroutines/suspend (Kotlin Multiplatform, Módulo 2); `viewModelScope` (Módulo 1).
+**Conocimiento previo:** coroutines, `suspend` y cancelación (Módulo 0, Tema 6 de este track); `viewModelScope` (Módulo 1).
 
 #### Paso 2 · Contexto y caso real
 
@@ -38,19 +50,19 @@ Al finalizar podrás escribir un `CoroutineWorker` y explicar por qué WorkManag
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/SincronizarWorker.kt`, y modela la garantía de persistencia con una cola respaldada en un archivo real (simulando el almacenamiento del sistema que usa WorkManager) para verificarla en ejecución real. Ejecuta `gradle` para compilar y `python3` para simular la persistencia:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/SincronizarWorker.kt`, y modela la garantía de persistencia con una cola respaldada en un archivo real (simulando el almacenamiento del sistema que usa WorkManager) para verificarla en ejecución real. Ejecuta `gradle` para compilar y `python3` para simular la persistencia:
 
 ```bash
 # Este script python3 modela la persistencia de la solicitud de trabajo en un archivo real
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/SincronizarWorker.kt <<'EOF'
 package com.academia.android
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.work.Result
+import kotlin.coroutines.cancellation.CancellationException
 
 class SincronizarWorker(
     context: Context,
@@ -60,6 +72,8 @@ class SincronizarWorker(
         return try {
             // repositorio.sincronizar() -- Módulo 5/6
             Result.success()
+        } catch (e: CancellationException) {
+            throw e   // WorkManager canceló el trabajo: no lo conviertas en un reintento
         } catch (e: Exception) {
             Result.retry()
         }
@@ -69,9 +83,9 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `SincronizarWorker` extiende `CoroutineWorker`, recibiendo `context` y `params` que WorkManager provee automáticamente al ejecutar el trabajo; `doWork()` es `suspend`, permitiendo llamar directamente a la sincronización del repositorio (Módulo 6), devolviendo `Result.retry()` ante cualquier excepción para que WorkManager reintente automáticamente.
+**Explicación línea por línea:** `SincronizarWorker` extiende `CoroutineWorker`, recibiendo `context` y `params` que WorkManager provee automáticamente al ejecutar el trabajo; `doWork()` es `suspend`, permitiendo llamar directamente a la sincronización del repositorio (Módulo 6), devolviendo `Result.retry()` ante una excepción para que WorkManager reintente automáticamente. `CancellationException` se relanza antes: si WorkManager detiene el trabajo (por ejemplo, porque dejó de cumplirse una restricción), capturarla con `catch (e: Exception)` rompería la cancelación cooperativa que viste en el Módulo 0, Tema 6. `Result` es `ListenableWorker.Result`, accesible sin import dentro de un `CoroutineWorker`.
 
-Modela, con un archivo real en disco, la diferencia entre una solicitud que vive solo en memoria (como `viewModelScope`) y una que persiste en almacenamiento (como WorkManager), sobreviviendo a un "reinicio del proceso" simulado:
+El siguiente script es un **modelo** (no ejecuta WorkManager): ilustra con un archivo en disco la diferencia entre una solicitud que vive solo en memoria (como `viewModelScope`) y una que persiste en almacenamiento (como WorkManager), sobreviviendo a un "reinicio del proceso" simulado:
 
 ```bash
 python3 -c "
@@ -99,9 +113,57 @@ print('trabajo recuperado por un NUEVO proceso desde almacenamiento persistente:
 "
 ```
 
-**Resultado esperado:** la cola en memoria queda vacía tras "terminar el proceso" (exactamente lo que le pasaría a un coroutine de `viewModelScope`), mientras que un nuevo proceso puede recuperar `SincronizarWorker` leyendo el archivo persistente, confirmando en ejecución real la garantía central de WorkManager: la solicitud de trabajo sobrevive independientemente del proceso que la encoló.
+**Resultado esperado:** la cola en memoria queda vacía tras "terminar el proceso" (exactamente lo que le pasaría a un coroutine de `viewModelScope`), mientras que un nuevo proceso puede recuperar `SincronizarWorker` leyendo el archivo persistente, lo que ilustra la garantía central de WorkManager: la solicitud de trabajo sobrevive independientemente del proceso que la encoló. La prueba de que WorkManager la cumple es la siguiente.
 
-**Fallo deliberado:** modifica `doWork()` para que, ante una excepción, devuelva `Result.failure()` en vez de `Result.retry()`. Repite mentalmente el escenario de un fallo transitorio (por ejemplo, una desconexión momentánea de red). Con `Result.failure()`, WorkManager NO reintentará automáticamente — diagnostica confirmando que `Result.failure()` es apropiado solo para errores definitivos que no se resolverían reintentando (como un error de validación de datos), mientras que `Result.retry()` es lo correcto para errores transitorios como problemas de red, exactamente la misma distinción de `HttpException`/`IOException` del Módulo 5.
+**Verificación real en Android.** Primero, prueba el `Worker` aislado con la biblioteca oficial de pruebas. Crea `app/src/androidTest/kotlin/com/academia/android/SincronizarWorkerTest.kt`:
+
+```kotlin
+package com.academia.android
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.work.ListenableWorker
+import androidx.work.testing.TestListenableWorkerBuilder
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class SincronizarWorkerTest {
+    @Test
+    fun sincronizarDevuelveSuccess() = runTest {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val worker = TestListenableWorkerBuilder<SincronizarWorker>(context).build()
+        assertEquals(ListenableWorker.Result.success(), worker.doWork())
+    }
+}
+```
+
+Con el emulador encendido, `./gradlew :app:connectedDebugAndroidTest` debe terminar en `BUILD SUCCESSFUL` con la prueba en verde. (Si usas el `HiltTestRunner` del Módulo 7, esta prueba también funciona con él.)
+
+Después, comprueba la persistencia en el sistema real. En `onCreate` de `MainActivity`, encola el trabajo con una restricción que todavía no se cumple:
+
+```kotlin
+val solicitud = OneTimeWorkRequestBuilder<SincronizarWorker>()
+    .setConstraints(Constraints.Builder().setRequiresCharging(true).build())
+    .build()
+WorkManager.getInstance(this).enqueueUniqueWork("sincronizar", ExistingWorkPolicy.KEEP, solicitud)
+```
+
+Instala, abre la app, pulsa **Inicio** y mata el proceso; luego consulta el planificador:
+
+```bash
+adb shell dumpsys battery unplug          # el emulador deja de "cargar"
+adb shell am kill com.academia.android
+adb shell dumpsys jobscheduler | grep "com.academia.android"
+adb shell dumpsys battery reset           # restaura el estado real de la batería
+```
+
+**Resultado esperado:** aunque el proceso de la app ya no existe, `dumpsys jobscheduler` sigue listando un trabajo de `com.academia.android` atendido por `androidx.work.impl.background.systemjob.SystemJobService`: la solicitud vive en el sistema, no en tu proceso. Tras `battery reset` (el emulador vuelve a cargar), WorkManager ejecuta el trabajo.
+
+**Fallo deliberado:** modifica `doWork()` para que, ante una excepción, devuelva `Result.failure()` en vez de `Result.retry()`. Haz que el bloque `try` lance `java.io.IOException("sin red")` y cambia la aserción de la prueba a `ListenableWorker.Result.retry()`: con `Result.failure()` la prueba falla, porque el resultado ya no es un reintento. Con `Result.failure()`, WorkManager NO reintentará automáticamente — diagnostica confirmando que `Result.failure()` es apropiado solo para errores definitivos que no se resolverían reintentando (como un error de validación de datos), mientras que `Result.retry()` es lo correcto para errores transitorios como problemas de red, exactamente la misma distinción de `HttpException`/`IOException` del Módulo 5.
 
 #### Paso 5 · Práctica guiada
 
@@ -157,12 +219,12 @@ Las constraints declaran condiciones del sistema que deben cumplirse antes de ej
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt`:
 
 ```bash
 # Este script python3 valida el intervalo mínimo permitido y modela las constraints
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt <<'EOF'
 package com.academia.android
 
@@ -265,12 +327,12 @@ Disparar una notificación local desde dentro de `doWork()` al completar la sinc
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt`:
 
 ```bash
 # Este script python3 modela el envío de la notificación tras completar el trabajo
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt <<'EOF'
 package com.academia.android
 
@@ -278,7 +340,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
-import androidx.work.Result
+import kotlin.coroutines.cancellation.CancellationException
 import androidx.work.WorkerParameters
 
 class SincronizarWorkerConNotificacion(
@@ -293,6 +355,8 @@ class SincronizarWorkerConNotificacion(
                 .build()
             NotificationManagerCompat.from(contexto).notify(1, notificacion)
             Result.success()
+        } catch (e: CancellationException) {
+            throw e   // WorkManager canceló el trabajo: no lo conviertas en un reintento
         } catch (e: Exception) {
             Result.retry()
         }

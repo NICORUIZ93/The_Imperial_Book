@@ -44,7 +44,7 @@ Desde una carpeta vacía crea el proyecto e instala Express:
 mkdir ejemplo-middleware-express
 cd ejemplo-middleware-express
 npm init -y
-npm install express
+npm install express@5
 mkdir src
 ```
 
@@ -60,7 +60,7 @@ app.use(express.json()); // 1. Debe ir antes de rutas que usan req.body.
 app.use((req, res, next) => {
   const inicio = performance.now();
   res.on("finish", () => {
-    console.log(`${req.method} ${req.path} -> ${res.statusCode} (${(performance.now() - inicio).toFixed(1)} ms)`);
+    console.log(`${req.method} ${req.originalUrl} -> ${res.statusCode} (${(performance.now() - inicio).toFixed(1)} ms)`);
   });
   next(); // 2. Entrega el control al siguiente middleware o ruta.
 });
@@ -78,7 +78,7 @@ app.get("/privado/mensaje", (_req, res) => res.json({ mensaje: "Acceso permitido
 app.listen(3004, "127.0.0.1", () => console.log("API en http://127.0.0.1:3004"));
 ```
 
-`express.json()` va antes de `POST /eco`; el logger se ejecuta para cualquier ruta; el middleware `/privado` responde `401` o llama `next()`, nunca ambas cosas.
+`express.json()` va antes de `POST /eco`; el logger se ejecuta para cualquier ruta y usa `req.originalUrl`, no `req.path`: dentro de `app.use("/privado", ...)` Express recorta el prefijo montado, y con `req.path` el `401` se registraría como `GET /mensaje`; el middleware `/privado` responde `401` o llama `next()`, nunca ambas cosas.
 
 En una primera terminal ejecuta:
 

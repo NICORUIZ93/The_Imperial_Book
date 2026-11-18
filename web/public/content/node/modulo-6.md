@@ -97,7 +97,7 @@ node src/password.js
 
 **Fallo deliberado y corrección:** cambia la contraseña usada para crear el registro a `1234` y ejecuta. El programa rechaza la entrada con `Usa al menos 12 caracteres` antes de derivar la clave. Restaura una contraseña larga; nunca “corrijas” el fallo guardando el texto original ni rebajando la validación para aceptar contraseñas triviales.
 
-**Práctica guiada:** conserva la verificación de una contraseña incorrecta y comprueba que devuelve `false` sin indicar qué parte de la derivación coincide. Añade temporalmente una comparación con `===`, observa que la sustituye una comparación de cadenas sin la protección explícita de `timingSafeEqual`, y restaura la versión con buffers de igual longitud.
+**Práctica guiada:** conserva la verificación de una contraseña incorrecta y comprueba que devuelve `false` sin indicar qué parte de la derivación coincide. Añade temporalmente `return actual === esperadoBuffer;` y observa que `valida` pasa a `false`: entre dos `Buffer`, `===` compara identidad de objetos, no bytes. El error real que aparece en código de producción es comparar las cadenas hex (`actual.toString("hex") === esperado`): funciona, pero termina en el primer carácter distinto y no da la garantía de tiempo constante de `timingSafeEqual`. Restaura la versión con buffers de igual longitud.
 
 **Ejercicio independiente:** añade un registro de intento fallido que contenga fecha, identificador de usuario y resultado, pero nunca la contraseña ni el hash. Entrega la salida de éxito y fallo y explica por qué `timingSafeEqual` exige comparar buffers de la misma longitud.
 

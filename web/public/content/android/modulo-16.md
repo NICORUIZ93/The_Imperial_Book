@@ -7,6 +7,8 @@ una evidencia independiente y termina integrándose en RutaFlow.
 
 ## Aprende construyendo
 
+> **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3), dentro de `dependencies { }` de `app/build.gradle.kts`: Tema 2, `implementation(libs.androidx.datastore.preferences)`; Tema 3, `implementation(libs.androidx.paging.runtime)` e `implementation(libs.androidx.paging.compose)`; Tema 4, `implementation(platform(libs.firebase.bom))` e `implementation(libs.firebase.messaging)`, más el plugin `alias(libs.plugins.google.services)` (raíz con `apply false`) y el `google-services.json` de tu proyecto de Firebase en `app/`; Tema 6, `implementation(libs.androidx.credentials)` e `implementation(libs.androidx.credentials.play.services.auth)`; Tema 7, `implementation(libs.play.integrity)`.
+
 ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso
 
 #### Paso 1 · Objetivo y preparación
@@ -61,7 +63,7 @@ fun AdjuntarFoto(onSeleccionada: (Uri) -> Unit) {
 Compila y revisa el manifiesto fusionado:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:assembleDebug :app:processDebugMainManifest
 grep -R "READ_MEDIA_IMAGES" app/build/intermediates/merged_manifests || echo "sin permiso amplio"
 ```
@@ -146,7 +148,7 @@ class AjustesRepository(private val context: Context) {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:compileDebugKotlin :app:testDebugUnitTest
 ./gradlew :app:test
 ```
@@ -231,7 +233,7 @@ class EntregasPagingSource(
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:testDebugUnitTest --tests '*PagingSource*'
 ```
 
@@ -318,7 +320,7 @@ Declara el servicio con `exported="false"` y la acción `MESSAGING_EVENT`, crea 
 en primer plano y solicita `POST_NOTIFICATIONS` después de explicar el beneficio.
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:processDebugMainManifest :app:testDebugUnitTest
 ./gradlew :app:test
 grep -R "MESSAGING_EVENT\|exported=\"false\"" app/build/intermediates/merged_manifests
@@ -405,7 +407,7 @@ Conecta la función a `currentWindowAdaptiveInfo().windowSizeClass` y conserva
 `envioSeleccionadoId` en ViewModel/SavedStateHandle.
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:testDebugUnitTest --tests '*Adaptive*' :app:connectedDebugAndroidTest
 ```
 
@@ -493,7 +495,7 @@ class IniciarSesion(private val context: Context, private val api: IdentidadApi)
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:compileDebugKotlin :app:testDebugUnitTest
 ./gradlew :app:test
 ```

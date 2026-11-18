@@ -3,6 +3,37 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Room genera código con KSP y verifica tus consultas al compilar, así que necesita dos plugins además de las bibliotecas. Con el catálogo del Módulo 0 (Tema 3):
+>
+> ```kotlin
+> // build.gradle.kts de la raíz, dentro de plugins { }
+> alias(libs.plugins.ksp) apply false
+> alias(libs.plugins.room) apply false
+>
+> // app/build.gradle.kts
+> plugins {
+>     // ...los que ya tienes...
+>     alias(libs.plugins.ksp)
+>     alias(libs.plugins.room)
+> }
+> android {
+>     // ...lo que ya tienes...
+> }
+> room {
+>     schemaDirectory("$projectDir/schemas")   // obligatorio con el plugin de Room
+> }
+> dependencies {
+>     // ...las que ya tienes...
+>     implementation(libs.androidx.room.runtime)
+>     ksp(libs.androidx.room.compiler)
+>     androidTestImplementation(libs.androidx.room.testing)
+> }
+> ```
+>
+> Pulsa **Sync Now**. Desde Room 2.7, `room-ktx` está integrado en `room-runtime` y no hace falta declararlo.
+>
+> **Los scripts `python3` con `sqlite3` de este módulo son modelos del SQL, no pruebas de Room.** Demuestran qué hace la sentencia SQL, pero no que tu `@Entity`, tu DAO o tu `Migration` compilen y se apliquen. La evidencia real es la **Verificación real en Android** de cada tema: la compilación con KSP, el esquema exportado y la app en el emulador.
+
 ### Tema 1: Entities, DAOs y Database
 
 #### Paso 1 · Objetivo y preparación
@@ -39,12 +70,12 @@ Room es una capa de abstracción sobre SQLite (el motor embebido de Android) que
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/AppDatabase.kt`, y valida la tabla equivalente en SQLite real (el motor que Room usa internamente) para confirmar que el esquema es válido:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/AppDatabase.kt`, y valida la tabla equivalente en SQLite real (el motor que Room usa internamente) para confirmar que el esquema es válido:
 
 ```bash
-# Este script python3 (vía sqlite3) valida el esquema SQL real que Room generaría
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+# Este script python3 (vía sqlite3) es un modelo del esquema SQL equivalente; la prueba real es compilar con Room
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/AppDatabase.kt <<'EOF'
 package com.academia.android
 
@@ -95,7 +126,9 @@ con.close()
 ```
 
 
-**Explicación línea por línea:** `@Entity` mapea `Tarea` a una tabla SQL con las mismas columnas que sus propiedades; `@PrimaryKey` corresponde a `PRIMARY KEY` en SQL; `@Query("SELECT * FROM Tarea")` es la query literal que Room verifica contra el esquema declarado en tiempo de compilación; el script Python con `sqlite3` confirma, contra el motor SQLite real, que ese esquema y esa query son válidos y ejecutables.
+**Explicación línea por línea:** `@Entity` mapea `Tarea` a una tabla SQL con las mismas columnas que sus propiedades; `@PrimaryKey` corresponde a `PRIMARY KEY` en SQL; `@Query("SELECT * FROM Tarea")` es la query literal que Room verifica contra el esquema declarado en tiempo de compilación; el script Python con `sqlite3` es un modelo: confirma que un esquema SQL equivalente acepta esa query, pero no prueba tu código Room.
+
+**Verificación real en Android.** Compila con `./gradlew :app:compileDebugKotlin`. **Resultado esperado:** la compilación termina bien y Room exporta el esquema en `app/schemas/com.academia.android.AppDatabase/1.json` (compruébalo con `ls app/schemas/com.academia.android.AppDatabase/`). Ahora cambia la consulta del DAO a `SELECT columnaInexistente FROM Tarea` y compila otra vez: falla **en compilación**, con un error de Room que incluye `no such column: columnaInexistente`. Esa es la diferencia con el script Python, que solo falla al ejecutar. Restaura la consulta.
 
 Simula el error que Room detectaría en tiempo de compilación si la query referenciara una columna inexistente, ejecutando esa misma query contra SQLite real:
 
@@ -172,12 +205,12 @@ Un DAO que devuelve `Flow<List<Tarea>>` en vez de `List<Tarea>` establece una su
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/Migraciones.kt`, validando la migración equivalente contra SQLite real antes:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/Migraciones.kt`, validando la migración equivalente contra SQLite real antes:
 
 ```bash
-# Este script python3 (vía sqlite3) ejecuta la migración real y confirma que preserva los datos
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+# Este script python3 (vía sqlite3) modela el SQL de la migración; la prueba real se hace en el emulador
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/Migraciones.kt <<'EOF'
 package com.academia.android
 
@@ -237,6 +270,8 @@ con.close()
 
 **Resultado esperado:** el primer script confirma que ambas tareas preexistentes sobreviven la migración, ahora con `prioridad = 0`; el segundo confirma que, sin aplicar la migración, consultar la columna nueva falla con `no such column: prioridad`, exactamente la discrepancia que Room detecta y convierte en una excepción explícita en tiempo de ejecución si la migración correspondiente no se declaró.
 
+**Verificación real en Android.** Construye la base de datos en `MainActivity` con `Room.databaseBuilder(applicationContext, AppDatabase::class.java, "tareas.db").build()`, inserta dos tareas desde `lifecycleScope.launch { … }` y registra `tareaDao().observarTodas().first()` con `Log.d("Room", …)`. Instala con `./gradlew :app:installDebug`. Después sube la base a la versión 2: añade `val prioridad: Int = 0` a `Tarea`, cambia `version = 2` en `@Database` y vuelve a instalar **sin** `.addMigrations(...)` (`installDebug` conserva los datos de la app). **Resultado esperado:** al abrir la app, `logcat` muestra `IllegalStateException: A migration from 1 to 2 was required but not found`. Añade `.addMigrations(MIGRATION_1_2)` al builder, reinstala y `adb logcat -s Room:D` muestra las dos tareas originales con `prioridad=0`. Room también exporta `2.json` junto a `1.json`.
+
 **Fallo deliberado:** en vez de `ALTER TABLE`, simula "perder los datos" recreando la tabla desde cero (`DROP TABLE Tarea; CREATE TABLE Tarea (...)` con la nueva columna, sin ningún `INSERT` de los datos anteriores). Verifica que la tabla ahora está vacía — diagnostica confirmando exactamente el error que una migración mal escrita (o la estrategia destructiva `fallbackToDestructiveMigration()` de Room) provocaría: perder todos los datos existentes del usuario en vez de preservarlos, la razón por la que declarar una migración explícita y correcta importa.
 
 #### Paso 5 · Práctica guiada
@@ -294,12 +329,12 @@ Una estrategia offline-first invierte el orden de prioridad habitual entre red y
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/TareaRepository.kt`. Ejecuta `python3` y `gradle` para validar el comportamiento offline-first:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/TareaRepository.kt`. Ejecuta `python3` y `gradle` para validar el comportamiento offline-first:
 
 ```bash
 # Este script python3 simula, con sqlite3 real, que la UI sigue funcionando sin red
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TareaRepository.kt <<'EOF'
 package com.academia.android
 

@@ -657,7 +657,7 @@ Con `--permission`, Node **niega por defecto** el acceso al sistema de archivos,
 
 | Opción | Qué permite |
 |---|---|
-| `--allow-fs-read=<ruta>` | leer en esa carpeta o archivo (incluye el propio script) |
+| `--allow-fs-read=<ruta>` | leer en esa carpeta o archivo (el punto de entrada ya se permite por defecto) |
 | `--allow-fs-write=<ruta>` | escribir en esa carpeta o archivo |
 | `--allow-child-process` | lanzar procesos hijos |
 | `--allow-worker` | crear worker threads |
@@ -733,7 +733,16 @@ escribió el reporte
 ¿puede usar child_process?: false
 ```
 
-**Fallo deliberado:** quita `--allow-fs-read=./leer-envios.mjs` de la primera ejecución. **Error esperado:** Node no arranca y muestra `ERR_ACCESS_DENIED` al intentar leer el propio script. **Diagnóstico:** el permiso de lectura también aplica al archivo que ejecutas. Agrega su ruta o la de su carpeta.
+**Fallo deliberado:** quita `--allow-fs-read=./datos/` de la primera ejecución (`node --permission --allow-fs-read=./leer-envios.mjs leer-envios.mjs`). **Error esperado:** el proceso termina con código 1 antes de imprimir `leído:`, porque la primera lectura no está dentro de un `try`:
+
+```text
+Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+  code: 'ERR_ACCESS_DENIED',
+  permission: 'FileSystemRead',
+  resource: 'datos/envios.csv'
+```
+
+**Diagnóstico:** el campo `resource` dice qué ruta faltó; agrega `--allow-fs-read=./datos/` y vuelve a ejecutar. Ojo: quitar `--allow-fs-read=./leer-envios.mjs` **no** provoca un fallo, porque la documentación de permisos indica que el punto de entrada de la aplicación se incluye por defecto en la lista de lectura permitida.
 
 **Práctica guiada.**
 
@@ -755,10 +764,10 @@ Toma un script tuyo que use un paquete de npm y ejecútalo con `--permission`. A
 
 - [ ] Explicas qué niega `--permission` por defecto.
 - [ ] Los dos comandos imprimen las ocho líneas esperadas.
-- [ ] Reprodujiste el error de lectura del propio script.
+- [ ] Reprodujiste el error de lectura de `datos/` y lo corregiste con el permiso que indica `resource`.
 - [ ] Sabes por qué no reemplaza a un contenedor sin privilegios.
 
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** permitir `--allow-fs-read=*` por comodidad, olvidar el permiso del propio script y creer que es una caja de arena completa. **Siguiente paso:** el tema «CVE, CWE y npm audit en el pipeline» complementa esta defensa detectando versiones vulnerables.
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** permitir `--allow-fs-read=*` por comodidad, olvidar el permiso de las carpetas de datos que lee el script y creer que es una caja de arena completa. **Siguiente paso:** el tema «CVE, CWE y npm audit en el pipeline» complementa esta defensa detectando versiones vulnerables.
 
 **Transferencia al proyecto integrador «RutaFlow»:** ejecuta el importador nocturno de RutaFlow con `--permission`, leyendo solo `datos/entrada/` y escribiendo solo en `datos/salida/`.
 

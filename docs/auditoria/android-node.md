@@ -185,3 +185,47 @@ No es un error: `kotlinx-coroutines-test:1.11.0` (android m0:699) existe ([Maven
 - **Lectura completa:** se leyeron completos los temas de android m0 (los 6), m1 (los 3), m3-T4, m4-T3, m8-T1, m11-T1, m15-T1 y m17-T1, y de node m0-T1/T2, m1-T6, m2-T3, m4-T1, m6-T1/T2, m7-T7, m8-T1, m9-T6, m10-T6, m14-T1 y m15-T1/T2. El resto se ojeó por encabezados, búsquedas dirigidas y fragmentos; las notas de los módulos solo ojeados tienen menor confianza.
 - **Capturas SVG** (`content/figures/node/*.svg`) y su coherencia con la salida real: no se revisaron.
 - **Lector Angular** (pliegue de soluciones, chips de glosario en `lesson-viewer.ts:940`): no se ejecutó la app.
+
+## Correcciones aplicadas (specs/014)
+
+Líneas = archivo original auditado (`web/public/content/`). Node se verificó ejecutando en `/tmp` con Node v22.23.5; Android/Kotlin (sin SDK ni emulador) contra developer.android.com, dagger.dev, Maven Central y el código fuente de Retrofit, el 2026-11-18. Nada de Android se compiló.
+
+| Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|
+| B1 · Android sin dependencias Gradle (m1–m14, 16, 17; imports de m5:72, m7:54, m8:53, m9:51) | corregido | Catálogo `libs.versions.toml` en android/modulo-0 (Tema 3) y bloque «Antes de empezar» con `implementation(libs.…)`/plugins en m1–m10 y m15–m16. Versiones de developer.android.com (lifecycle 2.11.1, navigation 2.10.2, room 2.8.5, work 2.12.0, camera 1.6.2, datastore 1.3.0, paging 3.5.3, credentials 1.6.0), Maven Central (retrofit 3.0.0, hilt 2.60.1, ksp 2.3.14, coroutines-test 1.11.0, serialization 1.13.0, logging-interceptor 4.12.0, maps-compose 9.0.1), Firebase BoM 35.2.0, Play Integrity 1.6.0, ML Kit 17.3.0, play-services-location 21.4.0. TOML validado con `tomllib`. No compilado |
+| B2 · Pruebas en `src/main` (android/modulo-9.md:47, 180; modulo-7.md:291; modulo-12.md:268) | corregido | Movidas a `src/test` (m9 T1, con `Dispatchers.setMain`) y `src/androidTest` (m9 T2, m7 T3 con `HiltAndroidRule` y `HiltTestRunner`); checklist m12 apunta a `src/test`. m9:288 ya estaba en `androidTest` (además se cambió `ComponentActivity` por `MainActivity`). Contra guías oficiales de pruebas de coroutines y Hilt |
+| B3 · Evidencia Android en Python (m0–m13) | corregido | Cada módulo m1–m13 declara que los scripts son modelos; «Verificación real en Android» añadida en m1 (ViewModelProvider + rotación, `am kill`), m3 (deep link con `adb am start`), m4, m5 (Retrofit vía `10.0.2.2`), m6 (KSP/esquema exportado/migración), m7 (`[Dagger/MissingBinding]`, prueba instrumentada), m8 (`TestListenableWorkerBuilder`, `dumpsys jobscheduler`), m9, m12 (`test`/`connectedCheck`/`lint`). m10 (Baseline Profiles) y m13 (AndroidKeyStore) quedan marcados como modelo con la prueba real indicada, sin código de prueba completo |
+| B4 · Ejercicios sin solución (1/83 y 0/90) | pendiente: fuera del alcance de specs/014 (soluciones = specs/013 P5) | — |
+| B7 · `validate.sh` no detecta estos defectos | pendiente: la tarea prohíbe tocar `scripts/` | — |
+| §6.1 Orden `nextTick`/Promise en ESM (node/modulo-0.md:164, 187, 214) | corregido | Ejecutado: ESM `1,3,2`; `.cjs` `1,2,3`; timer `4/5` puede salir tras el I/O. Fuente: `doc/api/process.md` de Node v22 |
+| §6.2 Fallo deliberado de permisos (node/modulo-10.md:736) | corregido | Ejecutado: quitar el permiso del script no falla; quitar `--allow-fs-read=./datos/` sale con código 1 y `ERR_ACCESS_DENIED`, `resource: 'datos/envios.csv'` |
+| §6.3 Enums en el borrado de tipos (node/modulo-14.md:35, 79) | corregido | Ejecutado: `enum E { A = 1, B = 2 }` → `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` |
+| §6.4 Deno «rechaza» sin `--allow-net` (node/modulo-15.md:53) | corregido | docs.deno.com/runtime/fundamentals/security (pregunta en terminal; `--no-prompt` falla con `NotCapable`). Deno no instalado: no ejecutado |
+| §6.5 Logger con `req.path` (node/modulo-4.md:63, 97) | corregido | Ejecutado con express@5: `GET /privado/mensaje -> 401` con `req.originalUrl`; se fijó `express@5` |
+| §6.6–6.7 Predictive Back (android/modulo-3.md:391–422) | corregido | Guía oficial predictive-back-gesture: callback habilitado desactiva la animación; `OnBackPressedCallback` se llama siempre; habilitado por defecto. Código completo con imports y `enabled = hayCambiosSinGuardar`; voseo eliminado |
+| §6.8 SharedFlow para eventos (android/modulo-4.md:224–364) | corregido | Guía oficial «UI events»: mensaje como estado (`mensajeUsuario` + `mensajeMostrado()`) |
+| §6.9 Play App Signing (android/modulo-11.md:16, 22, 106, 110) | corregido | developer.android.com/studio/publish/app-signing; comandos `keytool` y `keytool -printcert -jarfile` ejecutados localmente |
+| §6.10 Cambio de idioma no recrea (android/modulo-0.md:306) | corregido | developer.android.com runtime-changes (cita de la auditoría) |
+| §6.11 `titulo_bienvenida` nunca se añade (android/modulo-0.md:244–286) | corregido | Ejecutado en `/tmp`: `claves compartidas: {'titulo_bienvenida'}`, idempotente |
+| §6.12 `navArgument` como «tipado» (android/modulo-3.md:138) | corregido | Nota con rutas `@Serializable` + `toRoute()` (Navigation 2.8+, guía type-safety); además `composable(...)` pasa a extensión de `NavGraphBuilder` (no compilaba fuera del grafo) |
+| `settings.gradle.kts.fragmento` y dependencia fuera de `dependencies {}` (android/modulo-0.md:392, 396) | corregido | `include(":core")` en el `settings.gradle.kts` real; `implementation(project(":core"))` dentro del bloque; `kotlin-jvm` por catálogo |
+| `cd android-plataforma && cd android-plataforma` (android/modulo-15.md:43, 169, 289, 455) | corregido | Una carpeta por tema (`android-plataforma-temaN`), un solo `cd` |
+| `mkdir -p academia-android/… && cd academia-android` anidado (m1–m14, 16–18) | corregido | `test -f settings.gradle.kts \|\| cd academia-android` en todos los bloques |
+| `MainActivity` en paquete no lanzado (android/modulo-1.md:42) | corregido | Paquete `com.academia.android` fijado al crear el proyecto (m0) y m1 reemplaza el archivo de la plantilla en `java/` |
+| Archivo antes que su carpeta (node/modulo-14.md:41, 57) | corregido | Ejecutado: `mkdir` primero, `node src/asignar.ts` imprime `{ id: 'p-1', conductorId: 'c-9' }`; `npx tsc` requiere `npm install -D typescript` (verificado: TS2345) |
+| Prerrequisito de otro curso (android/modulo-8.md:13) y Docker antes de enseñarlo (node/modulo-5.md:11) | corregido | m8 remite a m0 Tema 6; m5 avisa y acota el uso de Docker |
+| `catch (e: Exception)` traga `CancellationException` (android/modulo-8.md:63) | corregido | Relanzada; además se quitó `import androidx.work.Result` (no existe; `Result` es `ListenableWorker.Result`) |
+| Retrofit sin converter, `localhost` en emulador, sin `INTERNET` (android/modulo-5.md:72–88) | corregido | `@Serializable`, `asConverterFactory` (paquete verificado en el fuente de Retrofit), `10.0.2.2`, cleartext solo en `src/debug` |
+| Hilt sin plugin/KSP/`android:name` (android/modulo-7.md:54) | corregido | dagger.dev/hilt/gradle-setup; añadidos `DatabaseModule` y `provideApiService` (sin ellos, `MissingBinding`) |
+| Room sin KSP ni prueba real (android/modulo-6.md:80) | corregido | Guía de Room 2.8.5 (plugin, `schemaDirectory`, `room-ktx` integrado) |
+| Prueba de migración con `MigrationTestHelper` (android/modulo-6.md) | pendiente: la guía oficial ya documenta la API de Room 3 (`androidx.room3`); sin SDK no se pudo verificar la de 2.8.x. Se usa verificación en emulador (`A migration from 1 to 2 was required but not found`) | — |
+| m4 usa un `TareaRepository` inexistente (android/modulo-4.md:69, hallazgo nuevo) | corregido | Interfaz `FuenteDeTareas` propia de m4; m9 la adapta |
+| `Tarea(... completada)` no coincide con m0 (android/modulo-9.md:65) | no reproducible | En `com.academia.android` resuelve a la `@Entity Tarea(id, titulo, completada)` de m6; la de m0 está en `com.academia.model` |
+| «la app Restauracion del módulo 4 no existe» (android/modulo-13.md, Tema 5) | no reproducible | android/modulo-4.md Tema 4 crea el proyecto `Restauracion` |
+| `dependencyInsight` sin `:app:` (android/modulo-18.md:61) | corregido | Documentación de Gradle (tarea por proyecto); no ejecutado |
+| Restos editoriales: «Trazabilidad…» (android m14:803, node m14:470), «Aplicación del material de referencia» y marcadores del atlas (android m13), «verificable en este entorno» (android m9:41) | corregido | `grep` de specs/014 B2/B3 sin coincidencias en android y node |
+| Voseo (android/modulo-3.md:414–422; node/modulo-14.md, 23 formas) | corregido | Búsqueda de formas en -á/-é/-í |
+| Node 18 como mínimo (node m2:774, m3:513, m3:653, m9:801) | corregido | LTS con soporte (22 o 24) |
+| `===` entre `Buffer` (node/modulo-6.md:100) | corregido | Ejecutado: `valida: false` con `actual === esperadoBuffer` |
+| Laboratorios `examples/` contradicen «no copies del repositorio» (node m0:55 vs m14:124, 187) | corregido | Aviso de excepción y `git clone` al inicio de node m14 |
+| Fragmento m17:43 sin imports; cierres vacíos m15; 404 que «no falla» (node m3:70); duración de temas; tracks desalineados; glosario | pendiente: defectos mayores/menores que no impiden seguir el tema; quedan para la reescritura (specs/013 P5) | — |

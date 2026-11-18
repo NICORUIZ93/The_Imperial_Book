@@ -510,7 +510,7 @@ Lleva el cursor al **[Proyecto integrador: listado acotado](#proyecto-3-api-http
 
 **Objetivo y preparación.**
 
-Usa Node.js 18 o superior y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
+Usa una versión LTS con soporte de Node.js (22 o 24) y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
 
 **Contexto y caso real.**
 
@@ -650,7 +650,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** desacti
 
 **Objetivo y preparación.**
 
-Usa Node.js 18 o superior. Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
 
 **Contexto y caso real.**
 

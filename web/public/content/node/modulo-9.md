@@ -798,7 +798,7 @@ curl -s http://127.0.0.1:3000/metrics
 
 **Objetivo y preparación.**
 
-Usa Node.js 18 o superior. Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
 
 **Contexto y caso real.**
 

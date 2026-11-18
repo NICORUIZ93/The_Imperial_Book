@@ -3,6 +3,32 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Hilt necesita su plugin de Gradle, KSP para generar código y que el manifiesto use tu clase `Application`. Con el catálogo del Módulo 0 (Tema 3):
+>
+> ```kotlin
+> // build.gradle.kts de la raíz, dentro de plugins { }
+> alias(libs.plugins.ksp) apply false   // si no lo añadiste en el Módulo 6
+> alias(libs.plugins.hilt) apply false
+>
+> // app/build.gradle.kts
+> plugins {
+>     // ...los que ya tienes...
+>     alias(libs.plugins.ksp)
+>     alias(libs.plugins.hilt)
+> }
+> dependencies {
+>     // ...las que ya tienes...
+>     implementation(libs.hilt.android)
+>     ksp(libs.hilt.compiler)
+>     androidTestImplementation(libs.hilt.android.testing)
+>     kspAndroidTest(libs.hilt.compiler)
+> }
+> ```
+>
+> En `app/src/main/AndroidManifest.xml`, añade `android:name=".MiApp"` a la etiqueta `<application>`; sin él, Android crea un `Application` genérico y Hilt nunca se inicializa. Pulsa **Sync Now**.
+>
+> **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
+
 ### Tema 1: Configuración básica de Hilt
 
 #### Paso 1 · Objetivo y preparación
@@ -40,12 +66,12 @@ Hilt (construido sobre Dagger) requiere anotar la clase `Application` con `@Hilt
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/MiApp.kt`, y modela el mismo principio de construcción centralizada en Python para verificarlo en ejecución real antes de confiar en la generación de código de Hilt:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/MiApp.kt`, y modela el mismo principio de construcción centralizada en Python para verificarlo en ejecución real antes de confiar en la generación de código de Hilt:
 
 ```bash
 # Este script python3 modela el mismo grafo de dependencias para verificar el principio
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/MiApp.kt <<'EOF'
 package com.academia.android
 
@@ -96,6 +122,8 @@ print('ViewModel obtuvo sus tareas vía la dependencia inyectada:', view_model.r
 ```
 
 **Resultado esperado:** `TareasViewModel` recibe una instancia ya construida de `TareaRepository` a través de su constructor, sin invocar `TareaRepository()` en ningún lugar de su propio código, confirmando en ejecución real el mismo principio que `@Inject constructor` aplica en Kotlin: el consumidor declara qué necesita, no cómo construirlo.
+
+**Verificación real en Android.** Ejecuta `./gradlew :app:compileDebugKotlin` justo después de crear `MiApp.kt`. **Resultado esperado en este punto:** falla en compilación con un error de Dagger del tipo `[Dagger/MissingBinding] com.academia.android.TareaRepository cannot be provided without an @Provides-annotated method`. No es un fallo del ejemplo: Hilt comprueba el grafo completo al compilar y todavía nadie le ha dicho cómo construir `TareaRepository`. El Tema 2 añade ese enlace con `@Binds`; al terminarlo, la misma orden compila.
 
 **Fallo deliberado:** modifica `TareasViewModel` para que construya `TareaRepository()` directamente dentro de su propio `__init__` en vez de recibirlo como parámetro (`self.repo = TareaRepository()`). Ejecuta de nuevo — el código "funciona" igual de bien en este caso simple, pero ahora `TareasViewModel` conoce y depende directamente de la clase concreta `TareaRepository` — diagnostica confirmando el problema real: si `TareaRepository` necesitara más adelante un parámetro de configuración (una URL, un token), CADA lugar que la construya directamente tendría que actualizarse, mientras que con inyección de dependencias solo el contenedor centralizado necesita ese cambio.
 
@@ -152,28 +180,44 @@ Al finalizar podrás decidir entre `@Provides` y `@Binds` según si una dependen
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
 
 ```bash
 # Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/NetworkModule.kt <<'EOF'
 package com.academia.android
 
+import android.content.Context
+import androidx.room.Room
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import retrofit2.Retrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit = Retrofit.Builder().baseUrl("https://api.miapp.com/").build()
+    fun provideApiService(): ApiService = crearApiService()   // ClienteApi.kt, Módulo 5
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "tareas.db").build()
+
+    @Provides
+    fun provideTareaDao(db: AppDatabase): TareaDao = db.tareaDao()
 }
 
 @Module
@@ -186,7 +230,7 @@ EOF
 ./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `provideRetrofit()` construye explícitamente la instancia de `Retrofit` (una clase externa que Hilt no puede anotar directamente en su constructor); `bindTareaRepository` simplemente declara la asociación entre la interfaz `TareaRepository` y su implementación `TareaRepositoryImpl` (Módulo 6), sin escribir código adicional de construcción, porque `TareaRepositoryImpl` ya tiene su propio constructor `@Inject`. Para que esto compile, el constructor de `TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService)` definido en el Módulo 6 debe anotarse ahora como `@Inject constructor(...)`: con Room (`TareaDao`, Módulo 6) y Retrofit (`ApiService`, aquí arriba) ya resolubles por Hilt, eso es todo lo que Hilt necesita para construir `TareaRepositoryImpl` automáticamente al resolver la interfaz `TareaRepository`.
+**Explicación línea por línea:** `provideApiService()` construye explícitamente el `ApiService` de Retrofit (una interfaz que genera Retrofit y que Hilt no puede construir por constructor); `DatabaseModule` hace lo mismo con `AppDatabase` y `TareaDao`, que crea Room; `bindTareaRepository` simplemente declara la asociación entre la interfaz `TareaRepository` y su implementación `TareaRepositoryImpl` (Módulo 6), sin escribir código adicional de construcción, porque `TareaRepositoryImpl` ya tiene su propio constructor `@Inject`. Para que esto compile, el constructor de `TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService)` definido en el Módulo 6 debe anotarse ahora como `@Inject constructor(...)`: con `TareaDao` y `ApiService` provistos por los dos módulos de arriba (Hilt no los sabe construir solo: sin esos `@Provides` la compilación falla con `[Dagger/MissingBinding]`), eso es todo lo que Hilt necesita para construir `TareaRepositoryImpl` automáticamente al resolver la interfaz `TareaRepository`.
 
 Modela ambos patrones en Python, confirmando en ejecución real la diferencia entre "construir explícitamente" y "simplemente mapear":
 
@@ -282,26 +326,80 @@ Al finalizar podrás elegir el scope correcto para una dependencia según su tie
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/TareasFlowTest.kt` junto a un modelo Python que confirma la diferencia real de comportamiento entre scopes:
+Continuando en `academia-android`, crea una **prueba instrumentada** (las pruebas viven en `src/androidTest` o `src/test`, nunca en `src/main`, que es el código que se empaqueta en la app). Hilt necesita además un *runner* que arranque la app de pruebas `HiltTestApplication` en lugar de `MiApp`:
 
 ```bash
-# Este script python3 modela scopes reales para contar cuántas instancias se crean de cada tipo
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
-cat > app/src/main/kotlin/com/academia/android/TareasFlowTest.kt <<'EOF'
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/androidTest/kotlin/com/academia/android
+cat > app/src/androidTest/kotlin/com/academia/android/HiltTestRunner.kt <<'EOF'
 package com.academia.android
 
+import android.app.Application
+import android.content.Context
+import androidx.test.runner.AndroidJUnitRunner
+import dagger.hilt.android.testing.HiltTestApplication
+
+class HiltTestRunner : AndroidJUnitRunner() {
+    override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application =
+        super.newApplication(cl, HiltTestApplication::class.java.name, context)
+}
+EOF
+cat > app/src/androidTest/kotlin/com/academia/android/TareasFlowTest.kt <<'EOF'
+package com.academia.android
+
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 
 @HiltAndroidTest
-@UninstallModules(NetworkModule::class) // reemplaza el módulo real por uno de test
-class TareasFlowTest
+@UninstallModules(NetworkModule::class) // desinstala el módulo de producción solo en esta prueba
+class TareasFlowTest {
+    @get:Rule val hiltRule = HiltAndroidRule(this)
+
+    @Module
+    @InstallIn(SingletonComponent::class) // módulo anidado: solo existe para esta clase de prueba
+    object NetworkModuleDePrueba {
+        @Provides
+        @Singleton
+        fun provideApiService(): ApiService = object : ApiService {
+            override suspend fun obtenerTareas() = listOf(TareaDTO("t-1", "Tarea de prueba"))
+        }
+    }
+
+    @Inject lateinit var api: ApiService
+
+    @Before fun inyectar() = hiltRule.inject()
+
+    @Test
+    fun usaElApiServiceDePrueba() = runTest {
+        assertEquals("Tarea de prueba", api.obtenerTareas().single().titulo)
+    }
+}
 EOF
-./gradlew :app:compileDebugKotlin
 ```
 
-**Explicación línea por línea:** `@HiltAndroidTest` habilita la inyección de Hilt dentro del test; `@UninstallModules(NetworkModule::class)` desinstala el módulo de producción, permitiendo que un módulo de test equivalente provea, en su lugar, un `Retrofit` apuntando a un servidor de pruebas en vez del real.
+En `app/build.gradle.kts`, dentro de `android { defaultConfig { } }`, cambia el runner a `testInstrumentationRunner = "com.academia.android.HiltTestRunner"` y añade `androidTestImplementation(libs.kotlinx.coroutines.test)` a `dependencies { }`. Con el emulador encendido, ejecuta:
+
+```bash
+./gradlew :app:connectedDebugAndroidTest
+```
+
+**Resultado esperado:** `BUILD SUCCESSFUL` y el informe en `app/build/reports/androidTests/connected/` con `usaElApiServiceDePrueba` en verde: la prueba recibió el `ApiService` falso sin tocar `NetworkModule` ni el código de producción. Si `ApiService` del Módulo 5 tiene más funciones (por ejemplo, `obtenerTarea(id)` de su práctica guiada), impleméntalas también en el objeto falso.
+
+**Explicación línea por línea:** `HiltTestRunner` sustituye `MiApp` por `HiltTestApplication` durante las pruebas; `@HiltAndroidTest` y `HiltAndroidRule` generan un grafo de Hilt propio para esta clase; `@UninstallModules(NetworkModule::class)` quita el módulo de producción y `NetworkModuleDePrueba` provee en su lugar un `ApiService` falso, de modo que `hiltRule.inject()` rellena `api` con él.
+
+El script Python siguiente es un **modelo** del efecto de los scopes (no ejecuta Hilt):
 
 Modela, contando instancias reales creadas, la diferencia entre `@Singleton` y un scope sin caché (equivalente a `@ViewModelScoped` con múltiples ViewModels):
 

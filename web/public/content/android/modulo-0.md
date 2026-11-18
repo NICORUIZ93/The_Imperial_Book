@@ -9,7 +9,7 @@ No necesitas un teléfono Android. Android Studio incluye el SDK, Gradle y un em
 - **macOS:** elige la descarga para Apple Silicon o Intel según tu Mac. En Apple Silicon usa imágenes de emulador ARM64.
 - **Linux:** instala los paquetes de virtualización/KVM de tu distribución, agrega tu usuario al grupo `kvm` y reinicia sesión.
 
-En **SDK Manager** instala Android SDK Platform, Build-Tools y Platform-Tools. En **Device Manager** crea un dispositivo Pixel con una imagen estable. Crea un proyecto **Empty Activity**, Kotlin y Jetpack Compose; espera a que termine "Gradle Sync" y pulsa Run.
+En **SDK Manager** instala Android SDK Platform, Build-Tools y Platform-Tools. En **Device Manager** crea un dispositivo Pixel con una imagen estable. Crea un proyecto **Empty Activity**, Kotlin y Jetpack Compose, con nombre `academia-android` y *Package name* `com.academia.android` (los módulos siguientes escriben en ese paquete; con otro paquete, el manifiesto lanzaría una `MainActivity` distinta a la del curso); espera a que termine "Gradle Sync" y pulsa Run.
 
 Comprueba también la terminal integrada:
 
@@ -123,7 +123,7 @@ flowchart TD
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía, crea un proyecto nuevo con la plantilla **Empty Activity** (Kotlin + Compose) desde Android Studio, llamado `academia-android`, e inspecciona su estructura real (`app/src/main/`) desde la terminal integrada:
+Desde una carpeta vacía, crea un proyecto nuevo con la plantilla **Empty Activity** (Kotlin + Compose) desde Android Studio, llamado `academia-android` y con *Package name* `com.academia.android`, e inspecciona su estructura real (`app/src/main/`) desde la terminal integrada:
 
 ```bash
 mkdir -p academia-android
@@ -239,11 +239,18 @@ flowchart TD
 Reutiliza `academia-android` (Tema 1; si partes de una carpeta vacía nueva, créala primero con `mkdir -p academia-android`) y crea, dentro de `app/src/main/res/`, un string nuevo y su traducción al inglés:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # entra solo si aún no estás en la raíz
 mkdir -p app/src/main/res/values-en
-cat >> app/src/main/res/values/strings.xml <<'EOF'
-<!-- agregado manualmente para este ejercicio, dentro del bloque <resources> existente -->
-EOF
+# inserta el string dentro de <resources> (no después de </resources>) y no lo duplica si ya existe
+python3 - <<'PY'
+from pathlib import Path
+ruta = Path('app/src/main/res/values/strings.xml')
+xml = ruta.read_text(encoding='utf-8')
+if 'name="titulo_bienvenida"' not in xml:
+    xml = xml.replace('</resources>', '    <string name="titulo_bienvenida">Bienvenido</string>\n</resources>', 1)
+    ruta.write_text(xml, encoding='utf-8')
+print('values/strings.xml contiene titulo_bienvenida')
+PY
 cat > app/src/main/res/values-en/strings.xml <<'EOF'
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -268,7 +275,7 @@ print('values-en/strings.xml es XML bien formado')
 
 `python3` es el comando que ejecuta el intérprete de Python 3 (aquí, un script inline con `-c` para validar el XML generado).
 
-**Explicación línea por línea:** `values-en/strings.xml` provee la traducción al inglés bajo el mismo nombre de recurso (`titulo_bienvenida`); Android selecciona automáticamente este archivo en vez de `values/strings.xml` (español, por defecto) cuando el idioma del dispositivo está configurado en inglés, sin ningún cambio de código Kotlin.
+**Explicación línea por línea:** el primer script agrega `<string name="titulo_bienvenida">Bienvenido</string>` justo antes de `</resources>` en `values/strings.xml` (el texto por defecto, en español); `values-en/strings.xml` provee la traducción al inglés bajo el mismo nombre de recurso (`titulo_bienvenida`); Android selecciona automáticamente este archivo en vez de `values/strings.xml` (español, por defecto) cuando el idioma del dispositivo está configurado en inglés, sin ningún cambio de código Kotlin.
 
 Confirma que ambos archivos definen la misma clave de recurso, condición necesaria para que la resolución automática funcione:
 
@@ -283,7 +290,7 @@ print('claves compartidas:', es & en)
 "
 ```
 
-**Resultado esperado:** `titulo_bienvenida` aparece en la intersección de claves compartidas entre ambos archivos; ninguna clave debería existir solo en un idioma sin su contraparte, porque eso dejaría un texto sin traducir cuando el dispositivo cambie de idioma.
+**Resultado esperado:** la salida termina en `claves compartidas: {'titulo_bienvenida'}` (si la plantilla generó también `app_name`, aparece en `claves solo en español`, porque no la tradujiste); ninguna clave debería existir solo en un idioma sin su contraparte, porque eso dejaría un texto sin traducir cuando el dispositivo cambie de idioma.
 
 **Fallo deliberado:** agrega una clave nueva (`<string name="solo_en_espanol">Texto</string>`) únicamente en `values/strings.xml`, sin agregarla también en `values-en/strings.xml`, y repite la comparación de claves. Aparece en "claves solo en español" — diagnostica confirmando que un dispositivo configurado en inglés mostraría, para esa clave específica, el string por defecto (español) como respaldo, no un error, pero rompiendo la consistencia de traducción esperada por el usuario.
 
@@ -297,13 +304,13 @@ Agrega un tercer idioma (`values-pt/strings.xml`, portugués) con la traducción
 
 **Tu tarea (sin mirar solución primero):** 
 1. ¿Cómo soportaría el proyecto integrador un usuario portugués viendo la pantalla de seguimiento sin duplicar código Kotlin?
-2. Si un text de estado cambia ("En ruta" → "En recorrido"), ¿cuántos archivos deben modificarse?
+2. Si un texto de estado cambia ("En ruta" → "En recorrido"), ¿cuántos archivos deben modificarse?
 3. ¿Qué sucede si el dispositivo cambia de idioma mientras la app está en ejecución?
 
 **Respuesta esperada:**
 1. Creando `res/values-pt/strings.xml` con la misma clave (`delivery_status_in_transit`) — Android resuelve automáticamente.
 2. Solo `strings.xml` (y sus variantes) — el código Kotlin no cambia, centralizando la verdad.
-3. Android no reinicia la app automáticamente; un observador de configuración (`onConfigurationChanged`) o recomposición detectaría el cambio.
+3. Por defecto, el cambio de idioma es un cambio de configuración: el sistema destruye y recrea la Activity, que vuelve a leer los recursos del nuevo idioma (el estado del `ViewModel` sobrevive). Solo si la Activity declara en el manifiesto que maneja ese cambio (`android:configChanges` con `locale`) deja de recrearse y recibe `onConfigurationChanged`. Fuente: [Android Developers — Runtime changes](https://developer.android.com/guide/topics/resources/runtime-changes).
 
 #### Paso 7 · Cierre
 
@@ -377,25 +384,110 @@ La estructura queda ejemplificada en el `LocationPolicy.kt` que acabas de crear 
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez en este módulo) y crea un módulo Gradle nuevo `:core` con una dependencia explícita desde `:app`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea un módulo Gradle nuevo `:core` con una dependencia explícita desde `:app`:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p core/src/main/kotlin/com/academia/core
 cat > core/build.gradle.kts <<'EOF'
-plugins { id("org.jetbrains.kotlin.jvm") }
+plugins { alias(libs.plugins.kotlin.jvm) }
 EOF
 cat > core/src/main/kotlin/com/academia/core/Formateador.kt <<'EOF'
 package com.academia.core
 fun formatearBienvenida(nombre: String): String = "Bienvenido, $nombre"
 EOF
-cat > settings.gradle.kts.fragmento <<'EOF'
-include(":app", ":core")
-EOF
-grep -q 'implementation(project(":core"))' app/build.gradle.kts || \
-  echo 'implementation(project(":core"))' >> app/build.gradle.kts
-grep -n "project(\":core\")" app/build.gradle.kts
+# registra el módulo en el settings.gradle.kts real (la plantilla ya trae include(":app"))
+grep -q 'include(":core")' settings.gradle.kts || echo 'include(":core")' >> settings.gradle.kts
 ```
+
+Ahora edita a mano tres archivos más (Gradle no admite «pegar al final» en estos casos):
+
+1. En `gradle/libs.versions.toml`, dentro de la sección `[plugins]` que ya existe, añade la línea siguiente. Usa la clave de versión de Kotlin que ya trae la plantilla (normalmente `kotlin`; es la misma que usa `kotlin-compose`):
+
+   ```toml
+   kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+   ```
+
+2. En el `build.gradle.kts` de la **raíz**, dentro de `plugins { }`, añade `alias(libs.plugins.kotlin.jvm) apply false`.
+3. En `app/build.gradle.kts`, **dentro** del bloque `dependencies { }` (no al final del archivo: fuera del bloque Gradle no lo entiende), añade `implementation(project(":core"))`.
+
+Pulsa **Sync Now** y comprueba la dependencia:
+
+```bash
+grep -n 'include(":core")' settings.gradle.kts
+grep -n "project(\":core\")" app/build.gradle.kts
+./gradlew :app:dependencies --configuration debugRuntimeClasspath | grep "project :core"
+```
+
+**Catálogo de dependencias del curso.** Los módulos siguientes usan bibliotecas que la plantilla Empty Activity no trae (Retrofit, Room, Hilt, WorkManager, Navigation…). Para que cada módulo solo tenga que añadir `implementation(libs.…)`, deja preparado ahora el catálogo de versiones. En `gradle/libs.versions.toml`, añade cada línea **debajo del encabezado que ya existe** (`[versions]`, `[libraries]`, `[plugins]`); no repitas los encabezados, porque TOML no admite una misma tabla dos veces. Las versiones son las estables publicadas en developer.android.com y Maven Central el 2026-11-18; si Android Studio sugiere una más nueva, puedes aceptarla.
+
+```toml
+[versions]
+lifecycleCompose = "2.11.1"
+navigation = "2.10.2"
+kotlinxSerialization = "1.13.0"
+retrofit = "3.0.0"
+okhttp = "4.12.0"
+room = "2.8.5"
+ksp = "2.3.14"
+hilt = "2.60.1"
+work = "2.12.0"
+coroutines = "1.11.0"
+datastore = "1.3.0"
+paging = "3.5.3"
+credentials = "1.6.0"
+camerax = "1.6.2"
+mlkitBarcode = "17.3.0"
+mapsCompose = "9.0.1"
+playServicesLocation = "21.4.0"
+firebaseBom = "35.2.0"
+googleServices = "4.6.0"
+playIntegrity = "1.6.0"
+
+[libraries]
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleCompose" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleCompose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
+androidx-camera-mlkit-vision = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "camerax" }
+mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "mlkitBarcode" }
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+play-integrity = { group = "com.google.android.play", name = "integrity", version.ref = "playIntegrity" }
+
+[plugins]
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+room = { id = "androidx.room", version.ref = "room" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version = "2.0.1" }
+```
+
+Cada módulo te dirá qué líneas copiar a `app/build.gradle.kts` (siempre dentro de `dependencies { }` o de `plugins { }`) y qué plugins declarar en la raíz con `apply false`. Desde AGP 9 la plantilla ya no aplica `org.jetbrains.kotlin.android`: Kotlin viene integrado en el plugin de Android y no debes volver a añadirlo.
 
 **Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
 
@@ -405,7 +497,7 @@ grep -n "project(\":core\")" app/build.gradle.kts
 ```
 
 
-**Explicación línea por línea:** `core/build.gradle.kts` declara el módulo `:core` como un módulo Kotlin puro (sin dependencias de Android), conteniendo lógica reutilizable (`formatearBienvenida`); agregar `implementation(project(":core"))` en `app/build.gradle.kts` establece que `:app` depende de `:core`, permitiendo que Gradle compile `:core` primero y lo ponga a disposición de `:app`.
+**Explicación línea por línea:** `core/build.gradle.kts` declara el módulo `:core` como un módulo Kotlin puro (sin dependencias de Android), conteniendo lógica reutilizable (`formatearBienvenida`); `include(":core")` en `settings.gradle.kts` hace que Gradle reconozca la carpeta como módulo (un archivo aparte, como un «fragmento», Gradle no lo lee nunca); agregar `implementation(project(":core"))` dentro de `dependencies { }` en `app/build.gradle.kts` establece que `:app` depende de `:core`, permitiendo que Gradle compile `:core` primero y lo ponga a disposición de `:app`.
 
 Confirma que el grafo de dependencias declarado coincide con la estructura de carpetas real creada:
 
@@ -461,7 +553,7 @@ Una `data class` representa datos y genera igualdad por valor, `toString` y `cop
 Trabaja dentro del proyecto Android creado en el Tema 1. Confirma primero que estás en la raíz correcta:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 test -f settings.gradle.kts && test -d app/src/main
 mkdir -p app/src/main/java/com/academia/model
 mkdir -p app/src/test/java/com/academia/model
@@ -694,7 +786,7 @@ Una función `suspend` puede detener su continuación y reanudarse después; no 
 Continúa en `academia-android`. Agrega a las dependencias de prueba de `app/build.gradle.kts` la biblioteca oficial para tiempo virtual:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 grep -q 'kotlinx-coroutines-test' app/build.gradle.kts || \
   sed -i.bak '/dependencies {/a\    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")' app/build.gradle.kts
 mkdir -p app/src/main/java/com/academia/envios app/src/test/java/com/academia/envios

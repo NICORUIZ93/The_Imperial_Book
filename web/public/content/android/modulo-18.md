@@ -56,9 +56,9 @@ coroutines = ["kotlinx-coroutines-core"]
 Usa `implementation(libs.bundles.coroutines)` y ejecuta:
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:dependencies --configuration debugRuntimeClasspath
-./gradlew dependencyInsight --dependency kotlinx-coroutines-core --configuration debugRuntimeClasspath
+./gradlew :app:dependencyInsight --dependency kotlinx-coroutines-core --configuration debugRuntimeClasspath
 ./gradlew :app:test
 ```
 
@@ -137,7 +137,7 @@ android {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:assembleDemoDebug :app:assembleProdRelease
 ./gradlew :app:processDemoDebugMainManifest
 ./gradlew :app:test
@@ -215,7 +215,7 @@ dependencies {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew projects
 ./gradlew :feature:entregas:test
 ./gradlew :app:assembleDebug --scan
@@ -295,7 +295,7 @@ buildTypes.named("release") {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew clean
 ./gradlew :app:test :app:lintProdRelease :app:bundleProdRelease
 ./gradlew :benchmark:connectedCheck

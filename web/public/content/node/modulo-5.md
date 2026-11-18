@@ -8,7 +8,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 #### Aprende
 
-**Prerrequisitos:** Node LTS, npm, JavaScript ESM básico y Docker Desktop o Docker Engine funcionando. Este proyecto no necesita archivos de otros temas.
+**Prerrequisitos:** Node LTS, npm, JavaScript ESM básico y Docker Desktop o Docker Engine funcionando. Docker se enseña a fondo en el Módulo 11; aquí solo lo usas para levantar PostgreSQL con los comandos exactos del tema (`docker compose up -d`, `ps`, `logs` y `down -v`), sin escribir un Dockerfile. Si nunca lo instalaste, sigue la guía oficial de instalación de Docker y comprueba `docker compose version` antes de seguir. Este proyecto no necesita archivos de otros temas.
 
 **Al terminar podrás:** levantar PostgreSQL localmente, conectarlo con `pg`, ejecutar consultas parametrizadas y diagnosticar separadamente un valor buscado, un dato duplicado y un fallo de conexión.
 

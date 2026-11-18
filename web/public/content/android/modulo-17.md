@@ -58,7 +58,7 @@ fun EntregaCard(
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:test
 ./gradlew :app:assembleDebug
 ```
@@ -146,7 +146,7 @@ fun ListaEntregas(entregas: List<Entrega>, onAbrir: (String) -> Unit) {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:test
 ./gradlew :app:assembleRelease
 ```
@@ -233,7 +233,7 @@ fun CampoDireccion(form: Formulario, onCambio: (String) -> Unit, onSiguiente: ()
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:test
 ./gradlew :app:connectedDebugAndroidTest
 ```
@@ -313,7 +313,7 @@ fun SeguimientoEffect(envioId: String, fuente: FuentePosicion, onPunto: (Punto) 
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:test
 ./gradlew :app:connectedDebugAndroidTest
 ```
@@ -402,7 +402,7 @@ fun ProgresoRuta(progreso: Float, onCambio: (Float) -> Unit) {
 ```
 
 ```bash
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 ./gradlew :app:test
 ./gradlew :app:connectedDebugAndroidTest
 ```

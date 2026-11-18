@@ -31,7 +31,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada
 
-Ejemplo independiente desde cero: crea `ejemplo-deno/main.ts`:
+Ejemplo independiente desde cero: crea la carpeta con `mkdir -p ejemplo-deno` y, dentro, el archivo `ejemplo-deno/main.ts`:
 
 ```ts
 const response = await fetch("http://127.0.0.1:3000/health");
@@ -45,16 +45,15 @@ node -e 'require("node:http").createServer((req,res)=>{res.writeHead(200);res.en
 ```
 
 ```bash
-mkdir -p ejemplo-deno
-deno run ejemplo-deno/main.ts
-deno run --allow-net=127.0.0.1:3000 ejemplo-deno/main.ts
+deno run --no-prompt ejemplo-deno/main.ts
+deno run --no-prompt --allow-net=127.0.0.1:3000 ejemplo-deno/main.ts
 ```
 
-**Resultado esperado:** la primera ejecución rechaza la conexión; la segunda imprime `estado=200`. No concedas `--allow-all` para hacer desaparecer el mensaje: eso elimina precisamente el límite que enseña el ejemplo.
+**Resultado esperado:** la primera ejecución falla con un error `NotCapable` que pide `--allow-net` para `127.0.0.1:3000`; la segunda imprime `estado=200`. Si quitas `--no-prompt` y ejecutas en una terminal interactiva, Deno no falla: se detiene y te **pregunta** si concedes el acceso (sí, no o todo); responde «no» para ver el mismo rechazo. `--no-prompt` hace que el rechazo sea reproducible también en scripts y CI. No concedas `--allow-all` para hacer desaparecer el mensaje: eso elimina precisamente el límite que enseña el ejemplo.
 
 #### Paso 5 · Práctica guiada
 
-**Fallo deliberado:** cambia la URL a `http://example.com`. Ejecuta otra vez con el permiso limitado. **Pista:** `127.0.0.1:3000` no cubre otro host; Deno debe denegar la salida. Restaura la URL y diagnostica qué permiso necesita cada dependencia, sin ampliar el host permitido a toda la red.
+**Fallo deliberado:** cambia la URL a `http://example.com`. Ejecuta otra vez con el permiso limitado y `--no-prompt`. **Pista:** `127.0.0.1:3000` no cubre otro host; Deno debe denegar la salida. Restaura la URL y diagnostica qué permiso necesita cada dependencia, sin ampliar el host permitido a toda la red.
 
 #### Paso 6 · Práctica independiente
 

@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+> **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3; cada tema crea su proyecto nuevo, así que copia en su `gradle/libs.versions.toml` las líneas que use). Tema 3 y Tema 6: `implementation(libs.play.services.location)`. Tema 5: `implementation(libs.maps.compose)` y el plugin `alias(libs.plugins.secrets)` (raíz con `apply false`). Tema 7: `implementation(libs.androidx.camera.camera2)`, `implementation(libs.androidx.camera.lifecycle)`, `implementation(libs.androidx.camera.view)`, `implementation(libs.androidx.camera.mlkit.vision)` e `implementation(libs.mlkit.barcode.scanning)`. Todas van dentro de `dependencies { }` de `app/build.gradle.kts`.
+
 ### Tema 1: Intents implícitos y Activity Result API
 
 #### Paso 1 · Objetivo y preparación
@@ -40,9 +42,10 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir android-plataforma && cd android-plataforma && cd android-plataforma
+mkdir android-plataforma-tema1 && cd android-plataforma-tema1
 # En Android Studio: File ▸ New ▸ New Project ▸ Empty Activity, nombre Repartidor,
-# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta
+# paquete com.rutaflow.repartidor; en «Save location» elige esta misma carpeta
+# (android-plataforma-tema1), para que settings.gradle.kts quede aquí
 ```
 
 Crea `app/src/main/java/com/rutaflow/repartidor/Acciones.kt`:
@@ -166,9 +169,10 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir android-plataforma && cd android-plataforma && cd android-plataforma
+mkdir android-plataforma-tema2 && cd android-plataforma-tema2
 # En Android Studio: File ▸ New ▸ New Project ▸ Empty Activity, nombre Repartidor,
-# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta
+# paquete com.rutaflow.repartidor; en «Save location» elige esta misma carpeta
+# (android-plataforma-tema2), para que settings.gradle.kts quede aquí
 ```
 
 Crea `app/src/main/java/com/rutaflow/repartidor/Energia.kt`:
@@ -286,9 +290,10 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir android-plataforma && cd android-plataforma && cd android-plataforma
+mkdir android-plataforma-tema3 && cd android-plataforma-tema3
 # En Android Studio: File ▸ New ▸ New Project ▸ Empty Activity, nombre Repartidor,
-# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta
+# paquete com.rutaflow.repartidor; en «Save location» elige esta misma carpeta
+# (android-plataforma-tema3), para que settings.gradle.kts quede aquí
 ```
 
 Crea `AndroidManifest.xml (fragmentos)`:
@@ -313,7 +318,7 @@ Crea `app/build.gradle.kts (fragmento)`:
 
 ```kotlin
 // app/build.gradle.kts, dentro de dependencies { }
-implementation("com.google.android.gms:play-services-location:21.3.0")
+implementation("com.google.android.gms:play-services-location:21.4.0")
 ```
 
 Crea `app/src/main/java/com/rutaflow/repartidor/SeguimientoService.kt`:
@@ -452,9 +457,10 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir android-plataforma && cd android-plataforma && cd android-plataforma
+mkdir android-plataforma-tema4 && cd android-plataforma-tema4
 # En Android Studio: File ▸ New ▸ New Project ▸ Empty Activity, nombre Repartidor,
-# paquete com.rutaflow.repartidor, guardado dentro de esta carpeta
+# paquete com.rutaflow.repartidor; en «Save location» elige esta misma carpeta
+# (android-plataforma-tema4), para que settings.gradle.kts quede aquí
 ```
 
 Crea `AndroidManifest.xml (fragmento)`:

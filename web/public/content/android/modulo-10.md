@@ -3,6 +3,10 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** El Tema 3 importa `androidx.compose.material.icons`; añade `implementation(libs.androidx.compose.material.icons.core)` (catálogo del Módulo 0, versión fijada por el BOM de Compose) dentro de `dependencies { }` y pulsa **Sync Now**.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En particular, la «medición» de Baseline Profiles con Python es solo un modelo del concepto: la generación real de un perfil con el plugin `androidx.baselineprofile` y su medición con Macrobenchmark están en el Módulo 18; hasta entonces no presentes la cifra del script como resultado de tu app.
+
 ### Tema 1: Detectar y corregir recomposición innecesaria
 
 #### Paso 1 · Objetivo y preparación
@@ -38,13 +42,13 @@ El Layout Inspector de Android Studio resalta visualmente qué composables se re
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/BotonesComparados.kt`, y modela en Python la comparación de identidad que Compose hace internamente, para confirmar en ejecución real por qué una lambda nueva rompe la igualdad:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/BotonesComparados.kt`, y modela en Python la comparación de identidad que Compose hace internamente, para confirmar en ejecución real por qué una lambda nueva rompe la igualdad:
 
 ```bash
 # Crea el MaterialTheme 3 de la app y los dos botones comparados; el script python3 más abajo
 # confirma en ejecución real la diferencia de identidad entre lambdas
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/Theme.kt <<'EOF'
 package com.academia.android
 
@@ -188,12 +192,12 @@ Un Baseline Profile precompila ahead-of-time (AOT) las rutas de código más usa
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/EfectosDeCiclo.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/EfectosDeCiclo.kt`:
 
 ```bash
-# Este script python3 simula la diferencia de tiempo entre interpretar código vs usar una versión precompilada
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+# Este script python3 es un MODELO de la diferencia entre interpretar y precompilar; no mide tu app (eso es Macrobenchmark, Módulo 18)
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/EfectosDeCiclo.kt <<'EOF'
 package com.academia.android
 
@@ -310,12 +314,12 @@ Un elemento interactivo sin texto visible (un ícono usado como botón) requiere
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/IconoAccesible.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/IconoAccesible.kt`:
 
 ```bash
 # Este script python3 audita programáticamente qué íconos carecen de contentDescription
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/IconoAccesible.kt <<'EOF'
 package com.academia.android
 

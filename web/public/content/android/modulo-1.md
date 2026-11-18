@@ -3,6 +3,10 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Trabajas en el proyecto `academia-android` del Módulo 0, creado con el paquete `com.academia.android`. En `app/build.gradle.kts`, dentro de `dependencies { }`, añade `implementation(libs.androidx.lifecycle.viewmodel.compose)` (catálogo del Módulo 0, Tema 3) y pulsa **Sync Now**: trae `ViewModel`, `viewModelScope` y `SavedStateHandle` de forma explícita en lugar de depender de lo que llegue de forma transitiva.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas.** Sirven para razonar sobre qué sobrevive y qué se pierde, pero no ejecutan Android. La evidencia real de cada tema es la que aparece como **Verificación real en Android**: logs de `adb logcat` en el emulador con una salida esperada concreta.
+
 ### Tema 1: Ciclo de vida de una Activity
 
 #### Paso 1 · Objetivo y preparación
@@ -33,13 +37,15 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` del Módulo 0), crea `app/src/main/kotlin/com/academia/android/PantallaCicloDeVida.kt` registrando cada callback en el log para observar el orden real:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), reemplaza la `MainActivity` que generó la plantilla (`app/src/main/java/com/academia/android/MainActivity.kt`) por una versión que registra cada callback en el log para observar el orden real:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
-cat > app/src/main/kotlin/com/academia/android/MainActivity.kt <<'EOF'
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
+# la plantilla del Módulo 0 ya creó MainActivity en java/; la reemplazas en el mismo archivo
+# (si la crearas también en kotlin/, habría dos clases MainActivity y no compilaría)
+cat > app/src/main/java/com/academia/android/MainActivity.kt <<'EOF'
 package com.academia.android
 
 import android.os.Bundle
@@ -60,7 +66,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() { super.onDestroy(); Log.d(ETIQUETA, "onDestroy") }
 }
 EOF
-grep -c "override fun on" app/src/main/kotlin/com/academia/android/MainActivity.kt
+grep -c "override fun on" app/src/main/java/com/academia/android/MainActivity.kt
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -83,6 +89,8 @@ adb logcat -s CicloDeVida:D
 #### Paso 5 · Práctica guiada
 
 Agrega `Log.d(ETIQUETA, "onCreate: savedInstanceState es ${if (savedInstanceState == null) "null (primera vez)" else "no null (recreación)"}")` dentro de `onCreate`, y confirma en el log que la primera ejecución muestra `null` y que tras rotar muestra `no null`. **Pista:** `savedInstanceState` es la señal que el propio sistema operativo da para distinguir una creación nueva de una recreación.
+
+**Verificación real en Android:** al rotar, `logcat` muestra en el mismo proceso dos secuencias `onCreate` con distinto `savedInstanceState` (Paso 5). Esa salida, no un script, es la prueba de la recreación.
 
 #### Paso 6 · Práctica independiente
 
@@ -132,12 +140,12 @@ Un `ViewModel` está vinculado al `ViewModelStore` de la Activity, una estructur
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/TareasViewModel.kt` moviendo el contador del Tema 1 a un `ViewModel`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/TareasViewModel.kt` moviendo el contador del Tema 1 a un `ViewModel`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TareasViewModel.kt <<'EOF'
 package com.academia.android
 
@@ -187,6 +195,16 @@ print('contador en ViewModel tras rotar (misma instancia):', vm_tras_rotar['cont
 ```
 
 **Resultado esperado:** el script confirma que `vm_tras_rotar` es la misma instancia que `vm` (el `ViewModelStoreSimulado` no crea una nueva si la clave ya existe), por lo que el contador conserva su valor incrementado tras la "rotación" simulada, a diferencia de `ActivitySimulada.recrear()`, que crea una instancia completamente nueva con el contador reiniciado a cero.
+
+**Verificación real en Android.** El script anterior es un modelo. Para probarlo en el emulador, conecta el `ViewModel` a la `MainActivity` del Tema 1. Dentro de `onCreate`, después de `super.onCreate(...)`, añade:
+
+```kotlin
+val vm = androidx.lifecycle.ViewModelProvider(this)[TareasViewModel::class.java]
+vm.incrementar()
+Log.d(ETIQUETA, "ViewModel ${System.identityHashCode(vm)} contador=${vm.contador.value}")
+```
+
+Ejecuta la app, rota el emulador dos veces y filtra con `adb logcat -s CicloDeVida:D`. **Resultado esperado:** el número de instancia es el mismo en las tres líneas y el contador sube a `1`, `2` y `3`. La Activity se recrea cada vez (ves `onDestroy`/`onCreate`), pero el `ViewModel` es el mismo objeto. Si cambias `vm` por una propiedad `var contador = 0` de la Activity, el valor vuelve a `1` en cada rotación.
 
 **Fallo deliberado:** modifica el script para que `store.obtener_o_crear` ignore la caché y siempre ejecute `fabrica()` (creando una instancia nueva cada vez, sin importar si la clave ya existe). Ejecuta de nuevo — el contador tras "rotar" vuelve a `0` — diagnostica confirmando que la supervivencia del `ViewModel` depende enteramente de que el `ViewModelStore` real efectivamente reutilice la misma instancia en vez de crear una nueva; si esa reutilización fallara, el `ViewModel` se comportaría exactamente igual que el estado simple del Tema 1.
 
@@ -242,12 +260,12 @@ Al finalizar podrás usar `SavedStateHandle` para persistir un valor que sobrevi
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez en este módulo) y crea `app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt`, extendiendo el patrón del Tema 2 con `SavedStateHandle` para un valor de filtro:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt`, extendiendo el patrón del Tema 2 con `SavedStateHandle` para un valor de filtro:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt <<'EOF'
 package com.academia.android
 
@@ -294,6 +312,14 @@ print('filtro tras muerte de proceso (SavedStateHandle):', proceso.bundle_persis
 ```
 
 **Resultado esperado:** tras `matar_proceso()`, el `contador` del `ViewModel` normal aparece como `PERDIDO` (el diccionario se vació por completo), mientras que el `filtro` gestionado como `SavedStateHandle` conserva su valor `pendientes`, confirmando exactamente la distinción de supervivencia del diagrama del Paso 3.
+
+**Verificación real en Android.** El script es un modelo. Para probar la muerte de proceso de verdad, obtén el `ViewModel` en `MainActivity` con `ViewModelProvider(this)[TareasConFiltroViewModel::class.java]`, asigna `filtro = "pendientes"` solo si está vacío y registra `Log.d(ETIQUETA, "filtro=${vm.filtro}")` en `onCreate`. Ejecuta la app, pulsa **Inicio** para llevarla a segundo plano y mata el proceso desde la terminal:
+
+```bash
+adb shell am kill com.academia.android
+```
+
+Vuelve a abrir la app desde **Recientes** (no desde el icono, que inicia una tarea nueva). **Resultado esperado:** `logcat` muestra `filtro=pendientes` en el `onCreate` del proceso nuevo, mientras que el contador del Tema 2 vuelve a empezar. `am kill` solo mata procesos en segundo plano: si la app está en primer plano no ocurre nada.
 
 **Fallo deliberado:** intenta guardar un objeto complejo no serializable (por ejemplo, en Kotlin real, una instancia de una clase sin implementar `Parcelable`) directamente en `savedStateHandle["objeto"]`. En un proyecto Android real esto falla en tiempo de ejecución con una excepción de serialización — diagnostica revisando la documentación oficial: `SavedStateHandle` solo acepta tipos que puedan guardarse en un `Bundle` (tipos primitivos, `String`, `Parcelable`), no cualquier objeto Kotlin arbitrario, justamente porque su mecanismo de persistencia subyacente requiere serialización real, a diferencia de una variable en memoria de un `ViewModel` normal que acepta cualquier tipo.
 

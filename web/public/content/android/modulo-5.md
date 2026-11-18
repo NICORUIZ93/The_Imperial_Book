@@ -3,6 +3,34 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`:
+>
+> ```kotlin
+> plugins {
+>     // ...los que ya tienes...
+>     alias(libs.plugins.kotlin.serialization)   // si no lo añadiste en el Módulo 3
+> }
+> dependencies {
+>     // ...las que ya tienes...
+>     implementation(libs.retrofit)
+>     implementation(libs.retrofit.kotlinx.serialization)
+>     implementation(libs.kotlinx.serialization.json)
+>     implementation(libs.okhttp.logging)
+> }
+> ```
+>
+> En el `build.gradle.kts` de la raíz, `alias(libs.plugins.kotlin.serialization) apply false` (si no está). En `app/src/main/AndroidManifest.xml`, antes de `<application>`, declara `<uses-permission android:name="android.permission.INTERNET" />`. Como el servidor de prueba usa `http://` sin TLS y desde Android 9 el tráfico en texto plano está bloqueado por defecto, permítelo **solo en depuración** creando `app/src/debug/AndroidManifest.xml`:
+>
+> ```xml
+> <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+>     <application android:usesCleartextTraffic="true" />
+> </manifest>
+> ```
+>
+> Pulsa **Sync Now**. Sin estas dependencias, `import retrofit2.http.GET` no compila.
+>
+> **Los scripts `python3` y `curl` de este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
+
 ### Tema 1: Retrofit con coroutines
 
 #### Paso 1 · Objetivo y preparación
@@ -39,12 +67,12 @@ Retrofit permite declarar un endpoint HTTP como una función de interfaz anotada
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea en `app/src/main/kotlin/` la interfaz Retrofit, junto con un servidor HTTP real mínimo para probar contra él:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea en `app/src/main/kotlin/` la interfaz Retrofit, junto con un servidor HTTP real mínimo para probar contra él:
 
 ```bash
 # Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > servidor_prueba.py <<'EOF'
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -73,8 +101,10 @@ sleep 1
 cat > app/src/main/kotlin/com/academia/android/ApiService.kt <<'EOF'
 package com.academia.android
 
+import kotlinx.serialization.Serializable
 import retrofit2.http.GET
 
+@Serializable
 data class TareaDTO(val id: String, val titulo: String)
 
 interface ApiService {
@@ -94,7 +124,35 @@ curl -s http://localhost:8000/tareas | python3 -m json.tool
 kill %1 2>/dev/null || true
 ```
 
-**Resultado esperado:** el servidor responde con un array JSON de dos tareas (`Comprar leche`, `Pagar el alquiler`), exactamente la forma que `List<TareaDTO>` en Kotlin deserializaría automáticamente vía el `ConverterFactory` configurado en Retrofit (Moshi o Gson), confirmando que el contrato de datos entre cliente y servidor es consistente.
+**Resultado esperado:** el servidor responde con un array JSON de dos tareas (`Comprar leche`, `Pagar el alquiler`), exactamente la forma que `List<TareaDTO>` en Kotlin deserializaría vía el `ConverterFactory` de kotlinx.serialization que configuras abajo (por eso `TareaDTO` lleva `@Serializable`).
+
+**Verificación real en Android.** `curl` solo prueba el servidor Python. Para probar Retrofit, crea `app/src/main/kotlin/com/academia/android/ClienteApi.kt`:
+
+```kotlin
+package com.academia.android
+
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+
+// En el emulador, 10.0.2.2 es el localhost de tu ordenador
+fun crearApiService(baseUrl: String = "http://10.0.2.2:8000/"): ApiService =
+    Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(Json { ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
+        .build()
+        .create(ApiService::class.java)
+```
+
+Con el servidor en marcha (`python3 servidor_prueba.py &`), en `onCreate` de `MainActivity` añade `lifecycleScope.launch { Log.d("Red", crearApiService().obtenerTareas().toString()) }` (imports `androidx.lifecycle.lifecycleScope` y `kotlinx.coroutines.launch`), instala la app y filtra el log:
+
+```bash
+./gradlew :app:installDebug
+adb logcat -s Red:D
+```
+
+**Resultado esperado:** `[TareaDTO(id=1, titulo=Comprar leche), TareaDTO(id=2, titulo=Pagar el alquiler)]`. Si ves `CLEARTEXT communication to 10.0.2.2 not permitted`, falta el manifiesto de depuración con `usesCleartextTraffic`; si ves `ConnectException` hacia `localhost`, usaste `localhost` en vez de `10.0.2.2`; si ves `SecurityException: Permission denied (missing INTERNET permission?)`, falta el permiso.
 
 **Fallo deliberado:** repite el `curl` contra una ruta que no existe (`curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/inexistente`, con el servidor corriendo de nuevo si ya lo detuviste). El servidor responde `404` — diagnostica confirmando que, en un proyecto Android real, esa respuesta 404 no dispara ninguna excepción de red genérica (`IOException`), sino específicamente una `HttpException` con código 404, exactamente la distinción que el Tema 2 formaliza para dar mensajes de error específicos.
 
@@ -148,12 +206,12 @@ Separar `HttpException` (el servidor respondió, pero con un código de error co
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza el servidor de prueba (Tema 1; recréalo con `mkdir -p academia-android` desde una carpeta vacía si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt`:
+Reutiliza el servidor de prueba (Tema 1; está en la raíz de `academia-android`) y crea `app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt`:
 
 ```bash
 # Script en python3 que levanta de nuevo el servidor de prueba con una ruta que falla
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 python3 servidor_prueba.py &
 sleep 1
 cat > app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt <<'EOF'
@@ -200,7 +258,7 @@ curl -s -o /dev/null -w "código con servidor detenido: %{http_code}\n" --max-ti
 
 **Resultado esperado:** con el servidor activo, la petición a `/tareas` responde `200` (mapearía a `EstadoUI.Exito`); tras detener el servidor (`kill`), la misma petición falla por completo sin ninguna respuesta HTTP (equivalente a `IOException`, no a un código de error específico), confirmando la distinción real entre "el servidor respondió con un error" y "la conexión nunca se completó".
 
-**Fallo deliberado:** reemplaza ambos `catch` específicos por un único `catch (e: Exception)` genérico, y repite mentalmente el escenario de servidor detenido. El código seguiría "funcionando" (captura la excepción igualmente), pero el mensaje mostrado al usuario perdería la distinción entre "revisa tu conexión" y "error del servidor, código específico" — diagnostica confirmando que capturar `Exception` genérica no falla en tiempo de ejecución, pero sí pierde silenciosamente la información necesaria para dar una respuesta específica y para decidir si reintentar automáticamente.
+**Fallo deliberado:** reemplaza ambos `catch` específicos por un único `catch (e: Exception)` genérico, instala la app con `TareasViewModelConErrores(crearApiService())` y repite el escenario con el servidor detenido, observando en pantalla o en `logcat` el mensaje resultante. El código seguiría "funcionando" (captura la excepción igualmente), pero el mensaje mostrado al usuario perdería la distinción entre "revisa tu conexión" y "error del servidor, código específico" — diagnostica confirmando que capturar `Exception` genérica no falla en tiempo de ejecución, pero sí pierde silenciosamente la información necesaria para dar una respuesta específica y para decidir si reintentar automáticamente.
 
 #### Paso 5 · Práctica guiada
 
@@ -255,12 +313,12 @@ Un interceptor de OkHttp se ejecuta de forma transversal en cada petición y res
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza el servidor de prueba (Tema 1; recréalo con `mkdir -p academia-android` desde una carpeta vacía si es tu primera vez) y crea, dentro de `app/src/main/kotlin/`, un cliente HTTP con interceptores; primero verifica con python el comportamiento esperado contra un servidor que expone qué headers recibió:
+Reutiliza el servidor de prueba (Tema 1; está en la raíz de `academia-android`) y crea, dentro de `app/src/main/kotlin/`, un cliente HTTP con interceptores; primero verifica con python el comportamiento esperado contra un servidor que expone qué headers recibió:
 
 ```bash
 # Script en python3 que confirma el comportamiento antes de escribir el Kotlin real
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > servidor_prueba_headers.py <<'EOF'
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler

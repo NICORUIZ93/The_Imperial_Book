@@ -13,98 +13,110 @@ Al finalizar podrás generar una keystore real, configurar la firma de un build 
 
 #### Paso 2 · Contexto y caso real
 
-**¿Por qué es importante?** La firma verifica que las actualizaciones futuras provienen del mismo desarrollador original; perder la keystore es en gran medida irreversible y puede forzar a republicar la app desde cero, perdiendo todo el historial acumulado.
+**¿Por qué es importante?** La firma verifica que las actualizaciones futuras provienen del mismo desarrollador original. En Google Play, las apps nuevas usan obligatoriamente Play App Signing: tú firmas con una **clave de subida** y Google firma lo que instalan los usuarios con la **clave de firma de la app**. Perder la clave de subida se resuelve con un restablecimiento en Play Console; perder la clave de firma sin Play App Signing impide publicar actualizaciones.
 
 #### Paso 3 · Teoría con analogía
 
 **Conceptos clave:** identidad criptográfica de la app, requisito de Play para actualizaciones.
 
-Firmar una app con una keystore establece su identidad criptográfica: Google Play usa esa firma para verificar que una actualización futura efectivamente proviene del mismo desarrollador que la publicó originalmente, rechazando cualquier intento de subir una actualización firmada con una clave distinta. Leer las credenciales desde variables de entorno (`System.getenv(...)`) en vez de hardcodearlas evita que queden expuestas en el control de versiones, el mismo principio de mantener secretos fuera del código (DevOps, Módulo 11).
+Firmar una app establece su identidad criptográfica. Android solo instala una actualización si está firmada con la misma clave de firma de la app que la versión instalada. Con Play App Signing, esa clave la custodia Google; tu keystore contiene la clave de subida, con la que Play Console comprueba que cada subida viene de ti y rechaza las firmadas con otra clave. Leer las credenciales desde variables de entorno (`System.getenv(...)`) en vez de hardcodearlas evita que queden expuestas en el control de versiones, el mismo principio de mantener secretos fuera del código (DevOps, Módulo 11).
 
 **Analogía:** la firma de una app es como el sello notarial único de un documento oficial: cualquier "actualización" sin ese mismo sello exacto se rechaza como potencialmente fraudulenta, y perder el sello original hace imposible certificar futuras versiones bajo la misma identidad legal.
 
 **Diagrama:**
 
 ```
-┌── keystore.jks (identidad criptográfica) ────┐
-│  firma la app release v1.0                        │
+┌── tu clave de subida (academia-upload.jks) ──┐
+│  firma el .aab que subes a Play Console          │
 └──────────┬─────────────────────────────┘
-           │ actualización futura DEBE firmarse
-           │ con la MISMA keystore
+           │ Play comprueba la clave de subida
            ▼
-┌── Google Play verifica la firma ─────────────┐
-│  ¿misma keystore? → acepta la actualización         │
-│  ¿keystore distinta? → RECHAZA (identidad no coincide) │
+┌── Play App Signing (clave de firma de la app) ┐
+│  Google firma los APK que instalan los usuarios    │
+│  clave de subida perdida → restablecimiento        │
 └───────────────────────────────────────────┘
 ```
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), genera una keystore real con `keytool` (la misma herramienta que Android Studio usa internamente) y crea `app/build.gradle.kts.fragmento` para leerla desde variables de entorno:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), genera tu **clave de subida** con `keytool` (la misma herramienta que Android Studio usa internamente) **fuera del repositorio**, y configura la firma de release leyendo ruta y contraseñas desde variables de entorno:
 
 ```bash
-mkdir -p academia-android/app
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p "$HOME/claves-android"                        # fuera del proyecto: nunca se sube a Git
+export KEYSTORE_PATH="$HOME/claves-android/academia-upload.jks"
 export KEYSTORE_PASSWORD="clave-de-prueba-academia"
 export KEY_PASSWORD="clave-de-prueba-academia"
-keytool -genkeypair -v -keystore app/keystore.jks -alias mi-app \
+keytool -genkeypair -v -keystore "$KEYSTORE_PATH" -alias subida \
   -keyalg RSA -keysize 2048 -validity 10000 \
   -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
   -dname "CN=The Imperial Book, OU=Desarrollo, O=Academia, L=Ciudad, S=Estado, C=CL"
-cat > app/build.gradle.kts.fragmento <<'EOF'
+# por si alguien copia una clave dentro del proyecto, que Git la ignore
+grep -qx '*.jks' .gitignore 2>/dev/null || echo '*.jks' >> .gitignore
+```
+
+Ahora edita el `app/build.gradle.kts` **real** (no un archivo aparte, que Gradle nunca leería). Dentro del bloque `android { }` que ya existe, añade `signingConfigs` y asígnalo al tipo de build `release` que ya trae la plantilla:
+
+```kotlin
 android {
+    // ...lo que ya tienes...
     signingConfigs {
         create("release") {
-            storeFile = file("keystore.jks")
+            storeFile = System.getenv("KEYSTORE_PATH")?.let { file(it) }
             storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = "mi-app"
+            keyAlias = "subida"
             keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
+    buildTypes {
+        release {
+            // ...lo que ya tienes (isMinifyEnabled, proguardFiles)...
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
-EOF
 ```
 
-**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+Genera el App Bundle firmado desde la misma terminal (para que vea las variables de entorno) y comprueba con qué certificado quedó firmado:
 
 ```bash
-./gradlew assembleDebug
-./gradlew test
+./gradlew :app:bundleRelease
+keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | grep "SHA256:"
 ```
 
 
-**Explicación línea por línea:** `keytool -genkeypair` genera un par de claves RSA real y lo almacena en `keystore.jks`, protegido por `storepass`/`keypass`; `-validity 10000` establece que el certificado es válido por unos 27 años (Google recomienda una validez larga, dado que la keystore debe seguir siendo válida para toda la vida útil de la app); el fragmento de `build.gradle.kts` lee esas mismas credenciales desde `System.getenv(...)`, nunca hardcodeadas en el archivo.
+**Explicación línea por línea:** `keytool -genkeypair` genera un par de claves RSA real y lo almacena en `academia-upload.jks`, fuera del proyecto y protegido por `storepass`/`keypass`; `-validity 10000` establece que el certificado es válido por unos 27 años (Google recomienda una validez larga, dado que la keystore debe seguir siendo válida para toda la vida útil de la app); el bloque `signingConfigs` lee la ruta y las credenciales desde `System.getenv(...)`, nunca hardcodeadas en el archivo, y `signingConfig = …` lo aplica al build `release`, que es el que `bundleRelease` produce.
 
 Verifica con `keytool` real que la keystore generada contiene el certificado esperado, y confirma su huella digital (fingerprint), el valor que Google Play y otros sistemas usan para verificar la identidad de la firma:
 
 ```bash
-keytool -list -v -keystore app/keystore.jks -alias mi-app -storepass "$KEYSTORE_PASSWORD" | grep -A1 "SHA256:"
+keytool -list -v -keystore "$KEYSTORE_PATH" -alias subida -storepass "$KEYSTORE_PASSWORD" | grep "SHA256:"
 ```
 
-**Resultado esperado:** el comando muestra la huella digital SHA-256 real del certificado generado, un valor único que identifica criptográficamente esta keystore específica; cualquier actualización futura de la app deberá producir exactamente esta misma huella digital al firmarse, o Google Play la rechazará como proveniente de un desarrollador distinto.
+**Resultado esperado:** el comando muestra la huella digital SHA-256 del certificado generado, y es **la misma** que imprimió `keytool -printcert` sobre `app-release.aab`: el bundle quedó firmado con tu clave de subida. Con Play App Signing (obligatorio para apps nuevas en Google Play), esa es la huella que Play registra para aceptar tus subidas; Play vuelve a firmar los APK que instalan los usuarios con la **clave de firma de la app**, que Google custodia.
 
-**Fallo deliberado:** genera una segunda keystore distinta (`keytool -genkeypair -v -keystore app/keystore-otra.jks -alias mi-app -keyalg RSA -keysize 2048 -validity 10000 -storepass "otra-clave" -keypass "otra-clave" -dname "CN=Otro,OU=Otro,O=Otro,L=Otro,S=Otro,C=CL"`) y compara su huella digital con la primera:
+**Fallo deliberado:** genera una segunda keystore distinta (`keytool -genkeypair -v -keystore "$HOME/claves-android/otra.jks" -alias subida -keyalg RSA -keysize 2048 -validity 10000 -storepass "otra-clave" -keypass "otra-clave" -dname "CN=Otro,OU=Otro,O=Otro,L=Otro,S=Otro,C=CL"`) y compara su huella digital con la primera:
 
 ```bash
-keytool -list -v -keystore app/keystore-otra.jks -alias mi-app -storepass "otra-clave" | grep "SHA256:"
-keytool -list -v -keystore app/keystore.jks -alias mi-app -storepass "$KEYSTORE_PASSWORD" | grep "SHA256:"
+keytool -list -v -keystore "$HOME/claves-android/otra.jks" -alias subida -storepass "otra-clave" | grep "SHA256:"
+keytool -list -v -keystore "$KEYSTORE_PATH" -alias subida -storepass "$KEYSTORE_PASSWORD" | grep "SHA256:"
 ```
 
-Las huellas digitales son completamente distintas — diagnostica confirmando que, aunque ambas keystores podrían firmar técnicamente el mismo APK/AAB, Google Play las trataría como identidades de desarrollador completamente distintas: subir una actualización firmada con `keystore-otra.jks` para una app ya publicada con `keystore.jks` sería rechazado, exactamente el escenario irreversible que hace crítico respaldar la keystore original.
+Las huellas digitales son completamente distintas. **Diagnóstico:** ambas claves pueden firmar técnicamente el mismo AAB, pero Play Console rechaza una subida firmada con una clave de subida distinta de la registrada. Con Play App Signing esto **no** es irreversible: si pierdes la clave de subida o se filtra, generas una nueva y solicitas en Play Console el restablecimiento de la clave de subida; la clave de firma de la app que reciben los usuarios no cambia. Solo las apps antiguas que no usan Play App Signing y pierden su clave de firma pierden la capacidad de publicar actualizaciones.
 
 #### Paso 5 · Práctica guiada
 
-Genera un tercer alias dentro de la misma keystore (`keytool -genkeypair -keystore app/keystore.jks -alias mi-app-debug ...`) y usa `keytool -list -keystore app/keystore.jks` (sin `-alias`) para listar todos los alias contenidos, confirmando que una única keystore puede almacenar múltiples identidades de firma distintas. **Pista:** una keystore es, en esencia, un contenedor de múltiples pares de claves, cada uno identificado por su propio alias.
+Genera un segundo alias dentro de la misma keystore (`keytool -genkeypair -keystore "$KEYSTORE_PATH" -alias subida-pruebas ...`) y usa `keytool -list -keystore "$KEYSTORE_PATH"` (sin `-alias`) para listar todos los alias contenidos, confirmando que una única keystore puede almacenar múltiples identidades de firma distintas. **Pista:** una keystore es, en esencia, un contenedor de múltiples pares de claves, cada uno identificado por su propio alias.
 
 #### Paso 6 · Práctica independiente
 
-Documenta en una frase qué harías si sospecharas que la keystore de release de tu app se filtró (por ejemplo, se subió accidentalmente a un repositorio público), relacionándolo con por qué no puedes simplemente "rotarla" de la misma forma que rotarías una API key comprometida.
+Documenta en una frase qué harías si sospecharas que tu clave de subida se filtró (por ejemplo, se subió accidentalmente a un repositorio público): con Play App Signing, genera una clave nueva y solicita en Play Console el restablecimiento de la clave de subida. Explica también por qué la clave de firma de la app, en cambio, no se rota como una API key.
 
 #### Paso 7 · Cierre
 
-Ya generas una keystore real, la configuras para leerse desde variables de entorno, y explicas por qué su pérdida o filtración es un problema grave y en gran medida irreversible. El siguiente tema cubre el formato de artefacto que Google Play requiere para la distribución. Fuente oficial: [Android Developers — Sign your app](https://developer.android.com/studio/publish/app-signing).
+Ya generas una clave de subida fuera del repositorio, la configuras desde variables de entorno, produces un `.aab` firmado y distingues la clave de subida (restablecible en Play Console) de la clave de firma de la app (custodiada por Google con Play App Signing). El siguiente tema cubre el formato de artefacto que Google Play requiere para la distribución. Fuente oficial: [Android Developers — Sign your app](https://developer.android.com/studio/publish/app-signing).
 
-**Errores comunes:** hardcodear las credenciales de la keystore en `build.gradle.kts`, exponiéndolas en el control de versiones; no mantener un respaldo seguro de la keystore original, arriesgando perder para siempre la capacidad de actualizar la app.
+**Errores comunes:** hardcodear las credenciales de la keystore en `build.gradle.kts`, exponiéndolas en el control de versiones; guardar la keystore dentro del proyecto (acaba en Git) y no tener un respaldo seguro de la clave de subida: con Play App Signing se puede restablecer, pero el proceso detiene tus publicaciones mientras tanto.
 
 **Cuándo no usarlo:** para un build de debug usado exclusivamente en desarrollo local, la keystore de debug automática que Android Studio genera es suficiente; la keystore de release, gestionada con el cuidado de este Tema, es específicamente para builds destinados a publicación real.
 
@@ -145,12 +157,12 @@ APK (ARM64,      APK (x86,        APK (ARM64,
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea, dentro de `app/src/`, un modelo con archivos reales de distinto tamaño que represente la diferencia entre un artefacto universal y artefactos optimizados por configuración:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea, dentro de `app/src/`, un modelo con archivos reales de distinto tamaño que represente la diferencia entre un artefacto universal y artefactos optimizados por configuración:
 
 ```bash
 # modela lo que Gradle produciría con ./gradlew bundleRelease, antes de medir el efecto real
-mkdir -p academia-android/app/src
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src
 mkdir -p simulacion-bundle/recursos-es simulacion-bundle/recursos-en simulacion-bundle/recursos-pt
 # genera contenido real (no solo metadatos) para medir tamaño real en disco
 for idioma in es en pt; do
@@ -235,11 +247,11 @@ Al finalizar podrás distinguir `versionCode` de `versionName`, y explicar el pr
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/build.gradle.kts.fragmento-version` verificando programáticamente la regla de incremento estricto:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea `app/build.gradle.kts.fragmento-version` verificando programáticamente la regla de incremento estricto:
 
 ```bash
-mkdir -p academia-android/app
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app
 cat > app/build.gradle.kts.fragmento-version <<'EOF'
 android {
     defaultConfig {

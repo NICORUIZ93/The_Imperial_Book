@@ -771,7 +771,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** cortar 
 
 **Objetivo y preparación.**
 
-Usa Node.js 18 o superior. Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
 
 **Contexto y caso real.**
 

@@ -5,6 +5,8 @@ Una app móvil se ejecuta en un dispositivo que puede perderse, restaurarse, que
 
 ## Aprende construyendo
 
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En el Tema 2, la criptografía en Python no usa `AndroidKeyStore`: para probar tu `CifradoSensible.kt` de verdad, escribe una prueba instrumentada en `app/src/androidTest` que cifre y descifre un texto y ejecútala con `./gradlew :app:connectedDebugAndroidTest` (el almacén de claves de Android solo existe en el dispositivo o emulador).
+
 ### Tema 1: El sistema operativo conecta tu app con entradas externas
 
 #### Paso 1 · Objetivo y preparación
@@ -43,12 +45,12 @@ Android asigna UID y sandbox por app, pero componentes declarados (`android:expo
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt` con la validación real de un deep link:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt` con la validación real de un deep link:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt <<'EOF'
 package com.academia.android
 
@@ -163,12 +165,12 @@ Clasifica datos antes de cifrar: público, interno, sensible y credencial; no gu
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/CifradoSensible.kt` documentando la construcción real con Android Keystore, y verifica el mismo tipo de construcción autenticada con AES-GCM real en Python:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/CifradoSensible.kt` documentando la construcción real con Android Keystore, y verifica el mismo tipo de construcción autenticada con AES-GCM real en Python:
 
 ```bash
-# Este script python3 confirma después que la clave usa AndroidKeyStore con GCM
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+# Este script python3 es un MODELO de AES-GCM; no usa AndroidKeyStore (la prueba real es instrumentada)
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/CifradoSensible.kt <<'EOF'
 package com.academia.android
 
@@ -282,11 +284,11 @@ La UI lee exclusivamente la fuente local (Módulo 6). Una escritura crítica off
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/OutboxOffline.kt`, y valida el mismo protocolo con SQLite real en Python (el motor que Room envuelve, Módulo 6):
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/OutboxOffline.kt`, y valida el mismo protocolo con SQLite real en Python (el motor que Room envuelve, Módulo 6):
 
 ```bash
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/OutboxOffline.kt <<'EOF'
 package com.academia.android
 
@@ -418,11 +420,11 @@ La UI thread procesa input y frames; I/O, locks o cómputo pesado ahí causa jan
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt`, comparando una versión bloqueante frente a una main-safe real:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt`, comparando una versión bloqueante frente a una main-safe real:
 
 ```bash
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt <<'EOF'
 package com.academia.android
 
@@ -546,7 +548,6 @@ Trabaja sobre el proyecto 12 con backend de prueba que soporte operation ID y ve
 - Usar `suspend` como prueba de main-safety: mueve bloqueo con dispatcher y mide.
 - Detener rollout como rollback: planifica hotfix para instalaciones ya afectadas.
 
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
 ## Atlas completo de temas oficiales
 
 Derivado de la [documentación oficial](https://developer.android.com/develop), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 52 temas.**
@@ -563,10 +564,8 @@ Derivado de la [documentación oficial](https://developer.android.com/develop), 
 ### Método de estudio y proyecto de ampliación
 
 Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
 
 
-## Aplicación del material de referencia
 
 ### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado
 

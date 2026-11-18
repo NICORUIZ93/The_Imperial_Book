@@ -3,6 +3,20 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Las pruebas tienen su propia carpeta y su propio tipo de dependencia: `app/src/test` (pruebas locales en la JVM, `testImplementation`, se ejecutan con `./gradlew :app:testDebugUnitTest`) y `app/src/androidTest` (pruebas instrumentadas en el emulador, `androidTestImplementation`, se ejecutan con `./gradlew :app:connectedDebugAndroidTest`). Nada de lo que está en `app/src/main` se ejecuta como prueba: allí `org.junit` ni siquiera está en el classpath. Comprueba que `app/build.gradle.kts` tiene, dentro de `dependencies { }`:
+>
+> ```kotlin
+> testImplementation(libs.junit)                         // ya lo trae la plantilla
+> testImplementation(libs.kotlinx.coroutines.test)       // catálogo del Módulo 0 (o la línea del Módulo 0, Tema 6)
+> androidTestImplementation(platform(libs.androidx.compose.bom))   // ya lo trae la plantilla
+> androidTestImplementation(libs.androidx.ui.test.junit4)          // ya lo trae la plantilla
+> debugImplementation(libs.androidx.ui.test.manifest)              // ya lo trae la plantilla
+> ```
+>
+> Los nombres de las líneas «de la plantilla» pueden variar ligeramente según tu versión de Android Studio; si falta alguna, añádela con el nombre que aparezca en tu `gradle/libs.versions.toml`.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas de tu app.** La evidencia real son las pruebas Kotlin de cada tema ejecutadas con Gradle y su informe en `app/build/reports/tests/`.
+
 ### Tema 1: Testing de ViewModels con fakes y runTest
 
 #### Paso 1 · Objetivo y preparación
@@ -38,20 +52,28 @@ Un repositorio fake es una implementación real y simple de la interfaz `TareaRe
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/TareasViewModelTest.kt`, y modela el mismo principio con un fake real ejecutado en Python (usando `unittest`, verificable en este entorno) antes de confiar en el equivalente Kotlin:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea la prueba local `app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt` (en `src/test`, no en `src/main`):
 
 ```bash
-# Este script python3 (unittest) ejecuta un test real contra un repositorio fake
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
-cat > app/src/main/kotlin/com/academia/android/TareasViewModelTest.kt <<'EOF'
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/test/kotlin/com/academia/android
+cat > app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt <<'EOF'
 package com.academia.android
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
+// Fake del TareaRepository del Módulo 6; Tarea es la @Entity de Room de ese módulo
 class TareaRepositoryFake(datosIniciales: List<Tarea>) : TareaRepository {
     override val tareas = MutableStateFlow(datosIniciales)
     override suspend fun sincronizar() {
@@ -59,22 +81,33 @@ class TareaRepositoryFake(datosIniciales: List<Tarea>) : TareaRepository {
     }
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TareasViewModelTest {
+    // viewModelScope usa Dispatchers.Main, que no existe en la JVM de las pruebas locales
+    @Before fun usarMainDePrueba() = Dispatchers.setMain(UnconfinedTestDispatcher())
+    @After fun restaurarMain() = Dispatchers.resetMain()
+
     @Test
     fun cargaTareasCorrectamente() = runTest {
-        val tareaDePrueba = Tarea(id = "1", titulo = "Comprar leche", completada = false)
-        val viewModel = TareasViewModelConEstado(TareaRepositoryFake(listOf(tareaDePrueba)))
+        val repo = TareaRepositoryFake(listOf(Tarea(id = "1", titulo = "Comprar leche", completada = false)))
+        // adapta el repositorio del Módulo 6 a la FuenteDeTareas que espera el ViewModel del Módulo 4
+        val fuente = object : FuenteDeTareas {
+            override suspend fun obtenerTareas() = repo.tareas.first().map { it.titulo }
+        }
+        val viewModel = TareasViewModelConEstado(fuente)
         viewModel.cargar()
         assertEquals(EstadoUI.Exito(listOf("Comprar leche")), viewModel.estado.value)
     }
 }
 EOF
-./gradlew :app:compileDebugKotlin
+./gradlew :app:testDebugUnitTest --tests "com.academia.android.TareasViewModelTest"
 ```
 
-**Explicación línea por línea:** `TareaRepositoryFake` es una clase Kotlin ordinaria que implementa la interfaz `TareaRepository` (Módulo 6) exponiendo un `MutableStateFlow` en memoria como `tareas` en vez de Room/Retrofit reales, con `sincronizar()` como no-operación porque el fake no tiene ninguna fuente remota que sincronizar, sin ninguna librería de mocking; `runTest` ejecuta el cuerpo del test en un dispatcher de tiempo virtual, permitiendo que cualquier `delay()` interno (por ejemplo, dentro de un backoff de reintento) transcurra instantáneamente.
+**Resultado esperado:** `BUILD SUCCESSFUL`; el informe `app/build/reports/tests/testDebugUnitTest/index.html` muestra `cargaTareasCorrectamente` en verde. **Fallo real que conviene ver una vez:** comenta la línea `@Before` y ejecuta de nuevo; la prueba falla con `IllegalStateException: Module with the Main dispatcher had failed to initialize`, porque fuera de Android no hay hilo principal. Restaura la línea.
 
-Ejecuta con `pytest` un test Python real y equivalente conceptualmente, confirmando en ejecución real la velocidad y determinismo de un fake frente a una llamada de red real simulada con latencia:
+**Explicación línea por línea:** `Dispatchers.setMain(UnconfinedTestDispatcher())` sustituye el dispatcher principal por uno de prueba antes de cada test, como indica la guía oficial «Testing Kotlin coroutines on Android»; `TareaRepositoryFake` es una clase Kotlin ordinaria que implementa la interfaz `TareaRepository` (Módulo 6) exponiendo un `MutableStateFlow` en memoria como `tareas` en vez de Room/Retrofit reales, con `sincronizar()` como no-operación porque el fake no tiene ninguna fuente remota que sincronizar, sin ninguna librería de mocking; `runTest` ejecuta el cuerpo del test en un dispatcher de tiempo virtual, permitiendo que cualquier `delay()` interno (por ejemplo, dentro de un backoff de reintento) transcurra instantáneamente.
+
+El siguiente test en Python es un **modelo** (no prueba tu app): ilustra la velocidad y el determinismo de un fake frente a una llamada con latencia simulada:
 
 ```bash
 cat > test_viewmodel_fake.py <<'EOF'
@@ -171,13 +204,12 @@ Un test de ViewModel verifica que la lógica de estado sea correcta, pero no que
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/TarjetaTareaUiTest.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea la prueba instrumentada `app/src/androidTest/kotlin/com/academia/android/TarjetaTareaUiTest.kt` (una prueba de Compose necesita el entorno de Android, por eso va en `src/androidTest`):
 
 ```bash
-# Este script python3 modela la brecha entre estado correcto y renderizado correcto
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
-cat > app/src/main/kotlin/com/academia/android/TarjetaTareaUiTest.kt <<'EOF'
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/androidTest/kotlin/com/academia/android
+cat > app/src/androidTest/kotlin/com/academia/android/TarjetaTareaUiTest.kt <<'EOF'
 package com.academia.android
 
 import androidx.compose.ui.test.assertIsDisplayed
@@ -197,8 +229,10 @@ class TarjetaTareaUiTest {
     }
 }
 EOF
-./gradlew :app:compileDebugKotlin
+./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.TarjetaTareaUiTest"
 ```
+
+**Resultado esperado:** con el emulador encendido, `BUILD SUCCESSFUL` y `muestraElTituloDeLaTarea` en verde en `app/build/reports/androidTests/connected/`. Si cambias el texto buscado a `"Comprar pan"`, la prueba falla indicando que no encontró ningún nodo con ese texto.
 
 **Explicación línea por línea:** `composeTestRule.setContent { ... }` renderiza `TarjetaTarea` (Módulo 2) en un entorno de test aislado; `onNodeWithText("Comprar leche")` busca un nodo en el árbol de UI resultante con ese texto exacto, y `assertIsDisplayed()` confirma que efectivamente es visible, verificando el resultado visual real, no solo un valor de estado interno.
 
@@ -285,16 +319,15 @@ Al finalizar podrás explicar qué cubre un test end-to-end que lanza la Activit
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea `app/src/main/kotlin/com/academia/android/FlujoCrearTareaTest.kt`:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea la prueba instrumentada `app/src/androidTest/kotlin/com/academia/android/FlujoCrearTareaTest.kt`:
 
 ```bash
 # Este test instrumentado lanza la Activity real y navega la app completa con finders de Compose
-mkdir -p academia-android/app/src/androidTest/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/androidTest/kotlin/com/academia/android
 cat > app/src/androidTest/kotlin/com/academia/android/FlujoCrearTareaTest.kt <<'EOF'
 package com.academia.android
 
-import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -305,7 +338,7 @@ import org.junit.Test
 
 class FlujoCrearTareaTest {
     @get:Rule
-    val compose = createAndroidComposeRule<ComponentActivity>() // lanza la Activity real, no un composable aislado
+    val compose = createAndroidComposeRule<MainActivity>() // lanza la MainActivity de la app, no un composable aislado
 
     @Test
     fun creaUnaTareaYLaVeEnLaLista() {
@@ -319,7 +352,9 @@ EOF
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.FlujoCrearTareaTest"
 ```
 
-**Explicación línea por línea:** `createAndroidComposeRule<ComponentActivity>()` lanza la Activity real de la app (a diferencia de `createComposeRule()` del Tema 2, que solo monta un composable suelto con `setContent`), con su `NavHost` y pantallas reales activas; cada `onNodeWithTag(...).performClick()`/`performTextInput(...)` simula una interacción real de usuario en secuencia (tocar "agregar", escribir el título, tocar "guardar"); la aserción final (`onNodeWithText("Nueva tarea").assertExists()`) verifica que, tras todo ese flujo a través de múltiples pantallas y componentes, la tarea nueva efectivamente aparece en la lista — algo que ni un test de ViewModel aislado ni uno de Compose UI de un único composable (Tema 2) podrían verificar por sí solos.
+**Requisito:** la prueba solo pasa cuando `MainActivity` muestra tu lista de tareas con elementos marcados con `Modifier.testTag("boton_agregar")`, `"campo_titulo"` y `"boton_guardar"` (lo construyes en el proyecto integrador del Módulo 12). Mientras no existan, el fallo esperado es que Compose no encuentra ningún nodo con `TestTag = 'boton_agregar'`: es la prueba avisándote de lo que falta. Con `createAndroidComposeRule<ComponentActivity>()` lanzarías una Activity vacía, sin ninguna de tus pantallas.
+
+**Explicación línea por línea:** `createAndroidComposeRule<MainActivity>()` lanza la Activity real de la app (a diferencia de `createComposeRule()` del Tema 2, que solo monta un composable suelto con `setContent`), con su `NavHost` y pantallas reales activas; cada `onNodeWithTag(...).performClick()`/`performTextInput(...)` simula una interacción real de usuario en secuencia (tocar "agregar", escribir el título, tocar "guardar"); la aserción final (`onNodeWithText("Nueva tarea").assertExists()`) verifica que, tras todo ese flujo a través de múltiples pantallas y componentes, la tarea nueva efectivamente aparece en la lista — algo que ni un test de ViewModel aislado ni uno de Compose UI de un único composable (Tema 2) podrían verificar por sí solos.
 
 Modela, en Python real, la diferencia entre usar un fake reutilizable y un mock de verificación puntual para el mismo repositorio, ejecutando ambos casos:
 

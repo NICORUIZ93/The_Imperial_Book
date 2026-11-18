@@ -3,6 +3,8 @@
 
 ## Aprende construyendo
 
+> **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist en Python solo comprueba que existan archivos; no demuestra que funcionen.
+
 ### Tema 1: Arquitectura MVVM completa con UDF
 
 #### Paso 1 · Objetivo y preparación
@@ -43,12 +45,12 @@ Este proyecto integra cada módulo anterior: la UI declarativa con state hoistin
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt`, integrando literalmente las piezas de los Módulos 4-7:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt`, integrando literalmente las piezas de los Módulos 4-7:
 
 ```bash
 # Este script python3 verifica que la integración conecta las capas en el orden correcto
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt <<'EOF'
 package com.academia.android
 
@@ -154,12 +156,11 @@ En el proyecto integrador, ninguna clase instancia manualmente sus propias depen
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea, dentro de `app/src/`, dos ViewModels de ejemplo para auditar con grep real que ninguna clase fuera de los módulos de Hilt (Módulo 7) instancia `Retrofit` o `Room` directamente. Ejecuta grep para validar:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea, dentro de `app/src/`, dos ViewModels de ejemplo para auditar con grep real que ninguna clase fuera de los módulos de Hilt (Módulo 7) instancia `Retrofit` o `Room` directamente. Ejecuta grep para validar:
 
 ```bash
-# Este script python3 no interviene en este paso; el grep siguiente hace la auditoría real
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt <<'EOF'
 package com.academia.android
 
@@ -249,12 +250,12 @@ Una app Android "completa" no se define únicamente por pantallas visualmente at
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/checklist-cierre-track.py`, una checklist ejecutable que verifica programáticamente las cinco dimensiones de este Tema contra los artefactos reales creados a lo largo del track. Ejecuta python para validar:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/checklist-cierre-track.py`, una checklist ejecutable que verifica programáticamente las cinco dimensiones de este Tema contra los artefactos reales creados a lo largo del track. Ejecuta python para validar:
 
 ```bash
 # Este script python3 ejecuta la checklist ejecutable definida a continuación
-mkdir -p academia-android/app
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app
 cat > app/checklist-cierre-track.py <<'EOF'
 import os
 
@@ -265,7 +266,7 @@ criterios = {
     "udf_stateflow": os.path.exists("app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt"),
     "offline_first_room": os.path.exists("app/src/main/kotlin/com/academia/android/AppDatabase.kt"),
     "dependencias_hilt": os.path.exists("app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt"),
-    "tests_existen": os.path.exists("app/src/main/kotlin/com/academia/android/TareasViewModelTest.kt"),
+    "tests_existen": os.path.exists("app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt"),  # src/test, nunca src/main
 }
 
 for nombre, cumplido in criterios.items():
@@ -288,13 +289,15 @@ python3 app/checklist-cierre-track.py
 
 **Explicación línea por línea:** el script verifica programáticamente, contra los archivos reales creados en módulos anteriores de este mismo track (Módulos 2, 4, 6, 7, 9), si cada una de las cinco dimensiones de una app Android completa (UI, UDF, offline-first, DI, testing) tiene al menos un artefacto concreto presente, en vez de una autoevaluación subjetiva.
 
+**Verificación real en Android:** la checklist solo comprueba que los archivos existan. Ejecuta después `./gradlew :app:testDebugUnitTest :app:lintDebug` y, con el emulador encendido, `./gradlew :app:connectedDebugAndroidTest`; las tres órdenes deben terminar en `BUILD SUCCESSFUL`. Esa es la evidencia de que la app integra las cinco dimensiones.
+
 **Resultado esperado:** si completaste los módulos anteriores en el mismo directorio `academia-android`, el script reporta la mayoría (o la totalidad) de las cinco dimensiones como `CUMPLE`, con un resumen numérico concreto, confirmando objetivamente que el proyecto integra los conceptos del track, no solo en teoría sino en artefactos de código reales y verificables.
 
 **Fallo deliberado:** ejecuta el mismo script desde un directorio completamente vacío sin ninguno de los archivos de módulos anteriores (`mkdir -p /tmp/proyecto-vacio/app/src/main/kotlin && cd /tmp/proyecto-vacio && python3 -c "print('simulando: 0/5 dimensiones cumplidas sin ningún archivo de módulos anteriores')"`). El resumen mostraría 0/5 — diagnostica confirmando que esta checklist, igual que la del Módulo 12 de DevOps, mide artefactos reales, no buenas intenciones: una app que "en teoría" sigue esta arquitectura pero sin código real que lo demuestre no pasaría esta verificación.
 
 #### Paso 5 · Práctica guiada
 
-Agrega una sexta dimensión a la checklist (`publicacion_lista`, verificando la existencia de `app/keystore.jks` del Módulo 11) y confirma que el resumen ahora reporta sobre 6 dimensiones totales. **Pista:** sigue el mismo patrón de `os.path.exists(...)` para el nuevo criterio.
+Agrega una sexta dimensión a la checklist (`publicacion_lista`, verificando con `os.environ.get("KEYSTORE_PATH")` que la clave de subida del Módulo 11 existe fuera del proyecto) y confirma que el resumen ahora reporta sobre 6 dimensiones totales. **Pista:** sigue el mismo patrón de `os.path.exists(...)` para el nuevo criterio.
 
 #### Paso 6 · Práctica independiente
 

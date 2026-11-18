@@ -3,6 +3,10 @@
 
 ## Aprende construyendo
 
+> **Antes de empezar este módulo.** Con el catálogo del Módulo 0 (Tema 3), añade en `app/build.gradle.kts`, dentro de `dependencies { }`, `implementation(libs.androidx.navigation.compose)` y `implementation(libs.kotlinx.serialization.json)`; dentro de `plugins { }`, `alias(libs.plugins.kotlin.serialization)`; y en el `build.gradle.kts` de la raíz, `alias(libs.plugins.kotlin.serialization) apply false`. Pulsa **Sync Now**. Sin `navigation-compose`, `import androidx.navigation.compose.NavHost` no compila; el plugin de serialización hace falta para las rutas tipadas con `@Serializable`.
+>
+> **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la que aparece como **Verificación real en Android**: la app en el emulador y comandos `adb` con salida esperada.
+
 ### Tema 1: NavHost y NavController
 
 #### Paso 1 · Objetivo y preparación
@@ -39,12 +43,12 @@ Al finalizar podrás declarar un grafo de navegación con `NavHost` y explicar c
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-android` de módulos anteriores), crea `app/src/main/kotlin/com/academia/android/GrafoNavegacion.kt`:
+Continuando en `academia-android` (el proyecto creado en el Módulo 0; si no lo tienes, créalo primero con su Tema 1), crea `app/src/main/kotlin/com/academia/android/GrafoNavegacion.kt`:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/GrafoNavegacion.kt <<'EOF'
 package com.academia.android
 
@@ -135,7 +139,7 @@ Al finalizar podrás declarar un argumento de navegación con su tipo explícito
 
 **Conceptos clave:** validación de tipo en tiempo de navegación, entrada externa mapeada a una ruta interna.
 
-Declarar explícitamente el tipo de un argumento con `navArgument(...) { type = ... }` permite que Navigation Compose valide y extraiga el argumento con el tipo correcto automáticamente, evitando errores de conversión manual que serían responsabilidad del desarrollador con un mecanismo no tipado como el `Bundle` clásico. Un deep link mapea una URI externa (notificación push, link compartido, navegador web) directamente hacia una ruta ya declarada en el `NavHost`, con el argumento resuelto automáticamente a partir de esa URI, permitiendo que el usuario llegue directamente a la pantalla relevante en vez de aterrizar en la principal.
+Con rutas de texto (`"detalle/{id}"`), declarar el tipo de un argumento con `navArgument(...) { type = ... }` permite que Navigation Compose valide y extraiga el argumento con el tipo correcto automáticamente, evitando errores de conversión manual que serían responsabilidad del desarrollador con un mecanismo no tipado como el `Bundle` clásico. Un deep link mapea una URI externa (notificación push, link compartido, navegador web) directamente hacia una ruta ya declarada en el `NavHost`, con el argumento resuelto automáticamente a partir de esa URI, permitiendo que el usuario llegue directamente a la pantalla relevante en vez de aterrizar en la principal.
 
 **Analogía:** un argumento tipado es como una casilla de un formulario que solo acepta un formato específico de dato, validado automáticamente al llegar. Un deep link es como una dirección postal específica que un cartero externo puede usar para entregar un paquete directamente en la puerta correcta de un edificio grande, en vez de dejarlo en la recepción general.
 
@@ -154,25 +158,29 @@ Declarar explícitamente el tipo de un argumento con `navArgument(...) { type = 
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y actualiza `GrafoNavegacion.kt` con un argumento tipado y un deep link:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y actualiza `GrafoNavegacion.kt` con un argumento tipado y un deep link:
 
 ```bash
 # compila con Gradle el archivo Kotlin generado a continuación
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 cat > app/src/main/kotlin/com/academia/android/RutaDetalleTarea.kt <<'EOF'
 package com.academia.android
 
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.compose.composable
 
-fun rutaDetalleConArgumentoYDeepLink() = composable(
-    "detalle/{id}",
-    arguments = listOf(navArgument("id") { type = NavType.StringType }),
-    deepLinks = listOf(navDeepLink { uriPattern = "miapp://tarea/{id}" })
-) { /* renderiza DetalleTareaScreen con el id ya resuelto */ }
+// composable(...) es una extensión de NavGraphBuilder: solo existe dentro del grafo
+fun NavGraphBuilder.rutaDetalleConArgumentoYDeepLink() {
+    composable(
+        "detalle/{id}",
+        arguments = listOf(navArgument("id") { type = NavType.StringType }),
+        deepLinks = listOf(navDeepLink { uriPattern = "miapp://tarea/{id}" })
+    ) { /* renderiza DetalleTareaScreen con el id ya resuelto */ }
+}
 EOF
 ./gradlew :app:compileDebugKotlin
 ```
@@ -199,6 +207,47 @@ print('URI externa: miapp://tarea/42  ->  ruta interna resuelta:', resultado)
 ```
 
 **Resultado esperado:** el script resuelve `miapp://tarea/42` hacia la ruta interna `detalle/42`, confirmando que el argumento `id` (`42`) se extrajo correctamente de la URI externa y se aplicó a la ruta declarada en el `NavHost`, sin intervención manual del desarrollador.
+
+
+**Verificación real en Android.** El script es un modelo de la coincidencia de patrones. Para probar el deep link de verdad, llama a `rutaDetalleConArgumentoYDeepLink()` dentro del `NavHost { … }` del Tema 1 y declara en `AndroidManifest.xml`, dentro de la `<activity>` de `MainActivity`, el filtro que permite que una URI externa llegue a la app:
+
+```xml
+<intent-filter>
+    <action android:name="android.intent.action.VIEW" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <category android:name="android.intent.category.BROWSABLE" />
+    <data android:scheme="miapp" android:host="tarea" />
+</intent-filter>
+```
+
+Instala la app y lanza la URI desde la terminal:
+
+```bash
+adb shell am start -W -a android.intent.action.VIEW -d "miapp://tarea/42" com.academia.android
+```
+
+**Resultado esperado:** `am start` responde `Status: ok` y la app se abre directamente en el detalle con `id = 42`. Sin el `<intent-filter>`, el comando responde que no hay ninguna actividad que resuelva el intent.
+
+**Rutas tipadas (Navigation 2.8 o superior).** `navArgument` sigue funcionando, pero la ruta sigue siendo un `String` que puedes escribir mal. La forma tipada actual, que la documentación oficial («Type safety in Kotlin DSL and Navigation Compose») recomienda por ser más robusta, declara cada destino como una clase `@Serializable` y el compilador comprueba el argumento:
+
+```kotlin
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable data class DetalleTarea(val id: String)
+
+fun NavGraphBuilder.rutaDetalleTipada() {
+    composable<DetalleTarea> { entrada ->
+        val destino: DetalleTarea = entrada.toRoute()
+        // renderiza DetalleTareaScreen(destino.id)
+    }
+}
+// navegar: navController.navigate(DetalleTarea(id = "42"))
+```
+
+Usa este estilo en los proyectos nuevos; el ejemplo con `navArgument` te sirve para leer código existente.
 
 **Fallo deliberado:** intenta resolver una URI que no coincide con el patrón del deep link (`resolver_deep_link('otraapp://cosa/42', 'miapp://tarea/{id}', 'detalle/{id}')`). La función retorna `None` — diagnostica confirmando que un deep link solo resuelve URIs que coinciden exactamente con su `uriPattern` declarado; una URI de un esquema o formato distinto simplemente no se enruta hacia esa ruta, ni hacia ninguna otra, a menos que coincida con otro patrón declarado.
 
@@ -254,12 +303,12 @@ En una app con bottom navigation de varias secciones (Inicio, Tareas, Perfil), c
 
 #### Paso 4 · Demostración guiada desde cero
 
-Reutiliza `academia-android` (o créalo desde una carpeta vacía con `mkdir -p academia-android` si es tu primera vez) y crea, dentro de `app/src/`, primero un modelo de los stacks independientes como estructura de datos, antes de implementar el Compose real:
+Reutiliza `academia-android` (el proyecto del Módulo 0) y crea, dentro de `app/src/`, primero un modelo de los stacks independientes como estructura de datos, antes de implementar el Compose real:
 
 ```bash
 # Verificación en python3 del modelo de stacks independientes antes de escribir el Compose real
-mkdir -p academia-android/app/src/main/kotlin/com/academia/android
-cd academia-android
+test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
+mkdir -p app/src/main/kotlin/com/academia/android
 python3 -c "
 class NavegacionMultiSeccion:
     def __init__(self, secciones):
@@ -388,44 +437,59 @@ sequenceDiagram
 Crea `app/src/main/kotlin/com/academia/android/EdicionPedidoScreen.kt`:
 
 ```kotlin
-PredictiveBackHandler { progress: Flow<BackEventCompat> ->
-    try {
-        progress.collect { backEvent ->
-            // el usuario todavía está deslizando: solo animamos, no decidimos todavía
+package com.academia.android
+
+import androidx.activity.BackEventCompat
+import androidx.activity.compose.PredictiveBackHandler
+import androidx.compose.runtime.Composable
+import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.flow.Flow
+
+@Composable
+fun ConfirmarDescarteAlVolver(
+    hayCambiosSinGuardar: Boolean,
+    mostrarDialogoDescartar: () -> Unit,
+) {
+    // Solo intercepta "atrás" mientras hay cambios sin guardar. Sin cambios, el
+    // handler queda deshabilitado y el sistema ejecuta su animación predictiva y navega.
+    PredictiveBackHandler(enabled = hayCambiosSinGuardar) { progress: Flow<BackEventCompat> ->
+        try {
+            progress.collect { backEvent ->
+                // backEvent.progress va de 0f a 1f mientras el dedo se desliza:
+                // aquí animarías tu propia transición
+            }
+            // el gesto se completó
+            mostrarDialogoDescartar()
+        } catch (e: CancellationException) {
+            // el usuario soltó el gesto a mitad de camino: deja la UI como estaba
         }
-        // el gesto se completó: ahora decidimos qué hacer realmente
-        if (hayCambiosSinGuardar) mostrarDialogoDescartar() else navController.popBackStack()
-    } catch (e: CancellationException) {
-        // el usuario canceló el gesto a mitad de camino (deslizó y volvió)
     }
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto Android con Gradle, compila e instala en un emulador):
+Llámalo desde tu pantalla de edición con el estado real, por ejemplo `ConfirmarDescarteAlVolver(hayCambiosSinGuardar = texto != original, mostrarDialogoDescartar = { mostrarDialogo = true })`, y compila:
 
 ```bash
-./gradlew assembleDebug
-./gradlew test
+./gradlew :app:installDebug
 ```
 
+**Resultado esperado (en un emulador con Android 15 o superior):** sin cambios, el gesto desde el borde muestra la animación predictiva del sistema y vuelve atrás. Con cambios, el handler está habilitado: según la guía oficial, mientras una app tiene habilitado un callback de retroceso, **las animaciones predictivas del sistema no se ejecutan** y es tu código el que responde; al completar el gesto aparece el diálogo. Así la previsualización nunca promete una navegación que no ocurre.
 
-**Resultado esperado:** mientras el usuario desliza desde el borde, la UI participa del progreso del gesto; solo al completarlo efectivamente se decide mostrar el diálogo o navegar, evitando que la previsualización del sistema prometa algo que no ocurre.
-
-**Fallo deliberado:** reemplazá `PredictiveBackHandler` por un `BackHandler` simple que directamente llama a `mostrarDialogoDescartar()` sin participar del flujo de progreso. Compila el proyecto con Gradle (`./gradlew :app:compileDebugKotlin`) para confirmar que compila, y probá el gesto en un dispositivo o emulador con Android 14+: el sistema muestra su previsualización genérica de "volviendo atrás" durante todo el deslizamiento, y solo al completarlo aparece el diálogo en vez de la navegación que la preview sugería — diagnostica confirmando la discrepancia confusa que este Tema busca evitar.
+**Fallo deliberado:** quita `enabled = hayCambiosSinGuardar` (el handler queda siempre habilitado) e instala de nuevo. Sin haber editado nada, desliza desde el borde: ya no ves la animación predictiva del sistema y, al soltar, aparece el diálogo en una pantalla sin cambios; el usuario no puede volver atrás con normalidad. **Diagnóstico:** un callback de retroceso habilitado desactiva la animación del sistema y se queda con el evento; por eso la guía oficial pide habilitarlo solo según un estado observable (aquí, `hayCambiosSinGuardar`). Restaura el parámetro `enabled`.
 
 #### Paso 5 · Práctica guiada
 
-Verificá en `app/src/main/AndroidManifest.xml` que la etiqueta `<application>` declare `android:enableOnBackInvokedCallback="true"`. **Pista:** sin ese flag, ni `BackHandler` ni `PredictiveBackHandler` participan del sistema de retroceso predictivo en absoluto, y la app cae de vuelta al comportamiento heredado sin ninguna previsualización, aunque el código Kotlin sea correcto.
+Revisa `app/src/main/AndroidManifest.xml`. El retroceso predictivo está habilitado por defecto, así que no necesitas añadir nada; `android:enableOnBackInvokedCallback="false"` en `<application>` sirve para **excluirse**. Prueba a ponerlo en `false`, reinstala y repite el gesto sin cambios: desaparece la animación del sistema, pero tu `BackHandler`/`PredictiveBackHandler` (basados en `OnBackPressedCallback`) se siguen llamando. **Pista:** la guía oficial lo dice así: `OnBackPressedCallback` se invoca siempre, sea cual sea el valor de `android:enableOnBackInvokedCallback`. Vuelve a quitar el atributo.
 
 #### Paso 6 · Práctica independiente
 
-Agregá el manejo explícito de `CancellationException` en el `catch` del Paso 4 (si todavía no lo tenías) y documentá en una frase qué le pasaría a `hayCambiosSinGuardar` si el usuario desliza el gesto hasta la mitad y luego vuelve a soltar sin completarlo: ¿se ejecuta algo del bloque posterior a `progress.collect`?
+Agrega el manejo explícito de `CancellationException` en el `catch` del Paso 4 (si todavía no lo tenías) y documenta en una frase qué le pasaría a `hayCambiosSinGuardar` si el usuario desliza el gesto hasta la mitad y luego vuelve a soltar sin completarlo: ¿se ejecuta algo del bloque posterior a `progress.collect`?
 
 #### Paso 7 · Cierre
 
-Ya usás `PredictiveBackHandler` para que la previsualización del gesto coincida con el resultado real, confirmado al reproducir la discrepancia con un `BackHandler` simple y corregirla. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. Fuentes oficiales: [Android Developers — Predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) y [Android Developers — Support predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#support-predictive).
+Ya usas `PredictiveBackHandler` para que la previsualización del gesto coincida con el resultado real, confirmado al reproducir la discrepancia con un `BackHandler` simple y corregirla. Esto cierra el módulo de navegación; el siguiente módulo del track aborda networking con Retrofit. Fuentes oficiales: [Android Developers — Predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) y [Android Developers — Support predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture#support-predictive).
 
-**Errores comunes:** usar `BackHandler` simple para interacciones donde el resultado del gesto no es simplemente "navegar atrás" (confirmaciones, diálogos); olvidar `android:enableOnBackInvokedCallback="true"` en el manifest, dejando la app sin gesto predictivo en absoluto; no manejar `CancellationException` para el caso de un gesto cancelado a mitad de camino.
+**Errores comunes:** usar `BackHandler` simple para interacciones donde el resultado del gesto no es simplemente "navegar atrás" (confirmaciones, diálogos); dejar el handler habilitado siempre (sin `enabled = …`), lo que desactiva la animación predictiva del sistema incluso cuando no hay nada que confirmar; no manejar `CancellationException` para el caso de un gesto cancelado a mitad de camino.
 
 **Cuándo no usarlo:** para una pantalla donde "volver atrás" siempre significa exactamente navegar a la pantalla anterior, sin ningún diálogo ni lógica condicional, el `BackHandler` simple es suficiente y `PredictiveBackHandler` agrega complejidad sin ningún beneficio real.
 

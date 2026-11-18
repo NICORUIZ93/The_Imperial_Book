@@ -161,7 +161,7 @@ En el **[Proyecto integrador: runtime observable de entregas](#proyecto-0-runtim
 
 El Event Loop repite fases con responsabilidades concretas: **timers** ejecuta callbacks de `setTimeout` y `setInterval` vencidos; **pending callbacks** procesa ciertos callbacks del sistema diferidos; **poll** recupera eventos de I/O y ejecuta sus callbacks; **check** ejecuta `setImmediate`; y **close callbacks** gestiona cierres, como los de sockets.
 
-`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop; después se procesan las microtareas de promesas. Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
+`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop. En CommonJS, y dentro de cualquier callback (por ejemplo, uno de I/O), la cola de `nextTick` se vacía antes que las microtareas de promesas. En el nivel superior de un módulo ESM ocurre lo contrario: Node ya está vaciando la cola de microtareas al evaluar el módulo, así que las promesas se ejecutan antes que `nextTick` (documentación oficial de `process`, sección «When to use `queueMicrotask()` vs. `process.nextTick()`»). Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
 
 Entre `setTimeout(fn, 0)` y `setImmediate(fn)` programados en el nivel superior no existe un ganador portable: influye la temporización de inicio. Dentro de un callback de I/O en `poll`, `setImmediate` se ejecuta antes del siguiente timer porque `check` sigue inmediatamente a esa fase.
 
@@ -211,7 +211,9 @@ Ejecuta:
 node src/runtime/fases.js
 ```
 
-**Resultado esperado:** `1`, `2` y `3` aparecen en ese orden. Las líneas `4/5` pueden intercambiarse. Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden.
+**Resultado esperado:** como `package.json` declara `"type": "module"`, el archivo es ESM y las tres primeras líneas salen como `1. síncrono`, `3. microtarea Promise`, `2. cola nextTick`: en el nivel superior de ESM la promesa gana a `nextTick`. Las líneas `4/5` no tienen orden garantizado entre sí ni respecto al bloque de I/O (en Node 22 el timer de nivel superior a veces sale después de `9`). Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden: dentro de un callback de I/O, `nextTick` sí va antes que la promesa.
+
+Compruébalo con CommonJS: copia el archivo a `src/runtime/fases.cjs`, cambia la primera línea por `const { readFile } = require("node:fs");` y la ruta por `require("node:path").join(__dirname, "../../package.json")`. Al ejecutar `node src/runtime/fases.cjs` las tres primeras líneas salen como `1`, `2`, `3`. El orden de `nextTick` frente a promesas depende del tipo de módulo; no es una regla universal.
 
 **Fallo deliberado y corrección:** añade temporalmente `const saturar = () => process.nextTick(saturar); saturar();`. El proceso no llega al I/O; deténlo con `Ctrl+C`. El diagnóstico es inanición del Event Loop, no lentitud del disco. Elimina esas líneas y verifica otra vez la traza completa.
 
