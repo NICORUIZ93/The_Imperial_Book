@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 06:59 UTC
+Generated: 2026-11-18 07:07 UTC
 Root: `the_imperial_book`
-Indexed files: 1663
+Indexed files: 1672
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 71 files
-- `automation-script`: 55 files
-- `course-content`: 331 files
-- `documentation`: 156 files
+- `automation-script`: 58 files
+- `course-content`: 333 files
+- `documentation`: 158 files
 - `example`: 962 files
 - `local-infra`: 1 files
-- `project-file`: 87 files
+- `project-file`: 89 files
 
 ## File Types
 
-- `.md`: 520
+- `.md`: 522
 - `.java`: 417
-- `.py`: 184
-- `.json`: 125
+- `.py`: 187
+- `.json`: 129
 - `.ts`: 74
 - `.js`: 54
 - `.html`: 50
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (228 lines, automation-script)
+- `scripts/validate.sh` (229 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -197,7 +197,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_subtopic_depth.py` (164 lines) - symbols: semantic_headings, broad_title, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
-- `scripts/audit_topic_learning_quality.py` (266 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
+- `scripts/audit_topic_learning_quality.py` (268 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/audit_visual_aids.py` (106 lines) - symbols: topic_text, code_blocks_without_filename, audit, main; imports: __future__, json, re, sys, pathlib
 - `scripts/build_editorial_backlog.py` (100 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_full_review.py` (175 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
@@ -207,7 +207,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
 - `scripts/build_total_book_topics.py` (129 lines) - symbols: normalized, main, render_item; imports: __future__, json, re, unicodedata, collections, pathlib
 - `scripts/build_unified_curriculum.py` (211 lines) - symbols: norm, main; imports: __future__, json, re, unicodedata, collections, pathlib
-- ... 37 more files
+- ... 40 more files
 
 ### course-content
 
@@ -229,7 +229,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- ... 313 more files
+- ... 315 more files
 
 ### documentation
 
@@ -238,7 +238,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CLAUDE.md` (133 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
-- `MASTER-PROMPT.md` (223 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 0 · CÓMO TRABAJAR: ESPECIFICACIÓN PRIMERO (SDD), ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables
+- `MASTER-PROMPT.md` (224 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 0 · CÓMO TRABAJAR: ESPECIFICACIÓN PRIMERO (SDD), ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables
 - `README.md` (388 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 138 more files
+- ... 140 more files
 
 ### example
 
@@ -299,4 +299,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 69 more files
+- ... 71 more files

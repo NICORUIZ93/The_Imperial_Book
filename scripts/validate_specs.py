@@ -45,9 +45,9 @@ def parse(spec: Path) -> tuple[list[Criterion], list[str]]:
         match = CRITERION.match(text)
         if match:
             ident, state, _ = match.groups()
-            criteria.append(Criterion(spec.name, ident, state, number))
+            criteria.append(Criterion(str(spec.relative_to(SPECS)), ident, state, number))
             if state not in STATES:
-                errors.append(f"{spec.name}:{number} {ident}: estado desconocido '{state}'")
+                errors.append(f"{spec.relative_to(SPECS)}:{number} {ident}: estado desconocido '{state}'")
             continue
         verify = VERIFY.match(text)
         if verify and criteria and criteria[-1].command is None:
@@ -81,7 +81,7 @@ def main() -> int:
     parser.add_argument("--run", action="store_true", help="ejecuta la verificación de los criterios 'hecho'")
     args = parser.parse_args()
 
-    specs = sorted(SPECS.glob("[0-9][0-9][0-9]-*.md"))
+    specs = sorted(SPECS.glob("[0-9][0-9][0-9]-*.md")) + sorted((SPECS / "tracks").glob("*.md"))
     if not specs:
         print("validate_specs: no hay archivos specs/NNN-*.md")
         return 1

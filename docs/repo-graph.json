@@ -93,7 +93,7 @@
     },
     {
       "path": "MASTER-PROMPT.md",
-      "lines": 223,
+      "lines": 224,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2133,6 +2133,14 @@
       "headings": []
     },
     {
+      "path": "docs/capture-intake.json",
+      "lines": 81,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "docs/code-visual-quality.json",
       "lines": 3001,
       "kind": "project-file",
@@ -3083,6 +3091,25 @@
         "## Las pruebas E2E no encuentran navegador o se quedan colgadas",
         "## Las credenciales locales son rechazadas",
         "## La validaci\u00f3n del repositorio falla"
+      ]
+    },
+    {
+      "path": "docs/zero-to-master.json",
+      "lines": 250,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/zero-to-master.md",
+      "lines": 30,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cobertura de cero a master por ruta",
+        "## C\u00f3mo se usa"
       ]
     },
     {
@@ -12129,7 +12156,7 @@
     },
     {
       "path": "scripts/audit_topic_learning_quality.py",
-      "lines": 266,
+      "lines": 268,
       "kind": "automation-script",
       "symbols": [
         "student_visible_content",
@@ -12373,6 +12400,26 @@
         "sys",
         "unicodedata",
         "collections",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/build_zero_to_master_report.py",
+      "lines": 129,
+      "kind": "automation-script",
+      "symbols": [
+        "track_modules",
+        "build",
+        "markdown",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "sys",
         "pathlib"
       ],
       "headings": []
@@ -12710,10 +12757,26 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 228,
+      "lines": 229,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
+      "headings": []
+    },
+    {
+      "path": "scripts/validate_capture_intake.py",
+      "lines": 80,
+      "kind": "automation-script",
+      "symbols": [
+        "load",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "sys",
+        "pathlib"
+      ],
       "headings": []
     },
     {
@@ -12769,6 +12832,22 @@
         "main"
       ],
       "imports": [
+        "re",
+        "sys",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/validate_master_prompt.py",
+      "lines": 73,
+      "kind": "automation-script",
+      "symbols": [
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
         "re",
         "sys",
         "pathlib"
@@ -12995,8 +13074,21 @@
       ]
     },
     {
+      "path": "specs/003-prompt-maestro-v2-de-cero-a-master.md",
+      "lines": 52,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 003 \u00b7 Prompt maestro v2: de cero a master, f\u00e1cil, pr\u00e1ctico y con ayudas visuales y de c\u00f3digo",
+        "## Contexto y l\u00edmites",
+        "## Criterios",
+        "## Huecos que deja visibles la medici\u00f3n (siguientes lotes, cada uno con su spec)"
+      ]
+    },
+    {
       "path": "specs/README.md",
-      "lines": 43,
+      "lines": 45,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -15101,6 +15193,14 @@
       "headings": []
     },
     {
+      "path": "web/public/content/curriculum-stacks/control-1.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
       "path": "web/public/content/curriculum-stacks/cpp.json",
       "lines": 2,
       "kind": "course-content",
@@ -15222,6 +15322,14 @@
     },
     {
       "path": "web/public/content/curriculum-stacks/math-science.json",
+      "lines": 2,
+      "kind": "course-content",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "web/public/content/curriculum-stacks/microservices.json",
       "lines": 2,
       "kind": "course-content",
       "symbols": [],

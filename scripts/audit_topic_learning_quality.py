@@ -115,6 +115,8 @@ def evaluate(block: str) -> dict[str, bool]:
         "code": bool(re.search(r"^```(?!mermaid)", block, re.MULTILINE)),
         "visual": (
             "```mermaid" in block
+            # Figuras y capturas servidas por la app (specs/002 V1/V2) también son ayuda visual.
+            or bool(re.search(r"!\[[^\]]+\]\(content/figures/", block))
             or bool(re.search(r"[┌┐└┘├┤┬┴┼─│]", block))
             or any(resolve_archify_visual_link(href) for href in ARCHIFY_VISUAL_LINK.findall(block))
         ),

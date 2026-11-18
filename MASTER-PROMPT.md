@@ -32,7 +32,8 @@ reescribir la academia completa de cero a experto, sin perder ningún tema.
 
 Ningún agente escribe ni corrige contenido sin una especificación. Orden obligatorio de cada lote:
 
-1. Lee `specs/README.md` y las specs vigentes. Si un criterio ya está `hecho`, no lo repitas.
+1. Lee `specs/README.md`, `specs/004-programa-cursos-de-cero-a-master.md` y la spec de la ruta en
+   `specs/tracks/<ruta>.md` (criterios T1–T7 y temas reales pendientes). Si un criterio ya está `hecho`, no lo repitas.
 2. Abre o amplía una spec `specs/NNN-<lote>.md` con criterios numerados y su `Verificación:` ejecutable
    (qué temas se crean o reescriben, en qué ruta y módulo, y con qué evidencia).
 3. Implementa solo contra los criterios `pendiente` de esa spec.
