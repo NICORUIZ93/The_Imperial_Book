@@ -10,3 +10,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | Spec | Tema | Estado |
 |---|---|---|
 | [011](011-limpieza-total.md) | Limpieza total del repositorio | hecho |
+| [012](012-limpieza-a-fondo.md) | Limpieza a fondo (segunda pasada) | hecho |
