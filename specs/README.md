@@ -43,4 +43,5 @@ python3 scripts/validate_specs.py --run    # además ejecuta cada verificación 
 | [004](004-programa-cursos-de-cero-a-master.md) | Programa: todas las rutas con temas reales y el estándar del prompt maestro | vigente |
 | [005](005-integracion-total-capturas-y-skillevaluator.md) | Integración total de capturas, video Flutter y SkillEvaluator | hecho |
 | [006](006-integridad-del-temario-sin-fantasmas-ni-huecos.md) | Integridad del temario: cero temas fantasma y cero huecos | hecho |
+| [007](007-mejoras-del-informe-de-capturas.md) | Mejoras del informe de capturas: Multihilo, registro, contenedores locales, evaluar skills, EKS/AKS/GKE y mapas de ruta | vigente |
 | [tracks/](tracks/) | Una spec por ruta con criterios T1–T7 y sus temas reales pendientes | en-curso |
