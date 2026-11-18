@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: rutaflow-pedidos-streams
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    streams:
+      application-id: rutaflow-pedidos-streams-v1
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde

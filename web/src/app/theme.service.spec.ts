@@ -23,7 +23,7 @@ describe('ThemeService', () => {
 
     expect(service.isDark()).toBe(true);
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
-    expect(localStorage.getItem('academia-floci-theme')).toBe('dark');
+    expect(localStorage.getItem('imperial-book-theme')).toBe('dark');
   });
 
   it('restores the saved theme on creation', () => {

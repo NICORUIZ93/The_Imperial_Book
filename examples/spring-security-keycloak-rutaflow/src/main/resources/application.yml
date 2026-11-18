@@ -1,0 +1,15 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: rutaflow-security-api
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/rutaflow}
+rutaflow:
+  orders:
+    owners:
+      p-ana: ${RUTAFLOW_PEDIDO_P_ANA_OWNER:ana}
+      p-luis: ${RUTAFLOW_PEDIDO_P_LUIS_OWNER:luis}

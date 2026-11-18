@@ -1,0 +1,19 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        accept-empty: false
+        native:
+          search-locations: classpath:/config
+    discovery:
+      client:
+        simple:
+          instances:
+            catalogo:
+              - uri: http://localhost:8081

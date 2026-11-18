@@ -1,0 +1,54 @@
+{
+  "realm": "rutaflow",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "location:write" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "rutaflow-cli",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true
+    },
+    {
+      "clientId": "rutaflow-gateway",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "gateway-dev-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8082/login/oauth2/code/keycloak"
+      ],
+      "webOrigins": [
+        "http://localhost:8082"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "ana",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        { "type": "password", "value": "ruta-demo", "temporary": false }
+      ],
+      "realmRoles": [ "location:write" ]
+    },
+    {
+      "username": "luis",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        { "type": "password", "value": "ruta-demo", "temporary": false }
+      ]
+    }
+  ]
+}

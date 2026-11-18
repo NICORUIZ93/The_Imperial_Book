@@ -23,6 +23,12 @@ NODE
 echo "== Índice de temas al día"
 python3 scripts/build_web_topic_index.py --check
 
+echo "== Página Temario al día"
+python3 scripts/build_curriculum_catalog.py --check
+
+echo "== Laboratorios citados por las lecciones"
+python3 scripts/validate_lesson_labs.py
+
 echo "== Specs"
 python3 scripts/validate_specs.py
 

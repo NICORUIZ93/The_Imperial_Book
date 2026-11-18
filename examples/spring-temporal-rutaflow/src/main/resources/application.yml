@@ -1,0 +1,10 @@
+spring:
+  temporal:
+    connection:
+      target: local
+    workers-auto-discovery:
+      packages:
+        - academia.rutaflow.temporal
+    workers:
+      - name: pedidos
+        task-queue: pedidos

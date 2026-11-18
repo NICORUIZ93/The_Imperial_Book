@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    stream:
+      default-binder: rabbit
+      bindings:
+        planRoute-in-0:
+          consumer:
+            max-attempts: 3
+      rabbit:
+        bindings:
+          planRoute-in-0:
+            consumer:
+              auto-bind-dlq: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}

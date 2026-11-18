@@ -1,0 +1,5 @@
+type Query { entrega(id: ID!): Entrega, entregas: [Entrega!]! }
+type Mutation { cambiarEstado(id: ID!, estado: String!): Entrega! }
+type Subscription { cambio: Entrega! }
+type Entrega { id: ID!, estado: String!, conductor: Conductor! }
+type Conductor { id: ID!, nombre: String! }

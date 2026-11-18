@@ -2,7 +2,9 @@ import { Injectable, signal } from '@angular/core';
 
 export type Theme = 'light' | 'dark';
 
-const STORAGE_KEY = 'academia-floci-theme';
+const STORAGE_KEY = 'imperial-book-theme';
+/** Clave anterior: se sigue leyendo para no perder la preferencia guardada. */
+const LEGACY_KEY = 'academia-floci-theme';
 
 /**
  * Tema claro/oscuro compartido por toda la app (catálogo, course-shell,
@@ -20,7 +22,7 @@ export class ThemeService {
 
   private loadInitial(): Theme {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_KEY);
       if (saved === 'light' || saved === 'dark') return saved;
     } catch {
       // localStorage no disponible: se ignora

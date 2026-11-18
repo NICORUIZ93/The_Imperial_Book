@@ -1,6 +1,6 @@
 import { BookModeService } from './book-mode.service';
 
-const STORAGE_KEY = 'academia-floci-book-mode';
+const STORAGE_KEY = 'imperial-book-book-mode';
 
 describe('BookModeService', () => {
   beforeEach(() => localStorage.clear());

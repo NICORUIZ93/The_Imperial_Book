@@ -16,7 +16,9 @@ const EMPTY_TRACK_PROGRESS: TrackProgress = {
 };
 const STORAGE_KEY = 'academia-progress-v2';
 const LEGACY_CLOUD_KEY = 'cloud-local-academy-progress';
-const BACKUP_FORMAT = 'academia-floci-progress';
+const BACKUP_FORMAT = 'imperial-book-progress';
+/** Formato de las copias exportadas antes del cambio de nombre: se siguen aceptando. */
+const LEGACY_BACKUP_FORMAT = 'academia-floci-progress';
 const BACKUP_VERSION = 1;
 const MAX_BACKUP_BYTES = 1_000_000;
 
@@ -96,7 +98,7 @@ export class ProgressService {
     }
     const backup = value as Record<string, unknown>;
     if (
-      backup['format'] !== BACKUP_FORMAT ||
+      (backup['format'] !== BACKUP_FORMAT && backup['format'] !== LEGACY_BACKUP_FORMAT) ||
       backup['version'] !== BACKUP_VERSION ||
       typeof backup['exportedAt'] !== 'string' ||
       Number.isNaN(Date.parse(backup['exportedAt'])) ||

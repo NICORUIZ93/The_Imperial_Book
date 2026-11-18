@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consulta una entrega</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 1rem/1.6 system-ui; color: #17253b; }
+    main { max-width: 60rem; margin: auto; padding: 1.5rem; }
+    .panel { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    label { display: block; }
+    input, button { font: inherit; padding: .7rem; max-width: 100%; }
+    input { width: 100%; }
+    button { margin-top: 1rem; }
+    :focus-visible { outline: 3px solid #315bcc; outline-offset: 3px; }
+    @media (max-width: 40rem) { .panel { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Consulta una entrega</h1>
+    <div class="panel">
+      <form action="/" method="get">
+        <label for="codigo">Código de envío</label>
+        <input id="codigo" name="codigo" required maxlength="30">
+        <button type="submit">Consultar</button>
+      </form>
+      <section aria-labelledby="ayuda">
+        <h2 id="ayuda">¿Dónde encuentro el código?</h2>
+        <p>Está en el comprobante de tu entrega. Ejemplo: ENV-42.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

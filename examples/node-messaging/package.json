@@ -1,0 +1,16 @@
+{
+  "name": "rutaflow-node-messaging-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "kafka:producer": "node kafka/producer.mjs",
+    "kafka:consumer": "node kafka/consumer.mjs",
+    "rabbit:producer": "node rabbit/producer.mjs",
+    "rabbit:worker": "node rabbit/worker.mjs"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "1.11.0",
+    "amqplib": "2.2.1"
+  }
+}

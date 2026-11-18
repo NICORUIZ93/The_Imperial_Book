@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Validar código</title>
+<form id="consulta" novalidate>
+  <label for="codigo">Código de envío</label>
+  <input id="codigo" aria-describedby="ayuda estado" required>
+  <p id="ayuda">Usa ENV- seguido de dígitos, por ejemplo ENV-42.</p>
+  <button>Comprobar formato</button>
+  <p id="estado" role="status"></p>
+</form>
+<script type="module" src="formulario.js"></script>
+</html>

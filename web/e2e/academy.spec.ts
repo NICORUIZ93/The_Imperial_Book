@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   // pruebas al final.
   await page.evaluate(() => {
     localStorage.clear();
-    localStorage.setItem('academia-floci-book-mode', 'off');
+    localStorage.setItem('imperial-book-book-mode', 'off');
   });
   await page.reload();
 });
@@ -576,7 +576,7 @@ test('lector: enlaza el tema con la práctica del capítulo cuando existe', asyn
 // pruebas lo activan y verifican la paginación editorial.
 
 async function enableBookMode(page: import('@playwright/test').Page): Promise<void> {
-  await page.evaluate(() => localStorage.setItem('academia-floci-book-mode', 'on'));
+  await page.evaluate(() => localStorage.setItem('imperial-book-book-mode', 'on'));
 }
 
 test('modo libro: portada, temas y cierre conservan todo el capítulo', async ({ page }) => {
@@ -651,7 +651,7 @@ test('modo libro: salir del modo devuelve el capítulo completo y persiste la el
 
   await expect(page.locator('.book-pagebar')).toHaveCount(0);
   await expect(page.locator('.topic-card').nth(1)).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('academia-floci-book-mode'))).toBe('off');
+  expect(await page.evaluate(() => localStorage.getItem('imperial-book-book-mode'))).toBe('off');
 
   await page.reload();
   await expect(page.locator('.book-pagebar')).toHaveCount(0);

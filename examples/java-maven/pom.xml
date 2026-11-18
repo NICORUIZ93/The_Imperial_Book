@@ -1,0 +1,7 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<groupId>com.academia</groupId><artifactId>convergence-lab</artifactId><version>1.0.0</version><packaging>pom</packaging>
+<modules><module>domain</module><module>app</module></modules>
+<properties><jackson.version>2.19.2</jackson.version><domain.jackson>${jackson.version}</domain.jackson><required.java>[25,)</required.java><maven.compiler.release>25</maven.compiler.release></properties>
+<build><plugins>
+<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>3.6.2</version><executions><execution><id>check</id><goals><goal>enforce</goal></goals><configuration><rules><requireJavaVersion><version>${required.java}</version></requireJavaVersion><dependencyConvergence/></rules></configuration></execution></executions></plugin>
+</plugins></build></project>

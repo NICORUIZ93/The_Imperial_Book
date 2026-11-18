@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    stream:
+      default-binder: kafka
+      bindings:
+        planRoute-in-0:
+          consumer:
+            max-attempts: 3
+      kafka:
+        bindings:
+          planRoute-in-0:
+            consumer:
+              enable-dlq: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:19092}

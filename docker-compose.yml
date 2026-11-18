@@ -1,0 +1,46 @@
+name: academia_cloud_local
+
+services:
+  aws-local:
+    image: floci/floci:2.2.0@sha256:e97cd0c1dc2aa14e7697fb5ef5018404c4d6345169dbd276315f0bed2c7b0520
+    container_name: floci-aws
+    ports:
+      - "${AWS_LOCAL_PORT:-4566}:4566"
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      # Sin esto, Floci incrusta "localhost" en URLs de respuesta (p. ej. QueueUrl de SQS),
+      # que otros contenedores de este compose (como stackport) no pueden resolver.
+      - FLOCI_HOSTNAME=aws-local
+      # FLOCI_STORAGE_MODE=memory (por defecto) pierde los datos al reiniciar el contenedor.
+      # persistent + FLOCI_STORAGE_PERSISTENT_PATH activan el volumen de abajo.
+      - FLOCI_STORAGE_MODE=persistent
+      - FLOCI_STORAGE_PERSISTENT_PATH=/app/data
+    volumes:
+      - ./data/aws:/app/data
+
+  stackport:
+    image: davireis/stackport:0.4.5@sha256:c46820d8db186d1c141bd57265722143b846cdb57595bdb8c5cddb5d9b546079
+    container_name: floci-stackport
+    depends_on:
+      - aws-local
+    ports:
+      - "${STACKPORT_PORT:-8080}:8080"
+    environment:
+      - AWS_ENDPOINT_URL=http://aws-local:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+
+  azure-local:
+    image: floci/floci-az:0.14.0@sha256:a35e74dfca9a5e811090d8ae98876044fc8990a8874ee525231f524ca56679db
+    container_name: floci-azure
+    ports:
+      - "${AZURE_LOCAL_PORT:-4577}:4577"
+
+  gcp-local:
+    image: floci/floci-gcp:0.10.0@sha256:405c128b685afbc461276820f2286defcc3a6fa478755067d3e3f740c5503c07
+    container_name: floci-gcp
+    ports:
+      - "${GCP_LOCAL_PORT:-4588}:4588"

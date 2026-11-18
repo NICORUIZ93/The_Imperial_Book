@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
-const STORAGE_KEY = 'academia-floci-book-mode';
+const STORAGE_KEY = 'imperial-book-book-mode';
+/** Clave anterior: se sigue leyendo para no perder la preferencia guardada. */
+const LEGACY_KEY = 'academia-floci-book-mode';
 
 /**
  * Modo de lectura del capítulo. Encendido, cada tema se lee como una página
@@ -26,7 +28,7 @@ export class BookModeService {
 
   private loadInitial(): boolean {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_KEY);
       if (saved === 'on') return true;
       if (saved === 'off') return false;
     } catch {
