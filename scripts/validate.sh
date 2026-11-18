@@ -228,5 +228,7 @@ python3 scripts/audit_lesson_substance.py --strict
 python3 scripts/audit_visual_aids.py
 python3 scripts/validate_capture_intake.py
 python3 scripts/validate_master_prompt.py
+# specs/009: lo movido a la rama archivo no vuelve ni queda citado.
+python3 scripts/validate_repo_cleanup.py
 python3 scripts/build_zero_to_master_report.py --check
 python3 scripts/audit_track_master_prompt.py --check

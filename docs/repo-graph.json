@@ -277,27 +277,6 @@
       ]
     },
     {
-      "path": "docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md",
-      "lines": 11995,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Inventario completo: cursos, m\u00f3dulos, temas y subtemas",
-        "## 1. RutaFlow \u2014 Proyecto integrador log\u00edstico",
-        "### M\u00f3dulo 0 \u00b7 RutaFlow desde cero: producto, entorno y dominio",
-        "#### Tema 1: El proceso log\u00edstico como sistema",
-        "#### Tema 2: Entorno reproducible en Windows, macOS y Linux",
-        "#### Tema 3: Arquitectura, privacidad y amenazas",
-        "### M\u00f3dulo 1 \u00b7 Datos, geograf\u00eda y contabilidad de una entrega",
-        "#### Tema 1: Modelo relacional e historial",
-        "#### Tema 2: Geograf\u00eda con precisi\u00f3n \u00fatil",
-        "#### Tema 3: Ledger de doble partida",
-        "### M\u00f3dulo 2 \u00b7 Backend: env\u00edos, asignaci\u00f3n e idempotencia",
-        "#### Tema 1: Contratos HTTP y autorizaci\u00f3n"
-      ]
-    },
-    {
       "path": "docs/MATRIZ-CURRICULAR.md",
       "lines": 73,
       "kind": "documentation",
@@ -603,1251 +582,12 @@
       ]
     },
     {
-      "path": "docs/app-flow-inspection-dedup.json",
-      "lines": 8267,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/app-flow-inspection-devops.json",
-      "lines": 1617,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/app-flow-inspection-evidence.json",
-      "lines": 8798,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/app-flow-inspection-order.json",
-      "lines": 1617,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/app-flow-inspection-relocate.json",
-      "lines": 11319,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "docs/app-flow-inspection.json",
       "lines": 16517,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
       "headings": []
-    },
-    {
-      "path": "docs/archivo/README.md",
-      "lines": 10,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Archivo hist\u00f3rico de documentos de proceso"
-      ]
-    },
-    {
-      "path": "docs/archivo/auditoria-profundidad-cobertura.md",
-      "lines": 235,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Auditor\u00eda de profundidad y cobertura \u2014 The Imperial Book",
-        "## Correcci\u00f3n de estado \u2014 2026-10-30",
-        "## Resumen ejecutivo (sin adornos)",
-        "## Eje 1 \u2014 PROFUNDIDAD (\u00bfel Paso 4 es ejecutable de cero a profesional?)",
-        "### Evidencia directa (le\u00edda, no inferida)",
-        "### Conclusi\u00f3n eje 1",
-        "## Eje 2 \u2014 COBERTURA (\u00bfest\u00e1n todos los temas del stack?)",
-        "## El problema de la m\u00e9trica (por qu\u00e9 esto estaba oculto)",
-        "## Plan de correcci\u00f3n priorizado (propuesta, no ejecutado)",
-        "### P0 \u2014 Arreglar el instrumento de medici\u00f3n",
-        "### P1 \u2014 Profundidad cr\u00edtica (Paso 4 ejecutable)",
-        "### P2 \u2014 Cobertura: puerta de entrada"
-      ]
-    },
-    {
-      "path": "docs/archivo/continuacion-material-rutaflow.md",
-      "lines": 140,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Continuaci\u00f3n del material de Proyecto-RutaFlow",
-        "## Referencias examinadas",
-        "## Implementaci\u00f3n",
-        "## Evidencia y l\u00edmites",
-        "## Revisi\u00f3n de continuaci\u00f3n \u2014 2026-11-03",
-        "## Revisi\u00f3n pedag\u00f3gica siguiente \u2014 2026-11-03",
-        "## Simplificaci\u00f3n para principiantes \u2014 2026-11-03",
-        "## Revisi\u00f3n de cursos prioritarios \u2014 2026-11-03"
-      ]
-    },
-    {
-      "path": "docs/archivo/integracion-biblioteca-externa-progreso.md",
-      "lines": 207,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Integraci\u00f3n de biblioteca externa y capturas \u2014 progreso",
-        "## Fase 1 \u2014 Capturas: revisi\u00f3n visual completa, integraci\u00f3n parcial",
-        "## Fase 2 \u2014 Biblioteca externa `/Volumes/Nicolas/03_Libros_Biblioteca/` (EN PROGRESO)",
-        "### C\u00f3mo retomar",
-        "### Cat\u00e1logo inicial de la sesi\u00f3n anterior",
-        "### Orden de prioridad sugerido (por impacto directo en tracks existentes)",
-        "## Hallazgos por integrar (se completa a medida que se revisan libros)",
-        "## Continuidad entre m\u00e1quinas \u2014 actualizaci\u00f3n 2026-10-13",
-        "## Siguiente acci\u00f3n concreta",
-        "## Verificaci\u00f3n del primer incremento",
-        "## Recuperar este incremento en otra PC",
-        "## Continuidad de Copilot \u2014 2026-10-30"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/README.md",
-      "lines": 18,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Versiones de main archivadas en la fusi\u00f3n del 2026-11-12"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/docs/CONTINUAR-7-PASOS.md",
-      "lines": 76,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Continuaci\u00f3n de la metodolog\u00eda de siete pasos",
-        "## Qu\u00e9 se corrigi\u00f3 en el auditor (no repetir)",
-        "## Regla de oro",
-        "## Los 5 temas que faltaban (resueltos)",
-        "## C\u00f3mo encontrar los temas exactos",
-        "## Verificaci\u00f3n tras cada tanda"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/docs/PLANTILLA-LECCION.md",
-      "lines": 109,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Plantilla de Lecci\u00f3n \u2014 Prompt Maestro para Claude / Codex",
-        "## PROMPT MAESTRO (copiar desde aqu\u00ed)",
-        "## DATOS DE LA LECCI\u00d3N",
-        "## REGLAS DE ESTILO",
-        "### Regla para conceptos t\u00e9cnicos",
-        "### Regla para diagramas",
-        "## ESTRUCTURA OBLIGATORIA DE LA P\u00c1GINA",
-        "# {{numero}}. {{TEMA}}",
-        "## \ud83d\udd04 Repaso rel\u00e1mpago (2 min)",
-        "## \ud83c\udfaf Qu\u00e9 vas a lograr",
-        "## \ud83d\udcd6 El concepto (el QU\u00c9 y el PORQU\u00c9)",
-        "## \ud83d\udcbb Manos a la obra (el C\u00d3MO)"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/docs/SKILLS-VISUALES-Y-ESTUDIO.md",
-      "lines": 94,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Skills para visuales y estudio desde cero",
-        "## Selecci\u00f3n y uso",
-        "## Recorrido que debe comprobarse",
-        "## C\u00f3mo usar las skills en una revisi\u00f3n",
-        "## L\u00edmites y estado inicial",
-        "## Primera integraci\u00f3n verificable"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/docs/subtopic-depth-reviewed-retirados.json",
-      "lines": 3212,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/docs/topic-source-review-retirados.json",
-      "lines": 203,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java",
-      "lines": 51,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/README.md",
-      "lines": 102,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Laboratorio: Spring Boot + Kafka + RutaFlow",
-        "## Requisitos",
-        "## Ejecutar las pruebas",
-        "## Ejecutar el flujo manual",
-        "## Fallos que deben poder explicarse",
-        "## Fuera del alcance",
-        "## Fuentes primarias"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml",
-      "lines": 42,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml",
-      "lines": 15,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/cloud/modulo-0.md",
-      "lines": 499,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 0: Introducci\u00f3n y preparaci\u00f3n",
-        "## Antes de comenzar: instalaci\u00f3n guiada por sistema operativo",
-        "## Aprende construyendo",
-        "### Tema 1: Fundamentos absolutos \u2014 qu\u00e9 es una terminal, un comando y un sistema operativo",
-        "#### Paso 1 \u00b7 Objetivo y preparaci\u00f3n",
-        "#### Paso 2 \u00b7 Contexto y caso real",
-        "#### Paso 3 \u00b7 Teor\u00eda, modelo mental y analog\u00eda",
-        "#### Paso 4 \u00b7 Demostraci\u00f3n guiada",
-        "#### Paso 5 \u00b7 Pr\u00e1ctica guiada",
-        "#### Paso 6 \u00b7 Pr\u00e1ctica independiente",
-        "#### Paso 7 \u00b7 Cierre",
-        "### Tema 2: Fundamentos de redes \u2014 direcciones IP, puertos, HTTP y APIs"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-0.md",
-      "lines": 1776,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
-        "## Antes de comenzar: instala Java correctamente",
-        "## Aprende construyendo",
-        "### Tema 0: Instalar Eclipse Temurin JDK 27 en macOS, Windows y Ubuntu \u00b7 B\u00e1sico \u00b7 15 min",
-        "#### Aprende",
-        "#### Practica",
-        "# macOS: instala Temurin 27 desde el cask oficial (gen\u00e9rico = versi\u00f3n m\u00e1s reciente).",
-        "# Verifica que el lanzador y el compilador respondan.",
-        "# Conserva las versiones y rutas en un archivo Markdown.",
-        "# Ubuntu/Debian: a\u00f1ade la clave y el repositorio oficial.",
-        "# Comprueba el JDK reci\u00e9n instalado.",
-        "# Conserva las versiones y rutas en un archivo Markdown."
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-1.md",
-      "lines": 863,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 1: Programaci\u00f3n orientada a objetos",
-        "## Aprende construyendo",
-        "### Tema 1: Clases, objetos, constructores y encapsulaci\u00f3n \u00b7 B\u00e1sico \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Herencia y sobreescritura \u00b7 Intermedio \u00b7 1 h",
-        "#### Aprende",
-        "#### Practica",
-        "# Maven",
-        "# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-10.md",
-      "lines": 519,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 10: M\u00f3dulos (JPMS) y proyectos grandes",
-        "## Aprende construyendo",
-        "### Tema 1: module-info.java y encapsulaci\u00f3n fuerte \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Migraci\u00f3n incremental y cu\u00e1ndo JPMS aporta valor \u00b7 Avanzado \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: `opens` para acceso reflexivo controlado de frameworks \u00b7 Avanzado \u00b7 60 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-11.md",
-      "lines": 634,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 11: JVM interna \u2014 GC, profiling y JIT",
-        "## Aprende construyendo",
-        "### Tema 1: Generaciones de memoria y recolectores \u00b7 Avanzado \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Java Flight Recorder y JIT compilation \u00b7 Avanzado \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Referencias especiales y heap dumps \u00b7 Avanzado \u00b7 60 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-12.md",
-      "lines": 1546,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 12: Buenas pr\u00e1cticas y patrones de dise\u00f1o",
-        "## Aprende construyendo",
-        "### Tema 1: Builder \u2014 configuraci\u00f3n paso a paso y validaci\u00f3n \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Factory Method y Strategy \u00b7 Intermedio \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Abstract Factory y familias de productos compatibles \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-13.md",
-      "lines": 482,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 13: Proyecto integrador",
-        "## Aprende construyendo",
-        "### Tema 1: Arquitectura por capas del proyecto integrador \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Integrando concurrencia, modelado y testing \u00b7 Experto \u00b7 60 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Build reproducible y cierre del track \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-14.md",
-      "lines": 620,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 14: Java en producci\u00f3n \u2014 memoria, benchmarks y runtime seguro",
-        "## Aprende construyendo",
-        "### Tema 1: Compartir memoria requiere orden y visibilidad \u00b7 Experto \u00b7 60 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: La JVM optimiza y puede invalidar un cron\u00f3metro ingenuo \u00b7 Experto \u00b7 65 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Deserializar es permitir construcci\u00f3n y comportamiento \u00b7 Experto \u00b7 60 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-15.md",
-      "lines": 1233,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 15: Java Master \u2014 builds, pruebas y observabilidad",
-        "## Aprende construyendo",
-        "### Tema 1: Maven avanzado \u00b7 Avanzado \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Gradle y builds reproducibles \u00b7 Avanzado \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Proyectos multi-m\u00f3dulo sin ciclos \u00b7 Experto \u00b7 1 h 15 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-16.md",
-      "lines": 513,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 16: Mapear y optimizar persistencia con JPA e Hibernate",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Entidades y relaciones JPA \u00b7 Intermedio \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: FetchType.LAZY, EAGER y el problema N+1 \u00b7 Avanzado \u00b7 1 h",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "## Construcci\u00f3n guiada del cap\u00edtulo"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-17.md",
-      "lines": 489,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 17: JDBC, DAO y transacciones",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: JDBC, PreparedStatement y DAO \u00b7 Intermedio \u00b7 1 h",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Transacciones, ACID y aislamiento \u00b7 Avanzado \u00b7 1 h 15 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "## Construcci\u00f3n guiada del cap\u00edtulo"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-18.md",
-      "lines": 744,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 18: HTTP, seguridad y backend con Java",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: HttpClient, REST, timeouts y fallos \u00b7 Intermedio \u00b7 2 h",
-        "#### Aprende",
-        "#### Practica",
-        "# En la otra terminal:",
-        "#### Aplica",
-        "### Tema 2: Tokens, validaci\u00f3n y l\u00edmites de seguridad \u00b7 Avanzado \u00b7 2 h",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-19.md",
-      "lines": 1198,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 19: Java del d\u00eda a d\u00eda \u2014 reflexi\u00f3n, regex, dinero, contratos, plugins e i18n",
-        "## Aprende construyendo",
-        "### Tema 1: Reflexi\u00f3n y anotaciones en tiempo de ejecuci\u00f3n \u00b7 Intermedio \u00b7 90 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Expresiones regulares con Pattern y Matcher \u00b7 Intermedio \u00b7 90 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Dinero exacto con BigDecimal \u00b7 B\u00e1sico \u00b7 75 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-2.md",
-      "lines": 682,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 2: Colecciones y gen\u00e9ricos",
-        "## Aprende construyendo",
-        "### Tema 1: List, Set, Map y sus implementaciones \u00b7 B\u00e1sico \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Gen\u00e9ricos, wildcards y type erasure \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Comparable vs Comparator, e iteraci\u00f3n \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-20.md",
-      "lines": 1673,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 20: Lambdas y Java funcional \u2014 comportamiento con tipo",
-        "## Aprende construyendo",
-        "### Tema 1: Lambdas a fondo \u2014 tipo objetivo, captura y referencias a m\u00e9todos \u00b7 Intermedio \u00b7 120 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Las cuatro formas: Predicate, Function, Consumer y Supplier \u00b7 B\u00e1sico \u00b7 75 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas \u00b7 Intermedio \u00b7 75 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-3.md",
-      "lines": 671,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 3: Excepciones y manejo de recursos",
-        "## Aprende construyendo",
-        "### Tema 1: Checked vs unchecked exceptions \u00b7 B\u00e1sico \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: try-with-resources \u00b7 B\u00e1sico \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Excepciones personalizadas y no tragar excepciones \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-4.md",
-      "lines": 821,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 4: Streams y programaci\u00f3n funcional",
-        "## Aprende construyendo",
-        "### Tema 1: Stream API \u2014 map, filter, reduce, collect \u00b7 B\u00e1sico \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Optional \u2014 evitar null expl\u00edcitamente \u00b7 Intermedio \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Streams paralelos y referencias a m\u00e9todos \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-5.md",
-      "lines": 1326,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 5: Concurrencia \u2014 hilos y virtual threads",
-        "## Aprende construyendo",
-        "### Tema 1: ExecutorService y gesti\u00f3n de hilos \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: CompletableFuture \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Virtual threads \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-6.md",
-      "lines": 683,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 6: I/O, NIO.2 y serializaci\u00f3n",
-        "## Aprende construyendo",
-        "### Tema 1: NIO.2 \u2014 Path y Files \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Serializaci\u00f3n con Jackson \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Archivos grandes y recursos del classpath \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-7.md",
-      "lines": 836,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 7: Records, sealed classes y pattern matching",
-        "## Aprende construyendo",
-        "### Tema 1: record \u2014 modelos inmutables sin boilerplate \u00b7 B\u00e1sico \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: sealed \u2014 jerarqu\u00edas cerradas y exhaustividad \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Pattern matching exhaustivo y para instanceof \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-8.md",
-      "lines": 673,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 8: Build tools \u2014 Maven y Gradle",
-        "## Aprende construyendo",
-        "### Tema 1: pom.xml vs build.gradle.kts \u00b7 B\u00e1sico \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Ciclo de vida de build y scopes \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Proyectos multi-m\u00f3dulo \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/java/modulo-9.md",
-      "lines": 638,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 9: Testing con JUnit 5 y Mockito",
-        "## Aprende construyendo",
-        "### Tema 1: JUnit 5 \u2014 anotaciones y ciclo de vida \u00b7 B\u00e1sico \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Mockito \u2014 aislar dependencias \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Tests parametrizados y cobertura \u00b7 Intermedio \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/node/modulo-14.md",
-      "lines": 1443,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 14: Node.js avanzado",
-        "## Aprende construyendo",
-        "### Tema 1: TypeScript en Node.js \u00b7 Avanzado \u00b7 60 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: GraphQL avanzado y Federation \u00b7 Avanzado \u00b7 105 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Microservicios, Kafka, RabbitMQ y sagas \u00b7 Avanzado \u00b7 105 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-0.md",
-      "lines": 864,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 0: Fundamentos de Spring \u2014 IoC y DI",
-        "## Antes de comenzar: del equipo vac\u00edo a Spring Boot",
-        "# macOS/Linux",
-        "# Windows PowerShell",
-        "## Aprende construyendo",
-        "### Tema 1: Inversi\u00f3n de control y el contenedor de Spring \u00b7 B\u00e1sico \u00b7 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "# compila y ejecuta el proyecto Java con el wrapper de Maven",
-        "#### Aplica",
-        "### Tema 2: Inyecci\u00f3n por constructor vs por campo \u00b7 B\u00e1sico \u00b7 20 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-1.md",
-      "lines": 723,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 1: Spring Boot CLI y estructura de proyecto",
-        "## Aprende construyendo",
-        "### Tema 1: Spring Initializr y starters \u00b7 B\u00e1sico \u00b7 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "# descarga y arranca con Maven el proyecto generado por Spring Initializr",
-        "#### Aplica",
-        "### Tema 2: application.yml vs application.properties \u00b7 B\u00e1sico \u00b7 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "# arranca el proyecto Java con Maven usando la configuraci\u00f3n de application.yml",
-        "# arranca el proyecto Java con Maven usando application.properties en vez de application.yml"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-10.md",
-      "lines": 1826,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 10: Microservicios con Spring Cloud",
-        "## Aprende construyendo",
-        "### Tema 1: Config Server y service discovery \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "# src/main/resources/application.yml",
-        "# src/main/resources/config/servicio-pedidos.yml",
-        "#### Aplica",
-        "### Tema 2: Spring Cloud Gateway \u00b7 Intermedio \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-11.md",
-      "lines": 572,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 11: Empaquetado y despliegue",
-        "## Aprende construyendo",
-        "### Tema 1: Fat JAR vs capas de Docker \u00b7 Intermedio \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "# src/main/resources/application.yml",
-        "#### Aplica",
-        "### Tema 2: GraalVM native image \u00b7 Avanzado \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Health checks para Kubernetes \u00b7 Intermedio \u00b7 40 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-12.md",
-      "lines": 702,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 12: Proyecto integrador \u2014 microservicio productivo",
-        "## Aprende construyendo",
-        "### Tema 1: Arquitectura del microservicio integrador \u00b7 Experto \u00b7 3 h",
-        "#### Aprende",
-        "#### Practica",
-        "# Maven (type=maven-project, por defecto): genera pom.xml y ./mvnw",
-        "# Gradle (alternativa equivalente): genera build.gradle.kts y ./gradlew",
-        "# curl -fsSL https://start.spring.io/starter.zip -d type=gradle-project-kotlin -d dependencies=web,data-jpa,flyway,postgresql,security,actuator -d javaVersion=25 -o app.zip",
-        "#### Aplica",
-        "### Tema 2: Integrando seguridad, persistencia y observabilidad \u00b7 Experto \u00b7 2 h 40 min",
-        "#### Aprende",
-        "#### Practica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-13.md",
-      "lines": 1031,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 13: Consistencia, contratos y operaci\u00f3n distribuida",
-        "## Aprende construyendo",
-        "### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento \u00b7 Experto \u00b7 1 h 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Recuperaci\u00f3n implica duplicaci\u00f3n segura \u00b7 Experto \u00b7 2 h 35 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Contratos ejecutables protegen despliegues independientes \u00b7 Experto \u00b7 1 h 45 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-14.md",
-      "lines": 1118,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 14: Backend de entregas: MySQL espacial, archivos y tiempo real",
-        "## Aprende construyendo",
-        "### Tema 1: CRUD API y contratos \u00b7 Experto \u00b7 2 h 15 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: MySQL y datos espaciales \u00b7 Experto \u00b7 1 h 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: JPA e Hibernate Spatial \u00b7 Experto \u00b7 2 h 15 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-15.md",
-      "lines": 1651,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 15: Spring Master: hexagonal, reactivo y microservicios",
-        "## Aprende construyendo",
-        "### Tema 1: Backpressure real en WebFlux con reactor-test \u00b7 Experto \u00b7 1 h 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Contenedores Testcontainers reutilizados entre clases \u00b7 Experto \u00b7 1 h 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Arquitectura hexagonal verificada con ArchUnit \u00b7 Experto \u00b7 1 h 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-16.md",
-      "lines": 241,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 16: JPA de Spring Boot \u2014 Hibernate, Lazy vs Eager y N+1",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Relaciones, lado propietario y ciclo de vida \u00b7 Avanzado \u00b7 1 h 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso \u00b7 Avanzado \u00b7 1 h 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-17.md",
-      "lines": 264,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 17: JDBC, DAO y transacciones en Spring Boot",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: DataSource, JdbcTemplate y DAO \u00b7 Avanzado \u00b7 1 h 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: `@Transactional`, rollback y l\u00edmites de transacci\u00f3n \u00b7 Avanzado \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-18.md",
-      "lines": 509,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 18: Autenticaci\u00f3n y backend seguro con Spring Security",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: SecurityFilterChain y autorizaci\u00f3n \u00b7 Avanzado \u00b7 1 h 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP \u00b7 Avanzado \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Levantar tu propio OAuth2 Authorization Server \u00b7 Experto \u00b7 50 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-19.md",
-      "lines": 532,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 19: Spring Batch \u2014 jobs, chunks y procesamiento masivo",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Job, Step, Tasklet y chunk processing \u00b7 Avanzado \u00b7 1 h 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Reinicio, JobParameters, retry, skip y listeners \u00b7 Avanzado \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Particionamiento con m\u00faltiples workers y remote chunking \u00b7 Experto \u00b7 1 h 30 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-2.md",
-      "lines": 1522,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 2: REST APIs con Spring Web",
-        "## Aprende construyendo",
-        "### Tema 1: Por qu\u00e9 DTOs en vez de entidades directamente \u00b7 Intermedio \u00b7 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "# descarga el proyecto y ejecuta las pruebas Java con Maven",
-        "#### Aplica",
-        "### Tema 2: Validaci\u00f3n con Bean Validation y ResponseEntity \u00b7 Intermedio \u00b7 25 min",
-        "#### Aprende",
-        "#### Practica",
-        "# ejecuta las pruebas Java con Maven, incluyendo la petici\u00f3n inv\u00e1lida",
-        "#### Aplica"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-20.md",
-      "lines": 1049,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 20: Integraciones Spring \u2014 scheduling, eventos, correo y cach\u00e9",
-        "## Aprende construyendo",
-        "### Dos ejemplos: primero visible, luego real",
-        "### Tema 1: Scheduling y tareas peri\u00f3dicas \u00b7 Avanzado \u00b7 1 h 10 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Eventos locales, eventos transaccionales y mensajer\u00eda \u00b7 Avanzado \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Correo con Spring Mail y entrega recuperable \u00b7 Avanzado \u00b7 1 h 10 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-21.md",
-      "lines": 1200,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 21: Apache Kafka con Spring Boot \u2014 eventos, consumidores y recuperaci\u00f3n",
-        "## Aprende construyendo",
-        "### Tema 1: Productor, t\u00f3pico, key y consumidor \u00b7 Experto \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia \u00b7 Experto \u00b7 1 h 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Outbox transaccional y flujo de negocio \u00b7 Experto \u00b7 1 h 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-22.md",
-      "lines": 507,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 22: Arquitectura: puertos, C4 y decisiones",
-        "## Aprende construyendo",
-        "### Tema 1: Hexagonal: puertos que hablan el idioma del dominio \u00b7 Experto \u00b7 1 h 10 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: C4: contexto, contenedores, componentes y c\u00f3digo \u00b7 Experto \u00b7 1 h 20 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias \u00b7 Experto \u00b7 1 h 10 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-3.md",
-      "lines": 895,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 3: Persistencia con Spring Data JPA",
-        "## Aprende construyendo",
-        "### Tema 1: Entidades y repositorios derivados \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: El problema N+1 y su correcci\u00f3n \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Migraciones con Flyway \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-4.md",
-      "lines": 1218,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 4: Spring Security",
-        "## Aprende construyendo",
-        "### Tema 1: SecurityFilterChain moderno \u00b7 Intermedio \u00b7 40 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Filtro JWT y autorizaci\u00f3n por rol \u00b7 Avanzado \u00b7 55 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: CORS y CSRF \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-5.md",
-      "lines": 618,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 5: Configuraci\u00f3n, perfiles y manejo de errores",
-        "## Aprende construyendo",
-        "### Tema 1: @ConfigurationProperties tipado \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende",
-        "#### Practica",
-        "# src/main/resources/application.yml",
-        "#### Aplica",
-        "### Tema 2: Fallar r\u00e1pido al arranque \u00b7 Intermedio \u00b7 30 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Manejo global de excepciones consistente entre entornos \u00b7 Avanzado \u00b7 40 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-6.md",
-      "lines": 867,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 6: Testing en Spring Boot",
-        "## Aprende construyendo",
-        "### Tema 1: Slices de testing \u2014 @WebMvcTest \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: @DataJpaTest con Testcontainers \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "# requiere Docker corriendo localmente; Testcontainers lo usa para levantar el contenedor real",
-        "#### Aplica",
-        "### Tema 3: @SpringBootTest completo y estrategia de pir\u00e1mide de tests \u00b7 Avanzado \u00b7 45 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-7.md",
-      "lines": 893,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 7: Observabilidad con Actuator",
-        "## Aprende construyendo",
-        "### Tema 1: Actuator y health checks personalizados \u00b7 Intermedio \u00b7 35 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: M\u00e9tricas de negocio con Micrometer \u00b7 Avanzado \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Liveness vs readiness \u00b7 Intermedio \u00b7 30 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-8.md",
-      "lines": 1473,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 8: Mensajer\u00eda \u2014 Kafka/RabbitMQ",
-        "## Aprende construyendo",
-        "### Tema 1: Producers y consumers con Spring Kafka \u00b7 Avanzado \u00b7 50 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 2: Dead-letter queue \u00b7 Avanzado \u00b7 45 min",
-        "#### Aprende",
-        "#### Practica",
-        "#### Aplica",
-        "### Tema 3: Productor idempotente y transacciones (exactly-once) \u00b7 Experto \u00b7 50 min",
-        "#### Aprende"
-      ]
-    },
-    {
-      "path": "docs/archivo/main-2026-11-03/web/public/content/spring-boot/modulo-9.md",
-      "lines": 968,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00f3dulo 9: Programaci\u00f3n reactiva con WebFlux",
-        "## Comienza desde cero: crea una API WebFlux ejecutable",
-        "### 1. Comprueba el entorno antes de generar archivos",
-        "### 2. Genera el proyecto con Spring Initializr",
-        "### 3. Crea una estructura peque\u00f1a y expl\u00edcita",
-        "### 4. Configura una base reactiva local",
-        "### 5. Implementa el modelo y el repositorio",
-        "### 6. Exp\u00f3n endpoints sin llamar subscribe()",
-        "### 7. Ejecuta y observa un resultado concreto",
-        "### 8. Provoca tres fallos antes de continuar",
-        "## Aprende construyendo",
-        "### Tema 1: Mono y Flux \u00b7 Intermedio \u00b7 40 min"
-      ]
-    },
-    {
-      "path": "docs/archivo/renovacion-cursos-2026-10-29.md",
-      "lines": 27,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n de cursos y experiencia de estudio",
-        "## Cambios entregados",
-        "## Cobertura de revisi\u00f3n",
-        "## Trabajo pendiente"
-      ]
-    },
-    {
-      "path": "docs/archivo/renovacion-primera-entrega.md",
-      "lines": 53,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Renovaci\u00f3n: portada y primera sesi\u00f3n",
-        "## Alcance entregado",
-        "## Alineaci\u00f3n de aprendizaje",
-        "## Verificaci\u00f3n realizada",
-        "## Fuentes primarias consultadas",
-        "## Siguientes lotes"
-      ]
-    },
-    {
-      "path": "docs/archivo/validacion-extensa-roadmaps.md",
-      "lines": 157,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Validaci\u00f3n extensa de los 14 tracks contra roadmaps oficiales 2026",
-        "## Tablero maestro: cobertura + profundidad por track",
-        "## Detalle por track: qu\u00e9 falta y con qu\u00e9 empezar",
-        "### foundations \u2014 \u26a0\ufe0f el m\u00e1s cr\u00edtico (puerta de entrada)",
-        "### ios \u2014 \u26a0\ufe0f profundidad cr\u00edtica (6/51 practicable)",
-        "### react \u2014 \u26a0\ufe0f profundidad cr\u00edtica (11/55 practicable)",
-        "### flutter \u2014 \u26a0\ufe0f profundidad (24/57) + 1 hueco",
-        "### java \u2014 profundidad (41/72)",
-        "### android \u2014 cobertura",
-        "### cloud \u2014 cobertura (amplitud enorme, bien)",
-        "### node \u2014 cobertura (casi completo)",
-        "### angular \u2014 cobertura (casi completo)"
-      ]
     },
     {
       "path": "docs/atomic-subtopics.json",
@@ -2091,20 +831,6 @@
       ]
     },
     {
-      "path": "docs/biblioteca-externa-gaps.md",
-      "lines": 40,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Biblioteca externa: \u00edndice de huecos por track",
-        "## Estado por track",
-        "## Estado de avance (2026-10-28)",
-        "## Top 10 de huecos por impacto",
-        "## Siguiente paso"
-      ]
-    },
-    {
       "path": "docs/biblioteca-externa-ocr.md",
       "lines": 25,
       "kind": "documentation",
@@ -2115,14 +841,6 @@
         "## Resultado por libro",
         "## Pendiente"
       ]
-    },
-    {
-      "path": "docs/book-curriculum-inventory.json",
-      "lines": 527350,
-      "kind": "project-file",
-      "symbols": [],
-      "imports": [],
-      "headings": []
     },
     {
       "path": "docs/browser-course-review.json",
@@ -2376,39 +1094,6 @@
       ]
     },
     {
-      "path": "docs/java-m2-technical-review.md",
-      "lines": 22,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Java M2 \u2014 revisi\u00f3n t\u00e9cnica de colecciones y gen\u00e9ricos"
-      ]
-    },
-    {
-      "path": "docs/java-m3-technical-review.md",
-      "lines": 23,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Java M3 \u2014 revisi\u00f3n t\u00e9cnica de excepciones y recursos"
-      ]
-    },
-    {
-      "path": "docs/java-m4-technical-review.md",
-      "lines": 31,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Java M4 \u2014 revisi\u00f3n t\u00e9cnica de Streams, Optional y Gatherers",
-        "## Cobertura comprobada",
-        "## Correcciones de esta revisi\u00f3n",
-        "## Puerta curricular pendiente antes de dar M4 por terminado"
-      ]
-    },
-    {
       "path": "docs/java-temario-completo.md",
       "lines": 589,
       "kind": "documentation",
@@ -2460,27 +1145,6 @@
       ]
     },
     {
-      "path": "docs/listado-maestro-temas-libros.md",
-      "lines": 91345,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Listado maestro de temas extra\u00eddos de libros t\u00e9cnicos",
-        "## Resumen",
-        "## Stack: foundations",
-        "### Co\u0301digo limpio - Manual de estilo para el desarrollo a\u0301gil de software",
-        "### Construir software verde - Un enfoque sostenible para el desarrollo y la operacio\u0301n de software",
-        "### Desarrollo de microservicios con Python",
-        "### El gran libro de Kotlin para programadores de back end",
-        "### El gran libro de programacio\u0301n en C++",
-        "### Java a fondo - Curso de programacio\u0301n (5.\u00aa edicio\u0301n)",
-        "### JavaScript - Novice to Ninja (2nd edition)",
-        "### Kotlin y Jetpack Compose - Desarrollo de aplicaciones Android",
-        "### Node.js"
-      ]
-    },
-    {
       "path": "docs/manual-review-log.md",
       "lines": 44,
       "kind": "documentation",
@@ -2491,27 +1155,6 @@
         "## M\u00e9todo",
         "## Registro",
         "## Estado global"
-      ]
-    },
-    {
-      "path": "docs/mapa-integracion-temas-libros.md",
-      "lines": 483,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Mapa de integraci\u00f3n de temas obtenidos de los libros",
-        "## Cobertura del inventario",
-        "## Stacks actuales: m\u00f3dulos existentes y material localizado",
-        "### foundations",
-        "### javascript",
-        "### node",
-        "### angular",
-        "### react",
-        "### java",
-        "### spring-boot",
-        "### kotlin-multiplatform",
-        "### android"
       ]
     },
     {
@@ -2699,19 +1342,6 @@
       ]
     },
     {
-      "path": "docs/quality-metrics.md",
-      "lines": 46,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# M\u00e9tricas de calidad editorial",
-        "## Muestra de profundidad",
-        "## Cobertura de pruebas de la aplicaci\u00f3n",
-        "## C\u00f3mo usar los resultados"
-      ]
-    },
-    {
       "path": "docs/requested-master-topics.json",
       "lines": 189,
       "kind": "project-file",
@@ -2769,23 +1399,6 @@
         "# Revisi\u00f3n de capturas de Descargas \u00b7 10 de noviembre de 2026",
         "## Texto y contraste con el contenido existente",
         "## Orden de ampliaci\u00f3n propuesto"
-      ]
-    },
-    {
-      "path": "docs/revision-por-curso.md",
-      "lines": 132,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Revisi\u00f3n por curso",
-        "## Definiciones",
-        "## Resumen por track",
-        "## Progresi\u00f3n por track",
-        "## 20 temas m\u00e1s urgentes",
-        "## Temas sin clasificar",
-        "## L\u00edmites",
-        "## Salida literal de validaci\u00f3n"
       ]
     },
     {
@@ -3037,7 +1650,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 1123463,
+      "lines": 18308,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3045,12 +1658,12 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 162573,
+      "lines": 2568,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Temario maestro unificado: academia + libros",
+        "# Temario maestro unificado: academia + cursos externos",
         "## Estados",
         "## Stack: foundations",
         "### M\u00f3dulo actual 0",
@@ -3062,37 +1675,6 @@
         "### M\u00f3dulo actual 6",
         "### M\u00f3dulo actual 7",
         "### M\u00f3dulo actual 8"
-      ]
-    },
-    {
-      "path": "docs/temario-total-libros-por-stack.md",
-      "lines": 160024,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Temario total extra\u00eddo de los libros por stack",
-        "## Stack: foundations",
-        "### Correspondencia: flutter / m\u00f3dulo 1",
-        "### Correspondencia: flutter / m\u00f3dulo 15",
-        "### Correspondencia: java / m\u00f3dulo 12",
-        "### Correspondencia: javascript / m\u00f3dulo 1",
-        "### Correspondencia: javascript / m\u00f3dulo 3",
-        "### Correspondencia: javascript / m\u00f3dulo 6",
-        "### Correspondencia: node / m\u00f3dulo 14",
-        "### Correspondencia: react / m\u00f3dulo 0",
-        "### Temas por reorganizar en m\u00f3dulos",
-        "### Libros pendientes de OCR"
-      ]
-    },
-    {
-      "path": "docs/temas-inventario.md",
-      "lines": 1111,
-      "kind": "documentation",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Inventario de temas"
       ]
     },
     {
@@ -3360,39 +1942,6 @@
       "headings": []
     },
     {
-      "path": "examples/archify/temas/devops/modulo-19-tema-2-contextos.html",
-      "lines": 14810,
-      "kind": "example",
-      "symbols": [
-        "archify-fonts",
-        "btn-theme",
-        "theme-icon",
-        "theme-label",
-        "btn-preset",
-        "preset-label",
-        "preset-menu",
-        "btn-motion",
-        "motion-label",
-        "btn-present",
-        "present-icon",
-        "present-label",
-        "btn-export",
-        "export-menu",
-        "archify-i18n-data",
-        "archify-diagram-title",
-        "archify-diagram-description",
-        "arrowhead",
-        "arrowhead-emphasis",
-        "arrowhead-security",
-        "arrowhead-dashed",
-        "grid",
-        "0",
-        "1"
-      ],
-      "imports": [],
-      "headings": []
-    },
-    {
       "path": "examples/archify/temas/foundations/modulo-12-tema-10-lazo-p.workflow.json",
       "lines": 183,
       "kind": "example",
@@ -3644,16 +2193,6 @@
       "headings": []
     },
     {
-      "path": "examples/cloud-http/server.mjs",
-      "lines": 11,
-      "kind": "example",
-      "symbols": [],
-      "imports": [
-        "node:http"
-      ],
-      "headings": []
-    },
-    {
       "path": "examples/control-1-tanque/README.md",
       "lines": 29,
       "kind": "example",
@@ -3879,78 +2418,6 @@
     {
       "path": "examples/electronics/sensores.py",
       "lines": 7,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/l10n.yaml",
-      "lines": 5,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/lib/buscador_envios.dart",
-      "lines": 41,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/lib/l10n/generated/app_localizations.dart",
-      "lines": 141,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/lib/l10n/generated/app_localizations_en.dart",
-      "lines": 14,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/lib/l10n/generated/app_localizations_es.dart",
-      "lines": 14,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/lib/main.dart",
-      "lines": 13,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/pubspec.yaml",
-      "lines": 17,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/test/buscador_envios_test.dart",
-      "lines": 32,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/flutter-testing/test/l10n_test.dart",
-      "lines": 16,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -4240,88 +2707,6 @@
     {
       "path": "examples/init/ready.d/10-seed.sh",
       "lines": 20,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Package.swift",
-      "lines": 6,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/README.md",
-      "lines": 8,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": [
-        "# Laboratorio iOS"
-      ]
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/EnvioLocal.swift",
-      "lines": 8,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/EnviosViewModel.swift",
-      "lines": 40,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/ListaEnvios.swift",
-      "lines": 17,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/MapaRuta.swift",
-      "lines": 24,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/MotorSincronizacion.swift",
-      "lines": 33,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/SelectorFotoEntrega.swift",
-      "lines": 28,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Sources/RutaFlowLab/SesionVault.swift",
-      "lines": 21,
-      "kind": "example",
-      "symbols": [],
-      "imports": [],
-      "headings": []
-    },
-    {
-      "path": "examples/ios-lab/Tests/RutaFlowLabTests/CancelacionTests.swift",
-      "lines": 44,
       "kind": "example",
       "symbols": [],
       "imports": [],
@@ -12092,36 +10477,6 @@
       "headings": []
     },
     {
-      "path": "scripts/audit_full.py",
-      "lines": 278,
-      "kind": "automation-script",
-      "symbols": [
-        "Tema",
-        "structural_text",
-        "split_temas",
-        "evaluar",
-        "recolectar",
-        "shingles",
-        "detectar_duplicados",
-        "pct",
-        "generar_informe",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "json",
-        "re",
-        "sys",
-        "collections",
-        "dataclasses",
-        "datetime",
-        "pathlib",
-        "audit_code_visual_quality"
-      ],
-      "headings": []
-    },
-    {
       "path": "scripts/audit_lesson_assets.py",
       "lines": 113,
       "kind": "automation-script",
@@ -12468,27 +10823,8 @@
       "headings": []
     },
     {
-      "path": "scripts/build_total_book_topics.py",
-      "lines": 129,
-      "kind": "automation-script",
-      "symbols": [
-        "normalized",
-        "main",
-        "render_item"
-      ],
-      "imports": [
-        "__future__",
-        "json",
-        "re",
-        "unicodedata",
-        "collections",
-        "pathlib"
-      ],
-      "headings": []
-    },
-    {
       "path": "scripts/build_unified_curriculum.py",
-      "lines": 211,
+      "lines": 214,
       "kind": "automation-script",
       "symbols": [
         "norm",
@@ -12605,28 +10941,6 @@
       "headings": []
     },
     {
-      "path": "scripts/dedupe_example_code.py",
-      "lines": 153,
-      "kind": "automation-script",
-      "symbols": [
-        "topic_slice",
-        "dedupe",
-        "guard",
-        "improve_topic",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "re",
-        "sys",
-        "difflib",
-        "pathlib",
-        "audit_lesson_substance"
-      ],
-      "headings": []
-    },
-    {
       "path": "scripts/evaluate_skills.py",
       "lines": 89,
       "kind": "automation-script",
@@ -12643,37 +10957,6 @@
         "sys",
         "tempfile",
         "pathlib"
-      ],
-      "headings": []
-    },
-    {
-      "path": "scripts/extract_book_curriculum.py",
-      "lines": 388,
-      "kind": "automation-script",
-      "symbols": [
-        "normalized",
-        "technical_pdfs",
-        "stack_for",
-        "flatten_outline",
-        "clean_heading",
-        "useful_heading",
-        "headings_from_pages",
-        "language_for",
-        "academy_topics",
-        "topic_lookup",
-        "best_existing",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "json",
-        "logging",
-        "os",
-        "re",
-        "unicodedata",
-        "collections",
-        "pathlib",
-        "pypdf"
       ],
       "headings": []
     },
@@ -12708,49 +10991,6 @@
       "headings": []
     },
     {
-      "path": "scripts/merge_duplicate_sections.py",
-      "lines": 178,
-      "kind": "automation-script",
-      "symbols": [
-        "topic_slice",
-        "paragraph_span",
-        "normalized",
-        "merge_marker",
-        "merge_topic",
-        "drop_generic_scaffold",
-        "fences_balanced",
-        "guard",
-        "improve_topic",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "re",
-        "sys",
-        "pathlib",
-        "audit_lesson_substance",
-        "audit_seven_step_methodology",
-        "audit_topic_learning_quality"
-      ],
-      "headings": []
-    },
-    {
-      "path": "scripts/prepare_study_diagram.py",
-      "lines": 39,
-      "kind": "automation-script",
-      "symbols": [
-        "main"
-      ],
-      "imports": [
-        "argparse",
-        "hashlib",
-        "json",
-        "pathlib"
-      ],
-      "headings": []
-    },
-    {
       "path": "scripts/rebuild_topic_source_review.py",
       "lines": 158,
       "kind": "automation-script",
@@ -12774,27 +11014,6 @@
         "pathlib",
         "urllib.parse",
         "audit_code_visual_quality"
-      ],
-      "headings": []
-    },
-    {
-      "path": "scripts/relocate_tail_to_theory.py",
-      "lines": 162,
-      "kind": "automation-script",
-      "symbols": [
-        "topic_slice",
-        "relocate",
-        "guard",
-        "improve_topic",
-        "main"
-      ],
-      "imports": [
-        "__future__",
-        "argparse",
-        "re",
-        "sys",
-        "pathlib",
-        "audit_lesson_substance"
       ],
       "headings": []
     },
@@ -12915,7 +11134,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 233,
+      "lines": 235,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -13084,6 +11303,21 @@
         "pathlib",
         "re",
         "sys"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/validate_repo_cleanup.py",
+      "lines": 68,
+      "kind": "automation-script",
+      "symbols": [
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "subprocess",
+        "sys",
+        "pathlib"
       ],
       "headings": []
     },
@@ -13309,8 +11543,20 @@
       ]
     },
     {
+      "path": "specs/009-limpieza-del-repo.md",
+      "lines": 38,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 009 \u00b7 Limpieza del repositorio",
+        "## Inventario (2026-11-18)",
+        "## Criterios"
+      ]
+    },
+    {
       "path": "specs/README.md",
-      "lines": 49,
+      "lines": 50,
       "kind": "documentation",
       "symbols": [],
       "imports": [],

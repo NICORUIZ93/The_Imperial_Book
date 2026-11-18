@@ -1,6 +1,6 @@
 # 009 · Limpieza del repositorio
 
-**Estado:** vigente
+**Estado:** hecho
 **Origen:** specs/008, fase 1. Regla de la constitución v3: nada sale del repo sin inventario escrito y
 aprobación del dueño; lo aprobado se mueve a la rama `archivo` (copia de `main` antes de limpiar).
 
@@ -28,10 +28,10 @@ DevOps (insumo para los cursos de Docker y Kubernetes) y `docs/propuesta-pagina-
 
 ## Criterios
 
-- **L1** `pendiente` — Existe la rama `archivo` con el estado de `main` anterior a la limpieza.
+- **L1** `hecho` — Existe la rama `archivo` con el estado de `main` anterior a la limpieza.
   Verificación: `git rev-parse --verify archivo`
-- **L2** `pendiente` — Los grupos aprobados ya no están en `main` y nada que siga en el repo los cita.
+- **L2** `hecho` — Los grupos aprobados ya no están en `main` y nada que siga en el repo los cita.
   Verificación: `python3 scripts/validate_repo_cleanup.py`
-- **L3** `pendiente` — El temario unificado se construye sin el inventario de libros y la validación
+- **L3** `hecho` — El temario unificado se construye sin el inventario de libros y la validación
   completa sigue en verde.
   Verificación: `./scripts/validate.sh`

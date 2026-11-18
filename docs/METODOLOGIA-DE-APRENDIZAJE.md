@@ -82,7 +82,7 @@ Clean Code y SOLID se evalúan transversalmente mediante el [estándar de códig
 
 ## Ciclo de capítulo anterior (referencia)
 
-Los capítulos que aún no migran a los cuatro pasos por subtema conservan este ciclo; sirve también para leer el material archivado en `docs/archivo/`:
+Los capítulos que aún no migran a los cuatro pasos por subtema conservan este ciclo; sirve también para leer el material archivado (rama `archivo` del repositorio):
 
 1. **Objetivo visible.** La persona conoce el resultado que podrá demostrar y los temas concretos de la sección.
 2. **Explicación breve.** Cada concepto responde qué es, cómo funciona, por qué importa y cuándo se utiliza.

@@ -1,6 +1,6 @@
 # Prerrequisito de lambdas antes de Java M4
 
-Fecha: 2026-11-13. Estado: diseño y ejecución técnica de un candidato archivado; **no publicado como lección**. Insumo existente: `docs/archivo/main-2026-11-03/web/public/content/java/modulo-20.md`, Tema 1. El archivo archivado reúne diez mecanismos en un tema de 120 minutos y exige JDK 27; la ruta actual usa JDK 25 y llega a Streams en M4 sin haber enseñado esos mecanismos. El contenido archivado es un punto de partida, no una firma de profundidad.
+Fecha: 2026-11-13. Estado: diseño y ejecución técnica de un candidato archivado; **no publicado como lección**. Insumo existente: `main-2026-11-03/web/public/content/java/modulo-20.md` dentro de la carpeta de archivo de la rama `archivo`, Tema 1. El archivo archivado reúne diez mecanismos en un tema de 120 minutos y exige JDK 27; la ruta actual usa JDK 25 y llega a Streams en M4 sin haber enseñado esos mecanismos. El contenido archivado es un punto de partida, no una firma de profundidad.
 
 ## Objetivo, evidencia y secuencia
 

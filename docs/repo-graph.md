@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 19:35 UTC
+Generated: 2026-11-18 20:14 UTC
 Root: `the_imperial_book`
-Indexed files: 1691
+Indexed files: 1585
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,31 +16,31 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 71 files
-- `automation-script`: 62 files
+- `automation-script`: 56 files
 - `course-content`: 320 files
-- `documentation`: 182 files
-- `example`: 962 files
+- `documentation`: 114 files
+- `example`: 941 files
 - `local-infra`: 1 files
-- `project-file`: 93 files
+- `project-file`: 82 files
 
 ## File Types
 
-- `.md`: 546
-- `.java`: 417
-- `.py`: 191
-- `.json`: 120
+- `.md`: 477
+- `.java`: 416
+- `.py`: 185
+- `.json`: 112
 - `.ts`: 74
 - `.js`: 54
-- `.html`: 50
-- `.yml`: 37
-- `.mjs`: 30
+- `.html`: 49
+- `.yml`: 35
+- `.mjs`: 29
 - `.rs`: 25
-- `.dart`: 24
 - `.go`: 24
-- `.swift`: 20
-- `.yaml`: 17
+- `.dart`: 17
 - `.sh`: 17
+- `.yaml`: 15
 - `.kt`: 13
+- `.swift`: 11
 - `.scss`: 10
 - `.jsx`: 6
 - `.txt`: 4
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (233 lines, automation-script)
+- `scripts/validate.sh` (235 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -192,7 +192,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_atomic_subtopics.py` (151 lines) - symbols: matches, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/audit_code_visual_quality.py` (226 lines) - symbols: student_visible_content, structural_text, blocks, official_source_urls, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, urllib.parse, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (148 lines) - symbols: signals, human_review_status, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
-- `scripts/audit_full.py` (278 lines) - symbols: Tema, structural_text, split_temas, evaluar, recolectar, shingles, detectar_duplicados, pct; imports: __future__, argparse, json, re, sys, collections, dataclasses, datetime
 - `scripts/audit_lesson_assets.py` (113 lines) - symbols: lessons, check_logos, check_links, check_images, check_docs_counts, main; imports: __future__, argparse, json, re, sys, pathlib
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
@@ -207,7 +206,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_route_maps.py` (114 lines) - symbols: unescape, modules_by_constant, ranges, section, apply, main; imports: __future__, argparse, re, sys, pathlib
-- ... 44 more files
+- `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
+- ... 38 more files
 
 ### course-content
 
@@ -248,10 +248,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/CONTINUIDAD-CHATGPT-PROMPTS-20261101.md` (182 lines) - headings: # Continuidad de ChatGPT: biblioteca, metodología y revisión de prompts, ## Punto exacto del repositorio, ## Qué ya está confirmado, ## Qué contiene la tanda local sin commit
 - `docs/ESTADO-REVISION-MINUCIOSA-20261101.md` (1080 lines) - headings: # Estado verificable de la revisión minuciosa, ## 1. Objetivo obligatorio, ### Ejemplo normativo aportado por el usuario, ## 2. Fuentes persistentes de la regla
 - `docs/ESTANDAR-DE-CODIGO.md` (56 lines) - headings: # Estándar transversal de código y diseño, ## Prioridades, ## Clean Code con criterio, ## SOLID cuando aporta valor
-- `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 164 more files
+- `docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md` (161 lines) - headings: # Plan curricular verificable: Build Tools — Maven y Gradle de cero a experto, ## Motivo del curso separado, ## Frontera con el track Java, ## Secuencia completa
+- ... 96 more files
 
 ### example
 
@@ -273,7 +273,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-1/modulo-22-tema-5-edge-routes.finalize.json` (1012 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.browser-check.json` (723 lines)
 - `examples/archify/temas/cloud/modulo-22-tema-5-edge-routes.review-2/modulo-22-tema-5-edge-routes.finalize-summary.json` (48 lines)
-- ... 944 more files
+- ... 923 more files
 
 ### local-infra
 
@@ -284,19 +284,19 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.env.example` (15 lines)
 - `.github/ISSUE_TEMPLATE/bug_report.yml` (80 lines)
 - `.github/workflows/ci.yml` (76 lines)
-- `docs/app-flow-inspection-dedup.json` (8267 lines)
-- `docs/app-flow-inspection-devops.json` (1617 lines)
-- `docs/app-flow-inspection-evidence.json` (8798 lines)
-- `docs/app-flow-inspection-order.json` (1617 lines)
-- `docs/app-flow-inspection-relocate.json` (11319 lines)
 - `docs/app-flow-inspection.json` (16517 lines)
-- `docs/archivo/main-2026-11-03/docs/subtopic-depth-reviewed-retirados.json` (3212 lines)
-- `docs/archivo/main-2026-11-03/docs/topic-source-review-retirados.json` (203 lines)
-- `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
-- `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
-- `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
 - `docs/atomic-subtopics.json` (20400 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
-- `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 75 more files
+- `docs/browser-course-review.json` (2712 lines)
+- `docs/capture-intake.json` (578 lines)
+- `docs/code-visual-quality.json` (2728 lines)
+- `docs/control-1-code-verification.json` (578 lines)
+- `docs/course-curriculum-inventory.json` (166 lines)
+- `docs/course-depth-review.json` (17807 lines)
+- `docs/curriculum-matrix.json` (394 lines)
+- `docs/floci-official-curriculum.json` (14 lines)
+- `docs/lesson-substance-baseline.json` (5 lines)
+- `docs/lesson-substance.json` (11918 lines)
+- `docs/master-prompt-compliance.json` (766 lines)
+- ... 64 more files

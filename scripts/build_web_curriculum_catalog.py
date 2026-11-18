@@ -17,7 +17,7 @@ SOURCE = ROOT / "docs" / "temario-maestro-unificado.json"
 CONTENT = ROOT / "web" / "public" / "content"
 INDEX = CONTENT / "curriculum-catalog.json"
 STACKS_DIR = CONTENT / "curriculum-stacks"
-EXPECTED_SOURCE_STACKS = 29  # incluye microservices y control-1 (specs/003)
+EXPECTED_SOURCE_STACKS = 16  # specs/009: sin el inventario de libros solo quedan las 16 rutas con lección
 PUBLISHED_STATUSES = {"actual", "actual+libros"}
 
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Une las rutas actuales con encabezados de libros y currículos de cursos."""
+"""Une las rutas actuales con los currículos de cursos externos inventariados.
+
+Desde specs/009 el inventario de libros extraído por OCR ya no forma parte del repo (rama `archivo`):
+las claves de libros del resultado se conservan vacías para no romper a quien las lee.
+"""
 
 from __future__ import annotations
 
@@ -10,7 +14,6 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BOOKS = ROOT / "docs" / "book-curriculum-inventory.json"
 COURSES = ROOT / "docs" / "course-curriculum-inventory.json"
 CURRENT = ROOT / "web" / "public" / "content" / "topic-index.json"
 OUT_MD = ROOT / "docs" / "temario-maestro-unificado.md"
@@ -34,7 +37,7 @@ def norm(value: str) -> str:
 
 def main() -> None:
     current = json.loads(CURRENT.read_text(encoding="utf-8"))
-    inventory = json.loads(BOOKS.read_text(encoding="utf-8"))
+    inventory = {"books": []}  # specs/009: sin inventario de libros
     course_inventory = json.loads(COURSES.read_text(encoding="utf-8"))
     book_topics: dict[str, dict[str, dict]] = defaultdict(dict)
     ocr: dict[str, list[dict]] = defaultdict(list)
@@ -149,7 +152,7 @@ def main() -> None:
 
     summary = result["summary"]
     lines = [
-        "# Temario maestro unificado: academia + libros", "",
+        "# Temario maestro unificado: academia + cursos externos", "",
         "> Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.", "",
         f"- Temas actuales conservados: {summary['currentTopics']}",
         f"- Temas actuales con evidencia exacta en libros: {summary['currentTopicsWithExactBookEvidence']}",

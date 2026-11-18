@@ -50,7 +50,6 @@ web/public/visuals/**/*.delivery.json
 **/.dart_tool/
 
 # pubspec.lock de paquetes Flutter (no se versiona)
-examples/flutter-testing/pubspec.lock
 
 # Artefactos Maven de los laboratorios procedentes del material de referencia
 /examples/rutaflow-material/**/target/
