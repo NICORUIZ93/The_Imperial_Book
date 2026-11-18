@@ -240,7 +240,10 @@ Contenido dos.
 
   async function settle(harness: RouterTestingHarness): Promise<void> {
     // La lección se mejora después del render (afterNextRender); un solo tick no basta.
+    // Al volver a un capítulo ya visitado el contenido sale de caché y la mejora llega
+    // en una macrotarea posterior, por eso también se cede el hilo con setTimeout.
     for (let i = 0; i < 4; i += 1) {
+      await new Promise(resolve => setTimeout(resolve, 0));
       await harness.fixture.whenStable();
       harness.detectChanges();
     }

@@ -25,8 +25,8 @@
           *ngFor="let topic of topics(module.id); let i = index"
           [routerLink]="['/curso', trackId, module.id]"
           [fragment]="topic.fragment"
-          [title]="topic.title"
-        ><span class="topic-number">{{ i + 1 }}.</span> {{ topic.title }}</a>
+          [title]="plainTitle(topic.title)"
+        ><span class="topic-number">{{ i + 1 }}.</span> <app-topic-title [title]="topic.title" /></a>
       </div>
     </div>
   </div>

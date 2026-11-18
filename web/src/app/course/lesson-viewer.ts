@@ -15,6 +15,7 @@ import { projectFor } from '../learning-activities';
 import { glossaryFor } from '../technical-glossary';
 import { TopicIndexService, type IndexedTopic } from '../topic-index.service';
 import { BookModeService } from './book-mode.service';
+import { TopicTitle } from '../topic-title';
 
 let mermaidInitialized = false;
 
@@ -134,7 +135,7 @@ interface BookTopicDetail {
  */
 @Component({
   selector: 'app-lesson-viewer',
-  imports: [CommonModule, RouterLink, LucideAngularModule],
+  imports: [CommonModule, RouterLink, LucideAngularModule, TopicTitle],
   templateUrl: './lesson-viewer.html',
   styleUrls: ['./lesson-viewer.scss', './lesson-viewer.book.scss'],
   host: { '[class.book-reading-host]': 'bookActive()' },

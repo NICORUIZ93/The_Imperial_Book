@@ -642,6 +642,8 @@ python3 -m unittest -q
 python3 verificar_trazabilidad.py; echo "salida: $?"
 ```
 
+![Captura de terminal: las pruebas unitarias pasan con OK, pero el verificador informa 3 criterios, 2 cubiertos, C3 sin prueba y salida 1](content/figures/foundations/spec-driven-trazabilidad.svg)
+
 **Resultado esperado:** las pruebas pasan (`OK`), pero el verificador imprime `criterios: 3  cubiertos: 2`, `sin prueba: C3` y `salida: 1`. Ese es el **fallo deliberado** del ejemplo: el código del agente sí rechaza letras, pero nadie lo demostró. En *vibe coding* ese hueco pasa desapercibido; aquí lo detecta el script antes de la revisión.
 
 **Explicación por bloques:** `re.findall(r"^(C\d+):", ..., re.M)` extrae los identificadores al inicio de cada línea de la especificación; el conjunto `cubiertos` sale de los nombres de las pruebas; la diferencia de conjuntos dice qué falta y qué sobra, y el código de salida `1` permite usarlo como paso de CI.

@@ -7,14 +7,13 @@ señales detectadas tampoco acredita corrección ni comprensión.
 | Métrica | Valor |
 |---|---:|
 | Temas analizados | 1326 |
-| Temas con alguna señal (requiere inspección) | 1 |
+| Temas con alguna señal (requiere inspección) | 0 |
 | Módulos con apéndices heredados | 170/291 |
 
 ## Señales por tipo
 
 | Código | Temas |
 |---|---:|
-| `cola-tras-cierre` | 1 |
 
 ## Apéndices heredados más frecuentes
 
@@ -28,7 +27,6 @@ señales detectadas tampoco acredita corrección ni comprensión.
 
 | Track / módulo | Tema | Palabras | Cola tras cierre | Códigos |
 |---|---|---:|---:|---|
-| cloud / 0 | Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo | 727 | 575 | cola-tras-cierre |
 
 ## Cómo se corrige
 
@@ -38,4 +36,4 @@ señales detectadas tampoco acredita corrección ni comprensión.
 4. `--strict` compara contra `docs/lesson-substance-baseline.json`: ningún
    tema nuevo puede nacer con estas señales sin revisión.
 
-Huella del contenido: `f402bfbf8b0e17fa1c787e73c7468b00d1cbf32f47fd10b8cb5222026b60e849`
+Huella del contenido: `0ef5c4f6b6074579604e6251f3f304e7ae75a62467867101c6c37940ef738341`

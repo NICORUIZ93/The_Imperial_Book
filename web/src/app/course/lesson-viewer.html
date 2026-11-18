@@ -45,7 +45,7 @@
         <nav class="chapter-topic-strip" *ngIf="chapterTopics().length > 1" aria-label="Temas de este capítulo">
           <div class="chapter-topic-strip-heading"><span>Temas de este capítulo</span><small>{{ currentTopicIndex() + 1 }} de {{ chapterTopics().length }} · {{ completedTopicCount() }} leídos</small></div>
           <div class="chapter-topic-strip-list">
-            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="isTopicDone(topic)" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ topic.title }}<small class="book-toc-page" *ngIf="bookActive()">{{ i + 2 }}</small></a>
+            <a *ngFor="let topic of chapterTopics(); let i = index" [class.current]="i === currentTopicIndex()" [class.done]="isTopicDone(topic)" [href]="'#' + topic.fragment" (click)="jumpToTopic($event, topic.fragment)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span><app-topic-title [title]="topic.title" /><small class="book-toc-page" *ngIf="bookActive()">{{ i + 2 }}</small></a>
           </div>
         </nav>
         <details class="course-guide" *ngIf="moduleId() === 0 && courseGuide() as guide">
@@ -56,7 +56,7 @@
         </details>
       </header>
       <p class="topic-focus-banner" *ngIf="focusedTopic() as topic">
-        <span>Vista de un tema: <strong>{{ topic.title }}</strong></span>
+        <span>Vista de un tema: <strong><app-topic-title [title]="topic.title" /></strong></span>
         <a [routerLink]="['/curso', trackId(), moduleId()]">Volver al capítulo completo</a>
       </p>
       <p class="sr-only" aria-live="polite">{{ bookAnnouncement() }}</p>
@@ -92,7 +92,7 @@
 
       <header class="book-topic-head" *ngIf="bookActive() && bookPageKind() === 'topic' && bookPageTopic() as topic">
         <span class="book-topic-kicker">§ {{ m.id }}.{{ topic.index + 1 }}</span>
-        <h2>{{ topic.title }}</h2>
+        <h2><app-topic-title [title]="topic.title" /></h2>
         <p class="book-topic-meta" *ngIf="topic.level || topic.duration">
           <span *ngIf="topic.level">{{ topic.level }}</span>
           <span *ngIf="topic.duration">{{ topic.duration }}</span>

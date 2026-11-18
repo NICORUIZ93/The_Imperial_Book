@@ -52,7 +52,7 @@
     },
     {
       "path": "CLAUDE.md",
-      "lines": 119,
+      "lines": 129,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -60,6 +60,7 @@
         "# CLAUDE.md",
         "## What this is",
         "## First step for any repo exploration",
+        "## Specs first (SDD)",
         "## Commands",
         "## Architecture"
       ]
@@ -2133,7 +2134,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 3008,
+      "lines": 3001,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2422,7 +2423,7 @@
     },
     {
       "path": "docs/lesson-substance-baseline.json",
-      "lines": 1693,
+      "lines": 5,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2430,7 +2431,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11180,
+      "lines": 11176,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2438,7 +2439,7 @@
     },
     {
       "path": "docs/lesson-substance.md",
-      "lines": 42,
+      "lines": 40,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12647,7 +12648,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 220,
+      "lines": 225,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -13722,7 +13723,7 @@
     },
     {
       "path": "web/public/content/cloud/modulo-0.md",
-      "lines": 434,
+      "lines": 418,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16283,7 +16284,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 904,
+      "lines": 908,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16514,7 +16515,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 663,
+      "lines": 665,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -20243,7 +20244,7 @@
     },
     {
       "path": "web/src/app/app.spec.ts",
-      "lines": 326,
+      "lines": 329,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -20428,7 +20429,7 @@
     },
     {
       "path": "web/src/app/command-palette.ts",
-      "lines": 130,
+      "lines": 131,
       "kind": "angular-app",
       "symbols": [
         "CommandPaletteComponent",
@@ -20446,7 +20447,8 @@
         "lucide-angular",
         "./course-data",
         "./command-palette.service",
-        "./topic-index.service"
+        "./topic-index.service",
+        "./topic-title"
       ],
       "headings": []
     },
@@ -20554,7 +20556,7 @@
     },
     {
       "path": "web/src/app/course/lesson-index.ts",
-      "lines": 93,
+      "lines": 95,
       "kind": "angular-app",
       "symbols": [
         "LessonIndexComponent",
@@ -20572,7 +20574,8 @@
         "../course-data",
         "../course-module.model",
         "../progress.service",
-        "../topic-index.service"
+        "../topic-index.service",
+        "../topic-title"
       ],
       "headings": []
     },
@@ -20606,7 +20609,7 @@
     },
     {
       "path": "web/src/app/course/lesson-viewer.ts",
-      "lines": 1816,
+      "lines": 1817,
       "kind": "angular-app",
       "symbols": [
         "LessonViewerComponent",
@@ -20652,6 +20655,7 @@
         "../technical-glossary",
         "../topic-index.service",
         "./book-mode.service",
+        "../topic-title",
         "mermaid",
         "katex"
       ],

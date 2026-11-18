@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-El laboratorio [`examples/spring-stream-rutaflow/`](../../../examples/spring-stream-rutaflow/) convierte un envío en una solicitud de ruta. La función se mantiene; el perfil selecciona el broker.
+El laboratorio [`examples/spring-stream-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-stream-rutaflow) convierte un envío en una solicitud de ruta. La función se mantiene; el perfil selecciona el broker.
 
 **Prerrequisitos del módulo:** Spring Boot M8 T6 (Spring Cloud Stream y binders), Spring Boot M8 T9 (RabbitMQ con Spring AMQP) y Spring Boot M21 T1 (tópicos, keys y grupos). Usa JDK 21.
 

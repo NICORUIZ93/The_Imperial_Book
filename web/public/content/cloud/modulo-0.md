@@ -297,7 +297,7 @@ Google Cloud: Cloud Storage — puerto 4588
 ```
 Después busca cada número en la sección `ports:`. No confundas el puerto publicado, que es visible en tu computador, con el número interno del contenedor: Compose muestra ambos juntos, separados por dos puntos.
 #### Paso 7 · Cierre y evidencia
-Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](../../../../docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
+Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
 **Conceptos clave:** proveedor, servicio, puerto, endpoint.
 **¿Por qué es importante?** Leer el proveedor y su puerto antes de ejecutar un comando evita enviarlo al emulador equivocado y ayuda a entender mejor los ejemplos multi-nube posteriores.
 
@@ -333,48 +333,11 @@ Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado
 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás estudiar con evidencia desde cero. Prerrequisitos: terminal y editor; verifica `git --version`.
+Al finalizar podrás estudiar cada módulo del curso con el mismo ciclo de tres fases y dejar evidencia de cada una en una bitácora versionada. **Conceptos clave:** ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito. **Prerrequisitos:** una terminal, un editor y Git; comprueba `git --version` antes de empezar.
 #### Paso 2 · Contexto y caso real
-Un aprendizaje profesional alterna explicación, práctica y comprobación.
+Cada uno de los diez módulos sigue el mismo ciclo. La **teoría** explica cada concepto con una analogía, el motivo por el que importa y un diagrama; no tiene comandos, porque sirve para construir el modelo mental antes de tocar el teclado. El **laboratorio** da cada acción con su comando exacto, lo que hace y la salida esperada para comparar, e incluye una verificación final y los errores comunes. La **evaluación** ya no da el comando: plantea una tarea, una solución de referencia y criterios de éxito para autoevaluarte sin depender de que alguien corrija. **¿Por qué es importante?** Saber cómo está construido cada módulo te deja dosificar el tiempo: la teoría es el mínimo para no perderte, el laboratorio la práctica guiada y la evaluación la única prueba de que aprendiste y no solo copiaste comandos.
 #### Paso 3 · Teoría, modelo mental y analogía
-Cada ciclo es una iteración: entender, construir, fallar, corregir y explicar.
-#### Paso 4 · Demostración guiada
-Crea `src/study-log.md` desde una carpeta vacía.
-```bash
-mkdir ejemplo-bitacora
-node --version
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Git disponible.
-#### Paso 5 · Práctica guiada
-Pista: omite una evidencia para provocar un fallo deliberado y complétala.
-#### Paso 6 · Práctica independiente
-Registra una sesión completa con criterios de éxito.
-#### Paso 7 · Cierre y evidencia
-Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: iniciar el módulo 1. Errores comunes: marcar sin probar y no documentar decisiones. Fuente oficial: https://git-scm.com/doc.
-**Conceptos clave:** ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito.
-
-Cada uno de los diez módulos de este curso sigue el mismo ciclo de tres fases. La primera fase es la teoría: para cada tema del módulo encontrarás una explicación de los conceptos, una analogía que conecta la idea con algo cotidiano, una justificación de por qué ese concepto importa en el mundo real, y una representación visual simplificada. Esta fase no tiene comandos que ejecutar: es para construir el modelo mental antes de tocar el teclado.
-
-La segunda fase es el laboratorio práctico. Aquí cada paso especifica una acción, el comando exacto que debes ejecutar, una explicación de qué hace ese comando, y la salida esperada para que puedas comparar lo que ves en tu terminal con lo que deberías ver. El laboratorio también incluye una sección de verificación al final —una forma concreta de comprobar que el resultado es correcto— y una lista de errores comunes con sus soluciones, para que si algo falla no te quedes bloqueado.
-
-La tercera fase son los ejercicios de evaluación. A diferencia del laboratorio, aquí no se te da el comando exacto: se te da un enunciado (una tarea a resolver), y tú decides qué comandos usar. Cada ejercicio incluye una solución esperada como referencia y una lista de criterios de éxito para que puedas autoevaluarte objetivamente, sin depender de que alguien más corrija tu trabajo. Esta fase es la que realmente demuestra si dominas el concepto: cualquiera puede copiar un comando de un laboratorio, pero resolver un ejercicio nuevo con esos mismos conceptos requiere haberlos entendido.
-
-Al final de cada módulo hay un resumen que recoge los puntos clave, lista explícitamente los conceptos que deberías haber aprendido, sugiere próximos pasos, y enlaza recursos adicionales para quien quiera profundizar más allá del alcance del curso. Este resumen no es un simple recordatorio: úsalo como checklist antes de avanzar al siguiente módulo. Si no puedes explicar con tus propias palabras cada punto clave del resumen, vale la pena repasar el módulo antes de continuar.
-
-**Analogía:** esta metodología es la misma que usan las escuelas de vuelo, de cirugía o de oficios técnicos: primero la clase teórica (por qué funciona así), después la práctica supervisada con instrucciones exactas (así se hace, paso a paso), y por último la evaluación sin ayuda (hazlo tú, y compruébalo tú mismo con una lista de criterios). Ningún piloto pasa directo de la teoría a volar solo sin la fase intermedia de práctica guiada.
-
-**¿Por qué es importante?** Saber de antemano cómo está construido cada módulo te permite dosificar tu tiempo: si vas con prisa, la teoría te da el mínimo para no perderte; si tienes tiempo, el laboratorio te da práctica guiada; y los ejercicios de evaluación son innegociables si quieres saber, con evidencia real, si aprendiste algo o solo copiaste comandos.
-
-**Diagrama:**
+Cada ciclo es una iteración: entender, construir, fallar, corregir y explicar. Al final de cada módulo, el resumen funciona como checklist: si no puedes explicar con tus palabras cada punto clave, repasa antes de avanzar. **Analogía:** es la secuencia de una escuela de vuelo: clase teórica (por qué funciona así), práctica supervisada con instrucciones exactas y, al final, el vuelo sin ayuda comprobado con una lista de criterios. Nadie pasa directo de la teoría a volar solo.
 
 ```mermaid
 flowchart LR
@@ -382,6 +345,27 @@ flowchart LR
     B --> C["Ejercicios\n(sin ayuda, autoevaluado)"]
     C --> D["Resumen\n(checklist final)"]
 ```
+#### Paso 4 · Demostración guiada
+Crea la bitácora del curso desde una carpeta vacía y regístrala en Git:
+```bash
+mkdir -p academia-cloud/src && cd academia-cloud
+git init -q
+printf '# Bitácora\n\n## Módulo 0\n- Teoría: leí los temas 1-7\n- Laboratorio: pendiente\n- Evaluación: pendiente\n' > src/study-log.md
+git add src/study-log.md && git commit -qm "bitácora: inicia módulo 0"
+git log --oneline -1
+```
+**Resultado esperado:** `git log` muestra un commit `bitácora: inicia módulo 0`. Cada fase que completes cambiará su línea de `pendiente` a la evidencia concreta (comando, salida o archivo).
+
+Cuando tengas Floci corriendo, el laboratorio del Módulo 1 empieza con esta comprobación; anota su salida en la bitácora:
+```bash
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+#### Paso 5 · Práctica guiada
+Provoca un **fallo deliberado**: marca `Laboratorio: hecho` sin pegar ninguna salida y pregúntate qué criterio de éxito se cumple. Ninguno: la marca no es evidencia. Corrige la línea con el comando y su resultado real, y vuelve a hacer commit. **Pista:** `git diff` antes del commit muestra exactamente qué evidencia agregaste.
+#### Paso 6 · Práctica independiente
+Registra una sesión completa de un módulo: tres líneas (teoría, laboratorio, evaluación), cada una con su evidencia y los criterios de éxito que usaste para autoevaluarte.
+#### Paso 7 · Cierre y evidencia
+Entrega la bitácora con su historial de commits, el fallo deliberado y su corrección, y explica qué fase demuestra que dominas un concepto. Siguiente paso: iniciar el módulo 1. **Errores comunes:** marcar fases como hechas sin probarlas y no documentar las decisiones. **Límite:** la bitácora demuestra que practicaste en local, no que el resultado funcione igual en una nube real; si vas con prisa puedes recortar la teoría, pero no la evaluación. **Fuente oficial:** [Git — documentación](https://git-scm.com/doc).
 
 ---
 

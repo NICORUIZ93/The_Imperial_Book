@@ -11,7 +11,7 @@ Los tres temas amplían incrementalmente el proyecto real `examples/spring-boot-
 
 **¿Por qué es importante?** Separar HTTP, reglas del servicio y persistencia hace que cada cambio tenga un lugar claro. La prueba de extremo a extremo comprueba que esas piezas sí trabajan juntas.
 
-**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. Abre [`examples/spring-boot-integrador-rutaflow/`](../../../../examples/spring-boot-integrador-rutaflow/). La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
+**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
 
 #### Subtema 12.1.1: Sigue una petición por las capas · 8 min
 
@@ -154,7 +154,7 @@ bash ./scripts/verify-integration.sh
 
 **¿Por qué es importante?** La base de datos no sabe quién hizo una solicitud y un contador no prueba que el trabajo terminó. El servicio valida identidad y permiso antes de escribir, y registra la métrica después de guardar.
 
-**Necesitas:** el Tema 1 y sus pruebas verdes. Continúa en [`examples/spring-boot-integrador-rutaflow/`](../../../../examples/spring-boot-integrador-rutaflow/). La clave HS256 del archivo de propiedades es solo de demostración local; no la uses como secreto de producción.
+**Necesitas:** el Tema 1 y sus pruebas verdes. Continúa en [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La clave HS256 del archivo de propiedades es solo de demostración local; no la uses como secreto de producción.
 
 #### Subtema 12.2.1: Verifica un JWT firmado · 10 min
 
@@ -288,7 +288,7 @@ bash ./scripts/verify-integration.sh
 
 **¿Por qué es importante?** Un test verde no demuestra que la API esté lista para producción. La decisión mejora cuando sabes qué comprobó el test, qué no comprobó y cuál es el siguiente paso.
 
-**Necesitas:** los Temas 1 y 2. Abre [`examples/spring-boot-integrador-rutaflow/`](../../../../examples/spring-boot-integrador-rutaflow/).
+**Necesitas:** los Temas 1 y 2. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow).
 
 #### Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min
 

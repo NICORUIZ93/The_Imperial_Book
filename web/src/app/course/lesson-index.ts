@@ -7,6 +7,7 @@ import { CourseModule, findTrack } from '../course-data';
 import { courseLevelLabel } from '../course-module.model';
 import { ProgressService } from '../progress.service';
 import { IndexedTopic, TopicIndexService } from '../topic-index.service';
+import { TopicTitle, plainTitle } from '../topic-title';
 
 interface LevelGroup {
   level: CourseModule['level'];
@@ -19,7 +20,7 @@ const LEVEL_ORDER: CourseModule['level'][] = ['Fundamentos', 'Aplicación', 'Int
 
 @Component({
   selector: 'app-lesson-index',
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TopicTitle],
   templateUrl: './lesson-index.html',
   styleUrl: './lesson-index.scss',
 })
@@ -27,6 +28,7 @@ export class LessonIndexComponent {
   @Input({ required: true }) trackId!: string;
   private readonly router = inject(Router);
   readonly topicIndex = inject(TopicIndexService);
+  protected readonly plainTitle = plainTitle;
   readonly topicQuery = signal('');
   readonly levelLabel = courseLevelLabel;
 

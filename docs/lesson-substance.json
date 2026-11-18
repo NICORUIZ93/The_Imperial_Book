@@ -1844,10 +1844,8 @@
     }
   ],
   "summary": {
-    "fingerprint": "f402bfbf8b0e17fa1c787e73c7468b00d1cbf32f47fd10b8cb5222026b60e849",
-    "issues": {
-      "cola-tras-cierre": 1
-    },
+    "fingerprint": "0ef5c4f6b6074579604e6251f3f304e7ae75a62467867101c6c37940ef738341",
+    "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 39,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
@@ -1856,7 +1854,7 @@
     "modules": 291,
     "modulesWithLegacySections": 170,
     "topics": 1326,
-    "topicsWithIssues": 1
+    "topicsWithIssues": 0
   },
   "topics": {
     "android": [
@@ -2910,9 +2908,9 @@
       {
         "issues": [],
         "module": 0,
-        "tailWords": 163,
+        "tailWords": 170,
         "topic": "Tema 5: Servicios que emula Floci — AWS, Azure y GCP",
-        "words": 548
+        "words": 555
       },
       {
         "issues": [],
@@ -2922,13 +2920,11 @@
         "words": 507
       },
       {
-        "issues": [
-          "cola-tras-cierre"
-        ],
+        "issues": [],
         "module": 0,
-        "tailWords": 575,
+        "tailWords": 120,
         "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
-        "words": 727
+        "words": 660
       },
       {
         "issues": [],
@@ -6247,7 +6243,7 @@
         "module": 10,
         "tailWords": 127,
         "topic": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
-        "words": 1056
+        "words": 1177
       },
       {
         "issues": [],
@@ -6772,7 +6768,7 @@
         "module": 7,
         "tailWords": 171,
         "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
-        "words": 1239
+        "words": 1269
       },
       {
         "issues": [],
@@ -10479,14 +10475,14 @@
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 8: Orquestar pedidos con Temporal y Spring Boot",
-        "words": 1328
+        "words": 1335
       },
       {
         "issues": [],
         "module": 10,
         "tailWords": 0,
         "topic": "Tema 9: Comprueba módulos antes de separar servicios",
-        "words": 990
+        "words": 997
       },
       {
         "issues": [],
@@ -10535,35 +10531,35 @@
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 1: Arquitectura del microservicio integrador",
-        "words": 1087
+        "words": 1094
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 2: Integra seguridad JWT y observabilidad",
-        "words": 1120
+        "words": 1127
       },
       {
         "issues": [],
         "module": 12,
         "tailWords": 0,
         "topic": "Tema 3: Cierra el servicio con evidencia y próximos pasos",
-        "words": 988
+        "words": 995
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 1: `@Transactional` funciona en una frontera, no como encantamiento",
-        "words": 777
+        "words": 784
       },
       {
         "issues": [],
         "module": 13,
         "tailWords": 0,
         "topic": "Tema 2: Recuperación implica duplicación segura",
-        "words": 951
+        "words": 965
       },
       {
         "issues": [],

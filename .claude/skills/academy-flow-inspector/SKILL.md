@@ -46,7 +46,7 @@ una ausencia real de contenido.
 
 ### 2. Decide el alcance con el usuario
 
-Barrer las 245 páginas de módulo con un navegador real toma varios minutos. Antes de lanzarlo,
+Barrer las 291 páginas de módulo con un navegador real toma varios minutos. Antes de lanzarlo,
 confirma el alcance si no es obvio por el pedido: ¿toda la academia, una ruta, o un módulo? Si el
 usuario ya fue específico ("revisa Fundamentos", "la ruta de Angular"), no hace falta preguntar.
 
@@ -67,7 +67,7 @@ PLAYWRIGHT_CHANNEL=chrome node .claude/skills/academy-flow-inspector/scripts/swe
   --out=docs/app-flow-inspection.json
 ```
 
-Omite `--tracks` para barrer las 14 rutas. El script visita cada página `/curso/<track>/<modulo>`,
+Omite `--tracks` para barrer las 16 rutas. El script visita cada página `/curso/<track>/<modulo>`,
 y por cada `.topic-card` revisa: que el conteo de temas coincida con `topic-index.json`, que los
 diagramas `pre.mermaid` hayan producido un `<svg>` real, que exista el control actual
 `button.topic-complete[data-topic-complete]` con `aria-pressed` booleano, que no haya excepciones
@@ -96,7 +96,7 @@ el navegador integrado, según cuál esté disponible en esta sesión) y mira co
   cualquier punto donde el camino no sea obvio o se rompa la navegación (progreso que no se
   guarda, breadcrumbs inconsistentes, botones que no responden).
 
-No necesitas abrir los 1100 temas a mano: el barrido ya cubrió la escala; esta capa es para
+No necesitas abrir los 1326 temas a mano: el barrido ya cubrió la escala; esta capa es para
 calidad humana sobre una muestra con sentido, no para repetir el barrido con tus ojos.
 
 ### 5. Reporta hallazgos, no un veredicto global
@@ -118,6 +118,6 @@ estándar de `docs/editorial-contract.md`: no reclames más cobertura de la que 
 - No reescribas los 9 criterios editoriales a mano revisando Markdown: ya están automatizados.
 - No conviertas un hallazgo del barrido en un veredicto sin mirarlo tú mismo cuando sea relevante
   para la respuesta que le vas a dar al usuario.
-- No reportes "1100/1100 temas verificados visualmente" -- nunca es cierto a esa escala; sé preciso
+- No reportes "1326/1326 temas verificados visualmente" -- nunca es cierto a esa escala; sé preciso
   sobre cuántos se inspeccionaron con el navegador y cuántos solo pasaron por el barrido o las
   auditorías estáticas.

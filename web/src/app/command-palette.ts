@@ -6,6 +6,7 @@ import { LucideAngularModule, Search, X } from 'lucide-angular';
 import { TRACKS } from './course-data';
 import { CommandPaletteService } from './command-palette.service';
 import { TopicIndexService } from './topic-index.service';
+import { plainTitle } from './topic-title';
 
 interface SearchEntry {
   label: string;
@@ -44,7 +45,7 @@ export class CommandPaletteComponent {
     const topics = this.topicIndex.allTopics()
       .filter(topic => topic.trackId === track.id)
       .map(topic => ({
-        label: topic.title,
+        label: plainTitle(topic.title),
         sublabel: `${track.name} · tema`,
         keywords: `${track.name} ${track.tagline}`,
         route: ['/curso', track.id, String(topic.moduleId)],

@@ -1012,7 +1012,7 @@ Entrega los tests y una decisión explicada sobre qué módulo sería dueño de 
 
 **Prerrequisitos:** clases e interfaces Java, excepciones, pruebas JUnit y beans de Spring. La Saga distribuida retoma el concepto del track; aquí se ejecuta en código.
 
-**Evidencia del tema:** tres pruebas del [laboratorio de Temporal](../../../../examples/spring-temporal-rutaflow/): un fallo temporal que se recupera, un cobro rechazado tras agotar intentos y una notificación fallida después del cobro.
+**Evidencia del tema:** tres pruebas del [laboratorio de Temporal](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-temporal-rutaflow): un fallo temporal que se recupera, un cobro rechazado tras agotar intentos y una notificación fallida después del cobro.
 
 ```mermaid
 sequenceDiagram
@@ -1168,7 +1168,7 @@ Ejecuta toda la suite con `./mvnw -q clean test`. Entrega el código de salida y
 
 **¿Por qué es importante?** Un paquete separado no garantiza una frontera real. Si Notificaciones importa la implementación privada de Pedidos, extraerlos luego obliga a coordinar cambios o expone datos que pertenecen al otro módulo.
 
-**Prerrequisitos:** paquetes Java, beans Spring, publicación de eventos y las decisiones de límites del Tema 7. El [laboratorio Spring Modulith](../../../../examples/spring-modulith-rutaflow/) usa Spring Boot 4.1.2 y Modulith 2.1.1.
+**Prerrequisitos:** paquetes Java, beans Spring, publicación de eventos y las decisiones de límites del Tema 7. El [laboratorio Spring Modulith](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-modulith-rutaflow) usa Spring Boot 4.1.2 y Modulith 2.1.1.
 
 #### Subtema 9.1: Traza las dependencias de paquetes · 10 min
 

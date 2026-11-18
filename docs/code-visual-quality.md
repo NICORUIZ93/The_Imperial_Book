@@ -7,7 +7,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | foundations | 102 | 102 | 96 | 73 | 6 | 0 | 0 | 101 | 102 | 102 |
-| cloud | 156 | 156 | 118 | 74 | 4 | 18 | 0 | 150 | 156 | 154 |
+| cloud | 156 | 156 | 119 | 74 | 4 | 18 | 0 | 150 | 156 | 154 |
 | devops | 130 | 130 | 84 | 83 | 2 | 40 | 0 | 130 | 129 | 130 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 88 |
 | node | 83 | 83 | 30 | 32 | 0 | 0 | 0 | 83 | 83 | 80 |
@@ -21,7 +21,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | ios | 56 | 56 | 40 | 34 | 0 | 16 | 0 | 55 | 56 | 56 |
 | flutter | 106 | 106 | 61 | 82 | 0 | 14 | 0 | 103 | 103 | 99 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 29 |
-| **Total** | **1256** | **1256** | **853** | **642** | **14** | **179** | **0** | **1242** | **1245** | **1237** |
+| **Total** | **1256** | **1256** | **854** | **642** | **14** | **179** | **0** | **1242** | **1245** | **1237** |
 
 ## Regla editorial
 

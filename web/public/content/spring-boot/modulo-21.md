@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Vas a conectar el servicio de envíos con ruteo y notificaciones. El laboratorio del módulo es [`examples/spring-kafka-rutaflow/`](../../../examples/spring-kafka-rutaflow/). Cada tema conserva el proyecto y añade una pieza; no empieza otra aplicación desde cero.
+Vas a conectar el servicio de envíos con ruteo y notificaciones. El laboratorio del módulo es [`examples/spring-kafka-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-kafka-rutaflow). Cada tema conserva el proyecto y añade una pieza; no empieza otra aplicación desde cero.
 
 **Cómo estudiar:** completa los cuatro pasos de cada subtema. Cada tema toma 20–45 min; sus subtemas toman 5–15 min.
 

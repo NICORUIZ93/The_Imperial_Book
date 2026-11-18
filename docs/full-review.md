@@ -9,7 +9,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 | Inventario estructural | 15 tracks, 291 módulos y 1326 temas en Markdown. | La paridad de archivos y metadatos no evalúa el aprendizaje. | [Curso por tema](./course-depth-review.md) |
 | Criterios editoriales | 1326/1326 temas muestran el perfil de presencia; 0 no lo completan. | Detector heurístico; no valida el contenido de cada criterio. | [Métricas](./topic-learning-quality.md) · [Deuda](./editorial-backlog.md) |
 | Marcadores de siete pasos | 943/1326 cumplen todos los marcadores medidos. | Presencia de marcadores, no utilidad ni calidad de las prácticas. | [Metodología](./seven-step-methodology.md) |
-| Sustancia Markdown | 1/1326 temas presentan al menos una señal; 170/291 módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |
+| Sustancia Markdown | 0/1326 temas presentan al menos una señal; 170/291 módulos, secciones heredadas. | Las señales requieren inspección del texto; no son defectos confirmados. | [Sustancia](./lesson-substance.md) |
 | Código y visuales | 1256 temas revisados; 642 con Mermaid, 14 con Archify y 179 con visual ASCII pendiente. | La presencia no acredita que el código se compile o que un diagrama se renderice y sea correcto. | [Código y visuales](./code-visual-quality.md) |
 | Fuentes oficiales | 1237/1326 temas contienen una URL de host oficial exacto en la prosa visible; 89 siguen sin dominio reconocido. La revisión parcial del 2026-11-18 verificó acceso a 452/503 citas existentes; 51 pendiente. | El aumento de reconocimiento corrige omisiones del detector, no añade contenido. Los 366 temas del registro conservan revisión manual pendiente de pertinencia; el éxito HTTP no prueba vigencia ni respaldo de afirmaciones. | [Auditoría](./code-visual-quality.md) · [Registro por tema](./topic-source-review.json) · [Vigencia](./official-sources.json) |
 | Renderizado estructural de navegador | Snapshot del 2026-10-31: 245 páginas y 1100/1100 temas; 0 hallazgos agregados, 0 errores de página y 0 errores de renderizado. | Cobertura completa del renderizado estructural; no ejecuta ejercicios ni acredita calidad pedagógica. | [Snapshot](./browser-course-review.json) |
@@ -23,7 +23,7 @@ Este informe agrega los auditores versionados; no reemplaza sus resultados detal
 |---|---:|---|
 | Bloques editoriales repetidos | 0 temas | Requiere inspección y reescritura; no se elimina automáticamente. |
 | Andamiaje genérico | 0 temas | Revisar si la instrucción realmente conduce a un artefacto específico. |
-| Cola posterior al cierre | 1 tema | Señal de contenido posiblemente desplazado, no diagnóstico pedagógico automático. |
+| Cola posterior al cierre | 0 temas | Señal de contenido posiblemente desplazado, no diagnóstico pedagógico automático. |
 | Párrafos repetidos | 0 temas | Confirmar duplicación dentro del contexto de cada tema. |
 | Temas breves | 0 temas | La brevedad sola no prueba insuficiencia; revisar objetivo y práctica. |
 

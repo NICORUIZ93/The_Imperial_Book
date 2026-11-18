@@ -15,7 +15,7 @@
     "cloud": {
       "topics": 156,
       "code": 156,
-      "commentedCode": 118,
+      "commentedCode": 119,
       "mermaid": 74,
       "archifyVisual": 4,
       "asciiVisual": 18,
@@ -256,13 +256,6 @@
       "track": "cloud",
       "module": 0,
       "topic": "Tema 6: Ventajas y limitaciones de practicar con un emulador local",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 0,
-      "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
       "missingCode": false,
       "missingComments": true
     },

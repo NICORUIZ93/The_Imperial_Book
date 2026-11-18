@@ -13,7 +13,7 @@ Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercit
 
 **¿Por qué es importante?** Una anotación no protege el trabajo si la llamada evita el proxy. En una operación de pedidos, esa diferencia puede decidir si un error revierte o deja datos a medias.
 
-**Necesitas:** Java 25 y Maven. Abre [`examples/spring-boot-transaction-boundary-rutaflow/`](../../../../examples/spring-boot-transaction-boundary-rutaflow/). La prueba usa `TransactionSynchronizationManager`, no mocks.
+**Necesitas:** Java 25 y Maven. Abre [`examples/spring-boot-transaction-boundary-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-transaction-boundary-rutaflow). La prueba usa `TransactionSynchronizationManager`, no mocks.
 
 #### Subtema 13.1.1: Detecta la transacción al entrar por el proxy · 8 min
 
@@ -148,7 +148,7 @@ Desde `examples/spring-boot-transaction-boundary-rutaflow`, ejecuta la comprobac
 
 **¿Por qué es importante?** Un timeout puede ocurrir después de guardar. El cliente reintenta sin saber si su pedido se creó; una clave persistida evita ejecutar el mismo efecto otra vez.
 
-**Necesitas:** Módulo 3 (SQL) y Módulo 8 de Spring Boot (Kafka). Abre [`examples/spring-boot-idempotency-rutaflow/`](../../../../examples/spring-boot-idempotency-rutaflow/). La prueba de la carrera usa PostgreSQL real en Testcontainers.
+**Necesitas:** Módulo 3 (SQL) y Módulo 8 de Spring Boot (Kafka). Abre [`examples/spring-boot-idempotency-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-idempotency-rutaflow). La prueba de la carrera usa PostgreSQL real en Testcontainers.
 
 #### Subtema 13.2.1: Deja que la base imponga la clave única · 8 min
 
@@ -260,7 +260,7 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 
 **Límite del laboratorio:** la tabla demuestra unicidad, no implementa una API idempotente completa. En producción, asocia la clave al principal y a la operación, compara un hash del request y conserva la respuesta original con una política de retención.
 
-**Fuentes:** [Spring JDBC con PostgreSQL](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html), [PostgreSQL: INSERT y ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html), [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [`./examples/spring-kafka-rutaflow/README.md`](../../../../examples/spring-kafka-rutaflow/README.md).
+**Fuentes:** [Spring JDBC con PostgreSQL](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html), [PostgreSQL: INSERT y ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html), [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [`./examples/spring-kafka-rutaflow/README.md`](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/examples/spring-kafka-rutaflow/README.md).
 
 ---
 

@@ -874,6 +874,10 @@ sys.exit(1 if cuellos else 0)
 python3 estimar.py; echo "salida: $?"
 ```
 
+**Explicación por bloques:** `supuestos.json` separa las decisiones (usuarios, factor de pico, capacidad medida) del cálculo, así cambiar un escenario no toca el código; `estimar.py` convierte operaciones diarias en peticiones por segundo dividiendo entre `SEGUNDOS_DIA` y multiplicando por el pico; `uso` compara cada carga con su capacidad medida, y la lista `cuellos` aplica el `UMBRAL` del 70 %. El código de salida `1` permite usar el script como control automático antes de aprobar un cambio de arquitectura.
+
+![Captura de terminal: con los supuestos base el uso de lecturas es 2 % y no hay cuello de botella; con campana.json el uso de lecturas es 247 %, el de escrituras 116 % y el script sale con 1](content/figures/foundations/diseno-estimacion.svg)
+
 **Resultado esperado:**
 
 ```text

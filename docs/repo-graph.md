@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 04:35 UTC
+Generated: 2026-11-18 06:49 UTC
 Root: `the_imperial_book`
 Indexed files: 1653
 Import edges: 67
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (220 lines, automation-script)
+- `scripts/validate.sh` (225 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -64,7 +64,7 @@ For automated lookups, use `docs/repo-graph.json`.
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
 - `web/src/app/course/course-shell.ts` (83 lines, angular-app)
   - symbols: CourseShellComponent, track, officialPath, sidebarOpen, bookReading, trackLogo, percent
-- `web/src/app/course/lesson-viewer.ts` (1816 lines, angular-app)
+- `web/src/app/course/lesson-viewer.ts` (1817 lines, angular-app)
   - symbols: LessonViewerComponent, focusedTopicIndex, track, module, officialSource, courseGuide, trackProject, projectStep, projectProgress, showTrackProject
 
 ## Internal Import Graph
@@ -168,7 +168,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/app.config.ts` (19 lines) - imports: @angular/core, @angular/router, ./app.routes
 - `web/src/app/app.html` (4 lines)
 - `web/src/app/app.routes.ts` (37 lines) - imports: @angular/router, ./catalog/course-catalog, ./catalog/curriculum-library, ./course/course-shell, ./course/track-overview, ./course/lesson-viewer
-- `web/src/app/app.spec.ts` (326 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
+- `web/src/app/app.spec.ts` (329 lines) - imports: @angular/core/testing, @angular/router, @angular/router/testing, ./app, ./app.routes, ./catalog/course-catalog, ./content.service, ./course-data
 - `web/src/app/app.ts` (11 lines) - symbols: App; imports: @angular/core, @angular/router, ./command-palette
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (243 lines)
@@ -180,7 +180,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.html` (29 lines) - symbols: palette-title, palette-results
 - `web/src/app/command-palette.scss` (38 lines)
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
-- `web/src/app/command-palette.ts` (130 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
+- `web/src/app/command-palette.ts` (131 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (78 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (891 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
 - ... 51 more files
@@ -233,7 +233,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `AGENTS.md` (92 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ### Profundidad obligatoria de temas y subtemas
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
-- `CLAUDE.md` (119 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Commands
+- `CLAUDE.md` (129 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
 - `MASTER-PROMPT.md` (149 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables, ### 1.2 Regla de preservación

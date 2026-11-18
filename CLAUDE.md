@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 The_Imperial_Book is a Spanish-language academy for cloud/dev learning. The official product is an
-Angular app (`web/`) that renders 14 curriculum tracks (245 modules, 1100 topics) authored as
+Angular app (`web/`) that renders 16 curriculum tracks (291 modules, 1326 topics) authored as
 Markdown lessons in `web/public/content/<track>/modulo-N.md`. Progress is stored client-side in
 `localStorage` — there are no quizzes, XP, or badges. Each specialization track has an integrator
 project; `RutaFlow` (`examples/rutaflow/`) is a cross-cutting logistics project that ties tracks
@@ -26,6 +26,16 @@ exploration. Regenerate it after structural changes:
 python3 scripts/build_repo_graph.py
 python3 scripts/build_repo_graph.py --check   # verify it's in sync (CI-equivalent)
 ```
+
+## Specs first (SDD)
+
+Work in this repo is spec-driven. Before fixing a bug or creating/rewriting a topic, read
+`specs/README.md` and the relevant `specs/NNN-*.md`: if a criterion is already `hecho`, do not redo it;
+if the work is new, add a numbered criterion with its `Verificación:` command first, then implement.
+New or rewritten topics must follow `specs/002-estandar-temas-con-capturas-y-ayudas.md` (visual aid,
+real terminal/app capture via `scripts/render_terminal_capture.py`, file-named code blocks with a
+block-by-block explanation) and be added to `specs/visual-aids-scope.json`.
+`scripts/validate.sh` runs `validate_specs.py`, `audit_lesson_assets.py` and `audit_visual_aids.py`.
 
 ## Commands
 
