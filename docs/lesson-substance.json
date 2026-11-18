@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "0ef5c4f6b6074579604e6251f3f304e7ae75a62467867101c6c37940ef738341",
+    "fingerprint": "1be07a8c951a5f2a59d49def05626924bd27c7b8898a0a3eaca2628f501a44de",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 39,
@@ -1853,7 +1853,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1326,
+    "topics": 1331,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -5608,6 +5608,20 @@
       },
       {
         "issues": [],
+        "module": 15,
+        "tailWords": 119,
+        "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "words": 978
+      },
+      {
+        "issues": [],
+        "module": 15,
+        "tailWords": 125,
+        "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "words": 928
+      },
+      {
+        "issues": [],
         "module": 16,
         "tailWords": 145,
         "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
@@ -6004,6 +6018,13 @@
         "tailWords": 170,
         "topic": "Tema 3: Interceptores y estados explícitos",
         "words": 1100
+      },
+      {
+        "issues": [],
+        "module": 5,
+        "tailWords": 110,
+        "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+        "words": 1124
       },
       {
         "issues": [],
@@ -9180,6 +9201,13 @@
         "tailWords": 102,
         "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
         "words": 569
+      },
+      {
+        "issues": [],
+        "module": 1,
+        "tailWords": 130,
+        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "words": 1166
       }
     ],
     "node": [
@@ -10826,6 +10854,13 @@
         "tailWords": 0,
         "topic": "Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "words": 1398
+      },
+      {
+        "issues": [],
+        "module": 20,
+        "tailWords": 163,
+        "topic": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+        "words": 1287
       },
       {
         "issues": [],

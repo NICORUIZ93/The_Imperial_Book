@@ -288,7 +288,7 @@
     },
     {
       "track": "flutter",
-      "topics": 106,
+      "topics": 109,
       "status": {
         "T1": true,
         "T2": true,
@@ -347,11 +347,11 @@
             "stores"
           ]
         },
-        "visual": 83,
-        "easy": 88,
-        "measuredTopics": 106,
+        "visual": 86,
+        "easy": 91,
+        "measuredTopics": 109,
         "captureScope": 0,
-        "project": 106
+        "project": 109
       }
     },
     {
@@ -605,7 +605,7 @@
     },
     {
       "track": "microservices",
-      "topics": 23,
+      "topics": 24,
       "status": {
         "T1": false,
         "T2": false,
@@ -628,11 +628,11 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
-        "visual": 1,
-        "easy": 23,
-        "measuredTopics": 23,
-        "captureScope": 0,
-        "project": 23
+        "visual": 2,
+        "easy": 24,
+        "measuredTopics": 24,
+        "captureScope": 1,
+        "project": 24
       }
     },
     {
@@ -776,7 +776,7 @@
     },
     {
       "track": "spring-boot",
-      "topics": 113,
+      "topics": 114,
       "status": {
         "T1": true,
         "T2": true,
@@ -822,11 +822,11 @@
             "Buildpacks"
           ]
         },
-        "visual": 43,
-        "easy": 113,
-        "measuredTopics": 113,
+        "visual": 44,
+        "easy": 114,
+        "measuredTopics": 114,
         "captureScope": 0,
-        "project": 113
+        "project": 114
       }
     }
   ]

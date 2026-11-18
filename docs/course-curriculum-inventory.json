@@ -142,6 +142,24 @@
         "Mitos y verdades de DDD"
       ],
       "projectFeatures": []
+    },
+    {
+      "id": "youtube-weincode-flutter-3-50",
+      "provider": "YouTube — weincode",
+      "title": "Flutter 3.50 vs Previous Versions: What Actually Changed?",
+      "url": "https://www.youtube.com/watch?v=5nEIpFFkNfY",
+      "stack": "flutter",
+      "language": "en",
+      "audience": "Desarrolladores Flutter que actualizan apps existentes.",
+      "sourceNote": "Video publicado el 2026-11-16, enviado el 2026-11-18 (ver docs/capture-intake.json). La descripción no detalla APIs; los cambios se verificaron contra las notas oficiales de Flutter 3.50 y una revisión técnica independiente.",
+      "topics": [
+        "Novedades de Flutter 3.50",
+        "Integrar herramientas de IA en apps móviles",
+        "Interfaces modernas",
+        "Flujos de autenticación",
+        "Lógica de negocio y Clean Architecture"
+      ],
+      "projectFeatures": []
     }
   ]
 }

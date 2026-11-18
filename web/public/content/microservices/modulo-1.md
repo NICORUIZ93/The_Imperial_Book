@@ -998,6 +998,141 @@ Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias d
 
 **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
+
+### Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min
+
+**Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
+
+**Al finalizar podrás:** reconocer cuatro mitos frecuentes sobre DDD, explicar qué afirma realmente cada idea y demostrar con código que una misma palabra del negocio necesita dos modelos distintos en dos contextos.
+
+**¿Por qué es importante?** Mucha gente cree que DDD es «usar entidades y repositorios» o «hacer microservicios». Con esa idea se llenan proyectos de capas vacías y se parten sistemas sin motivo. Entender qué es y qué no es DDD evita esos costos.
+
+#### Paso 1 · Objetivo y preparación
+
+Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 21 o superior y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, la palabra «Envío» se usa en dos equipos. Para **Ventas**, un envío es lo que el cliente paga: tiene peso y tarifa. Para **Operación**, un envío es lo que el mensajero mueve: tiene una ruta y un estado de entrega. Si los dos equipos comparten una sola clase `Envio` con todos los campos, cada cambio de uno rompe al otro. DDD da nombre a este problema y una forma de resolverlo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** dominio, lenguaje ubicuo, contexto delimitado (*bounded context*), objeto de valor, agregado.
+
+DDD significa diseñar el software a partir del negocio. El **lenguaje ubicuo** es el vocabulario que comparten el equipo y los expertos del negocio, y ese vocabulario aparece igual en el código. Un **contexto delimitado** es la frontera dentro de la cual una palabra tiene un solo significado. Fuera de esa frontera, la misma palabra puede significar otra cosa.
+
+| Mito | Verdad |
+|---|---|
+| DDD es usar entidades, repositorios y servicios | Esos son patrones tácticos. Lo central es estratégico: lenguaje ubicuo y contextos delimitados |
+| DDD exige microservicios | Un contexto delimitado es una frontera de modelo, no de despliegue. Puede vivir en un monolito modular |
+| Hay que aplicar DDD a todo el sistema | Se invierte en el dominio central, el que diferencia al negocio. Lo genérico se compra o se simplifica |
+| Un solo modelo para toda la empresa es más ordenado | Un modelo único mezcla significados y se vuelve frágil. Cada contexto tiene su modelo y se traducen en la frontera |
+
+**Analogía:** la palabra «banco» significa algo en una plaza y otra cosa en una calle financiera. Nadie se confunde porque el lugar da el significado. Un contexto delimitado es ese «lugar» dentro del software. La analogía se rompe en que, en el software, la traducción entre lugares hay que escribirla de forma explícita.
+
+**Límite de uso:** para un CRUD sencillo sin reglas de negocio importantes, DDD agrega más ceremonia que valor.
+
+```mermaid
+flowchart LR
+    subgraph Ventas["Contexto Ventas"]
+        V["Envio: peso, tarifa"]
+    end
+    subgraph Operacion["Contexto Operación"]
+        O["Envio: ruta, estado de entrega"]
+    end
+    V -->|"traducción en la frontera: solo el código"| O
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/microservices/ddd-mitos/DosContextos.java`:
+
+```java
+import java.util.List;
+
+public class DosContextos {
+
+    // Contexto Ventas: el envío es algo que se cobra.
+    record EnvioVenta(String codigo, int kilos) {
+        EnvioVenta {
+            // Invariante del objeto de valor: un envío sin peso no se puede cobrar.
+            if (kilos <= 0) throw new IllegalArgumentException("Ventas: el peso debe ser positivo");
+        }
+        long tarifaEnCentavos() { return 1_000L + kilos * 120L; }
+    }
+
+    // Contexto Operación: el envío es algo que se mueve. Mismo nombre, otro modelo.
+    record EnvioOperacion(String codigo, List<String> ruta, String estado) {
+        EnvioOperacion avanzar() { return new EnvioOperacion(codigo, ruta, "EN_RUTA"); }
+    }
+
+    // Traducción explícita en la frontera: Operación no recibe el peso ni la tarifa.
+    static EnvioOperacion traducir(EnvioVenta venta, List<String> ruta) {
+        return new EnvioOperacion(venta.codigo(), ruta, "CREADO");
+    }
+
+    public static void main(String[] args) {
+        var venta = new EnvioVenta("ENV-42", 2);
+        System.out.println("Ventas cobra " + venta.tarifaEnCentavos() + " centavos por " + venta.codigo());
+        var operacion = traducir(venta, List.of("Bodega", "Calle 26", "Cliente")).avanzar();
+        System.out.println("Operación mueve " + operacion.codigo() + " con estado " + operacion.estado());
+        try {
+            new EnvioVenta("ENV-43", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Rechazado: " + e.getMessage());
+        }
+    }
+}
+```
+
+Ejecútalo desde la carpeta del ejemplo:
+
+```bash
+cd academia-labs/microservices/ddd-mitos
+java DosContextos.java
+```
+
+**Explicación por bloques:** `EnvioVenta` y `EnvioOperacion` comparten la palabra «envío», pero cada uno solo tiene los datos que su contexto necesita. El constructor compacto de `EnvioVenta` protege la invariante del peso. `traducir` es la frontera: copia solo el código y fija el estado inicial de Operación. Nada de esto necesita microservicios ni un framework, y eso desmiente dos de los mitos de la tabla.
+
+![Captura de terminal: java DosContextos.java imprime la tarifa de 1240 centavos para ENV-42, el estado EN_RUTA y el rechazo de un envío con peso cero](content/figures/microservices/ddd-dos-contextos.svg)
+
+**Resultado esperado:**
+
+```text
+Ventas cobra 1240 centavos por ENV-42
+Operación mueve ENV-42 con estado EN_RUTA
+Rechazado: Ventas: el peso debe ser positivo
+```
+
+**Fallo deliberado:** agrega un campo `kilos` a `EnvioOperacion` «para tenerlo a mano» y cambia `traducir` para copiarlo. **Error esperado:** compila y funciona, pero ahora Operación depende de un dato de Ventas. **Diagnóstico:** cuando Ventas cambie la unidad de peso, Operación se rompe sin haberlo pedido. Ese acoplamiento es justo lo que el contexto delimitado evita; quita el campo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** calcula a mano la tarifa de 2 kilos y compárala con la salida.
+2. **Variación:** agrega a Operación el estado `ENTREGADO` con un método `entregar()`.
+3. **Diagnóstico:** explica por qué una clase `Envio` compartida con peso, tarifa, ruta y estado viola el lenguaje ubicuo de cada equipo.
+4. **Integración:** escribe en `glosario.md` qué significa «envío» en cada contexto, en una frase cada uno.
+5. **Diseño:** propone un tercer contexto, Facturación, y di qué datos recibiría en su frontera.
+
+**Pista:** si dudas de si un dato pertenece a un contexto, pregunta qué experto del negocio lo usa para tomar decisiones.
+
+#### Paso 6 · Práctica independiente
+
+Toma un sistema que conozcas (por ejemplo, el inventario de una tienda) y encuentra una palabra que cambie de significado entre dos áreas. Escribe los dos modelos en Java y la función de traducción, sin compartir clases entre ellos.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas los cuatro mitos y su verdad sin mirar la tabla.
+- [ ] `DosContextos.java` imprime las tres líneas esperadas.
+- [ ] Reprodujiste el fallo deliberado y explicaste el acoplamiento.
+- [ ] `glosario.md` define «envío» en dos contextos.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confundir contexto delimitado con microservicio, crear capas DDD en un CRUD sin reglas y compartir modelos entre equipos. **Siguiente paso:** el proyecto integrador del módulo usa estas fronteras para defender el monolito modular.
+
+**Transferencia al proyecto integrador «RutaFlow»:** documenta los contextos Ventas y Operación del monolito modular y protege su frontera con las pruebas de ArchUnit de los temas anteriores.
+
+**Fuente oficial:** [Martin Fowler — Bounded Context](https://martinfowler.com/bliki/BoundedContext.html) y [Domain-Driven Design Reference de Eric Evans](https://www.domainlanguage.com/ddd/reference/).
+
 ## Proyecto integrador · Defender el monolito modular de RutaFlow · 3 h
 
 Construye un monolito modular mínimo con Envíos, Facturación y Notificaciones. Entrega mapa de capacidades, APIs e internals, dos reglas de dominio sin framework, adaptador en memoria, inventario/grafo de dependencias, ciclo sembrado y corregido, fitness functions con prueba de sensibilidad, matriz de señales y ADR final. La decisión puede ser mantener o extraer, pero debe seguir la evidencia.

@@ -271,6 +271,156 @@ Corregí el Paso 5 reemplazando la cadena `if`/`else if` por un `switch` exhaust
 Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con `if`/`else if` del Paso 5, y el switch exhaustivo corregido del Paso 6; explicá por qué un `switch` exhaustivo sobre una `sealed class` previene específicamente el tipo de omisión que ocurrió en el Paso 5, mientras que una cadena de `if`/`else if` manual no ofrece esa garantía del compilador. Siguiente paso: cerrá el módulo integrando networking completo en el proyecto. Errores comunes: agregar headers de autenticación manualmente en cada llamada en vez de centralizarlos en un interceptor, usar `if`/`else if` en vez de un `switch` exhaustivo sobre una sealed class, y omitir el manejo explícito del estado de error en la UI. Fuentes oficiales: https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html y https://dart.dev/language/class-modifiers#sealed.
 **Implicación práctica:** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
+
+### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a implementar el inicio de sesión del conductor, guardar sus tokens de forma segura, renovar el token vencido sin que el usuario lo note y cerrar la sesión limpiando todo. **Prerrequisitos:** Tema 3 de este módulo (interceptores de `dio`) y un backend con `/auth/login` y `/auth/refresh` (el del proyecto integrador sirve).
+
+#### Paso 2 · Contexto y caso real
+En el Tema 3 el interceptor agregaba un token fijo. En la vida real el **token de acceso** vence a los pocos minutos por seguridad. Si la app no lo renueva, el conductor ve errores 401 en mitad de una ruta y tiene que volver a escribir su clave. Si el token se guarda en `SharedPreferences`, queda en texto plano en el teléfono. **¿Por qué es importante?** Un buen flujo de autenticación es invisible para el usuario y seguro para la empresa.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** token de acceso (corto), token de renovación (largo), almacenamiento seguro (Keychain/Keystore), error 401, cola de peticiones durante la renovación.
+
+El login devuelve dos tokens. El **token de acceso** va en cada petición y dura poco. El **token de renovación** solo sirve para pedir un token de acceso nuevo. Ambos se guardan con `flutter_secure_storage`, que usa el Keychain en iOS y el Keystore en Android. Cuando una petición recibe **401**, el interceptor renueva el token una sola vez, repite la petición y deja en espera las demás peticiones mientras tanto. Si la renovación también falla, la sesión terminó.
+
+**Analogía:** el token de acceso es la manilla de un evento que cambian cada hora; el de renovación es tu entrada original. Cuando la manilla vence, muestras la entrada en taquilla y te dan otra sin volver a pagar. Se rompe en que aquí la taquilla puede rechazar la entrada (sesión revocada) y entonces debes volver a comprar: iniciar sesión.
+
+**Límite de uso:** no guardes la contraseña del usuario en el teléfono, nunca. Solo los tokens.
+
+```mermaid
+stateDiagram-v2
+    [*] --> SinSesion
+    SinSesion --> ConSesion: login OK (guarda tokens)
+    ConSesion --> Renovando: petición responde 401
+    Renovando --> ConSesion: refresh OK (repite la petición)
+    Renovando --> SinSesion: refresh falla (borra tokens)
+    ConSesion --> SinSesion: logout (borra tokens)
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Desde la raíz de la app:
+
+```bash
+flutter pub add dio flutter_secure_storage
+```
+
+Archivo `lib/auth/almacen_tokens.dart`:
+
+```dart
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class AlmacenTokens {
+  const AlmacenTokens([this._storage = const FlutterSecureStorage()]);
+  final FlutterSecureStorage _storage;
+
+  Future<void> guardar(String acceso, String renovacion) async {
+    await _storage.write(key: 'acceso', value: acceso);
+    await _storage.write(key: 'renovacion', value: renovacion);
+  }
+
+  Future<String?> acceso() => _storage.read(key: 'acceso');
+  Future<String?> renovacion() => _storage.read(key: 'renovacion');
+  Future<void> borrar() => _storage.deleteAll();
+}
+```
+
+Archivo `lib/auth/interceptor_auth.dart`:
+
+```dart
+import 'package:dio/dio.dart';
+import 'almacen_tokens.dart';
+
+// QueuedInterceptor procesa una petición a la vez: si diez fallan con 401, solo se renueva una vez.
+class InterceptorAuth extends QueuedInterceptor {
+  InterceptorAuth(this._dio, this._tokens, {required this.alCerrarSesion});
+  final Dio _dio;
+  final AlmacenTokens _tokens;
+  final void Function() alCerrarSesion;
+
+  @override
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final acceso = await _tokens.acceso();
+    if (acceso != null) options.headers['Authorization'] = 'Bearer $acceso';
+    handler.next(options);
+  }
+
+  @override
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+    final esRefresh = err.requestOptions.path.endsWith('/auth/refresh');
+    if (err.response?.statusCode != 401 || esRefresh) return handler.next(err);
+
+    final renovacion = await _tokens.renovacion();
+    if (renovacion == null) return _terminar(err, handler);
+    try {
+      // Cliente aparte para no volver a pasar por este interceptor.
+      final r = await Dio(BaseOptions(baseUrl: _dio.options.baseUrl))
+          .post('/auth/refresh', data: {'refreshToken': renovacion});
+      await _tokens.guardar(r.data['accessToken'], r.data['refreshToken']);
+      final reintento = err.requestOptions..headers['Authorization'] = 'Bearer ${r.data['accessToken']}';
+      handler.resolve(await _dio.fetch(reintento)); // repite la petición original
+    } on DioException {
+      await _terminar(err, handler);
+    }
+  }
+
+  Future<void> _terminar(DioException err, ErrorInterceptorHandler handler) async {
+    await _tokens.borrar();
+    alCerrarSesion(); // la UI navega al login
+    handler.next(err);
+  }
+}
+```
+
+Archivo `lib/auth/servicio_auth.dart`:
+
+```dart
+import 'package:dio/dio.dart';
+import 'almacen_tokens.dart';
+
+class ServicioAuth {
+  ServicioAuth(this._dio, this._tokens);
+  final Dio _dio;
+  final AlmacenTokens _tokens;
+
+  Future<void> iniciarSesion(String usuario, String clave) async {
+    final r = await _dio.post('/auth/login', data: {'usuario': usuario, 'clave': clave});
+    await _tokens.guardar(r.data['accessToken'], r.data['refreshToken']); // la clave no se guarda
+  }
+
+  Future<void> cerrarSesion() => _tokens.borrar();
+}
+```
+
+**Explicación por bloques:** `AlmacenTokens` encapsula el almacenamiento seguro para que el resto de la app no sepa dónde viven los tokens; `onRequest` agrega el token de acceso a cada petición; `onError` solo actúa ante un 401 que no venga del propio refresh, renueva con un cliente `Dio` aparte (para no entrar en un ciclo), guarda los tokens nuevos y repite la petición original con `fetch`; si la renovación falla, `_terminar` borra todo y avisa a la UI; `ServicioAuth` hace el login y nunca guarda la clave.
+
+**Resultado esperado:** al iniciar sesión, las peticiones llevan `Authorization: Bearer …`; cuando el backend responde 401 por token vencido, ves una sola llamada a `/auth/refresh` y luego la petición original con 200, sin pantalla de error; al cerrar sesión, `acceso()` devuelve `null`.
+
+**Fallo deliberado:** cambia `QueuedInterceptor` por `Interceptor` y dispara cinco peticiones a la vez con el token vencido. **Error esperado:** ves cinco llamadas a `/auth/refresh` y algunas fallan porque el backend invalida el token de renovación ya usado. **Diagnóstico:** sin cola, cada petición renueva por su cuenta; `QueuedInterceptor` las procesa en orden y solo la primera renueva.
+
+#### Paso 5 · Práctica guiada
+1. **Reproducción:** con el backend local, fuerza la expiración del token de acceso y observa el refresh en los logs de `dio`.
+2. **Variación:** agrega un tope de un reintento por petición para evitar ciclos.
+3. **Diagnóstico:** explica qué pasaría si el refresh usara el mismo `_dio` con este interceptor.
+
+**Pista:** imprime `err.requestOptions.path` en `onError` para ver qué petición disparó cada renovación.
+
+#### Paso 6 · Práctica independiente
+Escribe una prueba unitaria con un adaptador falso de `dio` que responda 401 la primera vez y 200 después, y comprueba que `/auth/refresh` se llama exactamente una vez.
+
+#### Paso 7 · Cierre
+- [ ] Tokens en `flutter_secure_storage`, nunca en `SharedPreferences`.
+- [ ] Un solo refresh aunque fallen varias peticiones a la vez.
+- [ ] Sesión cerrada y tokens borrados cuando el refresh falla.
+- [ ] La contraseña no se guarda en ningún lugar.
+
+**Errores comunes:** guardar tokens en texto plano, renovar con el mismo cliente e interceptor (ciclo infinito) y no limpiar tokens al cerrar sesión. **Siguiente paso:** el laboratorio del módulo integra el login en la app de entregas.
+
+**Transferencia al proyecto integrador «App de entregas»:** agrega la pantalla de login del conductor y protege todas las llamadas de la ruta con `InterceptorAuth`.
+
+**Fuente oficial:** [dio: interceptores](https://pub.dev/packages/dio) y [flutter_secure_storage](https://pub.dev/packages/flutter_secure_storage).
+
 ## Aplicación guiada: RutaFlow Flutter
 
 **Construye una app propia que demuestre los Temas 1-3.** Parte de una carpeta vacía:

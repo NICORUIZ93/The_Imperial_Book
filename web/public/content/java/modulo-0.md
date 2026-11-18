@@ -23,6 +23,40 @@ public class Hola {
 
 Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.class`; el segundo lo ejecuta en la JVM. En Windows, si `javac` no se reconoce, revisa `JAVA_HOME` y que `%JAVA_HOME%\bin` esté en `Path`.
 
+## Ruta recomendada: recorrido del desarrollador Java en 17 pasos
+
+Esta ruta ordena lo que un desarrollador Java aprende desde cero hasta llegar a producción. Viene de una
+publicación de Nicolás Valenzuela (Backend & AI Engineer) guardada como captura y validada contra la
+academia (ver `docs/capture-intake.json`). La idea central: no hay atajos; cada paso hace más fácil el
+siguiente, así que no saltes a Kafka sin dominar los fundamentos. La imagen original no tiene un paso 10;
+no se inventó.
+
+```mermaid
+flowchart LR
+    F["Fundamentos<br/>pasos 1–5"] --> B["Base de datos<br/>pasos 6–7"]
+    B --> S["Ecosistema Spring<br/>pasos 8, 9 y 11"]
+    S --> P["Grado de producción<br/>pasos 12–17"]
+```
+
+| Paso | Tema de la ruta | Etapa | Dónde lo aprendes en la academia |
+|---|---|---|---|
+| 01 | Fundamentos de Java | Fundamentos | [Del código fuente a la JVM](/curso/java/0#tema-1-del-codigo-fuente-a-la-jvm) |
+| 02 | Conceptos de OOP | Fundamentos | [Clases, objetos, constructores y encapsulación](/curso/java/1#tema-1-clases-objetos-constructores-y-encapsulacion) |
+| 03 | Marco de colecciones | Fundamentos | [List, Set, Map y sus implementaciones](/curso/java/2#tema-1-list-set-map-y-sus-implementaciones) |
+| 04 | Manejo de excepciones | Fundamentos | [Excepciones personalizadas y no tragar excepciones](/curso/java/3#tema-3-excepciones-personalizadas-y-no-tragar-excepciones) |
+| 05 | Multihilo | Fundamentos | [Integrando concurrencia, modelado y testing](/curso/java/13#tema-2-integrando-concurrencia-modelado-y-testing) |
+| 06 | JDBC | Base de datos | [JDBC, PreparedStatement y DAO](/curso/java/17#tema-1-jdbc-preparedstatement-y-dao) |
+| 07 | SQL | Base de datos | [SQL para definir, escribir, consultar y relacionar](/curso/foundations/4#tema-2-sql-para-definir-escribir-consultar-y-relacionar) |
+| 08 | Spring Core | Ecosistema Spring | [Inversión de control y el contenedor de Spring](/curso/spring-boot/0#tema-1-inversion-de-control-y-el-contenedor-de-spring) |
+| 09 | Spring Boot | Ecosistema Spring | [Estereotipos, autoconfiguración y scopes](/curso/spring-boot/0#tema-3-estereotipos-autoconfiguracion-y-scopes) |
+| 11 | JPA / Hibernate | Ecosistema Spring | [Probar el repositorio contra PostgreSQL con @DataJpaTest](/curso/spring-boot/6#tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest) |
+| 12 | Microservicios | Grado de producción | [Arquitectura del microservicio integrador](/curso/spring-boot/12#tema-1-arquitectura-del-microservicio-integrador) |
+| 13 | Kafka | Grado de producción | [Producers y consumers con Spring Kafka](/curso/spring-boot/8#tema-1-producers-y-consumers-con-spring-kafka) |
+| 14 | Docker | Grado de producción | [Dockerfile multi-stage](/curso/devops/2#tema-1-dockerfile-multi-stage) |
+| 15 | Kubernetes | Grado de producción | [Pod, ReplicaSet, Deployment](/curso/devops/6#tema-1-pod-replicaset-deployment) |
+| 16 | AWS en la nube | Grado de producción | [Contenedores vs Lambda, y EKS](/curso/cloud/14#tema-3-contenedores-vs-lambda-y-eks) |
+| 17 | Diseño de sistemas | Grado de producción | [Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](/curso/foundations/10#tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella) |
+
 ## Aprende construyendo
 
 ### Tema 1: Del código fuente a la JVM

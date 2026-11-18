@@ -132,7 +132,8 @@
     "Proxy → self-call → Future excepcional → rechazo por capacidad. No acredita durabilidad ni propagación de seguridad.",
     "Sobre → namespace → validación/Fault → decisión de adaptador. Ejemplo complementario Python, no servidor SOAP Spring ni WSDL ejecutado.",
     "ChatClient controlado → callback autorizado → sesiones → esquema. Boot 4.0.9 + AI 2.0.2 compatibles, sin calidad LLM real.",
-    "Filtro tenant → vacío → límite/IDs → metadato ausente. Recuperación literal, no embeddings ni generación. Corregida numeración T6–T8."
+    "Filtro tenant → vacío → límite/IDs → metadato ausente. Recuperación literal, no embeddings ni generación. Corregida numeración T6–T8.",
+    "MCP con Spring AI: servidor webmvc STREAMABLE/SYNC con @McpTool y cliente con SyncMcpToolCallbackProvider. Captura real pendiente: Maven Central bloqueado en el entorno de generación."
   ],
   "21": [
     "Publicación → grupos → orden; refuerzo de M8 sobre el mismo lab y sus pruebas.",

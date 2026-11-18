@@ -67,7 +67,7 @@ export const FLUTTER_MODULES: CourseModule[] = [
     'Feature completa implementada con Riverpod (o Bloc) en vez de setState.'),
   m(5, 'Networking', 'Networking', 'Aplicación', '2 h 30 min', '#02569b',
     'Consume APIs REST reales con manejo de errores y estados de carga explícitos.',
-    ['http vs dio', 'Serialización con json_serializable', 'Interceptores (auth, logging)', 'Manejo de errores y estados de carga'],
+    ['http vs dio', 'Serialización con json_serializable', 'Interceptores (auth, logging)', 'Manejo de errores y estados de carga', 'Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión'],
     [
       'Haz una petición GET con el paquete http contra una API pública',
       'Repite el ejercicio con dio y compara la ergonomía (interceptores, cancelación, timeouts)',
@@ -181,7 +181,7 @@ export const FLUTTER_MODULES: CourseModule[] = [
     'Aplicación Flutter de entregas con mapa, tracking, ruta, evidencia, caché offline y push probada en dispositivo.'),
   m(15, 'Flutter Master: calidad, arquitectura y despliegue', 'Flutter Master', 'Experto', '9 h', '#02569b',
     'Consolida testing, rendimiento, Clean Architecture, internacionalización y releases firmados en todas las plataformas.',
-    ['flutter test, WidgetTester y pumpWidget', 'pumpAndSettle, golden e integration tests', 'RepaintBoundary, const, Keys y GlobalKey', 'Domain/Data/Presentation, repositories y use cases', 'intl, flutter_localizations y LocalizationsDelegate', 'APK, App Bundle, iOS, web, firma y stores'],
+    ['flutter test, WidgetTester y pumpWidget', 'pumpAndSettle, golden e integration tests', 'RepaintBoundary, const, Keys y GlobalKey', 'Domain/Data/Presentation, repositories y use cases', 'intl, flutter_localizations y LocalizationsDelegate', 'APK, App Bundle, iOS, web, firma y stores', 'Migrar a Flutter 3.50 y Dart 3.14', 'Integrar IA generativa con Firebase AI Logic'],
     ['Prueba widget', 'Detecta animación infinita', 'Mide repaints', 'Sustituye adapter', 'Prueba plurales', 'Firma artefactos'],
     ['¿Cuándo GlobalKey es deuda?', '¿Por qué pumpAndSettle puede ocultar un fallo?'], ['flutter_test','DevTools','intl','Fastlane'], 'Aplicación Flutter arquitecturada, localizada, perfilada, probada y desplegable.'),
   m(16, 'Flutter FFI: Dart con código nativo', 'Dart FFI', 'Experto', '3 h', '#02569b',

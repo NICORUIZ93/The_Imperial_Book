@@ -6,7 +6,9 @@ Cada tema extraído de una captura debe tener una decisión comprobable:
   candidato            -> el curso citado existe en docs/course-curriculum-inventory.json
                           y en docs/temario-maestro-unificado.json
   fuera-de-alcance     -> lleva un motivo escrito
-Además, todo curso citado por una captura debe estar en el inventario y en el temario unificado.
+Además, todo curso citado por una captura debe estar en el inventario y en el temario unificado, y
+una captura con `publishedAs` (ruta recomendada visible en la app) debe tener esa sección en la lección
+con un enlace a cada tema cubierto o agregado.
 """
 from __future__ import annotations
 
@@ -48,6 +50,22 @@ def main() -> int:
             name = f"{batch['id']}/{capture['file']}"
             if capture.get("inventoryCourse"):
                 check_course(capture["inventoryCourse"], name)
+            published = capture.get("publishedAs")
+            if published:
+                lesson = ROOT / "web" / "public" / "content" / published["track"] / f"modulo-{published['module']}.md"
+                text = lesson.read_text(encoding="utf-8") if lesson.is_file() else ""
+                heading = f"## {published['heading']}"
+                if heading not in text:
+                    errors.append(f"{name}: falta la sección «{published['heading']}» en {lesson.relative_to(ROOT)}")
+                else:
+                    section = text.split(heading, 1)[1].split("\n## ", 1)[0]
+                    for topic in capture["topics"]:
+                        for place in topic.get("where", [])[:1]:
+                            items = index.get(place["track"], {}).get(str(place["module"]), [])
+                            if 1 <= place["topic"] <= len(items):
+                                link = f"/curso/{place['track']}/{place['module']}#{items[place['topic'] - 1]['fragment']}"
+                                if link not in section:
+                                    errors.append(f"{name}: la ruta publicada no enlaza «{topic['title']}» ({link})")
             for topic in capture["topics"]:
                 label = f"{name} «{topic['title']}»"
                 decision = topic.get("decision")

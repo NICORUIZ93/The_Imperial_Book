@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1326,
+    "topics": 1331,
     "reviewed": 175,
-    "pending": 1151,
-    "priorityCandidates": 1003,
+    "pending": 1156,
+    "priorityCandidates": 1008,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -31,9 +31,9 @@
         "pending": 130
       },
       "flutter": {
-        "topics": 106,
+        "topics": 109,
         "reviewed": 63,
-        "pending": 43
+        "pending": 46
       },
       "foundations": {
         "topics": 102,
@@ -61,9 +61,9 @@
         "pending": 56
       },
       "microservices": {
-        "topics": 23,
+        "topics": 24,
         "reviewed": 17,
-        "pending": 6
+        "pending": 7
       },
       "node": {
         "topics": 83,
@@ -81,9 +81,9 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 113,
+        "topics": 114,
         "reviewed": 2,
-        "pending": 111
+        "pending": 112
       }
     },
     "staleRegistryEntries": [],
@@ -9662,6 +9662,38 @@
       }
     },
     {
+      "id": "flutter/modulo-15::Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+      "track": "flutter",
+      "module": 15,
+      "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
+      "id": "flutter/modulo-15::Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+      "track": "flutter",
+      "module": 15,
+      "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
       "id": "flutter/modulo-16::Tema 1: reconocer cuándo usar FFI y crear el paquete",
       "track": "flutter",
       "module": 16,
@@ -10663,6 +10695,22 @@
           "https://pub.dev/packages/json_serializable"
         ]
       }
+    },
+    {
+      "id": "flutter/modulo-5::Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+      "track": "flutter",
+      "module": 5,
+      "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
     },
     {
       "id": "flutter/modulo-6::Tema 1: shared_preferences",
@@ -18447,6 +18495,22 @@
       }
     },
     {
+      "id": "microservices/modulo-1::Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "track": "microservices",
+      "module": 1,
+      "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
       "id": "node/modulo-0::Tema 1: Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
       "track": "node",
       "module": 0,
@@ -21917,6 +21981,22 @@
       ],
       "prioritySignals": [
         "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "spring-boot/modulo-20::Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+      "track": "spring-boot",
+      "module": 20,
+      "topic": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
     },

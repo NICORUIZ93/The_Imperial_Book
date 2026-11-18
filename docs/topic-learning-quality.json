@@ -93,18 +93,18 @@
       "repeatedDemo": 0
     },
     "flutter": {
-      "topics": 106,
-      "explanation": 106,
-      "code": 106,
-      "visual": 83,
-      "filePath": 106,
-      "runCommand": 106,
-      "expectedResult": 106,
-      "practice": 106,
-      "project": 106,
-      "modelMental": 106,
-      "limitsDecision": 106,
-      "practicable": 106,
+      "topics": 109,
+      "explanation": 109,
+      "code": 109,
+      "visual": 86,
+      "filePath": 109,
+      "runCommand": 109,
+      "expectedResult": 109,
+      "practice": 109,
+      "project": 109,
+      "modelMental": 109,
+      "limitsDecision": 109,
+      "practicable": 109,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -189,18 +189,18 @@
       "repeatedDemo": 0
     },
     "microservices": {
-      "topics": 23,
-      "explanation": 23,
-      "code": 23,
-      "visual": 1,
-      "filePath": 23,
-      "runCommand": 23,
-      "expectedResult": 23,
-      "practice": 23,
-      "project": 23,
-      "modelMental": 23,
-      "limitsDecision": 23,
-      "practicable": 23,
+      "topics": 24,
+      "explanation": 24,
+      "code": 24,
+      "visual": 2,
+      "filePath": 24,
+      "runCommand": 24,
+      "expectedResult": 24,
+      "practice": 24,
+      "project": 24,
+      "modelMental": 24,
+      "limitsDecision": 24,
+      "practicable": 24,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -253,18 +253,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 113,
-      "explanation": 113,
-      "code": 113,
-      "visual": 43,
-      "filePath": 113,
-      "runCommand": 113,
-      "expectedResult": 113,
-      "practice": 113,
-      "project": 113,
-      "modelMental": 113,
-      "limitsDecision": 113,
-      "practicable": 113,
+      "topics": 114,
+      "explanation": 114,
+      "code": 114,
+      "visual": 44,
+      "filePath": 114,
+      "runCommand": 114,
+      "expectedResult": 114,
+      "practice": 114,
+      "project": 114,
+      "modelMental": 114,
+      "limitsDecision": 114,
+      "practicable": 114,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -12030,6 +12030,50 @@
         }
       },
       {
+        "module": 15,
+        "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 16,
         "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
         "criteria": {
@@ -13264,6 +13308,28 @@
       {
         "module": 5,
         "topic": "Tema 3: Interceptores y estados explícitos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23238,6 +23304,28 @@
           "genericScaffold": false,
           "repeatedDemo": false
         }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
       }
     ],
     "node": [
@@ -28390,6 +28478,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

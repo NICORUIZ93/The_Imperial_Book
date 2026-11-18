@@ -1,9 +1,36 @@
 ---
 name: academy-flow-inspector
-description: Inspecciona The Imperial Book (la app Angular en web/) como lo haría un humano que la usa de verdad -- navegando catálogo -> ruta -> módulo -> tema -- para encontrar errores de flujo (enlaces rotos, diagramas que no renderizan, excepciones de consola, páginas donde el DOM no coincide con lo que el Markdown promete) y para confirmar que cada tema tiene explicación y ejemplo reales, no solo que "aparece en el índice". Usa esta skill siempre que el usuario pida auditar, inspeccionar, revisar de inicio a fin, validar el flujo, o encontrar errores/bugs en la app, los cursos, las rutas, los módulos o los temas de The Imperial Book -- incluso si no menciona "inspector", "QA" o "end to end" explícitamente. También aplica cuando pregunte si "todos los temas tienen ejemplo y explicación" o si algo "se ve mal" al navegar un curso.
+description: Use when auditing The Imperial Book end to end — broken links, diagrams, console errors, and whether each topic really has explanation and example.
+metadata:
+  author: Nicolás Ruiz
+  tags: [the-imperial-book, qa, playwright, accessibility, curriculum]
+  version: 1.1.0
 ---
 
 # Academia Flow Inspector
+
+## Purpose
+
+Usa esta skill siempre que el usuario pida auditar, inspeccionar, revisar de inicio a fin, validar el
+flujo o encontrar errores en la app, los cursos, las rutas, los módulos o los temas de The Imperial Book,
+aunque no diga "inspector", "QA" o "end to end". También aplica cuando pregunte si "todos los temas
+tienen ejemplo y explicación" o si algo "se ve mal" al navegar un curso.
+
+## Prerequisites
+
+- Node 22+ y las dependencias de `web/` instaladas (`cd web && npm ci`).
+- Un navegador para Playwright: Chrome del sistema (`PLAYWRIGHT_CHANNEL=chrome`) o
+  `npx playwright install chromium`.
+- La app servida en `http://127.0.0.1:4200` (`cd web && npm start`).
+- Python 3 para las auditorías editoriales de `scripts/`.
+
+## Scripts
+
+| Script | Qué hace | Ejemplo |
+|---|---|---|
+| `scripts/sweep_topics.cjs` | Recorre cada página de módulo con un navegador real y escribe un hallazgo por fila | `node .claude/skills/academy-flow-inspector/scripts/sweep_topics.cjs --base-url=http://127.0.0.1:4200 --tracks=java --out=/tmp/flow.json` |
+| `scripts/audit_topic_learning_quality.py` (repo) | Mide los 9 criterios editoriales sobre el Markdown | `python3 scripts/audit_topic_learning_quality.py --check --require-practicable` |
+| `scripts/audit_seven_step_methodology.py` (repo) | Mide los marcadores del formato de 7 pasos | `python3 scripts/audit_seven_step_methodology.py --check` |
 
 Esta skill es para un proyecto concreto: The_Imperial_Book, una academia servida por una sola app
 Angular (`web/`). Consulta los índices generados para conocer el número vigente de rutas, módulos
@@ -121,3 +148,20 @@ estándar de `docs/editorial-contract.md`: no reclames más cobertura de la que 
 - No reportes "1326/1326 temas verificados visualmente" -- nunca es cierto a esa escala; sé preciso
   sobre cuántos se inspeccionaron con el navegador y cuántos solo pasaron por el barrido o las
   auditorías estáticas.
+
+## Limitations
+
+- El barrido corre contra el servidor de desarrollo; con mucha concurrencia puede marcar páginas "sin
+  temas" por carga. Reabre esas páginas de a una antes de reportarlas.
+- No juzga si una explicación es clara: eso exige la inspección humana del paso 4.
+- No ejecuta los ejemplos de código de las lecciones.
+
+## Troubleshooting
+
+| Error | Causa | Solución |
+|---|---|---|
+| `Se esperaban N temas y el DOM tiene 0 .topic-card` en muchas páginas | Servidor de desarrollo saturado | Baja `--concurrency` a 1–2 y repite solo esas páginas |
+| `browserType.launch: Executable doesn't exist` | Playwright sin navegador | `PLAYWRIGHT_CHANNEL=chrome` o `npx playwright install chromium` |
+| `Failed to load resource: 404` en consola | Recurso faltante (logo, figura) | Corre `python3 scripts/audit_lesson_assets.py` para ubicarlo |
+| `element is not visible` al hacer clic | El modo libro muestra un tema a la vez | Navega con la tira de temas o con el fragmento `#tema` |
+

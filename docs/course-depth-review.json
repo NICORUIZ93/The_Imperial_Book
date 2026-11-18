@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1326,
+    "topics": 1331,
     "topicsWithSignals": 262,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1326,
+    "total": 1331,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -6510,6 +6510,30 @@
     },
     {
       "track": "flutter",
+      "module": 15,
+      "title": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+      "file": "web/public/content/flutter/modulo-15.md",
+      "line": 505,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 15,
+      "title": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+      "file": "web/public/content/flutter/modulo-15.md",
+      "line": 602,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
       "module": 16,
       "title": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
       "file": "web/public/content/flutter/modulo-16.md",
@@ -7196,6 +7220,18 @@
       "title": "Tema 3: Interceptores y estados explícitos",
       "file": "web/public/content/flutter/modulo-5.md",
       "line": 167,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "flutter",
+      "module": 5,
+      "title": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+      "file": "web/public/content/flutter/modulo-5.md",
+      "line": 275,
       "signals": [],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
@@ -9334,7 +9370,7 @@
       "module": 0,
       "title": "Tema 1: Del código fuente a la JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 28,
+      "line": 62,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9348,7 +9384,7 @@
       "module": 0,
       "title": "Tema 2: public static void main — qué significa cada palabra",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 171,
+      "line": 205,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9362,7 +9398,7 @@
       "module": 0,
       "title": "Tema 3: JDK, JRE y JVM",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 329,
+      "line": 363,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9376,7 +9412,7 @@
       "module": 0,
       "title": "Tema 4: Tipos primitivos vs referencias",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 436,
+      "line": 470,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9390,7 +9426,7 @@
       "module": 0,
       "title": "Tema 5: Variables, conversiones y `String`",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 591,
+      "line": 625,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9404,7 +9440,7 @@
       "module": 0,
       "title": "Tema 6: Operadores, precedencia y control de flujo",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 709,
+      "line": 743,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9418,7 +9454,7 @@
       "module": 0,
       "title": "Tema 7: Arreglos, wrappers y paso de argumentos",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 873,
+      "line": 907,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -9432,7 +9468,7 @@
       "module": 0,
       "title": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
       "file": "web/public/content/java/modulo-0.md",
-      "line": 986,
+      "line": 1020,
       "signals": [
         "demostracion-no-delimitada"
       ],
@@ -12774,6 +12810,18 @@
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
     },
     {
+      "track": "microservices",
+      "module": 1,
+      "title": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "file": "web/public/content/microservices/modulo-1.md",
+      "line": 1002,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
       "track": "node",
       "module": 0,
       "title": "Tema 1: Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
@@ -15839,6 +15887,18 @@
         "demostracion-no-delimitada"
       ],
       "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "title": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+      "file": "web/public/content/spring-boot/modulo-20.md",
+      "line": 1068,
+      "signals": [],
+      "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

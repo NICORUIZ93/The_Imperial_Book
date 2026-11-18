@@ -1062,3 +1062,168 @@ class RagScopeTest {
 **Hito del tema:** conserva filtrado por empresa, ausencia de evidencia, selección de IDs con límite posterior y exclusión sin propietario. Adjunta tu caso independiente y plan de evaluación. Las cuatro pruebas publicadas verifican fronteras locales; no acreditan búsqueda vectorial, generación ni seguridad completa de un sistema RAG.
 
 **Fuente primaria:** [Spring AI: RAG, QuestionAnswerAdvisor y filtros](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
+
+## Aplicación del material de referencia
+
+### Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un `ChatClient` sin copiar su código. **Prerrequisitos:** el Tema 7 de este módulo (ChatClient y herramientas con `@Tool`), REST con Spring MVC y JDK 25 o superior.
+
+#### Paso 2 · Contexto y caso real
+En el Tema 7 la herramienta vivía dentro de la misma aplicación que el chat. Ahora el equipo de soporte, un asistente de escritorio y un agente de IA quieren consultar el estado de un envío. Si cada uno copia el código de la herramienta, tendrás tres versiones distintas de la misma regla. **MCP** (Model Context Protocol) es un protocolo abierto para que un servidor publique herramientas, recursos y prompts, y para que cualquier cliente compatible los descubra y los llame. **¿Por qué es importante?** Una sola herramienta, una sola regla de autorización y un solo lugar para corregirla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** servidor MCP, cliente MCP, herramienta (`tool`), descubrimiento (`tools/list`), invocación (`tools/call`), transporte Streamable HTTP.
+
+Piensa en tres piezas. El **servidor MCP** es tu aplicación Spring Boot: publica métodos anotados con `@McpTool`. El **cliente MCP** es otra aplicación (o un IDE, o un agente) que se conecta al servidor. Primero pregunta qué herramientas hay (`tools/list`) y recibe nombre, descripción y el esquema JSON de los parámetros. Después llama a una (`tools/call`) con argumentos. El modelo de IA nunca entra a tu base de datos: solo pide que se ejecute una herramienta, y es tu servidor el que decide si la ejecuta.
+
+**Analogía:** un servidor MCP es como el menú de un restaurante con los ingredientes de cada plato. El cliente lee el menú (descubrimiento) y pide un plato con sus opciones (invocación). La cocina sigue decidiendo qué sirve y a quién. La analogía se rompe en un punto: el menú de MCP se lee en tiempo de ejecución, así que una herramienta nueva aparece sin cambiar el código del cliente.
+
+**Límite de uso:** por defecto los transportes HTTP de MCP **no tienen autenticación**: cualquiera que alcance el endpoint puede listar e invocar todas las herramientas. No lo expongas fuera de `localhost` sin Spring Security delante.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente MCP (ChatClient)
+    participant S as Servidor MCP (Spring Boot)
+    participant D as Servicio de envíos
+    C->>S: POST /mcp tools/list
+    S-->>C: estado_envio(codigo) + esquema JSON
+    C->>S: POST /mcp tools/call estado_envio {codigo: ENV-42}
+    S->>D: autoriza y consulta ENV-42
+    D-->>S: CREADO
+    S-->>C: "Estado: CREADO"
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Crea dos proyectos con Spring Initializr (Spring Boot 4, Java 25): `rutaflow-mcp-server` y `rutaflow-mcp-client`.
+
+Archivo `rutaflow-mcp-server/pom.xml` (dependencia que agrega el servidor; la versión la fija el BOM de Spring AI 2.0):
+
+```xml
+<dependency>
+  <groupId>org.springframework.ai</groupId>
+  <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+</dependency>
+```
+
+Archivo `rutaflow-mcp-server/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  ai:
+    mcp:
+      server:
+        name: rutaflow-envios
+        version: 1.0.0
+        protocol: STREAMABLE   # SSE quedó obsoleto en Spring AI 2.0
+        type: SYNC
+        annotation-scanner:
+          enabled: true
+```
+
+Archivo `rutaflow-mcp-server/src/main/java/academia/EnvioTools.java`:
+
+```java
+package academia;
+
+import java.util.Map;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
+import org.springframework.stereotype.Component;
+
+@Component
+class EnvioTools {
+
+    // Fuente de datos de ejemplo; en RutaFlow sería el repositorio de envíos.
+    private final Map<String, String> estados = Map.of("ENV-42", "CREADO", "ENV-43", "ENTREGADO");
+
+    @McpTool(name = "estado_envio", description = "Devuelve el estado actual de un envío por su código")
+    String estadoEnvio(@McpToolParam(description = "Código del envío, por ejemplo ENV-42", required = true) String codigo) {
+        // La regla vive en el servidor: un código desconocido es un error explícito, no un texto inventado.
+        String estado = estados.get(codigo);
+        if (estado == null) {
+            throw new IllegalArgumentException("Envío no encontrado: " + codigo);
+        }
+        return "Estado: " + estado;
+    }
+}
+```
+
+Arranca el servidor y prueba el descubrimiento con el inspector oficial de MCP, desde otra terminal:
+
+```bash
+cd rutaflow-mcp-server && ./mvnw spring-boot:run
+npx @modelcontextprotocol/inspector
+```
+
+En el inspector elige transporte **Streamable HTTP**, URL `http://localhost:8080/mcp`, pulsa **List Tools** y luego llama `estado_envio` con `codigo = ENV-42`.
+
+**Resultado esperado:** la lista muestra `estado_envio` con su descripción y un esquema que exige `codigo` de tipo `string`; la llamada responde `Estado: CREADO`.
+
+Ahora el cliente. Archivo `rutaflow-mcp-client/src/main/resources/application.yml`:
+
+```yaml
+server:
+  port: 8081
+spring:
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        streamable-http:
+          connections:
+            rutaflow:
+              url: http://localhost:8080   # el endpoint /mcp es el valor por defecto
+```
+
+Archivo `rutaflow-mcp-client/src/main/java/academia/AsistenteController.java` (el cliente necesita además el starter `spring-ai-starter-mcp-client` y el starter del modelo que uses, que crea el `ChatClient.Builder`):
+
+```java
+package academia;
+
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+class AsistenteController {
+
+    private final ChatClient chatClient;
+
+    // Las herramientas llegan del servidor MCP: este proyecto no contiene el código de EnvioTools.
+    AsistenteController(ChatClient.Builder builder, SyncMcpToolCallbackProvider herramientasMcp) {
+        this.chatClient = builder.defaultToolCallbacks(herramientasMcp).build();
+    }
+
+    @GetMapping("/preguntar")
+    String preguntar(@RequestParam String q) {
+        return chatClient.prompt(q).call().content();
+    }
+}
+```
+
+```bash
+curl "http://localhost:8081/preguntar?q=¿En%20qué%20estado%20está%20ENV-42?"
+```
+
+**Explicación por bloques:** el starter `spring-ai-starter-mcp-server-webmvc` publica el endpoint `POST /mcp`; `annotation-scanner.enabled` hace que Spring encuentre `@McpTool` y genere el esquema JSON a partir de la firma del método y de `@McpToolParam`; en el cliente, la conexión `rutaflow` descubre las herramientas al arrancar y `SyncMcpToolCallbackProvider` las entrega al `ChatClient` como si fueran locales.
+
+**Fallo deliberado:** apaga el servidor y vuelve a arrancar el cliente. **Diagnóstico:** el cliente falla al iniciar porque no puede inicializar la conexión MCP `rutaflow`; el síntoma no es una mala respuesta del modelo sino un error de conexión. Levanta el servidor y repite. Segundo fallo: llama `estado_envio` con `ENV-99` desde el inspector: recibes el error `Envío no encontrado: ENV-99`, que demuestra que la regla está en el servidor.
+
+#### Paso 5 · Práctica guiada
+Agrega una segunda herramienta `envios_por_estado(estado)` que devuelva los códigos con ese estado. **Pista:** no toques el cliente; reinícialo y comprueba en el inspector que la herramienta nueva aparece sola en `tools/list`.
+
+#### Paso 6 · Práctica independiente
+Protege el endpoint `/mcp` del servidor con Spring Security (por ejemplo, un token en una cabecera) y demuestra con el inspector que sin token `tools/list` responde 401 y con token responde la lista.
+
+#### Paso 7 · Cierre
+Entregá la lista de herramientas vista en el inspector, la respuesta `Estado: CREADO`, el error del cliente con el servidor apagado y el 401 del Paso 6. Explicá con tus palabras por qué MCP evita copiar herramientas entre aplicaciones. **Errores comunes:** dejar `/mcp` público, devolver texto inventado cuando el dato no existe en vez de un error, y confiar en que el modelo decida permisos. **Cuándo no usarlo:** si la herramienta solo la usa una aplicación, el `@Tool` local del Tema 7 es más simple. **Siguiente paso:** el proyecto integrador expone sus consultas de envíos por MCP.
+
+**Transferencia al proyecto integrador «RutaFlow»:** publica `estado_envio` desde el servicio de envíos como servidor MCP protegido y consúmelo desde el asistente de soporte.
+
+**Fuente oficial:** [Spring AI — MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html) y [MCP Client Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html).

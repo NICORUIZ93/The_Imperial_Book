@@ -85,7 +85,7 @@
     },
     "spring-boot": {
       "originalModules": 23,
-      "originalTopics": 113,
+      "originalTopics": 114,
       "migratedModules": [
         26
       ]
@@ -107,7 +107,7 @@
     },
     "flutter": {
       "originalModules": 16,
-      "originalTopics": 106,
+      "originalTopics": 109,
       "migratedModules": []
     }
   }

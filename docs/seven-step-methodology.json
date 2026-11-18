@@ -96,21 +96,21 @@
       "complete": 130
     },
     "flutter": {
-      "topics": 106,
-      "objective": 105,
-      "prerequisites": 106,
-      "context": 105,
-      "theoryAnalogy": 105,
-      "guidedDemo": 105,
-      "codeExplanation": 106,
-      "execution": 106,
-      "expectedResult": 106,
-      "deliberateFailure": 106,
-      "guidedPractice": 105,
-      "independentPractice": 105,
-      "closure": 104,
-      "commonErrors": 105,
-      "resources": 106,
+      "topics": 109,
+      "objective": 108,
+      "prerequisites": 109,
+      "context": 108,
+      "theoryAnalogy": 108,
+      "guidedDemo": 106,
+      "codeExplanation": 109,
+      "execution": 109,
+      "expectedResult": 109,
+      "deliberateFailure": 109,
+      "guidedPractice": 108,
+      "independentPractice": 108,
+      "closure": 107,
+      "commonErrors": 108,
+      "resources": 109,
       "standaloneExample": 105,
       "complete": 104
     },
@@ -210,21 +210,21 @@
       "complete": 56
     },
     "microservices": {
-      "topics": 23,
-      "objective": 22,
-      "prerequisites": 23,
-      "context": 23,
-      "theoryAnalogy": 23,
-      "guidedDemo": 19,
-      "codeExplanation": 23,
-      "execution": 23,
-      "expectedResult": 22,
-      "deliberateFailure": 23,
-      "guidedPractice": 13,
-      "independentPractice": 23,
-      "closure": 22,
-      "commonErrors": 12,
-      "resources": 11,
+      "topics": 24,
+      "objective": 23,
+      "prerequisites": 24,
+      "context": 24,
+      "theoryAnalogy": 24,
+      "guidedDemo": 20,
+      "codeExplanation": 24,
+      "execution": 24,
+      "expectedResult": 23,
+      "deliberateFailure": 24,
+      "guidedPractice": 14,
+      "independentPractice": 24,
+      "closure": 23,
+      "commonErrors": 13,
+      "resources": 12,
       "standaloneExample": 22,
       "complete": 11
     },
@@ -286,22 +286,22 @@
       "complete": 29
     },
     "spring-boot": {
-      "topics": 113,
-      "objective": 0,
-      "prerequisites": 39,
-      "context": 0,
-      "theoryAnalogy": 0,
+      "topics": 114,
+      "objective": 1,
+      "prerequisites": 40,
+      "context": 1,
+      "theoryAnalogy": 1,
       "guidedDemo": 0,
-      "codeExplanation": 113,
-      "execution": 109,
-      "expectedResult": 113,
-      "deliberateFailure": 113,
-      "guidedPractice": 0,
-      "independentPractice": 0,
-      "closure": 0,
-      "commonErrors": 5,
-      "resources": 35,
-      "standaloneExample": 5,
+      "codeExplanation": 114,
+      "execution": 110,
+      "expectedResult": 114,
+      "deliberateFailure": 114,
+      "guidedPractice": 1,
+      "independentPractice": 1,
+      "closure": 1,
+      "commonErrors": 6,
+      "resources": 36,
+      "standaloneExample": 6,
       "complete": 0
     }
   },
@@ -13668,6 +13668,56 @@
         }
       },
       {
+        "module": 15,
+        "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 13,
+          "complete": false
+        }
+      },
+      {
         "module": 16,
         "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
         "criteria": {
@@ -15090,6 +15140,31 @@
         "classification": {
           "stepsPassed": 15,
           "complete": true
+        }
+      },
+      {
+        "module": 5,
+        "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 13,
+          "complete": false
         }
       },
       {
@@ -26403,6 +26478,31 @@
           "stepsPassed": 10,
           "complete": false
         }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 14,
+          "complete": false
+        }
       }
     ],
     "node": [
@@ -32259,6 +32359,31 @@
         },
         "classification": {
           "stepsPassed": 5,
+          "complete": false
+        }
+      },
+      {
+        "module": 20,
+        "topic": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 14,
           "complete": false
         }
       },

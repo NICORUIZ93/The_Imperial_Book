@@ -13,23 +13,218 @@
           "inventoryCourse": "linkedin-recorrido-desarrollador-java-17-pasos",
           "notes": "La imagen salta del paso 09 al 11: no existe un paso 10 en la fuente. No se inventa.",
           "topics": [
-            {"title": "Fundamentos de Java", "decision": "cubierto", "where": [{"track": "java", "module": 0, "topic": 1}, {"track": "java", "module": 0, "topic": 4}]},
-            {"title": "Conceptos de OOP", "decision": "cubierto", "where": [{"track": "java", "module": 1, "topic": 1}, {"track": "java", "module": 1, "topic": 2}]},
-            {"title": "Marco de colecciones", "decision": "cubierto", "where": [{"track": "java", "module": 2, "topic": 1}]},
-            {"title": "Manejo de excepciones", "decision": "cubierto", "where": [{"track": "java", "module": 3, "topic": 3}]},
-            {"title": "Multihilo", "decision": "cubierto", "where": [{"track": "java", "module": 13, "topic": 2}]},
-            {"title": "JDBC", "decision": "cubierto", "where": [{"track": "java", "module": 17, "topic": 1}, {"track": "spring-boot", "module": 17, "topic": 1}]},
-            {"title": "SQL", "decision": "cubierto", "where": [{"track": "foundations", "module": 4, "topic": 2}]},
-            {"title": "Spring Core", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 0, "topic": 1}, {"track": "spring-boot", "module": 0, "topic": 2}]},
-            {"title": "Spring Boot", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 0, "topic": 3}, {"track": "spring-boot", "module": 1, "topic": 1}]},
-            {"title": "JPA / Hibernate", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 6, "topic": 2}]},
-            {"title": "Microservicios", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 12, "topic": 1}, {"track": "microservices", "module": 1, "topic": 5}]},
-            {"title": "Kafka", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 8, "topic": 1}]},
-            {"title": "Docker", "decision": "cubierto", "where": [{"track": "devops", "module": 2, "topic": 1}]},
-            {"title": "Kubernetes", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
-            {"title": "AWS en la nube", "decision": "cubierto", "where": [{"track": "cloud", "module": 14, "topic": 3}]},
-            {"title": "Diseño de sistemas", "decision": "agregado", "where": [{"track": "foundations", "module": 10, "topic": 7}]}
-          ]
+            {
+              "title": "Fundamentos de Java",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 0,
+                  "topic": 1
+                },
+                {
+                  "track": "java",
+                  "module": 0,
+                  "topic": 4
+                }
+              ]
+            },
+            {
+              "title": "Conceptos de OOP",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 1,
+                  "topic": 1
+                },
+                {
+                  "track": "java",
+                  "module": 1,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "Marco de colecciones",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 2,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "Manejo de excepciones",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 3,
+                  "topic": 3
+                }
+              ]
+            },
+            {
+              "title": "Multihilo",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 13,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "JDBC",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "java",
+                  "module": 17,
+                  "topic": 1
+                },
+                {
+                  "track": "spring-boot",
+                  "module": 17,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "SQL",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "foundations",
+                  "module": 4,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "Spring Core",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 0,
+                  "topic": 1
+                },
+                {
+                  "track": "spring-boot",
+                  "module": 0,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "Spring Boot",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 0,
+                  "topic": 3
+                },
+                {
+                  "track": "spring-boot",
+                  "module": 1,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "JPA / Hibernate",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 6,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "Microservicios",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 12,
+                  "topic": 1
+                },
+                {
+                  "track": "microservices",
+                  "module": 1,
+                  "topic": 5
+                }
+              ]
+            },
+            {
+              "title": "Kafka",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 8,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "Docker",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 2,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "Kubernetes",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "AWS en la nube",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "cloud",
+                  "module": 14,
+                  "topic": 3
+                }
+              ]
+            },
+            {
+              "title": "Diseño de sistemas",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "foundations",
+                  "module": 10,
+                  "topic": 7
+                }
+              ]
+            }
+          ],
+          "publishedAs": {
+            "track": "java",
+            "module": 0,
+            "heading": "Ruta recomendada: recorrido del desarrollador Java en 17 pasos"
+          }
         },
         {
           "file": "9B57E326-3A26-46FE-88FA-2E5213BF6012.PNG",
@@ -37,14 +232,104 @@
           "source": "Publicidad de Galaxy Training: curso «Kubernetes for Developers», inicio lunes 9 de noviembre de 2026, 19:00–21:00",
           "inventoryCourse": "galaxy-training-kubernetes-for-developers",
           "topics": [
-            {"title": "ReplicaSet", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
-            {"title": "EKS (AKS/GKE)", "decision": "cubierto", "where": [{"track": "cloud", "module": 14, "topic": 3}, {"track": "cloud", "module": 33, "topic": 2}]},
-            {"title": "Minikube", "decision": "agregado", "where": [{"track": "devops", "module": 6, "topic": 8}]},
-            {"title": "Deployment", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
-            {"title": "ConfigMap", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 3}]},
-            {"title": "Namespace", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 5}]},
-            {"title": "Ingress", "decision": "cubierto", "where": [{"track": "devops", "module": 7, "topic": 2}, {"track": "devops", "module": 6, "topic": 8}]},
-            {"title": "Volumen (PV/PVC)", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 7}]}
+            {
+              "title": "ReplicaSet",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "EKS (AKS/GKE)",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "cloud",
+                  "module": 14,
+                  "topic": 3
+                },
+                {
+                  "track": "cloud",
+                  "module": 33,
+                  "topic": 2
+                }
+              ]
+            },
+            {
+              "title": "Minikube",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 8
+                }
+              ]
+            },
+            {
+              "title": "Deployment",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "ConfigMap",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 3
+                }
+              ]
+            },
+            {
+              "title": "Namespace",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 5
+                }
+              ]
+            },
+            {
+              "title": "Ingress",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 7,
+                  "topic": 2
+                },
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 8
+                }
+              ]
+            },
+            {
+              "title": "Volumen (PV/PVC)",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "devops",
+                  "module": 6,
+                  "topic": 7
+                }
+              ]
+            }
           ]
         },
         {
@@ -53,7 +338,17 @@
           "source": "Publicación de Warren Roque (Senior DevOps / Cloud Engineer): «Dos formas de trabajar con IA: Vibe coding vs Spec-Driven»",
           "inventoryCourse": "linkedin-vibe-coding-vs-spec-driven",
           "topics": [
-            {"title": "Desarrollo guiado por especificación (Spec-Driven) frente a vibe coding", "decision": "agregado", "where": [{"track": "foundations", "module": 7, "topic": 6}]}
+            {
+              "title": "Desarrollo guiado por especificación (Spec-Driven) frente a vibe coding",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "foundations",
+                  "module": 7,
+                  "topic": 6
+                }
+              ]
+            }
           ]
         },
         {
@@ -61,9 +356,62 @@
           "kind": "anuncios",
           "source": "Tres publicaciones de Facebook en una captura: meme de la PS5, DevTalles «Spring Boot Harness» y DAS Academy «Mitos y verdades de Domain-Driven Design»",
           "topics": [
-            {"title": "Meme: comprar una PS5 usada", "decision": "fuera-de-alcance", "reason": "No es contenido técnico; quedó como recomendación personal en Notion."},
-            {"title": "Spring Boot Harness (DevTalles)", "decision": "candidato", "stack": "spring-boot", "inventoryCourse": "devtalles-spring-boot-harness", "reason": "Solo hay un anuncio («Viene, viene…») con iconos de Spring y de un robot; el temario no es público y no se pudo verificar. Coincide con un hueco real: la academia no tiene un tema de Spring AI (ChatClient, herramientas, RAG, MCP). Ver specs/003 P5."},
-            {"title": "Mitos y verdades de Domain-Driven Design (DAS Academy)", "decision": "cubierto", "inventoryCourse": "das-academy-mitos-verdades-ddd", "where": [{"track": "spring-boot", "module": 10, "topic": 7}, {"track": "microservices", "module": 1, "topic": 5}]}
+            {
+              "title": "Meme: comprar una PS5 usada",
+              "decision": "fuera-de-alcance",
+              "reason": "No es contenido técnico; quedó como recomendación personal en Notion."
+            },
+            {
+              "title": "Spring Boot Harness (DevTalles)",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 20,
+                  "topic": 7
+                },
+                {
+                  "track": "spring-boot",
+                  "module": 20,
+                  "topic": 8
+                }
+              ],
+              "inventoryCourse": "devtalles-spring-boot-harness",
+              "reason": "Solo hay un anuncio sin temario público. Lo más cercano que enseña la academia es Spring AI (M20 Temas 7 y 8). La primera revisión lo marcó como hueco por un error de búsqueda; el hueco real era MCP, que se agrega en specs/005 E3."
+            },
+            {
+              "title": "Mitos y verdades de Domain-Driven Design (DAS Academy)",
+              "decision": "agregado",
+              "inventoryCourse": "das-academy-mitos-verdades-ddd",
+              "where": [
+                {
+                  "track": "microservices",
+                  "module": 1,
+                  "topic": 14
+                },
+                {
+                  "track": "spring-boot",
+                  "module": 10,
+                  "topic": 7
+                },
+                {
+                  "track": "microservices",
+                  "module": 1,
+                  "topic": 5
+                }
+              ]
+            },
+            {
+              "title": "MCP con Spring AI (hueco detectado al validar Spring Boot Harness)",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "spring-boot",
+                  "module": 20,
+                  "topic": 9
+                }
+              ]
+            }
           ]
         },
         {
@@ -71,7 +419,87 @@
           "kind": "entretenimiento",
           "source": "Video de Daniel Martínez mostrando el menú de Bendy and the Ink Machine",
           "topics": [
-            {"title": "Bendy and the Ink Machine", "decision": "fuera-de-alcance", "reason": "Videojuego; quedó como recomendación personal en Notion."}
+            {
+              "title": "Bendy and the Ink Machine",
+              "decision": "fuera-de-alcance",
+              "reason": "Videojuego; quedó como recomendación personal en Notion."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "video-2026-11-18",
+      "receivedAt": "2026-11-18",
+      "reviewedAt": "2026-11-18",
+      "captures": [
+        {
+          "file": "https://www.youtube.com/watch?v=5nEIpFFkNfY",
+          "kind": "video",
+          "source": "Video de YouTube del canal weincode: «Flutter 3.50 vs Previous Versions: What Actually Changed?» (2026-11-16)",
+          "inventoryCourse": "youtube-weincode-flutter-3-50",
+          "notes": "YouTube solo expuso título y descripción; los temas se tomaron de la descripción y se verificaron con las notas oficiales de Flutter 3.50 (estable el 2026-11-11 con Dart 3.14).",
+          "topics": [
+            {
+              "title": "Novedades de Flutter 3.50",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "flutter",
+                  "module": 15,
+                  "topic": 7
+                }
+              ]
+            },
+            {
+              "title": "Integrar herramientas de IA en apps móviles",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "flutter",
+                  "module": 15,
+                  "topic": 8
+                }
+              ]
+            },
+            {
+              "title": "Interfaces modernas",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "flutter",
+                  "module": 10,
+                  "topic": 1
+                }
+              ]
+            },
+            {
+              "title": "Flujos de autenticación",
+              "decision": "agregado",
+              "where": [
+                {
+                  "track": "flutter",
+                  "module": 5,
+                  "topic": 4
+                }
+              ]
+            },
+            {
+              "title": "Lógica de negocio y Clean Architecture",
+              "decision": "cubierto",
+              "where": [
+                {
+                  "track": "flutter",
+                  "module": 12,
+                  "topic": 1
+                },
+                {
+                  "track": "flutter",
+                  "module": 15,
+                  "topic": 4
+                }
+              ]
+            }
           ]
         }
       ]

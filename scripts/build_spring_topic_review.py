@@ -85,7 +85,7 @@ def main():
                 raise SystemExit(f'Revisión desactualizada: {relative}')
         else:
             path.write_text(text)
-    assert report['summary']['topics'] == 111
+    assert report['summary']['topics'] == 112
     assert report['summary']['subtopics'] == 393
     assert report['summary']['subtopicsWithBody'] == 393
     assert not report['summary']['missingRepositoryPaths']

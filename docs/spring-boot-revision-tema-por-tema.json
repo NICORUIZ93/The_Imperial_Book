@@ -3,7 +3,7 @@
   "scope": "Lectura técnica asistida y revisión de secuencia por tema; inventario de todos los subtemas. No revisión pedagógica humana ni ejecución individual de 393 ejercicios.",
   "summary": {
     "modules": 26,
-    "topics": 111,
+    "topics": 112,
     "subtopics": 393,
     "subtopicsWithBody": 393,
     "explicitRepositoryPaths": 169,
@@ -4554,6 +4554,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 9,
+          "title": "Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+          "line": 1068,
+          "review": "MCP con Spring AI: servidor webmvc STREAMABLE/SYNC con @McpTool y cliente con SyncMcpToolCallbackProvider. Captura real pendiente: Maven Central bloqueado en el entorno de generación.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },

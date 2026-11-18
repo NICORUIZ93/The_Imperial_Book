@@ -97,28 +97,28 @@
       "officialSource": 106
     },
     "spring-boot": {
-      "topics": 113,
-      "code": 113,
-      "commentedCode": 40,
-      "mermaid": 36,
+      "topics": 114,
+      "code": 114,
+      "commentedCode": 41,
+      "mermaid": 37,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 113,
-      "runCommand": 113,
-      "officialSource": 112
+      "filePath": 114,
+      "runCommand": 114,
+      "officialSource": 113
     },
     "microservices": {
-      "topics": 23,
-      "code": 23,
-      "commentedCode": 5,
-      "mermaid": 0,
+      "topics": 24,
+      "code": 24,
+      "commentedCode": 6,
+      "mermaid": 1,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 23,
-      "runCommand": 22,
-      "officialSource": 23
+      "filePath": 24,
+      "runCommand": 23,
+      "officialSource": 24
     },
     "kotlin-multiplatform": {
       "topics": 56,
@@ -157,16 +157,16 @@
       "officialSource": 56
     },
     "flutter": {
-      "topics": 106,
-      "code": 106,
-      "commentedCode": 61,
-      "mermaid": 82,
+      "topics": 109,
+      "code": 109,
+      "commentedCode": 64,
+      "mermaid": 85,
       "archifyVisual": 0,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
-      "filePath": 103,
-      "runCommand": 103,
-      "officialSource": 99
+      "filePath": 106,
+      "runCommand": 106,
+      "officialSource": 102
     },
     "rutaflow": {
       "topics": 29,

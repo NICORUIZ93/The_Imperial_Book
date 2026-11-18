@@ -12,11 +12,11 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
 | react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
 | java | 111 | 44 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 113 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
-| microservices | 23 | 2 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
+| spring-boot | 114 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| microservices | 24 | 2 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
 | android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
 | ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 106 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| flutter | 109 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
 | devops | 130 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
@@ -24,7 +24,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1326 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1331 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -563,6 +563,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 15 | [Tema 4: Clean Architecture](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 15 | [Tema 5: Internacionalización completa](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 15 | [Tema 6: Builds, firma y despliegue](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 15 | [Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 15 | [Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic](../web/public/content/flutter/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 16 | [Tema 1: reconocer cuándo usar FFI y crear el paquete](../web/public/content/flutter/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 16 | [Tema 2: generar bindings C seguros para Dart](../web/public/content/flutter/modulo-16.md) | ejemplo-breve-revisar-contexto |
 | flutter / 16 | [Tema 3: conectar una biblioteca Rust mediante una ABI C](../web/public/content/flutter/modulo-16.md) | ejemplo-breve-revisar-contexto |
@@ -620,6 +622,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 5 | [Tema 1: http vs dio](../web/public/content/flutter/modulo-5.md) | ejemplo-breve-revisar-contexto |
 | flutter / 5 | [Tema 2: json_serializable](../web/public/content/flutter/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 5 | [Tema 3: Interceptores y estados explícitos](../web/public/content/flutter/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 5 | [Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión](../web/public/content/flutter/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 6 | [Tema 1: shared_preferences](../web/public/content/flutter/modulo-6.md) | ejemplo-breve-revisar-contexto |
 | flutter / 6 | [Tema 2: sqflite vs Hive](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 6 | [Tema 3: Offline-first y Firebase](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1072,6 +1075,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | microservices / 1 | [Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | ejemplo-breve-revisar-contexto |
 | microservices / 1 | [Tema 12: Medir señales que justifican una extracción · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 1 | [Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 2: Fases del Event Loop de Node · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 3: process, global y módulos core · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1306,6 +1310,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 20 | [Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 20 | [Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
 | spring-boot / 20 | [Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar](../web/public/content/spring-boot/modulo-20.md) | demostracion-no-delimitada |
+| spring-boot / 20 | [Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas](../web/public/content/spring-boot/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 21 | [Tema 1: Productor, tópico, key y consumidor](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
 | spring-boot / 21 | [Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |
 | spring-boot / 21 | [Tema 3: Outbox transaccional y flujo de negocio](../web/public/content/spring-boot/modulo-21.md) | demostracion-no-delimitada |

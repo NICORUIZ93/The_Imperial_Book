@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 07:07 UTC
+Generated: 2026-11-18 07:29 UTC
 Root: `the_imperial_book`
-Indexed files: 1672
+Indexed files: 1692
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 71 files
-- `automation-script`: 58 files
+- `automation-script`: 59 files
 - `course-content`: 333 files
-- `documentation`: 158 files
+- `documentation`: 176 files
 - `example`: 962 files
 - `local-infra`: 1 files
-- `project-file`: 89 files
+- `project-file`: 90 files
 
 ## File Types
 
-- `.md`: 522
+- `.md`: 540
 - `.java`: 417
-- `.py`: 187
-- `.json`: 129
+- `.py`: 188
+- `.json`: 130
 - `.ts`: 74
 - `.js`: 54
 - `.html`: 50
@@ -198,6 +198,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_subtopic_depth.py` (164 lines) - symbols: semantic_headings, broad_title, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (268 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
+- `scripts/audit_track_master_prompt.py` (200 lines) - symbols: norm, load, topic_blocks, mean_sentence_words, measure, markdown, main; imports: __future__, argparse, json, re, sys, unicodedata, pathlib
 - `scripts/audit_visual_aids.py` (106 lines) - symbols: topic_text, code_blocks_without_filename, audit, main; imports: __future__, json, re, sys, pathlib
 - `scripts/build_editorial_backlog.py` (100 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_full_review.py` (175 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
@@ -206,8 +207,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
 - `scripts/build_total_book_topics.py` (129 lines) - symbols: normalized, main, render_item; imports: __future__, json, re, unicodedata, collections, pathlib
-- `scripts/build_unified_curriculum.py` (211 lines) - symbols: norm, main; imports: __future__, json, re, unicodedata, collections, pathlib
-- ... 40 more files
+- ... 41 more files
 
 ### course-content
 
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 140 more files
+- ... 158 more files
 
 ### example
 
@@ -283,7 +283,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `.env.example` (15 lines)
 - `.github/ISSUE_TEMPLATE/bug_report.yml` (80 lines)
-- `.github/workflows/ci.yml` (62 lines)
+- `.github/workflows/ci.yml` (76 lines)
 - `docs/app-flow-inspection-dedup.json` (8267 lines)
 - `docs/app-flow-inspection-devops.json` (1617 lines)
 - `docs/app-flow-inspection-evidence.json` (8798 lines)
@@ -295,8 +295,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
-- `docs/atomic-subtopics.json` (19658 lines)
+- `docs/atomic-subtopics.json` (19693 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 71 more files
+- ... 72 more files

@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 The_Imperial_Book is a Spanish-language academy for cloud/dev learning. The official product is an
-Angular app (`web/`) that renders 16 curriculum tracks (291 modules, 1326 topics) authored as
+Angular app (`web/`) that renders 16 curriculum tracks (291 modules, 1331 topics) authored as
 Markdown lessons in `web/public/content/<track>/modulo-N.md`. Progress is stored client-side in
 `localStorage` — there are no quizzes, XP, or badges. Each specialization track has an integrator
 project; `RutaFlow` (`examples/rutaflow/`) is a cross-cutting logistics project that ties tracks

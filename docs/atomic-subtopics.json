@@ -36,7 +36,7 @@
       "completeSubtopics": 0
     },
     "flutter": {
-      "topics": 106,
+      "topics": 109,
       "completeTopics": 1,
       "topicsWith3to6Subtopics": 1,
       "subtopics": 3,
@@ -78,7 +78,7 @@
       "completeSubtopics": 0
     },
     "microservices": {
-      "topics": 23,
+      "topics": 24,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -106,7 +106,7 @@
       "completeSubtopics": 0
     },
     "spring-boot": {
-      "topics": 113,
+      "topics": 114,
       "completeTopics": 111,
       "topicsWith3to6Subtopics": 111,
       "subtopics": 393,
@@ -3864,6 +3864,20 @@
         "complete": false
       },
       {
+        "module": 15,
+        "topic": "### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 15,
+        "topic": "### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
         "module": 16,
         "topic": "### Tema 1: reconocer cuándo usar FFI y crear el paquete",
         "subtopicCount": 0,
@@ -4301,6 +4315,13 @@
       {
         "module": 5,
         "topic": "### Tema 3: Interceptores y estados explícitos",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 5,
+        "topic": "### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
@@ -11963,6 +11984,13 @@
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false
+      },
+      {
+        "module": 1,
+        "topic": "### Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
       }
     ],
     "node": [
@@ -17147,6 +17175,13 @@
           }
         ],
         "complete": true
+      },
+      {
+        "module": 20,
+        "topic": "### Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
       },
       {
         "module": 21,

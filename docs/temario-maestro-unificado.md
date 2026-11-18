@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1326
+- Temas actuales conservados: 1331
 - Temas actuales con evidencia exacta en libros: 3
 - Temas adicionales únicos de libros: 73027
-- Temas candidatos provenientes de cursos: 49
-- Cursos externos inventariados: 6
-- Total unificado provisional: 74402
+- Temas candidatos provenientes de cursos: 54
+- Cursos externos inventariados: 7
+- Total unificado provisional: 74412
 - Libros pendientes de OCR: 109
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -21174,7 +21174,7 @@ Total provisional: 3111 temas.
 
 ## Stack: spring-boot
 
-Total provisional: 141 temas.
+Total provisional: 142 temas.
 
 ### Módulo actual 0
 
@@ -21331,6 +21331,7 @@ Total provisional: 141 temas.
 6. **Integraciones empresariales, SOAP y fronteras de protocolo** — `actual`
 7. **Spring AI: ChatClient y herramientas con autorización fuera del modelo** — `actual`
 8. **RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar** — `actual`
+9. **Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas** — `actual`
 
 ### Módulo actual 21
 
@@ -21447,7 +21448,7 @@ Total provisional: 141 temas.
 
 ## Stack: microservices
 
-Total provisional: 23 temas.
+Total provisional: 24 temas.
 
 ### Módulo actual 0
 
@@ -21477,6 +21478,7 @@ Total provisional: 23 temas.
 11. **Evitar falsos verdes en fitness functions · Integración · 35 min** — `actual`
 12. **Medir señales que justifican una extracción** — `actual`
 13. **Registrar una decisión reversible en un ADR** — `actual`
+14. **Separar mitos y verdades de Domain-Driven Design · Integración · 40 min** — `actual`
 
 ## Stack: kotlin-multiplatform
 
@@ -41985,7 +41987,7 @@ Total provisional: 4692 temas.
 
 ## Stack: flutter
 
-Total provisional: 2818 temas.
+Total provisional: 2826 temas.
 
 ### Módulo actual 0
 
@@ -42025,6 +42027,7 @@ Total provisional: 2818 temas.
 1. **http vs dio** — `actual`
 2. **json_serializable** — `actual`
 3. **Interceptores y estados explícitos** — `actual`
+4. **Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión** — `actual`
 
 ### Módulo actual 6
 
@@ -42098,6 +42101,8 @@ Total provisional: 2818 temas.
 4. **Clean Architecture** — `actual`
 5. **Internacionalización completa** — `actual`
 6. **Builds, firma y despliegue** — `actual`
+7. **Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega** — `actual`
+8. **Integrar IA generativa en una app Flutter con Firebase AI Logic** — `actual`
 
 ### Módulo actual 16
 
@@ -48454,6 +48459,24 @@ Total provisional: 2818 temas.
    - Fuente (es, p. 52): Ingenieria_de_Flutter — `Programacion/Flutter_Multiplataforma/Ingenieria_de_Flutter.pdf`
 2712. **Palabras Finales** — `candidato-libros`
    - Fuente (es, p. 62): Ingenieria_de_Flutter — `Programacion/Flutter_Multiplataforma/Ingenieria_de_Flutter.pdf`
+
+### Curso fuente: Flutter 3.50 vs Previous Versions: What Actually Changed?
+
+1. **Novedades de Flutter 3.50** — `candidato-cursos`
+   - Curso fuente: [YouTube — weincode — Flutter 3.50 vs Previous Versions: What Actually Changed?](https://www.youtube.com/watch?v=5nEIpFFkNfY)
+2. **Integrar herramientas de IA en apps móviles** — `candidato-cursos`
+   - Curso fuente: [YouTube — weincode — Flutter 3.50 vs Previous Versions: What Actually Changed?](https://www.youtube.com/watch?v=5nEIpFFkNfY)
+3. **Interfaces modernas** — `candidato-cursos`
+   - Curso fuente: [YouTube — weincode — Flutter 3.50 vs Previous Versions: What Actually Changed?](https://www.youtube.com/watch?v=5nEIpFFkNfY)
+4. **Flujos de autenticación** — `candidato-cursos`
+   - Curso fuente: [YouTube — weincode — Flutter 3.50 vs Previous Versions: What Actually Changed?](https://www.youtube.com/watch?v=5nEIpFFkNfY)
+5. **Lógica de negocio y Clean Architecture** — `candidato-cursos`
+   - Curso fuente: [YouTube — weincode — Flutter 3.50 vs Previous Versions: What Actually Changed?](https://www.youtube.com/watch?v=5nEIpFFkNfY)
+
+#### Alcance anunciado del proyecto final: Flutter 3.50 vs Previous Versions: What Actually Changed?
+
+- Audiencia indicada: Desarrolladores Flutter que actualizan apps existentes.
+- Nota: Video publicado el 2026-11-16, enviado el 2026-11-18 (ver docs/capture-intake.json). La descripción no detalla APIs; los cambios se verificaron contra las notas oficiales de Flutter 3.50 y una revisión técnica independiente.
 
 ## Stack: devops
 

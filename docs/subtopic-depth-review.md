@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1326
+- Temas inventariados: 1331
 - Revisados humanamente para subtemas: 175
-- Pendientes: 1151
-- Candidatos prioritarios por señales: 1003
+- Pendientes: 1156
+- Candidatos prioritarios por señales: 1008
 
 ## Cobertura por track
 
@@ -16,17 +16,17 @@
 | cloud | 156 | 0 | 156 |
 | control-1 | 70 | 0 | 70 |
 | devops | 130 | 0 | 130 |
-| flutter | 106 | 63 | 43 |
+| flutter | 109 | 63 | 46 |
 | foundations | 102 | 0 | 102 |
 | ios | 56 | 0 | 56 |
 | java | 111 | 22 | 89 |
 | javascript | 88 | 0 | 88 |
 | kotlin-multiplatform | 56 | 0 | 56 |
-| microservices | 23 | 17 | 6 |
+| microservices | 24 | 17 | 7 |
 | node | 83 | 0 | 83 |
 | react | 58 | 0 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 113 | 2 | 111 |
+| spring-boot | 114 | 2 | 112 |
 
 ## Cola prioritaria
 
@@ -392,6 +392,8 @@
 - `devops/modulo-9` — Tema 5: SLI, SLO, SLA — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 6: OpenTelemetry como estándar de instrumentación — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate — lista conceptos clave sin mapa interno verificable
+- `flutter/modulo-15` — Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `flutter/modulo-15` — Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `flutter/modulo-16` — Tema 1: reconocer cuándo usar FFI y crear el paquete — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `flutter/modulo-16` — Tema 4: compilar y empaquetar bibliotecas por plataforma — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `flutter/modulo-16` — Tema 5: medir rendimiento y evitar bloquear la interfaz — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -426,6 +428,7 @@
 - `flutter/modulo-22` — Tema 4: consentimiento, privacidad y audiencias — título agrupa varios conceptos
 - `flutter/modulo-22` — Tema 5: pruebas de anuncios y diagnóstico de no-fill — título agrupa varios conceptos
 - `flutter/modulo-22` — Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay — título agrupa varios conceptos
+- `flutter/modulo-5` — Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-0` — Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 3: Archivos, carpetas y rutas sin perderse — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 5: Primer programa, primer error y primera evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
@@ -791,6 +794,7 @@
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
 - `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -994,6 +998,7 @@
 - `spring-boot/modulo-20` — Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo — título agrupa varios conceptos
 - `spring-boot/modulo-20` — Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo — título agrupa varios conceptos
 - `spring-boot/modulo-20` — Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar — título agrupa varios conceptos
+- `spring-boot/modulo-20` — Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `spring-boot/modulo-21` — Tema 1: Productor, tópico, key y consumidor — título agrupa varios conceptos
 - `spring-boot/modulo-21` — Tema 3: Outbox transaccional y flujo de negocio — título agrupa varios conceptos
 - `spring-boot/modulo-22` — Tema 1: Hexagonal: puertos que hablan el idioma del dominio — título agrupa varios conceptos

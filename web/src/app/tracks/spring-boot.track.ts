@@ -276,7 +276,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Integra trabajo en segundo plano, notificaciones y caché con límites de consistencia explícitos; distingue eventos locales de mensajería distribuida.',
     [
       'RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar',
-      'Spring AI: ChatClient y herramientas con autorización fuera del modelo','@Scheduled, cron, zona horaria y concurrencia por instancia', 'Spring Application Events y @TransactionalEventListener', 'Spring Mail y entrega idempotente', '@Cacheable, @CacheEvict, TTL y cache stampede', 'Caffeine vs Redis y elección local/distribuida', 'Métricas, errores y pruebas con dependencias sustituidas'],
+      'Spring AI: ChatClient y herramientas con autorización fuera del modelo','@Scheduled, cron, zona horaria y concurrencia por instancia', 'Spring Application Events y @TransactionalEventListener', 'Spring Mail y entrega idempotente', '@Cacheable, @CacheEvict, TTL y cache stampede', 'Caffeine vs Redis y elección local/distribuida', 'Métricas, errores y pruebas con dependencias sustituidas', 'Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas'],
     [
       'Programa una tarea con @Scheduled y verifica zona horaria, duración y solapamiento bajo dos instancias',
       'Publica un evento local solo después del commit y prueba que no se notifica si la transacción hace rollback',

@@ -501,6 +501,209 @@ Entrega las salidas de verificación, el fallo y su corrección. Como siguiente 
 
 **Límites y decisión de uso:** Esta prueba acredita configuración y firma del APK local. No sustituye los requisitos de publicación, custodia, recuperación y pruebas en dispositivos de una distribución real.
 
+
+### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a actualizar la app de entregas a Flutter 3.50 (estable desde el 11 de noviembre de 2026, junto con Dart 3.14), aplicar las migraciones automáticas y comprobar con evidencia que no se rompió nada. **Prerrequisitos:** el Tema 1 de este módulo (pruebas con `flutter test`), Git y la app del proyecto integrador en una rama limpia.
+
+#### Paso 2 · Contexto y caso real
+Cada versión de Flutter trae mejoras, pero también cambios que obligan a tocar código. En 3.50 los widgets de Material y Cupertino salen del SDK hacia paquetes propios, las APIs web antiguas de JavaScript quedan obsoletas y CocoaPods deja de recibir actualizaciones. Si actualizas «a ciegas», el problema aparece en producción. **¿Por qué es importante?** Una migración ordenada te deja actualizar en una tarde, con pruebas que confirman que la app sigue igual.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** canal estable, cambio incompatible (*breaking change*), deprecación, migración automática con `dart fix` y `dart migrate`, rama de migración.
+
+Una **deprecación** avisa que algo va a desaparecer, pero todavía funciona. Un **cambio incompatible** rompe la compilación o el comportamiento. Lo que cambia en esta versión:
+
+| Cambio | Qué haces |
+|---|---|
+| Material y Cupertino pasan a los paquetes `material_ui` y `cupertino_ui`; los del SDK quedan obsoletos, no eliminados | `dart fix --apply --code=migrate_design_widgets` |
+| `dart:html`, `dart:js`, `dart:js_util` y `package:js` quedan obsoletos | `flutter build web --no-deprecated-js-interop` encuentra usos directos y de dependencias |
+| WebAssembly funciona también en Safari 26.2+ y Firefox 147+, pero hay que activarlo | `wasmAllowList` en `flutter_bootstrap.js` y `flutter build web --wasm` |
+| CocoaPods deja de recibir actualizaciones (diciembre de 2026) | pasar los plugins de iOS a Swift Package Manager |
+| Dart 3.14 trae `dart migrate` | `dart migrate --dry-run` para ver los cambios antes de aplicarlos |
+
+**Analogía:** es como mudarte de casa con una lista: primero etiquetas cada caja (inventario), mueves por partes (una migración por commit) y al llegar revisas que todo funcione (pruebas). Se rompe en que aquí la mitad del trabajo lo hace una herramienta automática, y aun así debes revisar cada cambio.
+
+**Límite de uso:** no migres durante una entrega urgente. Si una dependencia importante todavía no soporta 3.50, espera o fija la versión anterior y regístralo.
+
+```mermaid
+flowchart LR
+    A["rama migracion-3.50"] --> B["flutter upgrade"]
+    B --> C["dart fix / dart migrate"]
+    C --> D["flutter analyze + flutter test"]
+    D -->|"verde"| E["build web/iOS/Android"]
+    D -->|"rojo"| C
+    E --> F["merge con evidencia"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Desde la raíz del proyecto integrador, crea la rama y actualiza:
+
+```bash
+git switch -c migracion-3.50
+flutter upgrade
+flutter --version
+flutter test > evidencia-antes.txt || true
+dart migrate --dry-run
+dart fix --apply --code=migrate_design_widgets
+git diff --stat
+flutter analyze
+flutter test
+flutter build web --no-deprecated-js-interop
+```
+
+**Explicación por bloques:** la rama aísla la migración; `flutter --version` deja registrada la versión exacta; `evidencia-antes.txt` guarda el estado de las pruebas antes de cambiar nada; `dart migrate --dry-run` muestra qué cambiaría sin tocar archivos; `dart fix` reescribe los imports de Material y Cupertino hacia los paquetes nuevos y `git diff --stat` te deja revisar cada archivo tocado; `flutter analyze` y `flutter test` confirman que todo compila y se comporta igual; el build web con `--no-deprecated-js-interop` falla si queda una dependencia con la interoperabilidad JS antigua.
+
+Para probar WebAssembly en Safari y Firefox, en `web/flutter_bootstrap.js` (archivo `web/flutter_bootstrap.js`):
+
+```javascript
+_flutter.loader.load({
+  config: {
+    wasmAllowList: {
+      blink: true,   // Chrome y Edge (ya era el valor por defecto)
+      webkit: true,  // Safari 26.2+, opcional desde 3.50
+      gecko: true,   // Firefox 147+, opcional desde 3.50
+    },
+  },
+});
+```
+
+```bash
+flutter build web --wasm
+```
+
+**Resultado esperado:** `flutter --version` muestra Flutter 3.50 y Dart 3.14; `git diff --stat` lista los archivos con imports de Material o Cupertino actualizados; `flutter analyze` termina sin errores; `flutter test` tiene el mismo número de pruebas aprobadas que `evidencia-antes.txt`; el build web termina o señala la dependencia que aún usa `dart:html`.
+
+**Fallo deliberado:** agrega a un archivo `import 'dart:html';` y ejecuta de nuevo `flutter build web --no-deprecated-js-interop`. **Error esperado:** el build reporta el uso de la interoperabilidad JS obsoleta. **Diagnóstico:** la bandera existe justamente para encontrar estos usos antes de que la API desaparezca; reemplázalo por `package:web` y vuelve a compilar.
+
+#### Paso 5 · Práctica guiada
+1. **Reproducción:** repite la migración en una copia de la app y guarda la salida de cada comando.
+2. **Variación:** activa solo `webkit` en `wasmAllowList` y compara el tamaño de la descarga en Safari.
+3. **Diagnóstico:** si `flutter test` baja de pruebas aprobadas, identifica el commit de la migración que lo causó con `git bisect`.
+
+**Pista:** haz un commit por cada herramienta (`dart fix`, `dart migrate`, cambio manual) para poder revertir solo una.
+
+#### Paso 6 · Práctica independiente
+Pasa los plugins de iOS de la app de CocoaPods a Swift Package Manager y documenta en el README qué plugin todavía no lo soporta.
+
+#### Paso 7 · Cierre
+- [ ] Rama `migracion-3.50` con un commit por migración.
+- [ ] Mismo número de pruebas aprobadas antes y después.
+- [ ] Build web sin interoperabilidad JS obsoleta.
+- [ ] README con la versión fijada y las dependencias pendientes.
+
+**Errores comunes:** migrar en `main`, aplicar `dart fix` sin revisar el diff y confundir deprecación con eliminación. **Siguiente paso:** el Tema 8 agrega IA a la app ya migrada.
+
+**Transferencia al proyecto integrador «App de entregas»:** fija Flutter 3.50 en CI y adjunta la evidencia antes y después de la migración al pull request.
+
+**Fuente oficial:** [Flutter 3.50.0 release notes](https://docs.flutter.dev/release/release-notes/release-notes-3.50.0) y [cambios incompatibles de Flutter](https://docs.flutter.dev/release/breaking-changes).
+
+### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a agregar a la app de entregas un asistente que resume las novedades de un envío con un modelo Gemini, usando el plugin oficial `firebase_ai`, y a proteger su uso. **Prerrequisitos:** Tema 7 de este módulo (app en Flutter 3.50), un proyecto de Firebase y el CLI `flutterfire`.
+
+#### Paso 2 · Contexto y caso real
+El conductor recibe notas largas del cliente («dejar en portería, perro bravo, llamar antes»). Un resumen de una línea le ahorra tiempo en la calle. Llamar a un modelo de IA directamente desde la app con una clave escrita en el código sería inseguro: cualquiera podría sacar la clave del binario. **Firebase AI Logic** (antes «Vertex AI in Firebase») da acceso a los modelos Gemini desde la app sin guardar la clave del modelo en el código. **¿Por qué es importante?** Es la forma oficial de usar IA en Flutter sin montar un backend propio solo para eso.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** modelo generativo, prompt, respuesta en *streaming*, sesión de chat, App Check.
+
+El plugin habla con Firebase y Firebase habla con el modelo. Tu app nunca ve la clave del modelo. Creas un `GenerativeModel`, le envías contenido (texto, imagen) y recibes texto. Para conversaciones, una **sesión de chat** guarda el historial por ti. **App Check** comprueba que la petición viene de tu app real y no de un script que copió tu configuración.
+
+**Analogía:** Firebase es la recepción de un edificio: tú pides hablar con el experto (el modelo) y la recepción verifica quién eres (App Check) antes de pasarte la llamada. Se rompe en que el experto puede equivocarse: la respuesta es una propuesta, no un dato verificado.
+
+**Límite de uso:** no uses IA para decisiones que deben ser exactas (cobros, direcciones legales). Muestra siempre el texto original junto al resumen.
+
+```mermaid
+sequenceDiagram
+    participant A as App Flutter
+    participant F as Firebase AI Logic + App Check
+    participant G as Modelo Gemini
+    A->>F: generateContent(prompt con la nota)
+    F->>F: verifica App Check
+    F->>G: solicitud con la clave del proyecto
+    G-->>F: resumen
+    F-->>A: response.text
+```
+
+#### Paso 4 · Demostración guiada desde cero
+En la consola de Firebase abre **AI Logic → Get started** y elige el proveedor **Gemini Developer API**. Luego, desde la raíz de la app:
+
+```bash
+flutter pub add firebase_core firebase_ai
+flutterfire configure
+```
+
+Archivo `lib/main.dart` (inicializa Firebase antes de arrancar la app):
+
+```dart
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/widgets.dart';
+import 'firebase_options.dart'; // generado por flutterfire configure
+import 'app.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const App());
+}
+```
+
+Archivo `lib/asistente/resumidor_notas.dart`:
+
+```dart
+import 'package:firebase_ai/firebase_ai.dart';
+
+class ResumidorNotas {
+  // El nombre del modelo cambia con el tiempo: tómalo de la consola de Firebase AI Logic.
+  ResumidorNotas({String modelo = 'gemini-2.5-flash'})
+      : _model = FirebaseAI.googleAI().generativeModel(model: modelo);
+
+  final GenerativeModel _model;
+
+  Future<String> resumir(String nota) async {
+    if (nota.trim().isEmpty) {
+      throw ArgumentError('La nota está vacía'); // no gastes una llamada en nada
+    }
+    final respuesta = await _model.generateContent([
+      Content.text('Resume en una línea, para un conductor, esta nota de entrega: $nota'),
+    ]);
+    // El modelo puede no devolver texto (por ejemplo, si bloquea el contenido).
+    return respuesta.text ?? 'Sin resumen: revisa la nota completa';
+  }
+}
+```
+
+**Explicación por bloques:** `Firebase.initializeApp` conecta la app con tu proyecto usando el archivo generado por `flutterfire configure`; `FirebaseAI.googleAI()` elige el proveedor Gemini Developer API y `generativeModel` crea el modelo; `generateContent` envía el prompt y devuelve la respuesta; el `??` maneja el caso en que el modelo no entrega texto. La clave del modelo no aparece en ningún archivo de la app.
+
+**Resultado esperado:** al llamar `resumir('Dejar en portería, perro bravo, llamar antes de subir')` recibes una sola línea parecida a «Llamar antes; dejar en portería; cuidado con el perro». El texto exacto varía en cada ejecución porque el modelo es generativo.
+
+**Fallo deliberado:** comenta la línea `await Firebase.initializeApp(...)` y ejecuta la app. **Error esperado:** una excepción que indica que no existe la app de Firebase por defecto. **Diagnóstico:** el plugin de IA depende de Firebase inicializado; restaura la línea.
+
+#### Paso 5 · Práctica guiada
+1. **Reproducción:** muestra el resumen debajo de la nota original en la pantalla del envío.
+2. **Variación:** cambia a `generateContentStream` y pinta el texto a medida que llega.
+3. **Diagnóstico:** mide cuántas llamadas haces al abrir y cerrar la pantalla diez veces y guarda el resumen para no repetirlo.
+
+**Pista:** el resumen de una nota no cambia; guárdalo con la persistencia local del Módulo 6.
+
+#### Paso 6 · Práctica independiente
+Activa App Check en el proyecto y en la app, y demuestra que una petición sin token de App Check es rechazada.
+
+#### Paso 7 · Cierre
+- [ ] Resumen visible junto a la nota original.
+- [ ] Ninguna clave de modelo en el código ni en el repositorio.
+- [ ] Caso sin texto manejado con un mensaje claro.
+- [ ] App Check activo.
+
+**Errores comunes:** poner una clave de API del modelo en el código, no mostrar el texto original y llamar al modelo en cada redibujado del widget. **Siguiente paso:** el proyecto integrador agrega el asistente a la pantalla de ruta.
+
+**Transferencia al proyecto integrador «App de entregas»:** resume la nota de cada envío al cargar la ruta del día y guarda el resultado en caché local.
+
+**Fuente oficial:** [Firebase AI Logic: primeros pasos con Flutter](https://firebase.google.com/docs/ai-logic/get-started?platform=flutter) y [Flutter AI Toolkit](https://docs.flutter.dev/ai/ai-toolkit).
+
 ## Trazabilidad de la auditoría original
 
 - **Pruebas en Flutter**: cubierto en los Temas 1 (WidgetTester) y 2 (pumpAndSettle, golden e integration tests) de este módulo.

@@ -1,0 +1,31 @@
+{
+  "tool": "NVIDIA SkillEvaluator quality-check (Tier 1)",
+  "minimum": 80.0,
+  "skills": [
+    {
+      "skill": "academy-flow-inspector",
+      "score": 100.0,
+      "grade": "A",
+      "passed": true,
+      "findings": [],
+      "version": "1.0.1"
+    },
+    {
+      "skill": "archify",
+      "score": 87.0,
+      "grade": "B",
+      "passed": true,
+      "findings": [
+        "[low] No troubleshooting section documented",
+        "[low] No prerequisites/requirements documented",
+        "[medium] Deeply nested references in delivery-contract.md",
+        "[medium] No documented scripts in table format",
+        "[low] Description very long (recommend 50-150 chars): 740 chars, maximum 200",
+        "[low] No '## Purpose' section",
+        "[medium] SKILL_SPEC recommended field missing: 'metadata.tags'",
+        "[low] No limitations documented"
+      ],
+      "version": "1.0.1"
+    }
+  ]
+}

@@ -59,3 +59,17 @@ jobs:
         run: |
           python3 scripts/fix_lessons.py
         shell: bash
+
+  skills:
+    # specs/005: cada skill del repo debe pasar NVIDIA SkillEvaluator (Tier 1) con 80/100 o más.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install SkillEvaluator
+        run: pip install skillevaluator
+      - name: Evaluate skills
+        run: python3 scripts/evaluate_skills.py --min 80

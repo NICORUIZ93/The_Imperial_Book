@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1331**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -11,17 +11,17 @@ Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 | cloud | 0 | 156 | 0 | 0 |
 | control-1 | 0 | 70 | 0 | 0 |
 | devops | 0 | 130 | 0 | 0 |
-| flutter | 1 | 106 | 3 | 3 |
+| flutter | 1 | 109 | 3 | 3 |
 | foundations | 0 | 102 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
 | java | 101 | 111 | 313 | 313 |
 | javascript | 0 | 88 | 0 | 0 |
 | kotlin-multiplatform | 0 | 56 | 0 | 0 |
-| microservices | 0 | 23 | 0 | 0 |
+| microservices | 0 | 24 | 0 | 0 |
 | node | 2 | 83 | 6 | 6 |
 | react | 0 | 58 | 0 | 0 |
 | rutaflow | 0 | 29 | 0 | 0 |
-| spring-boot | 111 | 113 | 393 | 393 |
+| spring-boot | 111 | 114 | 393 | 393 |
 
 ## Temas pendientes
 
@@ -576,6 +576,8 @@ Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 - M15 ### Tema 4: Clean Architecture: tiene 0 subtemas
 - M15 ### Tema 5: Internacionalización completa: tiene 0 subtemas
 - M15 ### Tema 6: Builds, firma y despliegue: tiene 0 subtemas
+- M15 ### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega: tiene 0 subtemas
+- M15 ### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic: tiene 0 subtemas
 - M16 ### Tema 1: reconocer cuándo usar FFI y crear el paquete: tiene 0 subtemas
 - M16 ### Tema 2: generar bindings C seguros para Dart: tiene 0 subtemas
 - M16 ### Tema 3: conectar una biblioteca Rust mediante una ABI C: tiene 0 subtemas
@@ -632,6 +634,7 @@ Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 - M5 ### Tema 1: http vs dio: tiene 0 subtemas
 - M5 ### Tema 2: json_serializable: tiene 0 subtemas
 - M5 ### Tema 3: Interceptores y estados explícitos: tiene 0 subtemas
+- M5 ### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión: tiene 0 subtemas
 - M6 ### Tema 1: shared_preferences: tiene 0 subtemas
 - M6 ### Tema 2: sqflite vs Hive: tiene 0 subtemas
 - M6 ### Tema 3: Offline-first y Firebase: tiene 0 subtemas
@@ -1001,6 +1004,7 @@ Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 - M1 ### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min: tiene 0 subtemas
 - M1 ### Tema 12: Medir señales que justifican una extracción · Experto · 40 min: tiene 0 subtemas
 - M1 ### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min: tiene 0 subtemas
+- M1 ### Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min: tiene 0 subtemas
 
 ### node
 
@@ -1181,5 +1185,6 @@ Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 
 ### spring-boot
 
+- M20 ### Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas: tiene 0 subtemas
 - M26 ### Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min: tiene 0 subtemas
 - M26 ### Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min: tiene 0 subtemas

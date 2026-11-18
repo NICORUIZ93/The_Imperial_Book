@@ -2394,6 +2394,14 @@
       {
         "title": "Builds, firma y despliegue",
         "fragment": "tema-6-builds-firma-y-despliegue"
+      },
+      {
+        "title": "Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "fragment": "tema-7-migrar-una-app-a-flutter-3-50-y-dart-3-14-sin-romper-la-entrega"
+      },
+      {
+        "title": "Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "fragment": "tema-8-integrar-ia-generativa-en-una-app-flutter-con-firebase-ai-logic"
       }
     ],
     "16": [
@@ -2644,6 +2652,10 @@
       {
         "title": "Interceptores y estados explícitos",
         "fragment": "tema-3-interceptores-y-estados-explicitos"
+      },
+      {
+        "title": "Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+        "fragment": "tema-4-flujo-de-autenticacion-con-tokens-login-almacenamiento-seguro-renovacion-y-cierre-de-sesion"
       }
     ],
     "6": [
@@ -4642,6 +4654,10 @@
       {
         "title": "Registrar una decisión reversible en un ADR",
         "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
+      },
+      {
+        "title": "Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design-integracion-40-min"
       }
     ]
   },
@@ -5692,6 +5708,10 @@
       {
         "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
         "fragment": "tema-8-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
+      },
+      {
+        "title": "Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
+        "fragment": "tema-9-model-context-protocol-mcp-con-spring-ai-exponer-y-consumir-herramientas"
       }
     ],
     "21": [

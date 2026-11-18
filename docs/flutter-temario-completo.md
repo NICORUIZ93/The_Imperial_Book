@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow Driver: aplicación de entregas conectada.
 **Prerrequisito de entrada:** Dart y fundamentos de UI; el módulo 0 comienza con el lenguaje..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 1/106 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 1/109 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -61,6 +61,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 1: http vs dio
 - [pendiente de migrar] Tema 2: json_serializable
 - [pendiente de migrar] Tema 3: Interceptores y estados explícitos
+- [pendiente de migrar] Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión
 
 ### Módulo 6: Persistencia local
 
@@ -153,6 +154,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 4: Clean Architecture
 - [pendiente de migrar] Tema 5: Internacionalización completa
 - [pendiente de migrar] Tema 6: Builds, firma y despliegue
+- [pendiente de migrar] Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega
+- [pendiente de migrar] Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic
 
 ### Módulo 16: Flutter FFI: conectar Dart con código nativo
 
@@ -258,7 +261,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 106 temas en 23 módulos; 1 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 109 temas en 23 módulos; 1 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

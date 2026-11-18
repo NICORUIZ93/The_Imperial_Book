@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 111/113 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 111/114 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -547,6 +547,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 20.31 · Conserva un resultado vacío cuando no hay evidencia · 8 min
   - ✓ Subtema 20.32 · Limita resultados después de filtrar y conserva IDs · 10 min
   - ✓ Subtema 20.33 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min
+- [pendiente de migrar] Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
 
 ### Módulo 21: Eventos con Spring Kafka
 
@@ -675,7 +676,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 113 temas en 27 módulos; 111 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 114 temas en 27 módulos; 111 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

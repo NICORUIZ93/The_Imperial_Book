@@ -79,7 +79,7 @@
     {
       "track": "flutter",
       "modules": 23,
-      "topics": 106,
+      "topics": 109,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -88,8 +88,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 83,
-      "projectTopics": 106
+      "visualTopics": 86,
+      "projectTopics": 109
     },
     {
       "track": "foundations",
@@ -169,7 +169,7 @@
     {
       "track": "microservices",
       "modules": 2,
-      "topics": 23,
+      "topics": 24,
       "levels": {
         "Fundamentos": 2,
         "Aplicación": 0,
@@ -182,8 +182,8 @@
         "Experto"
       ],
       "hasMasterModule": false,
-      "visualTopics": 1,
-      "projectTopics": 23
+      "visualTopics": 2,
+      "projectTopics": 24
     },
     {
       "track": "node",
@@ -233,7 +233,7 @@
     {
       "track": "spring-boot",
       "modules": 27,
-      "topics": 113,
+      "topics": 114,
       "levels": {
         "Fundamentos": 2,
         "Aplicación": 2,
@@ -242,8 +242,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 43,
-      "projectTopics": 113
+      "visualTopics": 44,
+      "projectTopics": 114
     }
   ]
 }

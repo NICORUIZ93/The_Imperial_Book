@@ -18,7 +18,7 @@
     },
     {
       "path": ".github/workflows/ci.yml",
-      "lines": 62,
+      "lines": 76,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -568,7 +568,7 @@
     },
     {
       "path": "docs/SPRING-BOOT-REVISION-TEMA-POR-TEMA.md",
-      "lines": 204,
+      "lines": 205,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1851,7 +1851,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19658,
+      "lines": 19693,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1859,7 +1859,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1186,
+      "lines": 1191,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2134,7 +2134,7 @@
     },
     {
       "path": "docs/capture-intake.json",
-      "lines": 81,
+      "lines": 509,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2169,7 +2169,7 @@
     },
     {
       "path": "docs/course-curriculum-inventory.json",
-      "lines": 148,
+      "lines": 166,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2177,7 +2177,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16530,
+      "lines": 16590,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2185,7 +2185,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1358,
+      "lines": 1363,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2276,7 +2276,7 @@
     },
     {
       "path": "docs/flutter-temario-completo.md",
-      "lines": 269,
+      "lines": 272,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2439,7 +2439,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11176,
+      "lines": 11211,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2512,6 +2512,25 @@
         "### spring-boot",
         "### kotlin-multiplatform",
         "### android"
+      ]
+    },
+    {
+      "path": "docs/master-prompt-compliance.json",
+      "lines": 834,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
+      "headings": []
+    },
+    {
+      "path": "docs/master-prompt-compliance.md",
+      "lines": 39,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Cumplimiento del prompt maestro v2 por ruta",
+        "## Temas oficiales todav\u00eda sin tema propio (T3)"
       ]
     },
     {
@@ -2632,7 +2651,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13825,
+      "lines": 13880,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2797,7 +2816,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33493,
+      "lines": 33618,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2863,7 +2882,7 @@
     },
     {
       "path": "docs/spring-boot-revision-tema-por-tema.json",
-      "lines": 5302,
+      "lines": 5310,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2879,7 +2898,7 @@
     },
     {
       "path": "docs/spring-boot-temario-completo.md",
-      "lines": 686,
+      "lines": 687,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2923,7 +2942,7 @@
     },
     {
       "path": "docs/spring-boot-topic-review-notes.json",
-      "lines": 166,
+      "lines": 167,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2963,7 +2982,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22728,
+      "lines": 22808,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2971,7 +2990,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1214,
+      "lines": 1219,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2992,7 +3011,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 1122226,
+      "lines": 1122352,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -3000,7 +3019,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 162449,
+      "lines": 162472,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -3052,7 +3071,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29479,
+      "lines": 29589,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -12183,6 +12202,30 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_track_master_prompt.py",
+      "lines": 200,
+      "kind": "automation-script",
+      "symbols": [
+        "norm",
+        "load",
+        "topic_blocks",
+        "mean_sentence_words",
+        "measure",
+        "markdown",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "sys",
+        "unicodedata",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_visual_aids.py",
       "lines": 106,
       "kind": "automation-script",
@@ -12765,7 +12808,7 @@
     },
     {
       "path": "scripts/validate_capture_intake.py",
-      "lines": 80,
+      "lines": 98,
       "kind": "automation-script",
       "symbols": [
         "load",
@@ -13087,6 +13130,20 @@
       ]
     },
     {
+      "path": "specs/004-programa-cursos-de-cero-a-master.md",
+      "lines": 45,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 004 \u00b7 Programa: todos los cursos con temas reales y el est\u00e1ndar del prompt maestro v2",
+        "## C\u00f3mo funciona",
+        "## Criterios del programa",
+        "## Orden de los lotes",
+        "## L\u00edmites de la medici\u00f3n"
+      ]
+    },
+    {
       "path": "specs/README.md",
       "lines": 45,
       "kind": "documentation",
@@ -13101,8 +13158,216 @@
       ]
     },
     {
+      "path": "specs/tracks/android.md",
+      "lines": 64,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Android con Jetpack Compose (`android`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/angular.md",
+      "lines": 60,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Angular \u2014 \u00faltima versi\u00f3n y migraciones (`angular`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/cloud.md",
+      "lines": 78,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Cloud Local \u2014 AWS, Azure y GCP (`cloud`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/control-1.md",
+      "lines": 36,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Control 1 \u2014 Sistemas de control desde cero (`control-1`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/devops.md",
+      "lines": 75,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta DevOps (`devops`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/flutter.md",
+      "lines": 75,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Flutter (`flutter`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/foundations.md",
+      "lines": 36,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Fundamentos de Ingenier\u00eda de Software (`foundations`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/ios.md",
+      "lines": 66,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta iOS con SwiftUI (`ios`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/java.md",
+      "lines": 61,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Java: fundamentos y temas avanzados (`java`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/javascript.md",
+      "lines": 59,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta JavaScript: fundamentos y temas avanzados (`javascript`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/kotlin-multiplatform.md",
+      "lines": 61,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Kotlin Multiplatform (`kotlin-multiplatform`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/microservices.md",
+      "lines": 36,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Microservicios: sistemas distribuidos (`microservices`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/node.md",
+      "lines": 66,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Node.js: fundamentos de backend (`node`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/react.md",
+      "lines": 57,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta React: fundamentos y aplicaciones (`react`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/rutaflow.md",
+      "lines": 36,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta RutaFlow \u2014 Proyecto integrador log\u00edstico (`rutaflow`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
+      "path": "specs/tracks/spring-boot.md",
+      "lines": 62,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Ruta Spring Boot (`spring-boot`) \u00b7 especificaci\u00f3n del prompt maestro v2",
+        "## Criterios",
+        "## Temas reales por crear o convertir en tema propio (T3)",
+        "## C\u00f3mo ejecutar un lote"
+      ]
+    },
+    {
       "path": "specs/visual-aids-scope.json",
-      "lines": 25,
+      "lines": 59,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -16146,7 +16411,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-15.md",
-      "lines": 511,
+      "lines": 714,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16377,7 +16642,7 @@
     },
     {
       "path": "web/public/content/flutter/modulo-5.md",
-      "lines": 322,
+      "lines": 472,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -17133,13 +17398,14 @@
     },
     {
       "path": "web/public/content/java/modulo-0.md",
-      "lines": 1156,
+      "lines": 1190,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
       "headings": [
         "# M\u00f3dulo 0: Sintaxis, tipos y el modelo de la JVM",
         "## Antes de comenzar: instala Java correctamente",
+        "## Ruta recomendada: recorrido del desarrollador Java en 17 pasos",
         "## Aprende construyendo",
         "### Tema 1: Del c\u00f3digo fuente a la JVM",
         "#### Subtema 1.1: Compila y ejecuta tu primera clase \u00b7 10 min",
@@ -17148,8 +17414,7 @@
         "#### Subtema 1.4: Distingue la clase principal ausente de una dependencia ausente \u00b7 10 min",
         "### Tema 2: public static void main \u2014 qu\u00e9 significa cada palabra",
         "#### Subtema 2.1: Identifica cada parte de la firma cl\u00e1sica \u00b7 10 min",
-        "#### Subtema 2.2: Recibe argumentos sin recompilar \u00b7 10 min",
-        "#### Subtema 2.3: Compara una forma abreviada de Java 25 \u00b7 10 min"
+        "#### Subtema 2.2: Recibe argumentos sin recompilar \u00b7 10 min"
       ]
     },
     {
@@ -18246,7 +18511,7 @@
     },
     {
       "path": "web/public/content/microservices/modulo-1.md",
-      "lines": 1018,
+      "lines": 1153,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19359,7 +19624,7 @@
     },
     {
       "path": "web/public/content/spring-boot/modulo-20.md",
-      "lines": 1065,
+      "lines": 1230,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19652,7 +19917,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5921,
+      "lines": 5941,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
