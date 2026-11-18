@@ -6,7 +6,6 @@ import { TRACKS } from '../course-data';
 import { TRACK_GUIDES } from '../track-guides';
 import { CommandPaletteService } from '../command-palette.service';
 import { TRACK_ICONS, TRACK_MARKS } from '../icon-registry';
-import { OFFICIAL_UPDATES } from '../official-updates';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
 import { TopicIndexService } from '../topic-index.service';
@@ -53,7 +52,6 @@ export class CourseCatalogComponent {
   ];
   readonly themeService = inject(ThemeService);
   readonly topicIndex = inject(TopicIndexService);
-  readonly officialUpdates = OFFICIAL_UPDATES;
   readonly backupStatus = signal('');
 
   constructor(private readonly progressService: ProgressService) {}

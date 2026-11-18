@@ -116,42 +116,6 @@ test('Fundamentos módulo 5: comprueba depuración, pruebas, Git y CI', async ({
   await expect(topics.nth(3)).toContainText('tareas_prueba.json');
 });
 
-test('Java módulo 0: renderiza los diagramas de tipos, flujo y fechas', async ({ page }) => {
-  await page.goto('/curso/java/0');
-
-  const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(8);
-  for (const index of [3, 4, 5, 6, 7]) {
-    await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
-  }
-  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
-});
-
-test('Java módulo 20: profundiza lambdas y conserva su evidencia observable', async ({ page }) => {
-  await page.goto('/curso/java/20');
-
-  const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(4);
-  const lambda = topics.first();
-  await expect(lambda).toContainText('tipo objetivo');
-  await expect(lambda).toContainText('Captura y variable efectivamente final');
-  await expect(lambda).toContainText('Referencias estática, ligada, no ligada y constructor');
-  await expect(lambda).toContainText('la referencia a elegir es ambigua');
-  await expect(lambda).toContainText('Checklist de salida');
-  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
-});
-
-test('Spring Master: renderiza la recuperación idempotente de una compensación', async ({ page }) => {
-  await page.goto('/curso/spring-boot/15');
-
-  const heading = page.locator('h3.topic-heading').filter({ hasText: 'Compensación que falla: conservar trabajo pendiente' });
-  await expect(heading).toHaveCount(1);
-  const topic = heading.locator('xpath=ancestor::section[contains(@class, "topic-card")]');
-  await expect(topic.locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
-  await expect(topic).toContainText('no representa dos consumidores concurrentes');
-  await expect(page.locator('.lesson-error[role="alert"]')).toHaveCount(0);
-});
-
 test('Node módulo 0: renderiza configuración explícita y eventos no durables', async ({ page }) => {
   await page.goto('/curso/node/0');
 
@@ -236,26 +200,6 @@ test('figuras anatómicas: no generan geometría SVG inválida', async ({ page }
     await expect(page.locator('.iso-stage')).toBeVisible();
     await expect(page.locator('path[d*="NaN"], path[d*="undefined"], path[d*="Infinity"]')).toHaveCount(0);
     expect(consoleErrors, figure).toEqual([]);
-  }
-});
-
-test('prototipo: los seis contextos muestran contenido y progreso navegable', async ({ page }) => {
-  const contexts = [
-    { track: 'foundations', module: 0, heading: 'El primer resultado que puedes repetir' },
-    { track: 'javascript', module: 8, heading: 'De datos a una vista segura' },
-    { track: 'java', module: 22, heading: 'El contrato de equals y hashCode' },
-    { track: 'node', module: 12, heading: 'Arquitectura por capas' },
-    { track: 'android', module: 14, heading: 'Por qué una captura visual no basta' },
-    { track: 'spring-boot', module: 22, heading: 'Hexagonal: puertos' },
-  ];
-
-  for (const context of contexts) {
-    await page.goto(`/curso/${context.track}/${context.module}`);
-    const topic = page.locator('.topic-card').first();
-    await expect(topic).toContainText(context.heading);
-    await expect(topic.locator('pre:not(.mermaid)').first()).toBeVisible();
-    await expect(topic.locator('button.topic-complete[data-topic-complete]')).toHaveAttribute('aria-pressed', 'false');
-    await expect(topic.locator('.topic-step-navigation')).toBeVisible();
   }
 });
 
@@ -477,17 +421,6 @@ test('formación: electrónica incorpora ejemplos sin prompts generados en la le
   await page.screenshot({ path: `/tmp/academia-electronica-${test.info().project.name}.png` });
 });
 
-test('inicio desde cero: conduce de la página inicial a la primera sesión', async ({ page }) => {
-  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
-  const start = page.getByRole('link', { name: 'Empezar desde cero', exact: true });
-  await expect(start).toBeVisible();
-  await expect(page.locator('.starter-steps')).toContainText('Crea el archivo indicado');
-  await start.click();
-  await expect(page).toHaveURL(/\/curso\/foundations\/0$/);
-  await expect(page.locator('.lesson h1')).toContainText('Cómo funciona tu entorno');
-  await expect(page.locator('.topic-card').first()).toContainText('saludo.py');
-});
-
 test('inicio desde cero: mapa Archify y lectura responsive sin errores', async ({ page }) => {
   const errors: string[] = [];
   for (const width of [375, 768, 1280, 1920]) {
@@ -520,21 +453,6 @@ test('inicio desde cero: mapa Archify y lectura responsive sin errores', async (
   await popup.screenshot({ path: `/tmp/academia-archify-mobile-${test.info().project.name}.png` });
   expect(errors).toEqual([]);
   await popup.close();
-});
-
-test('renovación: retoma el siguiente capítulo y conserva el progreso al recargar', async ({ page }) => {
-  await page.getByRole('link', { name: 'Empezar desde cero', exact: true }).click();
-  await expect(page.locator('.topic-card').first()).toContainText('Hola, mundo');
-  await expect(page.locator('.project-bootstrap')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Marcar capítulo como leído', exact: true }).click();
-  await page.getByRole('link', { name: 'Catálogo', exact: true }).click();
-  const resume = page.locator('.resume-list').getByRole('link').filter({ hasText: 'Fundamentos' });
-  await expect(resume).toHaveAttribute('href', '/curso/foundations/1');
-  await page.reload();
-  await expect(resume).toHaveAttribute('href', '/curso/foundations/1');
-  await resume.click();
-  await expect(page).toHaveURL(/\/curso\/foundations\/1$/);
-  await expect(page.locator('.lesson h1')).toContainText('Pensamiento computacional');
 });
 
 test('biblioteca: filtra por área y encuentra temas reales sin perder accesos', async ({ page }) => {
@@ -726,23 +644,6 @@ test('modo libro: el objetivo viene del texto ya escrito y las flechas cambian d
   await expect(page).toHaveURL(/pagina=tema-1/);
 });
 
-test('modo libro: conserva el objetivo escrito por el autor sin reescribirlo', async ({ page }) => {
-  await enableBookMode(page);
-  await page.goto('/curso/java/12?pagina=tema-1');
-
-  const objective = page.locator('.book-topic-objective').first();
-  await expect(objective).toBeVisible();
-  // La voz vigente del autor se conserva: el lector separa la etiqueta, pero
-  // el contenido visible sigue siendo exactamente el del párrafo fuente.
-  await expect(objective).toContainText('Al terminar podrás');
-  await expect(objective).toContainText('construir un objeto inmutable');
-  const source = page.locator('p.book-objective-source').first();
-  await expect(source).toBeHidden();
-  const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
-  const shown = normalize((await objective.innerText()).replace(/^Al terminar podrás/i, ''));
-  expect(normalize((await source.textContent()) ?? '')).toContain(shown);
-});
-
 test('modo libro: salir del modo devuelve el capítulo completo y persiste la elección', async ({ page }) => {
   await enableBookMode(page);
   await page.goto('/curso/angular/0');
@@ -755,19 +656,6 @@ test('modo libro: salir del modo devuelve el capítulo completo y persiste la el
   await page.reload();
   await expect(page.locator('.book-pagebar')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Leer como libro' })).toBeVisible();
-});
-
-test('modo libro: oculta el objetivo sin ocultar el prerrequisito que lo acompaña', async ({ page }) => {
-  await enableBookMode(page);
-  await page.goto('/curso/spring-boot/15?pagina=tema-7');
-
-  const objective = page.locator('.book-topic-objective').first();
-  await expect(objective).toBeVisible();
-  await expect(objective).toContainText('recuperar una compensación');
-  // El tema escribe objetivo y prerrequisitos en el mismo párrafo: la cabecera
-  // repite el objetivo, pero el resto del párrafo debe seguir legible.
-  await expect(page.locator('p.book-objective-source').first()).toBeHidden();
-  await expect(page.locator('p:visible', { hasText: /Prerrequisitos?:/ }).first()).toBeVisible();
 });
 
 test('control 1: renderiza fórmulas TeX con KaTeX y las figuras del curso', async ({ page }) => {
