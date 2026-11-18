@@ -533,3 +533,130 @@ Crea la copia con `Estados = new List<string>(original.Estados)`, modifica la nu
 El siguiente paso es decidir ownership de colecciones en tus DTOs. **Errores comunes:** equiparar record con seguridad, comparar lenguajes por nombre de característica y exponer colecciones mutables de un historial. **Límites y decisión de uso:** el ejemplo no demuestra concurrencia segura, persistencia ni equivalencia estructural arbitraria.
 
 **Fuente oficial:** [Microsoft: records de C#](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record).
+
+### Tema 6: Desarrollo guiado por especificación con agentes de IA
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a escribir una especificación pequeña con criterios numerados, pedir a un agente de IA un cambio contra esa especificación y comprobar con un script que cada criterio quedó cubierto por una prueba. **Prerrequisitos:** el Tema 1 de este módulo (criterios dado/cuando/entonces), pruebas con `unittest` del Módulo 5 y Git básico.
+
+#### Paso 2 · Contexto y caso real
+Pedirle código a un asistente de IA con un mensaje suelto ("haz que confirmar entrega valide el PIN") suele funcionar la primera vez y fallar la tercera: el agente no recuerda qué se acordó, cambia cosas que nadie pidió y rompe lo que ya funcionaba. A ese ciclo de prompt → resultado → corrección → otra vez se le llama coloquialmente *vibe coding*. El desarrollo guiado por especificación (*spec-driven development*) invierte el orden: primero se escribe la especificación como única fuente de verdad, el agente trabaja contra ella y el cambio entra al repositorio solo si pasa revisión y CI. **¿Por qué es importante?** Porque en el proyecto integrador el mismo `confirmDelivery()` lo van a tocar varias sesiones de IA distintas; sin un documento estable, cada sesión reinterpreta la regla del PIN de 6 dígitos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** especificación como fuente de verdad, criterio con identificador, trazabilidad criterio → prueba, cambio pequeño y revisable, ciclo de mejora de la especificación.
+
+Una especificación útil para un agente tiene tres partes: **contexto** (qué existe y qué no se toca), **criterios numerados** (`C1`, `C2`… en forma dado/cuando/entonces) y **límites** (archivos permitidos, dependencias prohibidas). El agente recibe la especificación completa en cada sesión, no un resumen de memoria. Cada prueba nombra el criterio que verifica, así un script puede detectar criterios sin prueba o pruebas que no corresponden a ningún criterio.
+
+El ciclo no termina en el código: si la revisión descubre un caso no previsto, primero se agrega el criterio a la especificación y después se pide el cambio. Así el conocimiento queda en el repositorio y la próxima sesión empieza con el contexto correcto.
+
+**Analogía:** el *vibe coding* es dictarle una casa a un maestro de obra distinto cada día; la especificación es el plano firmado que cualquier maestro de obra puede leer, y la interventoría (revisión + CI) solo aprueba lo que coincide con el plano.
+
+**Límite de uso:** para un script de una sola vez o una exploración que se va a tirar, escribir una especificación cuesta más de lo que ahorra; el método paga cuando el código vive, lo tocan varias personas o agentes, y un error tiene coste.
+
+**Casos de uso reales:** contratos de API, reglas de negocio con cumplimiento legal, migraciones, y cualquier repositorio donde agentes de IA abren *pull requests*.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    SPEC["especificación (fuente de verdad)"] --> AGENT["agente de IA"]
+    AGENT --> PR["cambio pequeño + pruebas"]
+    PR --> CI["revisión + CI"]
+    CI -->|"caso no previsto"| SPEC
+    CI -->|"aprobado"| MAIN["rama principal"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Crea una carpeta nueva con la especificación, el código, sus pruebas y el verificador de trazabilidad:
+
+```bash
+mkdir -p ejemplo-spec && cd ejemplo-spec
+```
+
+Archivo `SPEC.md` (lo que se le entrega al agente en cada sesión):
+
+```text
+# Confirmar entrega
+Contexto: solo se modifica entregas.py; no se agregan dependencias.
+C1: Dado un recipientPin de 6 dígitos, cuando se confirma, entonces el estado es "delivered".
+C2: Dado un recipientPin con menos o más de 6 dígitos, cuando se confirma, entonces se lanza ValueError y el estado no cambia.
+C3: Dado un recipientPin con letras, cuando se confirma, entonces se lanza ValueError.
+```
+
+Archivo `entregas.py` (el cambio que produjo el agente):
+
+```python
+def confirmar(envio: dict, pin: str) -> dict:
+    """Devuelve una copia del envío confirmado; no muta el original."""
+    if len(pin) != 6 or not pin.isdigit():
+        raise ValueError("recipientPin debe tener exactamente 6 dígitos")
+    return {**envio, "estado": "delivered"}
+```
+
+Archivo `test_entregas.py` (cada prueba declara su criterio en el nombre):
+
+```python
+import unittest
+from entregas import confirmar
+
+
+class ConfirmarEntrega(unittest.TestCase):
+    def test_C1_pin_valido_confirma(self):
+        self.assertEqual(confirmar({"estado": "pending"}, "123456")["estado"], "delivered")
+
+    def test_C2_pin_corto_rechaza_sin_cambiar(self):
+        envio = {"estado": "pending"}
+        with self.assertRaises(ValueError):
+            confirmar(envio, "1234")
+        self.assertEqual(envio["estado"], "pending")
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+Archivo `verificar_trazabilidad.py`:
+
+```python
+import re
+import sys
+from pathlib import Path
+
+# Criterios declarados en la especificación: C1, C2, ...
+criterios = set(re.findall(r"^(C\d+):", Path("SPEC.md").read_text(encoding="utf-8"), re.M))
+# Criterios que alguna prueba dice verificar: test_C1_..., test_C2_...
+cubiertos = set(re.findall(r"def test_(C\d+)_", Path("test_entregas.py").read_text(encoding="utf-8")))
+
+print(f"criterios: {len(criterios)}  cubiertos: {len(criterios & cubiertos)}")
+for falta in sorted(criterios - cubiertos):
+    print(f"sin prueba: {falta}")
+for sobra in sorted(cubiertos - criterios):
+    print(f"prueba sin criterio: {sobra}")
+sys.exit(1 if criterios != cubiertos else 0)
+```
+
+Ejecuta primero las pruebas y luego el verificador:
+
+```bash
+python3 -m unittest -q
+python3 verificar_trazabilidad.py; echo "salida: $?"
+```
+
+**Resultado esperado:** las pruebas pasan (`OK`), pero el verificador imprime `criterios: 3  cubiertos: 2`, `sin prueba: C3` y `salida: 1`. Ese es el **fallo deliberado** del ejemplo: el código del agente sí rechaza letras, pero nadie lo demostró. En *vibe coding* ese hueco pasa desapercibido; aquí lo detecta el script antes de la revisión.
+
+**Explicación por bloques:** `re.findall(r"^(C\d+):", ..., re.M)` extrae los identificadores al inicio de cada línea de la especificación; el conjunto `cubiertos` sale de los nombres de las pruebas; la diferencia de conjuntos dice qué falta y qué sobra, y el código de salida `1` permite usarlo como paso de CI.
+
+#### Paso 5 · Práctica guiada
+Agrega `test_C3_pin_con_letras_rechaza` que espere `ValueError` con `"12ab56"` y vuelve a ejecutar ambos comandos: ahora el verificador imprime `criterios: 3  cubiertos: 3` y sale con `0`. **Pista:** si renombras una prueba a `test_C4_...` sin escribir `C4` en `SPEC.md`, el script la reporta como `prueba sin criterio`; esa es la señal de que el agente inventó comportamiento que nadie pidió.
+
+#### Paso 6 · Práctica independiente
+En la revisión aparece un caso nuevo: un PIN con espacios al inicio (`" 123456"`). Sin tocar todavía el código, agrega `C4` a `SPEC.md` decidiendo si se rechaza o se recorta, escribe la prueba `test_C4_...` y solo entonces cambia `entregas.py`. Registra en un `git commit` separado la especificación y en otro el código, para que el historial muestre que la decisión fue anterior a la implementación.
+
+#### Paso 7 · Cierre
+Entregá la salida del verificador con `C3` sin prueba, la salida corregida con los tres criterios cubiertos y el commit de `C4` antes del commit del código. Explicá en una frase por qué "las pruebas pasan" no es lo mismo que "la especificación está cumplida". Como siguiente paso, agregá `python3 verificar_trazabilidad.py` al flujo de CI del Módulo 5 para que ningún cambio de un agente entre sin cubrir sus criterios.
+
+**Errores comunes:** darle al agente solo el último mensaje en lugar de la especificación completa; aceptar un cambio grande de muchos archivos que nadie puede revisar; corregir el código sin actualizar la especificación, con lo que la siguiente sesión repite el error.
+
+**Cuándo no usarlo:** en prototipos desechables o en exploraciones de una tarde; ahí basta un criterio de salida claro y se borra el código al terminar.
+
+**Fuente oficial:** [GitHub Docs — Prácticas recomendadas para usar Copilot en tareas](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/best-practices-for-using-copilot-to-work-on-tasks).

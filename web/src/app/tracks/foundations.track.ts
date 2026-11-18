@@ -162,6 +162,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       'Atributos de calidad, arquitectura, dependencias y diagramas C4',
       'Cohesión, acoplamiento, SOLID, patrones y refactoring',
       'ADRs, documentación, deuda técnica, mantenimiento y evolución',
+      'Desarrollo guiado por especificación con agentes de IA',
     ],
     [
       'Entrevista un caso, redacta historias y criterios verificables',
@@ -226,6 +227,7 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
       'Replicación, particiones, consistencia, consenso y compromisos CAP',
       'Mensajería, entrega, idempotencia, reintentos, outbox y sagas',
       'Resiliencia, SLI/SLO, logs, métricas, trazas y respuesta a incidentes',
+      'Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella',
     ],
     [
       'Simula latencia, timeout, pérdida, duplicación y reordenamiento de mensajes',

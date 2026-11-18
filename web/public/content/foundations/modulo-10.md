@@ -784,3 +784,120 @@ Compara concurrencias 1, 2 y 4 con varias repeticiones. Añade un estado HTTP de
 El siguiente paso es un ensayo con carga representativa y un presupuesto de recursos. En el proyecto integrador, guarda las dos líneas JSON en `docs/capacidad.md` y explica qué cambió entre concurrencia 1 y 4. **Errores comunes:** comparar máquinas distintas sin contexto, confundir percentil con máximo y asumir escala lineal para tareas CPU-bound. **Límites y decisión de uso:** no extrapoles esta simulación a una flota real ni prometas una capacidad a partir de una sola ejecución.
 
 **Fuente oficial:** [Node performance hooks](https://nodejs.org/api/perf_hooks.html).
+
+### Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a convertir los requisitos de una función del inventario en números (peticiones por segundo, almacenamiento, ancho de banda), identificar qué componente se satura primero y justificar una decisión de diseño con esa estimación. **Prerrequisitos:** el Tema 6 de este módulo (latencia y throughput), el Tema 2 (replicación) y el Módulo 7 (requisitos y atributos de calidad).
+
+#### Paso 2 · Contexto y caso real
+"Diseño de sistemas" es el último paso de la ruta de cualquier desarrollador backend y la parte de las entrevistas técnicas donde más gente se bloquea: se empieza dibujando cajas (balanceador, caché, cola) sin saber si hacen falta. En el proyecto integrador, alguien propone "poner Redis y tres réplicas" para el historial de movimientos del inventario; nadie calculó cuántas lecturas por segundo habrá. **¿Por qué es importante?** Porque una estimación de cinco minutos decide si basta una sola base SQLite o si de verdad hace falta replicar y cachear; dibujar componentes sin números produce sistemas caros que fallan por la razón equivocada.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** requisitos funcionales y no funcionales, estimación de orden de magnitud (*back-of-the-envelope*), pico frente a promedio, relación lectura/escritura, cuello de botella, holgura.
+
+El método tiene cuatro pasos y siempre en este orden:
+
+1. **Alcance:** qué operaciones existen y cuáles no (por ejemplo, "registrar movimiento" y "consultar historial de un SKU"; sin reportes analíticos).
+2. **Estimación:** usuarios activos × operaciones por usuario ÷ segundos del día = peticiones promedio por segundo; multiplica por un factor de pico (2–5×). Haz lo mismo con bytes por registro para el almacenamiento anual.
+3. **Componente limitante:** compara cada carga con la capacidad **medida** de cada pieza (la que obtuviste en el Tema 6), no con cifras de internet. El primero que supera ~70 % de su capacidad es el cuello de botella.
+4. **Decisión y revisión:** cambia solo lo que el número exige (índice, caché, réplica de lectura, cola) y vuelve a estimar.
+
+Las cifras son órdenes de magnitud: importa si son 5 o 5 000 peticiones por segundo, no si son 47 o 52.
+
+**Analogía:** antes de ampliar un restaurante cuentas cuántos clientes llegan a la hora pico y cuántos platos saca la cocina por hora; si la cocina da abasto pero faltan mesas, contratar otro cocinero no arregla nada.
+
+**Límite de uso:** la estimación no reemplaza una prueba de carga; sirve para descartar diseños y elegir qué medir, y sus supuestos deben quedar escritos para corregirlos cuando lleguen datos reales.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    REQ["requisitos y alcance"] --> EST["estimación: rps, bytes, pico"]
+    EST --> CAP["capacidad medida por componente"]
+    CAP --> BOT["cuello de botella (> 70 %)"]
+    BOT --> DEC["decisión mínima + ADR"]
+    DEC -->|"re-estimar"| EST
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Crea una carpeta con el archivo de supuestos y el estimador:
+
+```bash
+mkdir -p ejemplo-diseno && cd ejemplo-diseno
+```
+
+Archivo `supuestos.json` (cada número es una decisión explícita, no un dato real):
+
+```json
+{
+  "usuarios_activos_dia": 2000,
+  "consultas_por_usuario": 40,
+  "movimientos_por_usuario": 5,
+  "factor_pico": 4,
+  "bytes_por_movimiento": 300,
+  "capacidad_lecturas_rps": 150,
+  "capacidad_escrituras_rps": 40
+}
+```
+
+Archivo `estimar.py`:
+
+```python
+import json
+import sys
+from pathlib import Path
+
+SEGUNDOS_DIA = 86_400
+UMBRAL = 0.70  # por encima de este uso, el componente se considera cuello de botella
+
+s = json.loads(Path(sys.argv[1] if len(sys.argv) > 1 else "supuestos.json").read_text(encoding="utf-8"))
+
+lecturas_pico = s["usuarios_activos_dia"] * s["consultas_por_usuario"] / SEGUNDOS_DIA * s["factor_pico"]
+escrituras_pico = s["usuarios_activos_dia"] * s["movimientos_por_usuario"] / SEGUNDOS_DIA * s["factor_pico"]
+gb_anuales = s["usuarios_activos_dia"] * s["movimientos_por_usuario"] * s["bytes_por_movimiento"] * 365 / 1e9
+
+uso = {
+    "lecturas": lecturas_pico / s["capacidad_lecturas_rps"],
+    "escrituras": escrituras_pico / s["capacidad_escrituras_rps"],
+}
+print(f"lecturas pico: {lecturas_pico:.1f} rps  escrituras pico: {escrituras_pico:.2f} rps")
+print(f"almacenamiento anual: {gb_anuales:.2f} GB")
+for nombre, valor in uso.items():
+    print(f"uso {nombre}: {valor:.0%}")
+cuellos = [n for n, v in uso.items() if v > UMBRAL]
+print("cuello de botella:", ", ".join(cuellos) if cuellos else "ninguno; no agregues componentes")
+sys.exit(1 if cuellos else 0)
+```
+
+```bash
+python3 estimar.py; echo "salida: $?"
+```
+
+**Resultado esperado:**
+
+```text
+lecturas pico: 3.7 rps  escrituras pico: 0.46 rps
+almacenamiento anual: 1.09 GB
+uso lecturas: 2%
+uso escrituras: 1%
+cuello de botella: ninguno; no agregues componentes
+salida: 0
+```
+
+Con estos supuestos, Redis y tres réplicas no se justifican: la base atiende el pico usando el 2 % de su capacidad medida y el historial crece alrededor de 1 GB al año.
+
+**Fallo deliberado:** copia el archivo a `campana.json` y cambia `usuarios_activos_dia` a `200000` (una campaña nacional). Ejecuta `python3 estimar.py campana.json`: ahora las lecturas pico llegan a unos 370 rps (`uso lecturas: 247%`), las escrituras a unos 46 rps (`uso escrituras: 116%`) y el script sale con `1` señalando `lecturas, escrituras`. El diagnóstico no es "falta Kubernetes": son las lecturas del historial, así que la primera decisión es un índice o una caché para esa consulta, y la segunda, una cola o lote para los movimientos.
+
+#### Paso 5 · Práctica guiada
+Con `campana.json`, sube `capacidad_lecturas_rps` a `1500` (lo que mediste tras crear un índice) y vuelve a ejecutar. **Pista:** el uso de lecturas baja a `25%` y el script solo señala `escrituras`; mejorar un componente cambia cuál es el siguiente limitante, por eso se re-estima después de cada decisión.
+
+#### Paso 6 · Práctica independiente
+Escoge otra función del proyecto integrador (por ejemplo, "buscar producto por nombre"), escribe su propio `supuestos.json` con la relación lectura/escritura que consideres realista y redacta un ADR de media página que cite la salida de `estimar.py` como evidencia de la decisión.
+
+#### Paso 7 · Cierre y evidencia
+Entregá la salida con los supuestos base, la salida de la campaña con el cuello de botella detectado, la salida tras el índice y tu ADR. Explicá por qué el diseño empieza por números y no por cajas. **Errores comunes:** dimensionar con el promedio y olvidar el pico; comparar contra capacidades copiadas de un blog en vez de medidas propias; agregar caché, réplicas y colas a la vez sin saber cuál resolvió el problema.
+
+**Cuándo no usarlo:** para un script interno con un puñado de usuarios no hace falta estimar; basta un criterio de rendimiento del Módulo 7 y medir si alguien se queja.
+
+**Fuente oficial:** [AWS Well-Architected Framework — Pilar de eficiencia del rendimiento](https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/welcome.html).

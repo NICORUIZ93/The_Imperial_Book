@@ -508,6 +508,17 @@
       ]
     },
     {
+      "id": "foundations:7:6",
+      "track": "foundations",
+      "module": 7,
+      "position": 6,
+      "title": "Desarrollo guiado por especificación con agentes de IA",
+      "file": "web/public/content/foundations/modulo-7.md",
+      "requires": [
+        "foundations:7:5"
+      ]
+    },
+    {
       "id": "foundations:8:1",
       "track": "foundations",
       "module": 8,
@@ -515,7 +526,7 @@
       "title": "El sistema operativo como administrador y frontera",
       "file": "web/public/content/foundations/modulo-8.md",
       "requires": [
-        "foundations:7:5"
+        "foundations:7:6"
       ]
     },
     {
@@ -673,6 +684,17 @@
       ]
     },
     {
+      "id": "foundations:10:7",
+      "track": "foundations",
+      "module": 10,
+      "position": 7,
+      "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+      "file": "web/public/content/foundations/modulo-10.md",
+      "requires": [
+        "foundations:10:6"
+      ]
+    },
+    {
       "id": "foundations:11:1",
       "track": "foundations",
       "module": 11,
@@ -680,7 +702,7 @@
       "title": "Sistemas, arquitectura y sistemas operativos",
       "file": "web/public/content/foundations/modulo-11.md",
       "requires": [
-        "foundations:10:6"
+        "foundations:10:7"
       ]
     },
     {
@@ -10851,6 +10873,17 @@
       ]
     },
     {
+      "id": "devops:6:8",
+      "track": "devops",
+      "module": 6,
+      "position": 8,
+      "title": "Clúster local con Minikube: perfiles, addons e Ingress",
+      "file": "web/public/content/devops/modulo-6.md",
+      "requires": [
+        "devops:6:7"
+      ]
+    },
+    {
       "id": "devops:7:1",
       "track": "devops",
       "module": 7,
@@ -10858,7 +10891,7 @@
       "title": "Helm charts y values",
       "file": "web/public/content/devops/modulo-7.md",
       "requires": [
-        "devops:6:7"
+        "devops:6:8"
       ]
     },
     {

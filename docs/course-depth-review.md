@@ -6,7 +6,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
-| foundations | 100 | 13 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
+| foundations | 102 | 14 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
 | javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
 | node | 83 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
 | angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
@@ -19,12 +19,12 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | flutter | 106 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
 | kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
 | cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 129 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| devops | 130 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1323 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1326 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -507,6 +507,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 6 | [Tema 5: Namespaces](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 7: Persistent Volumes, PVCs y StorageClasses](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 6 | [Tema 8: Clúster local con Minikube: perfiles, addons e Ingress](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 1: Helm charts y values](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 2: Ingress Controllers y reglas de enrutamiento](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 3: HorizontalPodAutoscaler](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
@@ -652,6 +653,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | foundations / 10 | [Tema 4: Resiliencia y observabilidad orientadas a objetivos](../web/public/content/foundations/modulo-10.md) | archivo-ejemplo-no-presentado |
 | foundations / 10 | [Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 10 | [Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 10 | [Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](../web/public/content/foundations/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 1: Sistemas, arquitectura y sistemas operativos](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 2: Algoritmos, autómatas, lenguajes y compiladores](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 11 | [Tema 3: Bases de datos, almacenes analíticos y minería de datos](../web/public/content/foundations/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
@@ -726,6 +728,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | foundations / 7 | [Tema 3: Diseño modular, principios, patrones y refactoring](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 4: Decisiones, documentación, deuda y evolución](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 7 | [Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda](../web/public/content/foundations/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| foundations / 7 | [Tema 6: Desarrollo guiado por especificación con agentes de IA](../web/public/content/foundations/modulo-7.md) | comprobar-fragmento-incompleto |
 | foundations / 8 | [Tema 1: El sistema operativo como administrador y frontera](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 8 | [Tema 2: Memoria y concurrencia sin magia](../web/public/content/foundations/modulo-8.md) | archivo-ejemplo-no-presentado |
 | foundations / 8 | [Tema 3: Linux como entorno observable](../web/public/content/foundations/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |

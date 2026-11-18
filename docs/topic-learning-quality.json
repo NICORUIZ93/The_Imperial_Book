@@ -77,18 +77,18 @@
       "repeatedDemo": 0
     },
     "devops": {
-      "topics": 129,
-      "explanation": 129,
-      "code": 129,
-      "visual": 122,
-      "filePath": 129,
-      "runCommand": 129,
-      "expectedResult": 129,
-      "practice": 129,
-      "project": 129,
-      "modelMental": 129,
-      "limitsDecision": 129,
-      "practicable": 129,
+      "topics": 130,
+      "explanation": 130,
+      "code": 130,
+      "visual": 123,
+      "filePath": 130,
+      "runCommand": 130,
+      "expectedResult": 130,
+      "practice": 130,
+      "project": 130,
+      "modelMental": 130,
+      "limitsDecision": 130,
+      "practicable": 130,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -109,18 +109,18 @@
       "repeatedDemo": 0
     },
     "foundations": {
-      "topics": 100,
-      "explanation": 100,
-      "code": 100,
-      "visual": 75,
-      "filePath": 100,
-      "runCommand": 100,
-      "expectedResult": 100,
-      "practice": 100,
-      "project": 100,
-      "modelMental": 100,
-      "limitsDecision": 100,
-      "practicable": 100,
+      "topics": 102,
+      "explanation": 102,
+      "code": 102,
+      "visual": 77,
+      "filePath": 102,
+      "runCommand": 102,
+      "expectedResult": 102,
+      "practice": 102,
+      "project": 102,
+      "modelMental": 102,
+      "limitsDecision": 102,
+      "practicable": 102,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -10796,6 +10796,28 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: Helm charts y values",
         "criteria": {
@@ -13990,6 +14012,28 @@
         }
       },
       {
+        "module": 10,
+        "topic": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 11,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
         "criteria": {
@@ -15612,6 +15656,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

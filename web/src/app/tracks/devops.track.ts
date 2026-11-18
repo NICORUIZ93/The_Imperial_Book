@@ -82,7 +82,7 @@ export const DEVOPS_MODULES: CourseModule[] = [
     'Pipeline CD que despliega con estrategia canary y rollback automático.'),
   m(6, 'Kubernetes: fundamentos', 'Kubernetes I', 'Integración', '4 h', '#475569',
     'El orquestador de contenedores estándar de la industria. Pods, deployments y services explicados desde cero.',
-    ['Pod, ReplicaSet, Deployment', 'Service (ClusterIP, NodePort, LoadBalancer)', 'ConfigMaps y Secrets', 'kubectl esencial', 'Namespaces', 'StatefulSets, DaemonSets, Jobs y CronJobs', 'Persistent Volumes, PVCs y StorageClasses'],
+    ['Pod, ReplicaSet, Deployment', 'Service (ClusterIP, NodePort, LoadBalancer)', 'ConfigMaps y Secrets', 'kubectl esencial', 'Namespaces', 'StatefulSets, DaemonSets, Jobs y CronJobs', 'Persistent Volumes, PVCs y StorageClasses', 'Clúster local con Minikube: perfiles, addons e Ingress'],
     [
       'Crea un cluster local con kind o minikube y verifica con kubectl get nodes',
       'Despliega tu propia app con un Deployment de 3 réplicas y verifica con kubectl get pods',

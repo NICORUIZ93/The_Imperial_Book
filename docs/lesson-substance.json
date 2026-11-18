@@ -1844,7 +1844,7 @@
     }
   ],
   "summary": {
-    "fingerprint": "6aa352459b721e5e7ed7884670b3cfeb9cf3b6b11ce2e84bef11370be07703f8",
+    "fingerprint": "f402bfbf8b0e17fa1c787e73c7468b00d1cbf32f47fd10b8cb5222026b60e849",
     "issues": {
       "cola-tras-cierre": 1
     },
@@ -1855,7 +1855,7 @@
     },
     "modules": 291,
     "modulesWithLegacySections": 170,
-    "topics": 1323,
+    "topics": 1326,
     "topicsWithIssues": 1
   },
   "topics": {
@@ -5218,6 +5218,13 @@
       },
       {
         "issues": [],
+        "module": 6,
+        "tailWords": 182,
+        "topic": "Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+        "words": 978
+      },
+      {
+        "issues": [],
         "module": 7,
         "tailWords": 146,
         "topic": "Tema 1: Helm charts y values",
@@ -6237,6 +6244,13 @@
       },
       {
         "issues": [],
+        "module": 10,
+        "tailWords": 127,
+        "topic": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "words": 1056
+      },
+      {
+        "issues": [],
         "module": 11,
         "tailWords": 27,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
@@ -6752,6 +6766,13 @@
         "tailWords": 65,
         "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
         "words": 645
+      },
+      {
+        "issues": [],
+        "module": 7,
+        "tailWords": 171,
+        "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
+        "words": 1239
       },
       {
         "issues": [],

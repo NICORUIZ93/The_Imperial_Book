@@ -2146,6 +2146,10 @@
       {
         "title": "Persistent Volumes, PVCs y StorageClasses",
         "fragment": "tema-7-persistent-volumes-pvcs-y-storageclasses"
+      },
+      {
+        "title": "Clúster local con Minikube: perfiles, addons e Ingress",
+        "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
       }
     ],
     "7": [
@@ -2788,6 +2792,10 @@
       {
         "title": "Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada",
         "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
+      },
+      {
+        "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "fragment": "tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella"
       }
     ],
     "11": [
@@ -3106,6 +3114,10 @@
       {
         "title": "Records de C#: igualdad por valor no implica inmutabilidad profunda",
         "fragment": "tema-5-records-de-c-igualdad-por-valor-no-implica-inmutabilidad-profunda"
+      },
+      {
+        "title": "Desarrollo guiado por especificación con agentes de IA",
+        "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
       }
     ],
     "8": [

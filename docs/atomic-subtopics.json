@@ -29,7 +29,7 @@
       "completeSubtopics": 0
     },
     "devops": {
-      "topics": 129,
+      "topics": 130,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -43,7 +43,7 @@
       "completeSubtopics": 3
     },
     "foundations": {
-      "topics": 100,
+      "topics": 102,
       "completeTopics": 0,
       "topicsWith3to6Subtopics": 0,
       "subtopics": 0,
@@ -3470,6 +3470,13 @@
         "complete": false
       },
       {
+        "module": 6,
+        "topic": "### Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
         "module": 7,
         "topic": "### Tema 1: Helm charts y values",
         "subtopicCount": 0,
@@ -4532,6 +4539,13 @@
         "complete": false
       },
       {
+        "module": 10,
+        "topic": "### Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
         "module": 11,
         "topic": "### Tema 1: Sistemas, arquitectura y sistemas operativos",
         "subtopicCount": 0,
@@ -5045,6 +5059,13 @@
       {
         "module": 7,
         "topic": "### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 7,
+        "topic": "### Tema 6: Desarrollo guiado por especificación con agentes de IA",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

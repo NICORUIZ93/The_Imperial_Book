@@ -1850,7 +1850,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 19637,
+      "lines": 19658,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1858,7 +1858,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1183,
+      "lines": 1186,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2168,7 +2168,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 16492,
+      "lines": 16530,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2176,7 +2176,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1355,
+      "lines": 1358,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -2430,7 +2430,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11159,
+      "lines": 11180,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2623,7 +2623,7 @@
     },
     {
       "path": "docs/prerequisite-graph.json",
-      "lines": 13792,
+      "lines": 13825,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2788,7 +2788,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 33418,
+      "lines": 33493,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2954,7 +2954,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 22680,
+      "lines": 22728,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2962,7 +2962,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1211,
+      "lines": 1214,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -3043,7 +3043,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 29413,
+      "lines": 29479,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -15560,7 +15560,7 @@
     },
     {
       "path": "web/public/content/devops/modulo-6.md",
-      "lines": 661,
+      "lines": 748,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16283,7 +16283,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-10.md",
-      "lines": 787,
+      "lines": 904,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -16514,7 +16514,7 @@
     },
     {
       "path": "web/public/content/foundations/modulo-7.md",
-      "lines": 536,
+      "lines": 663,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19411,7 +19411,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 5909,
+      "lines": 5921,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -20997,7 +20997,7 @@
     },
     {
       "path": "web/src/app/tracks/foundations.track.ts",
-      "lines": 296,
+      "lines": 298,
       "kind": "angular-app",
       "symbols": [],
       "imports": [

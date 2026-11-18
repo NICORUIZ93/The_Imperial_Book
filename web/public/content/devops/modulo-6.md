@@ -631,6 +631,93 @@ Ya separas la solicitud de almacenamiento de una aplicación de los detalles fí
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Declara el almacenamiento de la base de laboratorio mediante un PVC. Recrea su consumidor y verifica persistencia, documentando política de recuperación y el efecto de eliminar el claim.
 
+### Tema 8: Clúster local con Minikube: perfiles, addons e Ingress
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a levantar un clúster con Minikube, activar el addon de Ingress, publicar el Deployment `mi-api` del Tema 1 por un nombre de host y explicar cuándo conviene Minikube frente a `kind`. **Conocimiento previo:** Temas 1, 2 y 4 de este módulo; Docker en ejecución, `kubectl` y `minikube` instalados (`brew install minikube` en macOS).
+
+#### Paso 2 · Contexto y caso real
+Con `kind` ya tienes un clúster para pruebas rápidas y CI, pero cuando quieres probar un Ingress, un `LoadBalancer` o el panel web de Kubernetes en tu portátil, `kind` exige instalar y configurar cada pieza a mano. Minikube trae esas piezas como **addons** que se activan con un comando. **¿Por qué es importante?** Los cursos y la documentación oficial de Kubernetes usan Minikube como entorno de referencia para desarrolladores; saber traducir entre Minikube y `kind` evita quedarse bloqueado cuando un tutorial asume uno u otro.
+
+#### Paso 3 · Teoría con analogía
+**Conceptos clave:** perfil de Minikube (un clúster con nombre), *driver* (dónde corre el nodo: Docker, VM), addon, `minikube tunnel`, contexto de `kubectl`.
+
+Minikube crea un clúster de un nodo dentro de un contenedor Docker o de una máquina virtual (el *driver*). Cada clúster es un **perfil** con nombre, así puedes tener `academia` y `pruebas` a la vez y cambiar entre ellos. Al crearlo, Minikube agrega un **contexto** a `~/.kube/config`, por eso `kubectl` habla con él sin configuración extra. Los **addons** son componentes empaquetados (controlador de Ingress, `metrics-server`, panel) que se activan o desactivan sin escribir YAML. Como el nodo vive dentro de Docker, una IP de `LoadBalancer` o del Ingress no siempre es alcanzable desde tu máquina; `minikube tunnel` crea esa ruta mientras está abierto.
+
+**Analogía:** `kind` es una cocina vacía donde traes cada electrodoméstico; Minikube es una cocina amoblada donde enciendes el horno o la nevera con un interruptor. Las dos cocinan lo mismo, pero una arranca más ligera y la otra más completa.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    DEV["tu máquina (kubectl, navegador)"] -->|"contexto academia"| API["API server del perfil academia"]
+    DEV -->|"minikube tunnel"| ING["Ingress controller (addon)"]
+    ING --> SVC["Service mi-api"] --> PODS["Pods del Deployment mi-api"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+Crea la carpeta del tema y un clúster en un perfil propio:
+
+```bash
+mkdir -p academia-devops/src/modulo6/minikube && cd academia-devops/src/modulo6/minikube
+minikube start -p academia --driver=docker --cpus=2 --memory=4096
+kubectl config current-context
+minikube addons enable ingress -p academia
+kubectl get pods -n ingress-nginx
+```
+
+**Explicación línea por línea:** `-p academia` crea (o reutiliza) el perfil con ese nombre; `--driver=docker` corre el nodo como contenedor; `current-context` debe responder `academia`; el addon `ingress` instala el controlador NGINX en el namespace `ingress-nginx`.
+
+Despliega la API y publícala por nombre de host en `ingress.yaml`:
+
+```bash
+kubectl create deployment mi-api --image=nginx:1.27-alpine --replicas=2
+kubectl expose deployment mi-api --port=80
+cat > ingress.yaml <<'EOF'
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mi-api
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: mi-api.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: mi-api, port: { number: 80 } }
+EOF
+kubectl apply -f ingress.yaml
+kubectl get ingress mi-api
+```
+
+En otra terminal ejecuta `minikube tunnel -p academia` (pide contraseña de administrador y debe quedar abierta). Luego prueba:
+
+```bash
+curl -s -H "Host: mi-api.local" http://127.0.0.1/ | head -4
+```
+
+**Resultado esperado:** `kubectl get ingress mi-api` muestra la clase `nginx` y una dirección; el `curl` devuelve las primeras líneas de la página de bienvenida de NGINX. El encabezado `Host` es lo que el Ingress usa para decidir a qué Service enviar la petición.
+
+**Fallo deliberado:** cierra la terminal del `minikube tunnel` y repite el `curl`: falla con `Connection refused` porque nada enruta el puerto 80 de tu máquina hacia el nodo. Diagnostica con `minikube tunnel -p academia` de nuevo, o comprueba que el Ingress funciona dentro del clúster con `kubectl run prueba --rm -it --image=curlimages/curl --restart=Never -- curl -s -H "Host: mi-api.local" http://ingress-nginx-controller.ingress-nginx`.
+
+#### Paso 5 · Práctica guiada
+Lista los addons disponibles con `minikube addons list -p academia`, activa `metrics-server` y ejecuta `kubectl top pods` cuando pase un minuto. **Pista:** si `kubectl top` responde `Metrics API not available`, el addon aún está arrancando; revisa `kubectl get pods -n kube-system | grep metrics`.
+
+#### Paso 6 · Práctica independiente
+Crea un segundo perfil `pruebas` con `minikube start -p pruebas`, comprueba con `kubectl config get-contexts` que tienes dos contextos y despliega allí una versión distinta de `mi-api`. Documenta en `notas.md` qué comandos cambian el contexto activo y cómo evitarías aplicar un YAML en el clúster equivocado.
+
+#### Paso 7 · Cierre
+Entregá la salida de `kubectl get ingress mi-api`, la respuesta del `curl` con el encabezado `Host`, el error con el túnel cerrado y su diagnóstico. Al terminar libera recursos con `minikube stop -p academia` (conserva el clúster) o `minikube delete -p academia` (lo borra). El siguiente módulo profundiza en Helm e Ingress avanzado sobre este mismo clúster. Fuente oficial: [Kubernetes — Set up Ingress on Minikube with the NGINX Ingress Controller](https://kubernetes.io/docs/tasks/access-application-cluster/ingress-minikube/).
+
+**Errores comunes:** aplicar manifiestos sin revisar `kubectl config current-context` cuando conviven `kind` y Minikube; olvidar `minikube tunnel` y concluir que el Ingress está roto; dejar varios perfiles encendidos consumiendo memoria.
+
+**Cuándo no usarlo:** en CI o en pruebas automatizadas que crean y destruyen clústeres muchas veces, `kind` arranca más rápido y no necesita túnel; Minikube rinde mejor como laboratorio interactivo en tu portátil.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica la API del proyecto por un host local con Ingress en Minikube y documenta en el README los dos caminos de arranque (`kind` para CI, Minikube para desarrollo).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** crear un clúster local con `kind` o `minikube`, desplegar una aplicación propia con un Deployment de 3 réplicas, exponerla con un Service, inyectar configuración con ConfigMap y Secret, y observar la auto-reparación de un Pod eliminado manualmente.

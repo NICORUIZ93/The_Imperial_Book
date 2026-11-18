@@ -3,14 +3,14 @@
   "totals": {
     "tracks": 15,
     "modules": 291,
-    "topics": 1323,
-    "topicsWithSignals": 261,
+    "topics": 1326,
+    "topicsWithSignals": 262,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1323,
+    "total": 1326,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -5834,6 +5834,18 @@
     },
     {
       "track": "devops",
+      "module": 6,
+      "title": "Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+      "file": "web/public/content/devops/modulo-6.md",
+      "line": 634,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "devops",
       "module": 7,
       "title": "Tema 1: Helm charts y values",
       "file": "web/public/content/devops/modulo-7.md",
@@ -7606,6 +7618,18 @@
     },
     {
       "track": "foundations",
+      "module": 10,
+      "title": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+      "file": "web/public/content/foundations/modulo-10.md",
+      "line": 788,
+      "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "foundations",
       "module": 11,
       "title": "Tema 1: Sistemas, arquitectura y sistemas operativos",
       "file": "web/public/content/foundations/modulo-11.md",
@@ -8496,6 +8520,20 @@
       "line": 473,
       "signals": [],
       "newLaboratory": true,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "foundations",
+      "module": 7,
+      "title": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
+      "file": "web/public/content/foundations/modulo-7.md",
+      "line": 537,
+      "signals": [
+        "comprobar-fragmento-incompleto"
+      ],
+      "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,
       "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"

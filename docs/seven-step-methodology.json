@@ -77,23 +77,23 @@
       "complete": 0
     },
     "devops": {
-      "topics": 129,
-      "objective": 129,
-      "prerequisites": 129,
-      "context": 129,
-      "theoryAnalogy": 129,
-      "guidedDemo": 129,
-      "codeExplanation": 129,
-      "execution": 129,
-      "expectedResult": 129,
-      "deliberateFailure": 129,
-      "guidedPractice": 129,
-      "independentPractice": 129,
-      "closure": 129,
-      "commonErrors": 129,
-      "resources": 129,
-      "standaloneExample": 129,
-      "complete": 129
+      "topics": 130,
+      "objective": 130,
+      "prerequisites": 130,
+      "context": 130,
+      "theoryAnalogy": 130,
+      "guidedDemo": 130,
+      "codeExplanation": 130,
+      "execution": 130,
+      "expectedResult": 130,
+      "deliberateFailure": 130,
+      "guidedPractice": 130,
+      "independentPractice": 130,
+      "closure": 130,
+      "commonErrors": 130,
+      "resources": 130,
+      "standaloneExample": 130,
+      "complete": 130
     },
     "flutter": {
       "topics": 106,
@@ -115,23 +115,23 @@
       "complete": 104
     },
     "foundations": {
-      "topics": 100,
-      "objective": 99,
-      "prerequisites": 100,
-      "context": 99,
-      "theoryAnalogy": 99,
-      "guidedDemo": 99,
-      "codeExplanation": 100,
-      "execution": 100,
-      "expectedResult": 100,
-      "deliberateFailure": 99,
-      "guidedPractice": 98,
-      "independentPractice": 99,
-      "closure": 98,
-      "commonErrors": 99,
-      "resources": 99,
-      "standaloneExample": 99,
-      "complete": 95
+      "topics": 102,
+      "objective": 101,
+      "prerequisites": 102,
+      "context": 101,
+      "theoryAnalogy": 101,
+      "guidedDemo": 101,
+      "codeExplanation": 102,
+      "execution": 102,
+      "expectedResult": 102,
+      "deliberateFailure": 101,
+      "guidedPractice": 100,
+      "independentPractice": 101,
+      "closure": 100,
+      "commonErrors": 101,
+      "resources": 101,
+      "standaloneExample": 101,
+      "complete": 97
     },
     "ios": {
       "topics": 56,
@@ -12266,6 +12266,31 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: Helm charts y values",
         "criteria": {
@@ -15895,6 +15920,31 @@
         }
       },
       {
+        "module": 10,
+        "topic": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
         "module": 11,
         "topic": "Tema 1: Sistemas, arquitectura y sistemas operativos",
         "criteria": {
@@ -17722,6 +17772,31 @@
       {
         "module": 7,
         "topic": "Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda",
+        "criteria": {
+          "objective": true,
+          "prerequisites": true,
+          "context": true,
+          "theoryAnalogy": true,
+          "guidedDemo": true,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": true,
+          "independentPractice": true,
+          "closure": true,
+          "commonErrors": true,
+          "resources": true,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 15,
+          "complete": true
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
         "criteria": {
           "objective": true,
           "prerequisites": true,

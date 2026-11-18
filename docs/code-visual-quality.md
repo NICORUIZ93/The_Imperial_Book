@@ -2,13 +2,13 @@
 
 Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.
 
-Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-13 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 503 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
+Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-18 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 503 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| foundations | 100 | 100 | 94 | 71 | 6 | 0 | 0 | 99 | 100 | 100 |
+| foundations | 102 | 102 | 96 | 73 | 6 | 0 | 0 | 101 | 102 | 102 |
 | cloud | 156 | 156 | 118 | 74 | 4 | 18 | 0 | 150 | 156 | 154 |
-| devops | 129 | 129 | 83 | 82 | 2 | 40 | 0 | 129 | 128 | 129 |
+| devops | 130 | 130 | 84 | 83 | 2 | 40 | 0 | 130 | 129 | 130 |
 | javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 88 |
 | node | 83 | 83 | 30 | 32 | 0 | 0 | 0 | 83 | 83 | 80 |
 | angular | 71 | 71 | 69 | 30 | 0 | 20 | 0 | 71 | 70 | 71 |
@@ -21,7 +21,7 @@ Las fuentes se reconocen por host exacto en la prosa visible, no dentro del cód
 | ios | 56 | 56 | 40 | 34 | 0 | 16 | 0 | 55 | 56 | 56 |
 | flutter | 106 | 106 | 61 | 82 | 0 | 14 | 0 | 103 | 103 | 99 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 29 |
-| **Total** | **1253** | **1253** | **850** | **639** | **14** | **179** | **0** | **1239** | **1242** | **1234** |
+| **Total** | **1256** | **1256** | **853** | **642** | **14** | **179** | **0** | **1242** | **1245** | **1237** |
 
 ## Regla editorial
 

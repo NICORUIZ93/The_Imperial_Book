@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1323,
+    "topics": 1326,
     "reviewed": 175,
-    "pending": 1148,
-    "priorityCandidates": 1000,
+    "pending": 1151,
+    "priorityCandidates": 1003,
     "byTrack": {
       "android": {
         "topics": 74,
@@ -26,9 +26,9 @@
         "pending": 70
       },
       "devops": {
-        "topics": 129,
+        "topics": 130,
         "reviewed": 0,
-        "pending": 129
+        "pending": 130
       },
       "flutter": {
         "topics": 106,
@@ -36,9 +36,9 @@
         "pending": 43
       },
       "foundations": {
-        "topics": 100,
+        "topics": 102,
         "reviewed": 0,
-        "pending": 100
+        "pending": 102
       },
       "ios": {
         "topics": 56,
@@ -8471,6 +8471,22 @@
       "review": null
     },
     {
+      "id": "devops/modulo-6::Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+      "track": "devops",
+      "module": 6,
+      "topic": "Tema 8: Clúster local con Minikube: perfiles, addons e Ingress",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
       "id": "devops/modulo-7::Tema 1: Helm charts y values",
       "track": "devops",
       "module": 7,
@@ -11323,6 +11339,22 @@
       "review": null
     },
     {
+      "id": "foundations/modulo-10::Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+      "track": "foundations",
+      "module": 10,
+      "topic": "Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": null
+    },
+    {
       "id": "foundations/modulo-11::Tema 1: Sistemas, arquitectura y sistemas operativos",
       "track": "foundations",
       "module": 11,
@@ -12438,6 +12470,22 @@
       "prioritySignals": [
         "título agrupa varios conceptos",
         "menos de dos encabezados semánticos internos"
+      ],
+      "review": null
+    },
+    {
+      "id": "foundations/modulo-7::Tema 6: Desarrollo guiado por especificación con agentes de IA",
+      "track": "foundations",
+      "module": 7,
+      "topic": "Tema 6: Desarrollo guiado por especificación con agentes de IA",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
     },

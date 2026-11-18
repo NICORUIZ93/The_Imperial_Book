@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1323
+- Temas inventariados: 1326
 - Revisados humanamente para subtemas: 175
-- Pendientes: 1148
-- Candidatos prioritarios por señales: 1000
+- Pendientes: 1151
+- Candidatos prioritarios por señales: 1003
 
 ## Cobertura por track
 
@@ -15,9 +15,9 @@
 | angular | 71 | 71 | 0 |
 | cloud | 156 | 0 | 156 |
 | control-1 | 70 | 0 | 70 |
-| devops | 129 | 0 | 129 |
+| devops | 130 | 0 | 130 |
 | flutter | 106 | 63 | 43 |
-| foundations | 100 | 0 | 100 |
+| foundations | 102 | 0 | 102 |
 | ios | 56 | 0 | 56 |
 | java | 111 | 22 | 89 |
 | javascript | 88 | 0 | 88 |
@@ -369,6 +369,7 @@
 - `devops/modulo-6` — Tema 5: Namespaces — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-6` — Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-6` — Tema 7: Persistent Volumes, PVCs y StorageClasses — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `devops/modulo-6` — Tema 8: Clúster local con Minikube: perfiles, addons e Ingress — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-7` — Tema 1: Helm charts y values — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-7` — Tema 2: Ingress Controllers y reglas de enrutamiento — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-7` — Tema 3: HorizontalPodAutoscaler — lista conceptos clave sin mapa interno verificable
@@ -439,6 +440,7 @@
 - `foundations/modulo-10` — Tema 4: Resiliencia y observabilidad orientadas a objetivos — título agrupa varios conceptos
 - `foundations/modulo-10` — Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-10` — Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-10` — Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-11` — Tema 1: Sistemas, arquitectura y sistemas operativos — título agrupa varios conceptos
 - `foundations/modulo-11` — Tema 2: Algoritmos, autómatas, lenguajes y compiladores — título agrupa varios conceptos
 - `foundations/modulo-11` — Tema 3: Bases de datos, almacenes analíticos y minería de datos — título agrupa varios conceptos
@@ -507,6 +509,7 @@
 - `foundations/modulo-7` — Tema 3: Diseño modular, principios, patrones y refactoring — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-7` — Tema 4: Decisiones, documentación, deuda y evolución — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-7` — Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-7` — Tema 6: Desarrollo guiado por especificación con agentes de IA — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-8` — Tema 1: El sistema operativo como administrador y frontera — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-8` — Tema 2: Memoria y concurrencia sin magia — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `foundations/modulo-8` — Tema 3: Linux como entorno observable — lista conceptos clave sin mapa interno verificable

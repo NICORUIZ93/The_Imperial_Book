@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1326**. Tracks inventariados: **16**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -10,9 +10,9 @@ Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 | angular | 0 | 71 | 0 | 0 |
 | cloud | 0 | 156 | 0 | 0 |
 | control-1 | 0 | 70 | 0 | 0 |
-| devops | 0 | 129 | 0 | 0 |
+| devops | 0 | 130 | 0 | 0 |
 | flutter | 1 | 106 | 3 | 3 |
-| foundations | 0 | 100 | 0 | 0 |
+| foundations | 0 | 102 | 0 | 0 |
 | ios | 0 | 56 | 0 | 0 |
 | java | 101 | 111 | 313 | 313 |
 | javascript | 0 | 88 | 0 | 0 |
@@ -517,6 +517,7 @@ Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 - M6 ### Tema 5: Namespaces: tiene 0 subtemas
 - M6 ### Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs: tiene 0 subtemas
 - M6 ### Tema 7: Persistent Volumes, PVCs y StorageClasses: tiene 0 subtemas
+- M6 ### Tema 8: Clúster local con Minikube: perfiles, addons e Ingress: tiene 0 subtemas
 - M7 ### Tema 1: Helm charts y values: tiene 0 subtemas
 - M7 ### Tema 2: Ingress Controllers y reglas de enrutamiento: tiene 0 subtemas
 - M7 ### Tema 3: HorizontalPodAutoscaler: tiene 0 subtemas
@@ -667,6 +668,7 @@ Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 - M10 ### Tema 4: Resiliencia y observabilidad orientadas a objetivos: tiene 0 subtemas
 - M10 ### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases: tiene 0 subtemas
 - M10 ### Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada: tiene 0 subtemas
+- M10 ### Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella: tiene 0 subtemas
 - M11 ### Tema 1: Sistemas, arquitectura y sistemas operativos: tiene 0 subtemas
 - M11 ### Tema 2: Algoritmos, autómatas, lenguajes y compiladores: tiene 0 subtemas
 - M11 ### Tema 3: Bases de datos, almacenes analíticos y minería de datos: tiene 0 subtemas
@@ -741,6 +743,7 @@ Temas conformes a cuatro pasos: **215/1323**. Tracks inventariados: **16**.
 - M7 ### Tema 3: Diseño modular, principios, patrones y refactoring: tiene 0 subtemas
 - M7 ### Tema 4: Decisiones, documentación, deuda y evolución: tiene 0 subtemas
 - M7 ### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda: tiene 0 subtemas
+- M7 ### Tema 6: Desarrollo guiado por especificación con agentes de IA: tiene 0 subtemas
 - M8 ### Tema 1: El sistema operativo como administrador y frontera: tiene 0 subtemas
 - M8 ### Tema 2: Memoria y concurrencia sin magia: tiene 0 subtemas
 - M8 ### Tema 3: Linux como entorno observable: tiene 0 subtemas
