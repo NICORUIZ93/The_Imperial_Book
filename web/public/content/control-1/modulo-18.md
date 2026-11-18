@@ -179,7 +179,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** Valor final del error con realimentación unitaria.
 
-**Resultado.** \(e_{ss} = 0\) = 0: la integral lo elimina.
+**Resultado.** \(e_{ss} = 0\): la integral lo elimina.
 
 #### Ejemplo 4 · Error ante escalón con P con Kp = 98 · *Básico*
 
@@ -199,7 +199,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** Valor final del error con realimentación unitaria.
 
-**Resultado.** \(e_{ss} = 0\) = 0: la integral lo elimina.
+**Resultado.** \(e_{ss} = 0\): la integral lo elimina.
 
 #### Verificación con código
 
@@ -248,7 +248,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 1. Lazo cerrado: \(\dfrac{9}{s+1+9} = \dfrac{9}{s+10}\).
 
-   **¿Por qué?** \(\dfrac{N}{D+N}\) (capítulo 6).
+   **¿Por qué?** \(\dfrac{N}{D+N}\) (módulo 5).
 
 2. Valor final: \(9/10 = 0{,}9\).
 
@@ -256,7 +256,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 3. Error: \(1 - 0{,}9 = 0{,}1\). Con la fórmula: \(\dfrac{1}{1+K_p} = \dfrac{1}{10}\).
 
-   **¿Por qué?** Sistema tipo 0 (capítulo 15).
+   **¿Por qué?** Sistema tipo 0 (módulo 14).
 
 4. Con \(K_p = 99\): error \(1/100\).
 
@@ -276,7 +276,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 2. \(K_p = 10\): \(s^2+3s+12\), \(\zeta = \dfrac{3}{2\sqrt{12}} = 0{,}433\), \(M_p = 22{,}1\,\%\), error 16,7 %.
 
-   **¿Por qué?** Capítulo 13.
+   **¿Por qué?** Módulo 12.
 
 3. \(K_p = 40\): \(s^2+3s+42\), \(\zeta = 0{,}231\), \(M_p = 47{,}4\,\%\), error 4,8 %.
 
@@ -302,7 +302,7 @@ El actuador solo está prendido o apagado. Se usa con histéresis para que no co
 
 2. Tiene un integrador: tipo 1, error ante escalón 0.
 
-   **¿Por qué?** Capítulo 15.
+   **¿Por qué?** Módulo 14.
 
 3. Lazo cerrado: \(\dfrac{3s+8}{s(s+1)+3s+8} = \dfrac{3s+8}{s^2+4s+8}\). Valor final \(8/8 = 1\).
 
@@ -439,7 +439,7 @@ cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor
 
 2. \(K_v = \lim s\cdot\dfrac{4}{s(s+2)} = 2\). Error \(1/2\).
 
-   **¿Por qué?** Capítulo 15.
+   **¿Por qué?** Módulo 14.
 
 **Resultado:** Escalón 0; rampa 0,5
 
@@ -531,7 +531,7 @@ cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\),
 **Procedimiento**
 
 1. Deja solo la acción P y sube \(K_p\) hasta que la salida oscile de forma sostenida. Esa es la ganancia crítica \(K_{cr}\).
-2. Mide el período de la oscilación, \(P_{cr}\). (Con modelo: Routh da los dos, capítulo 16.)
+2. Mide el período de la oscilación, \(P_{cr}\). (Con modelo: Routh da los dos, módulo 15.)
 3. Usa la tabla.
 
 | Controlador | \(K_p\) | \(T_i\) | \(T_d\) |
@@ -560,7 +560,7 @@ cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\),
 
 #### Método 2: curva de reacción (lazo abierto)
 
-Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfrac{Ke^{-Ls}}{Ts+1}\) (capítulo 12, identificación): \(L\) es el retardo y \(T\) la constante de tiempo.
+Se aplica un escalón a la planta sin controlador y se ajusta la curva a \(\dfrac{Ke^{-Ls}}{Ts+1}\) (módulo 11, identificación): \(L\) es el retardo y \(T\) la constante de tiempo.
 
 | Controlador | \(K_p\) | \(T_i\) | \(T_d\) |
 |---|---|---|---|

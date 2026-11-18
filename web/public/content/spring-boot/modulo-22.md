@@ -8,7 +8,7 @@ Cada Tema parte de una carpeta vacía, produce un artefacto concreto y lo verifi
 
 Al finalizar vas a separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y a compilar el caso de uso sin Spring ni JPA en el classpath.
 
-**Conocimiento previo:** Java 21 o superior, `javac`/`java` en el `PATH`, y el Módulo 15 (Clean Architecture y DDD táctico). Comprueba `javac -version`.
+**Conocimiento previo:** JDK 25, `javac`/`java` en el `PATH`, y el Módulo 15 (Clean Architecture y DDD táctico). Comprueba `javac -version`.
 
 **¿Por qué es importante?** Un puerto que devuelve `Page<ReservaEntity>` obliga al dominio a depender de Spring Data: el test del caso de uso levanta el contexto de Spring, tarda segundos y falla cuando cambia la versión de JPA. El síntoma aparece cuando alguien intenta probar una regla de negocio y descubre que necesita una base de datos.
 
@@ -112,7 +112,7 @@ Al compilar, `javac` responde:
 Hexagonal.java:19: error: package org.springframework.data.domain does not exist
 ```
 
-El diagnóstico es que el dominio ahora depende de un framework. No falta una dependencia en el `build.gradle`: el problema es de dirección. Corrige el puerto para devolver `Reserva` y comprueba que `javac` vuelve a compilar sin Spring.
+El diagnóstico es que el dominio ahora depende de un framework. No falta una dependencia (este laboratorio compila con `javac`, sin Maven ni Gradle): el problema es de dirección. Corrige el puerto para devolver `Reserva` y comprueba que `javac` vuelve a compilar sin Spring.
 
 **Conceptos clave:** puerto, adaptador, dirección de dependencias, tipos del dominio.
 
@@ -126,7 +126,7 @@ El diagnóstico es que el dominio ahora depende de un framework. No falta una de
 flowchart LR
     Controlador["Controlador HTTP"] --> CasoUso["Caso de uso CrearReserva"]
     CasoUso --> Puerto["Puerto ReservaRepository"]
-    Puerto -.->|implementa| Adaptador["Adaptador: memoria o JPA"]
+    Adaptador["Adaptador: memoria o JPA"] -.->|implementa| Puerto
     Adaptador --> Dominio["Dominio: Reserva y ReservaId"]
 ```
 

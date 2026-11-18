@@ -145,7 +145,69 @@ cambia `C` a 1 y a 100 y observa cómo cambia `y_cerrado`. ¿Qué pasa con la pe
 
 **Límite:** esta comparación asume que el lazo cerrado es estable; si al cerrar el lazo el sistema se vuelve inestable (puede pasar con \(C\) muy grande en sistemas de orden alto), la fórmula \(1/(1+CG_p)\) deja de tener sentido físico aunque el álgebra la calcule igual.
 
-**Conexión con el proyecto integrador:** el control de nivel de un tanque (Ejemplo 1 de este tema) es exactamente el proyecto integrador del curso. Ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` desde la raíz del repositorio y anota en tu bitácora cuál es la referencia (1,5 m), la perturbación (el caudal de salida, que depende de la altura) y por qué este es un sistema de lazo cerrado real, no solo un ejemplo de pizarrón.
+**Conexión con el proyecto integrador:** el control de nivel de un tanque (Ejemplo 1 de este tema) es exactamente el proyecto integrador del curso. Primero crea el laboratorio dentro de tu carpeta de trabajo: en `academia-labs/control-1` crea la carpeta `examples/control-1-tanque` (`mkdir -p examples/control-1-tanque` en macOS/Linux, `mkdir examples\control-1-tanque` en PowerShell) y guarda en ella este archivo como `simular.py`. Solo usa la biblioteca estándar; los módulos 11, 14 y 18 lo vuelven a ejecutar con la misma ruta.
+
+<details><summary>Código completo de <code>examples/control-1-tanque/simular.py</code></summary>
+
+```python
+#!/usr/bin/env python3
+"""Simula un tanque lineal con control P y PI; solo usa la biblioteca estándar."""
+
+import argparse
+import csv
+from pathlib import Path
+
+AREA = 2.0       # m²
+SALIDA = 0.5     # m²/s; q_salida = SALIDA * altura
+PASO = 0.02      # s
+DURACION = 50.0  # s
+CAMBIO = 5.0     # s
+
+
+def simular(kp: float, ki: float) -> list[tuple[float, float, float, float]]:
+    altura = 1.0
+    integral = 0.0
+    filas = []
+    for n in range(round(DURACION / PASO) + 1):
+        tiempo = n * PASO
+        referencia = 1.0 if tiempo < CAMBIO else 1.5
+        error = referencia - altura
+        caudal_libre = 0.5 + kp * error + ki * integral
+        caudal = max(0.0, min(1.5, caudal_libre))
+        filas.append((tiempo, referencia, altura, caudal))
+        if n < round(DURACION / PASO):
+            if 0.0 < caudal_libre < 1.5 or (caudal == 0 and error > 0) or (caudal == 1.5 and error < 0):
+                integral += error * PASO
+            altura += (caudal - SALIDA * altura) / AREA * PASO
+    return filas
+
+
+def guardar_csv(ruta: Path, filas: list[tuple[float, float, float, float]]) -> None:
+    with ruta.open("w", newline="", encoding="utf-8") as archivo:
+        escritor = csv.writer(archivo)
+        escritor.writerow(("tiempo_s", "referencia_m", "altura_m", "caudal_m3_s"))
+        escritor.writerows((f"{valor:.4f}" for valor in fila) for fila in filas)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--salida", type=Path, default=Path("."))
+    args = parser.parse_args()
+    args.salida.mkdir(parents=True, exist_ok=True)
+    for nombre, kp, ki in (("P", 0.8, 0.0), ("PI", 0.8, 0.15)):
+        filas = simular(kp, ki)
+        guardar_csv(args.salida / f"tanque-{nombre}.csv", filas)
+        final = filas[-1][2]
+        print(f"{nombre}: altura_final={final:.3f} m; error_final={1.5-final:.3f} m")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+</details>
+
+Desde `academia-labs/control-1`, con el entorno del módulo 0 activo, ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` (en PowerShell, `.\.venv\Scripts\python.exe examples\control-1-tanque\simular.py --salida salida-tanque`). Debes ver `P: altura_final=1.308 m; error_final=0.192 m` y `PI: altura_final=1.500 m; error_final=0.000 m`. Anota en tu bitácora cuál es la referencia (1,5 m), la perturbación (el caudal de salida, que depende de la altura) y por qué este es un sistema de lazo cerrado real, no solo un ejemplo de pizarrón.
 
 ### Tema 2: Los elementos de un lazo de control
 
@@ -431,11 +493,11 @@ En lazo abierto la perturbación pasa entera (\(Y/D = 1\)). En lazo cerrado se d
 
 2. Con \(K = 8\): \(s^2+2s+8\). Polos: \(-1 \pm \sqrt{8-1}\,j = -1\pm2{,}65j\).
 
-   **¿Por qué?** Atajo de capítulo 2.
+   **¿Por qué?** Atajo del módulo 1.
 
 **Resultado:** \(\dfrac{K}{s^2+2s+K}\); con \(K=8\), polos \(-1\pm2{,}65j\)
 
-> Mover los polos cambiando \(K\) es la idea central del diseño (capítulo 18).
+> Mover los polos cambiando \(K\) es la idea central del diseño (módulo 17).
 
 #### Ejemplo 5 · Sensor con dinámica · *Intermedio*
 

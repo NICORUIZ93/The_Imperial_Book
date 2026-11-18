@@ -9,7 +9,7 @@ Necesitas un **JDK**, no solo “Java”. El JDK incluye el compilador `javac`, 
 |---|---|---|
 | Windows | Instala Eclipse Temurin JDK y VS Code; marca la opción de configurar `JAVA_HOME` | Abre una terminal nueva después de instalar |
 | macOS | `brew install --cask temurin` y `brew install git` | En Mac Apple Silicon usa el instalador ARM64 |
-| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-21-jdk git` | No instales únicamente `jre` |
+| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-25-jdk git` (Ubuntu 24.04 o posterior) | No instales únicamente `jre` |
 
 Verifica con `java --version` y `javac --version`: ambas versiones deben coincidir. Crea una carpeta `hola-java`, abre allí VS Code y guarda:
 
@@ -23,13 +23,13 @@ public class Hola {
 
 Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.class`; el segundo lo ejecuta en la JVM. En Windows, si `javac` no se reconoce, revisa `JAVA_HOME` y que `%JAVA_HOME%\bin` esté en `Path`.
 
+**Maven y Gradle (los necesitas desde el Módulo 8 y para `gradle init` del final de este módulo).** Instala Maven 3.9 o posterior y Gradle 9.1 o posterior, la primera versión de Gradle que funciona con Java 25. En macOS usa `brew install maven gradle`; en Windows y Ubuntu descarga los binarios de [maven.apache.org](https://maven.apache.org/download.cgi) y [gradle.org/install](https://gradle.org/install/), porque `apt` en Ubuntu 24.04 ofrece Maven 3.8.7 y Gradle 4.4.1, demasiado antiguos. Verifica con `mvn --version` y `gradle --version`: ambos deben mostrar Java 25.
+
 ## Ruta recomendada: recorrido del desarrollador Java en 17 pasos
 
-Esta ruta ordena lo que un desarrollador Java aprende desde cero hasta llegar a producción. Viene de una
-publicación de Nicolás Valenzuela (Backend & AI Engineer) guardada como captura y validada contra la
-academia (ver `docs/capture-intake.json`). La idea central: no hay atajos; cada paso hace más fácil el
-siguiente, así que no saltes a Kafka sin dominar los fundamentos. La imagen original no tiene un paso 10;
-no se inventó.
+Esta ruta ordena lo que un desarrollador Java aprende desde cero hasta llegar a producción. La idea central:
+no hay atajos; cada paso hace más fácil el siguiente, así que no saltes a Kafka sin dominar los
+fundamentos. La numeración salta del paso 9 al 11.
 
 ```mermaid
 flowchart LR
@@ -105,7 +105,7 @@ flowchart LR
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Entender fuente, bytecode y classpath permite diagnosticar por qué un programa que compila no inicia.
 
-**Prerrequisitos:** ninguno. Proyecto continuo del track: construir un motor de asignación de entregas. Usa JDK 21 o posterior y ejecuta `java --version` y `javac --version` antes de comenzar.
+**Prerrequisitos:** ninguno. Proyecto continuo del track: construir un motor de asignación de entregas. Usa JDK 25 o posterior (el que instalaste en «Antes de comenzar») y ejecuta `java --version` y `javac --version` antes de comenzar.
 
 #### Subtema 1.1: Compila y ejecuta tu primera clase · 10 min
 
@@ -247,7 +247,7 @@ Guarda ambas salidas lado a lado y explica con tus palabras en qué momento del 
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Este método conecta lo que escribes con el arranque del programa; entenderlo te permite recibir parámetros de ejecución y diagnosticar por qué el lanzador no encuentra la entrada.
-**Prerrequisitos:** M0 T1. Proyecto continuo: el motor de asignación de entregas recibirá origen y destino por terminal. Usa JDK 21 o posterior. Java 25 admite formas adicionales de métodos `main`; aquí practicarás la firma clásica, compatible con versiones anteriores.
+**Prerrequisitos:** M0 T1. Proyecto continuo: el motor de asignación de entregas recibirá origen y destino por terminal. Usa JDK 25 o posterior. Java 25 admite formas adicionales de métodos `main`; aquí practicarás primero la firma clásica, compatible con versiones anteriores.
 
 #### Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
 
@@ -346,7 +346,7 @@ java Hola25.java
 
 **Resultado esperado:** `Hola, Java 25`. El modo de archivo fuente permite este ejemplo compacto en Java 25.
 
-**Fallo deliberado:** ejecuta `javac -d out Hola25.java` con un JDK 21. **Error esperado:** errores de sintaxis cerca de `void main()`. **Diagnóstico:** la forma compacta mostrada depende de las capacidades incorporadas en Java 25; el estilo clásico del subtema anterior funciona en JDK 21 y posteriores.
+**Fallo deliberado:** con el mismo JDK 25, compila como si fuera Java 21: `javac --release 21 -d out Hola25.java`. **Error esperado:** `Hola25.java:1: error: implicitly declared classes are not supported in -source 21`. **Diagnóstico:** la forma compacta mostrada depende de las capacidades incorporadas en Java 25; el estilo clásico del subtema anterior funciona en JDK 21 y posteriores.
 
 **3. Entiende**
 Java 25 amplió las formas de entrada válidas para facilitar programas pequeños; la firma clásica sigue siendo útil en proyectos y versiones anteriores. Al elegir una forma, comprueba la versión mínima declarada por el proyecto.
@@ -379,10 +379,10 @@ java -cp out MotorInterno
 
 **Resultado esperado:** compila sin error y ejecuta `corre sin ser clase publica`. El `.class` se llama `MotorInterno.class` aunque el archivo fuente se llamaba `motor.java`.
 
-**Fallo deliberado:** una hipótesis frecuente es pensar que la regla "el nombre del archivo debe coincidir con el de la clase" aplica a cualquier clase con `main`. **Error esperado:** no hay ningún error; `javac` acepta el archivo sin quejarse y `java -cp out MotorInterno` funciona igual que con una clase pública. **Diagnóstico:** la restricción de nombre de archivo del Subtema 1.1 es exclusiva de las clases declaradas `public`; una clase sin modificador de acceso (paquete-privada) puede vivir en un archivo con cualquier nombre, mientras ese archivo no contenga ninguna otra clase `public`. Lo que el lanzador exige siempre, con o sin `public` en la clase, es que el método `main` sea `public static void`.
+**Fallo deliberado:** una hipótesis frecuente es pensar que la regla "el nombre del archivo debe coincidir con el de la clase" aplica a cualquier clase con `main`. **Error esperado:** no hay ningún error; `javac` acepta el archivo sin quejarse y `java -cp out MotorInterno` funciona igual que con una clase pública. **Diagnóstico:** la restricción de nombre de archivo del Subtema 1.1 es exclusiva de las clases declaradas `public`; una clase sin modificador de acceso (paquete-privada) puede vivir en un archivo con cualquier nombre, mientras ese archivo no contenga ninguna otra clase `public`. Hasta Java 24, el lanzador exigía además que `main` fuera `public static void main(String[] args)`; desde Java 25 (JEP 512) también acepta un `main` sin `public`, sin `static` o sin parámetros. Compruébalo: quita `public` de `main`, recompila y ejecuta; con JDK 25 imprime lo mismo.
 
 **3. Entiende**
-`public` en `class MotorInterno` controla quién puede importar y usar esa clase desde otro paquete; no tiene nada que ver con lo que exige `java` para arrancarla por classpath. `public` en `main` sí es obligatorio siempre: es el contrato que el lanzador busca, independientemente de la visibilidad de la clase que lo contiene.
+`public` en `class MotorInterno` controla quién puede importar y usar esa clase desde otro paquete; no tiene nada que ver con lo que exige `java` para arrancarla por classpath. La firma de `main` es otra regla, que depende de la versión: la firma clásica `public static void main(String[] args)` funciona en todas, y Java 25 la relajó. Si tu proyecto debe compilar también con JDK 21, conserva la firma clásica.
 
 **4. Cierra**
 Explica con tus palabras por qué el motor de entregas puede tener clases de ayuda sin `public` y seguir ejecutándolas con `java -cp` durante el desarrollo, aunque el archivo final que se publique sí necesite una clase pública con el nombre acordado.
@@ -393,7 +393,7 @@ Explica con tus palabras por qué el motor de entregas puede tener clases de ayu
 - [ ] Recibí y mostré dos argumentos en el orden correcto.
 - [ ] Controlé el caso en que faltaba un argumento y reproduje el fallo sin validación.
 - [ ] Distinguí la firma clásica de la forma compacta disponible en Java 25.
-- [ ] Separé la regla de nombre de archivo (clase `public`) de la regla de `main` (siempre `public static void`, sin importar la visibilidad de la clase).
+- [ ] Separé la regla de nombre de archivo (clase `public`) de la regla de `main` (firma clásica en todas las versiones; formas relajadas desde Java 25).
 
 **Fuentes oficiales:** [guía de lanzamiento de aplicaciones Java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html) y [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512).
 

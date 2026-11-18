@@ -235,7 +235,7 @@ En serie circula una sola corriente \(I = V_i/Z_{total}\). El voltaje de salida 
 
 4. Divide arriba y abajo por 0,2: \(\dfrac{5}{s^2+2s+5}\).
 
-   **¿Por qué?** Para que el coeficiente de \(s^2\) sea 1 (forma estándar de capítulo 13).
+   **¿Por qué?** Para que el coeficiente de \(s^2\) sea 1 (forma estándar del módulo 12).
 
 **Resultado:** \(G = \dfrac{5}{s^2+2s+5}\): segundo orden, polos \(-1\pm2j\)
 

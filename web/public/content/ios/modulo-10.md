@@ -382,7 +382,7 @@ Entregá el controlador con carga única del Paso 4, la petición de red repetid
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 15 o superior. En `RutaFlowApp`, crea **File > New > File > String Catalog** con el nombre `Localizable`. Agrega el idioma inglés en **Project > Info > Localizations**.
+Usa Xcode 26 o superior, la versión base del curso. En `RutaFlowApp`, crea **File > New > File > String Catalog** con el nombre `Localizable`. Agrega el idioma inglés en **Project > Info > Localizations**.
 
 #### Paso 2 · Contexto y caso real
 

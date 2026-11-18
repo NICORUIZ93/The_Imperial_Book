@@ -599,7 +599,7 @@ Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son l
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.x con Java 21 y el starter `spring-boot-starter-web`. Crea el proyecto en start.spring.io con el nombre `academia-spring` o continúa el de los temas anteriores.
+Usa Spring Boot 4.1.2 con JDK 25 y la dependencia Spring Web. Continúa el proyecto `academia-spring` de los temas anteriores (paquete `com.example.demo`) o créalo en start.spring.io como indica «Antes de comenzar».
 
 #### Paso 2 · Contexto y caso real
 
@@ -611,7 +611,7 @@ El servicio de asignación de RutaFlow guarda en memoria un lote de envíos y lo
 
 Spring crea cada bean, le inyecta sus dependencias y entonces llama a `@PostConstruct`. Al cerrar el contexto, llama a `@PreDestroy` en orden inverso de creación.
 
-`SmartLifecycle` sirve para componentes que **arrancan y se detienen** (un consumidor, un planificador): Spring llama `start()` cuando el contexto está listo y `stop()` al apagar. El número de **fase** decide el orden: fases más altas arrancan después y se detienen antes.
+`SmartLifecycle` sirve para componentes que **arrancan y se detienen** (un consumidor, un planificador): Spring llama `start()` cuando el contexto está listo y `stop()` al apagar. El número de **fase** decide el orden: fases más altas arrancan después y se detienen antes. La fase por defecto es `Integer.MAX_VALUE`, la más alta posible, y el apagado ordenado del servidor web corre en `WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE` (`Integer.MAX_VALUE - 1024`). Por eso un `SmartLifecycle` sin `getPhase()` se detendría **antes** de que el servidor termine las peticiones en curso.
 
 Con `server.shutdown=graceful` (activo por defecto desde Spring Boot 3.4), al recibir `SIGTERM` el servidor deja de aceptar peticiones nuevas y espera a las que están en curso, hasta el tiempo de `spring.lifecycle.timeout-per-shutdown-phase` (30 s por defecto).
 
@@ -640,10 +640,10 @@ sequenceDiagram
 
 #### Paso 4 · Demostración guiada desde cero
 
-Archivo `academia-spring/src/main/java/com/rutaflow/asignacion/LoteEnvios.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/asignacion/LoteEnvios.java` (dentro de `com.example.demo` para que el escaneo lo encuentre):
 
 ```java
-package com.rutaflow.asignacion;
+package com.example.demo.asignacion;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -651,6 +651,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.stereotype.Component;
 
@@ -678,6 +679,9 @@ public class LoteEnvios implements SmartLifecycle {
 
     @Override public boolean isRunning() { return corriendo; }
 
+    // Fase menor que la del apagado ordenado: se detiene cuando el servidor ya terminó las peticiones activas.
+    @Override public int getPhase() { return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE - 1; }
+
     @PreDestroy
     void liberar() { log.info("4. libera recursos propios"); }
 }
@@ -699,7 +703,7 @@ cd academia-spring
 kill -TERM $(pgrep -f academia-spring)
 ```
 
-**Explicación por bloques:** `LoteEnvios` registra cada etapa con un número. `@PostConstruct` corre apenas el bean existe. `start()` lo llama Spring cuando el contexto está listo; desde ahí acepta envíos. Al recibir `SIGTERM`, el servidor web hace su apagado ordenado y Spring llama `stop()`, que deja de aceptar trabajo y vacía lo pendiente. Al final, `@PreDestroy` libera recursos. Las dos propiedades activan el apagado ordenado y fijan el tiempo máximo por fase.
+**Explicación por bloques:** `LoteEnvios` registra cada etapa con un número. `@PostConstruct` corre apenas el bean existe. `start()` lo llama Spring cuando el contexto está listo; desde ahí acepta envíos. Al recibir `SIGTERM`, Spring detiene los componentes de fase más alta a más baja: primero el servidor web hace su apagado ordenado y, como `getPhase()` devuelve una fase menor, después llama `stop()`, que deja de aceptar trabajo y vacía lo pendiente. Al final, `@PreDestroy` libera recursos. Las dos propiedades activan el apagado ordenado y fijan el tiempo máximo por fase.
 
 **Resultado esperado:**
 
@@ -719,7 +723,7 @@ kill -TERM $(pgrep -f academia-spring)
 1. **Reproducción:** arranca y detén la aplicación y relaciona cada línea con su método.
 2. **Variación:** agrega un endpoint que llame `agregar` y otro que tarde 10 segundos; detén la app durante la petición lenta y comprueba que termina.
 3. **Diagnóstico:** reproduce el fallo deliberado con `kill -9`.
-4. **Integración:** implementa `getPhase()` devolviendo `Integer.MAX_VALUE - 100` y explica por qué el lote debe detenerse antes que otros componentes.
+4. **Integración:** borra temporalmente `getPhase()` (vuelve la fase por defecto, `Integer.MAX_VALUE`) y detén la app: la línea «3.» aparece antes de «Commencing graceful shutdown». Explica por qué una petición en curso que llame a `agregar` recibiría entonces `IllegalStateException` y restaura el método.
 5. **Diseño:** calcula el `terminationGracePeriodSeconds` del pod de RutaFlow a partir del tiempo de apagado de Spring.
 
 **Pista:** si no ves las líneas de apagado, revisa con qué señal se detuvo el proceso.

@@ -559,7 +559,7 @@ Ejecuta solo esta prueba:
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.4 o superior (los logs estructurados llegaron en 3.4) con `spring-boot-starter-web` y `spring-boot-starter-actuator`.
+Usa Spring Boot 4.1.2 con JDK 25 (los logs estructurados existen desde Spring Boot 3.4) en `academia-spring`, con las dependencias Spring Web y `spring-boot-starter-actuator`. Las clases de este tema van en `com.example.demo.asignacion`, dentro del paquete que escanea `@SpringBootApplication`; si las pones fuera, el endpoint responde 404.
 
 #### Paso 2 · Contexto y caso real
 
@@ -571,8 +571,8 @@ Durante un incidente en RutaFlow, alguien activó `DEBUG` en todo el servicio y 
 
 Cada clase tiene un **logger** con el nombre de su paquete. El **nivel** decide qué mensajes se escriben: con `INFO`, se escriben INFO, WARN y ERROR, pero no DEBUG.
 
-- En `application.properties`: `logging.level.com.rutaflow.asignacion=DEBUG`.
-- Un **grupo** junta varios paquetes bajo un nombre: `logging.group.asignacion=com.rutaflow.asignacion,com.rutaflow.rutas`.
+- En `application.properties`: `logging.level.com.example.demo.asignacion=DEBUG`.
+- Un **grupo** junta varios paquetes bajo un nombre: `logging.group.asignacion=com.example.demo.asignacion,com.example.demo.rutas`.
 - Actuator expone `/actuator/loggers` para **leer y cambiar niveles sin reiniciar**.
 
 Los **logs estructurados** escriben cada línea como un objeto JSON con campos fijos. Spring Boot trae formatos listos: `ecs` (Elastic), `gelf` y `logstash`. Los valores del **MDC** (por ejemplo, el id de la petición) aparecen como campos propios.
@@ -596,16 +596,16 @@ Archivo `academia-spring/src/main/resources/application.properties`:
 
 ```properties
 logging.level.root=INFO
-logging.group.asignacion=com.rutaflow.asignacion,com.rutaflow.rutas
+logging.group.asignacion=com.example.demo.asignacion,com.example.demo.rutas
 logging.level.asignacion=INFO
 logging.structured.format.console=ecs
 management.endpoints.web.exposure.include=health,loggers
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/asignacion/AsignacionController.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/asignacion/AsignacionController.java`:
 
 ```java
-package com.rutaflow.asignacion;
+package com.example.demo.asignacion;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

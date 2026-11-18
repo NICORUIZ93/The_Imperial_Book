@@ -17,7 +17,7 @@ OpenAPI define entradas, salidas y errores antes de acoplar clientes. Autenticac
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 1: Contratos HTTP y autorización** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 1: Contratos HTTP y autorización** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y JavaScript con Node.js (track Node).
 
 #### Paso 2 · Contexto y caso real
 
@@ -44,14 +44,6 @@ Crea una carpeta independiente para comprobar el concepto antes de conectarlo al
 mkdir -p rutaflow-labs/tema-1-contratos-http-y-autorizacion
 cd rutaflow-labs/tema-1-contratos-http-y-autorizacion
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 Contrato mínimo del endpoint (OpenAPI), en `contrato.yaml`:
 
@@ -158,7 +150,7 @@ Confirmar entrega es un caso de uso: carga el envío, valida versión y transici
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 2: Casos de uso y transacciones** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 2: Casos de uso y transacciones** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y JavaScript con Node.js (track Node).
 
 #### Paso 2 · Contexto y caso real
 
@@ -186,14 +178,6 @@ Crea una carpeta independiente y, dentro, `src/transaccion.js`:
 mkdir -p rutaflow-labs/tema-2-casos-de-uso-y-transacciones
 cd rutaflow-labs/tema-2-casos-de-uso-y-transacciones
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```javascript
 // Simulación en memoria de dos "tablas" para poder ejecutar el demo sin una base real.
@@ -289,7 +273,7 @@ Guardar datos y publicar directamente crea una ventana de fallo. El outbox persi
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 3: Outbox, colas y observabilidad** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 3: Outbox, colas y observabilidad** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y el SQL con PostgreSQL del Módulo 1 (contenedor `rutaflow-pg`).
 
 #### Paso 2 · Contexto y caso real
 
@@ -312,82 +296,90 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea una carpeta independiente y, dentro, `src/outbox.js`:
+Usa el PostgreSQL del Módulo 1 (contenedor `rutaflow-pg`). La garantía del outbox depende de una transacción real: un arreglo en memoria desaparece justo con la caída que quieres sobrevivir. Crea la carpeta:
 
 ```bash
 mkdir -p rutaflow-labs/tema-3-outbox-colas-y-observabilidad
 cd rutaflow-labs/tema-3-outbox-colas-y-observabilidad
 ```
 
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
+`esquema.sql` crea el envío, el outbox y una tabla `cola` que hace las veces del broker para poder observarlo:
+
+```sql
+DROP TABLE IF EXISTS cola, outbox, envios;
+CREATE TABLE envios (id TEXT PRIMARY KEY, estado TEXT NOT NULL);
+CREATE TABLE outbox (
+  id BIGSERIAL PRIMARY KEY,
+  envio_id TEXT NOT NULL REFERENCES envios(id),
+  tipo TEXT NOT NULL,
+  publicado BOOLEAN NOT NULL DEFAULT false
+);
+-- "cola" hace las veces del broker (RabbitMQ, Kafka) para poder observarlo con SELECT.
+CREATE TABLE cola (outbox_id BIGINT PRIMARY KEY, envio_id TEXT NOT NULL, tipo TEXT NOT NULL);
+INSERT INTO envios VALUES ('RF-4471', 'pendiente');
+```
+
+`confirmar.sql` es lo que hace la API al confirmar la entrega:
+
+```sql
+-- El cambio de dominio y el evento se confirman juntos o no se confirma ninguno.
+BEGIN;
+UPDATE envios SET estado = 'entregado' WHERE id = 'RF-4471';
+INSERT INTO outbox (envio_id, tipo) VALUES ('RF-4471', 'EnvioEntregado');
+COMMIT;
+-- Aquí termina el proceso de la API: no publica nada en la cola.
+```
+
+`relay.sql` es el relay, otro proceso que corre después y por su cuenta:
+
+```sql
+-- Proceso aparte: publica lo pendiente del outbox y lo marca como publicado.
+WITH pendientes AS (
+  UPDATE outbox SET publicado = true WHERE NOT publicado
+  RETURNING id, envio_id, tipo
+)
+INSERT INTO cola (outbox_id, envio_id, tipo)
+SELECT id, envio_id, tipo FROM pendientes
+ON CONFLICT (outbox_id) DO NOTHING;
+```
+
+Ejecuta cada script como un proceso `psql` distinto; entre `confirmar.sql` y `relay.sql` la API ya terminó, como si se hubiera caído después del commit:
 
 ```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
-
-```javascript
-// Simulación en memoria: una "tabla" envios, una "tabla" outbox y una cola externa.
-const envios = { 'RF-4471': { estado: 'pendiente' } };
-const outbox = [];
-const cola = [];
-
-// Patrón correcto: el cambio de dominio y el evento se escriben en la MISMA operación.
-function confirmarEntregaConOutbox(envioId) {
-  envios[envioId].estado = 'entregado';
-  outbox.push({ id: outbox.length + 1, envioId, tipo: 'EnvioEntregado', publicado: false });
-}
-
-confirmarEntregaConOutbox('RF-4471');
-console.log(JSON.stringify({ envio: envios['RF-4471'], outbox }));
-
-// Proceso relay separado: lee el outbox y publica lo que falte.
-function relayDeOutbox() {
-  for (const fila of outbox) {
-    if (!fila.publicado) {
-      cola.push(fila);
-      fila.publicado = true;
-    }
-  }
-}
-relayDeOutbox();
-console.log('Cola tras el relay:', JSON.stringify(cola));
+DB="postgresql://postgres:rutaflow@localhost:5432/postgres"
+psql "$DB" -v ON_ERROR_STOP=1 -q -f esquema.sql
+psql "$DB" -v ON_ERROR_STOP=1 -f confirmar.sql
+psql "$DB" -c "SELECT * FROM outbox" -c "SELECT count(*) AS en_cola FROM cola"
+psql "$DB" -v ON_ERROR_STOP=1 -f relay.sql
+psql "$DB" -v ON_ERROR_STOP=1 -f relay.sql
+psql "$DB" -c "SELECT * FROM cola" -c "SELECT id, publicado FROM outbox"
 ```
 
-Ejecuta `node src/outbox.js`.
+**Resultado esperado:** tras `confirmar.sql`, el outbox tiene la fila `1 | RF-4471 | EnvioEntregado | f` y la cola está vacía (`en_cola = 0`): la API no publicó nada, pero el evento quedó guardado en la misma transacción que el cambio de estado. El primer relay imprime `INSERT 0 1` y el segundo `INSERT 0 0`; al final la cola tiene una sola fila con `outbox_id = 1` y el outbox la marca con `publicado = t`.
 
-**Resultado esperado:** el envío queda `entregado`, el outbox guarda la fila del evento, y tras `relayDeOutbox()` la cola contiene ese mismo evento marcado como `publicado: true`.
+**Fallo deliberado:** vuelve a correr `esquema.sql` y ejecuta esta versión sin outbox, en `sin-outbox.sql`, que publica directo y muere antes de hacerlo:
 
-**Fallo deliberado:** reemplazá el flujo por una publicación directa a la cola, sin outbox, simulando que el proceso muere justo después del commit:
-
-```javascript
-const envios2 = { 'RF-4471': { estado: 'pendiente' } };
-const cola2 = [];
-
-function confirmarEntregaSinOutbox(envioId, simularCaidaDelProceso) {
-  envios2[envioId].estado = 'entregado'; // esto ya se guardó: COMMIT exitoso
-  if (simularCaidaDelProceso) {
-    throw new Error('el proceso murio antes de publicar el evento');
-  }
-  cola2.push({ envioId, tipo: 'EnvioEntregado' }); // publicación directa, fuera de la transacción
-}
-
-try {
-  confirmarEntregaSinOutbox('RF-4471', true);
-} catch (e) {
-  console.log('Error:', e.message);
-}
-console.log('Envio:', JSON.stringify(envios2['RF-4471'])); // estado: "entregado" -> el cambio quedó
-console.log('Cola:', JSON.stringify(cola2)); // [] -> el evento se perdió para siempre
+```sql
+-- Versión ingenua: guarda el estado y publica directo, sin outbox.
+UPDATE envios SET estado = 'entregado' WHERE id = 'RF-4471';
+-- El proceso muere aquí, después del commit automático y antes de publicar:
+\quit
+INSERT INTO cola (outbox_id, envio_id, tipo) VALUES (1, 'RF-4471', 'EnvioEntregado');
 ```
 
-El envío quedó `entregado` en la base, pero la cola está vacía: el evento se perdió para siempre y nada ni nadie lo va a reintentar, porque nunca se guardó en ningún lado. Corregilo volviendo al patrón outbox (`confirmarEntregaConOutbox` + `relayDeOutbox`): el evento sobrevive al crash porque ya estaba persistido en la misma transacción, y el relay lo publica en cuanto vuelve a correr.
+```bash
+psql "$DB" -v ON_ERROR_STOP=1 -q -f esquema.sql
+psql "$DB" -v ON_ERROR_STOP=1 -f sin-outbox.sql
+psql "$DB" -c "SELECT * FROM envios" -c "SELECT count(*) AS en_outbox FROM outbox" -c "SELECT count(*) AS en_cola FROM cola"
+psql "$DB" -v ON_ERROR_STOP=1 -f relay.sql
+```
+
+El envío quedó `entregado`, pero `en_outbox` y `en_cola` valen `0` y el relay imprime `INSERT 0 0`: el evento se perdió y nada lo va a reintentar, porque nunca se guardó. Corrígelo volviendo a `confirmar.sql`: el evento sobrevive a la caída porque se confirmó con el cambio de estado, y el relay lo publica cuando vuelve a correr. Con un broker real, el relay publica y después marca la fila; si cae entre ambos pasos, vuelve a publicar el mismo evento, y por eso el consumidor deduplica.
 
 #### Paso 5 · Práctica guiada
 
 1. Agregá deduplicación: antes de aplicar un evento consumido, revisá si su `id` ya está en una lista de `procesados` y, si está, ignoralo sin repetir el efecto.
-2. Ejecutá `relayDeOutbox()` dos veces seguidas y confirmá que no se publica el mismo evento dos veces gracias al flag `publicado`.
+2. Ejecuta `relay.sql` dos veces seguidas y confirma que la cola sigue con una sola fila gracias a `publicado` y a la clave primaria `outbox_id`.
 3. Pista: "al menos una vez" significa que el consumidor, no el publicador, es responsable de no duplicar efectos.
 
 #### Paso 6 · Práctica independiente
@@ -396,9 +388,9 @@ Implementa `relayConReintentos(outbox, cola, maxIntentos)` que, si publicar una 
 
 #### Paso 7 · Cierre y proyecto
 
-Entrega `src/outbox.js`, la salida del flujo correcto, la salida del fallo sin outbox y la explicación de por qué el evento se pierde en ese caso. Con este tema el backend de envíos queda transaccional, autorizado y observable de punta a punta; el próximo módulo conecta estos tres temas con el resto de RutaFlow en el flujo end-to-end de un envío real. **Fuente oficial:** [microservices.io — Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html).
+Entrega `esquema.sql`, `confirmar.sql`, `relay.sql` y `sin-outbox.sql`, la salida del flujo correcto, la salida del fallo sin outbox y la explicación de por qué el evento se pierde en ese caso. Con este tema el backend de envíos queda autorizado (Tema 1) y confirma el cambio de estado y su evento en una sola transacción; la observabilidad con trazas no se cubre aquí. El próximo módulo conecta estos tres temas con el resto de RutaFlow en el flujo end-to-end de un envío real. **Fuente oficial:** [microservices.io — Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html).
 
-**Errores comunes:** publicar a la cola antes o después del commit en vez de dentro de la misma transacción; no marcar las filas del outbox como publicadas; olvidar la deduplicación en el consumidor; dejar crecer la tabla outbox sin purgar filas ya publicadas; asumir que la cola nunca entrega un mensaje duplicado.
+**Errores comunes:** publicar a la cola directamente desde el caso de uso, antes o después del commit, en vez de guardar el evento en el outbox dentro de la misma transacción y dejar que el relay publique después del commit; no marcar las filas del outbox como publicadas; olvidar la deduplicación en el consumidor; dejar crecer la tabla outbox sin purgar filas ya publicadas; asumir que la cola nunca entrega un mensaje duplicado.
 
 **Transferencia al proyecto integrador «RutaFlow»:** Persiste el evento en outbox antes de publicarlo y deduplica en el consumidor. Interrumpe el proceso después de publicar y demuestra que el reintento no vuelve a aplicar el efecto.
 

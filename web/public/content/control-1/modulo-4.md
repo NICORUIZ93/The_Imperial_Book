@@ -34,7 +34,7 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 #### Demostración · por qué G(s) no depende de la entrada
 
 1. Toda ecuación lineal de coeficientes constantes tiene la forma \(a_n y^{(n)} + \cdots + a_1\dot y + a_0 y = b_m u^{(m)} + \cdots + b_0 u\).
-2. Con condiciones iniciales cero, cada derivada \(k\)-ésima se vuelve \(s^k\) (propiedad de la derivada, capítulo 3): \((a_ns^n + \cdots + a_0)Y(s) = (b_ms^m + \cdots + b_0)U(s)\).
+2. Con condiciones iniciales cero, cada derivada \(k\)-ésima se vuelve \(s^k\) (propiedad de la derivada, módulo 2): \((a_ns^n + \cdots + a_0)Y(s) = (b_ms^m + \cdots + b_0)U(s)\).
 3. Despejando: \(\dfrac{Y}{U} = \dfrac{b_ms^m + \cdots + b_0}{a_ns^n + \cdots + a_0}\). Solo aparecen los coeficientes del sistema, no la entrada.
 4. Además, como \(\mathcal{L}\{\delta\} = 1\), la respuesta al impulso es \(g(t) = \mathcal{L}^{-1}\{G(s)\}\): la función de transferencia es la transformada de la respuesta al impulso.
 
@@ -50,7 +50,7 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 
    \[2sY + 6Y = 12U\]
 
-   **¿Por qué?** Con condiciones iniciales cero, derivar es multiplicar por \(s\) (capítulo 3).
+   **¿Por qué?** Con condiciones iniciales cero, derivar es multiplicar por \(s\) (módulo 2).
 
 2. Saca \(Y\) como factor común: \(Y(2s+6) = 12U\).
 
@@ -60,7 +60,7 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 
    **¿Por qué?** Simplificar deja el polo a la vista: \(s = -3\).
 
-4. Escalón: \(Y = \dfrac{6}{s(s+3)}\). Es el Ejemplo 1 de capítulo 4: \(y = 2(1-e^{-3t})\).
+4. Escalón: \(Y = \dfrac{6}{s(s+3)}\). Es el Ejemplo 1 del módulo 3: \(y = 2(1-e^{-3t})\).
 
    **¿Por qué?** Ya sabemos invertir esa forma.
 
@@ -149,7 +149,7 @@ cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simpl
 
    **¿Por qué?** Se reemplazan los valores.
 
-3. Polos con el atajo de capítulo 2: \(-4/2 = -2\) y \(\sqrt{20-4} = 4\): \(-2\pm4j\).
+3. Polos con el atajo del módulo 1: \(-4/2 = -2\) y \(\sqrt{20-4} = 4\): \(-2\pm4j\).
 
    **¿Por qué?** \(\Delta < 0\): oscila.
 
@@ -161,7 +161,7 @@ cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simpl
 
 #### Ejemplo 5 · Resolver completa · *Nivel parcial*
 
-> **Qué cambia respecto al anterior:** Se pide \(y(t)\) completo: se juntan capítulo 4 y capítulo 5.
+> **Qué cambia respecto al anterior:** Se pide \(y(t)\) completo: se juntan el módulo 3 y el módulo 4.
 
 **Enunciado.** Resuelve \(\ddot y + 4\dot y + 13y = 26u(t)\), condiciones iniciales cero.
 
@@ -171,7 +171,7 @@ cambia `G` por \(\dfrac{16}{4s+8}\) (de \(4\dot y+8y=16u\)) y confirma que simpl
 
 2. \(A = \dfrac{26}{13} = 2\). Resto \(= \dfrac{26 - 2(s^2+4s+13)}{s(\ldots)} = \dfrac{-2s^2-8s}{s(\ldots)} = \dfrac{-2(s+4)}{s^2+4s+13}\).
 
-   **¿Por qué?** Mismo método del Ejemplo 8 de capítulo 4.
+   **¿Por qué?** Mismo método del Ejemplo 8 del módulo 3.
 
 3. Completa: \((s+2)^2+9\) y \(s+4 = (s+2)+2\).
 

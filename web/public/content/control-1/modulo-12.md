@@ -435,7 +435,7 @@ python3 verificacion.py
 
 cambia `b` a `6` y confirma que da \(\zeta=1\) (Ejemplo 2, críticamente amortiguado). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** esta clasificación por \(\zeta\) solo aplica a un sistema de segundo orden estándar (sin ceros); un cero en el numerador, cercano a los polos, puede hacer que la respuesta real se vea distinta de lo que predice solo \(\zeta\) (capítulo 14).
+**Límite:** esta clasificación por \(\zeta\) solo aplica a un sistema de segundo orden estándar (sin ceros); un cero en el numerador, cercano a los polos, puede hacer que la respuesta real se vea distinta de lo que predice solo \(\zeta\) (módulo 13).
 
 ### Tema 4: Fórmulas del caso subamortiguado
 
@@ -583,7 +583,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 2. Factoriza: \((s+2)(s+3)\). \(Y = \dfrac{6}{s(s+2)(s+3)}\).
 
-   **¿Por qué?** Con raíces reales se usa el tapado de capítulo 4, no las fórmulas de \(M_p\).
+   **¿Por qué?** Con raíces reales se usa el tapado del módulo 3, no las fórmulas de \(M_p\).
 
 3. Residuos: en 0, \(\dfrac{6}{6} = 1\); en \(-2\), \(\dfrac{6}{(-2)(1)} = -3\); en \(-3\), \(\dfrac{6}{(-3)(-1)} = 2\).
 
@@ -603,7 +603,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 2. \(Y = \dfrac{9}{s(s+3)^2} = \dfrac1s - \dfrac{1}{s+3} - \dfrac{3}{(s+3)^2}\).
 
-   **¿Por qué?** Polo repetido (capítulo 4, Ejemplo 4).
+   **¿Por qué?** Polo repetido (módulo 3, Ejemplo 4).
 
 **Resultado:** \(y(t) = 1 - e^{-3t} - 3te^{-3t}\)
 
@@ -663,7 +663,7 @@ Raíces de \(s^2 + 2\zeta\omega_ns + \omega_n^2\) con la fórmula cuadrática: \
 
 1. Lazo cerrado: \(\dfrac{K}{s^2+2s+K}\).
 
-   **¿Por qué?** Capítulo 6, Ejemplo 5.
+   **¿Por qué?** Módulo 5, Ejemplo 5.
 
 2. Compara: \(\omega_n^2 = K\) y \(2\zeta\omega_n = 2\).
 

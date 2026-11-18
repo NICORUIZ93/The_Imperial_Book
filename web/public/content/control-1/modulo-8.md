@@ -42,7 +42,7 @@ Sistemas mecánicos, motores, hornos y tanques se describen con las mismas ecuac
 
 2. \(\omega_n = \sqrt{k/m} = \sqrt{20} = 4{,}47\) rad/s.
 
-   **¿Por qué?** El término independiente es \(\omega_n^2\) (capítulo 13).
+   **¿Por qué?** El término independiente es \(\omega_n^2\) (módulo 12).
 
 3. \(\zeta = \dfrac{b}{2\sqrt{km}} = \dfrac{4}{2\cdot4{,}47} = 0{,}447\).
 
@@ -50,7 +50,7 @@ Sistemas mecánicos, motores, hornos y tanques se describen con las mismas ecuac
 
 4. \(M_p = e^{-\zeta\pi/\sqrt{1-\zeta^2}} = e^{-0{,}447\pi/0{,}894} = 20{,}8\,\%\).
 
-   **¿Por qué?** Fórmula del sobrepico (capítulo 13).
+   **¿Por qué?** Fórmula del sobrepico (módulo 12).
 
 5. Final: \(10\cdot G(0) = 10\cdot\dfrac{1}{20} = 0{,}5\) m.
 
@@ -422,7 +422,7 @@ usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin in
 
 2. Lee \(K = 5\), \(\tau = AR = 10\) s.
 
-   **¿Por qué?** Forma estándar de primer orden (capítulo 12).
+   **¿Por qué?** Forma estándar de primer orden (módulo 11).
 
 3. \(\Delta h = 0{,}1\cdot5 = 0{,}5\) m; \(t_s = 4\tau = 40\) s.
 

@@ -24,8 +24,12 @@ Una precondición es lo que debe cumplirse antes de llamar a `transition`; una p
 3. ¿Puede haber un envío en estado sin representación? (Ej. `estado=NULL`.)
 4. ¿Transacciones anidadas rompen el invariante?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Invariante: `∀s ∈ Shipments: s.status ∈ {CREATED, ASSIGNED, OUT_FOR_DELIVERY, DELIVERED} ∧ s.created_at ≤ s.assigned_at ≤ s.delivered_at`. Garantía: restricción CHECK en DB + validación en dominio. Envío NULL es violación, DB rechaza. Transacción anidada (SAVEPOINT) preserva invariante si rollback parcial restaura estado válido. Prueba: hypothes con `status` generado y verifica que toda secuencia deja invariante cierto.
+
+</details>
 
 **Conceptos clave:** proposición, valor de verdad, negación, conjunción, disyunción, implicación, equivalencia, predicado, cuantificador universal, cuantificador existencial, precondición, postcondición e invariante.
 
@@ -406,8 +410,15 @@ La mediana y los percentiles describen mejor una distribución asimétrica que e
 3. ¿Cómo el volumen de entregas afecta el p95?
 4. ¿Con qué frecuencia re-medir?
 
-[SOLUCIÓN PLEGADA]
-> Intervalo de confianza = rango donde crees que está el verdadero p95 (ej. 140-160ms con 95% confianza). Necesitas >300 muestras para que sea confiable (regla del pulgar). El volumen afecta p99/p95 porque aumenta contención; si duplicas carga, p95 puede multiplicarse. Re-medir mensualmente o ante cambios arquitectónicos. SLI debe ser "p95 < 200ms por mes", no "ahora".
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
+> 1. **Intervalo de confianza:** es un rango calculado con un **procedimiento** que, repetido sobre muchas muestras, contiene el p95 verdadero en el 95 % de los casos (p. ej. 140–160 ms al 95 %). No es «el rango donde crees que está»: el 95 % describe el método, no una creencia sobre este intervalo concreto.
+> 2. **Muestras:** no hay un número mágico. Con \(n\) muestras solo unas \(0{,}05\,n\) quedan por encima del p95 (5 con 100 muestras, 50 con 1000), así que con pocas muestras el p95 depende de muy pocos valores. Calcula el intervalo (por ejemplo, con *bootstrap*: remuestrear con reemplazo y recalcular el p95 muchas veces) y aumenta \(n\) hasta que sea lo bastante estrecho para tu decisión.
+> 3. **Volumen:** más carga suele aumentar la contención y la cola larga; si duplicas las entregas, el p95 puede crecer mucho más que el promedio. Mídelo con la carga nueva en vez de suponerlo.
+> 4. **Frecuencia:** vuelve a medir de forma continua o, como mínimo, ante cambios de arquitectura o de carga. Aquí entran dos términos distintos: el **SLI** (indicador) es la medida, por ejemplo «p95 de latencia de confirmación de entrega en los últimos 30 días»; el **SLO** (objetivo) es la meta sobre esa medida, por ejemplo «p95 < 200 ms en cada ventana de 30 días». «p95 < 200 ms por mes» es un SLO, no un SLI.
+
+</details>
 
 **Conceptos clave:** experimento, espacio muestral, evento, probabilidad condicional, independencia, variable aleatoria, esperanza, varianza, distribución, población, muestra, sesgo, intervalo de confianza, correlación, causalidad y prueba de hipótesis.
 
@@ -418,13 +429,18 @@ La probabilidad condicional `P(A|B)` mide A sabiendo B. Independencia significa 
 Una muestra debe representar la población sobre la que concluirás. Medir únicamente durante la noche no permite afirmar rendimiento diurno. Repetir observaciones del mismo entorno no elimina sesgo. Un intervalo de confianza comunica incertidumbre del procedimiento; no convierte una muestra mala en buena.
 
 ```python
+import random
 from statistics import mean, median, quantiles
 
-latencias = medir(repeticiones=100, semilla=2026)
+random.seed(2026)  # misma muestra en cada ejecución
+# latencias simuladas en ms, con cola larga a la derecha
+latencias = [random.lognormvariate(4.6, 0.4) for _ in range(100)]
 p50 = median(latencias)
 p95 = quantiles(latencias, n=100)[94]
-print({"n": len(latencias), "media": mean(latencias), "p50": p50, "p95": p95})
+print({"n": len(latencias), "media": round(mean(latencias), 1), "p50": round(p50, 1), "p95": round(p95, 1)})
 ```
+
+Este ejemplo simula las latencias para que puedas ejecutarlo solo; en el Paso 4 medirás tiempos reales. Con Python 3.13 imprime `{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}`: la media queda por encima de la mediana y el p95 duplica la mediana, la firma de una cola larga.
 
 Comparar dos versiones exige controlar calentamiento, carga, datos, hardware y orden; registrar semilla y ambiente; repetir; mostrar distribución y tamaño del efecto. Un valor p no mide importancia práctica ni probabilidad de que una hipótesis sea verdadera. Correlación tampoco prueba causalidad: una tercera variable puede explicar ambas.
 

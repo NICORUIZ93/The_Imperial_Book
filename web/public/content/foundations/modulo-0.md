@@ -109,7 +109,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea una carpeta `fundamentos-entorno` y dentro el archivo `entorno.py`:
+Crea una carpeta `fundamentos-entorno` y entra en ella desde la terminal con `mkdir fundamentos-entorno` y `cd fundamentos-entorno` (el Tema 3 explica carpetas y rutas con calma). Dentro, crea con VS Code el archivo `entorno.py`:
 
 ```python
 import os
@@ -143,7 +143,7 @@ Después de una ejecución normal comprueba el código de salida: `echo $?` en m
 
 #### Paso 5 · Práctica guiada
 
-Añade `print(f"carpeta={os.getcwd()}")`. Predice la ruta, ejecuta desde la carpeta del proyecto y luego desde su carpeta superior pasando `fundamentos-entorno/entorno.py`. **Pista:** cambia la carpeta de trabajo del proceso, no la ubicación del archivo fuente.
+Añade `print(f"carpeta={os.getcwd()}")`. Predice la ruta, ejecuta desde la carpeta del proyecto y luego sube a su carpeta superior con `cd ..` y ejecuta `python3 fundamentos-entorno/entorno.py` (en Windows, `py fundamentos-entorno\entorno.py`). **Pista:** cambia la carpeta de trabajo del proceso, no la ubicación del archivo fuente.
 
 #### Paso 6 · Práctica independiente
 
@@ -165,7 +165,7 @@ Transfiere el modelo al **proyecto integrador**: dibuja qué partes de un futuro
 
 **Fuentes oficiales revisadas el 2026-11-01:** [Python `os`](https://docs.python.org/3/library/os.html), [Python `platform`](https://docs.python.org/3/library/platform.html), [Python `sys`](https://docs.python.org/3/library/sys.html) y [uso del intérprete](https://docs.python.org/3/tutorial/interpreter.html).
 
-**Registro de ejecución:** pendiente de ejecutar como lote editorial independiente; la presencia de comandos y resultados esperados no se contabiliza como ejecución.
+**Registro de ejecución:** el 2026-11-18 se ejecutó `entorno.py` con Python 3.13 en Linux: imprimió las seis líneas, `echo $?` dio `0`, y con `os.getpid(1)` apareció `TypeError: posix.getpid() takes no arguments (1 given)` con código de salida `1`. No se ejecutó en Windows ni macOS.
 
 ### Tema 2: Del archivo fuente al programa en ejecución
 
@@ -411,13 +411,10 @@ Para cerrar la sesión, vuelve a ejecutar uno de los archivos sin consultar la d
 
 **Fuentes oficiales:** [Funciones `input` y `print`](https://docs.python.org/3/library/functions.html) y [formato de cadenas](https://docs.python.org/3/tutorial/inputoutput.html).
 
-
-## Ampliación de la página 50 del PDF
-
 ### Tema 6: VS Code, comandos y atajos comprobables
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás abrir, guardar y localizar archivos usando comandos identificados por nombre, sin depender de una tabla incorrecta. **Prerrequisitos:** VS Code instalado y el programa `saludo.py` del primer tema. La captura del PDF mezcla atajos de edición de texto con otros programas; los bindings varían según sistema, teclado y extensiones.
+Al finalizar podrás abrir, guardar y localizar archivos usando comandos identificados por nombre, sin depender de una tabla de atajos copiada de otro equipo. **Prerrequisitos:** VS Code instalado y el programa `saludo.py` de «Antes de comenzar». Las tablas de atajos que circulan por internet mezclan atajos de VS Code con los de otros programas; los atajos (*keybindings*) varían según sistema, teclado y extensiones.
 
 #### Paso 2 · Contexto y caso real
 **¿Por qué es importante?** Un compañero necesita reproducir el proyecto integrador de Fundamentos. Si el README dice «Ctrl+E para copiar», el procedimiento falla. Documenta «Copiar» y el binding efectivo de tu equipo, no una combinación asumida. En macOS muchas acciones usan Command; Windows y Linux suelen usar Ctrl, con excepciones.

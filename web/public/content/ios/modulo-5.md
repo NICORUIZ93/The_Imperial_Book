@@ -8,9 +8,9 @@
 ### Tema 1: URLSession con async/await y Codable
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a llamar al `POST /entregas` real de RutaFlow (Módulo 6 del track Cloud) desde Swift, decodificando la respuesta con `Codable`. Prerrequisitos: Módulo 4 de este track; Módulo 6 del track Cloud.
+Al finalizar vas a llamar a `POST /entregas` de RutaFlow desde Swift, decodificando la respuesta con `Codable`. Prerrequisitos: Módulo 4 de este track. No necesitas ningún servidor ni otro curso: en el Paso 4 registras un servidor simulado con `URLProtocol` que responde dentro de la propia app.
 #### Paso 2 · Contexto y caso real
-La app del conductor necesita confirmar una entrega llamando exactamente al mismo endpoint que ya probaste por `curl` en el Cloud — ahora desde código Swift real, no desde la terminal.
+La app del conductor necesita confirmar una entrega llamando al endpoint `POST /entregas` desde código Swift real. Mientras no tengas un backend propio, un servidor simulado devuelve la misma respuesta JSON que daría el real.
 #### Paso 3 · Teoría, modelo mental y analogía
 `URLSession.shared.data(from:)` ejecuta la petición como una función suspendible; `Codable` traduce el JSON de respuesta a un `struct` tipado — un mensajero que confirma recepción, no solo "la envié y ya".
 
@@ -18,6 +18,7 @@ La app del conductor necesita confirmar una entrega llamando exactamente al mism
 **Conceptos clave:** petición de red como función suspendible, parsing generado automáticamente.
 
 ```swift
+// Fragmento: `url`, `Tarea` (abajo) y `ErrorRed` (Paso 4) se definen en este tema.
 let (datos, respuesta) = try await URLSession.shared.data(from: url)
 guard let http = respuesta as? HTTPURLResponse, http.statusCode == 200 else {
     throw ErrorRed.servidor
@@ -45,23 +46,105 @@ El compilador de Swift genera automáticamente la conformidad completa a `Codabl
 **Límites y decisión de uso:** Decodificar correctamente no significa que la respuesta HTTP represente éxito. Comprueba status, tamaño y campos de dominio antes de usar el modelo y distingue cancelación de un fallo que merece mostrarse al usuario.
 
 #### Paso 4 · Demostración guiada desde cero
+Crea `RutaFlowApp/ServidorSimulado.swift`. Intercepta las peticiones al host `rutaflow.test` (un dominio reservado que nunca sale a internet) y responde como lo haría el backend:
+
 ```swift
+import Foundation
+
+// Servidor simulado: responde POST /entregas sin red ni backend externo.
+nonisolated final class ServidorSimulado: URLProtocol {
+    static let host = "rutaflow.test"
+
+    override class func canInit(with request: URLRequest) -> Bool {
+        request.url?.host == host
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
+
+    override func startLoading() {
+        let cuerpo = Data(#"{"shipmentId":"RF-4471","status":"delivered"}"#.utf8)
+        guard let url = request.url,
+              let respuesta = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil,
+                                              headerFields: ["Content-Type": "application/json"]) else {
+            client?.urlProtocol(self, didFailWithError: URLError(.badURL))
+            return
+        }
+        client?.urlProtocol(self, didReceive: respuesta, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: cuerpo)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
+// Sesión que envía sus peticiones al servidor simulado.
+func sesionSimulada() -> URLSession {
+    let configuracion = URLSessionConfiguration.ephemeral
+    configuracion.protocolClasses = [ServidorSimulado.self]
+    return URLSession(configuration: configuracion)
+}
+```
+
+Crea `RutaFlowApp/ConfirmarEntrega.swift`:
+
+```swift
+import Foundation
+
+enum ErrorRed: Error {
+    case urlInvalida
+    case servidor
+}
+
 struct ConfirmacionEntrega: Codable {
     let shipmentId: String
     let status: String
 }
 
-func confirmarEntrega(guia: String, pin: String) async throws -> ConfirmacionEntrega {
-    var request = URLRequest(url: URL(string: "https://api.rutaflow.example.com/entregas")!)
+func confirmarEntrega(guia: String, pin: String,
+                      sesion: URLSession = sesionSimulada()) async throws -> ConfirmacionEntrega {
+    guard let url = URL(string: "https://\(ServidorSimulado.host)/entregas") else {
+        throw ErrorRed.urlInvalida
+    }
+    var request = URLRequest(url: url)
     request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.httpBody = try JSONEncoder().encode(["shipmentId": guia, "recipientPin": pin])
-    let (datos, respuesta) = try await URLSession.shared.data(for: request)
+    let (datos, respuesta) = try await sesion.data(for: request)
     guard let http = respuesta as? HTTPURLResponse, http.statusCode == 200 else {
         throw ErrorRed.servidor
     }
     return try JSONDecoder().decode(ConfirmacionEntrega.self, from: datos)
 }
 ```
+
+Para verlo en pantalla, reemplaza `ContentView.swift`:
+
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    @State private var estado = "sin confirmar"
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Button("Confirmar RF-4471") {
+                Task {
+                    do {
+                        estado = try await confirmarEntrega(guia: "RF-4471", pin: "837201").status
+                    } catch {
+                        estado = "error: \(error)"
+                    }
+                }
+            }
+            Text(estado)
+        }
+    }
+}
+```
+
+Cuando tengas un backend real, cambia `sesion` por `URLSession.shared` y el host por el de tu servidor; el resto del código no cambia.
 
 **Ejecuta el ejemplo:**
 
@@ -70,20 +153,20 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: llamar `confirmarEntrega(guia: "RF-4471", pin: "837201")` devuelve un `ConfirmacionEntrega` con `status: "delivered"` — el mismo contrato que `confirmar-entrega` (Módulo 5 del track Cloud) ya devuelve por `curl`.
+Resultado esperado: al pulsar **Confirmar RF-4471**, el texto cambia de `sin confirmar` a `delivered`: `confirmarEntrega(guia: "RF-4471", pin: "837201")` devolvió un `ConfirmacionEntrega` con `status: "delivered"`, la respuesta del servidor simulado.
 #### Paso 5 · Práctica guiada
-Pista: no verifiques `http.statusCode` y pasá directo a decodificar `datos` aunque la respuesta sea un 400 (recipientPin inválido, Módulo 6 del Cloud) — ese es el fallo deliberado: `JSONDecoder` va a fallar al intentar decodificar un cuerpo de error como si fuera `ConfirmacionEntrega`, o peor, va a "tener éxito" decodificando campos que no significan lo que creés, porque nunca confirmaste que la petición realmente tuvo éxito.
+Pista: en `ServidorSimulado` cambia `statusCode: 200` por `400` y el cuerpo por `{"error":"recipientPin debe tener 6 dígitos"}`; luego quita la verificación de `http.statusCode` y pasa directo a decodificar `datos` — ese es el fallo deliberado: `JSONDecoder` va a fallar al intentar decodificar un cuerpo de error como si fuera `ConfirmacionEntrega`, o peor, va a "tener éxito" decodificando campos que no significan lo que crees, porque nunca confirmaste que la petición realmente tuvo éxito.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la verificación de `statusCode`, y agregá un segundo `struct` `ErrorEntrega: Codable` para decodificar el cuerpo de error cuando el status no sea 200, en vez de descartarlo.
+Corrige el Paso 5 restaurando la verificación de `statusCode`, y agrega un segundo `struct` `RespuestaError: Codable` para decodificar el cuerpo de error cuando el status no sea 200, en vez de descartarlo.
 #### Paso 7 · Cierre
-Entregá la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `ErrorEntrega` agregado del Paso 6; explicá por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
+Entrega la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `RespuestaError` agregado del Paso 6; explica por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 
 ### Tema 2: Errores tipados
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distinguir con un enum propio los tres fallos reales de `confirmarEntrega` (Tema 1): sin conexión, error del servidor y PIN inválido. Prerrequisitos: Tema 1 de este módulo.
 #### Paso 2 · Contexto y caso real
-Si `confirmarEntrega` falla, la app del conductor necesita mostrar un mensaje distinto según la causa: "revisá tu conexión" no es lo mismo que "el PIN tiene que tener 6 dígitos" (el 400 real del Módulo 6 del Cloud).
+Si `confirmarEntrega` falla, la app del conductor necesita mostrar un mensaje distinto según la causa: "revisa tu conexión" no es lo mismo que "el PIN tiene que tener 6 dígitos" (el 400 que configuraste en el servidor simulado del Tema 1).
 #### Paso 3 · Teoría, modelo mental y analogía
 Un enum de error propio comunica exactamente qué categoría de fallo ocurrió, verificable exhaustivamente por el compilador — un formulario de reporte con categorías predefinidas, no una casilla genérica de "algo salió mal".
 
@@ -117,9 +200,17 @@ enum ErrorEntrega: Error {
     case servidor(codigo: Int)
 }
 
-func confirmarEntrega(guia: String, pin: String) async throws -> ConfirmacionEntrega {
+// Reemplaza la función del Tema 1 (no la dupliques en el mismo proyecto).
+func confirmarEntrega(guia: String, pin: String,
+                      sesion: URLSession = sesionSimulada()) async throws -> ConfirmacionEntrega {
+    guard let url = URL(string: "https://\(ServidorSimulado.host)/entregas") else {
+        throw ErrorEntrega.servidor(codigo: -1)
+    }
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.httpBody = try JSONEncoder().encode(["shipmentId": guia, "recipientPin": pin])
     let (datos, respuesta): (Data, URLResponse)
-    do { (datos, respuesta) = try await URLSession.shared.data(for: request) }
+    do { (datos, respuesta) = try await sesion.data(for: request) }
     catch { throw ErrorEntrega.sinConexion }
     guard let http = respuesta as? HTTPURLResponse else { throw ErrorEntrega.servidor(codigo: -1) }
     if http.statusCode == 400 { throw ErrorEntrega.pinInvalido(mensaje: "recipientPin debe tener 6 dígitos") }

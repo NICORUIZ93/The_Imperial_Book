@@ -428,7 +428,7 @@ OK tarifa crece con el peso en 1000 casos
 FALLA tarifa mínima de 1120 con kilos=999, caso mínimo kilos=901
 ```
 
-**Fallo deliberado:** cambia `new Random(42)` por `new Random()` y ejecuta varias veces. **Error esperado:** los valores de `kilos` que fallan cambian en cada ejecución. **Diagnóstico:** sin semilla fija no puedes repetir un fallo para depurarlo. Las librerías imprimen la semilla del fallo para reproducirlo; aquí, déjala fija.
+**Fallo deliberado:** cambia `new Random(42)` por `new Random()` y ejecuta cinco o seis veces. **Error esperado:** la primera y la tercera propiedad fallan siempre con `kilos=999`, porque los bordes se prueban antes que los valores al azar; la segunda a veces pasa y a veces muestra `FALLA tarifa crece con el peso con kilos=900, caso mínimo kilos=900`, según si el azar visita el 900. **Diagnóstico:** sin semilla fija el mismo código pasa o falla según la ejecución, y no puedes repetir un fallo para depurarlo. Las librerías imprimen la semilla del fallo para reproducirlo; aquí, déjala fija.
 
 #### Paso 5 · Práctica guiada
 

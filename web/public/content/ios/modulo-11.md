@@ -63,10 +63,10 @@ Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 Resultado esperado: Xcode genera y descarga automáticamente un certificado de distribución y un provisioning profile que vinculan tu Team, `com.rutaflow.conductor` y las capacidades habilitadas (por ejemplo, Push Notifications); el Archive se completa sin errores de firma.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá el Bundle Identifier a `com.rutaflow.conductor.test` sin crear un nuevo App ID en tu cuenta de desarrollador — ese es el fallo deliberado: Xcode no encuentra ningún provisioning profile válido para ese identificador nuevo, y el Archive falla con un error de firma que señala exactamente el identificador que no coincide con ningún perfil existente.
+Pista: en **Signing & Capabilities** desactiva **Automatically manage signing** y deja vacío el provisioning profile; luego genera el Archive con `xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS' -archivePath build/RutaFlowApp.xcarchive archive` — ese es el fallo deliberado: sin perfil, Xcode avisa en Signing & Capabilities que el target necesita un provisioning profile y el Archive termina con un error de firma. (Cambiar solo el Bundle Identifier no basta para provocarlo: con la firma automática activa, Xcode registra el App ID nuevo por ti, salvo que un administrador del equipo lo haya restringido.) Compilar para el simulador no sirve de prueba, porque no firma con un perfil de distribución.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el Bundle Identifier a `com.rutaflow.conductor`, y agregá la capability de Push Notifications en Signing & Capabilities — confirmá que Xcode regenera automáticamente el provisioning profile para incluir esa nueva capacidad, sin que tengas que crearlo manualmente.
+Corrige el Paso 5 reactivando **Automatically manage signing** y repitiendo el Archive (añade `-allowProvisioningUpdates` si lo haces desde la terminal), y agrega la capability de Push Notifications en Signing & Capabilities — confirma que Xcode regenera automáticamente el provisioning profile para incluir esa nueva capacidad, sin que tengas que crearlo manualmente.
 
 * Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build`.
 * Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.

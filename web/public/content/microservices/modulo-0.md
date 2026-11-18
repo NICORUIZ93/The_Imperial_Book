@@ -238,8 +238,12 @@ public final class ServidorLatencia {
     servidor.createContext("/lento", intercambio -> {
       try {
         Thread.sleep(1500);
-        responder(intercambio, "TARIFA=12000");
+        // La marca va antes de responder: escribir a un cliente que ya se fue puede fallar.
         System.out.println("SERVIDOR_TERMINO_LENTO");
+        responder(intercambio, "TARIFA=12000");
+      } catch (IOException error) {
+        System.out.println("RESPUESTA_NO_ENTREGADA " + error);
+        intercambio.close();
       } catch (InterruptedException error) {
         Thread.currentThread().interrupt();
         intercambio.close();
@@ -309,7 +313,7 @@ UP
 TIMEOUT_SOLICITUD HttpTimeoutException
 ```
 
-Aproximadamente un segundo después, la terminal del servidor imprime `SERVIDOR_TERMINO_LENTO`: esa línea demuestra que el timeout liberó al cliente, pero no canceló el handler.
+Aproximadamente un segundo después, la terminal del servidor imprime `SERVIDOR_TERMINO_LENTO`: esa línea demuestra que el timeout liberó al cliente, pero no canceló el handler. Según el sistema operativo, después puede aparecer `RESPUESTA_NO_ENTREGADA java.io.IOException: Broken pipe`: el handler terminó su trabajo, pero ya no tenía a quién entregarle la respuesta. Por eso la marca se imprime antes de `responder`.
 
 **Fallo deliberado:** cambia la URI del cliente a `http://127.0.0.1:65534/lento`, verifica antes que el puerto no tenga escucha y ejecuta → **Error esperado:** termina con `java.net.ConnectException` en vez de `HttpTimeoutException` → **Diagnóstico:** el sistema operativo rechazó la conexión; un rechazo inmediato no ejercita el timeout de respuesta ni demuestra una red que descarta paquetes.
 
@@ -666,7 +670,7 @@ La **idempotencia** hace que repetir una intención produzca un efecto equivalen
 
 ##### Identificar una intención y comprobar su huella
 
-La clave nace en el cliente cuando nace la intención y se reutiliza en cada intento. El servidor calcula o recibe una huella canónica del método, recurso y payload relevante. Si la clave existe con otra huella, responde conflicto: reproducir el resultado anterior aplicaría una respuesta a datos diferentes.
+La clave nace en el cliente cuando nace la intención y se reutiliza en cada intento. El servidor calcula la huella del payload (aquí, SHA-256 del cuerpo); nunca la acepta del cliente, porque así cualquiera podría reutilizar la clave con otro payload declarando la huella antigua. Si la clave existe con otra huella, responde conflicto: reproducir el resultado anterior aplicaría una respuesta a datos diferentes.
 
 ##### Reservar y reproducir de forma atómica
 
@@ -691,47 +695,64 @@ OP-001 + huella B -> 409 conflicto
 Crea `idempotencia/src/ServidorIdempotente.java` copiando `examples/professional-bridges/microservices/ServidorIdempotente.java`. Este es el archivo completo:
 
 ```java
-import com.sun.net.httpserver.*;
-import java.io.*;
-import java.net.*;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ServidorIdempotente {
   record Record(String fingerprint, int status, String body) { }
-  private static final ConcurrentHashMap<String,Record> RECORDS = new ConcurrentHashMap<>();
+
+  private static final ConcurrentHashMap<String, Record> RECORDS = new ConcurrentHashMap<>();
   private static final AtomicInteger EFFECTS = new AtomicInteger();
+
   private ServidorIdempotente() { }
+
   public static void main(String[] args) throws IOException {
-    var server = HttpServer.create(new InetSocketAddress("127.0.0.1",8085),16);
+    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8085), 16);
     server.createContext("/envios", ServidorIdempotente::create);
-    server.createContext("/metricas", e -> respond(e,200,"efectos=" + EFFECTS.get()));
+    server.createContext("/metricas", exchange -> respond(exchange, 200, "efectos=" + EFFECTS.get()));
     server.start();
     System.out.println("LISTEN http://127.0.0.1:8085");
   }
+
   private static void create(HttpExchange exchange) throws IOException {
-    if (!exchange.getRequestMethod().equals("POST")) { respond(exchange,405,"METODO_NO_PERMITIDO"); return; }
+    if (!exchange.getRequestMethod().equals("POST")) { respond(exchange, 405, "METODO_NO_PERMITIDO"); return; }
     String key = exchange.getRequestHeaders().getFirst("Idempotency-Key");
-    String fingerprint = exchange.getRequestHeaders().getFirst("X-Payload-Fingerprint");
-    if (key == null || fingerprint == null) { respond(exchange,400,"CLAVE_Y_HUELLA_REQUERIDAS"); return; }
+    if (key == null || key.isBlank()) { respond(exchange, 400, "CLAVE_REQUERIDA"); return; }
+    byte[] payload;
+    try (var input = exchange.getRequestBody()) { payload = input.readAllBytes(); }
+    // La huella la calcula el servidor: el cliente no puede reutilizar la clave declarando otra huella.
+    String fingerprint = sha256(payload);
     var created = new boolean[1];
     Record record = RECORDS.compute(key, (ignored, existing) -> {
       if (existing != null) return existing;
       created[0] = true;
       int number = EFFECTS.incrementAndGet();
-      return new Record(fingerprint,201,"ENVIO_CREADO numero=" + number);
+      return new Record(fingerprint, 201, "ENVIO_CREADO numero=" + number);
     });
-    if (!record.fingerprint().equals(fingerprint)) {
-      respond(exchange,409,"CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD");
-      return;
-    }
-    exchange.getResponseHeaders().set("Idempotency-Replayed",Boolean.toString(!created[0]));
-    respond(exchange,record.status(),record.body());
+    if (!record.fingerprint().equals(fingerprint)) { respond(exchange, 409, "CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD"); return; }
+    exchange.getResponseHeaders().set("Idempotency-Replayed", Boolean.toString(!created[0]));
+    respond(exchange, record.status(), record.body());
   }
-  private static void respond(HttpExchange exchange,int status,String text) throws IOException {
+
+  private static String sha256(byte[] payload) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(payload));
+    } catch (NoSuchAlgorithmException error) {
+      throw new IllegalStateException("SHA-256 no disponible en esta JVM", error);
+    }
+  }
+
+  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
     byte[] body = text.getBytes(StandardCharsets.UTF_8);
-    exchange.sendResponseHeaders(status,body.length);
+    exchange.sendResponseHeaders(status, body.length);
     try (var output = exchange.getResponseBody()) { output.write(body); }
   }
 }
@@ -743,21 +764,22 @@ cp examples/professional-bridges/microservices/ServidorIdempotente.java academia
 cd academia-labs/microservices/idempotencia
 javac --release 27 -d out src/ServidorIdempotente.java
 java -cp out ServidorIdempotente
-curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Bogota' http://127.0.0.1:8085/envios
-curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Bogota' http://127.0.0.1:8085/envios
-curl -i -X POST -H 'Idempotency-Key: OP-001' -H 'X-Payload-Fingerprint: ciudad=Cali' http://127.0.0.1:8085/envios
+# En una segunda terminal, desde la misma carpeta:
+curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Bogota' http://127.0.0.1:8085/envios
+curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Bogota' http://127.0.0.1:8085/envios
+curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Cali' http://127.0.0.1:8085/envios
 curl -sS http://127.0.0.1:8085/metricas
 ```
 
-**Resultado esperado:** ambas respuestas válidas contienen `ENVIO_CREADO numero=1`; la segunda añade `Idempotency-Replayed: true`; el payload distinto devuelve HTTP 409 y `CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD`; la métrica termina exactamente en `efectos=1`.
+**Resultado esperado:** ambas respuestas válidas contienen `ENVIO_CREADO numero=1`; la primera trae `Idempotency-replayed: false` y la segunda `Idempotency-replayed: true` (el `HttpServer` del JDK escribe el nombre con una sola mayúscula; HTTP no distingue mayúsculas en los nombres de cabecera); el payload distinto devuelve HTTP 409 y `CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD`; la métrica termina exactamente en `efectos=1`.
 
 **Fallo deliberado:** cambia `compute` por `get` seguido de `put` y lanza dos solicitudes simultáneas → **Error esperado:** la métrica puede terminar en `efectos=2` → **Diagnóstico:** comprobar y escribir en pasos separados abre una carrera; restaura la reserva atómica y, en producción, una restricción única transaccional.
 
 #### Paso 5 · Práctica guiada
 
-1. **Reproducción:** repite `OP-001` con la misma huella y confirma `efectos=1`.
+1. **Reproducción:** repite `OP-001` con el mismo cuerpo y confirma `efectos=1`.
 2. **Variación:** usa `OP-002`; predice `numero=2`. Pista: es otra intención.
-3. **Diagnóstico:** omite la huella y explica el HTTP 400. Pista: la clave sola no detecta payload distinto.
+3. **Diagnóstico:** omite la cabecera `Idempotency-Key` y explica el HTTP 400 `CLAVE_REQUERIDA`. Pista: sin clave, el servidor no sabe si es la misma intención.
 4. **Integración:** ejecuta dos `curl` en paralelo y conserva headers, cuerpos y métrica en `evidence/idempotencia.txt`.
 5. **Diseño:** propone tabla, restricción única, estados, TTL y ámbito por usuario; explica cómo recuperas `PROCESSING` huérfano.
 
@@ -1014,15 +1036,116 @@ Crea `contratos/src/CompatibilidadContrato.java` copiando el archivo completo de
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/** Lee el JSON de verdad y comprueba nombre y tipo de cada campo del contrato de envío. */
 public final class CompatibilidadContrato {
   private CompatibilidadContrato() { }
+
   public static void main(String[] args) throws Exception {
     for (String file : args) {
-      String json = Files.readString(Path.of(file),StandardCharsets.UTF_8);
-      if (!json.contains("\"id\"") || !json.contains("\"estado\""))
-        throw new IllegalArgumentException("CONTRATO_INVALIDO");
-      String city = json.contains("\"ciudadDestino\"") ? "PRESENTE" : "DESCONOCIDA";
-      System.out.println(Path.of(file).getFileName() + " ciudad=" + city);
+      String json = Files.readString(Path.of(file), StandardCharsets.UTF_8);
+      Map<String, Object> envio = new LectorJson(json).leerObjetoRaiz();
+      exigirTexto(envio, "id");
+      exigirTexto(envio, "estado");
+      Object ciudad = envio.get("ciudadDestino");
+      if (ciudad != null && !(ciudad instanceof String))
+        throw new IllegalArgumentException("CONTRATO_INCOMPATIBLE: ciudadDestino debe ser texto");
+      System.out.println(Path.of(file).getFileName() + " ciudad=" + (ciudad == null ? "DESCONOCIDA" : "PRESENTE"));
+    }
+  }
+
+  private static void exigirTexto(Map<String, Object> envio, String campo) {
+    if (!envio.containsKey(campo)) throw new IllegalArgumentException("CONTRATO_INVALIDO: falta " + campo);
+    if (!(envio.get(campo) instanceof String))
+      throw new IllegalArgumentException("CONTRATO_INCOMPATIBLE: " + campo + " debe ser texto");
+  }
+
+  /** Lector JSON mínimo para el laboratorio; en un servicio real usa Jackson y un esquema. */
+  private static final class LectorJson {
+    private final String texto;
+    private int pos;
+
+    LectorJson(String texto) { this.texto = texto; }
+
+    Map<String, Object> leerObjetoRaiz() {
+      Object valor = leerValor();
+      saltarEspacios();
+      if (pos != texto.length() || !(valor instanceof Map<?, ?>))
+        throw new IllegalArgumentException("CONTRATO_INVALIDO: se esperaba un único objeto JSON");
+      @SuppressWarnings("unchecked") Map<String, Object> objeto = (Map<String, Object>) valor;
+      return objeto;
+    }
+
+    private Object leerValor() {
+      saltarEspacios();
+      if (pos >= texto.length()) throw error("fin inesperado");
+      char c = texto.charAt(pos);
+      if (c == '{') return leerObjeto();
+      if (c == '[') return leerLista();
+      if (c == '"') return leerTexto();
+      int inicio = pos;
+      while (pos < texto.length() && ",}] \n\r\t".indexOf(texto.charAt(pos)) < 0) pos++;
+      String literal = texto.substring(inicio, pos);
+      if (literal.equals("true") || literal.equals("false")) return Boolean.valueOf(literal);
+      if (literal.equals("null")) return null;
+      try { return new java.math.BigDecimal(literal); }
+      catch (NumberFormatException e) { throw error("valor no válido: " + literal); }
+    }
+
+    private Map<String, Object> leerObjeto() {
+      var objeto = new LinkedHashMap<String, Object>();
+      pos++;
+      saltarEspacios();
+      if (consumir('}')) return objeto;
+      do {
+        saltarEspacios();
+        String clave = leerTexto();
+        saltarEspacios();
+        if (!consumir(':')) throw error("se esperaba ':'");
+        objeto.put(clave, leerValor());
+        saltarEspacios();
+      } while (consumir(','));
+      if (!consumir('}')) throw error("se esperaba '}'");
+      return objeto;
+    }
+
+    private List<Object> leerLista() {
+      var lista = new ArrayList<Object>();
+      pos++;
+      saltarEspacios();
+      if (consumir(']')) return lista;
+      do { lista.add(leerValor()); saltarEspacios(); } while (consumir(','));
+      if (!consumir(']')) throw error("se esperaba ']'");
+      return lista;
+    }
+
+    private String leerTexto() {
+      if (!consumir('"')) throw error("se esperaba '\"'");
+      var resultado = new StringBuilder();
+      while (pos < texto.length() && texto.charAt(pos) != '"') {
+        char c = texto.charAt(pos++);
+        if (c == '\\' && pos < texto.length()) c = texto.charAt(pos++); // basta para el laboratorio
+        resultado.append(c);
+      }
+      if (!consumir('"')) throw error("texto sin cerrar");
+      return resultado.toString();
+    }
+
+    private boolean consumir(char esperado) {
+      if (pos < texto.length() && texto.charAt(pos) == esperado) { pos++; return true; }
+      return false;
+    }
+
+    private void saltarEspacios() {
+      while (pos < texto.length() && Character.isWhitespace(texto.charAt(pos))) pos++;
+    }
+
+    private IllegalArgumentException error(String detalle) {
+      return new IllegalArgumentException("JSON_INVALIDO en posición " + pos + ": " + detalle);
     }
   }
 }
@@ -1046,7 +1169,7 @@ java -cp out CompatibilidadContrato evidence/envio-v1.json evidence/envio-v2.jso
 
 **Resultado esperado:** `envio-v1.json ciudad=DESCONOCIDA` y `envio-v2.json ciudad=PRESENTE`.
 
-**Fallo deliberado:** elimina `estado` de V2 → **Error esperado:** `java.lang.IllegalArgumentException: CONTRATO_INVALIDO` → **Diagnóstico:** un campo requerido desapareció; restaura el contrato o introduce una migración/versionado explícito.
+**Fallo deliberado:** elimina `estado` de V2 → **Error esperado:** `java.lang.IllegalArgumentException: CONTRATO_INVALIDO: falta estado` → **Diagnóstico:** un campo requerido desapareció; restaura el contrato o introduce una migración/versionado explícito. Después cambia V2 a `"estado":{"codigo":"CREADO"}` → **Error esperado:** `CONTRATO_INCOMPATIBLE: estado debe ser texto`. Buscar el texto `"estado"` en el JSON habría aceptado este cambio; por eso el lector interpreta el JSON y comprueba el tipo.
 
 #### Paso 5 · Práctica guiada
 
@@ -1147,7 +1270,7 @@ java -cp out LimitePayload 123456789012345678901234567890123
 1. **Reproducción:** prueba 7 y 33 bytes. Pista: cuenta bytes UTF-8, no caracteres visuales.
 2. **Variación:** prueba exactamente 32 bytes y confirma el borde inclusivo.
 3. **Diagnóstico:** declara 10 bytes y entrega 5; exige `FRAME_INCOMPLETO`.
-4. **Integración:** registra longitud declarada/recibida y decisión sin guardar payload sensible.
+4. **Integración:** registra en `evidence/framing.txt` la longitud declarada/recibida, la salida `PAYLOAD_EXCESIVO` y la decisión, sin guardar payload sensible; el Tema 10 la revisa.
 5. **Diseño:** fija límites diferentes para evento JSON y evidencia fotográfica; justifica streaming.
 
 **Conexión con el proyecto integrador RutaFlow Distribuido:** limita cuerpos antes de parsear y documenta 413/errores de framing; mide tamaño sin usar IDs como etiquetas métricas.
@@ -1189,7 +1312,7 @@ RutaFlow revisa seis supuestos: confiabilidad, latencia cero, ancho infinito, se
 | Red confiable | timeout con efecto confirmado | reconciliación + idempotencia |
 | Latencia cero | `/lento` supera presupuesto | medición + deadline |
 | Ancho infinito | frame de 33 bytes rechazado | límite + streaming/compresión acotada |
-| Red segura | header sin identidad no autoriza | autenticación, cifrado y autorización |
+| Red segura | no se demuestra en loopback (queda para la práctica independiente) | autenticación, cifrado y autorización |
 | Topología estable | puerto/PID cambia | descubrimiento y health checks |
 | Sistema homogéneo | V1/V2 conviven | contrato y compatibilidad |
 
@@ -1200,19 +1323,60 @@ Analogía: una lista de normas de aviación no demuestra que el avión resista u
 Crea `falacias/src/FalaciasDistribuidas.java` copiando el archivo completo desde `examples/professional-bridges/microservices/FalaciasDistribuidas.java`.
 
 ```java
-import java.util.LinkedHashMap;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+/** Revisa que cada falacia tenga una evidencia real guardada en los temas anteriores del módulo. */
 public final class FalaciasDistribuidas {
+  record Evidencia(String archivo, String marca) { }
+  record Falacia(String nombre, String mitigacion, List<Evidencia> evidencias) { }
+
+  private static final List<Falacia> FALACIAS = List.of(
+      new Falacia("red_confiable", "reconciliacion+idempotencia", List.of(
+          new Evidencia("resultado-desconocido/evidence/resultado.txt", "CONFIRMADO"),
+          new Evidencia("idempotencia/evidence/idempotencia.txt", "efectos=1"))),
+      new Falacia("latencia_cero", "deadline+medicion", List.of(
+          new Evidencia("m0-t2/evidence/tema-2.txt", "HttpTimeoutException"))),
+      new Falacia("ancho_infinito", "limite+framing", List.of(
+          new Evidencia("framing/evidence/framing.txt", "PAYLOAD_EXCESIVO"))),
+      new Falacia("topologia_estable", "descubrimiento+health", List.of(
+          new Evidencia("m0-t1/evidence/tema-1.txt", "UP"))),
+      new Falacia("sistema_homogeneo", "contrato+compatibilidad", List.of(
+          new Evidencia("contratos/evidence/envio-v1.json", "\"estado\""),
+          new Evidencia("contratos/evidence/envio-v2.json", "\"ciudadDestino\""))));
+
   private FalaciasDistribuidas() { }
-  public static void main(String[] args) {
-    var evidence = new LinkedHashMap<String,String>();
-    evidence.put("red_confiable","timeout+reconciliacion");
-    evidence.put("latencia_cero","deadline+medicion");
-    evidence.put("ancho_infinito","limite+framing");
-    evidence.put("red_segura","autenticacion+cifrado+autorizacion");
-    evidence.put("topologia_estable","descubrimiento+health");
-    evidence.put("sistema_homogeneo","contrato+compatibilidad");
-    evidence.forEach((assumption,mitigation) ->
-        System.out.println("REFUTADA " + assumption + " -> " + mitigation));
+
+  public static void main(String[] args) throws IOException {
+    Path labs = Path.of(args.length > 0 ? args[0] : "..");
+    int faltantes = 0;
+    for (Falacia falacia : FALACIAS) {
+      String problema = buscarProblema(labs, falacia.evidencias());
+      if (problema == null) {
+        System.out.println("REFUTADA " + falacia.nombre() + " -> " + falacia.mitigacion());
+      } else {
+        System.out.println("SIN_EVIDENCIA " + falacia.nombre() + ": " + problema);
+        faltantes++;
+      }
+    }
+    System.out.println("SIN_DEMOSTRAR red_segura: el laboratorio en loopback no prueba identidad ni cifrado");
+    if (faltantes > 0) {
+      System.err.println("REVISION_RECHAZADA faltan " + faltantes + " evidencias");
+      System.exit(1);
+    }
+  }
+
+  private static String buscarProblema(Path labs, List<Evidencia> evidencias) throws IOException {
+    for (Evidencia evidencia : evidencias) {
+      Path archivo = labs.resolve(evidencia.archivo());
+      if (!Files.isRegularFile(archivo)) return "falta " + evidencia.archivo();
+      if (!Files.readString(archivo, StandardCharsets.UTF_8).contains(evidencia.marca()))
+        return evidencia.archivo() + " no contiene " + evidencia.marca();
+    }
+    return null;
   }
 }
 ```
@@ -1222,12 +1386,13 @@ mkdir -p academia-labs/microservices/falacias/{src,out,evidence}
 cp examples/professional-bridges/microservices/FalaciasDistribuidas.java academia-labs/microservices/falacias/src/
 cd academia-labs/microservices/falacias
 javac --release 27 -d out src/FalaciasDistribuidas.java
-java -cp out FalaciasDistribuidas
+# '..' es academia-labs/microservices, donde viven las carpetas de los temas 1 a 9
+java -cp out FalaciasDistribuidas ..
 ```
 
-**Resultado esperado:** seis líneas comienzan con `REFUTADA`; la primera termina en `red_confiable -> timeout+reconciliacion` y la última en `sistema_homogeneo -> contrato+compatibilidad`.
+**Resultado esperado:** si guardaste las evidencias de los temas anteriores, cinco líneas comienzan con `REFUTADA` (la primera es `REFUTADA red_confiable -> reconciliacion+idempotencia`) y la última es `SIN_DEMOSTRAR red_segura: …`: el programa declara lo que el laboratorio no prueba. Si falta un archivo o no contiene la salida esperada, imprime `SIN_EVIDENCIA` con la ruta, `REVISION_RECHAZADA` y termina con código 1.
 
-**Fallo deliberado:** cambia la mitigación de red confiable a `retry` → **Error esperado:** la revisión rechaza la evidencia porque retry sin reconciliación/idempotencia puede duplicar → **Diagnóstico:** una mitigación debe responder al impacto demostrado, no sólo repetir transporte.
+**Fallo deliberado:** renombra `../idempotencia/evidence/idempotencia.txt` y vuelve a ejecutar → **Error esperado:** `SIN_EVIDENCIA red_confiable: falta idempotencia/evidence/idempotencia.txt`, `REVISION_RECHAZADA faltan 1 evidencias` y `echo $?` imprime `1` → **Diagnóstico:** sin la prueba de un solo efecto, «reintentar» no está respaldado: un retry sin reconciliación ni idempotencia puede duplicar. Restaura el archivo.
 
 #### Paso 5 · Práctica guiada
 

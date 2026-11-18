@@ -3,11 +3,15 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ServidorIdempotente {
   record Record(String fingerprint, int status, String body) { }
+
   private static final ConcurrentHashMap<String, Record> RECORDS = new ConcurrentHashMap<>();
   private static final AtomicInteger EFFECTS = new AtomicInteger();
 
@@ -24,8 +28,11 @@ public final class ServidorIdempotente {
   private static void create(HttpExchange exchange) throws IOException {
     if (!exchange.getRequestMethod().equals("POST")) { respond(exchange, 405, "METODO_NO_PERMITIDO"); return; }
     String key = exchange.getRequestHeaders().getFirst("Idempotency-Key");
-    String fingerprint = exchange.getRequestHeaders().getFirst("X-Payload-Fingerprint");
-    if (key == null || fingerprint == null) { respond(exchange, 400, "CLAVE_Y_HUELLA_REQUERIDAS"); return; }
+    if (key == null || key.isBlank()) { respond(exchange, 400, "CLAVE_REQUERIDA"); return; }
+    byte[] payload;
+    try (var input = exchange.getRequestBody()) { payload = input.readAllBytes(); }
+    // La huella la calcula el servidor: el cliente no puede reutilizar la clave declarando otra huella.
+    String fingerprint = sha256(payload);
     var created = new boolean[1];
     Record record = RECORDS.compute(key, (ignored, existing) -> {
       if (existing != null) return existing;
@@ -36,6 +43,14 @@ public final class ServidorIdempotente {
     if (!record.fingerprint().equals(fingerprint)) { respond(exchange, 409, "CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD"); return; }
     exchange.getResponseHeaders().set("Idempotency-Replayed", Boolean.toString(!created[0]));
     respond(exchange, record.status(), record.body());
+  }
+
+  private static String sha256(byte[] payload) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(payload));
+    } catch (NoSuchAlgorithmException error) {
+      throw new IllegalStateException("SHA-256 no disponible en esta JVM", error);
+    }
   }
 
   private static void respond(HttpExchange exchange, int status, String text) throws IOException {

@@ -213,7 +213,15 @@ curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.x con `spring-boot-starter-security` y `spring-security-saml2-service-provider`. Necesitas un IdP de prueba: Keycloak en Docker (`docker run -p 8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak start-dev`) con un cliente SAML.
+Usa Spring Boot 4.1.2 con JDK 25 en `academia-spring` (paquete `com.example.demo`) y agrega `spring-boot-starter-security-saml2`: desde Spring Boot 4.0 la autoconfiguración de SAML vive en ese starter, que incluye Spring Security y `spring-security-saml2-service-provider`. Necesitas un IdP de prueba: Keycloak en Docker (`docker run -p 8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak start-dev`).
+
+Prepara Keycloak en la consola `http://localhost:8180` (usuario `admin`, contraseña `admin`):
+
+1. Crea el realm `rutaflow`.
+2. En **Clients → Create client**, elige **Client type: SAML** y escribe **Client ID** `rutaflow-panel`; debe coincidir con el `entity-id` que el SP envía como emisor. En **Valid redirect URIs** pon `http://localhost:8080/*` y en **Master SAML Processing URL** `http://localhost:8080/login/saml2/sso/empresa`.
+3. En la pestaña **Keys** del cliente, desactiva **Client signature required**: en este tema la aplicación no firma sus `AuthnRequest`.
+4. En **Client scopes → rutaflow-panel-dedicated**, agrega un mapper **User Property** con propiedad `email` y nombre de atributo SAML `email`.
+5. En **Users**, crea `operadora1` con correo `operadora1@empresa.co` y asígnale una contraseña en **Credentials** (sin marcarla como temporal).
 
 #### Paso 2 · Contexto y caso real
 
@@ -270,10 +278,10 @@ spring:
             entity-id: rutaflow-panel
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/seguridad/SamlConfig.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/seguridad/SamlConfig.java` (dentro de `com.example.demo`, para que el escaneo lo registre):
 
 ```java
-package com.rutaflow.seguridad;
+package com.example.demo.seguridad;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -295,10 +303,10 @@ class SamlConfig {
 }
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/seguridad/YoController.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/seguridad/YoController.java`:
 
 ```java
-package com.rutaflow.seguridad;
+package com.example.demo.seguridad;
 
 import java.util.Map;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

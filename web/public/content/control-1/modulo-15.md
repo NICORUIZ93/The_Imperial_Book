@@ -21,7 +21,7 @@ Para un polinomio de tercer orden o más, sacar las raíces a mano es difícil. 
 
 #### Demostración · estable ⇔ polos en el semiplano izquierdo
 
-1. La respuesta al impulso \(g(t)\) es una suma de términos \(c\,t^ke^{pt}\), uno por cada polo \(p\) (capítulo 4).
+1. La respuesta al impulso \(g(t)\) es una suma de términos \(c\,t^ke^{pt}\), uno por cada polo \(p\) (módulo 3).
 2. Si \(\operatorname{Re}(p) < 0\), cada término tiende a cero y \(\int_0^\infty |g|\,dt\) es finita.
 3. La salida es la convolución \(y(t) = \int g(\tau)u(t-\tau)d\tau\). Si \(|u|\le M\), entonces \(|y| \le M\int|g| < \infty\): salida acotada.
 4. Si algún polo tiene \(\operatorname{Re}(p)\ge0\), \(g(t)\) no se apaga y existe una entrada acotada (por ejemplo, una senoidal a la frecuencia del polo) que hace crecer la salida sin límite.
@@ -214,7 +214,7 @@ Arreglo completo:
 | \(s^{1}\) | \(10\) | \(0\) |
 | \(s^{0}\) | \(6\) | \(0\) |
 
-**Resultado.** 0 raíz(ces) en el semiplano derecho: **estable**.
+**Resultado.** Ninguna raíz en el semiplano derecho: **estable**.
 
 **Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
 
@@ -243,7 +243,7 @@ Arreglo completo:
 | \(s^{1}\) | \(-2\) | \(0\) |
 | \(s^{0}\) | \(10\) | \(0\) |
 
-**Resultado.** 2 raíz(ces) en el semiplano derecho: **inestable**.
+**Resultado.** 2 raíces en el semiplano derecho: **inestable**.
 
 **Comprobación.** Calculando las raíces numéricamente hay 2 con parte real positiva.
 
@@ -273,7 +273,7 @@ Arreglo completo:
 | \(s^{1}\) | \(0\) | \(0\) | \(0\) |
 | \(s^{0}\) | \(\text{NaN}\) | \(\text{NaN}\) | \(0\) |
 
-**Resultado.** 2 raíz(ces) en el semiplano derecho: **inestable**.
+**Resultado.** 2 raíces en el semiplano derecho: **inestable**.
 
 **Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
 
@@ -302,7 +302,7 @@ Arreglo completo:
 | \(s^{1}\) | \(\frac{13}{3}\) | \(0\) |
 | \(s^{0}\) | \(1\) | \(0\) |
 
-**Resultado.** 0 raíz(ces) en el semiplano derecho: **estable**.
+**Resultado.** Ninguna raíz en el semiplano derecho: **estable**.
 
 **Comprobación.** Calculando las raíces numéricamente hay 0 con parte real positiva.
 

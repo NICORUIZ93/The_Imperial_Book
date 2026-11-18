@@ -238,13 +238,13 @@ Todo complejo se puede escribir con su magnitud \(r\) y su ángulo \(\varphi\): 
 
 ∎
 
-Dos consecuencias que usarás en Laplace (capítulo 3):
+Dos consecuencias que usarás en Laplace (módulo 2):
 
 \[\cos\omega t = \frac{e^{j\omega t}+e^{-j\omega t}}{2} \qquad \sin\omega t = \frac{e^{j\omega t}-e^{-j\omega t}}{2j}\]
 
 *Salen de sumar y restar \(e^{j\omega t} = \cos\omega t + j\sin\omega t\) y \(e^{-j\omega t} = \cos\omega t - j\sin\omega t\).*
 
-> **Multiplicar en forma polar es fácil:** \(r_1e^{j\varphi_1}\cdot r_2e^{j\varphi_2} = r_1r_2\,e^{j(\varphi_1+\varphi_2)}\). Las magnitudes se multiplican y los ángulos se suman. Esto es la base de la condición de ángulo del lugar de las raíces (capítulo 18) y de los diagramas de Bode (capítulo 21).
+> **Multiplicar en forma polar es fácil:** \(r_1e^{j\varphi_1}\cdot r_2e^{j\varphi_2} = r_1r_2\,e^{j(\varphi_1+\varphi_2)}\). Las magnitudes se multiplican y los ángulos se suman. Esto es la base de la condición de ángulo del lugar de las raíces (módulo 17) y de los diagramas de Bode (módulo 20).
 
 #### Ejemplo 1 · Sumar dos complejos · *Básico*
 
@@ -346,7 +346,7 @@ Dos consecuencias que usarás en Laplace (capítulo 3):
 
 3. Ángulo con el eje real negativo: \(\theta = \arctan\dfrac{4}{3} = 53{,}13°\).
 
-   **¿Por qué?** En control casi siempre se mide desde el eje real negativo, porque los polos estables están a la izquierda. Ese ángulo da el amortiguamiento: \(\zeta = \cos\theta\) (capítulo 13).
+   **¿Por qué?** En control casi siempre se mide desde el eje real negativo, porque los polos estables están a la izquierda. Ese ángulo da el amortiguamiento: \(\zeta = \cos\theta\) (módulo 12).
 
 4. Ángulo desde el eje real positivo (el “matemático”): \(180° - 53{,}13° = 126{,}87°\).
 
@@ -428,7 +428,7 @@ python3 verificacion.py
 
 calcula \((1+j)(2+3j)\) y \(\dfrac{4+2j}{1+j}\) a mano y confirma modificando `verificacion.py`. Resultado esperado: \(-1+5j\) y \(3-j\).
 
-**Límite:** la regla "multiplica magnitudes y suma ángulos" en polar exige que ambos ángulos estén en el mismo rango (p. ej. \((-180°,180°]\)); si no, hay que normalizar sumando o restando 360° antes de sumar.
+**Límite:** la regla "multiplica magnitudes y suma ángulos" vale para cualquier ángulo, porque \(e^{j\varphi}\) se repite cada 360°: no hace falta normalizar antes de sumar. Lo que sí conviene es normalizar el **resultado** a un rango fijo (p. ej. \((-180°,180°]\)) para compararlo con la calculadora o con SymPy: \(200°\) y \(-160°\) son el mismo ángulo.
 
 ### Tema 3: Raíces de s²+bs+c
 
@@ -511,7 +511,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 
 #### Ejemplo 3 · El atajo · *Intermedio*
 
-> **Qué cambia respecto al anterior:** El mismo resultado del Ejemplo 7 con menos cuentas.
+> **Qué cambia respecto al anterior:** Las raíces complejas del Ejemplo 2, ahora con menos cuentas.
 
 **Enunciado.** Halla las raíces de \(s^2+2s+37\) sin la fórmula completa.
 
@@ -521,7 +521,7 @@ Sea \(P(s)\) un polinomio con coeficientes reales y \(p\) una raíz: \(P(p) = 0\
 
 2. Parte imaginaria: \(\sqrt{c - b^2/4} = \sqrt{37 - 1} = 6\).
 
-   **¿Por qué?** Es lo que queda dentro de la raíz después de sacar el 4 y el signo menos. Verifica con el Ejemplo 7: \(\sqrt{13-4} = 3\).
+   **¿Por qué?** Es lo que queda dentro de la raíz después de sacar el 4 y el signo menos. Verifica con el Ejemplo 2: \(\sqrt{13-4} = 3\).
 
 **Resultado:** \(s = -1 \pm 6j\). Es el denominador del punto 3(ii) del Parcial 1
 
@@ -591,7 +591,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 **Enunciado.** Halla las raíces de \(s^{2} + 2 s - 3=0\) y di qué comportamiento producen como polos.
 
-1. Discriminante \(\Delta = b^2-4c = 4--12=16\).
+1. Discriminante \(\Delta = b^2-4c = 4-(-12)=16\).
 
    **¿Por qué?** El signo del discriminante decide si las raíces son reales distintas, repetidas o complejas.
 
@@ -696,7 +696,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j2)|\) y \(\angle G(j2)\).
 
-1. Sustituye \(s = j2\): \(G(j2) = \frac{10}{j_{2} + 2}\).
+1. Sustituye \(s = j2\): \(G(j2) = \frac{10}{2j + 2}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 
@@ -712,7 +712,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j1)|\) y \(\angle G(j1)\).
 
-1. Sustituye \(s = j1\): \(G(j1) = \frac{5}{j_{1} + 1}\).
+1. Sustituye \(s = j1\): \(G(j1) = \frac{5}{1j + 1}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 
@@ -728,7 +728,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j2)|\) y \(\angle G(j2)\).
 
-1. Sustituye \(s = j2\): \(G(j2) = \frac{4}{j_{2} \left(j_{2} + 2\right)}\).
+1. Sustituye \(s = j2\): \(G(j2) = \frac{4}{2j \left(2j + 2\right)}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 
@@ -744,7 +744,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j5)|\) y \(\angle G(j5)\).
 
-1. Sustituye \(s = j5\): \(G(j5) = \frac{25}{j_{5}^{2} + 4 j_{5} + 25}\).
+1. Sustituye \(s = j5\): \(G(j5) = \frac{25}{(5j)^{2} + 4 \cdot 5j + 25}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 
@@ -760,7 +760,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j1)|\) y \(\angle G(j1)\).
 
-1. Sustituye \(s = j1\): \(G(j1) = \frac{j_{1} + 1}{j_{1} + 10}\).
+1. Sustituye \(s = j1\): \(G(j1) = \frac{1j + 1}{1j + 10}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 
@@ -776,7 +776,7 @@ La fórmula de Euler dice \(e^{j\theta} = \cos\theta + j\sin\theta\). Por eso to
 
 **Enunciado.** Calcula \(|G(j3)|\) y \(\angle G(j3)\).
 
-1. Sustituye \(s = j3\): \(G(j3) = \frac{100}{\left(j_{3} + 1\right) \left(j_{3} + 10\right)}\).
+1. Sustituye \(s = j3\): \(G(j3) = \frac{100}{\left(3j + 1\right) \left(3j + 10\right)}\).
 
    **¿Por qué?** Una entrada senoidal \(\sin\omega t\) "ve" al sistema evaluado en \(s = j\omega\).
 

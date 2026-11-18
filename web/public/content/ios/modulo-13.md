@@ -382,9 +382,12 @@ func sincronizacionMedida() async throws {
 **Ejecuta el ejemplo:**
 
 ```bash
-swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
-# pega el código en Practica/Sources/Practica/main.swift
-cd Practica && swift run
+# una sola vez, fuera de RutaFlowApp:
+mkdir Practica && cd Practica
+swift package init --type executable
+rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main que choca con main.swift
+# pega el código en Sources/Practica/main.swift
+swift run
 ```
 Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
@@ -619,7 +622,7 @@ Entrega el registro con device token impreso, el manejo de fallo y el diseño de
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 15 o superior con destino iOS 17+. En `Info.plist` agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
+Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y `authorizationDenied`, que solo existen desde iOS 18. En la pestaña **Info** del target (los proyectos nuevos de Xcode no traen un archivo `Info.plist` aparte) agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
 
 #### Paso 2 · Contexto y caso real
 
@@ -747,7 +750,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** pedir ubicación «
 
 #### Paso 1 · Objetivo y preparación
 
-En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un dispositivo o simulador y el depurador de Xcode para forzar la tarea.
+En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo plano, y allí `submit` lanza `BGTaskScheduler.Error.unavailable`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -829,8 +832,8 @@ enum Sincronizador {
 Fuerza la tarea desde el depurador de Xcode:
 
 ```bash
-cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-# 1) ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
+cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS' build
+# 1) elige tu iPhone conectado como destino, ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
 # 2) en la consola lldb:
 e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"co.rutaflow.sincronizar"]
 # 3) continúa la ejecución

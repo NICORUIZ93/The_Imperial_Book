@@ -189,9 +189,12 @@ let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
 **Ejecuta el ejemplo:**
 
 ```bash
-swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
-# pega el código en Practica/Sources/Practica/main.swift
-cd Practica && swift run
+# una sola vez, fuera de RutaFlowApp:
+mkdir Practica && cd Practica
+swift package init --type executable
+rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main que choca con main.swift
+# pega el código en Sources/Practica/main.swift
+swift run
 ```
 Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 

@@ -401,11 +401,6 @@ Anota si tu reporte necesita orden y por qué. Fuente oficial: [parallel streams
 
 **Proyecto integrador:** detecta tres entregas atrasadas consecutivas. **Límite:** Gatherers requiere Java 24 o posterior; usa filter si los elementos son independientes. **Práctica:** cambia la secuencia y compara windowSliding con windowFixed.
 
-```bash
-javac -d out src/Rachas.java
-java -cp out Rachas
-```
-
 #### Subtema 4.1: Agrupa elementos consecutivos en ventanas · 10 min
 
 **1. Contexto**

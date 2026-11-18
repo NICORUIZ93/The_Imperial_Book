@@ -987,10 +987,3 @@ Cierra el proyecto integrador RutaFlow probando, animando e interoperando con UI
 6. Envuelve `UIImagePickerController` con `UIViewControllerRepresentable` y un `Coordinator`, confirmando que el delegate conectado entrega la foto capturada a la vista SwiftUI.
 
 La entrega contiene el código de los seis Temas, los tests en verde, y la reproducción de cada fallo deliberado (cancelación ignorada, estructura rota, condición de carrera, `id` inconsistente, mapa congelado, delegate faltante) junto con su corrección.
-
-## Trazabilidad de la auditoría original
-
-- **Pruebas en SwiftUI**: cubierto en los Temas 1 (Swift Testing y pruebas asíncronas) y 2 (ViewInspector) de este módulo.
-- **Animaciones en SwiftUI**: cubierto en el Tema 4 (matchedGeometryEffect) de este módulo.
-- **Interoperabilidad con UIKit**: cubierto en los Temas 5 (UIViewRepresentable) y 6 (UIViewControllerRepresentable y Coordinator) de este módulo.
-- **Combine Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

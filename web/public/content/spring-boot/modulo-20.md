@@ -634,8 +634,6 @@ Ejecuta desde la carpeta del laboratorio:
 
 **Fuentes primarias:** [Spring Framework: ejecución, `@Async`, proxies y errores](https://docs.spring.io/spring-framework/reference/integration/scheduling.html), [Spring Boot: ejecución y scheduling](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html). El siguiente bloque compara contratos de integración; conserva separados protocolo, ejecución y garantía de entrega.
 
-## Ampliación de la página 28 del PDF
-
 ### Tema 6: Integraciones empresariales, SOAP y fronteras de protocolo
 
 **¿Por qué es importante?** confundir un mensaje aceptado con un resultado correcto puede registrar entregas inexistentes; el adaptador debe reconocer contratos y fallos antes de tocar el dominio.
@@ -746,8 +744,6 @@ python3 -m unittest -v
 
 **Fuente primaria:** [W3C: SOAP 1.2, mensajes y Fault](https://www.w3.org/TR/soap12-part1/).
 
-
-## Aplicación del material de referencia
 
 ### Tema 7: Spring AI: ChatClient y herramientas con autorización fuera del modelo
 
@@ -921,8 +917,6 @@ class ChatToolsTest {
 
 **Fuentes primarias:** [ChatClient](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [herramientas y ejecución](https://docs.spring.io/spring-ai/reference/api/tools.html), [compatibilidad Spring AI/Boot](https://docs.spring.io/spring-ai/reference/getting-started.html).
 
-## Aplicación del material de referencia
-
 ### Tema 8: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
 
 **Meta:** filtrar documentos por empresa, excluir contexto sin evidencia y conservar referencias antes de generar una respuesta. **Prerrequisitos:** M20 T6, colecciones, metadatos y JUnit. Duración: 35–40 min.
@@ -1062,8 +1056,6 @@ class RagScopeTest {
 **Hito del tema:** conserva filtrado por empresa, ausencia de evidencia, selección de IDs con límite posterior y exclusión sin propietario. Adjunta tu caso independiente y plan de evaluación. Las cuatro pruebas publicadas verifican fronteras locales; no acreditan búsqueda vectorial, generación ni seguridad completa de un sistema RAG.
 
 **Fuente primaria:** [Spring AI: RAG, QuestionAnswerAdvisor y filtros](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
-
-## Aplicación del material de referencia
 
 ### Tema 9: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
 

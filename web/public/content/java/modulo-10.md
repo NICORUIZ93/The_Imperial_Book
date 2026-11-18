@@ -19,7 +19,7 @@ Crea `src/academia.rutas/module-info.java` con `module academia.rutas { exports 
 
 **Resultado esperado:** `out/academia.rutas/module-info.class` existe y Maven no es necesario para compilar este ejemplo.
 
-**Fallo deliberado:** exporta el paquete equivocado `academia.rutas`. **Diagnóstico:** el API vive en `academia.rutas.api`; corrige el nombre completo del paquete.
+**Fallo deliberado:** exporta el paquete equivocado `academia.rutas`. **Error esperado:** ninguno todavía: compila igual, porque aún no hay otro módulo que use `Buscar`. **Diagnóstico:** el error aparecerá en el Subtema 1.2, cuando un segundo módulo importe `academia.rutas.api`; deja `exports academia.rutas.api;` antes de seguir.
 
 **3. Entiende**
 
@@ -33,15 +33,15 @@ Lista qué paquete quedó exportado y cuál sigue interno.
 
 **1. Contexto**
 
-La aplicación debe arrancar desde el module path y llamar al API exportado.
+La aplicación debe arrancar desde el module path y llamar al API exportado. `exports` solo controla el acceso **entre** módulos, así que `Main` vive en un segundo módulo.
 
 **2. Hazlo tú**
 
-Crea `src/academia.rutas/academia/rutas/app/Main.java` con `package academia.rutas.app; import academia.rutas.api.Buscar; public class Main { public static void main(String[] args) { System.out.println(Buscar.estado()); } }`; agrega `exports academia.rutas.app;` al `module-info.java` si lo necesita otro módulo. Compila con el comando `javac` del Subtema 1.1 y ejecuta `java --module-path out -m academia.rutas/academia.rutas.app.Main`.
+Crea el módulo `academia.app` con `src/academia.app/module-info.java` que contenga `module academia.app { requires academia.rutas; }` y `src/academia.app/academia/app/Main.java` con `package academia.app; import academia.rutas.api.Buscar; public class Main { public static void main(String[] args) { System.out.println(Buscar.estado()); } }`. Compila con el comando `javac` del Subtema 1.1 (compila los dos módulos) y ejecuta `java --module-path out -m academia.app/academia.app.Main`.
 
 **Resultado esperado:** el programa imprime `EN_RUTA` desde el módulo nombrado.
 
-**Fallo deliberado:** quita `exports academia.rutas.api`. **Diagnóstico:** `Main` no puede acceder al tipo; el paquete que usa otro componente debe formar parte del API exportado.
+**Fallo deliberado:** quita `exports academia.rutas.api` de `src/academia.rutas/module-info.java` y recompila. **Error esperado:** `error: package academia.rutas.api is not visible` con la nota `(package academia.rutas.api is declared in module academia.rutas, which does not export it)`. **Diagnóstico:** `Main` está en otro módulo; el paquete que usa otro componente debe formar parte del API exportado. Si `Main` estuviera dentro de `academia.rutas`, compilaría igual, porque `exports` no afecta al propio módulo.
 
 **3. Entiende**
 
@@ -59,9 +59,9 @@ Una clase puede ser `public` en Java y continuar oculta para consumidores de otr
 
 **2. Hazlo tú**
 
-Crea `src/cliente/cliente/module-info.java` con `module cliente { requires academia.rutas; }` y `src/cliente/cliente/cliente/Main.java` que importe `academia.rutas.Interno`. Compila juntos ambos módulos con `javac -d out --module-source-path src $(find src -name '*.java')`.
+Crea `src/cliente/module-info.java` con `module cliente { requires academia.rutas; }` y `src/cliente/cliente/Main.java` (paquete `cliente`) que importe `academia.rutas.Interno`. Compila juntos ambos módulos con `javac -d out --module-source-path src $(find src -name '*.java')`.
 
-**Resultado esperado:** el compilador rechaza el acceso a `Interno`, cuyo paquete no está exportado.
+**Resultado esperado:** el compilador rechaza el acceso a `Interno` con `error: package academia.rutas is not visible`, porque su paquete no está exportado.
 
 **Fallo deliberado:** añade `exports academia.rutas` al módulo productor solo para hacer pasar al cliente. **Diagnóstico:** publica la API mínima necesaria; evita exportar paquetes internos por comodidad.
 
@@ -86,7 +86,7 @@ Ejecuta:
 
 ```bash
 javac -d out --module-source-path src $(find src -name '*.java')
-java --module-path out -m academia.rutas/academia.rutas.app.Main
+java --module-path out -m academia.app/academia.app.Main
 ```
 
 **Conexión con el proyecto integrador:** si el motor de asignación de entregas crece lo suficiente para separarse en componentes (reglas de negocio vs. adaptadores de entrada/salida), `module-info.java` es la forma de que el compilador, no solo la convención, impida que un adaptador use una clase interna del dominio.
@@ -95,7 +95,7 @@ java --module-path out -m academia.rutas/academia.rutas.app.Main
 
 #### Practica
 
-Modifica `module-info.java` para exportar `academia.rutas` (el paquete interno) en vez de `academia.rutas.api` y vuelve a compilar; confirma que `Main` deja de compilar aunque `Buscar` siga siendo `public`.
+Modifica `src/academia.rutas/module-info.java` para exportar `academia.rutas` (el paquete interno) en vez de `academia.rutas.api` y vuelve a compilar; confirma que `Main`, del módulo `academia.app`, deja de compilar aunque `Buscar` siga siendo `public`.
 
 ### Tema 2: Migración incremental y cuándo JPMS aporta valor
 

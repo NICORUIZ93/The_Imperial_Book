@@ -96,11 +96,11 @@ En PowerShell, desde la misma carpeta, crea el entorno con `py -m venv .venv`, i
 
 #### Practica
 
-añade `import matplotlib; print("matplotlib:", matplotlib.__version__)` al script y confirma que también está disponible — lo necesitarás para graficar respuestas en el capítulo 13. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
+añade `import matplotlib; print("matplotlib:", matplotlib.__version__)` al script y confirma que también está disponible — lo necesitarás para graficar respuestas en el módulo 12. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
 **Límite:** verificar que una cuenta numérica coincide con el cálculo manual no demuestra que entendiste el procedimiento; sigue resolviendo cada ejemplo a mano antes de comprobarlo con código.
 
-Los capítulos 10, 11, 20 y 21 (linealización, espacio de estados, compensadores y Bode) son de nivel experto: van más allá de lo que suele preguntarse en los primeros parciales, pero te preparan para Control 2.
+Los módulos 9, 10, 19 y 20 (linealización, espacio de estados, compensadores y Bode) son de nivel experto: van más allá de lo que suele preguntarse en los primeros parciales, pero te preparan para Control 2.
 
 Para verificar tus cuentas puedes usar Python con SymPy y SciPy. El proyecto de práctica de la ruta explica cómo preparar la carpeta `academia-labs/control-1`.
 
@@ -135,25 +135,25 @@ Para verificar tus cuentas puedes usar Python con SymPy y SciPy. El proyecto de 
 
 | Punto | Qué pedían | Qué faltó | Dónde se estudia |
 |---|---|---|---|
-| 1 | Ejemplo de sistema de control y sus elementos | Nombrar y definir cada elemento | Capítulo 6 |
-| 2 | Función de transferencia del circuito con op-amps | Usar impedancias en Laplace en vez de derivadas en el tiempo | Capítulo 8 |
-| 3 | Respuesta al impulso de dos \(G(s)\) | Tabla, retardo y completar el cuadrado | Capítulos 3, 4, 12 y 13 |
-| 4 | Ventajas y desventajas de P, I, D | Explicar cada acción con su porqué | Capítulo 19 |
+| 1 | Ejemplo de sistema de control y sus elementos | Nombrar y definir cada elemento | Módulo 5 |
+| 2 | Función de transferencia del circuito con op-amps | Usar impedancias en Laplace en vez de derivadas en el tiempo | Módulo 7 |
+| 3 | Respuesta al impulso de dos \(G(s)\) | Tabla, retardo y completar el cuadrado | Módulos 2, 3, 11 y 12 |
+| 4 | Ventajas y desventajas de P, I, D | Explicar cada acción con su porqué | Módulo 18 |
 
 #### Plan de dos semanas
 
 | Día | Qué estudiar |
 |---|---|
-| 1 | Capítulos 2 y 3 |
-| 2 | Capítulos 4 y 5 |
-| 3 | Capítulos 6 y 7 |
-| 4 | Capítulo 8, luego los puntos 1 y 2 del Parcial 1 |
-| 5 | Capítulo 9 |
-| 6 | Capítulo 12, luego el punto 3 del Parcial 1 |
-| 7 | Capítulo 13 (el más importante; con calma) |
-| 8 | Capítulos 14 y 15 |
-| 9 | Capítulos 16 y 17, luego el Parcial 2 completo |
-| 10 | Capítulo 18 |
-| 11 | Capítulo 19, luego el punto 4 del Parcial 1 |
+| 1 | Módulos 1 y 2 |
+| 2 | Módulos 3 y 4 |
+| 3 | Módulos 5 y 6 |
+| 4 | Módulo 7, luego los puntos 1 y 2 del Parcial 1 |
+| 5 | Módulo 8 |
+| 6 | Módulo 11, luego el punto 3 del Parcial 1 |
+| 7 | Módulo 12 (el más importante; con calma) |
+| 8 | Módulos 13 y 14 |
+| 9 | Módulos 15 y 16, luego el Parcial 2 completo |
+| 10 | Módulo 17 |
+| 11 | Módulo 18, luego el punto 4 del Parcial 1 |
 | 12 | Simulacro en 90 minutos, solo con el formulario |
-| 13–14 | Nivel experto: capítulos 10, 11, 20 y 21 |
+| 13–14 | Nivel experto: módulos 9, 10, 19 y 20 |

@@ -1,6 +1,6 @@
 # Módulo 19: Compensadores de adelanto y atraso
 
-Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compensador: un cero y un polo bien puestos que cambian la forma del lugar de las raíces.
+Cuando subir la ganancia no basta (módulo 14, Ejemplo 4), se agrega un compensador: un cero y un polo bien puestos que cambian la forma del lugar de las raíces.
 
 **Al terminar podrás:**
 
@@ -24,7 +24,7 @@ Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compen
 
 **Procedimiento**
 
-1. Con \(M_p\) y \(t_s\) deseados, calcula los polos deseados \(s_d\) (capítulo 13 y capítulo 17).
+1. Con \(M_p\) y \(t_s\) deseados, calcula los polos deseados \(s_d\) (módulo 12 y módulo 16).
 2. Calcula \(\angle G(s_d)\). Lo que falta para llegar a −180° es el ángulo que debe aportar el compensador, \(\phi\).
 3. Ubica el cero (una opción simple: cancelar un polo de la planta que no esté en el origen) y calcula el polo para que el compensador aporte \(\phi\).
 4. Calcula \(K_c\) con la condición de magnitud.
@@ -36,7 +36,7 @@ Cuando subir la ganancia no basta (capítulo 15, Ejemplo 4), se agrega un compen
 
 1. Polos deseados: \(\sigma = 0{,}5\cdot4 = 2\), \(\omega_d = 4\sqrt{0{,}75} = 3{,}46\). \(s_d = -2+3{,}46j\).
 
-   **¿Por qué?** Capítulo 13.
+   **¿Por qué?** Módulo 12.
 
 2. Ángulo de la planta en \(s_d\): desde 0 el vector \((-2;\ 3{,}46)\) mide 120°; desde −2, \((0;\ 3{,}46)\) mide 90°. \(\angle G = -(120°+90°) = -210°\).
 
@@ -205,11 +205,11 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** El atraso multiplica la ganancia en bajas frecuencias por \(\beta\) (relación cero/polo).
 
-2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}013\).
+2. Elige el cero cerca del origen, por ejemplo \(z = 0{,}1\), y el polo en \(p = z/\beta = 0{,}0125\).
 
    **¿Por qué?** El par cero-polo muy pegado al origen casi no cambia el ángulo en los polos dominantes.
 
-**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}013}\): el error ante rampa baja 8 veces y la respuesta transitoria casi no cambia.
+**Resultado.** \(C(s) = \dfrac{s + 0{,}1}{s + 0{,}0125}\): el error ante rampa baja 8 veces y la respuesta transitoria casi no cambia.
 
 #### Ejemplo 5 · Atraso para subir Kv de 10 a 40 · *Básico*
 
@@ -263,7 +263,7 @@ Dos inversores en cascada: el primero con \(Z_i = R_1\parallel C_1\) y \(Z_f = R
 
 #### Demostración
 
-Con capítulo 8: \(Z_i = \dfrac{R_1}{1+sR_1C_1}\), \(Z_f = \dfrac{R_2}{1+sR_2C_2}\). La primera etapa da \(-\dfrac{R_2}{R_1}\cdot\dfrac{1+sR_1C_1}{1+sR_2C_2}\), y la segunda \(-R_4/R_3\). El producto quita el signo. Para la segunda forma, saca \(R_1C_1\) y \(R_2C_2\) como factor común.
+Con el módulo 7: \(Z_i = \dfrac{R_1}{1+sR_1C_1}\), \(Z_f = \dfrac{R_2}{1+sR_2C_2}\). La primera etapa da \(-\dfrac{R_2}{R_1}\cdot\dfrac{1+sR_1C_1}{1+sR_2C_2}\), y la segunda \(-R_4/R_3\). El producto quita el signo. Para la segunda forma, saca \(R_1C_1\) y \(R_2C_2\) como factor común.
 
 ∎
 

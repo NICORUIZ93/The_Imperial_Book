@@ -1,6 +1,6 @@
 # Módulo 15: Java Master — builds, pruebas y observabilidad
 
-Este capítulo endurece el proyecto multi-módulo del Módulo 14 como producto mantenible. Trabaja sobre ese mismo repositorio; no crea seis demostraciones aisladas.
+Este capítulo endurece el proyecto multi-módulo que creaste en el [Módulo 8, Tema 3](/curso/java/8#tema-3-proyectos-multi-modulo) como producto mantenible. Trabaja sobre ese mismo repositorio; no crea seis demostraciones aisladas.
 
 ## Aprende construyendo
 
@@ -590,9 +590,3 @@ Modifica `ProcesarEntrega.java` para llamar `MDC.put("traceId", traceId)` sin el
 ## Construcción guiada del capítulo
 
 Ejecuta `./gradlew clean check integrationTest`, inspecciona dependencias y artefactos, y arranca el proyecto con logging key-value. La entrega incluye hashes reproducibles, grafo de módulos, reportes unitarios/integración y dos logs correlacionados. Si otra persona necesita una configuración manual no documentada, el capítulo aún no está completo.
-
-## Trazabilidad de la auditoría original
-
-- **Maven/Gradle:** los temas 1 y 2 comparan ambos modelos y dejan Gradle como única fuente productiva.
-- **Testing:** los temas 4 y 5 separan pruebas unitarias, dobles e integración real.
-- **Logging:** el tema 6 implementa SLF4J, Logback, MDC y salida estructurada sin datos sensibles.

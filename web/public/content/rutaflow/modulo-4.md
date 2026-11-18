@@ -17,7 +17,7 @@ La app separa jornada, paradas, escaneo, evidencia y sincronización. Widgets re
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 1: Arquitectura Flutter por capacidades** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 1: Arquitectura Flutter por capacidades** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
 
 #### Paso 2 · Contexto y caso real
 
@@ -35,22 +35,14 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea una carpeta independiente con la estructura por capacidades antes de tocar el monorepo real:
+Crea un proyecto Flutter independiente (necesitas el SDK de Flutter estable; `flutter doctor` debe quedar sin errores para tu plataforma) y, dentro, la estructura por capacidades. El nombre del proyecto usa `minusculas_con_guion_bajo`, como pide Dart:
 
 ```bash
-mkdir -p rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades/lib/features/entrega/domain
-mkdir -p rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades/lib/features/entrega/data
-mkdir -p rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades/lib/features/entrega/presentation
-cd rutaflow-labs/tema-1-arquitectura-flutter-por-capacidades
+mkdir -p rutaflow-labs && cd rutaflow-labs
+flutter create --empty tema_1_arquitectura
+cd tema_1_arquitectura
+mkdir -p lib/features/entrega/domain lib/features/entrega/data lib/features/entrega/presentation
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 Define el contrato en el dominio, sin ninguna dependencia de Flutter ni de HTTP:
 
@@ -140,7 +132,7 @@ class ListaEnvios {
 }
 ```
 
-Al correr `dart run verificar.dart` de nuevo, el programa sigue imprimiendo `OK pendientes=1`, pero ahora `lista_envios.dart` importa `../data/envio_repository_http.dart` directamente: si más adelante agregás `EnvioRepositorySqlite` para la caché offline, no hay forma de usarla sin editar esta pantalla, porque el nombre de la clase concreta quedó escrito adentro de `presentation/`. Diagnóstico: `ListaEnvios` dejó de depender de una interfaz y pasó a depender de una clase concreta; corrección: devolvé el constructor a recibir `EnvioRepository repositorio` por parámetro y dejá que quien arma la pantalla decida qué implementación inyectar.
+Al correr `dart run verificar.dart` de nuevo, ya no compila: `verificar.dart` todavía llama `ListaEnvios(repo)`, y la versión acoplada no recibe ningún repositorio. Cambia esa línea por `ListaEnvios()` y vuelve a ejecutar: imprime `OK pendientes=1`, el dato fijo escrito dentro de la pantalla y no los dos envíos de `repo`. La prueba perdió la capacidad de elegir la fuente, y `lista_envios.dart` importa `../data/envio_repository_http.dart` directamente: si más adelante agregas `EnvioRepositorySqlite` para la caché offline, no hay forma de usarla sin editar esta pantalla, porque el nombre de la clase concreta quedó escrito adentro de `presentation/`. Diagnóstico: `ListaEnvios` dejó de depender de una interfaz y pasó a depender de una clase concreta; corrección: devuelve el constructor a recibir `EnvioRepository repositorio` por parámetro y deja que quien arma la pantalla decida qué implementación inyectar.
 
 #### Paso 5 · Práctica guiada
 
@@ -176,7 +168,7 @@ La política combina movimiento, etapa y carga: detenido usa menor frecuencia; r
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 2: GPS, permisos y batería** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 2: GPS, permisos y batería** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
 
 #### Paso 2 · Contexto y caso real
 
@@ -196,19 +188,25 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `lib/features/entrega/data/politica_ubicacion.dart` con la clase `PoliticaUbicacion` que ves más abajo, y guárdalo antes de ejecutar la app con `flutter run`.
 
-Crea una carpeta independiente y agrega los paquetes reales de ubicación y batería:
+Crea un proyecto Flutter independiente y agrega los paquetes reales de ubicación y batería. `geolocator_android` se agrega aparte porque el código importa sus ajustes específicos de Android:
 
 ```bash
-mkdir -p rutaflow-labs/tema-2-gps-permisos-y-bateria/lib/features/entrega/data
-cd rutaflow-labs/tema-2-gps-permisos-y-bateria
-flutter pub add geolocator battery_plus
+mkdir -p rutaflow-labs && cd rutaflow-labs
+flutter create tema_2_gps
+cd tema_2_gps
+mkdir -p lib/features/entrega/data
+flutter pub add geolocator geolocator_android battery_plus
 ```
+
+Declara el permiso en `android/app/src/main/AndroidManifest.xml`, como hijos directos de `<manifest>`: `<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />` y `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`. En iOS, agrega a `ios/Runner/Info.plist` la clave `NSLocationWhenInUseUsageDescription` con un texto que explique para qué usas la ubicación.
+
+Crea `lib/features/entrega/data/politica_ubicacion.dart`:
 
 ```dart
 // lib/features/entrega/data/politica_ubicacion.dart
 import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_android/geolocator_android.dart';
 import 'package:battery_plus/battery_plus.dart';
 
 class PermisoUbicacionDenegadoPermanente implements Exception {
@@ -234,11 +232,57 @@ class PoliticaUbicacion {
   }
 
   /// Ajusta el intervalo de muestreo según la carga de batería.
-  Future<LocationSettings> configurarMuestreo() async {
+  /// En Android el intervalo se pide con intervalDuration; timeLimit NO sirve:
+  /// es un tiempo máximo de espera y lanza TimeoutException si no llega una posición.
+  Future<AndroidSettings> configurarMuestreo() async {
     final nivel = await _battery.batteryLevel;
     final intervalo = nivel < 20 ? const Duration(seconds: 30) : const Duration(seconds: 5);
-    return LocationSettings(accuracy: LocationAccuracy.high, timeLimit: intervalo);
+    return AndroidSettings(accuracy: LocationAccuracy.high, intervalDuration: intervalo);
   }
+}
+```
+
+Reemplaza `lib/main.dart` por una pantalla mínima que use la política:
+
+```dart
+// lib/main.dart
+import 'package:battery_plus/battery_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+
+import 'features/entrega/data/politica_ubicacion.dart';
+
+void main() => runApp(const MaterialApp(home: PantallaUbicacion()));
+
+class PantallaUbicacion extends StatefulWidget {
+  const PantallaUbicacion({super.key});
+
+  @override
+  State<PantallaUbicacion> createState() => _PantallaUbicacionState();
+}
+
+class _PantallaUbicacionState extends State<PantallaUbicacion> {
+  final _politica = PoliticaUbicacion(Battery());
+  String _estado = 'Toca el botón para iniciar la jornada';
+
+  Future<void> _iniciar() async {
+    try {
+      final permiso = await _politica.asegurarPermiso();
+      final ajustes = await _politica.configurarMuestreo();
+      debugPrint('permiso=$permiso intervalo=${ajustes.intervalDuration}');
+      Geolocator.getPositionStream(locationSettings: ajustes).listen((posicion) {
+        setState(() => _estado = 'Posición ${posicion.latitude}, ${posicion.longitude}');
+      });
+    } on PermisoUbicacionDenegadoPermanente catch (error) {
+      setState(() => _estado = error.toString());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(child: Text(_estado)),
+        floatingActionButton: FloatingActionButton(onPressed: _iniciar, child: const Icon(Icons.play_arrow)),
+      );
 }
 ```
 
@@ -246,7 +290,7 @@ class PoliticaUbicacion {
 flutter run -d <tu-dispositivo-o-emulador>
 ```
 
-**Resultado esperado:** en un emulador con el permiso en "Solo mientras se usa la app", `asegurarPermiso()` devuelve `LocationPermission.whileInUse` y la app sigue reportando posición mientras está abierta; bajando la batería simulada por debajo de 20% (`adb shell dumpsys battery set level 15` en un emulador Android), `configurarMuestreo()` pasa a devolver un intervalo de 30 segundos en vez de 5.
+**Resultado esperado:** en un emulador con el permiso en "Solo mientras se usa la app", `asegurarPermiso()` devuelve `LocationPermission.whileInUse` y la app sigue reportando posición mientras está abierta; bajando la batería simulada por debajo de 20% (`adb shell dumpsys battery set level 15` en un emulador Android), `configurarMuestreo()` pasa a devolver un intervalo de 30 segundos en vez de 5: después de detener y volver a pulsar el botón, la consola de `flutter run` muestra `intervalo=0:00:30.000000`.
 
 **Fallo deliberado:** quitá el manejo explícito de `deniedForever` y pedí permiso sin revisar el resultado, como en una primera versión ingenua:
 
@@ -290,7 +334,7 @@ Confirmar entrega guarda primero un comando local con UUID y evidencia; luego si
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 3: Offline-first y prueba de entrega** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 3: Offline-first y prueba de entrega** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Dart y Flutter (track Flutter).
 
 #### Paso 2 · Contexto y caso real
 
@@ -309,16 +353,19 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `lib/features/entrega/data/outbox_entregas.dart` con la clase `OutboxEntregas` que ves más abajo, y guárdalo antes de ejecutarlo.
 
-Crea una carpeta independiente y agrega `sqflite` junto con la variante que corre sobre el Dart VM para poder verificar sin un emulador:
+Crea un proyecto Flutter independiente y agrega `sqflite` junto con `sqflite_common_ffi`, la variante que corre en tu computador para verificar sin un emulador:
 
 ```bash
-mkdir -p rutaflow-labs/tema-3-offline-first-y-prueba-de-entrega/lib/features/entrega/data
-cd rutaflow-labs/tema-3-offline-first-y-prueba-de-entrega
+mkdir -p rutaflow-labs && cd rutaflow-labs
+flutter create --empty tema_3_offline
+cd tema_3_offline
+mkdir -p lib/features/entrega/data test
 flutter pub add sqflite
 flutter pub add sqflite_common_ffi --dev
 ```
+
+Crea `lib/features/entrega/data/outbox_entregas.dart`:
 
 ```dart
 // lib/features/entrega/data/outbox_entregas.dart
@@ -364,37 +411,44 @@ class OutboxEntregas {
 }
 ```
 
+`outbox_entregas.dart` importa `sqflite`, que depende de Flutter; por eso la verificación corre con `flutter test`, que ejecuta en tu computador sin emulador. Crea `test/outbox_entregas_test.dart`:
+
 ```dart
-// verificar.dart
+// test/outbox_entregas_test.dart
+import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'lib/features/entrega/data/outbox_entregas.dart';
+import 'package:tema_3_offline/features/entrega/data/outbox_entregas.dart';
 
-Future<void> main() async {
-  sqfliteFfiInit();
-  final db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
-  await OutboxEntregas.crearTabla(db);
-  final outbox = OutboxEntregas(db);
+void main() {
+  test('una reconexión no reenvía una confirmación ya sincronizada', () async {
+    sqfliteFfiInit();
+    final db = await databaseFactoryFfi.openDatabase(inMemoryDatabasePath);
+    await OutboxEntregas.crearTabla(db);
+    final outbox = OutboxEntregas(db);
 
-  await outbox.confirmarEntrega('c-1', 'RF-4471');
+    await outbox.confirmarEntrega('c-1', 'RF-4471');
 
-  var llamadas = 0;
-  Future<void> enviar(String guia) async {
-    llamadas++;
-    print('POST confirmar $guia');
-  }
+    var llamadas = 0;
+    Future<void> enviar(String guia) async {
+      llamadas++;
+      print('POST confirmar $guia');
+    }
 
-  await outbox.sincronizar(enviar);
-  await outbox.sincronizar(enviar); // reconexión que dispara sincronizar() de nuevo
+    await outbox.sincronizar(enviar);
+    await outbox.sincronizar(enviar); // reconexión que dispara sincronizar() de nuevo
 
-  print('OK llamadas=$llamadas');
+    print('OK llamadas=$llamadas');
+    expect(llamadas, 1);
+    await db.close();
+  });
 }
 ```
 
 ```bash
-dart run verificar.dart
+flutter test test/outbox_entregas_test.dart
 ```
 
-**Resultado esperado:** `POST confirmar RF-4471` se imprime una sola vez y el programa termina con `OK llamadas=1` — la segunda llamada a `sincronizar()` no reenvía nada porque la fila ya quedó `sincronizado = 1`.
+**Resultado esperado:** `POST confirmar RF-4471` se imprime una sola vez, aparece `OK llamadas=1` y la prueba pasa (`All tests passed!`) — la segunda llamada a `sincronizar()` no reenvía nada porque la fila ya quedó `sincronizado = 1`.
 
 **Fallo deliberado:** en `sincronizar`, quitá el filtro `where: 'sincronizado = 0'` (sincronizar "todo lo que haya, por las dudas"):
 
@@ -408,7 +462,7 @@ Future<void> sincronizar(Future<void> Function(String guia) enviarAlServidor) as
 }
 ```
 
-Ejecutá `dart run verificar.dart` de nuevo: ahora imprime `POST confirmar RF-4471` dos veces y termina con `OK llamadas=2` — la segunda llamada a `sincronizar()` (la reconexión) reenvía una confirmación que el servidor ya había recibido, generando un segundo evento "entregado" duplicado para la misma guía. Diagnóstico: `sincronizar()` dejó de distinguir entre filas pendientes y filas ya confirmadas; corrección: devolver el filtro `where: 'sincronizado = 0'`, que convierte cada fila en un registro idempotente — una vez marcada, ningún llamado posterior a `sincronizar()` vuelve a tocarla.
+Ejecuta `flutter test test/outbox_entregas_test.dart` de nuevo: ahora imprime `POST confirmar RF-4471` dos veces y `OK llamadas=2`, y la prueba falla porque esperaba 1 — la segunda llamada a `sincronizar()` (la reconexión) reenvía una confirmación que el servidor ya había recibido, generando un segundo evento "entregado" duplicado para la misma guía. Diagnóstico: `sincronizar()` dejó de distinguir entre filas pendientes y filas ya confirmadas; corrección: devolver el filtro `where: 'sincronizado = 0'`, que convierte cada fila en un registro idempotente — una vez marcada, ningún llamado posterior a `sincronizar()` vuelve a tocarla.
 
 #### Paso 5 · Práctica guiada
 

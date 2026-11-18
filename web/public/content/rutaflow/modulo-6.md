@@ -17,7 +17,7 @@ Money combina entero en unidad menor y moneda; nunca float. La cotización guard
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 1: Cotización y facturación reproducible** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 1: Cotización y facturación reproducible** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Java básico (track Java).
 
 #### Paso 2 · Contexto y caso real
 
@@ -42,14 +42,6 @@ Crea una carpeta independiente para comprobar el concepto antes de conectarlo al
 mkdir -p rutaflow-labs/tema-1-cotizacion-facturacion
 cd rutaflow-labs/tema-1-cotizacion-facturacion
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```java
 import java.math.BigDecimal;
@@ -150,7 +142,7 @@ Cobrar efectivo aumenta caja del conductor y obligación a entregar; liquidar mu
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 2: Recaudo, liquidación y conciliación** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 2: Recaudo, liquidación y conciliación** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git, Java básico (track Java) y el SQL con PostgreSQL del Módulo 1.
 
 #### Paso 2 · Contexto y caso real
 
@@ -170,7 +162,6 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `ConciliadorRecaudo.java` con la clase que ves más abajo, y guárdalo antes de ejecutarlo con `./mvnw test`.
 
 Crea una carpeta independiente para comprobar el concepto antes de conectarlo al monorepo:
 
@@ -179,15 +170,7 @@ mkdir -p rutaflow-labs/tema-2-recaudo-liquidacion-conciliacion
 cd rutaflow-labs/tema-2-recaudo-liquidacion-conciliacion
 ```
 
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
-
-Primero el esquema PostgreSQL: una tabla de movimientos **append-only**, donde un ajuste siempre referencia al movimiento que corrige:
+Primero el esquema PostgreSQL, en `recaudo.sql`: una tabla de movimientos **append-only**, donde un ajuste siempre referencia al movimiento que corrige:
 
 ```sql
 CREATE TABLE recaudo_movimiento (
@@ -203,7 +186,7 @@ CREATE TABLE recaudo_movimiento (
 INSERT INTO recaudo_movimiento (envio_id, tipo, monto) VALUES ('RF-4471', 'recaudo', 120000.00);
 ```
 
-Y la lógica de conciliación en Java, que detecta la discrepancia y registra el ajuste **sin tocar el movimiento original**:
+Y la lógica de conciliación en Java, en `ConciliadorRecaudo.java`, que detecta la discrepancia y registra el ajuste **sin tocar el movimiento original**:
 
 ```java
 import java.math.BigDecimal;
@@ -227,14 +210,21 @@ public class ConciliadorRecaudo {
 
     public static void main(String[] args) {
         ConciliadorRecaudo conciliador = new ConciliadorRecaudo();
-        Recaudo turnoAna = new Recaudo("RF-4471", 501L, new BigDecimal("120000.00"), new BigDecimal("135000.00"));
+        Recaudo turnoAna = new Recaudo("RF-4471", 1L, new BigDecimal("120000.00"), new BigDecimal("135000.00"));
         conciliador.detectarDiscrepancia(turnoAna)
             .ifPresent(diferencia -> System.out.println(conciliador.construirAjusteCompensatorio(turnoAna, diferencia)));
     }
 }
 ```
 
-**Resultado esperado:** el programa imprime `INSERT INTO recaudo_movimiento (envio_id, tipo, monto, referencia_movimiento_id) VALUES ('RF-4471', 'ajuste_compensatorio', 15000.00, 501);` — una fila **nueva** que referencia a la fila original (id 501, el recaudo de $120.000), que sigue existiendo sin cambios.
+Ejecuta el esquema en el PostgreSQL del Módulo 1 y después la clase (Java 11+ ejecuta un archivo fuente sin compilarlo aparte):
+
+```bash
+psql "postgresql://postgres:rutaflow@localhost:5432/postgres" -v ON_ERROR_STOP=1 -f recaudo.sql
+java ConciliadorRecaudo.java
+```
+
+**Resultado esperado:** el programa imprime `INSERT INTO recaudo_movimiento (envio_id, tipo, monto, referencia_movimiento_id) VALUES ('RF-4471', 'ajuste_compensatorio', 15000.00, 1);` — una fila **nueva** que referencia a la fila original (id 1, el recaudo de $120.000, el primero que generó `BIGSERIAL`), que sigue existiendo sin cambios. Si pegas esa línea en `psql`, la tabla queda con las dos filas.
 
 **Fallo deliberado:** en vez de insertar el ajuste, "corrige" el movimiento original directamente:
 
@@ -278,7 +268,7 @@ Velocidad imposible, evidencia repetida o concentración de reversos son señale
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 3: Fraude responsable** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 3: Fraude responsable** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Java básico (track Java).
 
 #### Paso 2 · Contexto y caso real
 
@@ -305,14 +295,6 @@ Crea una carpeta independiente para comprobar el concepto antes de conectarlo al
 mkdir -p rutaflow-labs/tema-3-fraude-responsable
 cd rutaflow-labs/tema-3-fraude-responsable
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```java
 import java.util.Optional;
@@ -355,6 +337,8 @@ public class DetectorSenalFraude {
 }
 ```
 
+Ejecuta `java DetectorSenalFraude.java` (Java 11+ ejecuta el archivo fuente directamente).
+
 **Resultado esperado:** el programa imprime `Envio RF-7788 encolado para revision humana: GPS a 556 m de la direccion registrada` — el caso queda marcado para que un analista lo revise con contexto (zona, hora, historial del conductor), pero la entrega **no** se bloquea ni se cancela automáticamente.
 
 **Fallo deliberado:** reemplaza `evaluarEnvio` por una versión que decide sola, sin cola de revisión:
@@ -391,8 +375,6 @@ Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versi
 
 **Límites y decisión de uso:** Una puntuación de riesgo no prueba fraude y puede perjudicar a usuarios legítimos. Evalúa errores por grupos relevantes, conserva revisión humana y limita los datos usados; no conviertas una señal incierta en sanción automática.
 
-
-## Aplicación del material de referencia
 
 ### Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación
 

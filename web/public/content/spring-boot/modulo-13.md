@@ -449,15 +449,6 @@ bash ./scripts/verify-trace.sh
 
 **Aplicación y decisión:** En el proyecto integrador, usa el trace ID para localizar la llamada lenta y relaciona esa señal con un objetivo de servicio. Límite: ver dos spans no acredita observabilidad completa ni protección de todos los datos registrados.
 
-## Revisión oficial de plataforma — julio de 2026
-
-### Spring Boot 4.1 y actualización con compatibilidad comprobada
-
-**Spring Boot 4.1** añade soporte de **Spring gRPC**, mejoras de OpenTelemetry, configuración renovada de Jackson y mitigación SSRF en clientes HTTP mediante `InetAddressFilter`. Adoptar una versión mayor exige revisar release notes, Java mínimo, cambios de namespaces, starters, observabilidad y dependencias administradas. La protección SSRF complementa validación y egress; no convierte URLs suministradas por usuarios en confiables.
-
-**Aplicación al proyecto:** migra una rama, añade una prueba que bloquee loopback/metadatos cloud mediante InetAddressFilter, instrumenta una llamada gRPC y compara trazas HTTP/gRPC antes de promover el cambio.
-
-
 ## Laboratorio práctico
 
 ### Proyecto: microservicio comprobado bajo fallos
@@ -487,23 +478,3 @@ Evoluciona el proyecto 12 mediante una vertical de “crear pedido y proyectar r
 - Contrato que copia respuesta entera: conserva expectativas mínimas significativas.
 - Tag con ID: usa baja cardinalidad en métricas y contexto protegido en trace/log.
 - Liveness consulta todas las dependencias: separa vida de preparación para tráfico.
-
-<!-- OFFICIAL-TOPIC-ATLAS:START -->
-## Atlas completo de temas oficiales
-
-Derivado de la [documentación oficial](https://docs.spring.io/spring-boot/reference/), sus referencias, migraciones y guías de operación. Inventariar no equivale a dominar: cada selección se demuestra con código, prueba, medición y explicación. **Cobertura: 54 temas.**
-
-| Área | Temas que deben poder explicarse y aplicarse | Evidencia práctica |
-|---|---|---|
-| Núcleo | `auto-configuration` · `starters` · `configuration properties` · `profiles` · `DI` · `lifecycle` · `logging` · `failure analyzers` | entregas |
-| Web | `MVC` · `WebFlux` · `validación` · `Problem Details` · `filtros` · `CORS` · `REST clients` · `GraphQL` · `WebSocket` · `gRPC` | entregas |
-| Datos | `JDBC` · `JPA` · `R2DBC` · `transacciones` · `migrations` · `MongoDB` · `Redis` · `cache` · `locking` · `Testcontainers` | entregas |
-| Seguridad | `Spring Security` · `OAuth2 y OIDC` · `resource server` · `method security` · `CSRF` · `headers` · `secretos` · `SAML` | entregas |
-| Integración | `Kafka` · `AMQP` · `JMS` · `scheduling` · `batch` · `mail` · `outbox` · `idempotencia` · `circuit breakers` · `contratos` | entregas |
-| Operación | `Actuator` · `Micrometer` · `OpenTelemetry` · `health groups` · `graceful shutdown` · `native images` · `Buildpacks` · `Kubernetes` | entregas |
-
-### Método de estudio y proyecto de ampliación
-
-Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo falla, cómo se verifica y cuándo no conviene. Elige uno por área e intégralos en un proyecto propio de ampliación. Entrega diagrama, ADR, pruebas de éxito y fallo, una medición, una amenaza y el enlace oficial con versión y fecha. Una API preview se aísla en laboratorio y nunca se presenta como base estable.
-<!-- OFFICIAL-TOPIC-ATLAS:END -->
-

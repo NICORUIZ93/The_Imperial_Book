@@ -13,7 +13,7 @@ Compara ejecutar una llamada "asíncrona" que en realidad corre en el hilo que l
 
 ### Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min
 
-**Prerrequisito:** Módulo 9 de este track (WebFlux y reactividad), JDK 27+ y Maven.
+**Prerrequisito:** Módulo 9 de este track (WebFlux y reactividad), JDK 25 (la versión del curso) y Maven.
 
 **Al terminar podrás:** combinar resultados asíncronos con `thenCombine`, aplicar fallback con `exceptionally` y timeout con `orTimeout`, y reconocer cuándo una llamada a un método `@Async` se ejecuta en realidad de forma síncrona.
 
@@ -49,7 +49,7 @@ Cada fila tiene su explicación individual a continuación.
 
 **`orTimeout` corta una tarea lenta (núcleo).** `orTimeout` completa la `CompletableFuture` con un `TimeoutException` si no terminó dentro del plazo indicado, sin cancelar el trabajo subyacente (que sigue corriendo en su hilo, pero ya nadie espera su resultado). `consultarTarifaLenta` tarda 800 ms a propósito; con `orTimeout(200, MILLISECONDS).exceptionally(...)`, el llamador recibe `BigDecimal.ZERO` a los 200 ms en vez de esperar los 800 ms completos. Esto protege al llamador de un proveedor lento, aunque no libera los recursos que esa tarea sigue consumiendo en segundo plano.
 
-**Executor con hilos virtuales (decisión).** `SimpleAsyncTaskExecutor` con `setVirtualThreads(true)` crea un hilo virtual nuevo por tarea en vez de reutilizar un pool acotado de hilos de plataforma, lo que evita agotar el pool cuando hay muchas tareas de E/S esperando (la misma decisión que el Módulo 9, Tema 4, pero aplicada aquí a un executor de `@Async` en vez de al servidor web). `setTaskDecorator(...)` se aplica sobre el mismo executor para resolver el problema del Tema 2 de este módulo.
+**Executor con hilos virtuales (decisión).** `SimpleAsyncTaskExecutor` con `setVirtualThreads(true)` crea un hilo virtual nuevo por tarea en vez de reutilizar un pool acotado de hilos de plataforma, lo que evita agotar el pool cuando hay muchas tareas de E/S esperando (la misma decisión que el Módulo 9, Tema 3, «Cuándo WebFlux vale la complejidad, y R2DBC», pero aplicada aquí a un executor de `@Async` en vez de al servidor web). `setTaskDecorator(...)` se aplica sobre el mismo executor para resolver el problema del Tema 2 de este módulo.
 
 Combinar resultados asíncronos con `thenCombine`, aplicar fallback con `exceptionally` y cortar una tarea lenta con `orTimeout` solo funciona si la llamada realmente pasa por el proxy `@Async`; una autoinvocación dentro de la misma clase lo bypasea en silencio y el código vuelve a ser síncrono sin ningún error de compilación que lo delate.
 

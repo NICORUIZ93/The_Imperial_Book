@@ -71,7 +71,7 @@ flowchart LR
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 1: El proceso logístico como sistema** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 1: El proceso logístico como sistema** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y JavaScript con Node.js (track Node).
 
 #### Paso 2 · Contexto y caso real
 
@@ -87,14 +87,6 @@ Un envío no es solo un registro mutable con un campo `estado`: es una secuencia
 mkdir -p rutaflow-labs/tema-1-proceso-logistico/src
 cd rutaflow-labs/tema-1-proceso-logistico
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 Crea `src/envio-estado.js`:
 
@@ -182,7 +174,7 @@ flowchart LR
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 2: Entorno reproducible en Windows, macOS y Linux** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 2: Entorno reproducible en Windows, macOS y Linux** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git, JavaScript con Node.js (track Node) y Docker (track DevOps, Módulo 2).
 
 #### Paso 2 · Contexto y caso real
 
@@ -278,7 +270,7 @@ flowchart TD
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 3: Arquitectura, privacidad y amenazas** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 3: Arquitectura, privacidad y amenazas** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y JavaScript con Node.js (track Node).
 
 #### Paso 2 · Contexto y caso real
 
@@ -294,14 +286,6 @@ STRIDE (un modelo de amenazas de Microsoft) nombra seis categorías de riesgo; l
 mkdir -p rutaflow-labs/tema-3-privacidad-y-amenazas/src
 cd rutaflow-labs/tema-3-privacidad-y-amenazas
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 Crea `src/registrar-evento.js`:
 

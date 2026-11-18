@@ -100,7 +100,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** La recta tangente es la mejor aproximación lineal cerca del punto (Taylor de primer orden).
 
-**Resultado.** \(f(x) \approx 0 + -1\,\delta x\), con \(\delta x = x - x_0\) pequeño.
+**Resultado.** \(f(x) \approx -\delta x\), con \(\delta x = x - x_0\) pequeño.
 
 #### Ejemplo 5 · Linealizar \(\sqrt{x}\) en \(4\) · *Intermedio*
 

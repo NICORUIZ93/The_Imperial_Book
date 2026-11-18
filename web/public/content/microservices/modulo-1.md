@@ -1009,7 +1009,7 @@ Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias d
 
 #### Paso 1 · Objetivo y preparación
 
-Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 21 o superior y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
+Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 27.0.1, el mismo del resto del curso, y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
 
 #### Paso 2 · Contexto y caso real
 

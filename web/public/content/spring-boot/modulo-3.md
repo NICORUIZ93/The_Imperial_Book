@@ -651,7 +651,7 @@ Ejecuta:
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.x con `spring-boot-starter-data-mongodb` y Docker para levantar MongoDB: `docker run -d --name mongo -p 27017:27017 mongo:8`.
+Usa Spring Boot 4.1.2 y JDK 25 en `academia-spring` (paquete `com.example.demo`), agrega `spring-boot-starter-data-mongodb` y usa Docker para levantar MongoDB: `docker run -d --name mongo -p 27017:27017 mongo:8`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -686,10 +686,10 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Archivo `academia-spring/src/main/java/com/rutaflow/envios/Envio.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/envios/Envio.java` (dentro de `com.example.demo`, para que el escaneo lo encuentre):
 
 ```java
-package com.rutaflow.envios;
+package com.example.demo.envios;
 
 import java.time.Instant;
 import java.util.List;
@@ -702,10 +702,10 @@ public record Envio(@Id String codigo, String estado, String ciudad, List<Evento
 }
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/envios/EnvioRepository.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/envios/EnvioRepository.java`:
 
 ```java
-package com.rutaflow.envios;
+package com.example.demo.envios;
 
 import java.util.List;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -721,10 +721,10 @@ public interface EnvioRepository extends MongoRepository<Envio, String> {
 }
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/envios/CargaInicial.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/envios/CargaInicial.java`:
 
 ```java
-package com.rutaflow.envios;
+package com.example.demo.envios;
 
 import java.time.Instant;
 import java.util.List;
@@ -752,7 +752,8 @@ class CargaInicial implements CommandLineRunner {
 Archivo `academia-spring/src/main/resources/application.properties`:
 
 ```properties
-spring.data.mongodb.uri=mongodb://localhost:27017/rutaflow
+# Desde Spring Boot 4.0 la conexión usa el prefijo spring.mongodb (antes spring.data.mongodb)
+spring.mongodb.uri=mongodb://localhost:27017/rutaflow
 ```
 
 Ejecútalo:

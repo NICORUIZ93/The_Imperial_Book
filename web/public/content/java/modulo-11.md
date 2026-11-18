@@ -315,7 +315,7 @@ import java.lang.foreign.Arena;
 public class MemoriaNativa {
     public static void main(String[] args) {
         try (Arena arena = Arena.ofConfined()) {
-            var texto = arena.allocateUtf8String("RutaFlow");
+            var texto = arena.allocateFrom("RutaFlow");
             System.out.println(texto.byteSize());
         }
     }
@@ -324,7 +324,7 @@ public class MemoriaNativa {
 
 Compila `javac -d out src/MemoriaNativa.java` y ejecuta `java -cp out MemoriaNativa` con JDK 22 o superior.
 
-**Resultado esperado:** se imprime el tamaño en bytes del segmento UTF-8.
+**Resultado esperado:** `9`: los 8 bytes UTF-8 de `RutaFlow` más el terminador nulo que añade `allocateFrom`. (Las versiones preliminares de FFM llamaban a este método `allocateUtf8String`; en JDK 22 o superior ya no existe.)
 
 **Fallo deliberado:** mueve el acceso al segmento fuera del bloque `try`. **Diagnóstico:** el arena ya cerró su memoria; usa el segmento solo durante su ciclo de vida.
 
@@ -344,7 +344,7 @@ La función `strlen` de la biblioteca C devuelve la longitud de una cadena termi
 
 **2. Hazlo tú**
 
-Crea `src/LongitudNativa.java` con `Linker.nativeLinker()`, busca el símbolo `strlen` en `linker.defaultLookup()`, crea un downcall handle con `FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)`, reserva `arena.allocateUtf8String("RutaFlow")` y llama `invokeExact(texto)`. Activa `--enable-native-access=ALL-UNNAMED`; compila con JDK 22+ y ejecuta `java --enable-native-access=ALL-UNNAMED -cp out LongitudNativa`.
+Crea `src/LongitudNativa.java` con `Linker.nativeLinker()`, busca el símbolo `strlen` en `linker.defaultLookup()`, crea un downcall handle con `FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)`, reserva `arena.allocateFrom("RutaFlow")` y llama `invokeExact(texto)`. Activa `--enable-native-access=ALL-UNNAMED`; compila con JDK 22+ y ejecuta `java --enable-native-access=ALL-UNNAMED -cp out LongitudNativa`.
 
 **Resultado esperado:** la función nativa devuelve `8` para `RutaFlow`.
 

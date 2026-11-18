@@ -146,8 +146,12 @@ Si dos procesos de asignación intentaran reservar un lugar en el mismo vehícul
 3. ¿Cómo detectarlo? (Timeout, detector de ciclos.)
 4. ¿Cómo prevenirlo sin sacrificar concurrencia?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Pseudocódigo: P1 lock(A) → lock(B); P2 lock(B) → lock(A). Ambas retienen un lock y esperan al otro. Condiciones Coffman: (1) exclusión mutua (locks), (2) sin preemption (no desalojar), (3) retención con espera, (4) espera circular. Detección: timeout en lock (si esperas >30s, rollback), o detector de ciclos de espera. Prevención: ordenar locks (A siempre antes de B) o usar transacciones serializables que detectan y revierten.
+
+</details>
 
 **Conceptos clave:** memoria virtual, stack, heap, proceso, hilo, concurrencia, paralelismo, intercalado, sección crítica, condición de carrera, mutex, semáforo, deadlock e inmutabilidad.
 
@@ -336,8 +340,32 @@ La imagen es una receta sellada; el contenedor es una preparación concreta de e
 3. ¿Qué pasa cuando worker se pasa del límite?
 4. ¿Cómo monitorearlo sin instrumentación adicional?
 
-[SOLUCIÓN PLEGADA]
-> `limits: memory: 256M` es OOMKill hard. `reservations: memory: 256M` es solicitud al scheduler, no hard. Docker-compose usa ambas: reservations para scheduling, limits para evitar OOM. Si se pasa límite, proceso recibe SIGKILL (crash). Monitorear: `docker stats` muestra uso vivo. En Kubernetes, readiness/liveness probes detectan crash; agregar métricas: `RSS / limit` a Prometheus y alertar si > 90%.
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
+> ```yaml
+> services:
+>   db:
+>     image: postgres:17
+>     deploy:
+>       resources:
+>         limits:
+>           memory: 512M
+>         reservations:
+>           memory: 512M
+>   worker:
+>     build: .
+>     deploy:
+>       resources:
+>         limits:
+>           memory: 256M
+>         reservations:
+>           memory: 256M
+> ```
+>
+> `limits` es el techo: la plataforma impide que el contenedor asigne más memoria. `reservations` es el mínimo que la plataforma debe garantizarle. Cada servicio reserva lo que necesita garantizado (512 MB la BD, 256 MB el worker) y tiene ese mismo valor como techo, así que el worker nunca puede quitarle memoria a la BD. Si el worker intenta pasar de su límite, el kernel mata el proceso por falta de memoria (OOM, código de salida 137) y la BD sigue viva. Monitoréalo sin instrumentación adicional con `docker stats`, que muestra el uso de memoria frente al límite de cada contenedor.
+
+</details>
 
 **Conceptos clave:** máquina virtual, contenedor, imagen, capa, registro, namespace, cgroup, volumen, red, puerto, usuario no root, build reproducible y cadena de suministro.
 

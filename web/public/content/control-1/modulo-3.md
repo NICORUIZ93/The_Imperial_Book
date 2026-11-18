@@ -258,7 +258,7 @@ Un factor \((s+a)^2\) aporta dos fracciones:
 2. Multiplica todo por \((s+a)^2\): \(R(s) = B(s+a) + C + (s+a)^2\cdot\text{(otros)}\).
 3. En \(s=-a\): \(R(-a) = C\).
 4. Deriva respecto a \(s\): \(R'(s) = B + \left[(s+a)^2\cdot\text{(otros)}\right]'\). El corchete derivado todavía tiene un factor \((s+a)\), así que en \(s=-a\): \(R'(-a) = B\).
-5. La transformada \(\dfrac{1}{(s+a)^2} \to te^{-at}\) sale de la propiedad “multiplicar por \(t\)” de capítulo 3.
+5. La transformada \(\dfrac{1}{(s+a)^2} \to te^{-at}\) sale de la propiedad “multiplicar por \(t\)” del módulo 2.
 
 ∎
 
@@ -286,7 +286,7 @@ Un factor \((s+a)^2\) aporta dos fracciones:
 
 5. Tabla: \(\dfrac{1}{(s+1)^2} \to te^{-t}\).
 
-   **¿Por qué?** Capítulo 3, Ejemplo 8.
+   **¿Por qué?** Módulo 2, Ejemplo 8.
 
 **Resultado:** \(y(t) = 1 - e^{-t} - te^{-t}\)
 
@@ -536,7 +536,7 @@ Con fracciones complejas tendrías \(\dfrac{M}{s+a-j\omega} + \dfrac{\bar M}{s+a
 
 **Resultado:** \(y(t) = 1 - e^{-t}\left(\cos2t + \tfrac12\sin2t\right)\)
 
-> Esta forma, \(1 - e^{-\sigma t}(\cos\omega_dt + \tfrac{\sigma}{\omega_d}\sin\omega_dt)\), es la respuesta general al escalón de segundo orden (capítulo 13).
+> Esta forma, \(1 - e^{-\sigma t}(\cos\omega_dt + \tfrac{\sigma}{\omega_d}\sin\omega_dt)\), es la respuesta general al escalón de segundo orden (módulo 12).
 
 #### Errores comunes
 
@@ -596,7 +596,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** Con polos complejos no se parte en factores reales; se escribe el denominador como \((s+a)^2+\omega^2\) para usar las filas de seno y coseno amortiguados.
 
-2. Reescribe el numerador en términos de \((s+3)\): \(2 s + 1 = 2(s+3) + -5\).
+2. Reescribe el numerador en términos de \((s+3)\): \(2 s + 1 = 2(s+3) - 5\).
 
    **¿Por qué?** El coseno amortiguado necesita \((s+a)\) arriba y el seno amortiguado necesita \(\omega\) arriba; por eso se reorganiza el numerador así.
 

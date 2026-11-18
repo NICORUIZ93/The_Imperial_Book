@@ -286,7 +286,7 @@ Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilac
 ### Tema 3: Cierre del track
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (`@Observable` en `EnviosViewModel`) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo.
+Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (`@Observable` en `EnviosViewModel`) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo. Si no has hecho ninguno de esos cursos, compara en su lugar con la alternativa dentro de iOS que descartaste (por ejemplo, `ObservableObject` con `@Published` frente a `@Observable`, Módulo 2); el ejercicio es el mismo.
 
 #### Paso 2 · Contexto y caso real
 Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió todavía que articules explícitamente qué de esa experiencia fue específico de Swift/SwiftUI y qué es un principio universal de UI declarativa que verías igual en otra plataforma.
@@ -369,7 +369,7 @@ Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Pa
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 16 o superior. Dentro de `academia-ios`, crea `Paquetes/RutaFlowKit` con `swift package init --type library --name RutaFlowKit`.
+Usa Xcode 26 (Swift 6.2) o posterior. Dentro de `academia-ios`, crea el paquete con `mkdir -p Paquetes/RutaFlowKit && cd Paquetes/RutaFlowKit && swift package init --type library --name RutaFlowKit`.
 
 #### Paso 2 · Contexto y caso real
 

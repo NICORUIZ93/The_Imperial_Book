@@ -22,7 +22,7 @@ Después de que pasa el transitorio, ¿la salida llega exactamente a la referenc
 
 #### Demostración
 
-\(E = R - Y\) y \(Y = \dfrac{G}{1+G}R\), así que \(E = \left(1 - \dfrac{G}{1+G}\right)R = \dfrac{R}{1+G}\). El teorema del valor final (capítulo 3) da la fórmula.
+\(E = R - Y\) y \(Y = \dfrac{G}{1+G}R\), así que \(E = \left(1 - \dfrac{G}{1+G}\right)R = \dfrac{R}{1+G}\). El teorema del valor final (módulo 2) da la fórmula.
 
 ∎
 
@@ -94,11 +94,11 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** Con realimentación unitaria \(E = R - Y = R/(1+G)\).
 
-2. Lazo cerrado estable: no.
+2. Lazo cerrado estable: no. El polinomio característico \(s^3+5s^2+20\) no tiene término en \(s\), y sus raíces son \(-5{,}63\) y \(0{,}315\pm1{,}858j\): dos polos en el semiplano derecho.
 
    **¿Por qué?** El teorema del valor final solo se puede usar si el lazo cerrado es estable.
 
-**Resultado.** \(e_{ss} = \lim_{s\to0} sE(s) = \frac{1}{4}\).
+**Resultado.** No se puede aplicar el teorema del valor final: el lazo cerrado es inestable y el error crece sin límite. El cálculo mecánico \(\lim_{s\to0} sE(s) = \tfrac{1}{4}\) da un número, pero no significa nada.
 
 #### Ejemplo 6 · Error final de \(\frac{8}{\left(s + 1\right) \left(s + 4\right)}\) ante escalón de amplitud 3 · *Básico*
 
@@ -218,7 +218,7 @@ Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\
 
    **¿Por qué?** La \(s^2\) cancela los dos integradores.
 
-**Resultado:** Error 0,5. Antes de confiar en el número, verifica estabilidad (capítulo 16)
+**Resultado:** Error 0,5. Antes de confiar en el número, verifica estabilidad (módulo 15)
 
 #### Ejemplo 4 · Diseñar K para un error · *Nivel parcial*
 
@@ -238,7 +238,7 @@ Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\
 
    **¿Por qué?** Siempre hay que revisar el transitorio.
 
-**Resultado:** \(K \ge 80\), pero el sobrepico queda muy alto. Se necesita un compensador (capítulo 20)
+**Resultado:** \(K \ge 80\), pero el sobrepico queda muy alto. Se necesita un compensador (módulo 19)
 
 #### Errores comunes
 

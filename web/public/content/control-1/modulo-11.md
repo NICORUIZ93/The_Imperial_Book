@@ -142,7 +142,7 @@ python3 verificacion.py
 
 cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (capítulo 13).
+**Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (módulo 12).
 
 ### Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso
 
@@ -366,7 +366,7 @@ Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos ta
 
 2. Cambia \(t\) por \(t-1{,}5\) y multiplica por \(u(t-1{,}5)\).
 
-   **¿Por qué?** Propiedad del retardo (capítulo 3): la misma respuesta corrida 1,5 s.
+   **¿Por qué?** Propiedad del retardo (módulo 2): la misma respuesta corrida 1,5 s.
 
 **Resultado:** \(y(t) = 2\left(1-e^{-(t-1{,}5)/4}\right)u(t-1{,}5)\)
 
@@ -594,7 +594,7 @@ cambia los datos a los del Ejemplo 3 (`y_inf=2.5, t_obs=12, y_obs=1.58`) y confi
 
 **Límite:** esta fórmula identifica un modelo de primer orden sin retardo; si la curva tarda en arrancar (Ejemplo 5), primero hay que restar ese retardo \(T\) del tiempo observado antes de aplicar la fórmula, o \(\tau\) saldrá sobreestimado.
 
-**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y abre `tanque-P.csv`. Identifica \(K\) y \(\tau\) con este método usando dos filas cualesquiera de la columna `altura_m` antes del cambio de referencia en \(t=5\) s, y compáralo con el \(G(s)=2/(4s+1)\) que calculaste en el capítulo 9 (módulo 8). Anota ambos valores en tu bitácora.
+**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y abre `tanque-P.csv`. Antes de \(t=5\) s la altura está quieta en 1,0 m, así que ahí no hay transitorio que medir: usa las filas **desde** \(t=5\) s. Toma \(\Delta y = y_\infty - 1{,}0\) con la altura final, busca la primera fila que alcanza \(1{,}0 + 0{,}632\,\Delta y\) y resta 5 s a su tiempo. Ese CSV es el **lazo cerrado con P** (\(K_p=0{,}8\)), no la planta sola: debes obtener \(K = \Delta y/\Delta r \approx 0{,}615\) (con \(\Delta r = 0{,}5\) m) y \(\tau \approx 1{,}54\) s. Compáralo con el lazo cerrado que sale de la planta \(G(s)=2/(4s+1)\) del módulo 8: \(T(s)=\dfrac{0{,}8\,G}{1+0{,}8\,G}=\dfrac{1{,}6}{4s+2{,}6}=\dfrac{0{,}615}{1{,}54\,s+1}\). La realimentación hace la respuesta más rápida (\(\tau\) pasa de 4 s a 1,54 s) a cambio de un error permanente. Anota ambos modelos en tu bitácora.
 
 #### Práctica para resolver sola o solo
 

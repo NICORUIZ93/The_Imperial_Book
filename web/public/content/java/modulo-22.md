@@ -1155,7 +1155,7 @@ javac -cp out -d out Bad.java
 **Resultado esperado:** el compilador rechaza la creación porque falta el enlace que después sería `this$0`:
 
 ```text
-Bad.java:5: error: an enclosing instance that contains Cola.Cursor is required
+Bad.java:6: error: an enclosing instance that contains Cola.Cursor is required
         Cola.Cursor cursor = new Cola.Cursor();
                              ^
 1 error

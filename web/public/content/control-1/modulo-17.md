@@ -25,7 +25,7 @@ Con realimentación unitaria y ganancia \(K\), los polos de lazo cerrado cumplen
 
 #### Demostración · Cómo se evalúan (geometría)
 
-Si \(G(s) = \dfrac{\prod(s-z_i)}{\prod(s-p_j)}\), cada factor \((s - p)\) es un vector que va del polo \(p\) al punto \(s\). Por la forma polar (capítulo 2), el ángulo de un producto es la suma de ángulos y la magnitud es el producto de magnitudes:
+Si \(G(s) = \dfrac{\prod(s-z_i)}{\prod(s-p_j)}\), cada factor \((s - p)\) es un vector que va del polo \(p\) al punto \(s\). Por la forma polar (módulo 1), el ángulo de un producto es la suma de ángulos y la magnitud es el producto de magnitudes:
 
 \[\angle G = \sum\angle(s-z_i) - \sum\angle(s-p_j) \qquad |G| = \frac{\prod|s-z_i|}{\prod|s-p_j|}\]
 
@@ -145,12 +145,12 @@ cambia `s` a `-1 + 1*I` y confirma que el ángulo da aproximadamente \(-153{,}4�
 Escribe \(G = N(s)/D(s)\), con \(n\) polos y \(m\) ceros. La ecuación característica es \(D(s) + KN(s) = 0\).
 
 1. **Número de ramas:** \(n\). *Porque* \(D + KN\) tiene grado \(n\).
-2. **Simetría** respecto al eje real. *Porque* los coeficientes son reales y las raíces complejas vienen conjugadas (capítulo 2).
+2. **Simetría** respecto al eje real. *Porque* los coeficientes son reales y las raíces complejas vienen conjugadas (módulo 1).
 3. **Empieza en los polos y termina en los ceros.** *Porque* con \(K=0\) queda \(D=0\), y con \(K\to\infty\) hay que dividir por \(K\): \(D/K + N = 0 \to N = 0\). Las \(n-m\) ramas que sobran se van al infinito.
 4. **Eje real:** un punto del eje real está en el lugar si a su derecha hay un número *impar* de polos y ceros reales. *Porque* cada pareja compleja aporta ángulos que se cancelan, los polos y ceros a la izquierda aportan 0° y cada uno a la derecha aporta 180°. Para sumar 180° se necesita una cantidad impar.
 5. **Asíntotas:** las \(n-m\) ramas que van al infinito siguen rectas con ángulos \(\dfrac{180°(2k+1)}{n-m}\) que salen del centroide \(\sigma_a = \dfrac{\sum p_j - \sum z_i}{n-m}\). *Porque* lejos del origen todos los vectores apuntan casi igual: \(G \approx 1/(s-\sigma_a)^{n-m}\).
 6. **Punto de quiebre** (donde dos ramas se juntan o se separan del eje real): despeja \(K = -D(s)/N(s)\) y resuelve \(\dfrac{dK}{ds} = 0\). *Porque* en el eje real \(K\) alcanza un máximo justo donde dos raíces reales chocan.
-7. **Cruce con el eje imaginario:** con Routh (capítulo 16), el \(K\) que anula una fila y el polinomio auxiliar.
+7. **Cruce con el eje imaginario:** con Routh (módulo 15), el \(K\) que anula una fila y el polinomio auxiliar.
 
 #### Ejemplo 1 · Dos polos · *Básico*
 
@@ -180,7 +180,7 @@ Escribe \(G = N(s)/D(s)\), con \(n\) polos y \(m\) ceros. La ecuación caracter�
 
    **¿Por qué?** Condición de magnitud: \(K = 1/|G|\).
 
-**Resultado:** \(K = 4\), igual que en capítulo 13
+**Resultado:** \(K = 4\), igual que en módulo 12
 
 #### Ejemplo 2 · Tres polos · *Nivel parcial*
 
@@ -200,7 +200,7 @@ Escribe \(G = N(s)/D(s)\), con \(n\) polos y \(m\) ceros. La ecuación caracter�
 
    **¿Por qué?** \(-1{,}577\) cae entre −2 y −1, que no es parte del lugar.
 
-4. Cruce con \(j\omega\): por Routh (capítulo 16), \(K = 6\) en \(\pm j1{,}41\).
+4. Cruce con \(j\omega\): por Routh (módulo 15), \(K = 6\) en \(\pm j1{,}41\).
 
    **¿Por qué?** Regla 7.
 

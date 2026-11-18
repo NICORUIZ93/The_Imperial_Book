@@ -28,8 +28,12 @@ La red es una carretera con retrasos, pérdidas y duplicados — un timeout es u
 3. ¿Por qué jitter es crítico? (Pista: todos reintentando al mismo tiempo.)
 4. ¿Cómo un cliente lo usa sin ser invasivo?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Backoff: `delay = min(2^attempt * base, max)`, ej. `2^3 * 1 = 8s`. Jitter: `delay += random(0, delay)`, ej. 8s ± 4s. Sin jitter, 1000 clientes reintentando a los 8s exacto = pico masivo que mata servidor de nuevo. Con jitter, se esparcen uniformemente. Cliente: wrapper de `requests.get()` con reintento transparente (biblioteca `tenacity` en Python).
+
+</details>
 
 **Cuándo NO usar:** No reintentes indefinidamente sin límite. No confíes en timeout como prueba de fallo del servidor.
 
@@ -155,8 +159,12 @@ Las réplicas son copias con reglas de coordinación propias; leer una réplica 
 3. ¿Cuándo es aceptable eventual consistency?
 4. ¿Qué alternativas hay aparte de transacciones globales?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Sin coste: si la lectura va a la instancia que escribió (session affinity). Con truco: timestamp de escritura en cookie, cliente reenvía, servidor espera a replicación de esa versión o rechaza. Eventual consistency es aceptable para reporte (15s de delay OK). Alternativas: (1) escribir en BD primaria, leer de primaria temporalmente. (2) Usar async messaging con ack antes de retornar ("escriba y notifique" pattern). (3) Accept UI "está guardando..."
+
+</details>
 
 **Cuándo NO usar:** No prometas consistencia fuerte cuando el costo es prohibitivo. No ocultes lecturas obsoletas al usuario sin ser explícito.
 
@@ -270,8 +278,12 @@ Un broker es una bandeja numerada; la deduplicación por `commandId` hace que re
 3. ¿Cómo el consumidor procesa con garantía de una entrega?
 4. ¿Cuándo eliminar de outbox?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Transacción: INSERT shipment + INSERT outbox en same TX. Atomicidad: BD ACID. Consumidor: polling en outbox buscando `processed=false`, procesa (envía email), marca `processed=true` en same TX. Si email falla (excepción), rollback y reintenta. Una entrega: idempotencia de operación + deduplicación por ID (email es idempotente si usa shipment_id). Eliminar: mantener >30 días (auditoría), después limpiar en batch.
+
+</details>
 
 **Cuándo NO usar:** No reintentes operaciones no idempotentes; diseña idempotencia primero. No garantices "exactamente una vez" sin mecanismo de deduplicación explícito.
 
@@ -433,8 +445,12 @@ Un SLI mide lo que importa (proporción de confirmaciones completadas bajo 300ms
 3. ¿Cuándo escalar? ¿Cuándo revert?
 4. ¿Cómo no caer en pánico?
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > Runbook: (1) Verificar métrica (¿falsa alarma?), (2) Histograma de latencia: ¿p99 disparado (contención BD) o errors subieron (código)?, (3) Si contención, escalar DB o revisar queries lentas; si errors, revisar logs de aplicación y últimos deploys (revert si es reciente), (4) Alertar on-call si >10 min sin resolución. Automatizar: si surge que es por carga, auto-scale (Kubernetes horizontal pod autoscaler).
+
+</details>
 
 **Cuándo NO usar:** No alerten sin acción clara. No midas solo promedios; ocultan outliers.
 

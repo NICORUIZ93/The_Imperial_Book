@@ -16,7 +16,7 @@ No confundas seguridad SQL con consistencia: parametrizar evita que el valor se 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en `examples/java-jpa-lab/`.
-**Conocimiento previo:** haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
+**Conocimiento previo:** SQL básico (`CREATE TABLE`, `INSERT`, `SELECT`) y el entorno Java del Módulo 0 con Maven del Módulo 8.
 #### Paso 2 · Contexto y caso real
 
 Un proceso importa referencias de envíos que contienen caracteres introducidos por usuarios. Concatenar la referencia dentro del SQL puede alterar la consulta; además, repetir SQL y mapeo en servicios distintos produce lógica inconsistente.

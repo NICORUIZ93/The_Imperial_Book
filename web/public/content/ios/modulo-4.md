@@ -130,9 +130,12 @@ print(await contador.confirmar()) // debería ser 101 tras 100 confirmaciones co
 **Ejecuta el ejemplo:**
 
 ```bash
-swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
-# pega el código en Practica/Sources/Practica/main.swift
-cd Practica && swift run
+# una sola vez, fuera de RutaFlowApp:
+mkdir Practica && cd Practica
+swift package init --type executable
+rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main que choca con main.swift
+# pega el código en Sources/Practica/main.swift
+swift run
 ```
 Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
@@ -323,7 +326,26 @@ El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Erro
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 16 o superior. En el paquete `RutaFlowKit` del módulo 12 (o en uno nuevo), pon `// swift-tools-version: 6.0` en `Package.swift`: eso activa el modo Swift 6.
+Usa Xcode 26 (Swift 6.2) o posterior. Crea aquí un paquete propio para este tema (el Módulo 12 te enseñará a organizar paquetes; no lo necesitas todavía):
+
+```bash
+mkdir -p RutaFlowKit/Sources/Dominio RutaFlowKit/Tests/DominioTests
+```
+
+Guarda `RutaFlowKit/Package.swift`. La primera línea, `// swift-tools-version: 6.0`, activa el modo Swift 6:
+
+```swift
+// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "RutaFlowKit",
+    targets: [
+        .target(name: "Dominio"),
+        .testTarget(name: "DominioTests", dependencies: ["Dominio"]),
+    ]
+)
+```
 
 #### Paso 2 · Contexto y caso real
 
@@ -416,7 +438,7 @@ swift test
 ✔ Test run with 1 test passed
 ```
 
-**Fallo deliberado:** reemplaza el actor por la clase comentada (con `total` y `sumar()`) y llámala dentro de `grupo.addTask`. **Error esperado:** `Capture of 'contador' with non-sendable type 'ContadorEntregas' in a '@Sendable' closure` (error en modo Swift 6). **Diagnóstico:** la clase tiene estado mutable y cruzaría a varias tareas. Conviértela en actor; no la marques `@unchecked Sendable` sin un lock.
+**Fallo deliberado:** reemplaza el actor por la clase comentada (con `total` y `sumar()`) y llámala dentro de `grupo.addTask`. **Error esperado:** en modo Swift 6, un error en la línea de `grupo.addTask` del tipo `passing closure as a 'sending' parameter risks causing data races between … and concurrent execution of the closure`, con una nota `closure captures 'contador' …`. `addTask` recibe su cierre como parámetro `sending`, así que el compilador comprueba que lo capturado no siga accesible desde la tarea actual; el texto exacto entre «between» y «and» depende de la versión del compilador. **Diagnóstico:** la clase tiene estado mutable y cruzaría a varias tareas. Conviértela en actor; no la marques `@unchecked Sendable` sin un lock.
 
 #### Paso 5 · Práctica guiada
 
@@ -455,7 +477,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** silenciar errores c
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 16 o superior. Trabaja en un paquete ejecutable (`swift package init --type executable --name Posiciones`) para correrlo en la terminal.
+Usa Xcode 26 (Swift 6.2) o posterior. Trabaja en un paquete ejecutable para correrlo en la terminal: `mkdir Posiciones && cd Posiciones && swift package init --type executable`, y borra `Sources/Posiciones/Posiciones.swift` antes de crear `main.swift`.
 
 #### Paso 2 · Contexto y caso real
 

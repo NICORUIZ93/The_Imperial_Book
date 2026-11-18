@@ -1368,7 +1368,7 @@ Entrega una captura o registro de prefetch y mensajes sin ack para los valores 1
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.x con `spring-boot-starter-artemis` y Docker: `docker run -d --name artemis -p 61616:61616 -p 8161:8161 -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis`.
+Usa Spring Boot 4.1.2 y JDK 25 en `academia-spring` (paquete `com.example.demo`), agrega `spring-boot-starter-artemis` y levanta el broker con Docker: `docker run -d --name artemis -p 61616:61616 -p 8161:8161 -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1411,10 +1411,10 @@ spring.artemis.password=admin
 spring.jms.listener.session.transacted=true
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/facturacion/Facturacion.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/facturacion/Facturacion.java` (dentro de `com.example.demo`, para que el escaneo registre el listener):
 
 ```java
-package com.rutaflow.facturacion;
+package com.example.demo.facturacion;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.boot.CommandLineRunner;

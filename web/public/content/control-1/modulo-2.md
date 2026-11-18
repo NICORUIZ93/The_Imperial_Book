@@ -177,7 +177,7 @@ cambia `exp(-2 * t)` por `t**2` y vuelve a ejecutar. Resultado esperado: `2/s**3
 
 ∎
 
-#### Demostración · Seno y coseno (con Euler, capítulo 2)
+#### Demostración · Seno y coseno (con Euler, módulo 1)
 
 1. Con la misma cuenta del Ejemplo 1: \(\mathcal{L}\{e^{j\omega t}\} = \dfrac{1}{s-j\omega}\) y \(\mathcal{L}\{e^{-j\omega t}\} = \dfrac{1}{s+j\omega}\).
 2. Seno:

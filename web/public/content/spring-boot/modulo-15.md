@@ -250,7 +250,7 @@ Para comprobar «Decide si conviene compartir», consulta: `examples/testcontain
 
 **¿Por qué es importante?** El dominio conserva las reglas del negocio; si importa una clase de base de datos o un framework, cambiar esa infraestructura puede arrastrar cambios al negocio. ArchUnit convierte la frontera en un test que muestra qué clase la cruzó.
 
-**Antes de empezar:** entender puertos y adaptadores (Módulo 10, Tema 6). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
+**Antes de empezar:** entender puertos y adaptadores (Módulo 22, Tema 1, «Hexagonal: puertos que hablan el idioma del dominio»; puedes leerlo antes de este tema). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
 
 ```bash
 cd examples/archunit-hexagonal-rutaflow
@@ -610,17 +610,6 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 **Cierra:** **Proyecto integrador:** para el envío del Módulo 12, propone eventos inmutables de creación, recogida y entrega; indica qué estado se reconstruye y cómo se guardaría el historial de forma durable. El laboratorio no integra Kafka, base de datos ni proyecciones externas.
 
 **Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
-
-## Trazabilidad de la auditoría original
-
-- **Spring WebFlux**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Testing Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Arquitectura Hexagonal**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Microservicios Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Spring Cloud Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-
-
-## Aplicación del material de referencia
 
 ### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
 

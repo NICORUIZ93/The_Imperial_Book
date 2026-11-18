@@ -12,7 +12,7 @@ Los dos parciales del curso, resueltos paso a paso. Intenta cada punto en papel 
 
 Intenta cada punto en papel antes de abrir la solución. Al lado de cada punto está la lección que lo explica.
 
-#### Sistema de control y sus elementos · ver capítulo 6 · *Punto 1*
+#### Sistema de control y sus elementos · ver módulo 5 · *Punto 1*
 
 Explique y presente un sistema de control diferente a los vistos en clase. Con base en ese sistema enumere y defina los elementos básicos.
 
@@ -20,7 +20,7 @@ Explique y presente un sistema de control diferente a los vistos en clase. Con b
 
 **Sistema:** aire acondicionado con termostato. Es de lazo cerrado porque mide la temperatura del cuarto, la compara con la deseada y actúa según la diferencia.
 
-Dibuja el diagrama de bloques de capítulo 6 y define cada elemento:
+Dibuja el diagrama de bloques del módulo 5 y define cada elemento:
 
 - **Referencia:** 22 °C programados.
 - **Comparador:** resta la medición de la referencia.
@@ -35,7 +35,7 @@ Dibuja el diagrama de bloques de capítulo 6 y define cada elemento:
 </details>
 
 
-#### Función de transferencia con op-amps · ver capítulo 8 · *Punto 2*
+#### Función de transferencia con op-amps · ver módulo 7 · *Punto 2*
 
 Etapa 1: \(R_1\parallel C_1\) a la entrada y \(C_2\) de realimentación. Etapa 2: \(C_3\) a la entrada y \((C_5\) en serie con \(R_2)\parallel C_4\) de realimentación.
 
@@ -53,7 +53,7 @@ Lectura: un integrador, dos ceros en \(-1/(R_1C_1)\) y \(-1/(R_2C_5)\), y un pol
 
 </details>
 
-#### Respuesta al impulso · ver capítulo 4 y capítulo 12 · *Punto 3*
+#### Respuesta al impulso · ver módulo 3 y módulo 11 · *Punto 3*
 
 (i) \(G(s) = \dfrac{7}{9s+1}e^{-3s}\)   (ii) \(G(s) = \dfrac{10(37)}{s^2+2s+37}\)
 
@@ -77,21 +77,21 @@ Datos adicionales: \(\omega_n = 6{,}08\), \(\zeta = 0{,}164\), \(K = 10\), polos
 
 </details>
 
-#### Ventajas y desventajas · ver capítulo 19 · *Punto 4*
+#### Ventajas y desventajas · ver módulo 18 · *Punto 4*
 
 Enumere y explique las ventajas y desventajas de las acciones básicas de control.
 
 <details><summary>Respuesta</summary>
 
-Usa la tabla 10.4 completa: para cada acción escribe la ley de control, \(C(s)\), dos ventajas y dos desventajas con su porqué. Cierra con la tabla del efecto de subir cada ganancia y un ejemplo numérico, como el Ejemplo 1 de capítulo 19 (el P deja 10 % de error y el PI lo elimina).
+Usa la tabla de ventajas y desventajas del módulo 18 (Tema 4) completa: para cada acción escribe la ley de control, \(C(s)\), dos ventajas y dos desventajas con su porqué. Cierra con la tabla del efecto de subir cada ganancia y un ejemplo numérico, como el Ejemplo 1 del módulo 18 (el P deja 10 % de error y el PI lo elimina).
 
 </details>
 
 #### Parcial 2
 
-Todo este parcial es capítulo 13 y capítulo 17.
+Todo este parcial sale del módulo 12 y del módulo 16.
 
-#### Salida ante escalón · ver capítulo 13 · *Punto 1*
+#### Salida ante escalón · ver módulo 12 · *Punto 1*
 
 \(G(s) = \dfrac{3(\cdot)}{s^2+2s+65}\), \(u(t) = \mu(t)\). Halla \(y(t)\).
 
@@ -110,7 +110,7 @@ Todo este parcial es capítulo 13 y capítulo 17.
 
 </details>
 
-#### Polos en −3 ± 5j · ver capítulo 17 · *Punto 2*
+#### Polos en −3 ± 5j · ver módulo 16 · *Punto 2*
 
 (a) ¿Cuál es \(G(s)\) si \(K = 10\)? (b) ¿Cuál es la zona de diseño y por qué?
 
@@ -118,12 +118,12 @@ Todo este parcial es capítulo 13 y capítulo 17.
 
 1. \((s+3)^2+25 = s^2+6s+34\), así que \(\omega_n^2 = 34\) y \(G = \dfrac{340}{s^2+6s+34}\).
 2. \(\zeta = 3/5{,}83 = 0{,}514\), \(\theta = 59°\), \(M_p = 15{,}2\,\%\), \(t_s = 1{,}33\) s, \(t_p = 0{,}63\) s.
-3. **Zona:** a la izquierda de \(\sigma = -3\) y dentro del cono de ±59° (figura de capítulo 17).
+3. **Zona:** a la izquierda de \(\sigma = -3\) y dentro del cono de ±59° (figura del módulo 16).
 4. **Por qué:** cualquier polo ahí tiene \(\sigma \ge 3\) (se establece en 1,33 s o menos) y \(\zeta \ge 0{,}514\) (sobrepico de 15,2 % o menos). Además está en el semiplano izquierdo: estable y subamortiguado.
 
 </details>
 
-#### Desde la gráfica · ver capítulo 13 y capítulo 17 · *Punto 3*
+#### Desde la gráfica · ver módulo 12 y módulo 16 · *Punto 3*
 
 Máximo ≈ 5, valor final 3, pico en \(t \approx 2\) s. (a) \(M_p\); (b) \(G(s)\) si \(K = 3\); (c) zona de diseño.
 

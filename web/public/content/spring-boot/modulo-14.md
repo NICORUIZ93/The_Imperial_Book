@@ -31,7 +31,7 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 **Resultado esperado:** Maven termina con `BUILD SUCCESS`; la respuesta contiene estado `CREADO` y el GET recupera el mismo ID.
 
-**Fallo deliberado:** Cambia `CREADO` por `CREARDO` en `crear()`; el test detecta que la respuesta no coincide. **Diagnóstico:** Restaura `CREADO`.
+**Fallo deliberado:** Cambia `EstadoEnvio.CREADO` por `EstadoEnvio.CREARDO` en `crear()` y repite el comando. **Diagnóstico:** Maven falla al compilar, antes de ejecutar ninguna prueba, con `cannot find symbol` y `symbol: variable CREARDO`: el enum impide escribir un estado inventado. Para ver fallar el test, cambia `CREADO` por `CANCELADO` en `crear()`: `jsonPath("$.estado")` esperaba `CREADO` y recibe `CANCELADO`. Restaura `CREADO`.
 
 **Entiende:** El enum limita los estados que Java puede guardar. No define por sí solo qué transiciones permite el negocio.
 

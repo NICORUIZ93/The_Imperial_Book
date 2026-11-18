@@ -298,12 +298,46 @@ import SwiftUI
 struct RutaFlowApp: App {
     let contenedor: ModelContainer = {
         let configuracion = ModelConfiguration(cloudKitDatabase: .private("iCloud.co.rutaflow.app"))
-        return try! ModelContainer(for: NotaCliente.self, configurations: configuracion)
+        do {
+            return try ModelContainer(for: NotaCliente.self, configurations: configuracion)
+        } catch {
+            // Sin almacén la app no puede funcionar: detente con un mensaje que diga por qué.
+            fatalError("No se pudo crear el contenedor de SwiftData: \(error)")
+        }
     }()
 
     var body: some Scene {
         WindowGroup { NotasView() }
             .modelContainer(contenedor)
+    }
+}
+```
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/NotasView.swift`, la pantalla que lista y crea notas:
+
+```swift
+import SwiftData
+import SwiftUI
+
+struct NotasView: View {
+    @Environment(\.modelContext) private var contexto
+    @Query(sort: \NotaCliente.creada, order: .reverse) private var notas: [NotaCliente]
+
+    var body: some View {
+        NavigationStack {
+            List(notas) { nota in
+                VStack(alignment: .leading) {
+                    Text(nota.direccion).font(.headline)
+                    Text(nota.texto)
+                }
+            }
+            .navigationTitle("Notas")
+            .toolbar {
+                Button("Agregar") {
+                    contexto.insert(NotaCliente(direccion: "Calle 10 #5-20", texto: "Dejar en portería"))
+                }
+            }
+        }
     }
 }
 ```
@@ -324,7 +358,7 @@ Una nota creada en el simulador A aparece en el simulador B tras unos segundos a
 En CloudKit Console (icloud.developer.apple.com) se ve el tipo de registro CD_NotaCliente en el entorno Development.
 ```
 
-**Fallo deliberado:** agrega `@Attribute(.unique) var direccion: String = ""`. **Error esperado:** la app falla al crear el contenedor con un error que indica que CloudKit no admite restricciones únicas. **Diagnóstico:** CloudKit no puede garantizar unicidad entre dispositivos. Quita la restricción y resuelve los duplicados en la lógica de la app.
+**Fallo deliberado:** agrega `@Attribute(.unique) var direccion: String = ""`. **Error esperado:** la app se detiene en el `fatalError` con `No se pudo crear el contenedor de SwiftData:` seguido de un error que indica que CloudKit no admite restricciones únicas. **Diagnóstico:** CloudKit no puede garantizar unicidad entre dispositivos. Quita la restricción y resuelve los duplicados en la lógica de la app.
 
 #### Paso 5 · Práctica guiada
 

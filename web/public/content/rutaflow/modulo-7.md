@@ -37,25 +37,31 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Crea una carpeta independiente para practicar Terraform y la firma de imágenes antes de tocar el monorepo:
+Necesitas Terraform, `kubectl`, [kind](https://kind.sigs.k8s.io/) para un clúster local y `cosign`. Crea el clúster y una carpeta independiente para practicar antes de tocar el monorepo:
 
 ```bash
+kind create cluster --name rutaflow   # crea el contexto kubectl kind-rutaflow
 mkdir -p rutaflow-labs/tema-1-infraestructura-y-entrega-segura
 cd rutaflow-labs/tema-1-infraestructura-y-entrega-segura
 ```
 
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
-
-`main.tf` — un namespace y un deployment mínimos para `api-envios`:
+`main.tf` — el proveedor que dice a Terraform en qué clúster trabajar, y un namespace y un deployment mínimos para `api-envios`:
 
 ```hcl
 # main.tf — infraestructura mínima de api-envios en Kubernetes
+terraform {
+  required_providers {
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
+  }
+}
+
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = "kind-rutaflow"
+}
+
 resource "kubernetes_namespace" "rutaflow" {
   metadata {
     name = "rutaflow-envios"
@@ -95,30 +101,52 @@ terraform init
 terraform plan -out=plan.tfplan
 ```
 
-`deploy.sh` — la versión CON el bug: construye, firma y despliega, pero nunca verifica la firma antes de desplegar:
+La firma ocurre en CI, justo después de construir y publicar, sobre el **digest** que produjo ese build (`cosign generate-key-pair` crea `cosign.key` y `cosign.pub`):
+
+```bash
+# ci-firmar.sh — corre en CI, no en el despliegue
+set -euo pipefail
+docker build -t registry.rutaflow.dev/api-envios:1.4.2 .
+docker push registry.rutaflow.dev/api-envios:1.4.2
+IMAGE=$(docker inspect --format '{{index .RepoDigests 0}}' registry.rutaflow.dev/api-envios:1.4.2)
+cosign sign --key cosign.key "$IMAGE"   # firma registry.rutaflow.dev/api-envios@sha256:...
+echo "$IMAGE" > imagen-firmada.txt      # el despliegue recibe este valor
+```
+
+`deploy.sh` — la versión CON el bug: despliega por tag y nunca verifica la firma:
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 IMAGE="registry.rutaflow.dev/api-envios:1.4.2"
-
-cosign sign --key cosign.key "$IMAGE"            # firma la imagen legítima
 kubectl set image deployment/api-envios \
-  api-envios="$IMAGE" -n rutaflow-envios          # BUG: despliega sin verificar nada
+  api-envios="$IMAGE" -n rutaflow-envios          # BUG: tag mutable y sin verificar la firma
 echo "Desplegado $IMAGE"
 ```
 
-**Resultado esperado:** `terraform plan` muestra el namespace y el deployment a crear; `cosign sign` genera la firma en el registro.
+**Resultado esperado:** `terraform plan` muestra el namespace y el deployment a crear; `ci-firmar.sh` deja en `imagen-firmada.txt` una referencia `...@sha256:...` y su firma en el registro.
 
-**Fallo deliberado:** alguien retaguea una imagen distinta (sin firmar, o firmada con otra clave) sobre el mismo tag `registry.rutaflow.dev/api-envios:1.4.2` y vuelve a correr `deploy.sh`. El script completa sin ningún error e imprime `Desplegado registry.rutaflow.dev/api-envios:1.4.2`, porque nada en el script comprueba la firma: la imagen correcta y una imagen manipulada se despliegan exactamente igual. La firma generada antes existe, pero no protege nada si nadie la revisa en el camino. Corrección: agregá el gate de verificación antes de `kubectl set image`:
+**Fallo deliberado:** alguien retaguea una imagen distinta (sin firmar, o firmada con otra clave) sobre el mismo tag `registry.rutaflow.dev/api-envios:1.4.2` y vuelve a correr `deploy.sh`. El script completa sin ningún error e imprime `Desplegado registry.rutaflow.dev/api-envios:1.4.2`, porque nada en el script comprueba la firma: la imagen correcta y una imagen manipulada se despliegan exactamente igual. Tampoco serviría firmar dentro de `deploy.sh`: firmarías lo que haya en el tag en ese momento, incluida la imagen retagueada. Corrección: el despliegue recibe el digest firmado en CI, lo verifica y despliega ese mismo digest:
 
 ```bash
-cosign verify --key cosign.pub "$IMAGE" \
+#!/usr/bin/env bash
+set -euo pipefail
+# Recibe la referencia por digest que produjo CI: inmutable, a diferencia del tag.
+IMAGE="${1:?Uso: ./deploy.sh registry.rutaflow.dev/api-envios@sha256:<digest>}"
+[[ "$IMAGE" == *@sha256:* ]] || { echo "Despliega por digest, no por tag: $IMAGE"; exit 1; }
+
+# Gate: se verifica exactamente el digest que se va a desplegar.
+cosign verify --key cosign.pub "$IMAGE" > /dev/null \
   || { echo "Firma inválida: aborto el despliegue de $IMAGE"; exit 1; }
 kubectl set image deployment/api-envios api-envios="$IMAGE" -n rutaflow-envios
+echo "Desplegado $IMAGE"
 ```
 
-Con el gate agregado, repetir el despliegue de la imagen retagueada falla con «Firma inválida: aborto el despliegue» antes de tocar Kubernetes; el despliegue de la imagen legítima y correctamente firmada sigue pasando.
+```bash
+./deploy.sh "$(cat imagen-firmada.txt)"
+```
+
+Con el gate, pasar el tag (`./deploy.sh registry.rutaflow.dev/api-envios:1.4.2`) termina con «Despliega por digest, no por tag»; pasar el digest de la imagen retagueada falla en `cosign verify` con «Firma inválida: aborto el despliegue» antes de tocar Kubernetes; y el digest legítimo se despliega. Como Kubernetes recibe el digest y no el tag, lo que se verificó es exactamente lo que se ejecuta, aunque alguien mueva el tag entre la verificación y el `pull`.
 
 #### Paso 5 · Práctica guiada
 
@@ -132,7 +160,7 @@ Escribí un script `desplegar_verificado.sh` que reciba una imagen como argument
 
 #### Paso 7 · Cierre y proyecto
 
-Entregá `main.tf`, el `plan.tfplan`, `deploy.sh` con el gate de verificación agregado, y la evidencia de ambas corridas: la que bloquea la imagen retagueada y la que despliega la imagen legítima. El siguiente tema de este módulo toma esta misma infraestructura en producción y le agrega SLO y probes de Kubernetes para decidir cuándo un pod está realmente caído. **Fuente oficial:** [https://docs.sigstore.dev/](https://docs.sigstore.dev/) (documentación de cosign/sigstore sobre firma y verificación de imágenes).
+Entrega `main.tf`, el `plan.tfplan`, `ci-firmar.sh`, `deploy.sh` con el gate de verificación agregado, y la evidencia de ambas corridas: la que bloquea la imagen retagueada y la que despliega la imagen legítima. El siguiente tema de este módulo toma esta misma infraestructura en producción y le agrega SLO y probes de Kubernetes para decidir cuándo un pod está realmente caído. **Fuente oficial:** [https://docs.sigstore.dev/](https://docs.sigstore.dev/) (documentación de cosign/sigstore sobre firma y verificación de imágenes).
 
 **Errores comunes:** firmar la imagen y nunca verificarla antes del deploy; verificar la firma después de que Kubernetes ya la desplegó; guardar la clave privada de firma en el mismo repositorio que el código; asumir que una imagen firmada está libre de vulnerabilidades; reusar el mismo tag (`:1.4.2`) para builds distintos en vez de desplegar por digest.
 
@@ -179,14 +207,6 @@ Definí el SLO y las probes en una carpeta de práctica:
 mkdir -p rutaflow-labs/tema-2-slo-y-respuesta-a-incidentes
 cd rutaflow-labs/tema-2-slo-y-respuesta-a-incidentes
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 `slo.md` — el SLO concreto del servicio:
 
@@ -278,27 +298,29 @@ Una prueba **E2E de sistema** levanta el backend real (con su base de datos real
 
 **Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
 **Errores comunes:** renombrar un campo del payload en la prueba (como `guia` por `tracking`) y, al ver que el backend responde `400`, asumir que el test en sí está mal escrito en vez de leer el cuerpo de la respuesta — ese `400` es la prueba E2E funcionando correctamente: detectó un desajuste de contrato que ninguna prueba de un solo lado vería.
-**Fuente oficial:** [documentación de RutaFlow](https://docs.flutter.dev/).
+**Fuente oficial:** [Spring Boot — Testing con Testcontainers](https://docs.spring.io/spring-boot/reference/testing/testcontainers.html).
 
 #### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` con la clase que ves más abajo, y guárdalo antes de ejecutarlo con `./mvnw test -Dtest=FlujoEntregaE2ETest`.
 
-Levanta el backend real con Docker Compose y ejecuta una prueba que recorra el flujo contra él:
+**Antes de empezar:** esta prueba vive dentro de un backend Spring Boot 4.1.2 con Maven Wrapper, y RutaFlow no lo construye en módulos anteriores (su backend del Módulo 2 es Node). Parte de una copia de `examples/spring-boot-integrador-rutaflow/`, que ya expone `POST /api/entregas` con JWT y PostgreSQL, y agrégale los endpoints `POST /api/auth/login` y `POST /api/entregas/{guia}/confirmar` que la prueba usa. Necesitas Docker en ejecución: Testcontainers levanta el PostgreSQL de la prueba, así que no hace falta `docker compose`.
+
+Crea `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` con la clase de abajo y ejecútala desde la raíz de ese backend:
 
 ```bash
-# 1. Levanta backend + base de datos reales
-docker compose up -d
-# 2. Ejecuta la prueba E2E (recorre login -> crear -> asignar -> confirmar por HTTP real)
+# Recorre login -> crear -> confirmar por HTTP real contra un PostgreSQL efímero
 ./mvnw test -Dtest=FlujoEntregaE2ETest
 ```
+
+Desde Spring Boot 4.0, `@SpringBootTest` ya no crea un `TestRestTemplate`: agrega `@AutoConfigureTestRestTemplate` y las dependencias de prueba `spring-boot-resttestclient` y `spring-boot-restclient`. `@ServiceConnection` (de `spring-boot-testcontainers`) conecta el datasource al contenedor.
 
 La prueba vive en `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` y ejercita el contrato que la app consume:
 
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 @Testcontainers
 class FlujoEntregaE2ETest {
-    @Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:16");
+    @Container @ServiceConnection static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:16");
     @Autowired TestRestTemplate http;
 
     @Test

@@ -41,7 +41,7 @@ Los diagramas reales tienen lazos dentro de lazos y señales que se cruzan. Aqu�
 
 3. Lazo externo unitario: \(\dfrac{N}{D+N} = \dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\).
 
-   **¿Por qué?** Truco de capítulo 6.
+   **¿Por qué?** Truco del módulo 5.
 
 **Resultado:** \(\dfrac{G_1G_2G_3}{1+G_2H_1+G_1G_2G_3}\)
 
@@ -163,7 +163,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
 #### Ejemplo 3 · Dibujar el grafo: Dos bloques en serie con realimentación de cada uno · *Intermedio*
 
-**Enunciado.** Construye el grafo de flujo de señal de Dos bloques en serie con realimentación de cada uno.
+**Enunciado.** Construye el grafo de flujo de señal de dos bloques en serie con realimentación de cada uno, donde \(H_2\) **realimenta al nodo \(X\)** (la salida de \(G_1\)): \(E = R - H_1X\), \(X = G_1E - H_2Y\), \(Y = G_2X\).
 
 1. Cada variable es un nodo; cada término de una ecuación es una rama que llega al nodo despejado.
 
@@ -173,7 +173,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
 
    **¿Por qué?** Se lee cada ecuación de derecha a izquierda.
 
-**Resultado.** Dos lazos: \(-G_1H_1\) y \(-G_2H_2\); se tocan porque comparten el nodo \(X\).
+**Resultado.** Dos lazos: \(-G_1H_1\) y \(-G_2H_2\); se tocan porque comparten el nodo \(X\). Compáralo con el Ejemplo 2 de la regla de Mason (lazos locales independientes): allí cada bloque tiene su propio sumador, así que los lazos no comparten ningún nodo y no se tocan.
 
 #### Ejemplo 4 · Dibujar el grafo: Entrada con perturbación · *Intermedio*
 
@@ -246,7 +246,7 @@ arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que
 
 #### Demostración en el caso de un lazo (y por qué Δ tiene esa forma)
 
-1. Con una sola trayectoria \(P = G\) y un solo lazo \(L = -GH\) que la toca: \(\Delta = 1 - L = 1 + GH\) y \(\Delta_1 = 1\). Mason da \(\dfrac{G}{1+GH}\), la fórmula de capítulo 6.
+1. Con una sola trayectoria \(P = G\) y un solo lazo \(L = -GH\) que la toca: \(\Delta = 1 - L = 1 + GH\) y \(\Delta_1 = 1\). Mason da \(\dfrac{G}{1+GH}\), la fórmula del módulo 5.
 2. Con dos lazos que no se tocan, \(L_1\) y \(L_2\), en cascada: cada uno por separado da \(\dfrac{1}{1-L_1}\) y \(\dfrac{1}{1-L_2}\). En serie se multiplican: \(\dfrac{1}{(1-L_1)(1-L_2)} = \dfrac{1}{1 - L_1 - L_2 + L_1L_2}\). Ahí aparece el término \(+L_1L_2\) de los lazos que no se tocan.
 3. En general, \(\Delta\) es el determinante del sistema de ecuaciones lineales de los nodos, y la regla de Mason es la regla de Cramer aplicada a ese sistema.
 
@@ -288,7 +288,7 @@ arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que
 
 > **Qué cambia respecto al anterior:** Ahora hay lazos que no se tocan.
 
-**Enunciado.** \(G_1\) con realimentación \(H_1\), seguido de \(G_2\) con realimentación \(H_2\).
+**Enunciado.** Lazos locales independientes: \(G_1\) con realimentación \(H_1\) y su propio sumador (\(E_1 = R - H_1X_1\), \(X_1 = G_1E_1\)), seguido de \(G_2\) con realimentación \(H_2\) y otro sumador (\(E_2 = X_1 - H_2Y\), \(Y = G_2E_2\)). A diferencia del Ejemplo 3 del grafo, \(H_2\) llega a \(E_2\), no a \(X_1\).
 
 1. \(P_1 = G_1G_2\). Lazos \(L_1 = -G_1H_1\) y \(L_2 = -G_2H_2\).
 
@@ -536,7 +536,7 @@ Cada ejemplo indica qué se hace en cada paso y por qué. Todos los resultados s
   
   <details><summary>Respuesta</summary>
   
-  \(\dfrac{1}{s^2+3s+1}\) (Ejemplo 5 de capítulo 6).
+  \(\dfrac{1}{s^2+3s+1}\) (Ejemplo 5 del módulo 5).
   
   </details>
 

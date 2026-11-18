@@ -180,7 +180,7 @@ repite con las matrices del Ejemplo 4 (3×3, denominador \(s^3+6s^2+11s+6\)) y c
 
    **¿Por qué?** Producto fila por columna.
 
-**Resultado:** \(G = \dfrac{4}{s^2+3s+2}\), la misma de capítulo 5
+**Resultado:** \(G = \dfrac{4}{s^2+3s+2}\), la misma del módulo 4
 
 #### Ejemplo 2 · Masa-resorte en estados · *Experto*
 

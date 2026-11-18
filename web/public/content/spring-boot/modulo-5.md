@@ -486,7 +486,7 @@ Ejecuta desde la raíz:
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Spring Boot 3.x. Continúa el proyecto del tema anterior, que valida la configuración del secreto JWT al arrancar.
+Usa Spring Boot 4.1.2 con JDK 25. Continúa el proyecto `academia-spring` del tema anterior, que valida la configuración del secreto JWT al arrancar; las clases nuevas van en `com.example.demo.config`, dentro del paquete que escanea `@SpringBootApplication`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -513,10 +513,10 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Archivo `academia-spring/src/main/java/com/rutaflow/config/ConfiguracionFaltante.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/config/ConfiguracionFaltante.java`:
 
 ```java
-package com.rutaflow.config;
+package com.example.demo.config;
 
 public class ConfiguracionFaltante extends RuntimeException {
     private final String propiedad;
@@ -528,10 +528,10 @@ public class ConfiguracionFaltante extends RuntimeException {
 }
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/config/SecretoFaltanteAnalyzer.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/config/SecretoFaltanteAnalyzer.java`:
 
 ```java
-package com.rutaflow.config;
+package com.example.demo.config;
 
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -552,13 +552,13 @@ Archivo `academia-spring/src/main/resources/META-INF/spring.factories`:
 
 ```properties
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-com.rutaflow.config.SecretoFaltanteAnalyzer
+com.example.demo.config.SecretoFaltanteAnalyzer
 ```
 
-Archivo `academia-spring/src/main/java/com/rutaflow/config/SeguridadConfig.java`:
+Archivo `academia-spring/src/main/java/com/example/demo/config/SeguridadConfig.java`:
 
 ```java
-package com.rutaflow.config;
+package com.example.demo.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

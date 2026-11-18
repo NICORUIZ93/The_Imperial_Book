@@ -11,10 +11,10 @@
 Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python y diseñar casos que incluyan una lista vacía y un estado no admitido. **Prerrequisitos:** Python instalado; comprueba `python3 --version` (o `py --version` en Windows).
 
 #### Paso 2 · Contexto y caso real
-El gestor de tareas CLI (proyecto integrador Fundamentos) que vas a construir módulo a módulo necesita, desde el día uno, contestar una pregunta simple: de todas las tareas guardadas, ¿cuántas están pendientes? Parece trivial, pero si no definís el algoritmo antes de escribir código —¿qué devuelve si no hay ninguna tarea todavía?— vas a terminar adivinando el comportamiento en vez de poder explicarlo.
+El gestor de tareas CLI (proyecto integrador Fundamentos) que vas a construir módulo a módulo necesita, desde el día uno, contestar una pregunta simple: de todas las tareas guardadas, ¿cuántas están pendientes? Parece trivial, pero si no defines el algoritmo antes de escribir código —¿qué devuelve si no hay ninguna tarea todavía?— vas a terminar adivinando el comportamiento en vez de poder explicarlo.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un problema informal ("contar pendientes") esconde preguntas sin responder. Un algoritmo es la versión explícita de la solución: una secuencia finita de pasos que, dada una entrada, produce una salida predecible, sin importar si después la escribís en Python o la ejecutás a mano con papel. Por eso el orden profesional es problema → algoritmo explícito → casos de prueba (incluyendo los bordes) → código, nunca directamente problema → código:
+Un problema informal ("contar pendientes") esconde preguntas sin responder. Un algoritmo es la versión explícita de la solución: una secuencia finita de pasos que, dada una entrada, produce una salida predecible, sin importar si después la escribes en Python o la ejecutas a mano con papel. Por eso el orden profesional es problema → algoritmo explícito → casos de prueba (incluyendo los bordes) → código, nunca directamente problema → código:
 ```text
 CONTAR_PENDIENTES(tareas):
   contador = 0
@@ -66,11 +66,11 @@ flowchart LR
 
 #### Profundización · Diseño: Casos límite con números flotantes (99.99)
 
-**Escenario real:** El gestor de tareas aplica descuentos: "si subtotal >= 100, aplica 10%". Pruebas con 100 pasan, pero 99.99 falla al guardar precisión decimal.
+**Escenario real:** El gestor de tareas aplica descuentos: "si subtotal >= 100, aplica 10%". Con la regla `subtotal >= 100`, el 99.99 se clasifica bien (no recibe descuento); el riesgo está en los cálculos con decimales que vienen después, porque un `float` no guarda exactamente todos los valores decimales.
 
 **Tu tarea (sin mirar solución):**
 
-1. **Predice:** `0.1 + 0.1 + 0.1` ¿da exactamente `0.3`? Si aplicás tres descuentos sucesivos de 0.10 cada uno, ¿el total acumulado es exacto?
+1. **Predice:** `0.1 + 0.1 + 0.1` ¿da exactamente `0.3`? Si aplicas tres descuentos sucesivos de 0.10 cada uno, ¿el total acumulado es exacto?
 2. **Diseña casos:**
    - Normal: 99.99
    - Límite: 100.00, 100.01
@@ -104,7 +104,7 @@ Función validadora: redondea_a_centavos(resultado) _________
 > precio = Decimal('99.99') * Decimal('0.90')
 > ```
 >
-> **`99.99 * 0.90` imprime exactamente `89.991`** en Python — este caso puntual NO muestra residuo visible (la imprecisión interna existe en binario, pero redondea limpio al convertir a texto). Esa es precisamente la trampa: no podés predecir de antemano cuál cálculo con decimales se va a ver "limpio" y cuál no con solo mirarlo, por eso `Decimal` (o trabajar en centavos como enteros) es la única forma confiable de garantizar precisión exacta en dinero, en vez de confiar en que "este número en particular no tuvo problemas".
+> **`99.99 * 0.90` imprime exactamente `89.991`** en Python — este caso puntual NO muestra residuo visible (la imprecisión interna existe en binario, pero redondea limpio al convertir a texto). Esa es precisamente la trampa: no puedes predecir de antemano cuál cálculo con decimales se va a ver "limpio" y cuál no con solo mirarlo, por eso `Decimal` (o trabajar en centavos como enteros) es la única forma confiable de garantizar precisión exacta en dinero, en vez de confiar en que "este número en particular no tuvo problemas".
 
 </details>
 
@@ -115,6 +115,15 @@ mkdir ejemplo-algoritmo
 cd ejemplo-algoritmo
 mkdir src
 ```
+**Antes de leer el código:** usa cinco piezas que este curso explica a fondo más adelante. Por ahora basta con reconocerlas:
+
+- `def contar_pendientes(tareas):` define una **función**: un bloque con nombre que recibe `tareas` y entrega un resultado con `return`. La llamas escribiendo `contar_pendientes(...)` (Tema 4).
+- `{"descripcion": "comprar pan", "estado": "pendiente"}` es un **diccionario**: guarda valores bajo un nombre (clave). `tarea["estado"]` lee el valor de la clave `"estado"` (módulo 2).
+- `for numero, tarea in enumerate(tareas, start=1):` recorre la lista y, en cada vuelta, te da el número de la tarea (1, 2, 3…) y la tarea misma (los `for` se ven en el Tema 3).
+- `raise ValueError(...)` detiene el programa con un error y un mensaje: así se rechaza un estado no admitido en vez de contarlo mal.
+- `f"Tarea {numero}: …"` es un **f-string**: escribe en el texto el valor de las variables que van entre llaves.
+
+Guarda este contenido en `src/pendientes.py`:
 ```python
 def contar_pendientes(tareas):
     contador = 0
@@ -139,14 +148,14 @@ print(contar_pendientes([]))
 python3 src/pendientes.py
 ```
 En Windows usa `py src/pendientes.py`.
-**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agregá esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
+**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agrega al final del archivo esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
 ```python
 def porcentaje_pendientes(tareas):
     return contar_pendientes(tareas) / len(tareas) * 100
 
 print(porcentaje_pendientes([]))
 ```
-Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corregilo agregando `if not tareas: return 0.0` antes de dividir.
+Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corrígelo reemplazando la función por esta versión, que comprueba la lista vacía antes de dividir (`if not tareas:` es verdadero cuando la lista no tiene elementos):
 ```python
 def porcentaje_pendientes(tareas):
     if not tareas:
@@ -240,7 +249,7 @@ flowchart LR
 
 **Escribe tu respuesta:**
 ```
-int(input("1e10")) → _________
+int("1e10") → _________
 Rango válido: 1 a 1000. Si entra 10000: _________
 Ruta segura: float() o Decimal() antes de int()? _________
 "3,14" vs "3.14": El mismo número? _________ (¿por qué?)
@@ -251,18 +260,23 @@ Ruta segura: float() o Decimal() antes de int()? _________
 
 > **Respuesta esperada:**
 >
-> **int(input("1e10")):** ValueError (Python no convierte notación científica directamente a int).
+> **`int("1e10")`:** `ValueError: invalid literal for int() with base 10: '1e10'`. `int()` solo acepta dígitos (con signo opcional), sin notación científica ni separador decimal.
 >
-> **Si entra 10000:** Rechazarlo con `if cantidad > 1000: raise ValueError("máximo 1000")`.
+> **Si entra 10000:** se rechaza con una decisión (`if`, Tema 3) que compruebe el rango antes de usar el valor; la ruta segura de abajo lo hace.
 >
-> **Ruta segura:**
+> **Ruta segura:** convierte primero con `float()`, que sí entiende `1e10`, y acepta el valor solo si es entero y está en el rango. No uses `int(float(texto))` a secas: `int(float("3.7"))` da `3` y trunca sin avisar.
 > ```python
-> cantidad = int(float(input()))  # 1e10 → 10000000000.0 → 10000000000
-> if 1 <= cantidad <= 1000:
->     # válida
+> texto = "1e10"           # lo que escribió la persona
+> numero = float(texto)    # "1e10" → 10000000000.0
+> if numero.is_integer() and 1 <= numero <= 1000:
+>     cantidad = int(numero)
+>     print("cantidad válida:", cantidad)
+> else:
+>     print("cantidad rechazada:", texto)
 > ```
+> Salida: `cantidad rechazada: 1e10`. Con `"3.7"` también se rechaza y con `"25"` imprime `cantidad válida: 25`. Si el texto no es un número (`"abc"`), `float()` lanza `ValueError`; capturarlo requiere `try/except`, que llega más adelante en el curso.
 >
-> **"3,14" vs "3.14":** Distinto en Python (es error). Locales usan coma, pero `int()` espera punto.
+> **"3,14" vs "3.14":** para Python no son lo mismo. `int()` rechaza los dos, porque no acepta separador decimal: `int("3.14")` también da `ValueError`. Quien acepta el punto es `float()`: `float("3.14")` da `3.14`, pero `float("3,14")` da `ValueError`, sin importar el idioma del sistema. Si tus usuarios escriben con coma, reemplázala antes de convertir: `float(texto.replace(",", "."))`.
 
 </details>
 
@@ -675,7 +689,7 @@ Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo 
 
 Construye un programa que reciba descripción, precio y cantidad de varios productos; calcule subtotal; aplique descuento configurable; rechace valores negativos; y muestre un resumen. Empieza con `mkdir presupuesto`, crea `presupuesto.py`, `README.md` y `casos.md`.
 
-Implementa por incrementos y crea un commit después de cada etapa:
+Implementa por incrementos. Al cerrar cada etapa, ejecuta el programa, anota en `casos.md` qué cambió y qué casos ya pasan, y guarda una copia de la carpeta (`presupuesto-etapa-1`, `presupuesto-etapa-2`…) para poder volver atrás. Git, que hace esto mejor, llega en el módulo 5; por ahora no lo necesitas:
 
 1. Un producto con valores escritos en código.
 2. Entrada del usuario y conversión de tipos.
@@ -684,11 +698,11 @@ Implementa por incrementos y crea un commit después de cada etapa:
 5. Repetición para varios productos.
 6. Tabla manual con al menos ocho casos.
 
-**Verificación:** otra persona debe poder clonar/copiar la carpeta, ejecutar el comando documentado y reproducir todos los casos. Incluye un caso normal, valores cero, límite exacto del descuento, decimales, negativo y texto inválido.
+**Verificación:** otra persona debe poder copiar la carpeta, ejecutar el comando documentado en `README.md` y reproducir todos los casos. Incluye un caso normal, valores cero, límite exacto del descuento, decimales, negativo y texto inválido. Los negativos y el cero se rechazan con `if` (Tema 3) después de convertir. Para el texto inválido (por ejemplo `abc` como precio), con lo visto hasta aquí el programa se detiene con `ValueError` al convertir: anota en `casos.md` el mensaje exacto que observas. Capturarlo con `try/except` y pedir el dato de nuevo es una mejora que harás cuando aprendas excepciones.
 
 **Errores comunes y soluciones**
 
 - Mezclar texto y número sin conversión: inspecciona tipos antes de operar.
 - Usar `>` cuando el requisito dice “al menos”: prueba la frontera exacta.
-- Atrapar todo error sin explicarlo: captura solo excepciones esperadas.
+- Calcular antes de validar: comprueba el rango (negativos, cero) justo después de convertir y antes de usar el valor.
 - Crear una función enorme: separa entrada, regla y presentación.

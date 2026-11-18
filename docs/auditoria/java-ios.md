@@ -174,3 +174,49 @@ Nota global de 0 a 3. «Leído» indica si leí un tema completo; si no, la nota
 - **Laboratorios con Maven, Gradle, Testcontainers o H2** (`examples/java-maven`, `java-gradle`, `java-jpa-lab`): sin acceso a Maven Central (red limitada a pypi/npm). Solo comprobé que existen y su configuración (p. ej. enforcer `[25,)`).
 - **Lectura completa:** no leí entero cada tema de los 186. Temas no leídos a fondo, revisados con grep, medición mecánica y compilación: Java M2, M3, M6, M12, M14 T1–T4, M18, M19, M21, M22 (solo compilación y T5 parcial); iOS M2, M3, M7, M8, M9, M10, M14 T3–T10. Pueden tener defectos que no figuran aquí.
 - **Renderizado en la app Angular** (pliegue de soluciones y navegación entre temas): no levanté el servidor.
+
+## Correcciones aplicadas (specs/014)
+
+Fecha: 2026-11-18. Java se verificó ejecutando en `/tmp` con JDK 25.0.5 (paquete `openjdk-25-jdk` de Ubuntu 24.04, instalado para esta verificación) y JDK 21.0.13. Swift no se puede ejecutar aquí (descarga de swift.org bloqueada): iOS se verificó contra developer.apple.com y el código fuente de Swift/SwiftPM en GitHub. Maven Central está bloqueado, así que ningún `mvn` se ejecutó con dependencias.
+
+| Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|
+| `java/modulo-0.md:12` instala `openjdk-21-jdk` frente a «Java 25» (`:6`, `:108`, `:250`) | corregido | `apt-cache policy openjdk-25-jdk` en Ubuntu 24.04 (25.0.5 en `noble-updates`). Con JDK 25 compilan y se ejecutan M4 T4 (`[[true, true, true]]`), M5 T5 (`12 km, disponible`, con `--enable-preview`), M5 T6 y M7 T4 (`Destino: Norte`). |
+| `java/modulo-0.md:349` fallo deliberado que exige tener un JDK 21 | corregido | Con JDK 25, `javac --release 21` da `implicitly declared classes are not supported in -source 21` (ejecutado). |
+| `java/modulo-0.md:382` «`main` siempre `public static void`» (error técnico 4) | corregido | JDK 25 ejecuta una clase con `static void main` sin `public`; el `.class` falla en JDK 21 (ejecutado). Texto según JEP 512. |
+| `java/modulo-0.md:28-32` metatexto editorial | corregido | Borrado; la ruta conserva la nota de que no hay paso 10. |
+| Maven y Gradle no se instalan (`java/modulo-8.md`, `java/modulo-0.md:1189`) | corregido | Nota en M0: Maven ≥ 3.9 (3.9.11 enlaza `maven-compiler-plugin` 3.13.0, leído de `default-bindings.xml`) y Gradle ≥ 9.1 (tabla de compatibilidad de docs.gradle.org: Java 25 desde 9.1.0). `apt-cache` muestra Maven 3.8.7 y Gradle 4.4.1. |
+| `java/modulo-8.md:18` `pom.xml` descrito en prosa | corregido | `pom.xml` y `Saludo.java` completos; `xmllint` valida el XML. `mvn package` no se ejecutó porque Maven Central está bloqueado. |
+| `java/modulo-8.md:22` «Maven no encuentra ese compilador» (error técnico 5) | corregido | `javac --release 26` con JDK 25 da `error: release version 26 not supported` (ejecutado). |
+| `java/modulo-9.md:431` fallo deliberado de la semilla (error técnico 3) | corregido | 6 ejecuciones con `new Random()`: las propiedades 1 y 3 fallan siempre en 999 y la 2 falla en 900 en 4 de 6. |
+| `java/modulo-10.md:44` y `:98` `exports` dentro del mismo módulo (error técnico 1) | corregido | `Main` pasa a un módulo `academia.app`. Sin `exports` da `package academia.rutas.api is not visible`; con él imprime `EN_RUTA` (ejecutado). |
+| `java/modulo-10.md` Subtema 1.3: rutas `src/cliente/cliente/module-info.java` (nuevo) | corregido | La ruta original da `module not found on module source path`. Con `src/cliente/module-info.java` aparece el error esperado `package academia.rutas is not visible` (ejecutado). |
+| `java/modulo-10.md` Subtema 1.1: fallo deliberado sin error | corregido | Exportar `academia.rutas` compila sin error; el texto ahora lo dice y remite al 1.2 (ejecutado). |
+| `java/modulo-11.md:318` y `:347` `allocateUtf8String` (nuevo; no existe desde JDK 22) | corregido | Con JDK 25, `allocateFrom` imprime `9` y la llamada a `strlen` devuelve `8` (ejecutado). |
+| `java/modulo-15.md:3` «multi-módulo del Módulo 14» (error técnico 6) | corregido | Ahora remite al Módulo 8, Tema 3, «Proyectos multi-módulo». |
+| `java/modulo-15.md:594` «Trazabilidad de la auditoría original» | corregido | Sección borrada; el `grep` de B2 no encuentra nada. |
+| `java/modulo-20.md:311` salida «`true` y luego `false`» (error técnico 2) | corregido | El predicado exige texto limpio; la salida es `true`/`false` (ejecutado con JDK 21). |
+| `java/modulo-22.md:1158` `Bad.java:5` | corregido | El error real sale en `Bad.java:6` (ejecutado). |
+| `java/modulo-17.md:19` «tema anterior de este módulo» en el Tema 1 | corregido | Prerrequisito explícito: SQL básico, entorno de M0 y Maven de M8. |
+| `java/modulo-4.md:404-407` compila antes de crear el archivo | corregido | Bloque `bash` borrado; el comando se conserva después del código. |
+| `java/modulo-6.md:160` duda sobre Jackson `2.22.4` | no reproducible | `maven-metadata.xml` de repo1.maven.org lista 2.22.4. |
+| Ejemplos JDK 24–27 de `java/modulo-14.md` | pendiente: no hay JDK 26/27 en el entorno | Las demás dudas de JDK 22–25 (M4 T4, M5 T5–T6, M7 T4, M11 T4) quedan resueltas arriba. |
+| `ios/modulo-0.md:124-130`, `:517`, `:665` estructura SwiftPM (error técnico 7) | corregido | `InitPackage.swift` de `release/6.2`: la plantilla genera `Sources/<pkg>/<Tipo>.swift` con `@main`, que no puede convivir con `main.swift`. Los temas borran el archivo generado y usan `Sources/<pkg>/main.swift`. Se aplicó lo mismo en `ios/modulo-4.md:133` y `:458`, `ios/modulo-7.md:192`, `ios/modulo-13.md:385` (el original además hacía `cd Practica` a una carpeta que no existía) y `ios/modulo-12.md:372`. Sin compilar. |
+| `ios/modulo-0.md:60` prerrequisito «macOS» frente a `:17` Windows/Linux | corregido | Los 4 temas piden Swift 6.2 en cualquier sistema. Notas de la versión de Xcode 26: «includes Swift 6.2… requires macOS Sequoia 15.6». |
+| `ios/modulo-0.md:110` «previene por completo» (error técnico 12) | corregido | El texto reconoce que `!`, `try!` y `as!` provocan el crash que el propio Paso 4 muestra. |
+| `ios/modulo-0.md:569-572` consumir una variable global no copiable | corregido; compilación pendiente | La variable pasa a ser local dentro de `func entregar()`, el caso permitido según SE-0390 («x1 consumed by call»; `deinit` al final del ámbito). Falta compilarlo con Swift 6.2. |
+| Base de versiones iOS (Xcode 15/16 en `ios/modulo-10.md:385`, `ios/modulo-4.md:326` y `:458`, `ios/modulo-12.md:372`, `ios/modulo-13.md:622`) | corregido | Xcode 26 / Swift 6.2 declarados en M0 y en esas líneas (notas de la versión de Xcode 26). |
+| `ios/modulo-4.md:326` depende de `RutaFlowKit` del Módulo 12 | corregido; compilación pendiente | El tema crea su propio paquete con un `Package.swift` completo (targets `Dominio` y `DominioTests`). |
+| `ios/modulo-4.md:419` diagnóstico `@Sendable` (error técnico 11) | corregido; texto exacto pendiente de ejecución | Declaración de `addTask` en developer.apple.com (`operation: sending …`) y mensaje `passing closure as a 'sending' parameter risks causing data races…` en `DiagnosticsSIL.def` de swift `release/6.2`. |
+| `ios/modulo-5.md:11`, `:13`, `:73`, `:75`, `:86` prerrequisito del curso Cloud | corregido | Sustituido por un servidor simulado con `URLProtocol` incluido en el tema. |
+| `ios/modulo-5.md:55` `api.rutaflow.example.com` inexistente y `URL(string:)!` | corregido; compilación pendiente | `ServidorSimulado` intercepta el host reservado `rutaflow.test`; `guard let` en lugar de `!`. Firmas de `URLProtocol` verificadas en developer.apple.com. |
+| `ios/modulo-5.md:23` `ErrorRed` usado antes de definirse | corregido | Marcado como fragmento; `ErrorRed` se define en el Paso 4. |
+| `ios/modulo-5.md:122` (Tema 2) `request` sin definir (nuevo) | corregido; compilación pendiente | La función construye su `URLRequest` y usa la sesión simulada. |
+| `ios/modulo-6.md:301` `try!` y `:305` `NotasView` sin definir | corregido; compilación pendiente | `do/catch` con mensaje y `NotasView.swift` completo (`@Query`, `modelContext`). |
+| `ios/modulo-11.md:66` fallo de firma falso (error técnico 10) | corregido | El fallo ahora es la firma manual sin perfil, con `xcodebuild … archive`; se explica que, con la firma automática, Xcode registra el App ID (Apple Developer Help, *Automatic signing controls*; página de manual de `xcodebuild`). |
+| `ios/modulo-13.md:622` destino iOS 17 con APIs de iOS 18 (error técnico 8) | corregido | developer.apple.com: `CLServiceSession` «iOS: 18.0.0 -»; `authorizationDenied` iOS 18 (citado por la auditoría). También se cambió `Info.plist` por la pestaña Info del target. |
+| `ios/modulo-13.md:750` `BGTaskScheduler` en simulador (error técnico 9) | corregido | developer.apple.com, `BGTaskScheduler.Error.unavailable`: «The app runs on Simulator which doesn't support background processing». Ahora exige un iPhone y `generic/platform=iOS`. |
+| `ios/modulo-14.md:991` «Trazabilidad de la auditoría original» | corregido | Sección borrada. |
+| Más de 20 remisiones de iOS a otros cursos (D3) | corregido como prerrequisito; las comparaciones se mantienen | Aviso en M0 de que son opcionales, M5 sin Cloud y alternativa interna en `ios/modulo-12.md:289`. Quitarlas del texto es reescritura (specs/013 P5). |
+| `ios/modulo-14.md:204` ViewInspector sin versión | pendiente: no se pudo consultar la última versión publicada (la API de GitHub no respondió) | — |
+| Bloqueantes 2, 4 y 5 (soluciones, plantilla de subtemas, proyecto único y «carpeta vacía») y el voseo global | pendiente: reescritura fuera del alcance de specs/014 | Asignados a specs/013 P5. En las líneas tocadas se pasó a tuteo. |

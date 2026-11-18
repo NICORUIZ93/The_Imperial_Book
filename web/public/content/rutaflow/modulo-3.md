@@ -43,14 +43,6 @@ mkdir -p rutaflow-labs/tema-1-estado-vista/src
 cd rutaflow-labs/tema-1-estado-vista
 ```
 
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
-
 ```javascript
 // src/estado-vista.js
 // Union discriminada: el campo "tipo" es la unica fuente de verdad del estado.
@@ -119,7 +111,7 @@ const estadoImposible = {
 console.log(renderizarBooleans(estadoImposible));
 ```
 
-Ejecuta `node src/estado-vista-roto.js`. Imprime `Cargando envio...`: un spinner infinito aunque el envío **ya llegó** y aunque **hay un error real** pendiente de mostrar. Las tres banderas son `true`/con-dato a la vez, y el `if` solo revisa en el orden en que lo escribiste; con la unión discriminada del Paso 4 esta combinación ni siquiera se puede construir, porque `estado.tipo` solo admite un valor a la vez.
+Ejecuta `node src/estado-vista-roto.js`. Imprime `Cargando envio...`: un spinner infinito aunque el envío **ya llegó** y aunque **hay un error real** pendiente de mostrar. Las tres banderas son `true`/con-dato a la vez, y el `if` solo revisa en el orden en que lo escribiste. Con la unión discriminada del Paso 4, `estado.tipo` solo admite un valor a la vez y `renderizar` decide únicamente por él, así que la vista no puede quedar «cargando» y «lista» a la vez. Ojo: esto es JavaScript sin tipos, y nada te impide construir a mano `{ tipo: 'listo', envio, mensaje: 'error viejo' }`; `renderizar` lo acepta e ignora el campo sobrante. Para que esa combinación ni siquiera compile necesitas TypeScript con un tipo `EstadoVista` declarado como unión.
 
 #### Paso 5 · Práctica guiada
 
@@ -180,14 +172,6 @@ Crea una carpeta independiente para comprobar el clustering antes de conectarlo 
 mkdir -p rutaflow-labs/tema-2-clustering/src
 cd rutaflow-labs/tema-2-clustering
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```javascript
 // src/clustering.js
@@ -331,14 +315,6 @@ Crea una carpeta independiente para comprobar el cálculo de nombre accesible an
 mkdir -p rutaflow-labs/tema-3-accesibilidad/src
 cd rutaflow-labs/tema-3-accesibilidad
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```javascript
 // src/nombre-accesible.js

@@ -1,6 +1,6 @@
 # Módulo 12: Electrónica, sensores y control para software e IoT
 
-Capítulo de introducción aplicada a las 16 áreas de la página 4 y al control industrial de la página 42 de `merged.pdf`. El PDF es una colección de capturas, no un manual validado. Las explicaciones y programas siguientes son originales; las referencias técnicas sostienen el modelo y sus límites.
+Capítulo de introducción aplicada a la electrónica, los sensores y el control industrial. Las explicaciones y programas siguientes son originales; las referencias técnicas sostienen el modelo y sus límites.
 
 Este capítulo conecta programación con mediciones físicas. Empieza por unidades, circuitos y lógica antes de integrar sensores. Los ejemplos se ejecutan con la biblioteca estándar de Python; simulan fenómenos y decisiones, no sustituyen montaje, datasheets ni práctica de laboratorio.
 
@@ -161,7 +161,7 @@ Ganancia=10.0; salida=2.00 V
 **Pista específica:** Calcula la máxima entrada sin saturar y compara con el datasheet de un operacional real. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo no incluye caída de salida, slew rate ni corriente máxima. En la página 65 del PDF identifica primero polaridades y si cada símbolo es Zener; prueba cada hipótesis de conducción mediante KCL y desigualdades. No traslades la caída de 0.5 V a cualquier componente real.
+Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo no incluye caída de salida, slew rate ni corriente máxima. En un circuito con varios diodos (como la ampliación de los cuatro diodos al final del módulo) identifica primero polaridades y cuáles son Zener; prueba cada hipótesis de conducción mediante KCL y desigualdades. No traslades la caída de 0.5 V a cualquier componente real.
 
 #### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
@@ -654,7 +654,7 @@ Espacio=0.20 mm; cumple=False
 **Pista específica:** Aumenta centros a 0.60 mm y reproduce la restricción en KiCad con ERC/DRC y captura de resultados. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. **Próximamente:** proyecto real de KiCad (esquemático + layout) con ERC/DRC ejecutados y capturados. Fuente específica: https://docs.kicad.org/
+Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. Como extensión opcional, reproduce el ejemplo en un proyecto de KiCad (esquemático y layout) y ejecuta ERC/DRC. Fuente específica: https://docs.kicad.org/
 
 #### Paso 7 · Cierre
 Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
@@ -953,23 +953,32 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Diagrama interactivo:** [Scan PLC: interlock y actualización de salida](/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html).
 
-## Ampliación: ejercicio de Thévenin de la página 67
+## Ampliación: equivalente de Thévenin con tres fuentes
 
-Aquí sí se pudo leer la topología: tierra inferior, fuente de 4 V con positivo abajo (`Va=-4 V`), resistencia de carga 6 Ω entre a y b, resistencia de 12 Ω de b a tierra, fuente de 8 V positiva en b y negativa en c (`Vb-Vc=8 V`), otra resistencia de 12 Ω de c a tierra y fuente de 2 A desde tierra hacia c.
+Dibuja primero el circuito a partir de esta descripción: tierra inferior, fuente de 4 V con positivo abajo (`Va=-4 V`), resistencia de carga 6 Ω entre a y b, resistencia de 12 Ω de b a tierra, fuente de 8 V positiva en b y negativa en c (`Vb-Vc=8 V`), otra resistencia de 12 Ω de c a tierra y fuente de 2 A desde tierra hacia c.
 
 Retira la carga. El supernodo b-c cumple `Vb/12 + Vc/12 = 2`; junto con `Vb-Vc=8` da `Vb=16 V`, `Vc=8 V`. Por tanto `Vth=Va-Vb=-20 V`. Para hallar Rth, cortocircuita fuentes independientes de tensión y abre la de corriente: ambas resistencias de 12 Ω quedan en paralelo y `Rth=6 Ω`. Reconecta la carga: `Iab=-20/(6+6)=-5/3 A` y `Vab=Iab·6=-10 V`. El signo indica que b está 10 V por encima de a.
 
-Comprueba por nodos con carga: `(Vb+4)/6 + Vb/12 + Vc/12 = 2` y `Vc=Vb-8`; resulta `Vb=6 V`, `Vc=-2 V`, coherente con `Va-Vb=-10 V`. Para Norton, `In=Vth/Rth=-10/3 A`. Si cambias la polaridad de una fuente, cambia el sistema de ecuaciones antes de ejecutar: no reutilices este resultado para otro dibujo.
+Comprueba por nodos con carga: `(Vb+4)/6 + Vb/12 + Vc/12 = 2` y `Vc=Vb-8`; resulta `Vb=6 V`, `Vc=-2 V`, coherente con `Va-Vb=-10 V`. Para Norton, `In=Vth/Rth=-10/3 A`. Si cambias la polaridad de una fuente, cambia el sistema de ecuaciones antes de ejecutar: no reutilices este resultado para otro circuito.
 
-## Ampliación: cuatro diodos de la página 65
+## Ampliación: cuatro diodos
 
-Se leyó el dibujo ampliado: referencia inferior izquierda 0 V, inferior derecha -10 V por VA; fuente V1 superior +8 V; VB positiva arriba de 10 V. D1 y D4 tienen sentido directo hacia abajo, D2 de izquierda a derecha y D3 de abajo hacia arriba. Se usa el modelo dado: directa a 0.5 V y ruptura inversa a 8 V. Si una copia del diagrama tiene otra orientación, estas ecuaciones deben cambiar.
+Dibuja primero el circuito con esta lista de conexiones (todas las tensiones respecto a tierra, 0 V):
 
-Llama x al nodo de R1/D1/D2, y al superior derecho, z al punto entre R2 y D3, w al punto bajo VB y u al punto entre R3 y D4. Por VB, w=y-10. Hipótesis: D1 y D2 directos, D3 en ruptura y D4 bloqueado. Entonces x=0.5, y=x-0.5=0, z=-10+8=-2, u=w=-10 V.
+- **V1:** fuente de +8 V en el nodo superior izquierdo. **VA:** fija el nodo inferior derecho en −10 V.
+- **R1** = 3 kΩ entre V1 (+8 V) y el nodo x.
+- **D1:** ánodo en x, cátodo en tierra (0 V). **D2:** ánodo en x, cátodo en el nodo y.
+- **R2** = 1 kΩ entre y y el nodo z.
+- **D3** (Zener): ánodo en el nodo de −10 V, cátodo en z.
+- **VB** = 10 V: positivo en y, negativo en el nodo w, así que w = y − 10.
+- **R3** = 1 kΩ entre w y el nodo u.
+- **D4:** ánodo en u, cátodo en el nodo de −10 V.
+
+Modelo de diodo: conducción directa a 0.5 V y ruptura inversa a 8 V. Si cambias la orientación de un diodo, estas ecuaciones deben cambiar. Por VB, w=y-10. Hipótesis: D1 y D2 directos, D3 en ruptura y D4 bloqueado. Entonces x=0.5, y=x-0.5=0, z=-10+8=-2, u=w=-10 V.
 
 La corriente por R1 es (8-0.5)/3000 = 2.5 mA. R2 conduce (0-(-2))/1000 = 2 mA hacia D3; por tanto D2 lleva 2 mA y D1 recibe los 0.5 mA restantes. D3 conduce 2 mA en sentido inverso: ánodo a -10 V y cátodo a -2 V. D4 tiene 0 V ánodo-cátodo y 0 mA, consistente con bloqueo. Se cumplen KCL y las desigualdades de los cuatro estados; asumirlos sin comprobar corrientes no sería una solución.
 
-Para comprobar el modelo, parte de una carpeta vacía y crea manualmente `diodos_pdf.py`:
+Para comprobar el modelo, parte de una carpeta vacía y crea manualmente `diodos.py`:
 
 ```bash
 mkdir practica-diodos && cd practica-diodos
@@ -981,7 +990,7 @@ from fractions import Fraction as F
 izquierda, derecha = F(0), F(-10)
 x, y, z, u = F(1, 2), F(0), F(-2), F(-10)
 w = y - 10
-# Corrientes orientadas según los ánodos y cátodos leídos en el dibujo.
+# Corrientes orientadas de ánodo a cátodo según la lista de conexiones.
 i2 = (y - z) / 1000
 i3 = (z - y) / 1000
 i4 = (w - u) / 1000
@@ -1007,9 +1016,9 @@ print("D4 bloqueado: 0.000 mA")
 Ejecuta:
 
 ```bash
-python3 diodos_pdf.py
+python3 diodos.py
 ```
 
 **Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia `derecha` a `F(10)` sin reconstruir los demás nodos: las aserciones de polarización fallan y te obligan a revisar el modelo. **Práctica:** calcula `p_r1 = (8 - x) * ((8 - x) / 3000)` y `p_r2 = (y - z) * i2`, y demuestra que ambas potencias son no negativas.
 
-**Límite profesional:** esto valida el modelo de umbral y las polaridades interpretadas del dibujo, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. **Próximamente:** netlist real de `ngspice` del mismo circuito, comparando sus corrientes de nodo contra las calculadas aquí a mano.
+**Límite profesional:** esto valida el modelo de umbral y las polaridades de la lista de conexiones, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. Como extensión opcional, escribe la lista de conexiones como netlist de `ngspice` y compara sus corrientes con las calculadas aquí.

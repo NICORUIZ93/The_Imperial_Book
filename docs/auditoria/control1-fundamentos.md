@@ -240,3 +240,53 @@ Nota de 0 a 3, global por módulo.
 - **Figuras interactivas** (`content/figures/control-1-segundo-orden/figure.html` y `visuals/temas/...`): comprobé que existen, pero no las abrí en un navegador.
 - **Lectura completa:** leí completos 10 módulos y la muestra de temas listada en «Método». En el resto se revisaron encabezados, enunciados y resultados, no cada párrafo.
 - **Prueba con principiante real (Parte 2, §5):** fuera del alcance de un auditor documental.
+
+## Correcciones aplicadas (specs/014)
+
+Aplicadas el 2026-11-18 sobre `web/public/content/{control-1,foundations}` y sin cambios en `examples/control-1-tanque`. Los números de línea son los del informe original. Cálculos con Python 3.13, SymPy, NumPy y SciPy; el código se ejecutó en `/tmp`.
+
+### Bloqueantes
+
+| Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|
+| B1 `control-1/modulo-14.md:89-99`: \(e_{ss}=1/4\) con lazo inestable | corregido | `np.roots([1,5,0,20])` → \(-5{,}63\), \(0{,}315\pm1{,}858j\). El resultado dice ahora que no se aplica el teorema del valor final y que el error diverge. |
+| B2 `foundations/modulo-12.md:3, 164, 956-1015`: figuras de `merged.pdf` | corregido | Se quitaron las referencias al PDF y a las páginas. Thévenin: se conserva la descripción textual completa de la topología (SymPy: \(V_b=16\), \(V_c=8\), \(V_{th}=-20\) V, carga \(V_b=6\), \(I_N=-10/3\) A). Diodos: el «dibujo ampliado» pasa a ser una lista de conexiones y se ejecutó `diodos.py` (0,5 / 2 / 2 / 0 mA). Se quitaron los dos «Próximamente» (`:657`, `:1015`). |
+| B3 `foundations/modulo-1.md:678, 693`: el Proyecto 1 exige Git y excepciones | corregido (requisitos); pendiente: solución de referencia del proyecto | Los commits pasan a ser copias por etapa más notas en `casos.md`, con aviso de que Git llega en el módulo 5. El texto inválido se documenta como `ValueError` observado (`float("abc")` ejecutado). El error común «captura solo excepciones» se sustituyó por uno sobre lo ya enseñado. La solución publicada es trabajo de specs/013 P5. |
+| B4 `foundations/modulo-1.md:112-136`: `def`, `dict`, `enumerate`, `raise` y f-string sin enseñar | corregido | Se añadió una explicación breve en el punto de uso, con remisión al tema que lo enseña. Ejecutados la demo (`2`, `0`), el fallo (`ZeroDivisionError`) y la corrección (`0.0`). |
+| B5 `foundations/modulo-0.md:66-168`: Tema 1 de 90 min antes del «Hola, mundo» y sin `mkdir` | corregido (`mkdir`/`cd` en `:112` y `cd ..` en `:146`); pendiente: reordenar y partir el Tema 1 es una reescritura (specs/013 P5) | Ejecutado `entorno.py`: seis líneas, código de salida 0; con `os.getpid(1)` → `TypeError`, código 1. Queda anotado en el registro de ejecución del tema. |
+| B6 `foundations/modulo-0.md:415-420`, `modulo-7.md:479`: material de autoría (PDF, capturas) | corregido | Se borraron el encabezado «Ampliación de la página 50 del PDF» y las referencias a la captura. También se quitó la remisión a «módulo 7 de Java» (`modulo-7.md:529`). Una búsqueda de `PDF\|página N\|dibujo ampliado` en ambos cursos ya no encuentra nada. |
+| B7 `foundations/modulo-0.md:26`: ruta no probada en Windows | pendiente: el entorno no tiene Windows ni Ubuntu con escritorio. Solo se ejecutó el Tema 1 en Linux. | — |
+
+### Errores técnicos y matemáticos verificados
+
+| # | Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|---|
+| 1 | `control-1/modulo-14.md:97-99` | corregido | Ver B1. |
+| 2 | `control-1/modulo-11.md:597`: identificar \(K,\tau\) antes de \(t=5\) s y compararlo con la planta | corregido | Se ejecutó `simular.py`: antes de 5 s la altura es constante (`1.0000`). Desde 5 s se alcanza el 63,2 % en \(t=6{,}54\) s (\(\tau=1{,}54\) s), con \(K=0{,}615\). SymPy da \(0{,}8G/(1+0{,}8G)=1{,}6/(4s+2{,}6)\). La práctica ahora identifica el lazo cerrado y lo compara con \(T(s)\). |
+| 3 | `control-1/modulo-1.md:431`: normalizar ángulos antes de sumar | corregido | \(e^{j\varphi}\) tiene periodo \(2\pi\). El texto dice ahora que se normaliza solo el resultado. |
+| 4 | `foundations/modulo-1.md:265`: `int()` «espera punto» | corregido | Ejecutado: `int("3.14")` y `int("3,14")` → `ValueError`; `float("3.14")` → `3.14`; `float("3,14")` → `ValueError`; `float("3,14".replace(",", "."))` → `3.14`. |
+| 5 | `foundations/modulo-1.md:261-262`: solución con `IndentationError` y truncado | corregido | Nueva ruta segura con `float` + `is_integer()` + rango, ejecutada con `"1e10"`, `"3.7"` y `"25"`. Advierte que `int(float("3.7"))` da `3`. |
+| 6 | `foundations/modulo-9.md:410`: IC como creencia, «>300 muestras», SLI/SLO | corregido | El intervalo se define como propiedad del procedimiento; se quita la cifra sin fuente; SLI y SLO siguen el Google SRE Book, cap. 4 (*SLI: «a carefully defined quantitative measure»*; *SLO: «a target value or range… measured by an SLI»*). La solución queda plegada en `<details>`. |
+| 7 | `foundations/modulo-1.md:69`: «99.99 falla» | corregido | `99.99 >= 100` → `False`. El escenario explica ahora que el riesgo está en los cálculos con `float` que vienen después. |
+| 8 | `control-1/modulo-19.md:212` (y `:208`): polo 0,013 | corregido | `0.1/0.0125 = 8.0` frente a `0.1/0.013 = 7.69`. El polo pasa a 0,0125. |
+
+### Mayores y menores que impedían seguir un tema
+
+| Defecto (archivo:línea original) | Estado | Cómo se verificó |
+|---|---|---|
+| Control 1: «capítulo N» con desfase +1 (92 apariciones en 21 archivos) | corregido | Sustitución con script por «módulo N−1», con ajustes gramaticales («del módulo», plurales). Se comprobó que los ejemplos citados existen en el módulo nuevo (p. ej. «Ejemplo 8 del módulo 2», «Ejemplo 4 del módulo 14», «Ejemplo 1 del módulo 18»). `grep "[Cc]apítulos\? [0-9]"` ya no encuentra nada. No se añadió el control en `validate.sh` porque esta tarea no toca scripts. |
+| `control-1/modulo-5.md:148` (y `11.md:597`, `14.md:355`): laboratorio «desde la raíz del repositorio» | corregido | El módulo 5 incluye el código completo de `simular.py`, plegado, con la ruta `academia-labs/control-1/examples/control-1-tanque/`. Se ejecutó desde esa estructura: `P: altura_final=1.308 m`, `PI: altura_final=1.500 m`. |
+| `control-1/modulo-6.md:166-176` frente a `:291-309`: lazos que se tocan / no se tocan | corregido | Los dos enunciados nombran su topología y dan sus ecuaciones. SymPy: \(G_1G_2/(1+G_1H_1+G_2H_2)\) (se tocan en X) frente a \(G_1G_2/((1+G_1H_1)(1+G_2H_2))\). |
+| `control-1/modulo-1.md:511, 514`: «Ejemplo 7» → Ejemplo 2; `:699-779` `j_{2}` | corregido | Ahora remite al Ejemplo 2 (\(s^2+4s+13\)) y escribe `2j`, `(5j)^{2}`, `4 \cdot 5j`. |
+| `control-1/modulo-21.md:86`: «tabla 10.4» inexistente | corregido | Remite al módulo 18, Tema 4. |
+| Menores Control 1: `1.md:594`, `3.md:599`, `9.md:103`, `18.md:182, 202`, `15.md:217` | corregido | `4-(-12)`, `2(s+3)-5` (comprobado al expandir), `-\delta x`, sin el «= 0» duplicado, «Ninguna raíz / 2 raíces». |
+| `foundations/modulo-8.md:339`: «[SOLUCIÓN PLEGADA]» visible y 512 MB frente a 256M | corregido | La solución pasa a `<details>` con un `docker-compose.yml` coherente (BD 512M y worker 256M; `yaml.safe_load` sin errores), contrastado con la especificación Compose Deploy (`limits` = techo, `reservations` = mínimo garantizado). |
+| «[SOLUCIÓN PLEGADA]» visible en `foundations/modulo-4.md:25`, `8.md:149`, `9.md:27`, `10.md:31, 158, 273, 436` | corregido | Convertidas mecánicamente en `<details>`. Su contenido no se revisó. |
+| `foundations/modulo-9.md:420`: `medir()` sin definir | corregido | Ejemplo autocontenido con `random.seed(2026)`. Ejecutado: `{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}`. |
+| `foundations/modulo-4.md:234`: `cursor` sin conexión | corregido | Ejemplo completo con `sqlite3` en memoria. Ejecutado: concatenando devuelve las 2 filas y parametrizado devuelve `[]`. |
+| `foundations/modulo-5.md:66`: `logger` sin definir | corregido | Se añadieron `logging.basicConfig` y `getLogger`. Ejecutado: `INFO retirada_solicitada sku=A-1 cantidad=3`. |
+| `foundations/modulo-8.md:90, 323`: `domain.py` usado antes de crearse | no reproducible | El Paso 4 del Tema 1 (`:54-90`) crea `domain.py` con su contenido completo, y el Tema 4 lo vuelve a crear (`:413-419`). |
+| Voseo mezclado (14 módulos) | pendiente: unificación global fuera del alcance puntual | Solo se pasaron a tuteo las líneas editadas. |
+| Relleno sin resultado (C1 `8.md`, `12.md`, `18.md`, `20.md`), prácticas y errores comunes faltantes, «Más ejemplos» de plantilla, analogías dobles, `float` para dinero (`F 1.md:465`), proyecto integrador sin identidad, alcance (C#, 2PC, PLC), contenido personal (`C1 0.md:134`, `21.md:98`) | pendiente: piden redactar contenido nuevo o decisiones del dueño (specs/013 P5) | — |
+
+Verificación final: la búsqueda de `nodejs20\.x|App Mesh|jenkins:lts-jdk17|Trazabilidad de la auditoría original|El prompt menciona|merged\.pdf` en ambos cursos no encuentra nada, y `build_web_topic_index.py`, `build_curriculum_catalog.py` y `./scripts/validate.sh` terminan en `ok`.

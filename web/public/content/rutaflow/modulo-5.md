@@ -7,7 +7,7 @@
 
 **Conceptos clave:** matriz de coste, VRP, capacidad, ventanas, heurísticas y restricciones.
 
-La ruta más corta puede incumplir capacidad, prioridad o horario. El problema real minimiza coste sujeto a restricciones y cambios. Se parte de nearest-neighbor, se mejora con 2-opt y se compara con una solución de referencia. Toda heurística registra semilla, tiempo y brecha. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
+La ruta más corta puede incumplir capacidad, prioridad o horario. El problema real minimiza coste sujeto a restricciones y cambios. Este tema construye la base: el camino más corto entre dos nodos con Dijkstra. Resolver el VRP completo (por ejemplo, partir de nearest-neighbor, mejorar con 2-opt y comparar con una solución de referencia) queda fuera de este tema; cuando lo hagas, toda heurística debe registrar semilla, tiempo y brecha. El criterio no es memorizar la herramienta, sino poder predecir qué sucede ante duplicados, datos incompletos, concurrencia, pérdida de red o permisos insuficientes. Documenta supuestos y mide antes de optimizar.
 
 **Analogía:** Es como organizar citas médicas: cercanía importa, pero también horario, urgencia y duración.
 
@@ -17,7 +17,7 @@ La ruta más corta puede incumplir capacidad, prioridad o horario. El problema r
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 1: Grafos y problema de rutas** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 1: Grafos y problema de rutas** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
 
 #### Paso 2 · Contexto y caso real
 
@@ -46,14 +46,6 @@ Crea una carpeta independiente y, dentro, `rutas.py`:
 mkdir -p rutaflow-labs/tema-1-grafos-y-problema-de-rutas
 cd rutaflow-labs/tema-1-grafos-y-problema-de-rutas
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```python
 import heapq
@@ -139,7 +131,7 @@ Geocodificar produce candidatos con confianza, no verdad. Se normaliza sin destr
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 2: Geocoding y map matching** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 2: Geocoding y map matching** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
 
 #### Paso 2 · Contexto y caso real
 
@@ -168,14 +160,6 @@ Crea una carpeta independiente y, dentro, `geocoding.py`:
 mkdir -p rutaflow-labs/tema-2-geocoding-y-map-matching
 cd rutaflow-labs/tema-2-geocoding-y-map-matching
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```python
 # Simula el indice de un geocodificador real (p. ej. Nominatim sobre PostGIS):
@@ -251,7 +235,7 @@ El stream particiona por conductor, usa sequence_number y tolera eventos tardío
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir y verificar **Tema 3: Streaming y ETA con incertidumbre** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y lectura de JSON.
+Al finalizar podrás construir y verificar **Tema 3: Streaming y ETA con incertidumbre** dentro de RutaFlow, empezando desde una carpeta vacía y explicando qué decisión técnica resuelve. **Conocimiento previo:** terminal, Git y Python 3 básico: funciones, listas y diccionarios (este repositorio no tiene un track de Python).
 
 #### Paso 2 · Contexto y caso real
 
@@ -283,14 +267,6 @@ Crea una carpeta independiente y, dentro, `eta.py`:
 mkdir -p rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre
 cd rutaflow-labs/tema-3-streaming-y-eta-con-incertidumbre
 ```
-
-**Ejecuta el ejemplo** (según la capa: backend con `./mvnw test`, app con `flutter run`):
-
-```bash
-./mvnw test
-```
-Confirma el resultado contra el criterio del paso.
-
 
 ```python
 from datetime import datetime
@@ -370,8 +346,6 @@ Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia 
 **Transferencia al proyecto integrador «RutaFlow»:** Calcula ETA con datos de antigüedad conocida y comunica un rango. Simula una interrupción de posiciones y verifica que el rango o advertencia cambia sin presentar certeza falsa.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
-
-## Aplicación del material de referencia
 
 ### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil
 
@@ -534,8 +508,6 @@ El siguiente tema conecta las posiciones con una ruta calculada. En el proyecto 
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
 
-
-## Aplicación del material de referencia
 
 ### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable
 

@@ -7,7 +7,7 @@ Para crear, ejecutar, firmar y publicar una app iOS necesitas **macOS y Xcode**.
 
 ### macOS: entorno completo recomendado
 
-1. Instala Xcode desde App Store y ábrelo una vez para aceptar la licencia y descargar componentes.
+1. Instala Xcode 26 o posterior desde App Store (incluye Swift 6.2 y necesita macOS Sequoia 15.6 o posterior) y ábrelo una vez para aceptar la licencia y descargar componentes.
 2. En Xcode abre **Settings → Platforms** e instala un simulador de iOS.
 3. Ejecuta `xcode-select -p`, `xcodebuild -version` y `swift --version` en Terminal.
 4. Crea **File → New → Project → iOS App**, Interface SwiftUI y Language Swift.
@@ -16,6 +16,8 @@ Para crear, ejecutar, firmar y publicar una app iOS necesitas **macOS y Xcode**.
 ### Windows y Linux: etapa de fundamentos
 
 Instala Swift desde [swift.org/install](https://www.swift.org/install/) y VS Code con la extensión Swift. Verifica `swift --version`, crea `hola.swift` con `print("Hola, Swift")` y ejecuta `swift hola.swift`. Esta configuración sirve para Módulo 0 y lógica independiente; SwiftUI, simulador, firma y App Store requieren macOS.
+
+**Sobre otros cursos de la academia.** Algunas explicaciones comparan Swift con Kotlin, Android, React, Angular o Spring Boot y citan el módulo de ese curso. Son comparaciones opcionales: no necesitas haber hecho esos cursos para seguir este. Si no los conoces, sáltalas; todo lo que necesitas está en este curso.
 
 Si Xcode indica que no encuentra un runtime, instálalo en Settings → Platforms. Si falla la licencia, ejecuta `sudo xcodebuild -license accept`. Conserva espacio libre suficiente: Xcode y los simuladores pueden ocupar decenas de GB.
 
@@ -57,7 +59,7 @@ flowchart LR
 ### Tema 1: Optionals y unwrapping seguro
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a desenvolver un `String?` de forma segura con `guard let`, evitando el crash de un force unwrap sobre un destinatario ausente. Prerrequisitos: macOS, Xcode y Swift. Verifica swift --version y xcodebuild -version.
+Al finalizar vas a desenvolver un `String?` de forma segura con `guard let`, evitando el crash de un force unwrap sobre un destinatario ausente. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
 
 **Diagrama: Caminos de Desenvolvimiento Seguro**
 
@@ -107,13 +109,13 @@ if let nombreDesenvuelto = nombre {
 let saludo = nombre ?? "Invitado" // nil coalescing: valor por defecto
 ```
 
-Swift incorpora la ausencia de valor directamente en el sistema de tipos mediante el modificador `?`: `String?` y `String` son tipos formalmente distintos para el compilador, de modo que intentar usar un `String?` donde se espera un `String` sin desenvolverlo primero produce un error de compilación, no un crash en tiempo de ejecución. Esta decisión de diseño previene por completo la categoría de errores conocida en otros lenguajes como `NullPointerException` (Java, estudiado en el Módulo 3 de ese track) o `undefined is not a function` (JavaScript): en Swift, el compilador rechaza el código antes de que pueda ejecutarse, en vez de descubrir el problema en producción cuando un valor inesperadamente ausente causa un fallo.
+Swift incorpora la ausencia de valor directamente en el sistema de tipos mediante el modificador `?`: `String?` y `String` son tipos formalmente distintos para el compilador, de modo que intentar usar un `String?` donde se espera un `String` sin desenvolverlo primero produce un error de compilación, no un crash en tiempo de ejecución. Esta decisión de diseño reduce mucho la categoría de errores que en otros lenguajes aparece como `NullPointerException` (Java) o `undefined is not a function` (JavaScript): mientras desenvuelvas con `if let`, `guard let` o `??`, el compilador rechaza el código inseguro antes de ejecutarlo. No la elimina por completo: `!`, `try!` y `as!` le dicen al compilador «confía en mí», y si el valor falta el programa se detiene en tiempo de ejecución, como verás en el fallo deliberado del Paso 4.
 
 `if let` desenvuelve el optional de forma segura y condicional (el bloque solo se ejecuta si hay un valor presente); `guard let` desenvuelve de forma temprana con una salida obligatoria en caso de `nil` (apropiado para validaciones al inicio de una función); `??` (nil coalescing) provee un valor por defecto en una única expresión cuando el optional es `nil`. Todas estas son alternativas seguras al "force unwrap" (`nombre!`), que sí puede provocar un crash en tiempo de ejecución si el valor resulta ser `nil`, y que por eso se reserva para casos donde se tiene certeza absoluta (verificada por el propio programador, no por el compilador) de que el valor nunca será `nil` en ese punto específico del código.
 
 **Analogía:** un optional es como una caja que declara explícitamente en su etiqueta si puede estar vacía o no; abrirla con `if let` es revisar con cuidado antes de asumir que contiene algo, mientras que forzar la apertura con `!` es asumir a ciegas que hay contenido, arriesgándose a una sorpresa desagradable si la caja resulta estar vacía.
 
-**¿Por qué es importante?** El sistema de optionals de Swift previene la categoría completa de errores de "acceder a un valor ausente" detectándolos en tiempo de compilación, en vez de dejar que se manifiesten como crashes en producción como ocurre en lenguajes sin este mecanismo incorporado al sistema de tipos.
+**¿Por qué es importante?** El sistema de optionals de Swift detecta en tiempo de compilación casi todos los errores de "acceder a un valor ausente" (salvo los que fuerzas con `!`), en vez de dejar que se manifiesten como crashes en producción como ocurre en lenguajes sin este mecanismo incorporado al sistema de tipos.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una **carpeta vacía** y crea un ejecutable dedicado a valores ausentes:
@@ -121,13 +123,14 @@ Parte de una **carpeta vacía** y crea un ejecutable dedicado a valores ausentes
 mkdir swift-optionals
 cd swift-optionals
 swift package init --type executable
-mkdir -p Sources
-swift run
+rm Sources/swift-optionals/*.swift
 ```
 
 `--type` es la bandera que elige la plantilla del paquete Swift (`executable`, un programa que corre directamente; más abajo verás `library`, un paquete pensado para ser importado).
 
-Guarda `Sources/main.swift`:
+Desde Swift 6.2, la plantilla `executable` crea `Sources/swift-optionals/swift_optionals.swift` con un tipo `@main`; el `rm` lo borra porque un módulo no puede tener a la vez `@main` y `main.swift`.
+
+Guarda `Sources/swift-optionals/main.swift`:
 
 ```swift
 func etiquetaDestinatario(_ nombre: String?) -> String {
@@ -155,7 +158,7 @@ Entregá la función con `guard let` del Paso 4, el crash por force unwrap del P
 ### Tema 2: struct vs class
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a demostrar con código real la diferencia entre copiar un `struct` (independiente) y compartir una instancia de `class` (misma referencia), usando un paquete y una sesión de conductor como ejemplo. Prerrequisitos: macOS, Xcode y Swift. Verifica swift --version y xcodebuild -version.
+Al finalizar vas a demostrar con código real la diferencia entre copiar un `struct` (independiente) y compartir una instancia de `class` (misma referencia), usando un paquete y una sesión de conductor como ejemplo. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
 
 **Diagrama: Value Type vs Reference Type**
 
@@ -228,9 +231,9 @@ Desde una **carpeta vacía**, crea un ejemplo que haga visible copia frente a id
 mkdir swift-identidad
 cd swift-identidad
 swift package init --type executable
-swift run
+rm Sources/swift-identidad/*.swift
 ```
-Guarda `Sources/main.swift`:
+Guarda `Sources/swift-identidad/main.swift`:
 
 ```swift
 struct Paquete { var estado: String }
@@ -263,7 +266,7 @@ Entregá la copia independiente y la referencia compartida del Paso 4, el error 
 ### Tema 3: Protocolos y enums con valores asociados
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a modelar el estado de una entrega como un enum con valores asociados, y vas a comprobar que el compilador exige manejar exhaustivamente cada caso en un `switch`. Prerrequisitos: macOS, Xcode y Swift. Verifica swift --version y xcodebuild -version.
+Al finalizar vas a modelar el estado de una entrega como un enum con valores asociados, y vas a comprobar que el compilador exige manejar exhaustivamente cada caso en un `switch`. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
 
 #### Paso 2 · Contexto y caso real
 El estado de una entrega (creada, en ruta con un conductor, fallida con un motivo) no es un simple string — cada estado lleva consigo datos propios distintos, y un nuevo estado agregado en el futuro no debería poder "olvidarse" silenciosamente en la lógica que ya reacciona a los estados existentes.
@@ -311,9 +314,9 @@ Desde una **carpeta vacía**, crea un contrato y un estado imposible de represen
 mkdir swift-protocolos-estados
 cd swift-protocolos-estados
 swift package init --type executable
-swift run
+rm Sources/swift-protocolos-estados/*.swift
 ```
-Guarda `Sources/main.swift`:
+Guarda `Sources/swift-protocolos-estados/main.swift`:
 
 ```swift
 protocol Describible { var descripcion: String { get } }
@@ -350,7 +353,7 @@ Entregá el enum exhaustivo del Paso 4, el error de exhaustividad al agregar `en
 ### Tema 4: Closures, colecciones y genéricos con propósito
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a filtrar coordenadas válidas de una lista de paradas con `compactMap`, y a indexar elementos por un identificador genérico sin perder el tipo concreto. Prerrequisitos: macOS, Xcode y Swift. Verifica swift --version y xcodebuild -version.
+Al finalizar vas a filtrar coordenadas válidas de una lista de paradas con `compactMap`, y a indexar elementos por un identificador genérico sin perder el tipo concreto. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
 
 #### Paso 2 · Contexto y caso real
 Una lista de paradas de una ruta puede traer coordenadas ausentes o fuera de rango (una latitud de 120 grados no existe); descartarlas en silencio sin una regla explícita puede ocultar un error de datos real en vez de uno esperado.
@@ -514,7 +517,7 @@ Entregá el filtro de coordenadas del Paso 4, la prueba fallida por rango de lat
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Xcode 16 o superior (Swift 6). Crea un paquete de línea de comandos: `swift package init --type executable --name Propiedad` y escribe el código en `Sources/Propiedad/main.swift`.
+Usa Swift 6.2 o posterior (Xcode 26). Crea un paquete de línea de comandos con `mkdir Propiedad && cd Propiedad && swift package init --type executable`, borra el archivo generado con `rm Sources/Propiedad/Propiedad.swift` y escribe el código en `Sources/Propiedad/main.swift`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -566,12 +569,18 @@ func confirmar(_ codigo: consuming CodigoEntrega) {
     print("confirmando entrega con \(codigo.valor)")
 }
 
-let codigo = CodigoEntrega(valor: "7Q4K")
-mostrar(codigo)
-mostrar(codigo)    // se puede mirar varias veces
-confirmar(codigo)  // lo entrega
-// confirmar(codigo) // ❌ error: 'codigo' used after consume
-print("fin")
+// Una constante local (dentro de una función) se puede consumir;
+// por eso el ejemplo no declara `codigo` como variable global.
+func entregar() {
+    let codigo = CodigoEntrega(valor: "7Q4K")
+    mostrar(codigo)
+    mostrar(codigo)    // se puede mirar varias veces
+    confirmar(codigo)  // lo entrega
+    // confirmar(codigo) // ❌ error: 'codigo' used after consume
+    print("fin")
+}
+
+entregar()
 ```
 
 Ejecútalo:
@@ -662,7 +671,7 @@ Resultado esperado: `xcodebuild -list` muestra `RutaFlowApp` en **Schemes**, y e
 |---|---|---|
 | Una vista (`struct X: View`) o un modelo, servicio o tipo | Un archivo nuevo en el grupo `RutaFlowApp` (**File → New → File… → Swift File**) | `xcodebuild … build`, luego ⌘R o el canvas de Preview (⌥⌘↵) |
 | Pruebas con `@Test` o `XCTestCase` | Un archivo dentro de `RutaFlowAppTests` o `RutaFlowAppUITests` | `xcodebuild … test` con un simulador concreto |
-| Instrucciones sueltas al nivel superior (`let`, `await`, `print` fuera de una función) | Un paquete aparte: `swift package init --type executable --name Practica` y el código en `Sources/Practica/main.swift` | `swift run` dentro de `Practica` |
+| Instrucciones sueltas al nivel superior (`let`, `await`, `print` fuera de una función) | Un paquete aparte: `mkdir Practica && cd Practica && swift package init --type executable`, borra `Sources/Practica/Practica.swift` y pon el código en `Sources/Practica/main.swift` | `swift run` dentro de `Practica` |
 
 Las instrucciones sueltas no compilan dentro de la app, porque en un target de app solo `main.swift` admite código de nivel superior y `RutaFlowApp` usa `@main`.
 

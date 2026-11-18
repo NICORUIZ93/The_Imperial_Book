@@ -265,6 +265,7 @@ CREATE TABLE movimientos_contables (
   debito NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (debito >= 0),
   credito NUMERIC(14,2) NOT NULL DEFAULT 0 CHECK (credito >= 0),
   envio_codigo TEXT NOT NULL,
+  moneda CHAR(3) NOT NULL DEFAULT 'COP', -- un asiento balancea dentro de una misma moneda
   CHECK (debito = 0 OR credito = 0)
 );
 
@@ -275,9 +276,9 @@ INSERT INTO movimientos_contables (asiento_id, cuenta, debito, credito, envio_co
   (1, 'comision_plataforma',     0,  3000, 'RF-4471');
 
 -- Verificación: todo asiento_id presente en este resultado está desbalanceado
-SELECT asiento_id, SUM(debito) AS total_debito, SUM(credito) AS total_credito
+SELECT asiento_id, moneda, SUM(debito) AS total_debito, SUM(credito) AS total_credito
 FROM movimientos_contables
-GROUP BY asiento_id
+GROUP BY asiento_id, moneda
 HAVING SUM(debito) <> SUM(credito);
 ```
 
@@ -294,7 +295,7 @@ INSERT INTO movimientos_contables (asiento_id, cuenta, debito, credito, envio_co
 VALUES (2, 'efectivo_conductor', 10000, 0, 'RF-5002');
 ```
 
-Repite la consulta de verificación: ahora devuelve `asiento_id = 2 | total_debito = 10000.00 | total_credito = 0.00`, exponiendo el asiento descuadrado. Diagnóstico: cualquier `asiento_id` que aparezca en esa consulta nunca debe liquidarse ni conciliarse; corrección: insertar el movimiento de contrapartida faltante (`INSERT INTO movimientos_contables (asiento_id, cuenta, debito, credito, envio_codigo) VALUES (2, 'obligacion_comercio', 0, 10000, 'RF-5002');`) y volver a ejecutar la consulta hasta que no devuelva filas.
+Repite la consulta de verificación: ahora devuelve `asiento_id = 2 | moneda = COP | total_debito = 10000.00 | total_credito = 0.00`, exponiendo el asiento descuadrado. Diagnóstico: cualquier `asiento_id` que aparezca en esa consulta nunca debe liquidarse ni conciliarse; corrección: insertar el movimiento de contrapartida faltante (`INSERT INTO movimientos_contables (asiento_id, cuenta, debito, credito, envio_codigo) VALUES (2, 'obligacion_comercio', 0, 10000, 'RF-5002');`) y volver a ejecutar la consulta hasta que no devuelva filas.
 
 #### Paso 5 · Práctica guiada
 

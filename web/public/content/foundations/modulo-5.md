@@ -64,8 +64,16 @@ Si `retirar(0, 0)` se considera válido, el resultado es cero. Si `cantidad=-2`,
 Lee el stack trace desde el tipo de error y la primera línea de tu código, no solo la última salida. Coloca un breakpoint antes de la decisión, inspecciona valores y avanza una instrucción. Los logs deben registrar evento y contexto útil sin secretos:
 
 ```python
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s sku=%(sku)s cantidad=%(cantidad)s")
+logger = logging.getLogger(__name__)
+
+sku, cantidad = "A-1", 3
 logger.info("retirada_solicitada", extra={"sku": sku, "cantidad": cantidad})
 ```
+
+Salida: `INFO retirada_solicitada sku=A-1 cantidad=3`. Los campos de `extra` se vuelven atributos del registro y el formato decide cómo mostrarlos.
 
 Evita `print("aquí")` repetido: no expresa hipótesis ni estructura. Al corregir, crea una prueba que falle con la versión defectuosa y pase con la corrección. Así el conocimiento queda automatizado.
 

@@ -296,9 +296,9 @@ import java.util.function.Predicate;
 public class OrdenCorreo {
     public static void main(String[] args) {
         Function<String, String> limpiar = texto -> texto.trim().toLowerCase();
-        Predicate<String> contieneArroba = texto -> texto.contains("@");
-        Function<String, Boolean> flujoCorrecto = limpiar.andThen(contieneArroba::test);
-        Function<String, Boolean> flujoIncorrecto = contieneArroba::test;
+        Predicate<String> correoLimpio = texto -> texto.contains("@") && texto.equals(texto.trim().toLowerCase());
+        Function<String, Boolean> flujoCorrecto = limpiar.andThen(correoLimpio::test);
+        Function<String, Boolean> flujoIncorrecto = correoLimpio::test;
         String entrada = " ANA@RUTAFLOW.COM ";
         System.out.println(flujoCorrecto.apply(entrada));
         System.out.println(flujoIncorrecto.apply(entrada));

@@ -22,8 +22,12 @@ Modelar relacionalmente significa decidir primero qué hechos existen como entid
 3. ¿Qué garantías ofrece `NO ACTION` que `CASCADE` no da?
 4. Propón cuándo es seguro `CASCADE` (pista: diferencia entre datos técnicos y datos de negocio).
 
-[SOLUCIÓN PLEGADA]
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
 > `CASCADE` es para relaciones puramente técnicas (órdenes → líneas de orden: la línea no existe sin orden). `NO ACTION` para datos de negocio (conductor → entregas: la entrega sigue existiendo como hecho histórico, solo el propietario cambia). Auditoría exige registro explícito del cambio, no eliminación silenciosa.
+
+</details>
 
 **Conceptos clave:** entidad, atributo, fila, tabla, clave primaria, clave foránea, relación, cardinalidad, restricción y normalización.
 
@@ -232,12 +236,24 @@ ORDER BY unidades DESC;
 Nunca construyas SQL concatenando entrada:
 
 ```python
+import sqlite3
+
+conexion = sqlite3.connect(":memory:")
+cursor = conexion.cursor()
+cursor.execute("CREATE TABLE productos (sku TEXT, nombre TEXT)")
+cursor.executemany("INSERT INTO productos VALUES (?, ?)", [("A-1", "lápiz"), ("B-2", "regla")])
+sku = "x' OR '1'='1"  # entrada maliciosa
+
 # Incorrecto: permite alterar la consulta
 cursor.execute("SELECT * FROM productos WHERE sku = '" + sku + "'")
+print("concatenando:", cursor.fetchall())
 
 # Correcto: el driver separa código y dato
 cursor.execute("SELECT * FROM productos WHERE sku = ?", (sku,))
+print("parametrizado:", cursor.fetchall())
 ```
+
+Salida: `concatenando: [('A-1', 'lápiz'), ('B-2', 'regla')]` y `parametrizado: []`. La entrada maliciosa convirtió el filtro en una condición siempre verdadera y devolvió toda la tabla; con `?` se buscó literalmente ese texto como SKU.
 
 La parametrización previene inyección y maneja escaping/tipos. No es opcional aunque la herramienta sea local.
 

@@ -143,7 +143,7 @@ python3 verificacion.py
 
 cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx0{,}316\) (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (capítulo 13), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
+**Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (módulo 12), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
 
 ### Tema 2: Estabilidad según la posición de los polos
 
@@ -173,7 +173,7 @@ cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx
 
    **¿Por qué?** Parte real cero: \(\sin3t\), que oscila para siempre sin crecer ni apagarse.
 
-4. (d) Atajo de capítulo 2: \(-2\pm3j\). Estable.
+4. (d) Atajo del módulo 1: \(-2\pm3j\). Estable.
 
    **¿Por qué?** Parte real negativa.
 
@@ -197,7 +197,7 @@ cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx
 
 3. \(M_p = e^{-4\pi/3} = 1{,}5\,\%\); \(t_p = \pi/3 = 1{,}05\) s; \(t_s = 4/4 = 1\) s.
 
-   **¿Por qué?** Fórmulas de capítulo 13 con \(\sigma\) y \(\omega_d\).
+   **¿Por qué?** Fórmulas del módulo 12 con \(\sigma\) y \(\omega_d\).
 
 **Resultado:** \(\zeta = 0{,}8\), \(M_p = 1{,}5\,\%\), \(t_s = 1\) s
 
@@ -271,7 +271,7 @@ python3 verificacion.py
 
 cambia el polinomio a `(s+1)*(s+4)` (caso a) y confirma `estable: True`. Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** `re(r) < 0` para cada raíz exacta es la definición misma de estabilidad; en un examen sin software hay que decidirlo mirando los coeficientes (atajo de segundo orden) o con Routh-Hurwitz (capítulo 15) para polinomios más grandes, sin resolver las raíces.
+**Límite:** `re(r) < 0` para cada raíz exacta es la definición misma de estabilidad; en un examen sin software hay que decidirlo mirando los coeficientes (atajo de segundo orden) o con Routh-Hurwitz (módulo 14) para polinomios más grandes, sin resolver las raíces.
 
 ### Tema 3: La zona de diseño
 
@@ -355,7 +355,7 @@ python3 verificacion.py
 
 cambia `Mp, ts` a `0.05, 0.8` y confirma \(\zeta_{\min}\approx0{,}69\), \(\theta_{\max}\approx46{,}4°\), \(\sigma_{\min}=5\) (Ejemplo 2). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** esta zona define condiciones **necesarias** sobre un polo dominante de segundo orden; verificar que un candidato cae dentro de la zona (Ejemplo 3) no reemplaza comprobar que de verdad es el polo dominante del sistema completo (capítulo 13).
+**Límite:** esta zona define condiciones **necesarias** sobre un polo dominante de segundo orden; verificar que un candidato cae dentro de la zona (Ejemplo 3) no reemplaza comprobar que de verdad es el polo dominante del sistema completo (módulo 12).
 
 #### Ejemplo 2 · Tres especificaciones · *Intermedio*
 
@@ -401,7 +401,7 @@ cambia `Mp, ts` a `0.05, 0.8` y confirma \(\zeta_{\min}\approx0{,}69\), \(\theta
 
 1. Denominador: \((s+3)^2 + 25 = s^2+6s+34\). \(\omega_n^2 = 34\).
 
-   **¿Por qué?** Producto de conjugados (capítulo 2).
+   **¿Por qué?** Producto de conjugados (módulo 1).
 
 2. \(G = \dfrac{K\omega_n^2}{\ldots} = \dfrac{340}{s^2+6s+34}\).
 

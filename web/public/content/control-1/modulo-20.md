@@ -25,7 +25,7 @@ Otra forma de ver un sistema: qué le hace a una entrada senoidal de cada frecue
 1. \(Y(s) = G(s)\dfrac{\omega}{s^2+\omega^2} = G(s)\dfrac{\omega}{(s-j\omega)(s+j\omega)}\).
 2. Fracciones parciales: los polos de \(G\) (estables) dan términos que se apagan. Quedan los de \(\pm j\omega\).
 3. Residuo en \(j\omega\): \(\dfrac{G(j\omega)\,\omega}{2j\omega} = \dfrac{G(j\omega)}{2j}\). En \(-j\omega\), su conjugado.
-4. \(y_{ss} = \dfrac{G(j\omega)}{2j}e^{j\omega t} - \dfrac{\overline{G(j\omega)}}{2j}e^{-j\omega t}\). Con \(G(j\omega) = |G|e^{j\phi}\): \(y_{ss} = |G|\,\dfrac{e^{j(\omega t+\phi)} - e^{-j(\omega t+\phi)}}{2j} = |G|\sin(\omega t+\phi)\) (Euler, capítulo 2).
+4. \(y_{ss} = \dfrac{G(j\omega)}{2j}e^{j\omega t} - \dfrac{\overline{G(j\omega)}}{2j}e^{-j\omega t}\). Con \(G(j\omega) = |G|e^{j\phi}\): \(y_{ss} = |G|\,\dfrac{e^{j(\omega t+\phi)} - e^{-j(\omega t+\phi)}}{2j} = |G|\sin(\omega t+\phi)\) (Euler, módulo 1).
 
 ∎
 
@@ -109,7 +109,7 @@ python3 verificacion.py
 
 cambia `s` a `1*I` con `G = 5/(s+1)` y confirma el Ejemplo 2 (\(|G|\approx3{,}536\), fase \(\approx-45°\)). Confírmalo modificando `verificacion.py` y ejecutándolo de nuevo.
 
-**Límite:** esta fórmula solo describe la salida en **régimen permanente** (\(y_{ss}\)); no incluye el transitorio inicial, que depende de las condiciones iniciales y se apaga con el tiempo (capítulo 13).
+**Límite:** esta fórmula solo describe la salida en **régimen permanente** (\(y_{ss}\)); no incluye el transitorio inicial, que depende de las condiciones iniciales y se apaga con el tiempo (módulo 12).
 
 ### Tema 2: Decibeles y la escala logarítmica
 

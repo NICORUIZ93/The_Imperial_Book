@@ -15,11 +15,39 @@ Un proyecto necesita reproducir su compilación en tu portátil y en CI.
 
 **2. Hazlo tú**
 
-Crea `pom.xml` con `groupId` `academia`, `artifactId` `rutas`, versión `1.0` y `maven.compiler.release` `25`. Crea `src/main/java/Saludo.java` con `public class Saludo { public static void main(String[] args) { System.out.println("Ruta lista"); } }`. Ejecuta `mvn package` y `java -cp target/classes Saludo`.
+En una carpeta vacía `rutas-maven/` crea `pom.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>academia</groupId>
+    <artifactId>rutas</artifactId>
+    <version>1.0</version>
+    <properties>
+        <maven.compiler.release>25</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+</project>
+```
+
+Crea `src/main/java/Saludo.java`:
+
+```java
+public class Saludo {
+    public static void main(String[] args) {
+        System.out.println("Ruta lista");
+    }
+}
+```
+
+Ejecuta `mvn package` y `java -cp target/classes Saludo`. Necesitas Maven 3.9 o posterior (ver Módulo 0, «Antes de comenzar»).
 
 **Resultado esperado:** Maven compila y aparece `Ruta lista`.
 
-**Fallo deliberado:** cambia el release a un JDK no instalado. **Diagnóstico:** Maven no encuentra ese compilador; compara `mvn --version` con el JDK activo.
+**Fallo deliberado:** cambia `maven.compiler.release` a `26` con JDK 25 activo. **Error esperado:** la compilación falla con `release version 26 not supported`. **Diagnóstico:** Maven compila con el `javac` del JDK que ejecuta Maven, y ese `javac` no conoce versiones posteriores a la suya; compara `mvn --version` con el release pedido.
 
 **3. Entiende**
 
