@@ -29,7 +29,8 @@ datos-locales/
 !.claude/skills/archify/
 .aider*
 .qoder/
-.agents/
+.agents/*
+!.agents/skills/
 skills-lock.json
 
 # Local editor/OS state and intermediate rendering outputs
