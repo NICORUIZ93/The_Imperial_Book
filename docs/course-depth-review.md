@@ -7,24 +7,24 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 | Curso | Temas | Con señales | Prioridad de secuencia | Evidencia requerida |
 |---|---:|---:|---|---|
 | foundations | 102 | 14 | HTML/CSS antes de frameworks; archivos y ejecución antes de persistencia avanzada | Interfaz semántica operable por teclado, algoritmo con casos límite y SQL reproducible |
-| javascript | 88 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
-| node | 83 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
-| angular | 71 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
-| react | 58 | 46 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
-| java | 111 | 44 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
-| spring-boot | 114 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
+| javascript | 92 | 6 | Formularios, DOM y errores de red antes de patrones avanzados | Cliente que conserva entrada, anuncia errores y distingue cancelación de fallo |
+| node | 90 | 15 | HTTP y validación antes de autenticación e integraciones | API con límites de carga, paginación estable, pruebas y cierre ordenado |
+| angular | 78 | 3 | HTML/CSS/TypeScript explícitos; RxJS y estado con ejemplos completos | Rutas, formularios, datos remotos y cambios sin guardar comprobados con navegador |
+| react | 64 | 47 | JSX y estado antes de efectos; proveedor, dependencias y API visibles | Carga, error, vacío y carrera de respuestas; caché observada, no supuesta |
+| java | 117 | 44 | Clases completas antes de concurrencia; no reemplazar implementación por un enunciado | Compilación, errores, Futures, recursos cerrados y cancelación cooperativa |
+| spring-boot | 121 | 111 | Java/HTTP/SQL como requisitos; proyecto y starters reproducibles | Contratos HTTP, validación, autorización por recurso y consulta real con límites |
 | microservices | 24 | 2 | Procesos, red y fallo parcial antes de patrones; monolito modular antes de extracción | Contratos evolutivos, datos propios, idempotencia, recuperación y observabilidad demostradas |
-| android | 74 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
-| ios | 56 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
-| flutter | 109 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
-| kotlin-multiplatform | 56 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
-| cloud | 156 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
-| devops | 130 | 3 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
+| android | 83 | 1 | Kotlin antes de Compose; distinguir recomposición, recreación y muerte de proceso | App instalable con permisos, restauración, persistencia y pruebas en dispositivo |
+| ios | 69 | 4 | Swift antes de SwiftUI; explicitar macOS/Xcode y destino | Cancelación, estados de red, persistencia y accesibilidad comprobados en simulador |
+| flutter | 119 | 8 | Dart antes de widgets; ejemplo con main y destino de ejecución | Restauración, red, pruebas de widget, integración y publicación por plataforma |
+| kotlin-multiplatform | 66 | 2 | Kotlin y source sets antes de interoperabilidad | Política común sin dependencias nativas; reloj controlado y pruebas por destino |
+| cloud | 168 | 2 | Terminal/HTTP/Docker antes de servicios; emulación distinta de cloud real | Infraestructura, permisos mínimos, restauración ensayada, RPO/RTO y costes observados |
+| devops | 138 | 4 | Aplicación ejecutable antes de CI/CD; código de salida y artefactos identificables | Pipeline con promoción, rollback comprobado, observabilidad e incidente ensayado |
 | rutaflow | 29 | 1 | Integrar una especialidad por incremento; dominio y contratos antes de microservicios | Flujo completo con versión antigua/nueva, fallo y recuperación sin pérdida semántica |
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1331 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1430 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -47,6 +47,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 12 | [Tema 1: Arquitectura MVVM completa con UDF](../web/public/content/android/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 12 | [Tema 2: Inyección de dependencias en toda la app](../web/public/content/android/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 12 | [Tema 3: Cierre del track y próximos pasos](../web/public/content/android/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 12 | [Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min](../web/public/content/android/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 1: El sistema operativo conecta tu app con entradas externas](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 2: Proteger datos exige conocer copias y ciclo de vida](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 13 | [Tema 3: Offline-first necesita un protocolo de cambios](../web/public/content/android/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -62,12 +63,18 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 15 | [Tema 2: BroadcastReceiver: reaccionar a eventos del sistema](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 15 | [Tema 3: Foreground Service de ubicación con FusedLocationProvider](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 15 | [Tema 4: Compartir archivos con FileProvider y content://](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 15 | [Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 15 | [Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 15 | [Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 15 | [Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 15 | [Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min](../web/public/content/android/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 2: DataStore para preferencias consistentes y migrables](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 3: Paging 3, estados de carga y RemoteMediator](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 4: FCM, permiso de notificaciones y sincronización confiable](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 5: Interfaces adaptativas para teléfono, tablet y foldable](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 16 | [Tema 6: Credential Manager, passkeys y verificación en servidor](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 16 | [Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min](../web/public/content/android/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 17 | [Tema 1: Constraints, Modifier y componentes con slots](../web/public/content/android/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 17 | [Tema 2: LazyColumn, grids, claves estables y estado de scroll](../web/public/content/android/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 17 | [Tema 3: Formularios, IME, foco y validación accesible](../web/public/content/android/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
@@ -77,9 +84,11 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | android / 18 | [Tema 2: Build types, product flavors y configuración segura](../web/public/content/android/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 18 | [Tema 3: Modularización, convenciones y fronteras de arquitectura](../web/public/content/android/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 18 | [Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible](../web/public/content/android/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 18 | [Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min](../web/public/content/android/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 1: Composables y recomposición](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 2: State hoisting](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 2 | [Tema 3: remember, rememberSaveable y layout básico](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| android / 2 | [Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min](../web/public/content/android/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 3 | [Tema 1: NavHost y NavController](../web/public/content/android/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 3 | [Tema 2: Argumentos tipados y deep links](../web/public/content/android/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | android / 3 | [Tema 3: Navegación anidada con stacks independientes](../web/public/content/android/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
@@ -122,6 +131,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | angular / 11 | [Tema 2: Hidratación](../web/public/content/angular/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 11 | [Tema 3: `@defer` — estados reales, incluyendo error](../web/public/content/angular/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 11 | [Tema 4: Zoneless](../web/public/content/angular/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 11 | [Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min](../web/public/content/angular/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 11 | [Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min](../web/public/content/angular/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 12 | [Tema 1: Reconocer la versión y la arquitectura de un proyecto](../web/public/content/angular/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 12 | [Tema 2: Leer la guía de actualización antes de modificar archivos](../web/public/content/angular/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 12 | [Tema 3: Migrar una versión mayor a la vez y verificar cada salto](../web/public/content/angular/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
@@ -132,6 +143,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | angular / 14 | [Tema 2: La seguridad automática tiene fronteras explícitas](../web/public/content/angular/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 14 | [Tema 3: Internacionalizar implica significado, no reemplazo de texto](../web/public/content/angular/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 14 | [Tema 4: Rendimiento y actualización son contratos de experiencia](../web/public/content/angular/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 14 | [Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min](../web/public/content/angular/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 14 | [Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min](../web/public/content/angular/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 15 | [Tema 1: TestBed y ComponentFixture](../web/public/content/angular/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 15 | [Tema 2: Pruebas de Signals](../web/public/content/angular/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 15 | [Tema 3: Cypress y Playwright](../web/public/content/angular/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
@@ -157,6 +170,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | angular / 4 | [Tema 3: Lazy loading con loadComponent](../web/public/content/angular/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 4 | [Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing](../web/public/content/angular/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 4 | [Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización](../web/public/content/angular/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 4 | [Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min](../web/public/content/angular/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 5 | [Tema 1: Reactive Forms — FormGroup y FormControl](../web/public/content/angular/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 5 | [Tema 2: Validadores asíncronos](../web/public/content/angular/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 5 | [Tema 3: FormArray para campos dinámicos](../web/public/content/angular/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
@@ -171,6 +185,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | angular / 8 | [Tema 1: Bootstrap sin NgModules](../web/public/content/angular/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 8 | [Tema 2: Organización por feature](../web/public/content/angular/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 8 | [Tema 3: Migración desde NgModules](../web/public/content/angular/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 8 | [Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min](../web/public/content/angular/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| angular / 8 | [Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min](../web/public/content/angular/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 9 | [Tema 1: Store propio con signals](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 9 | [Tema 2: NgRx — actions, reducers y selectors](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | angular / 9 | [Tema 3: Cuándo NgRx justifica su complejidad](../web/public/content/angular/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
@@ -181,6 +197,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 0 | [Tema 5: Servicios que emula Floci — AWS, Azure y GCP](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 6: Ventajas y limitaciones de practicar con un emulador local](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 0 | [Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 0 | [Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min](../web/public/content/cloud/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 1 | [Tema 1: Virtualización vs contenedores](../web/public/content/cloud/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 1 | [Tema 2: Imágenes y capas](../web/public/content/cloud/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 1 | [Tema 3: Registros de contenedores (Docker Hub)](../web/public/content/cloud/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -201,12 +218,14 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 14 | [Tema 1: ECR y por qué no basta con Docker Hub](../web/public/content/cloud/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 14 | [Tema 2: Task Definition y ECS Cluster](../web/public/content/cloud/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 14 | [Tema 3: Contenedores vs Lambda, y EKS](../web/public/content/cloud/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 14 | [Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min](../web/public/content/cloud/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 15 | [Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI](../web/public/content/cloud/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 15 | [Tema 2: Change sets](../web/public/content/cloud/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 15 | [Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta](../web/public/content/cloud/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 16 | [Tema 1: State machine y Task states](../web/public/content/cloud/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 16 | [Tema 2: Choice state, Retry y Catch](../web/public/content/cloud/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 16 | [Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente](../web/public/content/cloud/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 16 | [Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min](../web/public/content/cloud/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 17 | [Tema 1: Streams vs colas](../web/public/content/cloud/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 17 | [Tema 2: MSK (Kafka gestionado) y consumer groups](../web/public/content/cloud/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 17 | [Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka](../web/public/content/cloud/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
@@ -224,6 +243,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 20 | [Tema 1: Bedrock Runtime y respuestas stub deterministas](../web/public/content/cloud/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 20 | [Tema 2: Textract y Transcribe](../web/public/content/cloud/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 20 | [Tema 3: Stub vs mock, y qué probar localmente](../web/public/content/cloud/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 20 | [Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min](../web/public/content/cloud/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 21 | [Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales](../web/public/content/cloud/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 21 | [Tema 2: AMIs, grupos de seguridad y claves SSH](../web/public/content/cloud/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 21 | [Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia](../web/public/content/cloud/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
@@ -235,6 +255,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 22 | [Tema 3: CloudFront — distribución de contenido y control de acceso al origen](../web/public/content/cloud/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 22 | [Tema 4: Route53 — zonas alojadas y registros de recursos](../web/public/content/cloud/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 22 | [Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real](../web/public/content/cloud/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 22 | [Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min](../web/public/content/cloud/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 23 | [Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda](../web/public/content/cloud/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 23 | [Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación](../web/public/content/cloud/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 23 | [Tema 3: Creación de clústeres y conexión con clientes estándar](../web/public/content/cloud/modulo-23.md) | Sin señales de estos detectores; revisión pendiente |
@@ -262,6 +283,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 28 | [Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación](../web/public/content/cloud/modulo-28.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 28 | [Tema 3: OpenSearch — modo simulado y modo real](../web/public/content/cloud/modulo-28.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 28 | [Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB](../web/public/content/cloud/modulo-28.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 28 | [Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min](../web/public/content/cloud/modulo-28.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 29 | [Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real](../web/public/content/cloud/modulo-29.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 29 | [Tema 2: Pricing — catálogo de tarifas de referencia](../web/public/content/cloud/modulo-29.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 29 | [Tema 3: BCM Data Exports — reportes de costo en formato estándar](../web/public/content/cloud/modulo-29.md) | Sin señales de estos detectores; revisión pendiente |
@@ -279,16 +301,21 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 31 | [Tema 2: Arquitectura interna de cloud local y su uso en CI/CD](../web/public/content/cloud/modulo-31.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 31 | [Tema 3: Migración desde otros emuladores, y límites de un emulador](../web/public/content/cloud/modulo-31.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 31 | [Tema 4: Testcontainers — pruebas de integración automatizadas](../web/public/content/cloud/modulo-31.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 31 | [Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min](../web/public/content/cloud/modulo-31.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 31 | [Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min](../web/public/content/cloud/modulo-31.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 32 | [Tema 1: Una red segura empieza por flujos, no por subredes](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 32 | [Tema 2: Una landing zone convierte gobierno en una base repetible](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 32 | [Tema 3: Disponibilidad y recuperación responden preguntas distintas](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 32 | [Tema 4: Un backup solo existe operativamente después de restaurarlo](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 32 | [Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 32 | [Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min](../web/public/content/cloud/modulo-32.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 1: Terraform avanzado y CI/CD cloud](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 2: Kubernetes administrado, ECS y Service Mesh](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 4: Lambda, API Gateway y observabilidad avanzada](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 5: Seguridad, auditoría y FinOps](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 33 | [Tema 6: Microservicios, Big Data, AI/ML y multi-cloud](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 33 | [Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min](../web/public/content/cloud/modulo-33.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 34 | [Tema 1: Instalación en macOS, Linux y Windows](../web/public/content/cloud/modulo-34.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 34 | [Tema 2: Modelo mental de la plataforma](../web/public/content/cloud/modulo-34.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 34 | [Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK](../web/public/content/cloud/modulo-34.md) | Sin señales de estos detectores; revisión pendiente |
@@ -312,6 +339,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 5 | [Tema 4: Payload de entrada y respuesta](../web/public/content/cloud/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 5 | [Tema 5: Versionado y alias](../web/public/content/cloud/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 5 | [Tema 6: Integración con S3, DynamoDB Streams y API Gateway](../web/public/content/cloud/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| cloud / 5 | [Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min](../web/public/content/cloud/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 6 | [Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket](../web/public/content/cloud/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 6 | [Tema 2: Recursos, métodos y stages](../web/public/content/cloud/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | cloud / 6 | [Tema 3: Integración con Lambda (proxy)](../web/public/content/cloud/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
@@ -332,16 +360,16 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | cloud / 9 | [Tema 5: Documentación de la API y guía de despliegue](../web/public/content/cloud/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 0 | [Tema 1: Cómo está armado cada capítulo](../web/public/content/control-1/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 1 | [Tema 1: ¿Qué es un número complejo?](../web/public/content/control-1/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 1 | [Tema 2: Operaciones](../web/public/content/control-1/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 1 | [Tema 2: Operaciones con números complejos: suma, producto y división](../web/public/content/control-1/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 1 | [Tema 3: Raíces de s²+bs+c](../web/public/content/control-1/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 1 | [Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)](../web/public/content/control-1/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 10 | [Tema 1: La forma de estado](../web/public/content/control-1/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 10 | [Tema 1: La forma de espacio de estados](../web/public/content/control-1/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 10 | [Tema 2: De estados a función de transferencia](../web/public/content/control-1/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 11 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 11 | [Tema 2: Respuestas](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 11 | [Tema 1: Forma estándar de primer orden: K y τ](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 11 | [Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 11 | [Tema 3: Retardo o tiempo muerto](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 11 | [Tema 4: Identificación desde una gráfica](../web/public/content/control-1/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 12 | [Tema 1: Forma estándar](../web/public/content/control-1/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 12 | [Tema 1: Forma estándar de segundo orden: K, ωn y ζ](../web/public/content/control-1/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 12 | [Tema 2: Simulador: mueve ζ y ωn](../web/public/content/control-1/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 12 | [Tema 3: Los cuatro casos según ζ](../web/public/content/control-1/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 12 | [Tema 4: Fórmulas del caso subamortiguado](../web/public/content/control-1/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
@@ -349,19 +377,19 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | control-1 / 13 | [Tema 1: Polos dominantes](../web/public/content/control-1/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 13 | [Tema 2: Efecto de un cero](../web/public/content/control-1/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 13 | [Tema 3: Cero de fase no mínima](../web/public/content/control-1/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 14 | [Tema 1: Fórmula general](../web/public/content/control-1/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 14 | [Tema 1: Fórmula general del error en estado estacionario](../web/public/content/control-1/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 14 | [Tema 2: Tipo de sistema y constantes](../web/public/content/control-1/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 15 | [Tema 1: Qué es estabilidad](../web/public/content/control-1/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 15 | [Tema 2: El arreglo de Routh](../web/public/content/control-1/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 15 | [Tema 3: Casos especiales](../web/public/content/control-1/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 15 | [Tema 3: Casos especiales del arreglo de Routh](../web/public/content/control-1/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 15 | [Tema 4: Rango de K para estabilidad](../web/public/content/control-1/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 16 | [Tema 1: Geometría de un polo](../web/public/content/control-1/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 16 | [Tema 2: Estabilidad](../web/public/content/control-1/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 16 | [Tema 1: Geometría de un polo en el plano s](../web/public/content/control-1/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 16 | [Tema 2: Estabilidad según la posición de los polos](../web/public/content/control-1/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 16 | [Tema 3: La zona de diseño](../web/public/content/control-1/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 17 | [Tema 1: Las dos condiciones](../web/public/content/control-1/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 17 | [Tema 1: Las dos condiciones del lugar de las raíces](../web/public/content/control-1/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 17 | [Tema 2: Reglas de construcción (con su porqué)](../web/public/content/control-1/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 17 | [Tema 3: Elegir K desde el lugar de las raíces](../web/public/content/control-1/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 18 | [Tema 1: La idea](../web/public/content/control-1/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 18 | [Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia](../web/public/content/control-1/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 18 | [Tema 2: Error en estado estacionario](../web/public/content/control-1/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 18 | [Tema 3: Cada acción, con números](../web/public/content/control-1/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 18 | [Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)](../web/public/content/control-1/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
@@ -369,15 +397,15 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | control-1 / 19 | [Tema 1: Diseño de un adelanto](../web/public/content/control-1/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 19 | [Tema 2: Diseño de un atraso](../web/public/content/control-1/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 19 | [Tema 3: Implementación con op-amps](../web/public/content/control-1/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 2 | [Tema 1: La idea](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 2 | [Tema 2: La tabla](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 2 | [Tema 3: Propiedades](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 2 | [Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 2 | [Tema 2: La tabla de transformadas de Laplace](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 2 | [Tema 3: Propiedades de la transformada de Laplace](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 2 | [Tema 4: Valor final y valor inicial](../web/public/content/control-1/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 20 | [Tema 1: Qué es la respuesta en frecuencia](../web/public/content/control-1/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 20 | [Tema 2: Decibeles y la escala logarítmica](../web/public/content/control-1/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 20 | [Tema 3: Los bloques básicos](../web/public/content/control-1/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 20 | [Tema 3: Los bloques básicos del diagrama de Bode](../web/public/content/control-1/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 20 | [Tema 4: Márgenes de estabilidad](../web/public/content/control-1/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 21 | [Tema 1: Parcial 1](../web/public/content/control-1/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 21 | [Tema 1: Parcial 1 resuelto paso a paso](../web/public/content/control-1/modulo-21.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 22 | [Tema 1: Simulacro con solución](../web/public/content/control-1/modulo-22.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 3 | [Tema 1: Caso 1: polos reales distintos](../web/public/content/control-1/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 3 | [Tema 2: Caso 2: polos repetidos](../web/public/content/control-1/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
@@ -385,21 +413,21 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | control-1 / 3 | [Tema 4: Resolver una ecuación diferencial completa](../web/public/content/control-1/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 4 | [Tema 1: Qué es la función de transferencia](../web/public/content/control-1/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 5 | [Tema 1: ¿Qué es un sistema de control?](../web/public/content/control-1/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 5 | [Tema 2: Los elementos](../web/public/content/control-1/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 5 | [Tema 2: Los elementos de un lazo de control](../web/public/content/control-1/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 5 | [Tema 3: Álgebra de bloques](../web/public/content/control-1/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 6 | [Tema 1: Reglas para mover bloques](../web/public/content/control-1/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 6 | [Tema 1: Reglas para mover bloques en un diagrama](../web/public/content/control-1/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 6 | [Tema 2: Grafos de flujo de señal](../web/public/content/control-1/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 6 | [Tema 3: Regla de Mason](../web/public/content/control-1/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 6 | [Tema 4: Referencia y perturbación juntas](../web/public/content/control-1/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 7 | [Tema 1: Impedancias](../web/public/content/control-1/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 7 | [Tema 1: Impedancias de resistencia, bobina y condensador en s](../web/public/content/control-1/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 7 | [Tema 2: Circuitos pasivos: divisor de voltaje](../web/public/content/control-1/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 7 | [Tema 3: El op-amp inversor](../web/public/content/control-1/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 8 | [Tema 1: Mecánico de traslación](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 8 | [Tema 2: Mecánico de rotación](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 8 | [Tema 3: Motor DC (electromecánico)](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | control-1 / 8 | [Tema 4: Sistemas térmicos e hidráulicos](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 8 | [Tema 5: Analogías](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| control-1 / 9 | [Tema 1: La idea](../web/public/content/control-1/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 8 | [Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos](../web/public/content/control-1/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| control-1 / 9 | [Tema 1: La idea de la linealización: aproximar con la recta tangente](../web/public/content/control-1/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 1: Sistema de archivos y permisos (chmod/chown)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 2: Procesos, señales y jobs en segundo plano](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 0 | [Tema 3: Pipes, redirección y filtros (grep, awk, sed)](../web/public/content/devops/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -435,6 +463,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 12 | [Tema 4: Checklist de salida a producción](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 12 | [Tema 5: GitOps con ArgoCD y FluxCD](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 12 | [Tema 6: Platform Engineering — Internal Developer Platforms (IDPs)](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 12 | [Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min](../web/public/content/devops/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 13 | [Tema 1: El pipeline completo — de commit a producción verificada](../web/public/content/devops/modulo-13.md) | comprobar-script-test |
 | devops / 13 | [Tema 2: Uniendo cada módulo del track en un solo flujo](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 13 | [Tema 3: Cierre del track — checklist final y reflexión](../web/public/content/devops/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -453,7 +482,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 16 | [Tema 3: Newman en profundidad — reportes y el contrato del código de salida](../web/public/content/devops/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 16 | [Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos](../web/public/content/devops/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 16 | [Tema 5: Integración completa — Newman dentro de un pipeline Jenkins](../web/public/content/devops/modulo-16.md) | Sin señales de estos detectores; revisión pendiente |
-| devops / 16 | [Tema complementario: Bruno y Postman, evaluar con el mismo contrato](../web/public/content/devops/modulo-16.md) | ejemplo-breve-revisar-contexto |
+| devops / 16 | [Tema 6: Bruno y Postman, evaluar con el mismo contrato](../web/public/content/devops/modulo-16.md) | ejemplo-breve-revisar-contexto |
 | devops / 17 | [Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 17 | [Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 17 | [Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión](../web/public/content/devops/modulo-17.md) | Sin señales de estos detectores; revisión pendiente |
@@ -473,6 +502,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 2 | [Tema 5: Redes en Docker](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 2 | [Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 2 | [Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min](../web/public/content/devops/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 1: Eventos de dominio e integración: hechos, no comandos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 20 | [Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos](../web/public/content/devops/modulo-20.md) | Sin señales de estos detectores; revisión pendiente |
@@ -493,6 +523,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 4 | [Tema 2: Caché de dependencias en CI](../web/public/content/devops/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 4 | [Tema 3: Artifacts y reportes de cobertura](../web/public/content/devops/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 4 | [Tema 4: Pipelines como código (GitHub Actions/GitLab CI)](../web/public/content/devops/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 4 | [Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min](../web/public/content/devops/modulo-4.md) | comprobar-script-test |
 | devops / 5 | [Tema 1: Blue-green deployment](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 2: Canary releases](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 5 | [Tema 3: Rolling updates](../web/public/content/devops/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
@@ -508,6 +539,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 6 | [Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 7: Persistent Volumes, PVCs y StorageClasses](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 6 | [Tema 8: Clúster local con Minikube: perfiles, addons e Ingress](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 6 | [Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 6 | [Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min](../web/public/content/devops/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 1: Helm charts y values](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 2: Ingress Controllers y reglas de enrutamiento](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 3: HorizontalPodAutoscaler](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
@@ -515,6 +548,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 7 | [Tema 5: RBAC en Kubernetes](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 7 | [Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 7 | [Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min](../web/public/content/devops/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 8 | [Tema 1: Providers, resources y data sources](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 8 | [Tema 2: State remoto y locking](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 8 | [Tema 3: Módulos reutilizables](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
@@ -522,7 +556,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 8 | [Tema 5: Workspaces para múltiples entornos](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 8 | [Tema 6: Ansible — playbooks, roles, inventory y módulos](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 8 | [Tema 7: Pulumi como alternativa a HCL](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
-| devops / 8 | [Tema complementario: OpenTofu, plan y estado sin recursos cloud](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 8 | [Tema 8: OpenTofu, plan y estado sin recursos cloud](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 8 | [Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min](../web/public/content/devops/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 2: PromQL esencial](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 3: Dashboards en Grafana](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
@@ -530,13 +565,19 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 9 | [Tema 5: SLI, SLO, SLA](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 6: OpenTelemetry como estándar de instrumentación](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| devops / 9 | [Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 1: Sound null safety](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 2: Clases y mixins](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 3: Futures, async/await y colecciones funcionales](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 4: Lints y estilo con analysis_options.yaml](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 0 | [Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 0 | [Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 0 | [Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 1 | [Tema 1: StatelessWidget vs StatefulWidget](../web/public/content/flutter/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 1 | [Tema 2: Layout con Row, Column y Stack, y ciclo de vida](../web/public/content/flutter/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 1 | [Tema 3: Keys](../web/public/content/flutter/modulo-1.md) | ejemplo-breve-revisar-contexto |
+| flutter / 1 | [Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min](../web/public/content/flutter/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 1 | [Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min](../web/public/content/flutter/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 10 | [Tema 1: ThemeData con Material 3](../web/public/content/flutter/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 10 | [Tema 2: Adaptación Material vs Cupertino](../web/public/content/flutter/modulo-10.md) | ejemplo-breve-revisar-contexto |
 | flutter / 10 | [Tema 3: Accesibilidad con Semantics y dark mode](../web/public/content/flutter/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
@@ -544,9 +585,11 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 11 | [Tema 2: Iconos y splash screens](../web/public/content/flutter/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 11 | [Tema 3: CI/CD con Codemagic o Fastlane](../web/public/content/flutter/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 11 | [Tema 4: Entornos y flavors con --dart-define-from-file](../web/public/content/flutter/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 11 | [Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min](../web/public/content/flutter/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 12 | [Tema 1: Arquitectura por features y Clean Architecture](../web/public/content/flutter/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 12 | [Tema 2: Uniendo los módulos del track](../web/public/content/flutter/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 12 | [Tema 3: Cierre del track](../web/public/content/flutter/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 12 | [Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min](../web/public/content/flutter/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 13 | [Tema 1: Una API Dart puede terminar en una frontera nativa](../web/public/content/flutter/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 13 | [Tema 2: Los secretos no pertenecen al binario](../web/public/content/flutter/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 13 | [Tema 3: Fluidez se mide contra el presupuesto de cada frame](../web/public/content/flutter/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -627,10 +670,13 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | flutter / 6 | [Tema 2: sqflite vs Hive](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 6 | [Tema 3: Offline-first y Firebase](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 6 | [Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 6 | [Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min](../web/public/content/flutter/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 7 | [Tema 1: MethodChannel](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 7 | [Tema 2: Plugins federados](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 7 | [Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 7 | [Tema 4: Cámara, galería y carga multipart de una evidencia](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 7 | [Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| flutter / 7 | [Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min](../web/public/content/flutter/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 8 | [Tema 1: Animaciones implícitas vs explícitas](../web/public/content/flutter/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 8 | [Tema 2: Flutter DevTools y detección de jank](../web/public/content/flutter/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 8 | [Tema 3: const widgets, RepaintBoundary y shouldRepaint](../web/public/content/flutter/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
@@ -644,7 +690,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | foundations / 0 | [Tema 3: Archivos, carpetas y rutas sin perderse](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 0 | [Tema 4: Cómo leer un comando antes de ejecutarlo](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 0 | [Tema 5: Primer programa, primer error y primera evidencia](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
-| foundations / 0 | [Tema complementario: VS Code, comandos y atajos comprobables](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
+| foundations / 0 | [Tema 6: VS Code, comandos y atajos comprobables](../web/public/content/foundations/modulo-0.md) | ejemplo-breve-revisar-contexto |
 | foundations / 1 | [Tema 1: Del problema al algoritmo y a los casos de prueba](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 1 | [Tema 2: Variables, tipos, expresiones y cambios de estado](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | foundations / 1 | [Tema 3: Decisiones, repeticiones y trazado de ejecución](../web/public/content/foundations/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -745,6 +791,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 0 | [Tema 2: struct vs class](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 0 | [Tema 3: Protocolos y enums con valores asociados](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 0 | [Tema 4: Closures, colecciones y genéricos con propósito](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 0 | [Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min](../web/public/content/ios/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 1 | [Tema 1: El protocolo View y composición](../web/public/content/ios/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 1 | [Tema 2: Orden de modificadores y layout con stacks](../web/public/content/ios/modulo-1.md) | ejemplo-breve-revisar-contexto |
 | ios / 1 | [Tema 3: Previews, LazyVGrid/ScrollView y property wrappers](../web/public/content/ios/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
@@ -752,12 +799,14 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 10 | [Tema 2: Accesibilidad con VoiceOver](../web/public/content/ios/modulo-10.md) | ejemplo-breve-revisar-contexto |
 | ios / 10 | [Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit](../web/public/content/ios/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 10 | [Tema 4: UIKit desde cero para mantener aplicaciones reales](../web/public/content/ios/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 10 | [Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min](../web/public/content/ios/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 11 | [Tema 1: Certificados y provisioning profiles](../web/public/content/ios/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 11 | [Tema 2: Archivar, subir y TestFlight](../web/public/content/ios/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 11 | [Tema 3: Metadata y versionado](../web/public/content/ios/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 12 | [Tema 1: Arquitectura del proyecto integrador](../web/public/content/ios/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 12 | [Tema 2: Sincronización entre red y persistencia local](../web/public/content/ios/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 12 | [Tema 3: Cierre del track](../web/public/content/ios/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 12 | [Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min](../web/public/content/ios/modulo-12.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 13 | [Tema 1: El sandbox reduce superficie, pero no valida intenciones](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 13 | [Tema 2: Proteger datos es controlar todas sus copias](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 13 | [Tema 3: Offline-first es un protocolo, no una caché](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
@@ -765,6 +814,9 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 13 | [Tema 5: Keychain — guardar secretos de forma segura](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 13 | [Tema 6: Permisos y privacidad — pedir acceso con criterio](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 13 | [Tema 7: Notificaciones push con APNs](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 13 | [Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 13 | [Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 13 | [Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min](../web/public/content/ios/modulo-13.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 14 | [Tema 1: Swift Testing y pruebas asíncronas](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 14 | [Tema 2: ViewInspector con criterio](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 14 | [Tema 3: Combine avanzado](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -772,6 +824,9 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 14 | [Tema 5: UIViewRepresentable](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 14 | [Tema 6: UIViewControllerRepresentable y Coordinator](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 14 | [Tema 7: Core ML y Vision — inferencia en el dispositivo](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 14 | [Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 14 | [Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 14 | [Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min](../web/public/content/ios/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 2 | [Tema 1: @State y @Binding](../web/public/content/ios/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 2 | [Tema 2: @Observable](../web/public/content/ios/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 2 | [Tema 3: @Environment y identidad vs valor](../web/public/content/ios/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
@@ -782,12 +837,16 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | ios / 4 | [Tema 2: Actors para estado mutable seguro](../web/public/content/ios/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 4 | [Tema 3: TaskGroup y MainActor](../web/public/content/ios/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 4 | [Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red](../web/public/content/ios/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 4 | [Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min](../web/public/content/ios/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 4 | [Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min](../web/public/content/ios/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 5 | [Tema 1: URLSession con async/await y Codable](../web/public/content/ios/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 5 | [Tema 2: Errores tipados](../web/public/content/ios/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 5 | [Tema 3: Reintentos y cancelación](../web/public/content/ios/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 6 | [Tema 1: @Model y ModelContainer](../web/public/content/ios/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 6 | [Tema 2: @Query y operaciones de escritura](../web/public/content/ios/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 6 | [Tema 3: Migraciones y SwiftData vs Core Data](../web/public/content/ios/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 6 | [Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min](../web/public/content/ios/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| ios / 6 | [Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min](../web/public/content/ios/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 7 | [Tema 1: Publishers y Subscribers](../web/public/content/ios/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 7 | [Tema 2: Operadores: debounce y combineLatest](../web/public/content/ios/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | ios / 7 | [Tema 3: Combine vs async/await](../web/public/content/ios/modulo-7.md) | comprobar-fragmento-incompleto, ejemplo-breve-revisar-contexto |
@@ -829,6 +888,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 14 | [Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 14 | [Tema 3: Deserializar es permitir construcción y comportamiento](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 14 | [Tema 4: El runtime es parte del artefacto y necesita ciclo de vida](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 14 | [Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 14 | [Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min](../web/public/content/java/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 15 | [Tema 1: Maven avanzado](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 15 | [Tema 2: Gradle y builds reproducibles](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 15 | [Tema 3: Proyectos multi-módulo sin ciclos](../web/public/content/java/modulo-15.md) | Sin señales de estos detectores; revisión pendiente |
@@ -847,6 +908,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 17 | [Tema 2: Transacciones, ACID y aislamiento](../web/public/content/java/modulo-17.md) | clase-java-no-visible |
 | java / 18 | [Tema 1: HttpClient, REST, timeouts y fallos](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 18 | [Tema 2: Tokens, validación y límites de seguridad](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 18 | [Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min](../web/public/content/java/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 1: Reflexión y anotaciones en tiempo de ejecución](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 2: Expresiones regulares con Pattern y Matcher](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 3: Dinero exacto con BigDecimal](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
@@ -854,6 +916,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 19 | [Tema 5: ServiceLoader: plugins sin acoplar implementaciones](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 19 | [Tema 7: Internacionalización: números, monedas, fechas y orden de texto](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 19 | [Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min](../web/public/content/java/modulo-19.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 2 | [Tema 1: List, Set, Map y sus implementaciones](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
 | java / 2 | [Tema 2: Genéricos, wildcards y type erasure](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
 | java / 2 | [Tema 3: Comparable vs Comparator, e iteración](../web/public/content/java/modulo-2.md) | demostracion-no-delimitada |
@@ -908,6 +972,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | java / 9 | [Tema 1: JUnit 5 — anotaciones y ciclo de vida](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 9 | [Tema 2: Mockito — aislar dependencias](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | java / 9 | [Tema 3: Tests parametrizados y cobertura](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| java / 9 | [Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min](../web/public/content/java/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 1: Variables — `const`, `let` y `var`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 2: Tipos primitivos y `typeof`](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 0 | [Tema 3: Conversión, coerción e igualdad](../web/public/content/javascript/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -952,6 +1017,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | javascript / 14 | [Tema 12: WebSocket y comunicación en tiempo real](../web/public/content/javascript/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 14 | [Tema 13: Typed Arrays, ArrayBuffer y DataView](../web/public/content/javascript/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 14 | [Tema 14: ECMAScript moderno, Temporal e iterator helpers](../web/public/content/javascript/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
+| javascript / 14 | [Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min](../web/public/content/javascript/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 2 | [Tema 1: Scope léxico y closures](../web/public/content/javascript/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 2 | [Tema 2: Hoisting y Temporal Dead Zone](../web/public/content/javascript/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 2 | [Tema 3: Call stack y contexto de ejecución](../web/public/content/javascript/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
@@ -979,12 +1045,15 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | javascript / 6 | [Tema 4: Reintentos y timeouts manuales](../web/public/content/javascript/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 6 | [Tema 5: Generadores — function*, yield y yield*](../web/public/content/javascript/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 6 | [Tema 6: Proxies y Reflect](../web/public/content/javascript/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| javascript / 6 | [Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min](../web/public/content/javascript/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 1: ESM frente a CommonJS](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 2: Tree-shaking y code-splitting](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 3: Vite y esbuild](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 4: package.json — exports, type y scripts](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 5: import() dinámico e import.meta](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 7 | [Tema 6: Webpack, Rollup y Babel/SWC](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| javascript / 7 | [Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| javascript / 7 | [Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min](../web/public/content/javascript/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 8 | [Tema 1: Selección y manipulación del DOM](../web/public/content/javascript/modulo-8.md) | demostracion-no-delimitada |
 | javascript / 8 | [Tema 2: Delegación de eventos](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | javascript / 8 | [Tema 3: Formularios y validación nativa](../web/public/content/javascript/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1004,6 +1073,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 1 | [Tema 2: Scope functions](../web/public/content/kotlin-multiplatform/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 1 | [Tema 3: Sealed classes y colecciones funcionales](../web/public/content/kotlin-multiplatform/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 1 | [Tema 4: Lambdas con receptor y builders tipo DSL](../web/public/content/kotlin-multiplatform/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 1 | [Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 10 | [Tema 1: Pipeline Gradle multiplataforma en CI](../web/public/content/kotlin-multiplatform/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 10 | [Tema 2: Fastlane](../web/public/content/kotlin-multiplatform/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 10 | [Tema 3: Versionado compartido](../web/public/content/kotlin-multiplatform/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1028,6 +1098,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 3 | [Tema 2: expect/actual](../web/public/content/kotlin-multiplatform/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 3 | [Tema 3: Gradle multiplataforma y targets disponibles](../web/public/content/kotlin-multiplatform/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 3 | [Tema 4: Jerarquía de source sets intermedios](../web/public/content/kotlin-multiplatform/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 3 | [Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 3 | [Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 4 | [Tema 1: Modelos de dominio y casos de uso](../web/public/content/kotlin-multiplatform/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 4 | [Tema 2: Repositorios con interfaz común](../web/public/content/kotlin-multiplatform/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 4 | [Tema 3: Inyección de dependencias multiplataforma con Koin](../web/public/content/kotlin-multiplatform/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1042,40 +1114,47 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | kotlin-multiplatform / 6 | [Tema 2: Drivers por plataforma](../web/public/content/kotlin-multiplatform/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 6 | [Tema 3: Migraciones de esquema](../web/public/content/kotlin-multiplatform/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 6 | [Tema 4: Transacciones: atomicidad en operaciones multi-tabla](../web/public/content/kotlin-multiplatform/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 6 | [Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-6.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 7 | [Tema 1: Compose Multiplatform vs Jetpack Compose](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 7 | [Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 7 | [Tema 3: Theming y navegación compartidos](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 7 | [Tema 4: Limitaciones en iOS y otros targets](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 7 | [Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 7 | [Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 7 | [Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 7 | [Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min](../web/public/content/kotlin-multiplatform/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 8 | [Tema 1: El framework generado para iOS](../web/public/content/kotlin-multiplatform/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 8 | [Tema 2: Mapeo de tipos Kotlin ↔ Swift](../web/public/content/kotlin-multiplatform/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 8 | [Tema 3: Coroutines desde Swift, y distribución del framework](../web/public/content/kotlin-multiplatform/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 8 | [Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min](../web/public/content/kotlin-multiplatform/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 9 | [Tema 1: kotlin.test en commonTest](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | kotlin-multiplatform / 9 | [Tema 2: Fakes en vez de mocks](../web/public/content/kotlin-multiplatform/modulo-9.md) | ejemplo-breve-revisar-contexto |
 | kotlin-multiplatform / 9 | [Tema 3: runTest para coroutines](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
-| microservices / 0 | [Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 0 | [Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| kotlin-multiplatform / 9 | [Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min](../web/public/content/kotlin-multiplatform/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min](../web/public/content/microservices/modulo-0.md) | clase-java-no-visible |
+| microservices / 0 | [Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 0 | [Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 0 | [Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min](../web/public/content/microservices/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min](../web/public/content/microservices/modulo-1.md) | ejemplo-breve-revisar-contexto |
+| microservices / 1 | [Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min](../web/public/content/microservices/modulo-1.md) | ejemplo-breve-revisar-contexto |
 | microservices / 1 | [Tema 12: Medir señales que justifican una extracción · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | microservices / 1 | [Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
-| microservices / 1 | [Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
+| microservices / 1 | [Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min](../web/public/content/microservices/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 2: Fases del Event Loop de Node · Intermedio · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 0 | [Tema 3: process, global y módulos core · Básico · 75 min](../web/public/content/node/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1091,6 +1170,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | node / 10 | [Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 10 | [Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min](../web/public/content/node/modulo-10.md) | comprobar-script-test |
 | node / 10 | [Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 10 | [Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min](../web/public/content/node/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 11 | [Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 11 | [Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 11 | [Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min](../web/public/content/node/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1122,11 +1202,15 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | node / 2 | [Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 2 | [Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 2 | [Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min](../web/public/content/node/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 1: El modelo request/response · Básico · 60 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 2: Routing manual · Básico · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 3: Parsing de body y headers · Intermedio · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 3 | [Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 3 | [Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min](../web/public/content/node/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 4 | [Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 4 | [Tema 2: Routers anidados · Básico · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 4 | [Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min](../web/public/content/node/modulo-4.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1149,6 +1233,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | node / 7 | [Tema 4: Alternativas de testing y debugging · Intermedio · 45 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 7 | [Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 7 | [Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 7 | [Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min](../web/public/content/node/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 8 | [Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 8 | [Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 8 | [Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min](../web/public/content/node/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1159,6 +1244,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | node / 9 | [Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 9 | [Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | node / 9 | [Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| node / 9 | [Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min](../web/public/content/node/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 0 | [Tema 1: JSX es azúcar sintáctica sobre createElement](../web/public/content/react/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 0 | [Tema 2: Listas con key estable](../web/public/content/react/modulo-0.md) | comprobar-script-test |
 | react / 0 | [Tema 3: Composición sobre herencia, y Fragments](../web/public/content/react/modulo-0.md) | comprobar-script-test |
@@ -1167,6 +1253,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | react / 1 | [Tema 2: Render frente a commit](../web/public/content/react/modulo-1.md) | comprobar-script-test |
 | react / 1 | [Tema 3: Batching de actualizaciones](../web/public/content/react/modulo-1.md) | comprobar-script-test |
 | react / 1 | [Tema 4: Componentes controlados](../web/public/content/react/modulo-1.md) | comprobar-script-test |
+| react / 1 | [Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min](../web/public/content/react/modulo-1.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 10 | [Tema 1: Server Components por defecto](../web/public/content/react/modulo-10.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 10 | [Tema 2: use client para interactividad](../web/public/content/react/modulo-10.md) | comprobar-script-test |
 | react / 10 | [Tema 3: Streaming con Suspense en el servidor](../web/public/content/react/modulo-10.md) | comprobar-script-test, ejemplo-breve-revisar-contexto |
@@ -1181,6 +1268,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | react / 13 | [Tema 2: La composición visual debe conservar semántica y foco](../web/public/content/react/modulo-13.md) | comprobar-script-test |
 | react / 13 | [Tema 3: Cliente y servidor forman una sola frontera de seguridad](../web/public/content/react/modulo-13.md) | comprobar-script-test |
 | react / 13 | [Tema 4: Hidratación determinista, idioma y releases medibles](../web/public/content/react/modulo-13.md) | comprobar-script-test, ejemplo-breve-revisar-contexto |
+| react / 13 | [Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min](../web/public/content/react/modulo-13.md) | comprobar-script-test, comprobar-fragmento-incompleto |
 | react / 14 | [Tema 1: Server Components y streaming](../web/public/content/react/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 14 | [Tema 2: Server Actions y seguridad](../web/public/content/react/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 14 | [Tema 3: Next.js ISR, Metadata y Middleware](../web/public/content/react/modulo-14.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1193,9 +1281,11 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | react / 2 | [Tema 4: Reglas de los hooks, useReducer y useImperativeHandle](../web/public/content/react/modulo-2.md) | comprobar-script-test |
 | react / 2 | [Tema 5: Error Boundaries — contener errores de render sin romper toda la app](../web/public/content/react/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 2 | [Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual](../web/public/content/react/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
+| react / 2 | [Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min](../web/public/content/react/modulo-2.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 3 | [Tema 1: React Hook Form y el problema del re-render por tecla](../web/public/content/react/modulo-3.md) | comprobar-script-test |
 | react / 3 | [Tema 2: Validación con zod y formularios multi-paso](../web/public/content/react/modulo-3.md) | comprobar-script-test |
 | react / 3 | [Tema 3: Eventos sintéticos](../web/public/content/react/modulo-3.md) | comprobar-script-test |
+| react / 3 | [Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min](../web/public/content/react/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | react / 4 | [Tema 1: createContext y useContext](../web/public/content/react/modulo-4.md) | comprobar-script-test |
 | react / 4 | [Tema 2: Cuándo Context es suficiente y cuándo no](../web/public/content/react/modulo-4.md) | comprobar-script-test, ejemplo-breve-revisar-contexto |
 | react / 4 | [Tema 3: Componentes compuestos, render props y hooks personalizados](../web/public/content/react/modulo-4.md) | comprobar-script-test |
@@ -1217,6 +1307,8 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | react / 9 | [Tema 3: Virtualización y code-splitting](../web/public/content/react/modulo-9.md) | comprobar-script-test, ejemplo-breve-revisar-contexto |
 | react / 9 | [Tema 4: useTransition, useDeferredValue y Fiber](../web/public/content/react/modulo-9.md) | comprobar-script-test |
 | react / 9 | [Tema 5: Suspense y React.lazy — carga diferida del lado cliente](../web/public/content/react/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| react / 9 | [Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min](../web/public/content/react/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| react / 9 | [Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min](../web/public/content/react/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 0 | [Tema 1: El proceso logístico como sistema](../web/public/content/rutaflow/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 0 | [Tema 2: Entorno reproducible en Windows, macOS y Linux](../web/public/content/rutaflow/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | rutaflow / 0 | [Tema 3: Arquitectura, privacidad y amenazas](../web/public/content/rutaflow/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
@@ -1249,6 +1341,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 0 | [Tema 1: Inversión de control y el contenedor de Spring](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
 | spring-boot / 0 | [Tema 2: Inyección por constructor vs por campo](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
 | spring-boot / 0 | [Tema 3: Estereotipos, autoconfiguración y scopes](../web/public/content/spring-boot/modulo-0.md) | demostracion-no-delimitada |
+| spring-boot / 0 | [Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min](../web/public/content/spring-boot/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 1 | [Tema 1: Spring Initializr y starters](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
 | spring-boot / 1 | [Tema 2: application.yml vs application.properties](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
 | spring-boot / 1 | [Tema 3: Perfiles y estructura por capas](../web/public/content/spring-boot/modulo-1.md) | demostracion-no-delimitada |
@@ -1267,6 +1360,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 11 | [Tema 1: Fat JAR vs capas de Docker](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
 | spring-boot / 11 | [Tema 2: GraalVM native image](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
 | spring-boot / 11 | [Tema 3: Health checks para Kubernetes](../web/public/content/spring-boot/modulo-11.md) | demostracion-no-delimitada |
+| spring-boot / 11 | [Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min](../web/public/content/spring-boot/modulo-11.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 12 | [Tema 1: Arquitectura del microservicio integrador](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
 | spring-boot / 12 | [Tema 2: Integra seguridad JWT y observabilidad](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
 | spring-boot / 12 | [Tema 3: Cierra el servicio con evidencia y próximos pasos](../web/public/content/spring-boot/modulo-12.md) | demostracion-no-delimitada |
@@ -1294,6 +1388,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 17 | [Tema 2: `@Transactional`, rollback y límites de transacción](../web/public/content/spring-boot/modulo-17.md) | demostracion-no-delimitada |
 | spring-boot / 18 | [Tema 1: SecurityFilterChain y autorización](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
 | spring-boot / 18 | [Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP](../web/public/content/spring-boot/modulo-18.md) | demostracion-no-delimitada |
+| spring-boot / 18 | [Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min](../web/public/content/spring-boot/modulo-18.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 19 | [Tema 1: Job, Step, Tasklet y chunk processing](../web/public/content/spring-boot/modulo-19.md) | demostracion-no-delimitada |
 | spring-boot / 19 | [Tema 2: Reinicio, JobParameters, retry, skip y listeners](../web/public/content/spring-boot/modulo-19.md) | demostracion-no-delimitada |
 | spring-boot / 2 | [Tema 1: Por qué DTOs en vez de entidades directamente](../web/public/content/spring-boot/modulo-2.md) | demostracion-no-delimitada |
@@ -1334,6 +1429,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 3 | [Tema 1: Entidades y repositorios derivados](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
 | spring-boot / 3 | [Tema 2: El problema N+1 y su corrección](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
 | spring-boot / 3 | [Tema 3: Migraciones con Flyway](../web/public/content/spring-boot/modulo-3.md) | demostracion-no-delimitada |
+| spring-boot / 3 | [Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min](../web/public/content/spring-boot/modulo-3.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 4 | [Tema 1: SecurityFilterChain moderno](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
 | spring-boot / 4 | [Tema 2: Filtro JWT y autorización por rol](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
 | spring-boot / 4 | [Tema 3: CORS y CSRF](../web/public/content/spring-boot/modulo-4.md) | demostracion-no-delimitada |
@@ -1342,12 +1438,14 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 5 | [Tema 1: @ConfigurationProperties tipado](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
 | spring-boot / 5 | [Tema 2: Fallar rápido al arranque](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
 | spring-boot / 5 | [Tema 3: Manejo global de excepciones consistente entre entornos](../web/public/content/spring-boot/modulo-5.md) | demostracion-no-delimitada |
+| spring-boot / 5 | [Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min](../web/public/content/spring-boot/modulo-5.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 6 | [Tema 1: Probar un controller con `@WebMvcTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
 | spring-boot / 6 | [Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
 | spring-boot / 6 | [Tema 3: Integrar el flujo con `@SpringBootTest`](../web/public/content/spring-boot/modulo-6.md) | demostracion-no-delimitada |
 | spring-boot / 7 | [Tema 1: Actuator y health checks personalizados](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
 | spring-boot / 7 | [Tema 2: Contar operaciones de negocio con Micrometer](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
 | spring-boot / 7 | [Tema 3: Liveness y readiness sin reinicios en cadena](../web/public/content/spring-boot/modulo-7.md) | demostracion-no-delimitada |
+| spring-boot / 7 | [Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min](../web/public/content/spring-boot/modulo-7.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 8 | [Tema 1: Producers y consumers con Spring Kafka](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 2: Dead-letter queue](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
@@ -1357,6 +1455,7 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | spring-boot / 8 | [Tema 7: Kafka Streams con Spring para transformar eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 8: Avro y Schema Registry para contratos de eventos](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
 | spring-boot / 8 | [Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch](../web/public/content/spring-boot/modulo-8.md) | demostracion-no-delimitada |
+| spring-boot / 8 | [Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min](../web/public/content/spring-boot/modulo-8.md) | Sin señales de estos detectores; revisión pendiente |
 | spring-boot / 9 | [Tema 1: Mono y Flux](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |
 | spring-boot / 9 | [Tema 2: WebClient y composición no bloqueante](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |
 | spring-boot / 9 | [Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC](../web/public/content/spring-boot/modulo-9.md) | demostracion-no-delimitada |

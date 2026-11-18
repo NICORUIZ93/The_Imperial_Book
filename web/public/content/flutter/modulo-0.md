@@ -387,6 +387,15 @@ flowchart LR
     R -- info --> F[dart fix --apply]
 ```
 
+**¿Por qué es importante?** porque un analizador compartido evita discusiones de estilo, encuentra errores reales (futures sin esperar, casts inseguros) y protege datos en los logs.
+**Fuente oficial:** [Dart: Customizing static analysis](https://dart.dev/tools/analysis), [Dart: Linter rules](https://dart.dev/tools/linter-rules).
+**Conceptos clave:** `dart analyze`, `analysis_options.yaml`, `flutter_lints`, `strict-casts`, severidad de reglas, `dart fix`, `--fatal-infos`.
+**Cuándo no usarlo:** no actives todas las reglas existentes de golpe en un proyecto grande: empieza con el conjunto recomendado y agrega reglas acordadas por el equipo, una a una.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** agrega el análisis estático estricto al repositorio de la app del repartidor y hazlo obligatorio en CI.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** subir la severidad de una regla a `error` en `analysis_options.yaml` y confiar en que ya está aplicada sin correr `dart analyze` localmente — el editor puede seguir mostrando el código en verde si no recargó la configuración, y el equipo recién descubre el `error` cuando el pipeline de CI lo bloquea.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -456,14 +465,385 @@ Activa la regla `unawaited_futures` y escribe una función que llame a un `Futur
 Agrega un paso `dart analyze --fatal-infos` al pipeline de CI del Módulo 11 y documenta qué reglas decidió el equipo y por qué.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque un analizador compartido evita discusiones de estilo, encuentra errores reales (futures sin esperar, casts inseguros) y protege datos en los logs.
-**Fuente oficial:** [Dart: Customizing static analysis](https://dart.dev/tools/analysis), [Dart: Linter rules](https://dart.dev/tools/linter-rules).
-**Conceptos clave:** `dart analyze`, `analysis_options.yaml`, `flutter_lints`, `strict-casts`, severidad de reglas, `dart fix`, `--fatal-infos`.
-**Cuándo no usarlo:** no actives todas las reglas existentes de golpe en un proyecto grande: empieza con el conjunto recomendado y agrega reglas acordadas por el equipo, una a una.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** agrega el análisis estático estricto al repositorio de la app del repartidor y hazlo obligatorio en CI.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** subir la severidad de una regla a `error` en `analysis_options.yaml` y confiar en que ya está aplicada sin correr `dart analyze` localmente — el editor puede seguir mostrando el código en verde si no recargó la configuración, y el equipo recién descubre el `error` cuando el pipeline de CI lo bloquea.
+### Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min
+
+**Prerrequisito:** tema «Futures, async/await y colecciones funcionales» de este módulo.
+
+**Al finalizar podrás:** crear un `Stream` con una función `async*`, transformarlo con `where` y `map`, consumirlo con `await for` y con `listen`, y cancelar la suscripción para no dejar fugas.
+
+**¿Por qué es importante?** Un `Future` entrega un valor una vez; un `Stream` entrega muchos a lo largo del tiempo: posiciones GPS, mensajes de un socket, cambios de una base. En Flutter, `StreamBuilder` y casi todo el estado en vivo se basan en streams.
+
+#### Paso 1 · Objetivo y preparación
+
+Instala el SDK de Dart (o Flutter, que lo incluye) y crea un proyecto de consola con `dart create -t console streams_rutaflow`. Escribirás en `bin/streams_rutaflow.dart`.
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow recibe la posición del mensajero cada pocos segundos. La primera versión hacía una petición cada vez con `Timer`, y al salir de la pantalla el temporizador seguía corriendo. Con un stream y su suscripción cancelada al salir, el problema desaparece.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `Stream`, `async*`, `yield`, `await for`, `listen`, `StreamSubscription`, `StreamController`, stream de una suscripción y de difusión (*broadcast*).
+
+Hay dos formas de crear un stream:
+
+- Una función **`async*`** que hace `yield` de cada valor. Es la más simple cuando tú produces los valores.
+- Un **`StreamController`** cuando los valores llegan desde afuera (callbacks): llamas `add` y al final `close`.
+
+Para consumirlo:
+
+- `await for (final x in stream)` dentro de una función `async`: lee en orden y espera a que termine.
+- `stream.listen(...)` devuelve una **`StreamSubscription`**; guárdala y llama `cancel()` cuando ya no la necesites.
+
+Un stream normal admite **un solo** oyente. Si necesitas varios, usa `asBroadcastStream()` o `StreamController.broadcast()`.
+
+**Analogía:** un stream es una cinta de equipaje: las maletas llegan de a una y tú las recoges. `await for` es esperar junto a la cinta hasta que llegue la última; `listen` es dejar a alguien encargado y avisarle cuándo irse (`cancel`). La analogía falla en que una cinta normal solo admite una persona recogiendo.
+
+**Límite de uso:** no uses `await for` con un stream que nunca termina dentro de código que debe seguir: se queda esperando para siempre. Cancela siempre las suscripciones en `dispose` de los widgets.
+
+```mermaid
+flowchart LR
+    G["posiciones() async*"] -->|"yield"| W["where: dentro de Bogotá"]
+    W --> M["map: texto"]
+    M --> A["await for"]
+    M --> L["listen + cancel()"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `streams_rutaflow/bin/streams_rutaflow.dart`:
+
+```dart
+import 'dart:async';
+
+// Productor: emite una posición cada 100 ms.
+Stream<double> posiciones() async* {
+  var lat = 4.55;
+  for (var i = 0; i < 6; i++) {
+    await Future.delayed(const Duration(milliseconds: 100));
+    lat += 0.02;
+    yield lat;
+  }
+}
+
+Future<void> main() async {
+  // 1) Transformar y leer hasta el final con await for.
+  final enBogota = posiciones().where((lat) => lat < 4.64).map((lat) => 'lat ${lat.toStringAsFixed(2)}');
+  await for (final texto in enBogota) {
+    print('await for: $texto');
+  }
+
+  // 2) listen y cancelar a mitad de camino.
+  late final StreamSubscription<double> suscripcion;
+  var recibidas = 0;
+  suscripcion = posiciones().listen((lat) {
+    recibidas++;
+    if (recibidas == 2) {
+      suscripcion.cancel(); // como salir de la pantalla
+      print('listen: cancelado después de $recibidas posiciones');
+    }
+  });
+  await Future.delayed(const Duration(milliseconds: 800));
+  print('fin');
+}
+```
+
+Ejecútalo:
+
+```bash
+cd streams_rutaflow
+dart run
+```
+
+**Explicación por bloques:** `posiciones` es una función `async*`: cada `yield` entrega un valor y la función continúa en la siguiente vuelta. En la primera parte, `where` deja pasar solo latitudes menores a 4.64 (con decimales binarios, 4.65 se guarda como 4.6499…, por eso el límite no es 4.65) y `map` las convierte en texto; `await for` las imprime y termina cuando el stream termina. En la segunda parte, `listen` recibe valores hasta la segunda posición y cancela la suscripción: el productor deja de generar. La espera final solo da tiempo a que se vea que no llegan más valores.
+
+**Resultado esperado:**
+
+```text
+await for: lat 4.57
+await for: lat 4.59
+await for: lat 4.61
+await for: lat 4.63
+listen: cancelado después de 2 posiciones
+fin
+```
+
+**Fallo deliberado:** llama dos veces `listen` sobre el mismo stream: `final s = posiciones(); s.listen(print); s.listen(print);`. **Error esperado:** `Bad state: Stream has already been listened to.` **Diagnóstico:** un stream normal admite un solo oyente. Crea dos streams o usa `asBroadcastStream()`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y explica por qué no aparece 4.65 ni 4.67.
+2. **Variación:** agrega `.take(2)` antes de `await for` y observa que el bucle termina antes.
+3. **Diagnóstico:** reproduce el fallo deliberado de doble suscripción.
+4. **Integración:** reescribe el productor con un `StreamController` y un `Timer.periodic`, cerrándolo con `close()` y deteniendo el timer en `onCancel`.
+5. **Diseño:** en una pantalla de Flutter, consume el stream con `StreamBuilder` y explica quién cancela la suscripción.
+
+**Pista:** si un stream «no termina», revisa si el productor llega a cerrar o a salir del bucle.
+
+#### Paso 6 · Práctica independiente
+
+Escribe `Stream<int> contarEntregas(Stream<String> eventos)` que emita el total acumulado cada vez que llega un evento `ENTREGADO`, usando `where` y `scan` manual con una variable.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre `Future` y `Stream`.
+- [ ] El programa imprime las seis líneas esperadas.
+- [ ] Reprodujiste el error de doble suscripción.
+- [ ] Cancelas las suscripciones que abres.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar `cancel()`, escuchar dos veces un stream normal y usar `await for` con streams infinitos donde el código debe seguir. **Siguiente paso:** el tema siguiente usa records y patterns para devolver y desarmar varios valores a la vez.
+
+**Transferencia al proyecto integrador «RutaFlow»:** expón la posición del mensajero de RutaFlow como `Stream<Posicion>` y cancela la suscripción en el `dispose` de la pantalla de ruta.
+
+**Fuente oficial:** [Dart — Asynchronous programming: Streams](https://dart.dev/libraries/async/using-streams) y [Dart — Creating streams](https://dart.dev/libraries/async/creating-streams).
+
+### Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min
+
+**Prerrequisito:** tema «Clases y mixins» de este módulo.
+
+**Al finalizar podrás:** devolver varios valores con un record, desarmarlos con patterns y escribir un `switch` exhaustivo sobre una clase `sealed` que el analizador comprueba.
+
+**¿Por qué es importante?** Antes, devolver dos valores obligaba a crear una clase o usar una lista sin tipos. Los records y los patterns de Dart 3 dan resultados tipados y `switch` que el compilador revisa: si agregas un estado nuevo, te avisa dónde falta manejarlo.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Dart 3.0 o superior (`dart --version`). Crea `dart create -t console patrones_rutaflow` y escribe en `bin/patrones_rutaflow.dart`.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, una función calculaba la tarifa y el tiempo estimado y devolvía `List<dynamic>`. Alguien invirtió el orden y la app mostró «1240 minutos». Con un record con nombres, ese error no compila.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** record, campo posicional y con nombre, pattern de desestructuración, `sealed class`, `switch` exhaustivo, guarda `when`.
+
+- Un **record** agrupa valores sin declarar una clase: `(int, String)` o con nombres `({int centavos, int minutos})`. Es inmutable y se compara por valor.
+- Un **pattern** desarma un valor: `final (:centavos, :minutos) = cotizar(2);` crea dos variables.
+- Una **`sealed class`** tiene un conjunto cerrado de subclases (todas en el mismo archivo). Un `switch` sobre ella es **exhaustivo**: el analizador comprueba que manejaste todos los casos.
+- En un `switch`, los patterns pueden pedir datos de cada caso y una **guarda** `when` agrega condiciones.
+
+**Analogía:** un record es una caja con compartimentos rotulados; el pattern es abrir la caja y sacar cada cosa por su rótulo. La `sealed class` es una lista cerrada de tipos de paquete: el inspector (analizador) revisa que tengas una regla para cada uno.
+
+**Límite de uso:** no uses records para modelos con comportamiento o que viajan por toda la app: para eso una clase con nombre documenta mejor. Un `switch` con un caso `_` (comodín) pierde la comprobación exhaustiva.
+
+```mermaid
+flowchart TB
+    E["sealed EstadoEnvio"] --> C["Creado"]
+    E --> R["EnRuta(parada)"]
+    E --> T["Entregado(firma)"]
+    S["switch exhaustivo"] -.->|"debe cubrir los 3"| E
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `patrones_rutaflow/bin/patrones_rutaflow.dart`:
+
+```dart
+// Record con nombres: el orden ya no puede confundirse.
+({int centavos, int minutos}) cotizar(int kilos) =>
+    (centavos: 1000 + kilos * 120, minutos: 30 + kilos * 5);
+
+sealed class EstadoEnvio {}
+class Creado extends EstadoEnvio {}
+class EnRuta extends EstadoEnvio { EnRuta(this.parada); final int parada; }
+class Entregado extends EstadoEnvio { Entregado(this.firma); final String? firma; }
+
+String describir(EstadoEnvio estado) => switch (estado) {
+      Creado() => 'esperando recogida',
+      EnRuta(parada: 1) => 'saliendo de bodega',
+      EnRuta(:final parada) => 'en ruta, parada $parada',
+      Entregado(firma: null) => 'entregado sin firma: revisar',
+      Entregado(:final firma?) => 'entregado, firmó $firma',
+    };
+
+void main() {
+  final (:centavos, :minutos) = cotizar(2); // pattern de desestructuración
+  print('tarifa $centavos centavos, $minutos minutos');
+
+  for (final e in [Creado(), EnRuta(1), EnRuta(4), Entregado(null), Entregado('Ana')]) {
+    print(describir(e));
+  }
+
+  final json = {'codigo': 'ENV-42', 'kilos': 2};
+  if (json case {'codigo': String codigo, 'kilos': int kilos} when kilos > 0) {
+    print('JSON válido: $codigo con $kilos kg');
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd patrones_rutaflow
+dart run
+```
+
+**Explicación por bloques:** `cotizar` devuelve un record con nombres; en `main`, `final (:centavos, :minutos)` crea dos variables con esos nombres. `EstadoEnvio` es `sealed`, así que `describir` puede usar un `switch` sin comodín y el analizador comprueba que cubre los tres tipos. Los patterns también miran los datos: `EnRuta(parada: 1)` es un caso particular y `Entregado(:final firma?)` solo coincide si la firma no es nula. Al final, `if case` valida la forma de un mapa JSON y extrae sus campos tipados en una sola línea.
+
+**Resultado esperado:**
+
+```text
+tarifa 1240 centavos, 40 minutos
+esperando recogida
+saliendo de bodega
+en ruta, parada 4
+entregado sin firma: revisar
+entregado, firmó Ana
+JSON válido: ENV-42 con 2 kg
+```
+
+**Fallo deliberado:** agrega `class Devuelto extends EstadoEnvio {}` sin tocar `describir`. **Error esperado:** `dart analyze` y la compilación fallan con «The type 'EstadoEnvio' is not exhaustively matched by the switch cases since it doesn't match 'Devuelto()'». **Diagnóstico:** el compilador encontró el caso olvidado. Agrega `Devuelto() => 'devuelto a bodega'`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y relaciona cada línea con su caso del `switch`.
+2. **Variación:** cambia el record por uno posicional `(int, int)` y observa qué se pierde al leerlo.
+3. **Diagnóstico:** reproduce el fallo deliberado con `Devuelto`.
+4. **Integración:** agrega una guarda `EnRuta(:final parada) when parada > 10 => ...` y colócala en el orden correcto.
+5. **Diseño:** busca en tu código una función que devuelva `List` o `Map` para varios valores y conviértela en record.
+
+**Pista:** el orden de los casos importa: el primero que coincide gana, así que los casos particulares van antes que los generales.
+
+#### Paso 6 · Práctica independiente
+
+Modela el resultado de una petición como `sealed class Resultado<T>` con `Exito(T valor)` y `Fallo(String mensaje)`, y escribe un `switch` que lo convierta en texto para la pantalla.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas record, pattern y `sealed`.
+- [ ] El programa imprime las siete líneas esperadas.
+- [ ] Reprodujiste el error de `switch` no exhaustivo.
+- [ ] Ordenas los casos de particular a general.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `_` y perder la exhaustividad, poner casos generales antes que los particulares y usar records para modelos grandes. **Siguiente paso:** el tema siguiente agrega métodos a tipos existentes con extensiones.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, modela los estados del envío como `sealed class` y conviértelos en texto con un `switch` exhaustivo en la pantalla de seguimiento.
+
+**Fuente oficial:** [Dart — Records](https://dart.dev/language/records) y [Dart — Patterns](https://dart.dev/language/patterns).
+
+### Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min
+
+**Prerrequisito:** tema «Records y patterns en Dart» de este módulo.
+
+**Al finalizar podrás:** agregar métodos a tipos que no son tuyos con `extension`, y crear un tipo `CodigoEnvio` con `extension type` que no cuesta nada en ejecución pero impide mezclarlo con cualquier `String`.
+
+**¿Por qué es importante?** Las utilidades sueltas (`formatearPrecio(x)`) se pierden en archivos de ayuda. Las extensiones las ponen donde se esperan (`x.comoPesos`). Y un `extension type` evita pasar un nombre de cliente donde iba un código de envío, sin crear clases.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Dart 3.3 o superior (necesario para `extension type`). Crea `dart create -t console extensiones_rutaflow`.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, una función recibía `(String codigo, String cliente)` y alguien la llamó con los argumentos al revés. Con un tipo `CodigoEnvio`, esa llamada no compila.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** extensión (`extension ... on`), resolución estática, `extension type`, representación, tipo envoltorio sin costo.
+
+Una **extensión** agrega métodos, getters u operadores a un tipo existente: `extension Pesos on int { String get comoPesos => ... }`. Se resuelve **en tiempo de compilación** según el tipo estático: no funciona sobre una variable `dynamic`.
+
+Un **`extension type`** envuelve un valor (su **representación**) en un tipo nuevo para el compilador. En ejecución es exactamente el valor original: no crea objetos. Sirve para:
+
+- distinguir valores con el mismo tipo base (`CodigoEnvio` frente a `String`);
+- exponer solo las operaciones válidas;
+- validar al construir.
+
+**Analogía:** una extensión es una navaja que se acopla a una herramienta que ya tienes; un `extension type` es una etiqueta de color en un cable: el cable es el mismo, pero ya no lo confundes con otro. La analogía falla en que la etiqueta desaparece en ejecución: si conviertes a `dynamic`, se pierde.
+
+**Límite de uso:** las extensiones no reemplazan a los métodos de una clase propia que controlas. Un `extension type` no protege si haces `as String` a propósito; es una ayuda del compilador, no una barrera en ejecución.
+
+```mermaid
+flowchart LR
+    I["int 52000"] -->|"extension Pesos"| P["52000.comoPesos -> $52.000"]
+    S["String 'ENV-42'"] -->|"CodigoEnvio(...)"| C["CodigoEnvio"]
+    C -->|"en ejecución"| S
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `extensiones_rutaflow/bin/extensiones_rutaflow.dart`:
+
+```dart
+extension Pesos on int {
+  // 52000 -> "$52.000"
+  String get comoPesos => '\$${toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+$)'), (_) => '.')}';
+}
+
+extension type CodigoEnvio._(String valor) {
+  // Constructor con validación: solo códigos con el formato correcto.
+  factory CodigoEnvio(String texto) {
+    if (!RegExp(r'^ENV-\d+$').hasMatch(texto)) throw FormatException('código inválido: $texto');
+    return CodigoEnvio._(texto);
+  }
+  int get numero => int.parse(valor.substring(4));
+}
+
+String etiqueta(CodigoEnvio codigo, String cliente) => '${codigo.valor} para $cliente';
+
+void main() {
+  print(52000.comoPesos);
+
+  final codigo = CodigoEnvio('ENV-42');
+  print(etiqueta(codigo, 'Ana'));
+  print('número: ${codigo.numero}');
+  // etiqueta('Ana', codigo); // ❌ no compila: los tipos no coinciden
+
+  try {
+    CodigoEnvio('42');
+  } on FormatException catch (e) {
+    print(e.message);
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd extensiones_rutaflow
+dart run
+```
+
+**Explicación por bloques:** `Pesos` agrega a `int` un getter que inserta puntos cada tres cifras desde la derecha. `CodigoEnvio` es un `extension type` sobre `String`: el constructor privado `_` guarda el valor y el `factory` público valida el formato antes. `numero` solo existe para códigos. La función `etiqueta` pide un `CodigoEnvio` y un `String`: pasarlos al revés no compila. En ejecución, `codigo` sigue siendo el texto `'ENV-42'`, sin objeto extra.
+
+**Resultado esperado:**
+
+```text
+$52.000
+ENV-42 para Ana
+número: 42
+código inválido: 42
+```
+
+**Fallo deliberado:** descomenta `etiqueta('Ana', codigo);`. **Error esperado:** «The argument type 'String' can't be assigned to the parameter type 'CodigoEnvio'». **Diagnóstico:** el compilador distingue el código de un texto cualquiera, justo el error que antes llegaba a producción.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y prueba `1000000.comoPesos`.
+2. **Variación:** agrega a `CodigoEnvio` un getter `esUrgente` para números mayores que 9000.
+3. **Diagnóstico:** reproduce el fallo deliberado.
+4. **Integración:** guarda el código en una variable `dynamic` y llama `.numero`: explica por qué falla.
+5. **Diseño:** lista tres tipos de RutaFlow que hoy son `String` y deberían ser `extension type`.
+
+**Pista:** las extensiones se eligen por el tipo estático: si la variable es `dynamic`, el compilador no sabe qué extensión usar.
+
+#### Paso 6 · Práctica independiente
+
+Crea `extension type Kilos(double valor)` con validación (mayor que cero y menor que 1000) y úsalo en una función `cotizar(Kilos kilos)`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre extensión y `extension type`.
+- [ ] El programa imprime las cuatro líneas esperadas.
+- [ ] Reprodujiste el error de tipos al invertir argumentos.
+- [ ] Sabes por qué no funciona con `dynamic`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar extensiones sobre `dynamic`, esperar que un `extension type` valide en ejecución tras un `as` y crear extensiones para tipos propios que podrías modificar. **Siguiente paso:** el tema «Lints y estilo con analysis_options.yaml» hace que el analizador también vigile el uso de estos tipos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, reemplaza los `String` de códigos de envío por `CodigoEnvio` y agrega la extensión `comoPesos` para los precios.
+
+**Fuente oficial:** [Dart — Extension methods](https://dart.dev/language/extension-methods) y [Dart — Extension types](https://dart.dev/language/extension-types).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

@@ -244,6 +244,16 @@ Dart es de un solo hilo: todo tu código (incluido el render) corre en el **isol
 
 **Analogía:** el isolate principal es un cocinero que también atiende a los clientes. Si se pone a pelar 10 kg de papas (trabajo de CPU), nadie es atendido. Un isolate es un segundo cocinero en otra cocina: pela las papas en paralelo mientras el primero sigue atendiendo. No comparten la misma tabla (memoria), se pasan los resultados por una ventanilla (mensajes).
 
+**Conceptos clave:** hilo único de Dart, isolate principal, `compute()`, memoria no compartida y paso de mensajes, E/S vs CPU.
+**Cuándo no usarlo:** para operaciones de red o disco, `async/await` normal basta y es más simple — crear un isolate tiene un costo de arranque y de copia de datos. Usa isolates solo para trabajo de CPU que dure lo suficiente para causar jank perceptible.
+
+**Transferencia al proyecto integrador «RutaFlow»:** calcula las estadísticas del historial de entregas de un repartidor con `compute` y demuestra con DevTools que la lista de envíos sigue haciendo scroll fluido mientras el cálculo corre.
+
+---
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** pasar a `compute()` un método de instancia o una función anidada en vez de una función top-level o `static` como `sumaPesada` — el isolate nuevo no puede copiar referencias como `this`, así que `compute` falla al intentar enviar la función en vez de simplemente ejecutarla.
+**Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```dart
@@ -309,15 +319,6 @@ Usa `compute` para parsear un JSON grande (simula el historial GPS como una list
 
 #### Paso 7 · Cierre
 Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el spinner que distingue ambos casos. **¿Por qué es importante?** La regla de oro de una app móvil fluida es "nunca bloquees el hilo de UI". `async/await` cubre la E/S, pero el trabajo de CPU (parseo masivo, imágenes, criptografía, cálculos geoespaciales) necesita isolates. Es la diferencia entre una app que se siente profesional y una que "se traba". Fuentes: [Flutter — Concurrency and isolates](https://docs.flutter.dev/perf/isolates) y [dart:isolate](https://api.dart.dev/stable/dart-isolate/dart-isolate-library.html).
-**Conceptos clave:** hilo único de Dart, isolate principal, `compute()`, memoria no compartida y paso de mensajes, E/S vs CPU.
-**Cuándo no usarlo:** para operaciones de red o disco, `async/await` normal basta y es más simple — crear un isolate tiene un costo de arranque y de copia de datos. Usa isolates solo para trabajo de CPU que dure lo suficiente para causar jank perceptible.
-
-**Transferencia al proyecto integrador «RutaFlow»:** calcula las estadísticas del historial de entregas de un repartidor con `compute` y demuestra con DevTools que la lista de envíos sigue haciendo scroll fluido mientras el cálculo corre.
-
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** pasar a `compute()` un método de instancia o una función anidada en vez de una función top-level o `static` como `sumaPesada` — el isolate nuevo no puede copiar referencias como `this`, así que `compute` falla al intentar enviar la función en vez de simplemente ejecutarla.
-**Fuente oficial:** [documentación de Flutter](https://docs.flutter.dev/).
 
 ### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más
 
@@ -342,6 +343,15 @@ flowchart LR
     C --> P[ProgresoRutaPainter.paint]
     P --> K[Canvas: líneas y círculos]
 ```
+
+**¿Por qué es importante?** porque te permite construir componentes que no existen en la librería estándar sin sacrificar rendimiento ni accesibilidad.
+**Fuente oficial:** [Flutter: CustomPaint](https://api.flutter.dev/flutter/widgets/CustomPaint-class.html), [Flutter: CustomPainter](https://api.flutter.dev/flutter/rendering/CustomPainter-class.html).
+**Conceptos clave:** `CustomPaint`, `CustomPainter`, `Canvas`, `Paint`, `shouldRepaint`, `RepaintBoundary`, `Semantics`, fragment shaders.
+**Cuándo no usarlo:** si se puede componer con widgets existentes (`Row`, `Container`, `LinearProgressIndicator`), hazlo: son accesibles por defecto y más fáciles de mantener.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** muestra el avance de la ruta del día en la pantalla principal con este componente y su etiqueta accesible.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** agregar un campo nuevo al painter (como `fallidas` en el Paso 5) y olvidar incluirlo en la comparación de `shouldRepaint` — Flutter sigue reutilizando el dibujo anterior porque, según esa comparación, "nada cambió", aunque el estado real sí haya cambiado.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -461,14 +471,7 @@ Agrega un parámetro `fallidas` y dibuja en rojo las paradas fallidas. Actualiza
 Anima el avance con un `AnimationController` pasando `repaint: animacion` al `CustomPainter`, y mide con Flutter DevTools que solo se repinta la capa del `RepaintBoundary`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque te permite construir componentes que no existen en la librería estándar sin sacrificar rendimiento ni accesibilidad.
-**Fuente oficial:** [Flutter: CustomPaint](https://api.flutter.dev/flutter/widgets/CustomPaint-class.html), [Flutter: CustomPainter](https://api.flutter.dev/flutter/rendering/CustomPainter-class.html).
-**Conceptos clave:** `CustomPaint`, `CustomPainter`, `Canvas`, `Paint`, `shouldRepaint`, `RepaintBoundary`, `Semantics`, fragment shaders.
-**Cuándo no usarlo:** si se puede componer con widgets existentes (`Row`, `Container`, `LinearProgressIndicator`), hazlo: son accesibles por defecto y más fáciles de mantener.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** muestra el avance de la ruta del día en la pantalla principal con este componente y su etiqueta accesible.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar un campo nuevo al painter (como `fallidas` en el Paso 5) y olvidar incluirlo en la comparación de `shouldRepaint` — Flutter sigue reutilizando el dibujo anterior porque, según esa comparación, "nada cambió", aunque el estado real sí haya cambiado.
 
 ## Laboratorio práctico
 

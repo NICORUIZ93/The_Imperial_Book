@@ -72,7 +72,7 @@ Tests/                ← Swift Testing sobre dominio (Módulo 9)
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -267,7 +267,7 @@ struct RutaFlowApp: App {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -343,7 +343,7 @@ valor y una forma de notificar cambios, sin poseer el estado él mismo
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -358,6 +358,146 @@ Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente
 #### Paso 7 · Cierre
 Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
 **Implicación práctica:** Distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
+
+### Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min
+
+**Prerrequisito:** tema «Arquitectura del proyecto integrador» de este módulo.
+
+**Al finalizar podrás:** crear un paquete local con dos módulos (dominio y red), agregar una dependencia externa con versión fijada, usarlo desde la app y ejecutar sus pruebas con `swift test`.
+
+**¿Por qué es importante?** Cuando todo el código vive en el target de la app, compilar tarda, las pruebas necesitan el simulador y cualquier archivo puede depender de cualquier otro. Los paquetes separan responsabilidades y sus pruebas corren en segundos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 16 o superior. Dentro de `academia-ios`, crea `Paquetes/RutaFlowKit` con `swift package init --type library --name RutaFlowKit`.
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow tardaba cuatro minutos en compilar desde cero y las reglas de tarifas solo se podían probar con el simulador. Al moverlas a un paquete, sus pruebas corren en la terminal en dos segundos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** paquete, `Package.swift`, producto, target, dependencia, versión semántica, `Package.resolved`, paquete local.
+
+Un **paquete** se describe en `Package.swift`:
+
+- **targets:** módulos de código (`Dominio`, `Red`) y sus pruebas.
+- **productos:** lo que otros pueden importar (una librería con uno o más targets).
+- **dependencias:** otros paquetes, con una regla de versión (`from: "1.2.0"` acepta 1.x desde 1.2.0).
+
+Cada target solo puede importar los targets que declara como dependencia, así que el compilador hace cumplir la arquitectura. `Package.resolved` guarda las versiones exactas resueltas: súbelo al repositorio para builds reproducibles.
+
+En Xcode, un paquete local se agrega arrastrando su carpeta al proyecto o con **File > Add Package Dependencies > Add Local**.
+
+**Analogía:** los targets son habitaciones con puertas que solo abren hacia donde dice el plano (`dependencies`). La analogía falla en que el plano lo revisa el compilador en cada build, no un inspector de vez en cuando.
+
+**Límite de uso:** no separes en paquetes demasiado pequeños: cada uno agrega configuración. Los recursos (imágenes, catálogos) en paquetes necesitan `resources:` y `Bundle.module`.
+
+```mermaid
+flowchart TB
+    App["RutaFlowApp"] --> K["producto RutaFlowKit"]
+    K --> R["target Red"]
+    K --> D["target Dominio"]
+    R --> D
+    R --> E["swift-collections (externo)"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/Paquetes/RutaFlowKit/Package.swift`:
+
+```swift
+// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "RutaFlowKit",
+    platforms: [.iOS(.v17), .macOS(.v14)],
+    products: [
+        .library(name: "RutaFlowKit", targets: ["Dominio", "Red"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-collections", from: "1.1.0"),
+    ],
+    targets: [
+        .target(name: "Dominio"),
+        .target(name: "Red", dependencies: [
+            "Dominio",
+            .product(name: "Collections", package: "swift-collections"),
+        ]),
+        .testTarget(name: "DominioTests", dependencies: ["Dominio"]),
+    ]
+)
+```
+
+Archivo `academia-ios/Paquetes/RutaFlowKit/Sources/Dominio/Tarifa.swift`:
+
+```swift
+public struct Tarifa: Sendable {
+    public init() {}
+    public func centavos(kilos: Int) -> Int { 1_000 + kilos * 120 }
+}
+```
+
+Archivo `academia-ios/Paquetes/RutaFlowKit/Tests/DominioTests/TarifaTests.swift`:
+
+```swift
+import Testing
+@testable import Dominio
+
+@Test func tarifaDeDosKilos() {
+    #expect(Tarifa().centavos(kilos: 2) == 1_240)
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-ios/Paquetes/RutaFlowKit
+swift build
+swift test
+```
+
+**Explicación por bloques:** `Package.swift` declara la librería `RutaFlowKit` con dos targets. `Dominio` no depende de nada; `Red` depende de `Dominio` y del producto `Collections` del paquete externo, fijado desde la versión 1.1.0. El target de pruebas solo ve `Dominio`. `Tarifa` es `public` para que la app la pueda usar. La prueba usa Swift Testing y corre con `swift test`, sin simulador.
+
+**Resultado esperado:**
+
+```text
+Building for debugging...
+Build complete!
+◇ Test run started.
+✔ Test tarifaDeDosKilos() passed
+✔ Test run with 1 test passed
+```
+
+**Fallo deliberado:** en `Dominio/Tarifa.swift` agrega `import Collections`. **Error esperado:** `no such module 'Collections'`. **Diagnóstico:** `Dominio` no declara esa dependencia. El compilador hace cumplir la regla «el dominio no depende de librerías externas».
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** compila y prueba el paquete desde la terminal.
+2. **Variación:** agrega el paquete local a `RutaFlowApp` en Xcode y usa `Tarifa` en una vista.
+3. **Diagnóstico:** reproduce el fallo deliberado del import.
+4. **Integración:** agrega un recurso JSON de tarifas al target `Dominio` con `resources: [.process("tarifas.json")]` y léelo con `Bundle.module`.
+5. **Diseño:** decide qué partes de RutaFlow merecen paquete propio y dibuja sus dependencias.
+
+**Pista:** si Xcode no encuentra un módulo del paquete, revisa que esté en el producto que agregaste al target de la app.
+
+#### Paso 6 · Práctica independiente
+
+Crea el target `Persistencia` que dependa de `Dominio` y no de `Red`, con su target de pruebas, y comprueba con un import indebido que el compilador lo rechaza.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas producto, target y dependencia.
+- [ ] `swift test` pasa sin simulador.
+- [ ] Reprodujiste el error de un import no declarado.
+- [ ] Subes `Package.resolved` al repositorio.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar `public` en lo que usa la app, no subir `Package.resolved` y crear paquetes para cada archivo. **Siguiente paso:** el tema «Sincronización entre red y persistencia local» usa los targets `Red` y `Dominio`.
+
+**Transferencia al proyecto integrador «RutaFlow»:** mueve las reglas de tarifas y el cliente de red de RutaFlow a `RutaFlowKit` y ejecuta sus pruebas en el CI con `swift test`.
+
+**Fuente oficial:** [Swift.org — Package Manager](https://www.swift.org/documentation/package-manager/) y [Apple — Swift packages](https://developer.apple.com/documentation/xcode/swift-packages).
 
 ## Laboratorio práctico
 

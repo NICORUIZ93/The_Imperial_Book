@@ -13,6 +13,14 @@ Un cambio de UI en la pantalla de lista de envíos rompió silenciosamente el es
 #### Paso 3 · Teoría, modelo mental y analogía
 `WidgetTester` simula un usuario interactuando con el árbol de widgets en memoria, sin necesitar un dispositivo o emulador real; `pump()` avanza un frame, permitiendo verificar el estado exacto del árbol en cualquier punto. La analogía: un maniquí de pruebas que reacciona exactamente como un usuario real, pero en un entorno de laboratorio controlado y repetible.
 
+**¿Por qué es importante?** Un widget test confirma el comportamiento visible real del árbol de widgets sin el costo de un emulador, detectando regresiones de UI antes de que lleguen a producción.
+
+**Conceptos clave:** WidgetTester, pump(), árbol de widgets en memoria, testWidgets.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Añade pruebas del estado vacío y con entregas de la lista real. Cambia temporalmente el texto o la condición de vacío y verifica que el test detecta la regresión visible.
+
+**Límites y decisión de uso:** Un widget test verifica comportamiento en el entorno de prueba, pero no la cámara, permisos ni integración completa del dispositivo. Combínalo con pruebas de integración para esas fronteras, como distingue la [documentación de Flutter](https://docs.flutter.dev/testing/overview).
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía y genera tu propio proyecto:
 ```bash
@@ -68,14 +76,6 @@ Agrega un segundo test que confirme que, con al menos un envío en la lista, el 
 #### Paso 7 · Cierre
 Entrega el test del estado vacío del Paso 4, la aserción invertida del Paso 5, y el segundo test del estado con datos del Paso 6; explica por qué `WidgetTester` permite verificar el árbol de widgets sin el costo de un emulador real. Como siguiente paso, usa `pumpAndSettle` para probar interacciones asíncronas e integration tests de extremo a extremo. Errores comunes: usar `tester.pump()` una sola vez para un widget con animaciones o datos asíncronos que necesitan varios frames; probar implementación interna (variables privadas) en vez del resultado visible para el usuario. Fuentes oficiales: https://docs.flutter.dev/testing/overview y https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html.
 
-**¿Por qué es importante?** Un widget test confirma el comportamiento visible real del árbol de widgets sin el costo de un emulador, detectando regresiones de UI antes de que lleguen a producción.
-
-**Conceptos clave:** WidgetTester, pump(), árbol de widgets en memoria, testWidgets.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Añade pruebas del estado vacío y con entregas de la lista real. Cambia temporalmente el texto o la condición de vacío y verifica que el test detecta la regresión visible.
-
-**Límites y decisión de uso:** Un widget test verifica comportamiento en el entorno de prueba, pero no la cámara, permisos ni integración completa del dispositivo. Combínalo con pruebas de integración para esas fronteras, como distingue la [documentación de Flutter](https://docs.flutter.dev/testing/overview).
-
 ### Tema 2: pumpAndSettle, golden e integration tests
 
 #### Paso 1 · Objetivo y preparación
@@ -86,6 +86,12 @@ Un test que verifica el resultado de una búsqueda de envíos justo después de 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `pumpAndSettle()` avanza frames repetidamente hasta que no quede ninguna animación o frame pendiente, aproximando lo que un usuario real experimentaría esperando a que la pantalla "se asiente"; si algo mantiene la UI en animación perpetua, `pumpAndSettle()` nunca termina y el test falla por timeout. La analogía: esperar a que una escena termine de moverse antes de tomar la fotografía, en vez de disparar el obturador a mitad del movimiento.
+
+**¿Por qué es importante?** `pumpAndSettle()` evita fallas intermitentes esperando explícitamente a que la UI se estabilice, pero falla por timeout ante animaciones genuinamente infinitas — una limitación que hay que conocer, no un bug.
+
+**Conceptos clave:** pumpAndSettle(), estabilización de frames, falla intermitente como señal de sincronización faltante.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Controla la respuesta del repositorio durante la búsqueda de una guía. Avanza el reloj del test y verifica carga, resultado y error sin depender de una petición real o de esperas indefinidas.
 
 #### Paso 4 · Demostración guiada
 Parte de otra carpeta vacía y crea un proyecto independiente con el widget y sus pruebas:
@@ -197,12 +203,6 @@ Agrega un test que complete el Future con error y otro que desmonte el widget an
 #### Paso 7 · Cierre
 Entrega el test con `pumpAndSettle()` del Paso 4, la falla intermitente con `pump()` único del Paso 5, y el caso de animación infinita del Paso 6; explica por qué una falla intermitente en un test (no un fallo consistente) suele señalar una sincronización asíncrona faltante, no un bug aleatorio real. Como siguiente paso, mide el rendimiento de una lista con `RepaintBoundary` y Keys correctas. Errores comunes: usar un único `pump()` para estados asíncronos que necesitan varios frames; aplicar `pumpAndSettle()` a una pantalla con una animación intencionalmente infinita, sin un timeout explícito. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/integration-tests.
 
-**¿Por qué es importante?** `pumpAndSettle()` evita fallas intermitentes esperando explícitamente a que la UI se estabilice, pero falla por timeout ante animaciones genuinamente infinitas — una limitación que hay que conocer, no un bug.
-
-**Conceptos clave:** pumpAndSettle(), estabilización de frames, falla intermitente como señal de sincronización faltante.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Controla la respuesta del repositorio durante la búsqueda de una guía. Avanza el reloj del test y verifica carga, resultado y error sin depender de una petición real o de esperas indefinidas.
-
 ### Tema 3: Rendimiento, RepaintBoundary y Keys
 
 #### Paso 1 · Objetivo y preparación
@@ -213,6 +213,12 @@ Una lista de 100 envíos pierde frames notablemente al marcar uno solo como "ent
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Sin `RepaintBoundary`, una región que cambia puede forzar el repintado de widgets vecinos que comparten la misma capa de pintura; sin una `Key` estable por ítem, Flutter puede confundir la identidad de los widgets al reordenar una lista, reconstruyendo más de lo necesario. La analogía: pintar una sola ventana de un edificio sin afectar a las demás (RepaintBoundary), frente a repintar todo el edificio porque no quedó claro cuál ventana específica cambió.
+
+**¿Por qué es importante?** Medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real; una Key basada en índice en vez de identidad real produce bugs de estado visual asociado a la fila equivocada.
+
+**Conceptos clave:** RepaintBoundary, Key por identidad real vs índice, profiler antes de optimizar.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Mide repintado y estado de filas al completar y reordenar entregas. Una fila debe conservar su identidad por guía; compara la medición antes y después de introducir límites de repintado.
 
 #### Paso 4 · Demostración guiada
 
@@ -250,12 +256,6 @@ Corregí el Paso 5 restaurando `RepaintBoundary` y `ValueKey(envios[i].id)` (el 
 #### Paso 7 · Cierre
 Entrega la lista con `RepaintBoundary`/`Key` correcta del Paso 4, el checkbox en la fila equivocada del Paso 5, y la medición comparada del Paso 6; explica por qué medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real. Como siguiente paso, aislá el dominio de negocio con Clean Architecture. Errores comunes: usar el índice de una lista como Key en vez de un identificador estable del dato real; optimizar con RepaintBoundary sin medir primero cuál widget realmente se repinta de más. Fuentes oficiales: https://docs.flutter.dev/perf/best-practices y https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html.
 
-**¿Por qué es importante?** Medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real; una Key basada en índice en vez de identidad real produce bugs de estado visual asociado a la fila equivocada.
-
-**Conceptos clave:** RepaintBoundary, Key por identidad real vs índice, profiler antes de optimizar.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Mide repintado y estado de filas al completar y reordenar entregas. Una fila debe conservar su identidad por guía; compara la medición antes y después de introducir límites de repintado.
-
 ### Tema 4: Clean Architecture
 
 #### Paso 1 · Objetivo y preparación
@@ -266,6 +266,12 @@ El equipo necesita cambiar el cliente HTTP (`Dio` por otro) sin tocar ninguna re
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Clean Architecture organiza el código en capas concéntricas donde las dependencias solo pueden apuntar hacia el centro (`domain`): la capa de dominio no conoce ningún detalle de infraestructura (HTTP, base de datos, UI), mientras que las capas externas sí pueden depender del dominio. La analogía: cada capa es un puesto de aduana con un contrato — el centro nunca necesita saber cómo llegó la mercadería desde afuera.
+
+**¿Por qué es importante?** La dirección de las dependencias (siempre hacia el dominio, nunca al revés) es lo que permite cambiar infraestructura sin tocar ni volver a probar la lógica de negocio.
+
+**Conceptos clave:** domain/application/data, dirección de dependencias, repositorio abstracto, aislamiento de infraestructura.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Extrae confirmar entrega como caso de uso independiente de widgets. Prueba reglas con un repositorio falso y conserva una prueba de interfaz que demuestre que la pantalla presenta el fallo de dominio.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/domain/envio.dart` con el contenido de este tema.
@@ -302,12 +308,6 @@ Corregí el Paso 5 quitando el import de `dio` del dominio, implementando `Envio
 #### Paso 7 · Cierre
 Entrega las capas separadas del Paso 4, la dependencia de `Dio` filtrada al dominio del Paso 5, y el test aislado con repositorio falso del Paso 6; explica por qué la dirección de las dependencias (siempre hacia el centro) es lo que realmente define Clean Architecture, no solo tener carpetas con esos nombres. Como siguiente paso, hacé que esos textos sean traducibles con internacionalización completa. Errores comunes: crear carpetas `domain`/`application`/`data` sin hacer cumplir realmente la dirección de dependencias; agregar capas ceremoniales a un proyecto tan simple que no las necesita. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
 
-**¿Por qué es importante?** La dirección de las dependencias (siempre hacia el dominio, nunca al revés) es lo que permite cambiar infraestructura sin tocar ni volver a probar la lógica de negocio.
-
-**Conceptos clave:** domain/application/data, dirección de dependencias, repositorio abstracto, aislamiento de infraestructura.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Extrae confirmar entrega como caso de uso independiente de widgets. Prueba reglas con un repositorio falso y conserva una prueba de interfaz que demuestre que la pantalla presenta el fallo de dominio.
-
 ### Tema 5: Internacionalización completa
 
 #### Paso 1 · Objetivo y preparación
@@ -318,6 +318,14 @@ RutaFlow planea operar en una región con usuarios que hablan español e inglés
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Flutter genera clases de localización tipadas a partir de archivos `.arb` (uno por idioma), reemplazando strings hardcodeados por llamadas a `AppLocalizations.of(context)`; el formato de fechas, números y plurales también depende de la configuración regional (`Locale`), no solo de traducir palabra por palabra. La analogía: traducir un contrato no es reemplazar palabras una por una, sino adaptar el formato completo (fechas, moneda, pluralización) a las convenciones de cada idioma.
+
+**¿Por qué es importante?** Una clave de traducción faltante en un idioma produce un error detectable (en build o en runtime), nunca una traducción silenciosamente incorrecta — pero solo si algo (un test de paridad) la busca activamente.
+
+**Conceptos clave:** archivos .arb, AppLocalizations, Locale, paridad de claves entre idiomas.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Localiza conteos, fechas y mensajes de error de la ruta. Prueba idioma alternativo y texto ampliado, verificando que ninguna traducción modifica el código de estado enviado al backend.
+
+**Límites y decisión de uso:** Traducir cadenas no resuelve formato de fechas, pluralización, lectura RTL ni espacio disponible. Prueba datos reales de cada locale y mantén fechas e identificadores de transporte independientes de su presentación traducida.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía y crea el proyecto con sus dependencias:
@@ -405,14 +413,6 @@ Corregí el Paso 5 agregando `estadoEntregado` también a `app_en.arb`, y agrega
 
 #### Paso 7 · Cierre
 Entrega las traducciones funcionando del Paso 4, la clave faltante en un idioma del Paso 5, y el test de paridad de claves del Paso 6; explica por qué verificar automáticamente que ambos archivos `.arb` tengan las mismas claves evita descubrir una traducción faltante recién en producción. Como siguiente paso, generá y firmá el artefacto de build final. Errores comunes: agregar una clave de traducción a un solo idioma sin verificar los demás; formatear fechas o números manualmente en vez de usar las utilidades de `intl` sensibles al `Locale`. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization y https://pub.dev/packages/intl.
-
-**¿Por qué es importante?** Una clave de traducción faltante en un idioma produce un error detectable (en build o en runtime), nunca una traducción silenciosamente incorrecta — pero solo si algo (un test de paridad) la busca activamente.
-
-**Conceptos clave:** archivos .arb, AppLocalizations, Locale, paridad de claves entre idiomas.
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Localiza conteos, fechas y mensajes de error de la ruta. Prueba idioma alternativo y texto ampliado, verificando que ninguna traducción modifica el código de estado enviado al backend.
-
-**Límites y decisión de uso:** Traducir cadenas no resuelve formato de fechas, pluralización, lectura RTL ni espacio disponible. Prueba datos reales de cada locale y mantén fechas e identificadores de transporte independientes de su presentación traducida.
 
 ### Tema 6: Builds, firma y despliegue
 

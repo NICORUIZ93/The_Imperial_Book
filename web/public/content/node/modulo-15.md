@@ -26,6 +26,9 @@ flowchart LR
   P -->|no| E[Acceso rechazado]
 ```
 
+**¿Por qué es importante?** Un permiso pequeño reduce cuánto puede hacer accidentalmente un programa o una dependencia.
+**Cuándo no elegirlo:** si una dependencia crítica requiere acceso nativo o APIs que la capa de compatibilidad no implementa, primero confirma el soporte con un caso real.
+
 #### Paso 4 · Demostración guiada
 
 Ejemplo independiente desde cero: crea `ejemplo-deno/main.ts`:
@@ -57,13 +60,11 @@ deno run --allow-net=127.0.0.1:3000 ejemplo-deno/main.ts
 
 Crea `ejemplo-deno/leer.ts` que lea `./pedido.json`. Ejecuta con permiso de red pero sin permiso de lectura, luego concede solo `--allow-read=./pedido.json`. Compara Node y Deno usando el mismo archivo y guarda ambos comandos y mensajes. Investiga qué cambia si el proyecto usa una dependencia npm que ejecuta un script de instalación o carga un add-on nativo.
 
+**Evidencia de aprendizaje:** entrega las dos ejecuciones, el error por host no permitido y la lista de accesos mínimos.
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega el resultado permitido, el acceso rechazado y una lista de permisos por capacidad. **Proyecto integrador RutaFlow:** si un worker de entregas se migra a Deno, concede únicamente acceso a la URL del servicio de mapas y al archivo/configuración que necesita. Errores comunes: usar `-A` como permiso habitual, creer que los paquetes npm pierden acceso al sistema automáticamente si se les concede y asumir que compatibilidad Node significa identidad total. Siguiente paso: comparar el entorno integrado de Bun. Fuentes oficiales: [Deno: permisos](https://docs.deno.com/runtime/reference/permissions/), [seguridad](https://docs.deno.com/runtime/fundamentals/security/) y [compatibilidad Node](https://docs.deno.com/runtime/fundamentals/node/).
-
-**¿Por qué es importante?** Un permiso pequeño reduce cuánto puede hacer accidentalmente un programa o una dependencia.
-**Evidencia de aprendizaje:** entrega las dos ejecuciones, el error por host no permitido y la lista de accesos mínimos.
-**Cuándo no elegirlo:** si una dependencia crítica requiere acceso nativo o APIs que la capa de compatibilidad no implementa, primero confirma el soporte con un caso real.
 
 ### Tema 2: Bun reúne runtime, paquetes, pruebas y bundler
 
@@ -87,6 +88,9 @@ flowchart LR
   A --> E[bun install]
   F[Node APIs] -. verificar cobertura .-> A
 ```
+
+**¿Por qué es importante?** Una herramienta integrada solo ayuda si conserva el comportamiento de las dependencias que el proyecto usa.
+**Cuándo no elegirlo:** no cambies un servicio estable solo por una medición vacía; primero verifica drivers, instrumentación y plataforma de despliegue.
 
 #### Paso 4 · Demostración guiada
 
@@ -132,13 +136,11 @@ bun test
 
 Ejecuta el mismo proyecto con Node/npm y Bun. Compara instalación limpia, pruebas, salida y APIs; conserva los lockfiles en ramas separadas y no mezcles gestores en una misma instalación. Empaqueta `src/main.js` con `bun build` y comprueba que la salida producida mantiene el resultado. Registra versiones y sistema operativo.
 
+**Evidencia de aprendizaje:** compara las dos instalaciones y las mismas pruebas con salida registrada.
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega resultados de instalación, ejecución, pruebas y bundle. **Proyecto integrador RutaFlow:** usa Bun solo después de correr el conjunto de integración real de la API, especialmente base de datos, autenticación y observabilidad. Errores comunes: concluir compatibilidad por un `console.log`, dejar npm y Bun modificando lockfiles a la vez y atribuir una mejora de build a mejor latencia del servicio. Siguiente paso: decidir si conviene migrar un proyecto Node existente. Fuentes oficiales: [Bun: bienvenida](https://bun.sh/docs), [runtime](https://bun.sh/docs/runtime), [compatibilidad Node](https://bun.sh/docs/runtime/nodejs-compat) y [bun install](https://bun.sh/docs/pm/cli/install).
-
-**¿Por qué es importante?** Una herramienta integrada solo ayuda si conserva el comportamiento de las dependencias que el proyecto usa.
-**Evidencia de aprendizaje:** compara las dos instalaciones y las mismas pruebas con salida registrada.
-**Cuándo no elegirlo:** no cambies un servicio estable solo por una medición vacía; primero verifica drivers, instrumentación y plataforma de despliegue.
 
 ### Tema 3: Migrar un proyecto Node a Bun sin perder reproducibilidad
 
@@ -164,6 +166,9 @@ flowchart LR
   E -->|no| G[Aislar API incompatible]
 ```
 
+**¿Por qué es importante?** La misma app puede comportarse distinto en las APIs de red, archivos, procesos y complementos nativos.
+**Cuándo no migrar:** si no puedes reproducir el entorno real o no tienes pruebas de contrato suficientes, primero crea esa evidencia.
+
 #### Paso 4 · Demostración guiada
 
 Crea una copia independiente llamada `experimento-bun`, conserva `package-lock.json` y ejecuta el proyecto con Node antes de cambiar gestor. Guarda salida de `node --version`, `npm ci` y `npm test`. Después instala Bun y corre `bun run` y `bun test` con las mismas pruebas. Mantén intacto `src/` en esta primera comparación.
@@ -188,13 +193,11 @@ bun test
 
 Prueba los endpoints de salud, login, consulta de base de datos, una transacción y consumo de una cola. Ejecuta una prueba de cierre del proceso y verifica que los logs y métricas sigan disponibles. Documenta dependencia, API, versión, plataforma y resultado por cada incompatibilidad; no marques “compatible” si omitiste una ruta.
 
+**Evidencia de aprendizaje:** entrega la matriz con comandos, pruebas y errores reproducibles, no una afirmación general.
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega la tabla Node/Bun, los comandos exactos y la lista de rutas comprobadas. **Proyecto integrador RutaFlow:** conserva Node como despliegue candidato hasta que staging reproduzca los mismos contratos, conexiones y apagado. Errores comunes: actualizar paquetes durante la migración, comparar instalaciones con lockfiles distintos y probar solo la ruta feliz. Siguiente paso: convertir evidencia en una decisión de runtime. Fuentes oficiales: [Bun: compatibilidad Node](https://bun.sh/docs/runtime/nodejs-compat), [Deno: compatibilidad Node](https://docs.deno.com/runtime/fundamentals/node/) y [Node: ejecutar scripts](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line).
-
-**¿Por qué es importante?** La misma app puede comportarse distinto en las APIs de red, archivos, procesos y complementos nativos.
-**Evidencia de aprendizaje:** entrega la matriz con comandos, pruebas y errores reproducibles, no una afirmación general.
-**Cuándo no migrar:** si no puedes reproducir el entorno real o no tienes pruebas de contrato suficientes, primero crea esa evidencia.
 
 ### Tema 4: Elegir entre Node, Deno y Bun
 
@@ -227,6 +230,9 @@ flowchart TD
   E -->|sí, con compatibilidad| F[Probar Bun en staging]
   E -->|no| N
 ```
+
+**¿Por qué es importante?** El runtime participa en seguridad, despliegue y soporte de cada dependencia.
+**Cuándo no cambiarlo:** si el costo de migración excede una necesidad demostrada, conservar el runtime actual es una decisión técnica válida.
 
 #### Paso 4 · Demostración guiada
 
@@ -261,10 +267,9 @@ bun --version
 
 Escribe un caso donde conservar Node sea lo correcto, otro donde Deno reduzca acceso accidental para un script y otro donde Bun simplifique una herramienta local tras pasar pruebas. Explica qué evidencia podría cambiar cada recomendación. No presentes una diferencia de benchmark como prueba sin repetirla con carga y versión registradas.
 
+**Evidencia de aprendizaje:** entrega decisión, pruebas que la sostienen y condición para revisarla.
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega la matriz y el razonamiento ligado a evidencia técnica. **Proyecto integrador RutaFlow:** registra decisión de runtime, rollback y pruebas de aceptación para el worker, no cambies todos los servicios a la vez. Errores comunes: tratar compatibilidad como sí/no, confundir seguridad del runtime con seguridad de toda la aplicación y mantener versiones sin política de actualización. Siguiente paso: aplica la decisión y registra métricas de operación. Fuentes oficiales: [Node.js](https://nodejs.org/en/learn), [Deno: seguridad](https://docs.deno.com/runtime/fundamentals/security/) y [Bun: compatibilidad](https://bun.sh/docs/runtime/nodejs-compat).
 
-**¿Por qué es importante?** El runtime participa en seguridad, despliegue y soporte de cada dependencia.
-**Evidencia de aprendizaje:** entrega decisión, pruebas que la sostienen y condición para revisarla.
-**Cuándo no cambiarlo:** si el costo de migración excede una necesidad demostrada, conservar el runtime actual es una decisión técnica válida.

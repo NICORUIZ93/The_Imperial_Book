@@ -13,20 +13,7 @@ Al finalizar vas a declarar el flujo real que `demo-nodo` (Módulo 21) necesita 
 RutaFlow necesita que solo los nodos de reparto (`demo-nodo`) hablen con `rutaflow-facturacion`, nunca cualquier IP pública — el diseño empieza por esa comunicación concreta, no por dibujar subredes primero.
 #### Paso 3 · Teoría, modelo mental y analogía
 La red es una ciudad: las subredes son barrios, pero lo que de verdad importa es qué flujos de tráfico están permitidos entre ellos, no solo quién vive cerca de quién.
-#### Paso 4 · Demostración guiada
-```bash
-DB_SG=$(aws ec2 create-security-group --group-name rutaflow-db-interna \
-  --description "Solo accesible desde demo-nodo" --query GroupId --output text)
-aws ec2 authorize-security-group-ingress --group-id "$DB_SG" --protocol tcp --port 5432 \
-  --source-group demo-nodo
-```
-Resultado esperado: la regla de ingreso usa `--source-group demo-nodo` (una referencia a otro grupo de seguridad), no un CIDR — solo instancias que pertenezcan a `demo-nodo` pueden llegar al puerto 5432, sin importar qué IP tengan.
-#### Paso 5 · Práctica guiada
-Pista: creá dos VPCs con el mismo rango CIDR (`aws ec2 create-vpc --cidr-block 10.0.0.0/16` dos veces) y después intentá emparejarlas con `create-vpc-peering-connection` — ese es el fallo deliberado: un peering entre dos VPCs con CIDR solapado no tiene forma de enrutar el tráfico sin ambigüedad, y la operación queda inutilizable aunque la llamada en sí no siempre falle de inmediato.
-#### Paso 6 · Práctica independiente
-Documentá, para `rutaflow-db-interna`, por qué una regla con `--cidr 0.0.0.0/0` en el puerto 5432 sería exactamente el error que este Tema busca evitar, aunque "funcionara" en una demo rápida.
-#### Paso 7 · Cierre
-Entregá la regla por referencia de grupo del Paso 4, el CIDR solapado del Paso 5, y la explicación del riesgo de `0.0.0.0/0` del Paso 6; explicá por qué "público" significa que existe una ruta desde Internet, no que todo el tráfico esté permitido. Siguiente paso: gobierno. Errores comunes: subnets sin rutas y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html.
+
 **Conceptos clave:** VPC/VNet, CIDR, subnet, route table, availability zone, internet gateway, NAT, private endpoint, security group, firewall, north-south, east-west, DNS y zero trust.
 
 Empieza con actores y comunicaciones necesarias: usuario→edge, edge→API, API→base y operadores→plano de control. Luego asigna zonas, rutas y controles. “Público” significa que existe ruta desde Internet, no que todo tráfico esté permitido. Una base privada necesita retorno, resolución DNS y endpoints para servicios; esconderla en una subred no reemplaza autenticación ni cifrado.
@@ -70,6 +57,21 @@ que alguien aplicó manualmente y nadie puede reproducir. El límite real de `--
 a un CIDR es que no conviene usarlo cuando el otro extremo vive fuera de tu VPC (un servicio de
 terceros, por ejemplo): ahí sí necesitás un rango de IP explícito, no una referencia de grupo.
 
+#### Paso 4 · Demostración guiada
+```bash
+DB_SG=$(aws ec2 create-security-group --group-name rutaflow-db-interna \
+  --description "Solo accesible desde demo-nodo" --query GroupId --output text)
+aws ec2 authorize-security-group-ingress --group-id "$DB_SG" --protocol tcp --port 5432 \
+  --source-group demo-nodo
+```
+Resultado esperado: la regla de ingreso usa `--source-group demo-nodo` (una referencia a otro grupo de seguridad), no un CIDR — solo instancias que pertenezcan a `demo-nodo` pueden llegar al puerto 5432, sin importar qué IP tengan.
+#### Paso 5 · Práctica guiada
+Pista: creá dos VPCs con el mismo rango CIDR (`aws ec2 create-vpc --cidr-block 10.0.0.0/16` dos veces) y después intentá emparejarlas con `create-vpc-peering-connection` — ese es el fallo deliberado: un peering entre dos VPCs con CIDR solapado no tiene forma de enrutar el tráfico sin ambigüedad, y la operación queda inutilizable aunque la llamada en sí no siempre falle de inmediato.
+#### Paso 6 · Práctica independiente
+Documentá, para `rutaflow-db-interna`, por qué una regla con `--cidr 0.0.0.0/0` en el puerto 5432 sería exactamente el error que este Tema busca evitar, aunque "funcionara" en una demo rápida.
+#### Paso 7 · Cierre
+Entregá la regla por referencia de grupo del Paso 4, el CIDR solapado del Paso 5, y la explicación del riesgo de `0.0.0.0/0` del Paso 6; explicá por qué "público" significa que existe una ruta desde Internet, no que todo el tráfico esté permitido. Siguiente paso: gobierno. Errores comunes: subnets sin rutas y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html.
+
 ### Tema 2: Una landing zone convierte gobierno en una base repetible
 
 #### Paso 1 · Objetivo y preparación
@@ -78,27 +80,7 @@ Al finalizar vas a escribir el guardrail real que impediría que alguien desacti
 Si RutaFlow separa sus cuentas en producción, no-producción y seguridad (Módulo 29), necesita que ningún rol fuera del equipo de seguridad pueda apagar la auditoría de la cuenta de producción, aunque tenga permisos amplios para todo lo demás.
 #### Paso 3 · Teoría, modelo mental y analogía
 La jerarquía de cuentas es un edificio de oficinas con políticas centrales y responsables; una landing zone instala esas reglas antes de que lleguen las cargas de trabajo, no después.
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-cat > guardrail-cloudtrail.json <<'EOF'
-{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"cloudtrail:StopLogging","Resource":"*",
-  "Condition":{"StringNotLike":{"aws:PrincipalArn":"*/SecurityAutomation"}}}]}
-EOF
-aws iam simulate-custom-policy --policy-input-list file://guardrail-cloudtrail.json \
-  --action-names cloudtrail:StopLogging --resource-arns "*"
-```
-Resultado esperado: el simulador confirma que esta política deniega `cloudtrail:StopLogging` para cualquier principal que no termine en `/SecurityAutomation` — un `Deny` explícito que ningún `Allow` concedido después puede anular, el mismo principio del Módulo 7.
-#### Paso 5 · Práctica guiada
-Pista: creá una segunda cuenta (simulada, cambiando `AWS_ACCESS_KEY_ID` como en el Módulo 29) sin aplicarle este guardrail — ese es el fallo deliberado: cualquier rol con permisos administrativos en esa cuenta puede apagar su propio CloudTrail sin que nada lo impida, exactamente la cuenta "sin guardrail" que este Tema advierte.
-#### Paso 6 · Práctica independiente
-Documentá, para la organización de RutaFlow, a dónde iría el destino centralizado e inmutable de logs (que las cuentas de aplicación no puedan borrar), qué cuota pondrías por cuenta, y bajo qué condición se usaría una cuenta break-glass sin que se vuelva un atajo cotidiano.
-#### Paso 7 · Cierre
-Entregá el guardrail simulado del Paso 4, la cuenta sin protección del Paso 5, y el diseño de logging/cuotas/break-glass del Paso 6; explicá por qué un compromiso de una sola cuenta no debería poder controlar toda la organización. Siguiente paso: resiliencia. Errores comunes: cuentas sin dueño y privilegio global. Fuente oficial: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html.
 **Conceptos clave:** organization, account/project/subscription, management group, folder, identity federation, break-glass, guardrail, policy, centralized logging, audit trail, quota, tagging y blast radius.
 
 Separa producción, no producción, seguridad y logs en cuentas/proyectos cuando el riesgo lo justifique. Esa frontera limita cuotas, facturación, credenciales y efectos de una configuración errónea. Evita usuarios permanentes y access keys personales: federa identidad, usa roles temporales y registra elevación. La cuenta break-glass se prueba y vigila sin convertirla en atajo cotidiano.
@@ -145,6 +127,28 @@ después de un incidente.
 
 **Límites y decisión de uso:** Una landing zone establece controles iniciales, pero no sustituye autorización dentro de cada aplicación ni evita toda configuración insegura. Revisa excepciones, cuentas nuevas y cambios de políticas de forma continua, con responsables y evidencias.
 
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+cat > guardrail-cloudtrail.json <<'EOF'
+{"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"cloudtrail:StopLogging","Resource":"*",
+  "Condition":{"StringNotLike":{"aws:PrincipalArn":"*/SecurityAutomation"}}}]}
+EOF
+aws iam simulate-custom-policy --policy-input-list file://guardrail-cloudtrail.json \
+  --action-names cloudtrail:StopLogging --resource-arns "*"
+```
+Resultado esperado: el simulador confirma que esta política deniega `cloudtrail:StopLogging` para cualquier principal que no termine en `/SecurityAutomation` — un `Deny` explícito que ningún `Allow` concedido después puede anular, el mismo principio del Módulo 7.
+#### Paso 5 · Práctica guiada
+Pista: creá una segunda cuenta (simulada, cambiando `AWS_ACCESS_KEY_ID` como en el Módulo 29) sin aplicarle este guardrail — ese es el fallo deliberado: cualquier rol con permisos administrativos en esa cuenta puede apagar su propio CloudTrail sin que nada lo impida, exactamente la cuenta "sin guardrail" que este Tema advierte.
+#### Paso 6 · Práctica independiente
+Documentá, para la organización de RutaFlow, a dónde iría el destino centralizado e inmutable de logs (que las cuentas de aplicación no puedan borrar), qué cuota pondrías por cuenta, y bajo qué condición se usaría una cuenta break-glass sin que se vuelva un atajo cotidiano.
+#### Paso 7 · Cierre
+Entregá el guardrail simulado del Paso 4, la cuenta sin protección del Paso 5, y el diseño de logging/cuotas/break-glass del Paso 6; explicá por qué un compromiso de una sola cuenta no debería poder controlar toda la organización. Siguiente paso: resiliencia. Errores comunes: cuentas sin dueño y privilegio global. Fuente oficial: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html.
+
 ### Tema 3: Disponibilidad y recuperación responden preguntas distintas
 
 #### Paso 1 · Objetivo y preparación
@@ -153,34 +157,7 @@ Al finalizar vas a asignar un RTO y un RPO reales a tres servicios concretos de 
 Una caída regional no debería borrar `ShipmentEvents` ni detener la confirmación de entregas críticas — pero el nivel de protección que vale la pena pagar no es el mismo para el historial de ubicaciones que para los pagos.
 #### Paso 3 · Teoría, modelo mental y analogía
 RTO es cuánto tiempo tolerás estar caído; RPO es cuántos datos tolerás perder — el cinturón de seguridad evita el accidente, el plan de rescate actúa cuando ya ocurrió, y ambos responden preguntas distintas.
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```text
-Servicio                  RTO       RPO       Estrategia
-confirmar-entrega         5 min     ~0        rol IAM temporal + reintentos (Módulo 5), sin estado propio que perder
-ShipmentEvents            30 min    5 min     PITR de DynamoDB (Módulo 4) + réplica
-rutaflow-facturacion      4 h       24 h      snapshot diario (Módulo 13) + restore probado
-```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: tres servicios reales de RutaFlow, tres combinaciones de RTO/RPO distintas — ninguna es "cero" porque cero tiene un costo y una complejidad que ningún servicio de este curso justifica todavía.
-#### Paso 5 · Práctica guiada
-Pista: eliminá el punto de recuperación más reciente de `rutaflow-facturacion` (Módulo 13) y recién después intentá cumplir el RPO de 24 horas de la tabla — ese es el fallo deliberado: sin ese punto de recuperación, el RPO real que podés cumplir es el del snapshot anterior, potencialmente mucho más viejo que las 24 horas prometidas.
-#### Paso 6 · Práctica independiente
-Compará, para `ShipmentEvents`, qué cambiaría si en vez de PITR + réplica usaras pilot light (solo el núcleo mínimo activo) o active-active (dos regiones escribiendo a la vez) — documentá qué complejidad operativa nueva introduce cada opción frente a la estrategia actual.
-#### Paso 7 · Cierre
-Entregá la tabla de RTO/RPO real del Paso 4, el punto de recuperación faltante del Paso 5, y la comparación de estrategias del Paso 6; explicá por qué alinear estos objetivos con el impacto de negocio, no con el entusiasmo técnico, es la decisión central de este Tema. Siguiente paso: recuperación. Errores comunes: replicar sin probar y confundir RPO con RTO. Fuente oficial: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html.
 **Conceptos clave:** fault domain, multi-AZ, multi-region, redundancy, quorum, graceful degradation, RTO, RPO, backup, replication, pilot light, warm standby, active-active y consistency.
 
 Alta disponibilidad mantiene el servicio ante fallos previstos; disaster recovery restaura después de un desastre. Define por viaje de usuario: RTO es tiempo máximo aceptable para recuperar; RPO es pérdida temporal máxima de datos. “Cero” tiene costos y complejidad enormes. Alinea objetivos con impacto, no con entusiasmo técnico.
@@ -215,6 +192,35 @@ recursos que declares en tu propia `template.yaml`, por qué `ShipmentEvents` us
 y `rutaflow-facturacion` (Módulo 13) usa snapshot diario en vez de una única estrategia genérica
 aplicada a todo por igual.
 
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```text
+Servicio                  RTO       RPO       Estrategia
+confirmar-entrega         5 min     ~0        rol IAM temporal + reintentos (Módulo 5), sin estado propio que perder
+ShipmentEvents            30 min    5 min     PITR de DynamoDB (Módulo 4) + réplica
+rutaflow-facturacion      4 h       24 h      snapshot diario (Módulo 13) + restore probado
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: tres servicios reales de RutaFlow, tres combinaciones de RTO/RPO distintas — ninguna es "cero" porque cero tiene un costo y una complejidad que ningún servicio de este curso justifica todavía.
+#### Paso 5 · Práctica guiada
+Pista: eliminá el punto de recuperación más reciente de `rutaflow-facturacion` (Módulo 13) y recién después intentá cumplir el RPO de 24 horas de la tabla — ese es el fallo deliberado: sin ese punto de recuperación, el RPO real que podés cumplir es el del snapshot anterior, potencialmente mucho más viejo que las 24 horas prometidas.
+#### Paso 6 · Práctica independiente
+Compará, para `ShipmentEvents`, qué cambiaría si en vez de PITR + réplica usaras pilot light (solo el núcleo mínimo activo) o active-active (dos regiones escribiendo a la vez) — documentá qué complejidad operativa nueva introduce cada opción frente a la estrategia actual.
+#### Paso 7 · Cierre
+Entregá la tabla de RTO/RPO real del Paso 4, el punto de recuperación faltante del Paso 5, y la comparación de estrategias del Paso 6; explicá por qué alinear estos objetivos con el impacto de negocio, no con el entusiasmo técnico, es la decisión central de este Tema. Siguiente paso: recuperación. Errores comunes: replicar sin probar y confundir RPO con RTO. Fuente oficial: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html.
+
 ### Tema 4: Un backup solo existe operativamente después de restaurarlo
 
 #### Paso 1 · Objetivo y preparación
@@ -223,25 +229,7 @@ Al finalizar vas a restaurar de verdad el snapshot de `rutaflow-facturacion` (M�
 El plan del Tema 3 promete un RTO de 4 horas para `rutaflow-facturacion` — pero esa promesa no vale nada hasta que alguien efectivamente restaure el snapshot y cronometre cuánto tardó de verdad.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un backup solo existe operativamente después de restaurarlo: guardar un paracaídas no demuestra que abre, hay que inspeccionarlo y ensayarlo.
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-time aws rds restore-db-instance-from-db-snapshot --db-instance-identifier rutaflow-facturacion-gameday \
-  --db-snapshot-identifier snap-facturacion-001
-aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion-gameday
-psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
-```
-Resultado esperado: `time` reporta cuánto tardó de verdad la restauración completa hasta que la instancia quedó disponible y consultable — comparalo directamente contra las 4 horas de RTO prometidas en el Tema 3, no contra una estimación.
-#### Paso 5 · Práctica guiada
-Pista: intentá restaurar primero `facturas` y recién después `clientes`/`pagos` (las tablas con las que tiene foreign keys, Módulo 13 Tema 1) en un escenario donde las tres vinieran de exports separados — ese es el fallo deliberado: restaurar en el orden de dependencia incorrecto rompe las referencias foráneas a mitad de camino, incluso cuando cada export individual es válido.
-#### Paso 6 · Práctica independiente
-Escribí el runbook de este game day: quién lo dispara, qué comandos corre exactamente, qué condición de aborto lo detendría (por ejemplo, si la restauración supera el doble del RTO prometido), y qué evidencia queda registrada al final.
-#### Paso 7 · Cierre
-Entregá el tiempo real medido del Paso 4, el orden de restauración incorrecto del Paso 5, y el runbook del Paso 6; explicá por qué permisos, claves y dependencias suelen fallar precisamente durante la recuperación, no durante el respaldo. Siguiente paso: plataforma. Errores comunes: no probar integridad y conservar backups mutables. Fuente oficial: https://sre.google/sre-book/testing-reliability/.
 **Conceptos clave:** restore test, immutability, retention, encryption key, integrity, dependency order, runbook, chaos experiment, steady state, hypothesis, abort condition, evidence y game day.
 
 Verifica que el backup contiene datos, que la clave está disponible, que versiones son compatibles y que la aplicación funciona. Restaura en entorno aislado, ejecuta consultas de integridad y un recorrido de usuario. Mide tiempo real y compáralo con RTO/RPO. Conserva copias inmutables o aisladas para ransomware y borrado administrativo.
@@ -277,6 +265,290 @@ En el proyecto integrador RutaFlow, este game day correría exactamente contra e
 `rutaflow-facturacion` que creaste en el Módulo 13 — el runbook del Paso 6 documentaría ese mismo
 comando `restore-db-instance-from-db-snapshot` con el cronómetro corriendo, no una versión
 hipotética sin tiempos medidos. Conserva el runbook junto a tu propia `template.yaml`.
+
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+time aws rds restore-db-instance-from-db-snapshot --db-instance-identifier rutaflow-facturacion-gameday \
+  --db-snapshot-identifier snap-facturacion-001
+aws rds wait db-instance-available --db-instance-identifier rutaflow-facturacion-gameday
+psql -h localhost -U admin -d postgres -c "SELECT count(*) FROM facturas;"
+```
+Resultado esperado: `time` reporta cuánto tardó de verdad la restauración completa hasta que la instancia quedó disponible y consultable — comparalo directamente contra las 4 horas de RTO prometidas en el Tema 3, no contra una estimación.
+#### Paso 5 · Práctica guiada
+Pista: intentá restaurar primero `facturas` y recién después `clientes`/`pagos` (las tablas con las que tiene foreign keys, Módulo 13 Tema 1) en un escenario donde las tres vinieran de exports separados — ese es el fallo deliberado: restaurar en el orden de dependencia incorrecto rompe las referencias foráneas a mitad de camino, incluso cuando cada export individual es válido.
+#### Paso 6 · Práctica independiente
+Escribí el runbook de este game day: quién lo dispara, qué comandos corre exactamente, qué condición de aborto lo detendría (por ejemplo, si la restauración supera el doble del RTO prometido), y qué evidencia queda registrada al final.
+#### Paso 7 · Cierre
+Entregá el tiempo real medido del Paso 4, el orden de restauración incorrecto del Paso 5, y el runbook del Paso 6; explicá por qué permisos, claves y dependencias suelen fallar precisamente durante la recuperación, no durante el respaldo. Siguiente paso: plataforma. Errores comunes: no probar integridad y conservar backups mutables. Fuente oficial: https://sre.google/sre-book/testing-reliability/.
+
+### Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min
+
+**Prerrequisito:** temas «Una red segura empieza por flujos» y «Disponibilidad y recuperación responden preguntas» de este módulo.
+
+**Al finalizar podrás:** revisar la arquitectura de RutaFlow con los seis pilares de Well-Architected, puntuar cada pilar con preguntas concretas y ordenar los hallazgos por riesgo.
+
+**¿Por qué es importante?** Sin un marco, las revisiones de arquitectura dependen de quién esté en la reunión. Los seis pilares obligan a mirar también lo que nadie quiere mirar: costos, rendimiento medido y sostenibilidad.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea la carpeta `academia-labs/cloud/well-architected`. Ten a mano el diagrama de la arquitectura del proyecto integrador.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow pasó una revisión de seguridad y se sentía lista para producción. Una revisión con los seis pilares encontró que la base de datos estaba en una sola zona y que nunca se habían hecho pruebas de carga: dos riesgos que la revisión de seguridad no miraba.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Well-Architected Framework, pilar, excelencia operativa, seguridad, confiabilidad, eficiencia de rendimiento, optimización de costos, sostenibilidad, riesgo alto (HRI).
+
+| Pilar | Pregunta central |
+|---|---|
+| Excelencia operativa | ¿Podemos desplegar, observar y corregir sin heroísmos? |
+| Seguridad | ¿Protegemos datos, identidades y sistemas? |
+| Confiabilidad | ¿Nos recuperamos de fallas y cumplimos el SLO? |
+| **Eficiencia de rendimiento** | ¿Usamos los recursos adecuados y lo medimos con carga real? |
+| Optimización de costos | ¿Pagamos solo por lo que aporta valor? |
+| **Sostenibilidad** | ¿Reducimos el consumo de energía y recursos de lo que construimos? |
+
+La revisión no da una nota final: produce una lista de **riesgos altos** (HRI) que se resuelven primero, y riesgos medios que se planean. Se repite cuando la arquitectura cambia.
+
+**Rendimiento** y **sostenibilidad** suelen ir juntos: menos recursos ociosos y procesadores más eficientes (como ARM/Graviton) bajan costo, energía y a veces latencia.
+
+**Analogía:** es la revisión técnico-mecánica del carro: no basta con que los frenos funcionen si las llantas están lisas. La analogía falla en que aquí tú mismo eliges las preguntas detalladas de cada pilar según tu sistema.
+
+**Límite de uso:** la revisión no reemplaza pruebas reales (carga, restauración, caos): es una guía para decidir qué probar. Un pilar perfecto a costa de otro (máxima confiabilidad sin mirar costo) también es un hallazgo.
+
+```mermaid
+flowchart LR
+    A["Arquitectura RutaFlow"] --> P["6 pilares<br/>preguntas sí/no"]
+    P --> H["riesgos altos"]
+    P --> M["riesgos medios"]
+    H --> X["plan: resolver primero"]
+    M --> Y["backlog con fecha"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/well-architected/revision_wa.py`:
+
+```python
+# Revisión ligera de Well-Architected: cada pilar con preguntas de sí/no y su riesgo.
+REVISION = {
+    "Excelencia operativa": {"runbooks versionados": True, "despliegues automatizados": True},
+    "Seguridad": {"MFA en todas las cuentas": True, "cifrado en reposo": True, "mínimo privilegio revisado": False},
+    "Confiabilidad": {"multi-AZ en la base": False, "respaldos restaurados en prueba": True},
+    "Eficiencia de rendimiento": {"pruebas de carga recientes": False, "caché frente a la base": True},
+    "Optimización de costos": {"etiquetas de costo": True, "presupuestos con alerta": True},
+    "Sostenibilidad": {"apagado nocturno de entornos de prueba": False, "instancias Graviton evaluadas": True},
+}
+ALTO_RIESGO = {"multi-AZ en la base", "mínimo privilegio revisado"}
+
+for pilar, preguntas in REVISION.items():
+    cumplidas = sum(preguntas.values())
+    faltan = [p for p, ok in preguntas.items() if not ok]
+    marca = "OK " if not faltan else "!! "
+    detalle = "" if not faltan else " · falta: " + ", ".join(
+        f"{p}{' (riesgo alto)' if p in ALTO_RIESGO else ''}" for p in faltan)
+    print(f"{marca}{pilar}: {cumplidas}/{len(preguntas)}{detalle}")
+
+altos = [p for preguntas in REVISION.values() for p, ok in preguntas.items() if not ok and p in ALTO_RIESGO]
+print(f"Riesgos altos a resolver primero: {len(altos)}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/well-architected
+python3 revision_wa.py
+```
+
+**Explicación por bloques:** `REVISION` guarda, por pilar, preguntas concretas de RutaFlow con su respuesta actual. `ALTO_RIESGO` marca las que, si fallan, pueden causar una pérdida grave (datos o servicio). El bucle cuenta cuántas cumple cada pilar y lista lo que falta, señalando los riesgos altos. La última línea dice cuántos riesgos altos hay que resolver antes que nada. Las preguntas son un ejemplo: cada equipo escribe las suyas a partir de las guías oficiales de cada pilar.
+
+![Captura de terminal: la revisión marca riesgos en seguridad, confiabilidad, rendimiento y sostenibilidad, con dos riesgos altos](content/figures/cloud/well-architected.svg)
+
+**Resultado esperado:**
+
+```text
+OK Excelencia operativa: 2/2
+!! Seguridad: 2/3 · falta: mínimo privilegio revisado (riesgo alto)
+!! Confiabilidad: 1/2 · falta: multi-AZ en la base (riesgo alto)
+!! Eficiencia de rendimiento: 1/2 · falta: pruebas de carga recientes
+OK Optimización de costos: 2/2
+!! Sostenibilidad: 1/2 · falta: apagado nocturno de entornos de prueba
+Riesgos altos a resolver primero: 2
+```
+
+**Fallo deliberado:** marca todas las respuestas como `True` sin evidencia. **Error esperado:** el script imprime todo en OK y cero riesgos, pero la base sigue en una sola zona. **Diagnóstico:** una revisión sin evidencia no sirve. Para cada `True`, anota el enlace a la prueba (un runbook, un reporte de carga, una restauración hecha).
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la revisión y explica los dos riesgos altos.
+2. **Variación:** agrega dos preguntas al pilar de rendimiento (por ejemplo, «p95 medido en producción»).
+3. **Diagnóstico:** reproduce el fallo deliberado y agrega un campo de evidencia a cada respuesta.
+4. **Integración:** resuelve un riesgo (por ejemplo, multi-AZ en el emulador) y vuelve a ejecutar.
+5. **Diseño:** escribe el plan de los tres hallazgos más importantes con responsable y fecha.
+
+**Pista:** una pregunta buena se responde con una evidencia que alguien más puede abrir.
+
+#### Paso 6 · Práctica independiente
+
+Haz una revisión de los seis pilares para un proyecto propio con al menos dos preguntas por pilar y entrégala con las evidencias.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras los seis pilares y su pregunta central.
+- [ ] La revisión lista los dos riesgos altos.
+- [ ] Cada respuesta positiva tiene evidencia.
+- [ ] Hay un plan con responsables para los riesgos altos.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** responder sin evidencia, revisar solo seguridad y tratar la revisión como un examen que se aprueba una vez. **Siguiente paso:** el tema «Un backup solo existe operativamente después de restaurarlo» profundiza el pilar de confiabilidad.
+
+**Transferencia al proyecto integrador «RutaFlow»:** haz la revisión Well-Architected de RutaFlow, resuelve los riesgos altos y repite la revisión después de cada cambio grande.
+
+**Fuente oficial:** [AWS — Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html) y [AWS — Sustainability Pillar](https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/sustainability-pillar.html).
+
+### Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min
+
+**Prerrequisito:** tema «Una landing zone convierte gobierno en una base reutilizable» de este módulo.
+
+**Al finalizar podrás:** marcar con etiquetas los recursos que guardan datos personales y bloquear en CI cualquier plan de Terraform que los cree en una región no permitida.
+
+**¿Por qué es importante?** Las leyes de protección de datos pueden limitar dónde se guardan los datos personales. Un respaldo creado «temporalmente» en otra región puede ser un incumplimiento. Revisarlo antes de crear el recurso es mucho más barato que corregirlo después.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea `academia-labs/cloud/residencia`. En un proyecto real, genera el plan con `terraform show -json plan.out > plan.json`; aquí usarás un plan de ejemplo.
+
+#### Paso 2 · Contexto y caso real
+
+Un desarrollador de RutaFlow creó un bucket de respaldo en Europa para probar la recuperación. El bucket recibió copias de las fotos de entrega, que incluyen datos personales. El área legal pidió borrar el bucket y explicar por qué el pipeline lo permitió.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** residencia de datos, soberanía, dato personal, clasificación por etiqueta, región permitida, política en CI, SCP de región.
+
+- **Residencia:** en qué país o región físicamente están los datos.
+- **Soberanía:** qué leyes aplican a esos datos y qué autoridades pueden pedirlos.
+
+Las regiones permitidas las define el área legal, no el equipo técnico. El equipo técnico las hace cumplir en tres niveles:
+
+| Nivel | Herramienta |
+|---|---|
+| antes de crear | revisión del plan de Terraform en CI (este tema) |
+| al crear | políticas de la organización que niegan regiones (SCP en AWS, Organization Policy en GCP) |
+| después | inventario y alertas (AWS Config, Security Hub) |
+
+Para que una revisión automática funcione, cada recurso debe estar **clasificado**: una etiqueta como `datos = personales` dice qué tipo de dato guarda.
+
+**Analogía:** es la regla de un archivo clínico: las historias de los pacientes no salen del edificio. La etiqueta es el sello «confidencial» en la carpeta; sin sello, nadie sabe que esa carpeta no puede salir.
+
+**Límite de uso:** las etiquetas solo sirven si se ponen siempre: combínalas con una política que exija la etiqueta. Residencia no es lo mismo que seguridad: un dato en la región correcta también debe estar cifrado y con acceso mínimo. Este tema no es asesoría legal.
+
+```mermaid
+flowchart LR
+    P["terraform plan -json"] --> R["residencia.py"]
+    R --> C{"¿datos=personales<br/>fuera de regiones permitidas?"}
+    C -->|sí| B["BLOQUEADO: CI falla"]
+    C -->|no| A["apply"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/residencia/residencia.py`:
+
+```python
+import json
+import sys
+
+# Regla de residencia: los datos personales de clientes de Colombia solo pueden vivir en estas regiones.
+REGIONES_PERMITIDAS = {"us-east-1", "sa-east-1"}  # acordadas con el área legal
+ETIQUETA = "datos"  # valor "personales" marca recursos con datos personales
+
+def revisar(plan: dict) -> list[str]:
+    hallazgos = []
+    for recurso in plan["resource_changes"]:
+        despues = recurso["change"]["after"] or {}
+        etiquetas = despues.get("tags_all") or {}
+        if etiquetas.get(ETIQUETA) != "personales":
+            continue
+        region = despues.get("region", plan["region"])
+        if region not in REGIONES_PERMITIDAS:
+            hallazgos.append(f"{recurso['address']}: datos personales en {region}")
+    return hallazgos
+
+plan = json.load(open(sys.argv[1]))
+hallazgos = revisar(plan)
+for h in hallazgos:
+    print("BLOQUEADO", h)
+print(f"{len(hallazgos)} problema(s) de residencia")
+sys.exit(1 if hallazgos else 0)
+```
+
+Archivo `academia-labs/cloud/residencia/plan.json`:
+
+```json
+{
+  "region": "us-east-1",
+  "resource_changes": [
+    {"address": "aws_s3_bucket.fotos", "change": {"after": {"tags_all": {"datos": "personales"}}}},
+    {"address": "aws_s3_bucket.respaldo_eu", "change": {"after": {"region": "eu-west-1", "tags_all": {"datos": "personales"}}}},
+    {"address": "aws_s3_bucket.logs_eu", "change": {"after": {"region": "eu-west-1", "tags_all": {"datos": "tecnicos"}}}}
+  ]
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/residencia
+python3 residencia.py plan.json; echo "salida: $?"
+```
+
+**Explicación por bloques:** `REGIONES_PERMITIDAS` es la lista acordada con legal. `revisar` recorre los cambios del plan, ignora los recursos que no están etiquetados como datos personales y, para los que sí, toma la región del recurso o, si no la tiene, la del proveedor. El plan de ejemplo tiene tres buckets: el de fotos (región por defecto, permitida), un respaldo con datos personales en Europa y unos logs técnicos en Europa. Solo el respaldo se bloquea, y el código de salida 1 hace fallar el CI.
+
+![Captura de terminal: el respaldo con datos personales en eu-west-1 queda bloqueado y el script termina con código 1](content/figures/cloud/residencia-datos.svg)
+
+**Resultado esperado:**
+
+```text
+BLOQUEADO aws_s3_bucket.respaldo_eu: datos personales en eu-west-1
+1 problema(s) de residencia
+salida: 1
+```
+
+**Fallo deliberado:** quita la etiqueta `datos` del respaldo en `plan.json`. **Error esperado:** el script dice «0 problema(s)» y termina con 0, aunque el respaldo sigue en Europa con datos personales. **Diagnóstico:** sin clasificación, la regla no sabe qué proteger. Exige la etiqueta `datos` en todos los recursos de almacenamiento (por ejemplo, con otra regla que falle si falta).
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el script y explica por qué los logs en Europa no se bloquean.
+2. **Variación:** agrega `sa-east-1` y un recurso ahí con datos personales; comprueba que pasa.
+3. **Diagnóstico:** reproduce el fallo deliberado sin etiqueta.
+4. **Integración:** agrega una regla que falle si un bucket no tiene la etiqueta `datos`.
+5. **Diseño:** escribe la SCP de AWS que niega crear recursos fuera de las regiones permitidas (`aws:RequestedRegion`).
+
+**Pista:** primero clasifica, después restringe: una regla sobre datos sin clasificar no protege nada.
+
+#### Paso 6 · Práctica independiente
+
+Convierte la regla en una política Rego para Conftest (como en el tema de policy as code del track de DevOps) y compara las dos versiones.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingues residencia y soberanía.
+- [ ] El script bloquea el respaldo en Europa.
+- [ ] Reprodujiste el fallo de un recurso sin clasificar.
+- [ ] Conoces los tres niveles de control.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confiar solo en la revisión del plan, no clasificar los recursos y decidir las regiones sin el área legal. **Siguiente paso:** el tema «Disponibilidad y recuperación responden preguntas» debe respetar estas regiones al elegir dónde replicar.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega la revisión de residencia al pipeline de infraestructura de RutaFlow y exige la etiqueta `datos` en todos los almacenamientos.
+
+**Fuente oficial:** [AWS — Data residency](https://aws.amazon.com/compliance/data-residency/) y [AWS Organizations — Deny access based on the requested Region](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html).
 
 ## Revisión oficial de plataforma — julio de 2026
 

@@ -42,6 +42,12 @@ graph TD
     style I fill:#4caf50
 ```
 
+**¿Por qué es importante?** Un `await` lento fuera de un límite `Suspense` bloquea todo lo demás en ese componente, aunque el resto de los datos ya estuviera listo — el streaming solo funciona dentro de los límites que vos definís explícitamente.
+
+**Conceptos clave:** Server Component, `Suspense`, streaming por límite, `await` bloqueante.
+
+**Transferencia al proyecto integrador «Portal de clientes»:** Separa estado básico e historial lento del seguimiento mediante límites de streaming. Retrasa solo el historial y comprueba que el cliente puede leer la guía antes de que termine esa consulta.
+
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía y crea tu propio proyecto Next.js con Node 24 LTS:
 ```bash
@@ -113,12 +119,6 @@ Agregá una segunda sección lenta (por ejemplo `EstadisticasEnvio`) con su prop
 #### Paso 7 · Cierre
 Entrega la página con streaming del Paso 4, el bloqueo total reproducido en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué el streaming ocurre por límite `Suspense`, no por página completa. Como siguiente paso, estudia Server Actions para las mutaciones de esos mismos datos. Errores comunes: hacer `await` de algo lento fuera de cualquier `Suspense`, anulando el streaming de todo lo demás; marcar un componente como `'use client'` sin necesitarlo, perdiendo el beneficio de no enviar su JavaScript. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 
-**¿Por qué es importante?** Un `await` lento fuera de un límite `Suspense` bloquea todo lo demás en ese componente, aunque el resto de los datos ya estuviera listo — el streaming solo funciona dentro de los límites que vos definís explícitamente.
-
-**Conceptos clave:** Server Component, `Suspense`, streaming por límite, `await` bloqueante.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Separa estado básico e historial lento del seguimiento mediante límites de streaming. Retrasa solo el historial y comprueba que el cliente puede leer la guía antes de que termine esa consulta.
-
 ### Tema 2: Server Actions y seguridad
 
 #### Paso 1 · Objetivo y preparación
@@ -129,6 +129,14 @@ Un operador puede marcar como entregado un envío que NO le corresponde, simplem
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una Server Action marcada `'use server'` queda expuesta como un endpoint invocable: cualquier cliente puede llamarla con CUALQUIER valor, sin importar qué muestre la interfaz. El servidor es el único lugar donde la autorización es confiable; validar la forma de los datos con `zod` no reemplaza verificar que ese usuario puede actuar sobre ese recurso específico. La analogía: una ventanilla alcanzable por cualquiera que sepa el número — el empleado igual debe comprobar que el documento de identidad corresponde a la cuenta, nunca confiar en lo que la persona afirma.
+
+**¿Por qué es importante?** Una Server Action es un endpoint invocable con cualquier valor, sin importar qué muestre la interfaz; validar el formato del dato no reemplaza comprobar que ese usuario puede actuar sobre ese recurso específico.
+
+**Conceptos clave:** `'use server'`, validación de esquema vs. autorización, confianza cero en datos del cliente.
+
+**Transferencia al proyecto integrador «Portal de clientes»:** Autoriza la acción de confirmar sobre la guía concreta en el servidor. Prueba sesión ausente, guía ajena y entrada inválida, verificando que ningún caso rechazado modifica la base.
+
+**Límites y decisión de uso:** Una Server Action sigue siendo una operación invocable con datos manipulables. Valida sesión antes de usar su identidad, autoriza sobre el recurso y protege cambios concurrentes; el esquema de entrada solo comprueba forma, no permisos.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
@@ -181,14 +189,6 @@ Restaura el filtro de `operadorId`, y agregá una prueba con una sesión simulad
 
 #### Paso 7 · Cierre
 Entrega la acción autorizada del Paso 4, el envío ajeno modificado sin autorización del Paso 5, y las dos pruebas del Paso 6; explica por qué validar la forma de los datos con `zod` no es lo mismo que autorizar la operación sobre un recurso específico. Como siguiente paso, estudia ISR y Middleware para proteger rutas completas, no solo acciones puntuales. Errores comunes: confiar en cualquier dato que llega del cliente (incluidos ids en campos ocultos) sin revalidar permisos en el servidor; registrar tokens de sesión completos en logs de error. Fuente oficial: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security.
-
-**¿Por qué es importante?** Una Server Action es un endpoint invocable con cualquier valor, sin importar qué muestre la interfaz; validar el formato del dato no reemplaza comprobar que ese usuario puede actuar sobre ese recurso específico.
-
-**Conceptos clave:** `'use server'`, validación de esquema vs. autorización, confianza cero en datos del cliente.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Autoriza la acción de confirmar sobre la guía concreta en el servidor. Prueba sesión ausente, guía ajena y entrada inválida, verificando que ningún caso rechazado modifica la base.
-
-**Límites y decisión de uso:** Una Server Action sigue siendo una operación invocable con datos manipulables. Valida sesión antes de usar su identidad, autoriza sobre el recurso y protege cambios concurrentes; el esquema de entrada solo comprueba forma, no permisos.
 
 ### Tema 3: Next.js ISR, Metadata y Middleware
 
@@ -307,6 +307,12 @@ La foto de evidencia de entrega en la página de detalle de un envío no tenía 
 #### Paso 3 · Teoría, modelo mental y analogía
 `next/image` exige `width`/`height` (o `fill`) de antemano para que el navegador reserve exactamente ese espacio antes de que la imagen descargue, eliminando el salto de layout; `next/font` descarga y autohospeda la fuente en tiempo de build, en vez de depender de una petición externa que bloquea el pintado del texto. La analogía: pintar las líneas de un lugar de estacionamiento antes de que el auto llegue, en vez de dejar que la llegada del auto decida el espacio.
 
+**¿Por qué es importante?** Reservar el espacio de una imagen antes de que descargue es lo que elimina el salto de layout — el formato o la compresión de la imagen no resuelven ese problema por sí solos.
+
+**Conceptos clave:** `next/image`, CLS, `next/font`, reserva de espacio.
+
+**Transferencia al proyecto integrador «Portal de clientes»:** Reserva el espacio de la fotografía de evidencia y aplica la fuente seleccionada en el layout. Compara desplazamiento visual con descarga lenta y conserva la medición de la página real.
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
 ```bash
@@ -353,12 +359,6 @@ Restaurá `next/image`, y además compará: quitá temporalmente `next/font` en 
 #### Paso 7 · Cierre
 Entrega la foto sin salto de layout del Paso 4, el CLS alto reproducido con `<img>` plano del Paso 5, y la comparación de FCP entre `next/font` y un `<link>` externo del Paso 6; explica por qué reservar espacio de antemano es lo que elimina el salto, no el formato del archivo de imagen. Como siguiente paso, estudia accesibilidad con React Aria para esa misma página. Errores comunes: usar `<img>` plano sin `width`/`height` donde `next/image` ya está disponible; cargar una fuente externa bloqueante cuando `next/font` puede autohospedarla. Fuente oficial: https://nextjs.org/docs/app/building-your-application/optimizing/images y https://nextjs.org/docs/app/building-your-application/optimizing/fonts.
 
-**¿Por qué es importante?** Reservar el espacio de una imagen antes de que descargue es lo que elimina el salto de layout — el formato o la compresión de la imagen no resuelven ese problema por sí solos.
-
-**Conceptos clave:** `next/image`, CLS, `next/font`, reserva de espacio.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Reserva el espacio de la fotografía de evidencia y aplica la fuente seleccionada en el layout. Compara desplazamiento visual con descarga lenta y conserva la medición de la página real.
-
 ### Tema 5: Accesibilidad y React Aria
 
 #### Paso 1 · Objetivo y preparación
@@ -369,6 +369,14 @@ Un diálogo de confirmación construido como un `<div>` con estilos propios se v
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `<div>` no tiene ninguna semántica ARIA implícita: un lector de pantalla no tiene forma de saber que es un diálogo, cuál es su nombre accesible, ni que el foco debería quedar atrapado dentro. Los hooks de React Aria (`useDialog`, `useModal`, `useOverlay`) conectan el `role="dialog"`, el `aria-modal` y el atrapado/restauración de foco correctos, comportamiento que es fácil de implementar mal a mano. La analogía: una puerta sin cartel ni manija — puede funcionar, pero nadie que no la vea sabe que está ahí o cómo usarla.
+
+**¿Por qué es importante?** Un componente puede verse visualmente idéntico y a la vez ser invisible para un lector de pantalla — la única forma de confirmarlo es inspeccionar el árbol de accesibilidad, no la apariencia.
+
+**Conceptos clave:** `useDialog`, árbol de accesibilidad, atrapado de foco, `jest-axe`.
+
+**Transferencia al proyecto integrador «Portal de clientes»:** Integra el diálogo de confirmación con nombre, foco inicial y restauración al cerrar. Prueba Escape, tabulación y lector de pantalla; una acción irreversible exige además autorización del backend.
+
+**Límites y decisión de uso:** El nombre y role de un diálogo no bastan para hacerlo modal. Debes gestionar foco, cierre, restauración e interacción con el fondo mediante una solución completa y probar el recorrido con teclado.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
@@ -419,14 +427,6 @@ Restaurá los props de `useDialog`, agregá `useModal`/`FocusScope` para confirm
 #### Paso 7 · Cierre
 Entrega el diálogo accesible del Paso 4, la pérdida de semántica confirmada en el árbol de accesibilidad del Paso 5, y el atrapado de foco más la prueba con `jest-axe` del Paso 6; explica por qué un componente puede verse idéntico y a la vez ser invisible para un lector de pantalla. Como siguiente paso, estudia i18n para que los textos de ese mismo diálogo sean traducibles. Errores comunes: confiar en que "se ve bien" es lo mismo que "es accesible"; reinventar el atrapado de foco a mano en vez de usar `useModal`/`FocusScope`. Fuente oficial: https://react-spectrum.adobe.com/react-aria/useDialog.html.
 
-**¿Por qué es importante?** Un componente puede verse visualmente idéntico y a la vez ser invisible para un lector de pantalla — la única forma de confirmarlo es inspeccionar el árbol de accesibilidad, no la apariencia.
-
-**Conceptos clave:** `useDialog`, árbol de accesibilidad, atrapado de foco, `jest-axe`.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Integra el diálogo de confirmación con nombre, foco inicial y restauración al cerrar. Prueba Escape, tabulación y lector de pantalla; una acción irreversible exige además autorización del backend.
-
-**Límites y decisión de uso:** El nombre y role de un diálogo no bastan para hacerlo modal. Debes gestionar foco, cierre, restauración e interacción con el fondo mediante una solución completa y probar el recorrido con teclado.
-
 ### Tema 6: i18n, pluralización y RTL
 
 #### Paso 1 · Objetivo y preparación
@@ -437,6 +437,15 @@ Agregar un locale "ar" para la expansión de RutaFlow a Medio Oriente expuso dos
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Las reglas de pluralización son categorías CLDR específicas de cada idioma (`zero`/`one`/`two`/`few`/`many`/`other`), no una simple singular-o-plural; una librería con ICU MessageFormat elige la categoría correcta en vez de un `count === 1 ? ... : ...` escrito a mano. El atributo `dir` en `<html>` controla la dirección de lectura de toda la página y debe fijarse por locale en la raíz, no quedar fijo en "ltr". La analogía: una carta modelo con un espacio en blanco para una cantidad tiene que usar la forma gramatical correcta para ese número en ese idioma — "1 día" frente a "2 días" frente a, en árabe, hasta seis formas distintas según la cantidad.
+
+**¿Por qué es importante?** Una clave de traducción faltante en un idioma debe producir un error detectable en build o en CI, nunca un texto de respaldo silencioso que solo se descubre al llegar a producción.
+
+**Conceptos clave:** categorías CLDR de plural, `dir` por locale, paridad de claves entre idiomas.
+
+---
+
+**Transferencia al proyecto integrador «Portal de clientes»:** Configura mensajes y dirección del documento por locale. Prueba varias cantidades y navegación entre idiomas, verificando que la misma guía mantiene identidad y autorización aunque cambie su presentación.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `messages/es.json` con el contenido de este tema.
@@ -493,14 +502,6 @@ Agregá la clave `envios` a `messages/ar.json` con las categorías de plural cor
 #### Paso 7 · Cierre
 Entrega la pluralización y el `dir="rtl"` funcionando del Paso 4, la build rota por la clave faltante del Paso 5, y la prueba de paridad de claves del Paso 6; explica por qué una clave de traducción faltante debe ser un error detectable, nunca un texto de respaldo silencioso. Con esto cerrás el track completo de React, listo para operar en producción real. Errores comunes: tratar la pluralización como un simple singular/plural binario cuando el idioma destino tiene más categorías; fijar `dir="ltr"` de forma fija en vez de derivarlo del locale activo. Fuente oficial: https://next-intl.dev/docs/usage/messages#plurals.
 
-**¿Por qué es importante?** Una clave de traducción faltante en un idioma debe producir un error detectable en build o en CI, nunca un texto de respaldo silencioso que solo se descubre al llegar a producción.
-
-**Conceptos clave:** categorías CLDR de plural, `dir` por locale, paridad de claves entre idiomas.
-
----
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Configura mensajes y dirección del documento por locale. Prueba varias cantidades y navegación entre idiomas, verificando que la misma guía mantiene identidad y autorización aunque cambie su presentación.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 ## Trazabilidad de la auditoría original
 
 - **Server Components Avanzado**: cubierto en los Temas 1 (streaming con Suspense) y 2 (Server Actions y seguridad) de este módulo.

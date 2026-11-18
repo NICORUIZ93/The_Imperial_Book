@@ -4,7 +4,7 @@
     {
       "track": "android",
       "modules": 19,
-      "topics": 74,
+      "topics": 83,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -13,13 +13,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 67,
-      "projectTopics": 74
+      "visualTopics": 76,
+      "projectTopics": 83
     },
     {
       "track": "angular",
       "modules": 17,
-      "topics": 71,
+      "topics": 78,
       "levels": {
         "Fundamentos": 4,
         "Aplicación": 4,
@@ -28,13 +28,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 68,
-      "projectTopics": 71
+      "visualTopics": 75,
+      "projectTopics": 78
     },
     {
       "track": "cloud",
       "modules": 35,
-      "topics": 156,
+      "topics": 168,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 5,
@@ -43,8 +43,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 96,
-      "projectTopics": 156
+      "visualTopics": 108,
+      "projectTopics": 168
     },
     {
       "track": "control-1",
@@ -64,7 +64,7 @@
     {
       "track": "devops",
       "modules": 23,
-      "topics": 130,
+      "topics": 138,
       "levels": {
         "Fundamentos": 4,
         "Aplicación": 2,
@@ -73,13 +73,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 123,
-      "projectTopics": 130
+      "visualTopics": 131,
+      "projectTopics": 138
     },
     {
       "track": "flutter",
       "modules": 23,
-      "topics": 109,
+      "topics": 119,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -88,8 +88,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 86,
-      "projectTopics": 109
+      "visualTopics": 96,
+      "projectTopics": 119
     },
     {
       "track": "foundations",
@@ -109,7 +109,7 @@
     {
       "track": "ios",
       "modules": 15,
-      "topics": 56,
+      "topics": 69,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -118,13 +118,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 35,
-      "projectTopics": 56
+      "visualTopics": 48,
+      "projectTopics": 69
     },
     {
       "track": "java",
       "modules": 23,
-      "topics": 111,
+      "topics": 117,
       "levels": {
         "Fundamentos": 4,
         "Aplicación": 4,
@@ -133,13 +133,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 19,
-      "projectTopics": 111
+      "visualTopics": 25,
+      "projectTopics": 117
     },
     {
       "track": "javascript",
       "modules": 15,
-      "topics": 88,
+      "topics": 92,
       "levels": {
         "Fundamentos": 5,
         "Aplicación": 4,
@@ -148,13 +148,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 58,
-      "projectTopics": 88
+      "visualTopics": 62,
+      "projectTopics": 92
     },
     {
       "track": "kotlin-multiplatform",
       "modules": 14,
-      "topics": 56,
+      "topics": 66,
       "levels": {
         "Fundamentos": 2,
         "Aplicación": 2,
@@ -163,8 +163,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 47,
-      "projectTopics": 56
+      "visualTopics": 57,
+      "projectTopics": 66
     },
     {
       "track": "microservices",
@@ -188,7 +188,7 @@
     {
       "track": "node",
       "modules": 16,
-      "topics": 83,
+      "topics": 90,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -197,13 +197,13 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 36,
-      "projectTopics": 83
+      "visualTopics": 43,
+      "projectTopics": 90
     },
     {
       "track": "react",
       "modules": 15,
-      "topics": 58,
+      "topics": 64,
       "levels": {
         "Fundamentos": 3,
         "Aplicación": 3,
@@ -212,8 +212,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 37,
-      "projectTopics": 58
+      "visualTopics": 43,
+      "projectTopics": 64
     },
     {
       "track": "rutaflow",
@@ -233,7 +233,7 @@
     {
       "track": "spring-boot",
       "modules": 27,
-      "topics": 114,
+      "topics": 121,
       "levels": {
         "Fundamentos": 2,
         "Aplicación": 2,
@@ -242,8 +242,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
-      "visualTopics": 44,
-      "projectTopics": 114
+      "visualTopics": 51,
+      "projectTopics": 121
     }
   ]
 }

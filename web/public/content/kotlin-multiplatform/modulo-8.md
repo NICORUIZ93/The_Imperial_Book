@@ -327,6 +327,155 @@ Corregí el Paso 5 agregando `continuation.resume(throwing: error)` en la rama d
 Entregá el callback consumido del Paso 4, la `Task` colgada por falta de `resume` en la rama de error del Paso 5, y el wrapper corregido con su test del Paso 6; explicá por qué un wrapper `async` sobre un callback debe cubrir EXPLÍCITAMENTE ambas ramas (éxito y error), no solo la feliz. Con esto cerrás la interoperabilidad con iOS de este track. Errores comunes: asumir que Swift maneja las funciones suspend igual que Kotlin sin ninguna adaptación; escribir un wrapper `async`/`withCheckedThrowingContinuation` que no cubre la rama de error, dejando la `Task` colgada indefinidamente ante un fallo. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/withcheckedthrowingcontinuation(function:_:).
 **Implicación práctica:** Un wrapper `async` sobre un callback Kotlin debe resolver la continuation en AMBAS ramas (éxito y error); omitir la rama de error deja la `Task` de Swift colgada indefinidamente ante un fallo real.
 
+### Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min
+
+**Prerrequisito:** temas «El framework generado para iOS» y «Mapeo de tipos Kotlin ↔ Swift» de este módulo.
+
+**Al finalizar podrás:** mostrar una pantalla de Compose dentro de una app SwiftUI con `ComposeUIViewController` y `UIViewControllerRepresentable`, y mostrar una vista nativa de UIKit (un mapa) dentro de Compose con `UIKitView`.
+
+**¿Por qué es importante?** Pocas apps se escriben de cero en Compose Multiplatform. Lo normal es mezclar: pantallas compartidas dentro de una app SwiftUI, y componentes nativos (mapas, cámara) dentro de pantallas compartidas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa un proyecto KMP con Compose Multiplatform y la app `iosApp` de SwiftUI que genera el asistente. Necesitas macOS con Xcode.
+
+#### Paso 2 · Contexto y caso real
+
+El equipo de iOS de RutaFlow ya tenía la app en SwiftUI. Querían reutilizar la pantalla de resumen del día hecha en Compose, pero el mapa debía seguir siendo MapKit, que los conductores de iPhone conocen.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `ComposeUIViewController`, `UIViewControllerRepresentable`, `UIKitView`, `MKMapView`, ciclo de vida, `iosMain`.
+
+**Compose dentro de SwiftUI:**
+
+1. En `iosMain`, una función devuelve `ComposeUIViewController { PantallaResumen() }`: un `UIViewController` de UIKit que contiene Compose.
+2. En Swift, un `UIViewControllerRepresentable` envuelve ese controlador para usarlo como vista de SwiftUI.
+
+**UIKit dentro de Compose:**
+
+- `UIKitView(factory = { MKMapView() }, update = { ... })` crea la vista nativa una vez (`factory`) y la actualiza cuando cambia el estado (`update`).
+
+Las dos direcciones se pueden anidar: una pantalla de Compose dentro de SwiftUI que muestra un mapa de UIKit.
+
+**Analogía:** es poner una ventana de otro edificio dentro de tu pared: se ve y funciona, pero tiene su propio marco. La analogía falla en que las dos ventanas comparten el mismo aire: los gestos y el teclado se reparten entre los dos sistemas.
+
+**Límite de uso:** cada salto entre sistemas tiene un costo de rendimiento y de gestos (el scroll anidado puede comportarse distinto). No anides muchas vistas UIKit en una lista de Compose.
+
+```mermaid
+flowchart TB
+    S["SwiftUI: ContentView"] --> R["ResumenView: UIViewControllerRepresentable"]
+    R --> C["ComposeUIViewController<br/>PantallaResumen (Kotlin)"]
+    C --> U["UIKitView: MKMapView"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/src/iosMain/kotlin/co/rutaflow/ios/ResumenViewController.kt`:
+
+```kotlin
+package co.rutaflow.ios
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitView
+import androidx.compose.ui.window.ComposeUIViewController
+import kotlinx.cinterop.ExperimentalForeignApi
+import platform.CoreLocation.CLLocationCoordinate2DMake
+import platform.MapKit.MKCoordinateRegionMakeWithDistance
+import platform.MapKit.MKMapView
+
+@OptIn(ExperimentalForeignApi::class)
+fun ResumenViewController(pendientes: Int) = ComposeUIViewController {
+    Column {
+        Text("Te quedan $pendientes entregas")
+        // Vista nativa de UIKit dentro de Compose.
+        UIKitView(
+            factory = { MKMapView() },
+            update = { mapa ->
+                val bogota = CLLocationCoordinate2DMake(4.6097, -74.0817)
+                mapa.setRegion(MKCoordinateRegionMakeWithDistance(bogota, 3_000.0, 3_000.0), animated = false)
+            },
+            modifier = Modifier.fillMaxWidth().height(240.dp),
+        )
+    }
+}
+```
+
+Archivo `iosApp/iosApp/ResumenView.swift`:
+
+```swift
+import SwiftUI
+import ComposeApp // framework generado por KMP
+
+struct ResumenView: UIViewControllerRepresentable {
+    let pendientes: Int32
+    func makeUIViewController(context: Context) -> UIViewController {
+        ResumenViewControllerKt.ResumenViewController(pendientes: pendientes)
+    }
+    func updateUIViewController(_ controlador: UIViewController, context: Context) {}
+}
+
+struct ContentView: View {
+    var body: some View {
+        NavigationStack {
+            ResumenView(pendientes: 3)
+                .ignoresSafeArea(.keyboard)
+                .navigationTitle("Resumen") // título nativo de SwiftUI
+        }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:embedAndSignAppleFrameworkForXcode   # lo llama Xcode en el build
+open iosApp/iosApp.xcodeproj   # ejecuta con ⌘R en un simulador
+```
+
+**Explicación por bloques:** En `iosMain`, `ResumenViewController` devuelve un controlador de UIKit con Compose adentro. Dentro de Compose, `UIKitView` crea un `MKMapView` una sola vez en `factory` y centra la región en `update`. En Swift, el framework se importa como `ComposeApp`; las funciones de nivel superior de Kotlin quedan en una clase con el nombre del archivo y sufijo `Kt`. `ResumenView` adapta el controlador a SwiftUI y `ContentView` lo pone dentro de un `NavigationStack` nativo con su título.
+
+**Resultado esperado:**
+
+```text
+La app de SwiftUI muestra la barra de navegación nativa «Resumen», el texto «Te quedan 3 entregas» dibujado por Compose y debajo un mapa de MapKit centrado en Bogotá.
+El mapa responde a gestos de zoom y arrastre como cualquier mapa nativo.
+```
+
+**Fallo deliberado:** crea el `MKMapView` dentro de `update` en lugar de `factory`. **Error esperado:** el mapa parpadea y pierde el zoom del usuario en cada recomposición. **Diagnóstico:** `factory` crea la vista una vez; `update` solo debe cambiar propiedades. Si creas la vista en `update`, se reemplaza cada vez.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta en el simulador y prueba los gestos del mapa.
+2. **Variación:** pasa un número distinto de pendientes desde SwiftUI y comprueba el texto.
+3. **Diagnóstico:** reproduce el fallo deliberado creando el mapa en `update`.
+4. **Integración:** agrega un marcador `MKPointAnnotation` en `factory` y muévelo en `update` según un parámetro.
+5. **Diseño:** decide qué pantallas de RutaFlow serían Compose dentro de SwiftUI y qué componentes seguirían nativos.
+
+**Pista:** si Swift no encuentra la función de Kotlin, busca la clase `NombreDeArchivoKt` en el framework generado.
+
+#### Paso 6 · Práctica independiente
+
+Haz el camino contrario completo: una vista de SwiftUI dentro de Compose, envolviendo un `UIHostingController` en `UIKitViewController`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las dos direcciones de integración.
+- [ ] La pantalla Compose aparece dentro de SwiftUI con el mapa nativo.
+- [ ] Reprodujiste el parpadeo al crear la vista en `update`.
+- [ ] Sabes el costo de anidar sistemas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear vistas nativas en `update`, anidar muchas vistas UIKit en listas y olvidar el sufijo `Kt` al llamar desde Swift. **Siguiente paso:** el tema «Coroutines desde Swift, y distribución del framework» conecta estados de Kotlin con SwiftUI.
+
+**Transferencia al proyecto integrador «RutaFlow»:** muestra la pantalla de resumen de RutaFlow (Compose) dentro de la app SwiftUI, con el mapa de MapKit embebido.
+
+**Fuente oficial:** [Kotlin — Integration with the SwiftUI framework](https://kotlinlang.org/docs/multiplatform/compose-swiftui-integration.html) y [Kotlin — Integration with the UIKit framework](https://kotlinlang.org/docs/multiplatform/compose-uikit-integration.html).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una app SwiftUI que consume el módulo compartido KMP a través del framework generado.

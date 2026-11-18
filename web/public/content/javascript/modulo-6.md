@@ -536,6 +536,140 @@ Ahora distingues una intercepción transversal de una regla de dominio y sabes d
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Experimenta con un proxy de diagnóstico del store en una rama del widget. Verifica lecturas y escrituras interceptadas y compara con una API explícita antes de aceptar esa complejidad.
 
+### Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min
+
+**Prerrequisito:** tema «fetch API y AbortController» de este módulo.
+
+**Al finalizar podrás:** leer el cuerpo de una respuesta HTTP a medida que llega, con `ReadableStream`, `TextDecoderStream` y un `TransformStream` propio que separa líneas.
+
+**¿Por qué es importante?** `await respuesta.text()` espera a que llegue todo el cuerpo. Con respuestas grandes o lentas (un reporte, un registro en vivo) eso gasta memoria y retrasa lo que el usuario ve. Con streams procesas cada parte apenas llega.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Node.js 22 o superior, que trae `fetch` y los streams web sin instalar nada. Crea la carpeta `academia-labs/javascript/streams-web`. El ejemplo levanta su propio servidor local, así que no necesitas internet.
+
+#### Paso 2 · Contexto y caso real
+
+El panel de RutaFlow muestra las paradas de una ruta mientras el servidor las calcula. Si el navegador espera la respuesta completa, la pantalla queda vacía varios segundos. Leyendo por partes, cada parada aparece en cuanto el servidor la envía.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `ReadableStream`, trozo (*chunk*), `TextDecoderStream`, `TransformStream`, `pipeThrough`, `for await...of`.
+
+`respuesta.body` es un `ReadableStream` de bytes. Llega en **trozos** cuyo tamaño decide la red, no tu programa: un trozo puede traer media línea o tres líneas.
+
+Por eso se encadenan transformaciones con `pipeThrough`:
+
+1. `TextDecoderStream` convierte bytes en texto, sin romper caracteres como «ñ» que ocupan dos bytes.
+2. Un `TransformStream` propio junta los trozos y emite **líneas completas**. Guarda lo que sobra para el siguiente trozo y, al final (`flush`), emite el último resto.
+
+Un `ReadableStream` se puede recorrer con `for await...of`.
+
+**Analogía:** los trozos son baldes de agua que llegan por una tubería. `TextDecoderStream` filtra el agua y tu `TransformStream` la embotella en botellas del mismo tamaño (líneas). La analogía falla en que el agua no tiene significado; un byte cortado a la mitad sí lo pierde, por eso se decodifica con un stream y no trozo por trozo con `toString()`.
+
+**Límite de uso:** si necesitas todo el cuerpo para decidir algo (por ejemplo, validar un JSON completo), leerlo por partes no ayuda. Para JSON por partes usa un formato por líneas como NDJSON.
+
+```mermaid
+flowchart LR
+    S["Servidor<br/>envía paradas"] -->|bytes en trozos| B["respuesta.body<br/>ReadableStream"]
+    B --> D["TextDecoderStream<br/>bytes a texto"]
+    D --> T["separarLineas()<br/>TransformStream"]
+    T --> L["for await<br/>una línea por vez"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/javascript/streams-web/leer-por-partes.mjs`:
+
+```js
+import { createServer } from 'node:http';
+
+// Servidor de prueba: envía una parada cada 50 ms.
+const servidor = createServer(async (_req, res) => {
+  res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
+  for (const parada of ['Bodega', 'Calle 26', 'Cliente']) {
+    res.write(`${parada}\n`);
+    await new Promise((listo) => setTimeout(listo, 50));
+  }
+  res.end();
+});
+await new Promise((listo) => servidor.listen(0, '127.0.0.1', listo));
+const { port } = servidor.address();
+
+// Junta trozos y emite líneas completas.
+function separarLineas() {
+  let resto = '';
+  return new TransformStream({
+    transform(trozo, control) {
+      const lineas = (resto + trozo).split('\n');
+      resto = lineas.pop(); // la última puede estar incompleta
+      for (const linea of lineas) control.enqueue(linea);
+    },
+    flush(control) {
+      if (resto) control.enqueue(resto);
+    },
+  });
+}
+
+const respuesta = await fetch(`http://127.0.0.1:${port}/paradas`);
+const lineas = respuesta.body
+  .pipeThrough(new TextDecoderStream())
+  .pipeThrough(separarLineas());
+
+for await (const linea of lineas) {
+  console.log(`llegó: ${linea}`);
+}
+servidor.close();
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/javascript/streams-web
+node leer-por-partes.mjs
+```
+
+**Explicación por bloques:** El servidor escribe una parada, espera 50 ms y escribe la siguiente, como haría un cálculo real. `servidor.listen(0, ...)` pide un puerto libre. `separarLineas` guarda en `resto` lo que quedó después del último salto de línea, porque ese trozo puede estar incompleto, y lo emite en `flush` cuando termina el stream. `pipeThrough` encadena la decodificación y la separación, y `for await` imprime cada línea en cuanto está completa, sin esperar el final de la respuesta.
+
+![Captura de terminal: node leer-por-partes.mjs imprime llegó Bodega, llegó Calle 26 y llegó Cliente](content/figures/javascript/streams-web-fetch.svg)
+
+**Resultado esperado:**
+
+```text
+llegó: Bodega
+llegó: Calle 26
+llegó: Cliente
+```
+
+**Fallo deliberado:** borra el método `flush` y cambia la última parada para que se envíe sin `\n` (por ejemplo, `res.end('Cliente')` fuera del bucle). **Error esperado:** la línea «Cliente» nunca se imprime. **Diagnóstico:** el último trozo quedó guardado en `resto` y nadie lo emitió. `flush` existe justo para eso.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el ejemplo y cambia la espera a 500 ms para ver que las líneas aparecen de a una.
+2. **Variación:** agrega una parada con tilde, como «Plaza Bolívar», y confirma que se imprime bien.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica qué guarda `resto` en cada trozo.
+4. **Integración:** cuenta los trozos agregando un `console.log` dentro de `transform` y compáralo con el número de líneas.
+5. **Diseño:** cambia el servidor para que envíe NDJSON (`{"parada":"Bodega"}` por línea) y conviértelo con `JSON.parse` en otra transformación.
+
+**Pista:** el número de trozos no es igual al número de líneas: depende de la red. Tu código debe funcionar con cualquier corte.
+
+#### Paso 6 · Práctica independiente
+
+Escribe `contarBytes()`, un `TransformStream` que deja pasar los bytes sin cambiarlos y, en `flush`, imprime cuántos bytes pasaron. Colócalo antes de `TextDecoderStream` y compara el total con `content-length` de una respuesta sin streaming.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué un trozo puede cortar una línea o un carácter.
+- [ ] El programa imprime las tres líneas esperadas.
+- [ ] Reprodujiste la pérdida de la última línea sin `flush`.
+- [ ] Sabes cuándo conviene `respuesta.text()` en vez de streams.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** decodificar cada trozo con `new TextDecoder().decode(trozo)` sin `{ stream: true }`, olvidar `flush` y suponer que un trozo es una línea. **Siguiente paso:** el tema «Reintentos y timeouts manuales» combina estas lecturas con `AbortController` para cortar respuestas que se quedan colgadas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, muestra las paradas a medida que llegan desde el endpoint de cálculo, leyendo la respuesta con `pipeThrough` y una transformación por líneas.
+
+**Fuente oficial:** [MDN — Streams API](https://developer.mozilla.org/es/docs/Web/API/Streams_API) y [MDN — TransformStream](https://developer.mozilla.org/en-US/docs/Web/API/TransformStream).
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir un cliente de API robusto que consuma una API pública con manejo de errores, cancelación, reintentos y timeout, usando `async`/`await` de principio a fin.

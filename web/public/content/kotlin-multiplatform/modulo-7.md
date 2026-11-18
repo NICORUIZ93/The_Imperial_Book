@@ -595,6 +595,571 @@ Ya aplicas un criterio explícito para decidir cuándo una integración necesita
 
 ---
 
+### Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min
+
+**Prerrequisito:** tema «Theming y navegación compartidos» de este módulo.
+
+**Al finalizar podrás:** poner textos, imágenes y plurales en `composeResources`, generar la clase `Res` y mostrarlos en Android, iOS y escritorio con el idioma del dispositivo.
+
+**¿Por qué es importante?** Si cada plataforma tiene sus propios archivos de textos, se desincronizan y un botón aparece en inglés solo en iOS. Compose Multiplatform Resources comparte los recursos desde `commonMain` con accesos con tipos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.6 o superior con la dependencia `compose.components.resources` en `commonMain`. Crea `composeApp/src/commonMain/composeResources/`.
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow decía «Entregar» en Android y «Deliver» en iOS porque alguien olvidó traducir el archivo de una plataforma. Con recursos comunes, hay un solo archivo por idioma.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `composeResources`, `values/strings.xml`, calificador de idioma (`values-en`), `Res.string`, `stringResource`, `pluralStringResource`, `painterResource`.
+
+Los recursos comunes viven en `commonMain/composeResources/`:
+
+- `values/strings.xml` con los textos por defecto y `values-en/strings.xml` con los de inglés (el **calificador** del nombre de la carpeta elige el idioma).
+- `<plurals>` para textos que cambian con la cantidad.
+- `drawable/` para imágenes (PNG, JPG, XML vectorial, SVG).
+
+Al compilar, Gradle genera la clase **`Res`** con accesos con tipos: `Res.string.entregar`, `Res.drawable.camion`. En los composables se leen con `stringResource(...)`, `pluralStringResource(...)` y `painterResource(...)`. El idioma se toma del sistema en cada plataforma.
+
+**Analogía:** `composeResources` es la bodega central de etiquetas: cada tienda (plataforma) toma de ahí la etiqueta del idioma de su cliente. La analogía falla en que la bodega se arma al compilar: un recurso nuevo no aparece en `Res` hasta el siguiente build.
+
+**Límite de uso:** no pongas en recursos textos que vienen del servidor. Los nombres de recursos deben ser identificadores válidos de Kotlin (sin guiones).
+
+```mermaid
+flowchart TB
+    R["commonMain/composeResources"] --> V["values/strings.xml (es)"]
+    R --> E["values-en/strings.xml"]
+    R --> D["drawable/camion.xml"]
+    V & E & D -->|"build"| RES["clase Res generada"]
+    RES --> A["Android"] & I["iOS"] & DK["Escritorio"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/src/commonMain/composeResources/values/strings.xml`:
+
+```xml
+<resources>
+    <string name="entregar">Entregar</string>
+    <string name="saludo">Hola, %1$s</string>
+    <plurals name="pendientes">
+        <item quantity="one">%1$d entrega pendiente</item>
+        <item quantity="other">%1$d entregas pendientes</item>
+    </plurals>
+</resources>
+```
+
+Archivo `composeApp/src/commonMain/composeResources/values-en/strings.xml`:
+
+```xml
+<resources>
+    <string name="entregar">Deliver</string>
+    <string name="saludo">Hi, %1$s</string>
+    <plurals name="pendientes">
+        <item quantity="one">%1$d pending delivery</item>
+        <item quantity="other">%1$d pending deliveries</item>
+    </plurals>
+</resources>
+```
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/Encabezado.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
+import rutaflow.composeapp.generated.resources.*
+
+@Composable
+fun Encabezado(conductor: String, pendientes: Int, alEntregar: () -> Unit) {
+    Column {
+        Image(painterResource(Res.drawable.camion), contentDescription = null)
+        Text(stringResource(Res.string.saludo, conductor))
+        Text(pluralStringResource(Res.plurals.pendientes, pendientes, pendientes))
+        Button(onClick = alEntregar) { Text(stringResource(Res.string.entregar)) }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:generateComposeResClass
+./gradlew :composeApp:run              # escritorio
+./gradlew :composeApp:installDebug     # Android
+```
+
+**Explicación por bloques:** `values/strings.xml` tiene los textos en español y `values-en/strings.xml` en inglés. `%1$s` y `%1$d` son el primer argumento como texto y como número. `<plurals>` define la forma singular y plural. Al compilar, Gradle genera `Res` en el paquete `rutaflow.composeapp.generated.resources`. `Encabezado` usa `stringResource` con argumento, `pluralStringResource` con la cantidad (para elegir la forma) y otra vez la cantidad como argumento del texto, y `painterResource` para la imagen de `drawable/camion.xml`.
+
+**Resultado esperado:**
+
+```text
+Con el sistema en español y 1 pendiente: «Hola, Ana», «1 entrega pendiente», botón «Entregar».
+Con el sistema en inglés y 3 pendientes: «Hi, Ana», «3 pending deliveries», botón «Deliver».
+El mismo resultado en Android, iOS y escritorio.
+```
+
+**Fallo deliberado:** nombra el recurso `entregar-ya` en `strings.xml`. **Error esperado:** la generación de `Res` falla o el acceso no existe, porque `entregar-ya` no es un identificador válido de Kotlin. **Diagnóstico:** usa nombres con guion bajo (`entregar_ya`).
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta en escritorio y en Android con el sistema en español.
+2. **Variación:** cambia el idioma del emulador a inglés y comprueba los textos.
+3. **Diagnóstico:** reproduce el fallo deliberado con el guion.
+4. **Integración:** agrega una carpeta `drawable-dark` con otra versión de la imagen para el modo oscuro.
+5. **Diseño:** mueve a recursos comunes los textos que hoy están en `strings.xml` de Android y en `Localizable.strings` de iOS.
+
+**Pista:** si `Res` no tiene tu recurso, ejecuta `generateComposeResClass` y revisa el nombre.
+
+#### Paso 6 · Práctica independiente
+
+Agrega portugués (`values-pt`) y una prueba en `commonTest` que verifique que las tres versiones de `strings.xml` tienen las mismas claves.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas cómo se elige el idioma con calificadores.
+- [ ] Los textos y plurales cambian con el idioma del sistema.
+- [ ] Reprodujiste el error de nombre inválido.
+- [ ] Hay un solo archivo de textos por idioma.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** duplicar textos por plataforma, usar nombres con guiones y armar plurales con `if` en el código. **Siguiente paso:** el tema siguiente abre pantallas desde enlaces externos con deep links.
+
+**Transferencia al proyecto integrador «RutaFlow»:** mueve todos los textos e imágenes de la app de RutaFlow a `composeResources` con español e inglés.
+
+**Fuente oficial:** [Kotlin — Multiplatform resources](https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources.html).
+
+### Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min
+
+**Prerrequisito:** tema «Theming y navegación compartidos» de este módulo.
+
+**Al finalizar podrás:** declarar un deep link en el grafo de navegación común, registrarlo en Android e iOS y abrir el detalle de un envío desde `rutaflow://envio/ENV-42`.
+
+**¿Por qué es importante?** Una notificación o un SMS con el enlace del envío debe llevar al conductor directo al detalle, no a la pantalla de inicio. Con navegación común, la ruta se define una vez para todas las plataformas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.8 o superior con `org.jetbrains.androidx.navigation:navigation-compose` en `commonMain`. Necesitas acceso a `AndroidManifest.xml` y al `Info.plist` de la app de iOS.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow envía al conductor un SMS cuando le asignan un envío urgente. El enlace abría la app en la lista y el conductor tenía que buscar el envío entre veinte. Con el deep link, abre el detalle directamente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** deep link, esquema de URL, `navDeepLink`, ruta con tipos (`@Serializable`), `intent-filter`, `CFBundleURLTypes`, `ExternalUriHandler`.
+
+Un **deep link** es una URL que la app sabe abrir. En Compose Multiplatform:
+
+1. Defines las rutas como clases `@Serializable` (`data class DetalleEnvio(val codigo: String)`).
+2. En el grafo, `composable<DetalleEnvio>(deepLinks = listOf(navDeepLink<DetalleEnvio>(basePath = "rutaflow://envio")))` asocia el patrón. El parámetro `codigo` se toma de la ruta.
+3. Cada plataforma debe avisar al sistema que la app atiende el esquema `rutaflow://`: Android con un `intent-filter`, iOS con `CFBundleURLTypes`.
+4. Cuando llega el enlace, la plataforma se lo entrega al `NavController` con `navController.navigate(NavUri(url))` o, si el controlador aún no existe, lo guarda hasta que esté listo.
+
+**Analogía:** el deep link es la dirección exacta de una oficina en un edificio grande: en lugar de entrar por recepción y preguntar, vas directo al piso y la puerta. La analogía falla en que, si la oficina no existe, la app debe decidir a dónde llevarte (por ejemplo, la lista).
+
+**Límite de uso:** los esquemas propios (`rutaflow://`) los puede reclamar cualquier app; para enlaces web verificados usa App Links (Android) y Universal Links (iOS) con tu dominio. Valida siempre los parámetros recibidos.
+
+```mermaid
+sequenceDiagram
+    participant S as SMS
+    participant P as Android / iOS
+    participant N as NavController (común)
+    participant D as DetalleEnvio
+    S->>P: rutaflow://envio/ENV-42
+    P->>N: navigate(NavUri)
+    N->>D: codigo = ENV-42
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/navegacion/Navegacion.kt`:
+
+```kotlin
+package co.rutaflow.navegacion
+
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable object ListaEnvios
+@Serializable data class DetalleEnvio(val codigo: String)
+
+@Composable
+fun RutaFlowNav(nav: NavHostController) {
+    NavHost(nav, startDestination = ListaEnvios) {
+        composable<ListaEnvios> { Text("Lista de envíos") }
+        composable<DetalleEnvio>(
+            deepLinks = listOf(navDeepLink<DetalleEnvio>(basePath = "rutaflow://envio")),
+        ) { entrada ->
+            val codigo = entrada.toRoute<DetalleEnvio>().codigo
+            if (Regex("ENV-\\d+").matches(codigo)) Text("Detalle de $codigo") else Text("Enlace no válido")
+        }
+    }
+}
+```
+
+Archivo `composeApp/src/androidMain/AndroidManifest.xml`:
+
+```xml
+<activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="rutaflow" android:host="envio" />
+    </intent-filter>
+</activity>
+```
+
+Archivo `iosApp/iosApp/Info.plist`:
+
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array><string>rutaflow</string></array>
+    </dict>
+</array>
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:installDebug
+adb shell am start -W -a android.intent.action.VIEW -d "rutaflow://envio/ENV-42"
+xcrun simctl openurl booted "rutaflow://envio/ENV-42"
+```
+
+**Explicación por bloques:** Las rutas son clases serializables; `DetalleEnvio` lleva el código. `navDeepLink<DetalleEnvio>(basePath = ...)` arma el patrón `rutaflow://envio/{codigo}` a partir de los campos de la clase. Al llegar, `toRoute` reconstruye el objeto y el código se valida antes de usarlo. En Android, el `intent-filter` declara el esquema y el host; Navigation lee el intent al iniciar la actividad. En iOS, `CFBundleURLSchemes` registra el esquema y la app pasa la URL al controlador desde `onOpenURL`.
+
+**Resultado esperado:**
+
+```text
+`adb shell am start ... rutaflow://envio/ENV-42` abre la app directamente en «Detalle de ENV-42».
+`xcrun simctl openurl booted ...` hace lo mismo en el simulador de iOS.
+`rutaflow://envio/abc` muestra «Enlace no válido».
+```
+
+**Fallo deliberado:** quita el `<intent-filter>` del manifiesto. **Error esperado:** `adb` responde `Error: Activity not started, unable to resolve Intent`. **Diagnóstico:** el sistema no sabe que la app atiende el esquema `rutaflow://`. La navegación común define la ruta, pero cada plataforma debe registrar el esquema.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** abre el enlace con `adb` y con `simctl`.
+2. **Variación:** agrega un deep link `rutaflow://ruta/{dia}` hacia la pantalla de ruta del día.
+3. **Diagnóstico:** reproduce el fallo deliberado sin `intent-filter`.
+4. **Integración:** abre el enlace con la app ya abierta y comprueba que no se crea una segunda instancia (`singleTask`).
+5. **Diseño:** diseña los enlaces que enviaría RutaFlow por SMS y notificación, y qué pasa si el envío ya no es del conductor.
+
+**Pista:** si el enlace abre la app pero no la pantalla, revisa que el patrón (`basePath` + campos) coincida exactamente con la URL.
+
+#### Paso 6 · Práctica independiente
+
+Cambia el esquema propio por un App Link verificado (`https://rutaflow.co/envio/ENV-42`) con `assetlinks.json` en Android y explica qué gana en seguridad.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué hace la parte común y qué hace cada plataforma.
+- [ ] El enlace abre el detalle en Android e iOS.
+- [ ] Reprodujiste el error sin `intent-filter`.
+- [ ] Validas el parámetro recibido.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar registrar el esquema en una plataforma, no validar el parámetro y usar esquemas propios para enlaces públicos sin verificación. **Siguiente paso:** el tema siguiente hace que estas pantallas sean accesibles en todas las plataformas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** abre el detalle de envíos urgentes de RutaFlow desde el SMS con `rutaflow://envio/{codigo}` en Android e iOS.
+
+**Fuente oficial:** [Kotlin — Navigation and routing in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-navigation-routing.html) y [Kotlin — Deep links in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-navigation-deep-links.html).
+
+### Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min
+
+**Prerrequisito:** tema «Estado y recomposición» de este módulo.
+
+**Al finalizar podrás:** dar descripciones, roles y estados a los componentes con `Modifier.semantics`, agrupar elementos para que se lean como una unidad y comprobarlo con TalkBack, VoiceOver y una prueba común.
+
+**¿Por qué es importante?** Compose Multiplatform traduce la semántica de Compose a las APIs de accesibilidad de cada sistema. Si la semántica está mal en el código común, está mal en todas las plataformas a la vez.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable). Activa TalkBack en el emulador de Android y VoiceOver en el simulador de iOS (Accessibility Inspector en Xcode).
+
+#### Paso 2 · Contexto y caso real
+
+Un conductor de RutaFlow con baja visión usaba VoiceOver. En la tarjeta de envío, VoiceOver leía «botón» sin decir para qué, y el ícono de estado no se leía. El arreglo en el código común sirvió también para TalkBack.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** árbol de semántica, `contentDescription`, `Modifier.semantics`, `mergeDescendants`, `role`, `stateDescription`, `heading`, `onClickLabel`.
+
+Compose arma un **árbol de semántica** paralelo a la interfaz. Los lectores de pantalla leen ese árbol, no los píxeles.
+
+- Las imágenes con significado necesitan `contentDescription`; las decorativas, `null`.
+- `Modifier.semantics(mergeDescendants = true)` junta un grupo (código, estado y botón) para leerlo como una unidad.
+- `role` dice qué es (botón, casilla); `stateDescription` dice su estado («entregado»); `heading()` marca títulos para navegar entre ellos.
+- `onClickLabel` en `clickable` describe la acción («marcar como entregado»), no solo «botón».
+
+Las pruebas comunes (`runComposeUiTest`) buscan nodos por su semántica: si la prueba encuentra el texto o la descripción, el lector de pantalla también.
+
+**Analogía:** el árbol de semántica es la versión en braille de la pantalla: si no escribes el braille, el usuario que no ve no tiene nada que leer. La analogía falla en que aquí el «braille» también lo usan las pruebas automáticas.
+
+**Límite de uso:** no pongas `contentDescription` que repite el texto visible: el lector lo dirá dos veces. La semántica no reemplaza el contraste de colores ni los tamaños táctiles mínimos (48 dp).
+
+```mermaid
+flowchart TB
+    C["TarjetaEnvio (mergeDescendants)"] --> T["Text: ENV-42 (heading)"]
+    C --> I["Icon: estado (stateDescription)"]
+    C --> B["clickable: onClickLabel 'marcar como entregado'"]
+    C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/TarjetaEnvio.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaEnvio(codigo: String, entregado: Boolean, alMarcar: () -> Unit) {
+    val estado = if (entregado) "entregado" else "en ruta"
+    Row(
+        Modifier
+            .clickable(onClickLabel = "marcar como entregado", role = Role.Button, onClick = alMarcar)
+            .semantics(mergeDescendants = true) { stateDescription = estado } // una sola lectura
+            .padding(16.dp),
+    ) {
+        Icon(if (entregado) Icons.Default.CheckCircle else Icons.Default.LocalShipping, contentDescription = null) // el estado ya se dice
+        Text(codigo, Modifier.semantics { heading() })
+    }
+}
+```
+
+Archivo `composeApp/src/commonTest/kotlin/co/rutaflow/ui/TarjetaEnvioTest.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.*
+import kotlin.test.Test
+
+class TarjetaEnvioTest {
+    @OptIn(ExperimentalTestApi::class)
+    @Test fun seLeeComoUnaUnidadConEstado() = runComposeUiTest {
+        setContent { TarjetaEnvio("ENV-42", entregado = false) {} }
+        onNode(hasStateDescription("en ruta") and hasClickAction())
+            .assertTextContains("ENV-42")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Role))
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:jvmTest
+./gradlew :composeApp:installDebug   # luego activa TalkBack y toca la tarjeta
+```
+
+**Explicación por bloques:** La fila completa es clicable con una etiqueta de acción y el rol de botón. `mergeDescendants = true` une el ícono y el texto en un solo nodo, con el estado como `stateDescription`. El ícono tiene `contentDescription = null` porque el estado ya se dice: así no se repite. El código se marca como encabezado para que el usuario salte entre tarjetas. La prueba común busca un nodo con ese estado y acción de clic, y comprueba el texto y el rol: si la prueba lo encuentra, el lector también.
+
+**Resultado esperado:**
+
+```text
+./gradlew :composeApp:jvmTest pasa la prueba seLeeComoUnaUnidadConEstado.
+TalkBack lee: «ENV-42, en ruta, botón. Toca dos veces para marcar como entregado».
+VoiceOver lee una frase equivalente en iOS.
+```
+
+**Fallo deliberado:** quita `mergeDescendants = true`. **Error esperado:** la prueba falla con «Failed: assertTextContains... no node found», y TalkBack recorre el ícono, el texto y la fila por separado. **Diagnóstico:** sin agrupar, la información queda repartida en tres nodos. Agrupa lo que el usuario entiende como una unidad.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la prueba común y luego recorre la tarjeta con TalkBack.
+2. **Variación:** cambia `entregado` a `true` y comprueba que el lector dice «entregado».
+3. **Diagnóstico:** reproduce el fallo deliberado sin agrupar.
+4. **Integración:** revisa la pantalla con el Accessibility Scanner de Android y corrige lo que reporte.
+5. **Diseño:** escribe tres reglas de accesibilidad para todas las tarjetas de RutaFlow.
+
+**Pista:** escucha la pantalla con el lector antes de mirarla: si no entiendes qué hacer, falta semántica.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una acción personalizada «reportar problema» con `customActions` en la semántica de la tarjeta y pruébala con TalkBack y VoiceOver.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas el árbol de semántica.
+- [ ] La prueba común pasa.
+- [ ] Reprodujiste la lectura repartida sin `mergeDescendants`.
+- [ ] El lector dice el estado y la acción.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** describir íconos decorativos, repetir el texto visible en la descripción y no agrupar elementos relacionados. **Siguiente paso:** el módulo 8 muestra estas pantallas dentro de una app SwiftUI existente.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega semántica de estado y acción a las tarjetas de envío de RutaFlow y pruébala en `commonTest`.
+
+**Fuente oficial:** [Kotlin — Accessibility in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-accessibility.html) y [Android Developers — Semantics in Compose](https://developer.android.com/develop/ui/compose/accessibility/semantics).
+
+### Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min
+
+**Prerrequisito:** tema «Compose Multiplatform vs Jetpack Compose» de este módulo.
+
+**Al finalizar podrás:** activar Compose Hot Reload en el target de escritorio, cambiar textos, colores y diseño mientras la app corre sin perder el estado, y saber qué cambios exigen reiniciar.
+
+**¿Por qué es importante?** Ajustar una pantalla con ciclos de compilar y reiniciar de un minuto hace que se pruebe menos. Con Hot Reload el cambio aparece en segundos y conservas el estado (por ejemplo, el formulario ya llenado).
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin. Necesitas el target `jvm()` (escritorio): Hot Reload funciona sobre la JVM. Instala el plugin de Kotlin Multiplatform en IntelliJ IDEA o Android Studio.
+
+#### Paso 2 · Contexto y caso real
+
+El diseñador de RutaFlow ajustaba el espaciado de la tarjeta de envío con el equipo de desarrollo. Cada cambio pedía reiniciar la app y volver a llenar el formulario de prueba. Con Hot Reload, revisaron diez variantes en cinco minutos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** recarga en caliente, estado preservado, target JVM de escritorio, tarea `hotRun`, cambios compatibles e incompatibles.
+
+Compose Hot Reload recompila solo lo que cambió y **reemplaza el código en la JVM en ejecución**. Luego Compose recompone la pantalla y **mantiene el estado** de `remember`.
+
+- Se ejecuta con la tarea `hotRun` del target de escritorio o con el botón de Hot Reload del IDE.
+- Al guardar el archivo, la app se actualiza.
+
+| Cambio | ¿Recarga en caliente? |
+|---|---|
+| textos, colores, modificadores, nuevos composables | sí |
+| cuerpo de funciones | sí |
+| nuevas dependencias de Gradle, cambios en `main` | no: reinicia |
+
+Aunque se ejecuta en escritorio, el código común es el mismo que corre en Android e iOS: lo que ves es lo que se compila para ellos.
+
+**Analogía:** es cambiar la decoración de una habitación con la gente adentro: nadie tiene que salir y volver a entrar. La analogía falla en que, si cambias los cimientos (dependencias), hay que desalojar y reconstruir.
+
+**Límite de uso:** no todos los cambios se pueden aplicar en caliente; si el estado se ve raro después de un cambio grande, reinicia. Revisa siempre el resultado final en Android e iOS: tipografía y densidad pueden variar.
+
+```mermaid
+flowchart LR
+    E["Editar TarjetaEnvio.kt"] --> G["Guardar"]
+    G --> C["Compilación incremental"]
+    C --> J["JVM en ejecución: código reemplazado"]
+    J --> R["Recomposición con estado preservado"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/build.gradle.kts`:
+
+```kotlin
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.hot.reload) // en versiones donde no viene incluido
+}
+
+kotlin {
+    jvm("desktop")
+    // ... targets de Android e iOS
+}
+```
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/Formulario.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun FormularioNota() {
+    var nota by remember { mutableStateOf("") } // este estado sobrevive a la recarga
+    Column(Modifier.padding(16.dp)) {             // cambia 16 por 32 y guarda
+        Text("Nota para el cliente")              // cambia el texto y guarda
+        OutlinedTextField(value = nota, onValueChange = { nota = it })
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:hotRunDesktop --auto
+# escribe algo en el campo, cambia el padding o el texto en el código y guarda
+```
+
+**Explicación por bloques:** El target de escritorio se llama `desktop`; con el plugin de Hot Reload, Gradle agrega la tarea `hotRunDesktop`, y `--auto` recarga al guardar. `FormularioNota` guarda la nota en `remember`. Al cambiar el padding o el texto y guardar, la JVM recibe el código nuevo y Compose recompone: el diseño cambia y el texto que escribiste sigue en el campo.
+
+**Resultado esperado:**
+
+```text
+La ventana de escritorio se actualiza uno o dos segundos después de guardar, sin cerrarse.
+El texto escrito en el campo sigue ahí tras cambiar el padding de 16 a 32.
+Al agregar una dependencia nueva en Gradle, la herramienta pide reiniciar.
+```
+
+**Fallo deliberado:** cambia `remember { mutableStateOf("") }` por `remember { mutableStateOf(0) }` (otro tipo) y guarda. **Error esperado:** el estado se reinicia o la herramienta avisa que el cambio no es compatible y reinicia la composición. **Diagnóstico:** cambiar el tipo del estado no se puede aplicar conservando el valor anterior. Es normal: reinicia cuando cambies la forma del estado.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** arranca con `hotRunDesktop`, escribe una nota y cambia el padding.
+2. **Variación:** cambia el color del texto con `MaterialTheme.colorScheme.primary` y guarda.
+3. **Diagnóstico:** reproduce el fallo deliberado cambiando el tipo del estado.
+4. **Integración:** agrega un composable nuevo debajo del campo y guarda sin reiniciar.
+5. **Diseño:** escribe en el README del equipo qué cambios se prueban con Hot Reload y cuáles exigen reiniciar.
+
+**Pista:** si un cambio no aparece, revisa la consola de Hot Reload: dice si recargó o si necesita reiniciar.
+
+#### Paso 6 · Práctica independiente
+
+Usa Hot Reload para ajustar con el diseñador la tarjeta de envío y, al final, compara capturas del escritorio con Android e iOS.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué Hot Reload necesita la JVM.
+- [ ] Cambiaste el diseño sin perder el texto escrito.
+- [ ] Reprodujiste un cambio incompatible.
+- [ ] Verificas el resultado final en móvil.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** esperar que todo cambio se aplique en caliente, olvidar verificar en Android e iOS y no tener target de escritorio. **Siguiente paso:** el módulo 9 prueba estas mismas pantallas con `runComposeUiTest`.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega el target de escritorio a la app de RutaFlow para ajustar pantallas con Hot Reload.
+
+**Fuente oficial:** [Kotlin — Compose Hot Reload](https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html) y [GitHub — JetBrains/compose-hot-reload](https://github.com/JetBrains/compose-hot-reload).
 
 ## Laboratorio práctico
 

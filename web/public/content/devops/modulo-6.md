@@ -718,6 +718,266 @@ Entregá la salida de `kubectl get ingress mi-api`, la respuesta del `curl` con 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica la API del proyecto por un host local con Ingress en Minikube y documenta en el README los dos caminos de arranque (`kind` para CI, Minikube para desarrollo).
 
+### Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min
+
+**Prerrequisito:** tema «Pod, ReplicaSet, Deployment» de este módulo.
+
+**Al finalizar podrás:** nombrar los componentes del plano de control y de los nodos, verlos en un clúster local y seguir con `kubectl get events` cómo un Deployment llega al estado deseado.
+
+**¿Por qué es importante?** Cuando un pod queda en `Pending` o un cambio «no se aplica», saber qué componente es responsable de cada paso dice dónde mirar. Sin ese mapa, se reinician cosas al azar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Minikube o kind con `kubectl`. Crea un clúster con `minikube start` (o `kind create cluster`).
+
+#### Paso 2 · Contexto y caso real
+
+Un despliegue de RutaFlow se quedó con pods en `Pending` durante una hora. El equipo reinició el Deployment tres veces. El evento del scheduler decía desde el principio «0/3 nodes are available: insufficient memory».
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** plano de control, kube-apiserver, etcd, scheduler, controller-manager, kubelet, kube-proxy, runtime de contenedores, estado deseado, reconciliación, eventos.
+
+| Componente | Dónde | Qué hace |
+|---|---|---|
+| **kube-apiserver** | plano de control | única puerta de entrada; valida y guarda objetos |
+| **etcd** | plano de control | base de datos clave-valor con el estado del clúster |
+| **scheduler** | plano de control | elige un nodo para cada pod sin asignar |
+| **controller-manager** | plano de control | controladores que comparan deseado con real y corrigen |
+| **kubelet** | cada nodo | arranca los contenedores del pod con el runtime |
+| **kube-proxy** | cada nodo | reglas de red para los Services |
+
+Todo funciona con **reconciliación**: declaras el estado deseado (3 réplicas) y cada controlador observa el estado real y actúa hasta igualarlos. Nadie da órdenes paso a paso. Cada acción deja un **evento** que puedes leer.
+
+**Analogía:** el apiserver es la recepción, etcd el libro de registro, el scheduler el que asigna oficinas, los controladores los supervisores que revisan que todo coincida con el plan y el kubelet el encargado de cada piso. La analogía falla en que los supervisores nunca terminan su ronda: la reconciliación es permanente.
+
+**Límite de uso:** en servicios administrados (EKS, GKE, AKS) no ves los pods del plano de control; los gestiona el proveedor. Aun así, los eventos y el comportamiento son los mismos.
+
+```mermaid
+flowchart LR
+    U["kubectl apply"] --> A["kube-apiserver"]
+    A <--> E[("etcd")]
+    C["controller-manager<br/>Deployment → ReplicaSet → Pods"] <--> A
+    S["scheduler<br/>asigna nodo"] <--> A
+    A <--> K["kubelet del nodo<br/>arranca contenedores"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/arquitectura/api.yaml`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-rutaflow
+spec:
+  replicas: 3
+  selector: { matchLabels: { app: api-rutaflow } }
+  template:
+    metadata: { labels: { app: api-rutaflow } }
+    spec:
+      containers:
+        - name: api
+          image: nginx:1.27
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }
+```
+
+Ejecútalo:
+
+```bash
+kubectl get pods -n kube-system           # componentes del plano de control (en Minikube/kind)
+kubectl apply -f academia-labs/devops/arquitectura/api.yaml
+kubectl get events --sort-by=.lastTimestamp | tail -12
+```
+
+**Explicación por bloques:** En un clúster local, los componentes del plano de control corren como pods en `kube-system`, así que puedes verlos. Al aplicar el Deployment, los eventos cuentan la reconciliación: el controlador de Deployments crea un ReplicaSet, el de ReplicaSets crea tres pods, el scheduler asigna cada uno a un nodo y el kubelet descarga la imagen y arranca el contenedor. Las `requests` le dicen al scheduler cuánta memoria y CPU reservar.
+
+**Resultado esperado:**
+
+```text
+kube-system muestra etcd-minikube, kube-apiserver-minikube, kube-controller-manager-minikube, kube-scheduler-minikube y kube-proxy-xxxxx.
+Eventos (en orden): ScalingReplicaSet (deployment-controller), SuccessfulCreate (replicaset-controller), Scheduled (default-scheduler), Pulling / Pulled / Created / Started (kubelet).
+```
+
+**Fallo deliberado:** cambia `memory: 64Mi` por `memory: 64Gi` y vuelve a aplicar. **Error esperado:** los pods nuevos quedan en `Pending` y el evento del scheduler dice `0/1 nodes are available: 1 Insufficient memory`. **Diagnóstico:** el scheduler no encuentra un nodo con esa reserva. Lee el evento antes de reiniciar nada; corrige la `request` o agrega nodos.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** lista los pods de `kube-system` y nombra qué hace cada uno.
+2. **Variación:** borra un pod del Deployment y mira en los eventos cómo el ReplicaSet crea otro.
+3. **Diagnóstico:** reproduce el fallo deliberado con 64Gi.
+4. **Integración:** detén el kubelet de un nodo de kind (`docker exec <nodo> systemctl stop kubelet`) y observa qué marca el controlador de nodos.
+5. **Diseño:** escribe una guía de diagnóstico de cinco líneas: qué componente revisar según el estado del pod.
+
+**Pista:** ante un problema, `kubectl describe pod` muestra al final los eventos del pod: empieza siempre por ahí.
+
+#### Paso 6 · Práctica independiente
+
+Escala el Deployment a 50 réplicas en un clúster pequeño y explica, con los eventos, qué componente decide cuántas quedan corriendo y por qué.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras los componentes del plano de control y de los nodos.
+- [ ] Seguiste la reconciliación en los eventos.
+- [ ] Reprodujiste un pod en `Pending` y leíste su causa.
+- [ ] Sabes qué ves y qué no en un clúster administrado.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reiniciar sin leer eventos, confundir el scheduler con el kubelet y pensar que Kubernetes ejecuta órdenes paso a paso. **Siguiente paso:** el tema siguiente decide dónde va cada pod con requests, afinidad y taints.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega al runbook de RutaFlow el mapa de componentes y qué evento revisar ante pods en `Pending`, `CrashLoopBackOff` e `ImagePullBackOff`.
+
+**Fuente oficial:** [Kubernetes — Cluster Architecture](https://kubernetes.io/docs/concepts/architecture/) y [Kubernetes — Controllers](https://kubernetes.io/docs/concepts/architecture/controller/).
+
+### Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min
+
+**Prerrequisito:** tema «Arquitectura de Kubernetes» de este módulo.
+
+**Al finalizar podrás:** reservar recursos con requests y limits, repartir réplicas entre nodos con anti-afinidad y reservar nodos para un tipo de carga con taints y tolerations.
+
+**¿Por qué es importante?** Si todas las réplicas caen en el mismo nodo, una falla de ese nodo apaga el servicio. Si un pod no declara recursos, puede dejar sin memoria a los demás. El scheduler decide bien solo si le das la información.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa kind con varios nodos: crea `kind-3nodos.yaml` con un plano de control y tres workers, y ejecuta `kind create cluster --config kind-3nodos.yaml`.
+
+#### Paso 2 · Contexto y caso real
+
+Una noche cayó un nodo del clúster de RutaFlow y la API quedó fuera de servicio: sus tres réplicas estaban en ese mismo nodo. Con anti-afinidad, cada réplica va a un nodo distinto.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** request, limit, clase de QoS, `podAntiAffinity`, `topologyKey`, `topologySpreadConstraints`, taint, toleration, `nodeSelector`.
+
+- **requests:** lo que el pod reserva; el scheduler solo lo pone en nodos con ese espacio libre.
+- **limits:** el máximo. Si supera el límite de memoria, el contenedor se mata (`OOMKilled`); si supera el de CPU, se frena.
+- **Anti-afinidad** (`podAntiAffinity`) evita poner pods iguales juntos según una `topologyKey` (por ejemplo, el nombre del nodo o la zona).
+- **Taint** en un nodo: «aquí no entra nadie, salvo quien tolere esto». **Toleration** en un pod: «yo sí puedo entrar». Se usa para nodos especiales (GPU, procesos batch).
+
+Las reglas pueden ser **obligatorias** (`required...`) o **preferidas** (`preferred...`). Las obligatorias pueden dejar pods en `Pending` si no hay dónde cumplirlas.
+
+**Analogía:** requests son reservas de mesa en un restaurante; limits, el máximo que alguien puede pedir; anti-afinidad es «no sienten a toda la familia en la misma mesa»; un taint es un cartel «mesa reservada para grupos» que solo respetan quienes traen la reserva (toleration). La analogía falla en que el restaurante no echa al cliente que se pasa del límite; Kubernetes sí.
+
+**Límite de uso:** la anti-afinidad obligatoria con más réplicas que nodos deja pods sin programar: usa `topologySpreadConstraints` o la versión preferida. Requests muy altas desperdician capacidad; mídelas con el uso real.
+
+```mermaid
+flowchart TB
+    S["scheduler"] --> N1["worker 1: api-1"]
+    S --> N2["worker 2: api-2"]
+    S --> N3["worker 3 (taint batch): reporte"]
+    S -. "api no tolera batch" .-> N3
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/scheduling/kind-3nodos.yaml`:
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
+```
+
+Archivo `academia-labs/devops/scheduling/api.yaml`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: api }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: api } }
+  template:
+    metadata: { labels: { app: api } }
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector: { matchLabels: { app: api } }
+              topologyKey: kubernetes.io/hostname   # una réplica por nodo
+      containers:
+        - name: api
+          image: nginx:1.27
+          resources:
+            requests: { cpu: 100m, memory: 64Mi }
+            limits: { memory: 128Mi }
+```
+
+Archivo `academia-labs/devops/scheduling/reporte.yaml`:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata: { name: reporte-nocturno }
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector: { carga: batch }
+      tolerations:
+        - { key: carga, operator: Equal, value: batch, effect: NoSchedule }
+      containers:
+        - name: reporte
+          image: busybox:1.36
+          command: ["sh", "-c", "echo reporte listo"]
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/devops/scheduling
+kind create cluster --config kind-3nodos.yaml
+kubectl taint nodes kind-worker3 carga=batch:NoSchedule
+kubectl label nodes kind-worker3 carga=batch
+kubectl apply -f api.yaml -f reporte.yaml
+kubectl get pods -o wide
+```
+
+**Explicación por bloques:** El clúster tiene tres workers. `kind-worker3` recibe un taint `carga=batch:NoSchedule` y una etiqueta igual: solo entran pods que toleren el taint. La API reserva 100m de CPU y 64Mi, con límite de memoria de 128Mi, y la anti-afinidad obliga a una réplica por nodo. Como no tolera el taint, sus dos réplicas van a `kind-worker` y `kind-worker2`. El Job del reporte selecciona el nodo batch y tolera su taint, así que corre en `kind-worker3`.
+
+**Resultado esperado:**
+
+```text
+NAME                     READY   STATUS      NODE
+api-xxxx-aaaaa           1/1     Running     kind-worker
+api-xxxx-bbbbb           1/1     Running     kind-worker2
+reporte-nocturno-ccccc   0/1     Completed   kind-worker3
+```
+
+**Fallo deliberado:** sube `replicas` de la API a 3. **Error esperado:** la tercera réplica queda en `Pending` con el evento `0/4 nodes are available: 1 node(s) had untolerated taint {carga: batch}, 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 node(s) didn't match pod anti-affinity rules`. **Diagnóstico:** la regla obligatoria no se puede cumplir con dos nodos disponibles. Usa la versión preferida o `topologySpreadConstraints`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** aplica los archivos y comprueba en qué nodo quedó cada pod.
+2. **Variación:** cambia la anti-afinidad a `preferredDuringSchedulingIgnoredDuringExecution` y escala a 3.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el evento completo.
+4. **Integración:** haz que un contenedor supere su límite de memoria (por ejemplo, con `stress`) y busca `OOMKilled` en `kubectl describe pod`.
+5. **Diseño:** define requests y limits de la API de RutaFlow a partir de `kubectl top pods` medido en staging.
+
+**Pista:** si un pod queda en `Pending`, el evento lista cuántos nodos descartó y por qué regla.
+
+#### Paso 6 · Práctica independiente
+
+Reemplaza la anti-afinidad por `topologySpreadConstraints` con `maxSkew: 1` y `whenUnsatisfiable: ScheduleAnyway`, y compara el reparto con 5 réplicas.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre request y limit.
+- [ ] Las réplicas de la API quedan en nodos distintos.
+- [ ] El Job corre solo en el nodo con taint.
+- [ ] Leíste el evento de una regla imposible.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no declarar requests, usar anti-afinidad obligatoria con más réplicas que nodos y olvidar el `nodeSelector` junto a la toleration. **Siguiente paso:** el módulo 7 agrega HorizontalPodAutoscaler, que necesita requests para calcular el uso.
+
+**Transferencia al proyecto integrador «RutaFlow»:** reparte las réplicas de la API de RutaFlow entre nodos y reserva un nodo con taint para los reportes nocturnos.
+
+**Fuente oficial:** [Kubernetes — Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) y [Kubernetes — Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) y [Kubernetes — Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** crear un clúster local con `kind` o `minikube`, desplegar una aplicación propia con un Deployment de 3 réplicas, exponerla con un Service, inyectar configuración con ConfigMap y Secret, y observar la auto-reparación de un Pod eliminado manualmente.

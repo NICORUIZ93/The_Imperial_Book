@@ -598,6 +598,136 @@ Ya explicas el problema que resuelve una IDP y demuestras, con un ejemplo mínim
 
 ---
 
+### Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min
+
+**Prerrequisito:** temas «IaC multi-nube» y «Checklist de salida a producción» de este módulo.
+
+**Al finalizar podrás:** etiquetar todos los recursos con su servicio y entorno desde Terraform, calcular el costo por servicio y crear un presupuesto que avise antes de pasarse.
+
+**¿Por qué es importante?** La nube cobra por uso y la factura llega al final del mes. Sin etiquetas no sabes qué servicio gastó; sin presupuesto te enteras tarde. FinOps es hacer el costo visible para quienes toman las decisiones técnicas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Terraform con el proveedor AWS. Para practicar sin costo, usa el emulador local del track de cloud (que incluye un Cost Explorer simulado) o una cuenta de pruebas con créditos.
+
+#### Paso 2 · Contexto y caso real
+
+La factura de nube de RutaFlow se duplicó en un mes. Tardaron dos semanas en descubrir que un entorno de pruebas con una base de datos grande seguía encendido. Con etiquetas y un presupuesto por entorno, la alerta habría llegado el segundo día.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** FinOps, asignación de costos, etiqueta obligatoria, `default_tags`, centro de costo, presupuesto, alerta por pronóstico, rightsizing.
+
+FinOps tiene tres fases que se repiten:
+
+1. **Informar:** saber quién gasta qué. Requiere **etiquetas** consistentes (`servicio`, `entorno`, `equipo`) en todos los recursos.
+2. **Optimizar:** apagar lo que no se usa, ajustar tamaños (*rightsizing*), usar compromisos de uso.
+3. **Operar:** presupuestos y alertas por equipo, revisados con frecuencia.
+
+En Terraform, `default_tags` del proveedor aplica etiquetas a todos los recursos que lo soportan, sin repetirlas. Un **presupuesto** con alerta por **pronóstico** avisa cuando el ritmo de gasto apunta a superar el límite, no cuando ya lo superó.
+
+**Analogía:** las etiquetas son los centros de costo en la contabilidad de una empresa: sin ellos, la factura de luz es un solo número; con ellos, sabes qué oficina dejó el aire encendido. La analogía falla en que la nube factura por minuto: el aire encendido se nota rápido.
+
+**Límite de uso:** no todos los recursos aceptan etiquetas ni todos los costos se pueden asignar (transferencia de datos compartida). Ahorrar a costa de la confiabilidad (quitar réplicas) puede salir más caro.
+
+```mermaid
+flowchart LR
+    T["Terraform default_tags<br/>servicio, entorno, equipo"] --> R["recursos etiquetados"]
+    R --> C["Cost Explorer: costo por etiqueta"]
+    C --> B["Budget por entorno"]
+    B -->|"pronóstico > 80 %"| A["alerta al equipo"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `infra/proveedor.tf`:
+
+```hcl
+provider "aws" {
+  region = "us-east-1"
+  default_tags {
+    tags = {
+      proyecto = "rutaflow"
+      entorno  = var.entorno
+      equipo   = "plataforma"
+    }
+  }
+}
+
+variable "entorno" { type = string }
+```
+
+Archivo `infra/presupuesto.tf`:
+
+```hcl
+resource "aws_budgets_budget" "entorno" {
+  name         = "rutaflow-${var.entorno}"
+  budget_type  = "COST"
+  limit_amount = var.entorno == "produccion" ? "800" : "150"
+  limit_unit   = "USD"
+  time_unit    = "MONTHLY"
+
+  cost_filter {
+    name   = "TagKeyValue"
+    values = [format("user:entorno$%s", var.entorno)]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 80
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "FORECASTED" # avisa por el ritmo, antes de pasarse
+    subscriber_email_addresses = ["plataforma@rutaflow.co"]
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd infra
+terraform plan -var entorno=pruebas
+aws ce get-cost-and-usage --time-period Start=2026-11-01,End=2026-11-18 \
+  --granularity MONTHLY --metrics UnblendedCost --group-by Type=TAG,Key=entorno
+```
+
+**Explicación por bloques:** `default_tags` agrega las tres etiquetas a todos los recursos que crea el proveedor, así nadie las olvida. El presupuesto usa la etiqueta `entorno` como filtro (con el formato `user:clave$valor` que exige AWS) y un límite distinto para producción y para pruebas. La notificación es por **pronóstico**: avisa cuando el gasto proyectado del mes pasa el 80 % del límite. La consulta de Cost Explorer agrupa el costo del mes por la etiqueta `entorno`.
+
+**Resultado esperado:**
+
+```text
+terraform plan muestra los recursos con tags_all que incluyen proyecto = "rutaflow", entorno = "pruebas" y equipo = "plataforma", y el presupuesto rutaflow-pruebas con límite 150 USD.
+La consulta de costos devuelve un grupo por valor de la etiqueta entorno (por ejemplo, entorno$produccion y entorno$pruebas) con su UnblendedCost.
+```
+
+**Fallo deliberado:** crea un recurso fuera de Terraform (desde la consola) y vuelve a consultar los costos. **Error esperado:** su gasto aparece en el grupo `entorno$` (vacío), sin dueño. **Diagnóstico:** lo que no está en código no recibe `default_tags`. Agrega una regla (por ejemplo, AWS Config o una política de Conftest) que exija la etiqueta y revisa cada semana el grupo sin etiqueta.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** planea con dos entornos y compara los límites del presupuesto.
+2. **Variación:** agrega la etiqueta `servicio` a cada módulo de Terraform con `tags` propios que se sumen a los por defecto.
+3. **Diagnóstico:** reproduce el fallo deliberado con un recurso sin etiqueta.
+4. **Integración:** activa las etiquetas de asignación de costos en la consola de facturación (paso necesario para que aparezcan en Cost Explorer).
+5. **Diseño:** arma una tabla mensual de costo por servicio y propone una acción de ahorro con su riesgo.
+
+**Pista:** si un costo no aparece por etiqueta, revisa que la etiqueta esté activada para asignación de costos y que el recurso la tenga.
+
+#### Paso 6 · Práctica independiente
+
+Programa con un `aws_scheduler_schedule` el apagado nocturno de la base de datos del entorno de pruebas y estima cuánto ahorra al mes.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las tres fases de FinOps.
+- [ ] Todos los recursos llevan las etiquetas por defecto.
+- [ ] Hay un presupuesto con alerta por pronóstico.
+- [ ] Detectaste un recurso sin dueño.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** etiquetar a mano y de forma inconsistente, alertar solo cuando el gasto ya pasó el límite y ahorrar quitando redundancia crítica. **Siguiente paso:** el tema «Platform Engineering» ofrece estas etiquetas y presupuestos como parte de la plataforma interna.
+
+**Transferencia al proyecto integrador «RutaFlow»:** etiqueta toda la infraestructura de RutaFlow con `default_tags`, crea presupuestos por entorno y revisa el costo por servicio cada mes.
+
+**Fuente oficial:** [FinOps Foundation — FinOps Framework](https://www.finops.org/framework/) y [AWS — Using cost allocation tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) y [Terraform AWS Provider — default_tags](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#default_tags-configuration-block).
 
 ## Laboratorio práctico
 

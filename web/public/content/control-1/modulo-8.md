@@ -504,7 +504,7 @@ cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando 
 
 **Conexión con el proyecto integrador:** el proyecto `examples/control-1-tanque/` usa exactamente este modelo lineal, con \(A=2\) m² y salida \(q=0{,}5h\) (es decir \(R=1/0{,}5=2\) s/m²). Calcula \(G(s)=R/(ARs+1)\) con esos valores (\(K=2\), \(\tau=4\) s) y anótalo como el primer dato de tu bitácora antes de ejecutar `simular.py`.
 
-### Tema 5: Analogías
+### Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos
 
 **¿Por qué es importante?** Las analogías te permiten reutilizar lo aprendido en un dominio para entender cualquier otro.
 

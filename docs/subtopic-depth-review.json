@@ -1,23 +1,23 @@
 {
   "summary": {
-    "topics": 1331,
-    "reviewed": 175,
+    "topics": 1430,
+    "reviewed": 274,
     "pending": 1156,
-    "priorityCandidates": 1008,
+    "priorityCandidates": 1017,
     "byTrack": {
       "android": {
-        "topics": 74,
-        "reviewed": 0,
+        "topics": 83,
+        "reviewed": 9,
         "pending": 74
       },
       "angular": {
-        "topics": 71,
-        "reviewed": 71,
+        "topics": 78,
+        "reviewed": 78,
         "pending": 0
       },
       "cloud": {
-        "topics": 156,
-        "reviewed": 0,
+        "topics": 168,
+        "reviewed": 12,
         "pending": 156
       },
       "control-1": {
@@ -26,13 +26,13 @@
         "pending": 70
       },
       "devops": {
-        "topics": 130,
-        "reviewed": 0,
+        "topics": 138,
+        "reviewed": 8,
         "pending": 130
       },
       "flutter": {
-        "topics": 109,
-        "reviewed": 63,
+        "topics": 119,
+        "reviewed": 73,
         "pending": 46
       },
       "foundations": {
@@ -41,23 +41,23 @@
         "pending": 102
       },
       "ios": {
-        "topics": 56,
-        "reviewed": 0,
+        "topics": 69,
+        "reviewed": 13,
         "pending": 56
       },
       "java": {
-        "topics": 111,
-        "reviewed": 22,
+        "topics": 117,
+        "reviewed": 28,
         "pending": 89
       },
       "javascript": {
-        "topics": 88,
-        "reviewed": 0,
+        "topics": 92,
+        "reviewed": 4,
         "pending": 88
       },
       "kotlin-multiplatform": {
-        "topics": 56,
-        "reviewed": 0,
+        "topics": 66,
+        "reviewed": 10,
         "pending": 56
       },
       "microservices": {
@@ -66,13 +66,13 @@
         "pending": 7
       },
       "node": {
-        "topics": 83,
-        "reviewed": 0,
+        "topics": 90,
+        "reviewed": 7,
         "pending": 83
       },
       "react": {
-        "topics": 58,
-        "reviewed": 0,
+        "topics": 64,
+        "reviewed": 6,
         "pending": 58
       },
       "rutaflow": {
@@ -81,8 +81,8 @@
         "pending": 29
       },
       "spring-boot": {
-        "topics": 114,
-        "reviewed": 2,
+        "topics": 121,
+        "reviewed": 9,
         "pending": 112
       }
     },
@@ -353,6 +353,32 @@
       "review": null
     },
     {
+      "id": "android/modulo-12::Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min",
+      "track": "android",
+      "module": 12,
+      "topic": "Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "dominio"
+        ],
+        "sources": [
+          "https://developer.android.com/topic/architecture/domain-layer"
+        ]
+      }
+    },
+    {
       "id": "android/modulo-13::Tema 1: El sistema operativo conecta tu app con entradas externas",
       "track": "android",
       "module": 13,
@@ -590,6 +616,141 @@
       "review": null
     },
     {
+      "id": "android/modulo-15::Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min",
+      "track": "android",
+      "module": 15,
+      "topic": "Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "maps"
+        ],
+        "sources": [
+          "https://developers.google.com/maps/documentation/android-sdk/maps-compose",
+          "https://developers.google.com/maps/documentation/android-sdk/get-api-key"
+        ]
+      }
+    },
+    {
+      "id": "android/modulo-15::Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
+      "track": "android",
+      "module": 15,
+      "topic": "Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "geofencing"
+        ],
+        "sources": [
+          "https://developer.android.com/develop/sensors-and-location/location/geofencing"
+        ]
+      }
+    },
+    {
+      "id": "android/modulo-15::Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
+      "track": "android",
+      "module": 15,
+      "topic": "Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "camera",
+          "scanning"
+        ],
+        "sources": [
+          "https://developer.android.com/media/camera/camerax",
+          "https://developers.google.com/ml-kit/vision/barcode-scanning/android"
+        ]
+      }
+    },
+    {
+      "id": "android/modulo-15::Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
+      "track": "android",
+      "module": 15,
+      "topic": "Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "sensors"
+        ],
+        "sources": [
+          "https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview",
+          "https://developer.android.com/develop/sensors-and-location/sensors/sensors_motion"
+        ]
+      }
+    },
+    {
+      "id": "android/modulo-15::Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min",
+      "track": "android",
+      "module": 15,
+      "topic": "Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un dispositivo Android real con Bluetooth y un periférico BLE (por ejemplo, nRF Connect en otro teléfono); capturar Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Bluetooth"
+        ],
+        "sources": [
+          "https://developer.android.com/develop/connectivity/bluetooth/ble/ble-overview",
+          "https://developer.android.com/develop/connectivity/bluetooth/bt-permissions"
+        ]
+      }
+    },
+    {
       "id": "android/modulo-16::Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
       "track": "android",
       "module": 16,
@@ -678,6 +839,33 @@
         "menos de dos encabezados semánticos internos"
       ],
       "review": null
+    },
+    {
+      "id": "android/modulo-16::Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min",
+      "track": "android",
+      "module": 16,
+      "topic": "Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita una app publicada en una pista de prueba de Google Play, un proyecto de Google Cloud con la API habilitada y un dispositivo real; capturar la respuesta decodificada en el servidor.",
+        "criticalSubtopics": [
+          "Play Integrity"
+        ],
+        "sources": [
+          "https://developer.android.com/google/play/integrity/overview",
+          "https://developer.android.com/google/play/integrity/standard"
+        ]
+      }
     },
     {
       "id": "android/modulo-17::Tema 1: Constraints, Modifier y componentes con slots",
@@ -815,6 +1003,32 @@
       "review": null
     },
     {
+      "id": "android/modulo-18::Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min",
+      "track": "android",
+      "module": 18,
+      "topic": "Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio y un dispositivo o emulador conectado; capturar la tabla de resultados de Macrobenchmark en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Macrobenchmark"
+        ],
+        "sources": [
+          "https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview"
+        ]
+      }
+    },
+    {
       "id": "android/modulo-2::Tema 1: Composables y recomposición",
       "track": "android",
       "module": 2,
@@ -859,6 +1073,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "android/modulo-2::Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min",
+      "track": "android",
+      "module": 2,
+      "topic": "Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Material 3"
+        ],
+        "sources": [
+          "https://developer.android.com/develop/ui/compose/designsystems/material3",
+          "https://m3.material.io/styles/color/roles"
+        ]
+      }
     },
     {
       "id": "android/modulo-3::Tema 1: NavHost y NavController",
@@ -1718,6 +1959,61 @@
       }
     },
     {
+      "id": "angular/modulo-11::Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min",
+      "track": "angular",
+      "module": 11,
+      "topic": "Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "SSG",
+          "streaming"
+        ],
+        "sources": [
+          "https://angular.dev/guide/ssr",
+          "https://angular.dev/guide/prerendering"
+        ]
+      }
+    },
+    {
+      "id": "angular/modulo-11::Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min",
+      "track": "angular",
+      "module": 11,
+      "topic": "Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "incremental hydration"
+        ],
+        "sources": [
+          "https://angular.dev/guide/incremental-hydration",
+          "https://angular.dev/guide/templates/defer"
+        ]
+      }
+    },
+    {
       "id": "angular/modulo-12::Tema 1: Reconocer la versión y la arquitectura de un proyecto",
       "track": "angular",
       "module": 12,
@@ -1962,6 +2258,60 @@
         ],
         "sources": [
           "https://angular.dev/best-practices/security"
+        ]
+      }
+    },
+    {
+      "id": "angular/modulo-14::Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
+      "track": "angular",
+      "module": 14,
+      "topic": "Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "CSP y Trusted Types"
+        ],
+        "sources": [
+          "https://angular.dev/best-practices/security#content-security-policy",
+          "https://developer.mozilla.org/es/docs/Web/HTTP/CSP"
+        ]
+      }
+    },
+    {
+      "id": "angular/modulo-14::Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
+      "track": "angular",
+      "module": 14,
+      "topic": "Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un navegador con la extensión Angular DevTools y un proyecto Angular en ejecución; capturar el flame graph antes y después del cambio a computed.",
+        "criticalSubtopics": [
+          "profiling"
+        ],
+        "sources": [
+          "https://angular.dev/tools/devtools/profiler",
+          "https://angular.dev/api/core/enableProfiling"
         ]
       }
     },
@@ -2637,6 +2987,33 @@
       }
     },
     {
+      "id": "angular/modulo-4::Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min",
+      "track": "angular",
+      "module": 4,
+      "topic": "Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "resolvers"
+        ],
+        "sources": [
+          "https://angular.dev/guide/routing/data-resolvers",
+          "https://angular.dev/api/router/ResolveFn"
+        ]
+      }
+    },
+    {
       "id": "angular/modulo-5::Tema 1: Reactive Forms — FormGroup y FormControl",
       "track": "angular",
       "module": 5,
@@ -2985,6 +3362,61 @@
       }
     },
     {
+      "id": "angular/modulo-8::Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min",
+      "track": "angular",
+      "module": 8,
+      "topic": "Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "librerías",
+          "monorepos"
+        ],
+        "sources": [
+          "https://angular.dev/tools/libraries/creating-libraries",
+          "https://angular.dev/reference/configs/file-structure"
+        ]
+      }
+    },
+    {
+      "id": "angular/modulo-8::Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min",
+      "track": "angular",
+      "module": 8,
+      "topic": "Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "microfrontends con criterio"
+        ],
+        "sources": [
+          "https://www.npmjs.com/package/@angular-architects/native-federation",
+          "https://martinfowler.com/articles/micro-frontends.html"
+        ]
+      }
+    },
+    {
       "id": "angular/modulo-9::Tema 1: Store propio con signals",
       "track": "angular",
       "module": 9,
@@ -3169,6 +3601,34 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "cloud/modulo-0::Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min",
+      "track": "cloud",
+      "module": 0,
+      "topic": "Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker con el emulador local (Floci) o una cuenta de nube; el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "IaaS PaaS SaaS",
+          "regions and zones"
+        ],
+        "sources": [
+          "https://aws.amazon.com/about-aws/global-infrastructure/regions_az/",
+          "https://csrc.nist.gov/pubs/sp/800/145/final"
+        ]
+      }
     },
     {
       "id": "cloud/modulo-1::Tema 1: Virtualización vs contenedores",
@@ -3485,6 +3945,34 @@
       "review": null
     },
     {
+      "id": "cloud/modulo-14::Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 14,
+      "topic": "Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS con ECR, KMS y cosign; capturar el escaneo, la firma, la verificación y el rechazo de la etiqueta repetida.",
+        "criticalSubtopics": [
+          "supply chain"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
+          "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html",
+          "https://docs.sigstore.dev/cosign/signing/overview/"
+        ]
+      }
+    },
+    {
       "id": "cloud/modulo-15::Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI",
       "track": "cloud",
       "module": 15,
@@ -3577,6 +4065,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "cloud/modulo-16::Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",
+      "track": "cloud",
+      "module": 16,
+      "topic": "Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/procesamiento-batch.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "batch"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html",
+          "https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html"
+        ]
+      }
     },
     {
       "id": "cloud/modulo-17::Tema 1: Streams vs colas",
@@ -3847,6 +4362,33 @@
       "review": null
     },
     {
+      "id": "cloud/modulo-20::Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 20,
+      "topic": "Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/gobierno-ia-ml.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "AI ML governance"
+        ],
+        "sources": [
+          "https://www.nist.gov/itl/ai-risk-management-framework",
+          "https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry.html"
+        ]
+      }
+    },
+    {
       "id": "cloud/modulo-21::Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales",
       "track": "cloud",
       "module": 21,
@@ -4017,6 +4559,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "cloud/modulo-22::Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 22,
+      "topic": "Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS con un balanceador o una distribución y WAF; el emulador local no aplica reglas de WAF. Capturar el plan de Terraform y el resultado de la prueba de carga.",
+        "criticalSubtopics": [
+          "WAF and DDoS"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html",
+          "https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html"
+        ]
+      }
     },
     {
       "id": "cloud/modulo-23::Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda",
@@ -4426,6 +4995,33 @@
       "review": null
     },
     {
+      "id": "cloud/modulo-28::Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",
+      "track": "cloud",
+      "module": 28,
+      "topic": "Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/series-temporales.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "time-series"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/timestream/latest/developerguide/concepts.html",
+          "https://docs.influxdata.com/influxdb/v2/process-data/common-tasks/downsample-data/"
+        ]
+      }
+    },
+    {
       "id": "cloud/modulo-29::Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real",
       "track": "cloud",
       "module": 29,
@@ -4680,6 +5276,59 @@
       "review": null
     },
     {
+      "id": "cloud/modulo-31::Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min",
+      "track": "cloud",
+      "module": 31,
+      "topic": "Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/migracion-7r.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "migration"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html"
+        ]
+      }
+    },
+    {
+      "id": "cloud/modulo-31::Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 31,
+      "topic": "Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS y un equipo VPN del lado local; capturar el plan y el estado de los dos túneles en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "hybrid"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html",
+          "https://docs.aws.amazon.com/whitepapers/latest/hybrid-connectivity/hybrid-connectivity.html"
+        ]
+      }
+    },
+    {
       "id": "cloud/modulo-32::Tema 1: Una red segura empieza por flujos, no por subredes",
       "track": "cloud",
       "module": 32,
@@ -4736,6 +5385,62 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "cloud/modulo-32::Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 32,
+      "topic": "Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/well-architected.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "Well-Architected",
+          "sustainability",
+          "performance"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
+          "https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/sustainability-pillar.html"
+        ]
+      }
+    },
+    {
+      "id": "cloud/modulo-32::Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min",
+      "track": "cloud",
+      "module": 32,
+      "topic": "Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/residencia-datos.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "residency"
+        ],
+        "sources": [
+          "https://aws.amazon.com/compliance/data-residency/",
+          "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html"
+        ]
+      }
     },
     {
       "id": "cloud/modulo-33::Tema 1: Terraform avanzado y CI/CD cloud",
@@ -4831,6 +5536,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "cloud/modulo-33::Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min",
+      "track": "cloud",
+      "module": 33,
+      "topic": "Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/deteccion-amenazas.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "threat detection"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html",
+          "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html"
+        ]
+      }
     },
     {
       "id": "cloud/modulo-34::Tema 1: Instalación en macOS, Linux y Windows",
@@ -5170,6 +5902,33 @@
       "review": null
     },
     {
+      "id": "cloud/modulo-5::Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min",
+      "track": "cloud",
+      "module": 5,
+      "topic": "Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/deprecaciones-runtimes.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "deprecations"
+        ],
+        "sources": [
+          "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy",
+          "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBEngineVersions.html"
+        ]
+      }
+    },
+    {
       "id": "cloud/modulo-6::Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
       "track": "cloud",
       "module": 6,
@@ -5480,10 +6239,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-1::Tema 2: Operaciones",
+      "id": "control-1/modulo-1::Tema 2: Operaciones con números complejos: suma, producto y división",
       "track": "control-1",
       "module": 1,
-      "topic": "Tema 2: Operaciones",
+      "topic": "Tema 2: Operaciones con números complejos: suma, producto y división",
       "status": "pending",
       "semanticHeadings": [
         "Forma polar y fórmula de Euler",
@@ -5498,7 +6257,9 @@
         "Ejemplo 8 · Potencia de un complejo · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5544,10 +6305,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-10::Tema 1: La forma de estado",
+      "id": "control-1/modulo-10::Tema 1: La forma de espacio de estados",
       "track": "control-1",
       "module": 10,
-      "topic": "Tema 1: La forma de estado",
+      "topic": "Tema 1: La forma de espacio de estados",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · A espacio de estados · *Experto*",
@@ -5580,10 +6341,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-11::Tema 1: Forma estándar",
+      "id": "control-1/modulo-11::Tema 1: Forma estándar de primer orden: K y τ",
       "track": "control-1",
       "module": 11,
-      "topic": "Tema 1: Forma estándar",
+      "topic": "Tema 1: Forma estándar de primer orden: K y τ",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -5595,14 +6356,16 @@
         "Ejemplo 6 · Leer K y τ de \\(\\frac{1}{s + \\frac{1}{10}}\\) · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
-      "id": "control-1/modulo-11::Tema 2: Respuestas",
+      "id": "control-1/modulo-11::Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso",
       "track": "control-1",
       "module": 11,
-      "topic": "Tema 2: Respuestas",
+      "topic": "Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Ya en forma estándar · *Básico*",
@@ -5615,7 +6378,9 @@
         "Ejemplo 7 · Respuesta de \\(\\frac{2}{s + 2}\\) a un rampa unitaria · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5655,10 +6420,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-12::Tema 1: Forma estándar",
+      "id": "control-1/modulo-12::Tema 1: Forma estándar de segundo orden: K, ωn y ζ",
       "track": "control-1",
       "module": 12,
-      "topic": "Tema 1: Forma estándar",
+      "topic": "Tema 1: Forma estándar de segundo orden: K, ωn y ζ",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Leer los parámetros · *Básico*",
@@ -5670,7 +6435,9 @@
         "Ejemplo 6 · Leer K, ωn y ζ de \\(\\frac{100}{s^{2} + 20 s + 100}\\) · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -5809,10 +6576,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-14::Tema 1: Fórmula general",
+      "id": "control-1/modulo-14::Tema 1: Fórmula general del error en estado estacionario",
       "track": "control-1",
       "module": 14,
-      "topic": "Tema 1: Fórmula general",
+      "topic": "Tema 1: Fórmula general del error en estado estacionario",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -5889,10 +6656,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-15::Tema 3: Casos especiales",
+      "id": "control-1/modulo-15::Tema 3: Casos especiales del arreglo de Routh",
       "track": "control-1",
       "module": 15,
-      "topic": "Tema 3: Casos especiales",
+      "topic": "Tema 3: Casos especiales del arreglo de Routh",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Un cero en la primera columna · *Nivel parcial*",
@@ -5926,10 +6693,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-16::Tema 1: Geometría de un polo",
+      "id": "control-1/modulo-16::Tema 1: Geometría de un polo en el plano s",
       "track": "control-1",
       "module": 16,
-      "topic": "Tema 1: Geometría de un polo",
+      "topic": "Tema 1: Geometría de un polo en el plano s",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -5945,10 +6712,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-16::Tema 2: Estabilidad",
+      "id": "control-1/modulo-16::Tema 2: Estabilidad según la posición de los polos",
       "track": "control-1",
       "module": 16,
-      "topic": "Tema 2: Estabilidad",
+      "topic": "Tema 2: Estabilidad según la posición de los polos",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Clasificar por estabilidad · *Básico*",
@@ -5985,10 +6752,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-17::Tema 1: Las dos condiciones",
+      "id": "control-1/modulo-17::Tema 1: Las dos condiciones del lugar de las raíces",
       "track": "control-1",
       "module": 17,
-      "topic": "Tema 1: Las dos condiciones",
+      "topic": "Tema 1: Las dos condiciones del lugar de las raíces",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -6044,10 +6811,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-18::Tema 1: La idea",
+      "id": "control-1/modulo-18::Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia",
       "track": "control-1",
       "module": 18,
-      "topic": "Tema 1: La idea",
+      "topic": "Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -6058,7 +6825,9 @@
         "Ejemplo 5 · Leer un PID escrito en s · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -6205,10 +6974,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-2::Tema 1: La idea",
+      "id": "control-1/modulo-2::Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s",
       "track": "control-1",
       "module": 2,
-      "topic": "Tema 1: La idea",
+      "topic": "Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Calcular una transformada con la definición · *Básico*",
@@ -6219,14 +6988,16 @@
         "Ejemplo 5 · \\(\\mathcal{L}\\{5 e^{2 t}\\}\\) con la definición · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
-      "id": "control-1/modulo-2::Tema 2: La tabla",
+      "id": "control-1/modulo-2::Tema 2: La tabla de transformadas de Laplace",
       "track": "control-1",
       "module": 2,
-      "topic": "Tema 2: La tabla",
+      "topic": "Tema 2: La tabla de transformadas de Laplace",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -6243,10 +7014,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-2::Tema 3: Propiedades",
+      "id": "control-1/modulo-2::Tema 3: Propiedades de la transformada de Laplace",
       "track": "control-1",
       "module": 2,
-      "topic": "Tema 3: Propiedades",
+      "topic": "Tema 3: Propiedades de la transformada de Laplace",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Una constante · *Básico*",
@@ -6331,10 +7102,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-20::Tema 3: Los bloques básicos",
+      "id": "control-1/modulo-20::Tema 3: Los bloques básicos del diagrama de Bode",
       "track": "control-1",
       "module": 20,
-      "topic": "Tema 3: Los bloques básicos",
+      "topic": "Tema 3: Los bloques básicos del diagrama de Bode",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -6370,10 +7141,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-21::Tema 1: Parcial 1",
+      "id": "control-1/modulo-21::Tema 1: Parcial 1 resuelto paso a paso",
       "track": "control-1",
       "module": 21,
-      "topic": "Tema 1: Parcial 1",
+      "topic": "Tema 1: Parcial 1 resuelto paso a paso",
       "status": "pending",
       "semanticHeadings": [
         "Sistema de control y sus elementos · ver capítulo 6 · *Punto 1*",
@@ -6537,10 +7308,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-5::Tema 2: Los elementos",
+      "id": "control-1/modulo-5::Tema 2: Los elementos de un lazo de control",
       "track": "control-1",
       "module": 5,
-      "topic": "Tema 2: Los elementos",
+      "topic": "Tema 2: Los elementos de un lazo de control",
       "status": "pending",
       "semanticHeadings": [
         "Cinco sistemas listos para el punto 1",
@@ -6579,10 +7350,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-6::Tema 1: Reglas para mover bloques",
+      "id": "control-1/modulo-6::Tema 1: Reglas para mover bloques en un diagrama",
       "track": "control-1",
       "module": 6,
-      "topic": "Tema 1: Reglas para mover bloques",
+      "topic": "Tema 1: Reglas para mover bloques en un diagrama",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Lazos entrelazados por reducción · *Intermedio*",
@@ -6654,10 +7425,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-7::Tema 1: Impedancias",
+      "id": "control-1/modulo-7::Tema 1: Impedancias de resistencia, bobina y condensador en s",
       "track": "control-1",
       "module": 7,
-      "topic": "Tema 1: Impedancias",
+      "topic": "Tema 1: Impedancias de resistencia, bobina y condensador en s",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Combinar impedancias · *Básico*",
@@ -6669,7 +7440,9 @@
         "Ejemplo 6 · Impedancia de una bobina de 1 H en paralelo con un capacitor de 0,25 F · *Avanzado*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -6787,10 +7560,10 @@
       "review": null
     },
     {
-      "id": "control-1/modulo-8::Tema 5: Analogías",
+      "id": "control-1/modulo-8::Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos",
       "track": "control-1",
       "module": 8,
-      "topic": "Tema 5: Analogías",
+      "topic": "Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos",
       "status": "pending",
       "semanticHeadings": [
         "Más ejemplos resueltos",
@@ -6801,14 +7574,16 @@
         "Ejemplo 5 · Elegir el análogo eléctrico de un eje · *Intermedio*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
-      "id": "control-1/modulo-9::Tema 1: La idea",
+      "id": "control-1/modulo-9::Tema 1: La idea de la linealización: aproximar con la recta tangente",
       "track": "control-1",
       "module": 9,
-      "topic": "Tema 1: La idea",
+      "topic": "Tema 1: La idea de la linealización: aproximar con la recta tangente",
       "status": "pending",
       "semanticHeadings": [
         "Ejemplo 1 · Tanque con salida libre · *Experto*",
@@ -6820,7 +7595,9 @@
         "Ejemplo 6 · Linealizar \\(x^{2}\\) en \\(3\\) · *Básico*",
         "Verificación con código"
       ],
-      "prioritySignals": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
       "review": null
     },
     {
@@ -7362,6 +8139,34 @@
       "review": null
     },
     {
+      "id": "devops/modulo-12::Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min",
+      "track": "devops",
+      "module": 12,
+      "topic": "Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Terraform y una cuenta de AWS o el emulador con Cost Explorer simulado; capturar el plan y la consulta de costos agrupados en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "FinOps"
+        ],
+        "sources": [
+          "https://www.finops.org/framework/",
+          "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+          "https://registry.terraform.io/providers/hashicorp/aws/latest/docs#default_tags-configuration-block"
+        ]
+      }
+    },
+    {
       "id": "devops/modulo-13::Tema 1: El pipeline completo — de commit a producción verificada",
       "track": "devops",
       "module": 13,
@@ -7638,10 +8443,10 @@
       "review": null
     },
     {
-      "id": "devops/modulo-16::Tema complementario: Bruno y Postman, evaluar con el mismo contrato",
+      "id": "devops/modulo-16::Tema 6: Bruno y Postman, evaluar con el mismo contrato",
       "track": "devops",
       "module": 16,
-      "topic": "Tema complementario: Bruno y Postman, evaluar con el mismo contrato",
+      "topic": "Tema 6: Bruno y Postman, evaluar con el mismo contrato",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -7947,6 +8752,35 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "devops/modulo-2::Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",
+      "track": "devops",
+      "module": 2,
+      "topic": "Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "rootless",
+          "runtime security"
+        ],
+        "sources": [
+          "https://docs.docker.com/engine/security/rootless/",
+          "https://docs.docker.com/engine/security/",
+          "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/"
+        ]
+      }
     },
     {
       "id": "devops/modulo-20::Tema 1: Eventos de dominio e integración: hechos, no comandos",
@@ -8265,6 +9099,34 @@
       "review": null
     },
     {
+      "id": "devops/modulo-4::Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min",
+      "track": "devops",
+      "module": 4,
+      "topic": "Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un repositorio de GitHub con Actions, entornos y el registro ghcr.io; capturar la vista del pipeline con la aprobación pendiente.",
+        "criticalSubtopics": [
+          "quality gates",
+          "promotion"
+        ],
+        "sources": [
+          "https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment",
+          "https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/passing-information-between-jobs"
+        ]
+      }
+    },
+    {
       "id": "devops/modulo-5::Tema 1: Blue-green deployment",
       "track": "devops",
       "module": 5,
@@ -8487,6 +9349,61 @@
       "review": null
     },
     {
+      "id": "devops/modulo-6::Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min",
+      "track": "devops",
+      "module": 6,
+      "topic": "Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "architecture"
+        ],
+        "sources": [
+          "https://kubernetes.io/docs/concepts/architecture/",
+          "https://kubernetes.io/docs/concepts/architecture/controller/"
+        ]
+      }
+    },
+    {
+      "id": "devops/modulo-6::Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min",
+      "track": "devops",
+      "module": 6,
+      "topic": "Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "scheduling"
+        ],
+        "sources": [
+          "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/",
+          "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
+          "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+        ]
+      }
+    },
+    {
       "id": "devops/modulo-7::Tema 1: Helm charts y values",
       "track": "devops",
       "module": 7,
@@ -8595,6 +9512,33 @@
       "review": null
     },
     {
+      "id": "devops/modulo-7::Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min",
+      "track": "devops",
+      "module": 7,
+      "topic": "Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "policies"
+        ],
+        "sources": [
+          "https://kubernetes.io/docs/concepts/services-networking/network-policies/",
+          "https://kubernetes.io/docs/concepts/security/pod-security-admission/"
+        ]
+      }
+    },
+    {
       "id": "devops/modulo-8::Tema 1: Providers, resources y data sources",
       "track": "devops",
       "module": 8,
@@ -8701,10 +9645,10 @@
       "review": null
     },
     {
-      "id": "devops/modulo-8::Tema complementario: OpenTofu, plan y estado sin recursos cloud",
+      "id": "devops/modulo-8::Tema 8: OpenTofu, plan y estado sin recursos cloud",
       "track": "devops",
       "module": 8,
-      "topic": "Tema complementario: OpenTofu, plan y estado sin recursos cloud",
+      "topic": "Tema 8: OpenTofu, plan y estado sin recursos cloud",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -8714,6 +9658,35 @@
         "menos de dos encabezados semánticos internos"
       ],
       "review": null
+    },
+    {
+      "id": "devops/modulo-8::Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min",
+      "track": "devops",
+      "module": 8,
+      "topic": "Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Terraform, Conftest y un emulador S3 (LocalStack o Floci) con Docker; capturar la salida del import y de conftest en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "import",
+          "policy as code"
+        ],
+        "sources": [
+          "https://developer.hashicorp.com/terraform/language/import",
+          "https://www.conftest.dev/",
+          "https://www.openpolicyagent.org/docs/latest/terraform/"
+        ]
+      }
     },
     {
       "id": "devops/modulo-9::Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram",
@@ -8814,6 +9787,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "devops/modulo-9::Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+      "track": "devops",
+      "module": 9,
+      "topic": "Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "chaos"
+        ],
+        "sources": [
+          "https://principlesofchaos.org/",
+          "https://chaos-mesh.org/docs/simulate-pod-chaos-on-kubernetes/"
+        ]
+      }
     },
     {
       "id": "flutter/modulo-0::Tema 1: Sound null safety",
@@ -8920,6 +9920,88 @@
       }
     },
     {
+      "id": "flutter/modulo-0::Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min",
+      "track": "flutter",
+      "module": 0,
+      "topic": "Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "streams"
+        ],
+        "sources": [
+          "https://dart.dev/libraries/async/using-streams",
+          "https://dart.dev/libraries/async/creating-streams"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-0::Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min",
+      "track": "flutter",
+      "module": 0,
+      "topic": "Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "records",
+          "patterns"
+        ],
+        "sources": [
+          "https://dart.dev/language/records",
+          "https://dart.dev/language/patterns"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-0::Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min",
+      "track": "flutter",
+      "module": 0,
+      "topic": "Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "extensions"
+        ],
+        "sources": [
+          "https://dart.dev/language/extension-methods",
+          "https://dart.dev/language/extension-types"
+        ]
+      }
+    },
+    {
       "id": "flutter/modulo-1::Tema 1: StatelessWidget vs StatefulWidget",
       "track": "flutter",
       "module": 1,
@@ -8994,6 +10076,60 @@
         ],
         "sources": [
           "https://docs.flutter.dev/ui/widgets"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-1::Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min",
+      "track": "flutter",
+      "module": 1,
+      "topic": "Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "widget-element-render object"
+        ],
+        "sources": [
+          "https://docs.flutter.dev/resources/architectural-overview",
+          "https://api.flutter.dev/flutter/widgets/Widget/canUpdate.html"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-1::Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min",
+      "track": "flutter",
+      "module": 1,
+      "topic": "Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "gestures"
+        ],
+        "sources": [
+          "https://docs.flutter.dev/ui/interactivity/gestures",
+          "https://docs.flutter.dev/cookbook/gestures/dismissible"
         ]
       }
     },
@@ -9182,6 +10318,34 @@
       }
     },
     {
+      "id": "flutter/modulo-11::Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min",
+      "track": "flutter",
+      "module": 11,
+      "topic": "Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "web y desktop"
+        ],
+        "sources": [
+          "https://docs.flutter.dev/platform-integration/web",
+          "https://docs.flutter.dev/platform-integration/desktop",
+          "https://docs.flutter.dev/ui/adaptive-responsive"
+        ]
+      }
+    },
+    {
       "id": "flutter/modulo-12::Tema 1: Arquitectura por features y Clean Architecture",
       "track": "flutter",
       "module": 12,
@@ -9252,6 +10416,35 @@
         ],
         "sources": [
           "https://docs.flutter.dev/app-architecture"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-12::Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min",
+      "track": "flutter",
+      "module": 12,
+      "topic": "Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "views y view models",
+          "repositories",
+          "services"
+        ],
+        "sources": [
+          "https://docs.flutter.dev/app-architecture/guide",
+          "https://docs.flutter.dev/app-architecture/recommendations"
         ]
       }
     },
@@ -10821,6 +12014,33 @@
       }
     },
     {
+      "id": "flutter/modulo-6::Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min",
+      "track": "flutter",
+      "module": 6,
+      "topic": "Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "files"
+        ],
+        "sources": [
+          "https://pub.dev/packages/path_provider",
+          "https://docs.flutter.dev/cookbook/persistence/reading-writing-files"
+        ]
+      }
+    },
+    {
       "id": "flutter/modulo-7::Tema 1: MethodChannel",
       "track": "flutter",
       "module": 7,
@@ -10919,6 +12139,60 @@
         ],
         "sources": [
           "https://docs.flutter.dev/platform-integration/platform-channels"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-7::Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
+      "track": "flutter",
+      "module": 7,
+      "topic": "Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "add-to-app"
+        ],
+        "sources": [
+          "https://docs.flutter.dev/add-to-app",
+          "https://docs.flutter.dev/add-to-app/android/add-flutter-screen"
+        ]
+      }
+    },
+    {
+      "id": "flutter/modulo-7::Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
+      "track": "flutter",
+      "module": 7,
+      "topic": "Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "background"
+        ],
+        "sources": [
+          "https://pub.dev/packages/workmanager",
+          "https://docs.flutter.dev/packages-and-plugins/background-processes"
         ]
       }
     },
@@ -11203,10 +12477,10 @@
       "review": null
     },
     {
-      "id": "foundations/modulo-0::Tema complementario: VS Code, comandos y atajos comprobables",
+      "id": "foundations/modulo-0::Tema 6: VS Code, comandos y atajos comprobables",
       "track": "foundations",
       "module": 0,
-      "topic": "Tema complementario: VS Code, comandos y atajos comprobables",
+      "topic": "Tema 6: VS Code, comandos y atajos comprobables",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -12740,6 +14014,33 @@
       "review": null
     },
     {
+      "id": "ios/modulo-0::Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min",
+      "track": "ios",
+      "module": 0,
+      "topic": "Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "ownership"
+        ],
+        "sources": [
+          "https://github.com/swiftlang/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md",
+          "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/memorysafety/"
+        ]
+      }
+    },
+    {
       "id": "ios/modulo-1::Tema 1: El protocolo View y composición",
       "track": "ios",
       "module": 1,
@@ -12848,6 +14149,32 @@
       "review": null
     },
     {
+      "id": "ios/modulo-10::Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
+      "track": "ios",
+      "module": 10,
+      "topic": "Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "localization"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog"
+        ]
+      }
+    },
+    {
       "id": "ios/modulo-11::Tema 1: Certificados y provisioning profiles",
       "track": "ios",
       "module": 11,
@@ -12938,6 +14265,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "ios/modulo-12::Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
+      "track": "ios",
+      "module": 12,
+      "topic": "Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Swift packages"
+        ],
+        "sources": [
+          "https://www.swift.org/documentation/package-manager/",
+          "https://developer.apple.com/documentation/xcode/swift-packages"
+        ]
+      }
     },
     {
       "id": "ios/modulo-13::Tema 1: El sandbox reduce superficie, pero no valida intenciones",
@@ -13042,6 +14396,86 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "ios/modulo-13::Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
+      "track": "ios",
+      "module": 13,
+      "topic": "Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Core Location"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/corelocation/cllocationupdate",
+          "https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-13::Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
+      "track": "ios",
+      "module": 13,
+      "topic": "Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "background tasks"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/backgroundtasks",
+          "https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-13::Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+      "track": "ios",
+      "module": 13,
+      "topic": "Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "biometrics"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id"
+        ]
+      }
     },
     {
       "id": "ios/modulo-14::Tema 1: Swift Testing y pruebas asíncronas",
@@ -13150,6 +14584,87 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "ios/modulo-14::Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
+      "track": "ios",
+      "module": 14,
+      "topic": "Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "gestures"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/swiftui/adding-interactivity-with-gestures",
+          "https://developer.apple.com/documentation/swiftui/composing-swiftui-gestures"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-14::Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min",
+      "track": "ios",
+      "module": 14,
+      "topic": "Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "widgets"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/widgetkit",
+          "https://developer.apple.com/documentation/widgetkit/keeping-a-widget-up-to-date"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-14::Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min",
+      "track": "ios",
+      "module": 14,
+      "topic": "Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "App Intents"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/appintents",
+          "https://developer.apple.com/documentation/appintents/app-shortcuts"
+        ]
+      }
     },
     {
       "id": "ios/modulo-2::Tema 1: @State y @Binding",
@@ -13306,6 +14821,61 @@
       "review": null
     },
     {
+      "id": "ios/modulo-4::Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
+      "track": "ios",
+      "module": 4,
+      "topic": "Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Sendable",
+          "Swift 6 isolation"
+        ],
+        "sources": [
+          "https://www.swift.org/migration/documentation/migrationguide/",
+          "https://developer.apple.com/documentation/swift/sendable"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-4::Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
+      "track": "ios",
+      "module": 4,
+      "topic": "Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "AsyncSequence"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/swift/asyncstream",
+          "https://developer.apple.com/documentation/swift/asyncsequence"
+        ]
+      }
+    },
+    {
       "id": "ios/modulo-5::Tema 1: URLSession con async/await y Codable",
       "track": "ios",
       "module": 5,
@@ -13398,6 +14968,59 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "ios/modulo-6::Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
+      "track": "ios",
+      "module": 6,
+      "topic": "Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "CloudKit"
+        ],
+        "sources": [
+          "https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices"
+        ]
+      }
+    },
+    {
+      "id": "ios/modulo-6::Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
+      "track": "ios",
+      "module": 6,
+      "topic": "Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "files"
+        ],
+        "sources": [
+          "https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html",
+          "https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:allowsmultipleselection:oncompletion:)"
+        ]
+      }
     },
     {
       "id": "ios/modulo-7::Tema 1: Publishers y Subscribers",
@@ -14240,6 +15863,60 @@
       "review": null
     },
     {
+      "id": "java/modulo-14::Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min",
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/cds-aot.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "CDS y AOT"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/21/vm/class-data-sharing.html",
+          "https://openjdk.org/jeps/483"
+        ]
+      }
+    },
+    {
+      "id": "java/modulo-14::Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min",
+      "track": "java",
+      "module": 14,
+      "topic": "Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/migracion-lts.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "migración LTS"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdeprscan.html",
+          "https://docs.oracle.com/en/java/javase/21/migrate/getting-started.html"
+        ]
+      }
+    },
+    {
       "id": "java/modulo-15::Tema 1: Maven avanzado",
       "track": "java",
       "module": 15,
@@ -14541,6 +16218,33 @@
       "review": null
     },
     {
+      "id": "java/modulo-18::Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",
+      "track": "java",
+      "module": 18,
+      "topic": "Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/criptografia-jca.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "criptografía"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/21/security/java-cryptography-architecture-jca-reference-guide.html",
+          "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"
+        ]
+      }
+    },
+    {
       "id": "java/modulo-19::Tema 1: Reflexión y anotaciones en tiempo de ejecución",
       "track": "java",
       "module": 19,
@@ -14658,6 +16362,60 @@
         "título agrupa varios conceptos"
       ],
       "review": null
+    },
+    {
+      "id": "java/modulo-19::Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",
+      "track": "java",
+      "module": 19,
+      "topic": "Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/class-loading.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "class loading"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ClassLoader.html",
+          "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html"
+        ]
+      }
+    },
+    {
+      "id": "java/modulo-19::Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min",
+      "track": "java",
+      "module": 19,
+      "topic": "Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/method-var-handles.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "method handles"
+        ],
+        "sources": [
+          "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/MethodHandle.html",
+          "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/VarHandle.html"
+        ]
+      }
     },
     {
       "id": "java/modulo-2::Tema 1: List, Set, Map y sus implementaciones",
@@ -15711,6 +17469,33 @@
       "review": null
     },
     {
+      "id": "java/modulo-9::Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min",
+      "track": "java",
+      "module": 9,
+      "topic": "Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/pruebas-propiedades.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "property testing"
+        ],
+        "sources": [
+          "https://jqwik.net/docs/current/user-guide.html",
+          "https://junit.org/junit5/docs/current/user-guide/"
+        ]
+      }
+    },
+    {
       "id": "javascript/modulo-0::Tema 1: Variables — `const`, `let` y `var`",
       "track": "javascript",
       "module": 0,
@@ -16380,6 +18165,34 @@
       "review": null
     },
     {
+      "id": "javascript/modulo-14::Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
+      "track": "javascript",
+      "module": 14,
+      "topic": "Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Node.js 24 o Chrome 134 (gestión explícita de recursos); el entorno de generación tiene Node 22. Capturar `node recursos.mjs` con Node 24.",
+        "criticalSubtopics": [
+          "using y await using",
+          "DisposableStack"
+        ],
+        "sources": [
+          "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using",
+          "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack"
+        ]
+      }
+    },
+    {
       "id": "javascript/modulo-2::Tema 1: Scope léxico y closures",
       "track": "javascript",
       "module": 2,
@@ -16804,6 +18617,33 @@
       "review": null
     },
     {
+      "id": "javascript/modulo-6::Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min",
+      "track": "javascript",
+      "module": 6,
+      "topic": "Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/streams-web-fetch.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "Fetch y streams"
+        ],
+        "sources": [
+          "https://developer.mozilla.org/es/docs/Web/API/Streams_API",
+          "https://developer.mozilla.org/en-US/docs/Web/API/TransformStream"
+        ]
+      }
+    },
+    {
       "id": "javascript/modulo-7::Tema 1: ESM frente a CommonJS",
       "track": "javascript",
       "module": 7,
@@ -16896,6 +18736,62 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "javascript/modulo-7::Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",
+      "track": "javascript",
+      "module": 7,
+      "topic": "Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/esm-a-fondo.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "top-level await",
+          "ciclos",
+          "import maps"
+        ],
+        "sources": [
+          "https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Modules",
+          "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap"
+        ]
+      }
+    },
+    {
+      "id": "javascript/modulo-7::Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",
+      "track": "javascript",
+      "module": 7,
+      "topic": "Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/cadena-suministro-npm.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "supply chain"
+        ],
+        "sources": [
+          "https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json",
+          "https://docs.npmjs.com/cli/v11/commands/npm-audit"
+        ]
+      }
     },
     {
       "id": "javascript/modulo-8::Tema 1: Selección y manipulación del DOM",
@@ -17187,6 +19083,33 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "kotlin-multiplatform/modulo-1::Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 1,
+      "topic": "Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "genéricos"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/generics.html",
+          "https://kotlinlang.org/docs/inline-functions.html#reified-type-parameters"
+        ]
+      }
     },
     {
       "id": "kotlin-multiplatform/modulo-10::Tema 1: Pipeline Gradle multiplataforma en CI",
@@ -17549,6 +19472,63 @@
       "review": null
     },
     {
+      "id": "kotlin-multiplatform/modulo-3::Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 3,
+      "topic": "Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "version catalogs",
+          "convention plugins"
+        ],
+        "sources": [
+          "https://docs.gradle.org/current/userguide/version_catalogs.html",
+          "https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html"
+        ]
+      }
+    },
+    {
+      "id": "kotlin-multiplatform/modulo-3::Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 3,
+      "topic": "Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "JVM",
+          "JS y Wasm"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform-dsl-reference.html#targets",
+          "https://kotlinlang.org/docs/js-to-kotlin-interop.html#jsexport-annotation",
+          "https://kotlinlang.org/docs/wasm-overview.html"
+        ]
+      }
+    },
+    {
       "id": "kotlin-multiplatform/modulo-4::Tema 1: Modelos de dominio y casos de uso",
       "track": "kotlin-multiplatform",
       "module": 4,
@@ -17764,6 +19744,33 @@
       "review": null
     },
     {
+      "id": "kotlin-multiplatform/modulo-6::Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 6,
+      "topic": "Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "seguridad"
+        ],
+        "sources": [
+          "https://developer.android.com/privacy-and-security/security-tips",
+          "https://developer.apple.com/documentation/security/keychain-services"
+        ]
+      }
+    },
+    {
       "id": "kotlin-multiplatform/modulo-7::Tema 1: Compose Multiplatform vs Jetpack Compose",
       "track": "kotlin-multiplatform",
       "module": 7,
@@ -17828,6 +19835,114 @@
       "review": null
     },
     {
+      "id": "kotlin-multiplatform/modulo-7::Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "topic": "Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "recursos",
+          "localización"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources.html"
+        ]
+      }
+    },
+    {
+      "id": "kotlin-multiplatform/modulo-7::Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "topic": "Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "deep links"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform/compose-navigation-routing.html",
+          "https://kotlinlang.org/docs/multiplatform/compose-navigation-deep-links.html"
+        ]
+      }
+    },
+    {
+      "id": "kotlin-multiplatform/modulo-7::Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "topic": "Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "accesibilidad"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform/compose-accessibility.html",
+          "https://developer.android.com/develop/ui/compose/accessibility/semantics"
+        ]
+      }
+    },
+    {
+      "id": "kotlin-multiplatform/modulo-7::Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "topic": "Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Hot Reload"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html",
+          "https://github.com/JetBrains/compose-hot-reload"
+        ]
+      }
+    },
+    {
       "id": "kotlin-multiplatform/modulo-8::Tema 1: El framework generado para iOS",
       "track": "kotlin-multiplatform",
       "module": 8,
@@ -17872,6 +19987,33 @@
       "review": null
     },
     {
+      "id": "kotlin-multiplatform/modulo-8::Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min",
+      "track": "kotlin-multiplatform",
+      "module": 8,
+      "topic": "Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "UIKit y SwiftUI"
+        ],
+        "sources": [
+          "https://kotlinlang.org/docs/multiplatform/compose-swiftui-integration.html",
+          "https://kotlinlang.org/docs/multiplatform/compose-uikit-integration.html"
+        ]
+      }
+    },
+    {
       "id": "kotlin-multiplatform/modulo-9::Tema 1: kotlin.test en commonTest",
       "track": "kotlin-multiplatform",
       "module": 9,
@@ -17914,10 +20056,37 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+      "id": "kotlin-multiplatform/modulo-9::Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min",
+      "track": "kotlin-multiplatform",
+      "module": 9,
+      "topic": "Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "benchmarks"
+        ],
+        "sources": [
+          "https://github.com/Kotlin/kotlinx-benchmark",
+          "https://github.com/openjdk/jmh"
+        ]
+      }
+    },
+    {
+      "id": "microservices/modulo-0::Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+      "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -17929,10 +20098,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+      "id": "microservices/modulo-0::Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+      "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación",
@@ -17946,10 +20115,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+      "id": "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+      "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -17978,10 +20147,10 @@
       }
     },
     {
-      "id": "microservices/modulo-0::Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+      "id": "microservices/modulo-0::Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+      "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -17990,10 +20159,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+      "id": "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+      "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación",
@@ -18028,10 +20197,10 @@
       }
     },
     {
-      "id": "microservices/modulo-0::Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+      "id": "microservices/modulo-0::Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18040,10 +20209,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "id": "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min",
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18144,10 +20313,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+      "id": "microservices/modulo-1::Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+      "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18156,10 +20325,10 @@
       "review": null
     },
     {
-      "id": "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+      "id": "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+      "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18185,10 +20354,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+      "id": "microservices/modulo-1::Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+      "topic": "Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18213,10 +20382,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+      "id": "microservices/modulo-1::Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+      "topic": "Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18241,10 +20410,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+      "id": "microservices/modulo-1::Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+      "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18269,10 +20438,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+      "id": "microservices/modulo-1::Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+      "topic": "Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18297,10 +20466,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+      "id": "microservices/modulo-1::Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+      "topic": "Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18325,10 +20494,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "id": "microservices/modulo-1::Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18354,10 +20523,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "id": "microservices/modulo-1::Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18383,10 +20552,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "id": "microservices/modulo-1::Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18412,10 +20581,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "id": "microservices/modulo-1::Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "topic": "Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min",
       "status": "reviewed",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18495,10 +20664,10 @@
       }
     },
     {
-      "id": "microservices/modulo-1::Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "id": "microservices/modulo-1::Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
       "status": "pending",
       "semanticHeadings": [
         "Objetivo y preparación"
@@ -18703,6 +20872,30 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "node/modulo-10::Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",
+      "track": "node",
+      "module": 10,
+      "topic": "Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/modelo-de-permisos.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "permission model"
+        ],
+        "sources": [
+          "https://nodejs.org/api/permissions.html"
+        ]
+      }
     },
     {
       "id": "node/modulo-11::Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min",
@@ -19112,6 +21305,58 @@
       "review": null
     },
     {
+      "id": "node/modulo-2::Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",
+      "track": "node",
+      "module": 2,
+      "topic": "Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/buffer-blob-web-apis.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "buffers",
+          "blobs",
+          "Web APIs compatibles"
+        ],
+        "sources": [
+          "https://nodejs.org/api/buffer.html",
+          "https://nodejs.org/api/globals.html"
+        ]
+      }
+    },
+    {
+      "id": "node/modulo-2::Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min",
+      "track": "node",
+      "module": 2,
+      "topic": "Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/zlib-compresion.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "compresión"
+        ],
+        "sources": [
+          "https://nodejs.org/api/zlib.html",
+          "https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options"
+        ]
+      }
+    },
+    {
       "id": "node/modulo-3::Tema 1: El modelo request/response · Básico · 60 min",
       "track": "node",
       "module": 3,
@@ -19172,6 +21417,59 @@
         "menos de dos encabezados semánticos internos"
       ],
       "review": null
+    },
+    {
+      "id": "node/modulo-3::Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",
+      "track": "node",
+      "module": 3,
+      "topic": "Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/https-http2-tls.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "HTTP/2",
+          "TLS"
+        ],
+        "sources": [
+          "https://nodejs.org/api/http2.html",
+          "https://nodejs.org/api/tls.html"
+        ]
+      }
+    },
+    {
+      "id": "node/modulo-3::Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",
+      "track": "node",
+      "module": 3,
+      "topic": "Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/net-dgram-dns.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "DNS",
+          "TCP/UDP"
+        ],
+        "sources": [
+          "https://nodejs.org/api/net.html",
+          "https://nodejs.org/api/dgram.html",
+          "https://nodejs.org/api/dns.html"
+        ]
+      }
     },
     {
       "id": "node/modulo-4::Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min",
@@ -19481,6 +21779,30 @@
       "review": null
     },
     {
+      "id": "node/modulo-7::Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",
+      "track": "node",
+      "module": 7,
+      "topic": "Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/cobertura-node-test.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "coverage"
+        ],
+        "sources": [
+          "https://nodejs.org/api/test.html#collecting-code-coverage"
+        ]
+      }
+    },
+    {
       "id": "node/modulo-8::Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
       "track": "node",
       "module": 8,
@@ -19615,6 +21937,32 @@
       "review": null
     },
     {
+      "id": "node/modulo-9::Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min",
+      "track": "node",
+      "module": 9,
+      "topic": "Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/asynclocalstorage-diagnostics.svg y comparada con «Resultado esperado».",
+        "criticalSubtopics": [
+          "AsyncLocalStorage",
+          "diagnostics_channel"
+        ],
+        "sources": [
+          "https://nodejs.org/api/async_context.html",
+          "https://nodejs.org/api/diagnostics_channel.html"
+        ]
+      }
+    },
+    {
       "id": "react/modulo-0::Tema 1: JSX es azúcar sintáctica sobre createElement",
       "track": "react",
       "module": 0,
@@ -19731,6 +22079,34 @@
       ],
       "prioritySignals": [],
       "review": null
+    },
+    {
+      "id": "react/modulo-1::Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min",
+      "track": "react",
+      "module": 1,
+      "topic": "Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "pureza",
+          "estado como snapshot"
+        ],
+        "sources": [
+          "https://react.dev/learn/keeping-components-pure",
+          "https://react.dev/learn/state-as-a-snapshot"
+        ]
+      }
     },
     {
       "id": "react/modulo-10::Tema 1: Server Components por defecto",
@@ -19943,6 +22319,32 @@
       "review": null
     },
     {
+      "id": "react/modulo-13::Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min",
+      "track": "react",
+      "module": 13,
+      "topic": "Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 18 real con dependencias de npm y su suite de pruebas; capturar la salida del codemod y de `npm test` en la máquina del proyecto.",
+        "criticalSubtopics": [
+          "migración"
+        ],
+        "sources": [
+          "https://react.dev/blog/2024/04/25/react-19-upgrade-guide"
+        ]
+      }
+    },
+    {
       "id": "react/modulo-14::Tema 1: Server Components y streaming",
       "track": "react",
       "module": 14,
@@ -20129,6 +22531,34 @@
       "review": null
     },
     {
+      "id": "react/modulo-2::Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min",
+      "track": "react",
+      "module": 2,
+      "topic": "Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "useLayoutEffect",
+          "useEffectEvent"
+        ],
+        "sources": [
+          "https://react.dev/reference/react/useLayoutEffect",
+          "https://react.dev/reference/react/useEffectEvent"
+        ]
+      }
+    },
+    {
       "id": "react/modulo-3::Tema 1: React Hook Form y el problema del re-render por tecla",
       "track": "react",
       "module": 3,
@@ -20171,6 +22601,34 @@
       ],
       "prioritySignals": [],
       "review": null
+    },
+    {
+      "id": "react/modulo-3::Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min",
+      "track": "react",
+      "module": 3,
+      "topic": "Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "useActionState",
+          "useOptimistic"
+        ],
+        "sources": [
+          "https://react.dev/reference/react/useActionState",
+          "https://react.dev/reference/react/useOptimistic"
+        ]
+      }
     },
     {
       "id": "react/modulo-4::Tema 1: createContext y useContext",
@@ -20487,6 +22945,61 @@
         "lista conceptos clave sin mapa interno verificable"
       ],
       "review": null
+    },
+    {
+      "id": "react/modulo-9::Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min",
+      "track": "react",
+      "module": 9,
+      "topic": "Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "use"
+        ],
+        "sources": [
+          "https://react.dev/reference/react/use",
+          "https://react.dev/reference/react/Suspense"
+        ]
+      }
+    },
+    {
+      "id": "react/modulo-9::Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min",
+      "track": "react",
+      "module": 9,
+      "topic": "Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "React Compiler",
+          "reglas del compilador"
+        ],
+        "sources": [
+          "https://react.dev/learn/react-compiler",
+          "https://react.dev/reference/rules"
+        ]
+      }
     },
     {
       "id": "rutaflow/modulo-0::Tema 1: El proceso logístico como sistema",
@@ -20983,6 +23496,34 @@
       "review": null
     },
     {
+      "id": "spring-boot/modulo-0::Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
+      "track": "spring-boot",
+      "module": 0,
+      "topic": "Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "lifecycle",
+          "graceful shutdown"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html",
+          "https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html"
+        ]
+      }
+    },
+    {
       "id": "spring-boot/modulo-1::Tema 1: Spring Initializr y starters",
       "track": "spring-boot",
       "module": 1,
@@ -21269,6 +23810,33 @@
       ],
       "prioritySignals": [],
       "review": null
+    },
+    {
+      "id": "spring-boot/modulo-11::Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min",
+      "track": "spring-boot",
+      "module": 11,
+      "topic": "Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central y Docker con acceso a las imágenes de Paketo; capturar la salida de `spring-boot:build-image` y de `docker inspect` en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "Buildpacks"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/maven-plugin/build-image.html",
+          "https://paketo.io/docs/howto/java/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-12::Tema 1: Arquitectura del microservicio integrador",
@@ -21718,6 +24286,33 @@
         "título agrupa varios conceptos"
       ],
       "review": null
+    },
+    {
+      "id": "spring-boot/modulo-18::Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min",
+      "track": "spring-boot",
+      "module": 18,
+      "topic": "Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central y un Keycloak con un cliente SAML configurado; capturar el flujo de inicio de sesión en el navegador y la respuesta de /yo en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "SAML"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-security/reference/servlet/saml2/login/overview.html",
+          "https://www.keycloak.org/docs/latest/server_admin/#_client-saml-configuration"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-19::Tema 1: Job, Step, Tasklet y chunk processing",
@@ -22383,6 +24978,33 @@
       "review": null
     },
     {
+      "id": "spring-boot/modulo-3::Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min",
+      "track": "spring-boot",
+      "module": 3,
+      "topic": "Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "MongoDB"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-data/mongodb/reference/",
+          "https://www.mongodb.com/docs/manual/data-modeling/"
+        ]
+      }
+    },
+    {
       "id": "spring-boot/modulo-4::Tema 1: SecurityFilterChain moderno",
       "track": "spring-boot",
       "module": 4,
@@ -22503,6 +25125,32 @@
       "review": null
     },
     {
+      "id": "spring-boot/modulo-5::Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min",
+      "track": "spring-boot",
+      "module": 5,
+      "topic": "Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "failure analyzers"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/how-to/application.html#howto.application.failure-analyzer"
+        ]
+      }
+    },
+    {
       "id": "spring-boot/modulo-6::Tema 1: Probar un controller con `@WebMvcTest`",
       "track": "spring-boot",
       "module": 6,
@@ -22602,6 +25250,33 @@
         "título agrupa varios conceptos"
       ],
       "review": null
+    },
+    {
+      "id": "spring-boot/modulo-7::Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min",
+      "track": "spring-boot",
+      "module": 7,
+      "topic": "Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "logging"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/features/logging.html",
+          "https://docs.spring.io/spring-boot/api/rest/actuator/loggers.html"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-8::Tema 1: Producers y consumers con Spring Kafka",
@@ -22751,6 +25426,33 @@
         "título agrupa varios conceptos"
       ],
       "review": null
+    },
+    {
+      "id": "spring-boot/modulo-8::Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min",
+      "track": "spring-boot",
+      "module": 8,
+      "topic": "Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min",
+      "status": "reviewed",
+      "semanticHeadings": [
+        "Objetivo y preparación"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos",
+        "menos de dos encabezados semánticos internos",
+        "lista conceptos clave sin mapa interno verificable"
+      ],
+      "review": {
+        "status": "reviewed",
+        "reviewDate": "2026-11-18",
+        "execution": "Código revisado; captura real pendiente: Necesita Maven Central y Docker con ActiveMQ Artemis; capturar `./mvnw spring-boot:run` y la consola web de Artemis (puerto 8161) en la Mac del proyecto.",
+        "criticalSubtopics": [
+          "JMS"
+        ],
+        "sources": [
+          "https://docs.spring.io/spring-boot/reference/messaging/jms.html",
+          "https://activemq.apache.org/components/artemis/documentation/"
+        ]
+      }
     },
     {
       "id": "spring-boot/modulo-9::Tema 1: Mono y Flux",

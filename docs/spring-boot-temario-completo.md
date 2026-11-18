@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow: plataforma de entregas basada en servicios.
 **Prerrequisito de entrada:** Java, HTTP, SQL y pruebas; los módulos iniciales vuelven a presentar cada herramienta..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 111/114 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 111/121 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -27,6 +27,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.1: Asigna a cada estereotipo un papel claro · 10 min
   - ✓ Subtema 3.2: Inspecciona lo que aporta una dependencia · 10 min
   - ✓ Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min
+- [pendiente de migrar] Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min
 
 ### Módulo 1: Spring Boot CLI y estructura de proyecto
 
@@ -90,6 +91,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.7 · Crear el esquema con V1 · 12 min
   - ✓ Subtema 3.8 · Aplicar un cambio nuevo con V2 · 10 min
   - ✓ Subtema 3.9 · Diagnosticar versiones repetidas · 8 min
+- [pendiente de migrar] Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min
 
 ### Módulo 4: Spring Security
 
@@ -132,6 +134,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.22 · Lanzar una excepción del dominio · 10 min
   - ✓ Subtema 4.23 · Extender el manejador sin cambiar el formato · 10 min
   - ✓ Subtema 4.24 · Comprobar el borde del límite con MockMvc · 10 min
+- [pendiente de migrar] Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min
 
 ### Módulo 6: Testing en Spring Boot
 
@@ -166,6 +169,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 7.7 · Habilitar las sondas de Spring Boot · 5 min
   - ✓ Subtema 7.8 · Revisar la dependencia solo en readiness · 10 min
   - ✓ Subtema 7.9 · Probar estados distintos y diagnosticar el error · 10 min
+- [pendiente de migrar] Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min
 
 ### Módulo 8: Mensajería — Kafka/RabbitMQ
 
@@ -214,6 +218,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 9.2 · Publicar y distinguir confirm de return · 10 min
   - ✓ Subtema 9.3 · Confirmar después del trabajo y mandar fallos permanentes a DLQ · 10 min
   - ✓ Subtema 9.4 · Limitar entregas en vuelo con prefetch · 10 min
+- [pendiente de migrar] Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min
 
 ### Módulo 9: Programación reactiva con WebFlux
 
@@ -316,6 +321,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.2: Distingue vivo de listo para tráfico · 10 min
   - ✓ Subtema 3.3: Conecta Actuator con el Deployment · 12 min
   - ✓ Subtema 3.4: Evita reinicios en cascada · 10 min
+- [pendiente de migrar] Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min
 
 ### Módulo 12: Proyecto integrador — microservicio productivo
 
@@ -486,6 +492,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 18.6 · Configura CORS para el origen necesario · 8 min
   - ✓ Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
   - ✓ Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min
+- [pendiente de migrar] Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min
 
 ### Módulo 19: Spring Batch — jobs, chunks y procesamiento masivo
 
@@ -676,7 +683,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 114 temas en 27 módulos; 111 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 121 temas en 27 módulos; 111 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

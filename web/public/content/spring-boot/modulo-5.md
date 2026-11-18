@@ -476,6 +476,159 @@ Ejecuta desde la raíz:
 
 ---
 
+### Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min
+
+**Prerrequisito:** tema «Fallar rápido al arranque» de este módulo.
+
+**Al finalizar podrás:** escribir un `FailureAnalyzer` propio que convierta una excepción de arranque en un mensaje con la causa y la acción a tomar, y registrarlo en `spring.factories`.
+
+**¿Por qué es importante?** Cuando una aplicación no arranca, la pila de excepciones puede tener cien líneas. Spring Boot ya traduce los errores comunes (puerto ocupado, bean faltante) a un mensaje claro. Con un analizador propio, tus errores de configuración también se explican solos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x. Continúa el proyecto del tema anterior, que valida la configuración del secreto JWT al arrancar.
+
+#### Paso 2 · Contexto y caso real
+
+Cada persona nueva en RutaFlow perdía media hora el primer día: la aplicación no arrancaba porque faltaba `JWT_SECRET_BASE64`, y el error aparecía enterrado en una pila de excepciones de validación.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `FailureAnalyzer`, `AbstractFailureAnalyzer`, `FailureAnalysis` (descripción y acción), `spring.factories`, excepción de arranque.
+
+Si el arranque falla, Spring Boot recorre los **analizadores** registrados. El primero que reconoce la excepción devuelve un `FailureAnalysis` con dos textos: **descripción** (qué pasó) y **acción** (qué hacer). Spring Boot los imprime en un recuadro claro en lugar de la pila completa.
+
+`AbstractFailureAnalyzer<T>` busca en la cadena de causas una excepción del tipo `T`, aunque venga envuelta en otras. Los analizadores se registran en `META-INF/spring.factories`, no como beans, porque corren cuando el contexto ya falló.
+
+**Analogía:** un analizador es un mecánico que, en lugar de entregarte el manual entero del motor, te dice «falta aceite: agrega un litro». La analogía falla en que solo reconoce las averías para las que lo entrenaste.
+
+**Límite de uso:** no ocultes la causa original: la pila completa sigue disponible con `--debug`. Escribe analizadores solo para errores frecuentes con una solución conocida.
+
+```mermaid
+flowchart LR
+    A["Arranque"] --> E["ConfiguracionFaltante<br/>envuelta en BeanCreationException"]
+    E --> F["SecretoFaltanteAnalyzer"]
+    F --> R["APPLICATION FAILED TO START<br/>Descripción + Acción"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/java/com/rutaflow/config/ConfiguracionFaltante.java`:
+
+```java
+package com.rutaflow.config;
+
+public class ConfiguracionFaltante extends RuntimeException {
+    private final String propiedad;
+    public ConfiguracionFaltante(String propiedad) {
+        super("Falta la propiedad " + propiedad);
+        this.propiedad = propiedad;
+    }
+    public String propiedad() { return propiedad; }
+}
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/config/SecretoFaltanteAnalyzer.java`:
+
+```java
+package com.rutaflow.config;
+
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+
+class SecretoFaltanteAnalyzer extends AbstractFailureAnalyzer<ConfiguracionFaltante> {
+    @Override
+    protected FailureAnalysis analyze(Throwable raiz, ConfiguracionFaltante causa) {
+        return new FailureAnalysis(
+            "La aplicación necesita '" + causa.propiedad() + "' y no la encontró.",
+            "Exporta la variable de entorno JWT_SECRET_BASE64 con 32 bytes en Base64, por ejemplo:\n"
+                + "    export JWT_SECRET_BASE64=$(openssl rand -base64 32)",
+            causa);
+    }
+}
+```
+
+Archivo `academia-spring/src/main/resources/META-INF/spring.factories`:
+
+```properties
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+com.rutaflow.config.SecretoFaltanteAnalyzer
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/config/SeguridadConfig.java`:
+
+```java
+package com.rutaflow.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+class SeguridadConfig {
+    @Bean
+    byte[] secretoJwt(@Value("${security.jwt.secret-base64:}") String base64) {
+        if (base64.isBlank()) throw new ConfiguracionFaltante("security.jwt.secret-base64");
+        return java.util.Base64.getDecoder().decode(base64);
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+unset JWT_SECRET_BASE64
+./mvnw spring-boot:run
+```
+
+**Explicación por bloques:** `SeguridadConfig` lanza `ConfiguracionFaltante` si el secreto está vacío. Spring la envuelve en varias excepciones de creación de beans. `SecretoFaltanteAnalyzer` extiende `AbstractFailureAnalyzer`, que encuentra la causa en la cadena y le pasa el objeto ya tipado. La descripción dice qué falta y la acción da el comando exacto. `spring.factories` registra el analizador para que Spring Boot lo use incluso sin contexto.
+
+**Resultado esperado:**
+
+```text
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+La aplicación necesita 'security.jwt.secret-base64' y no la encontró.
+
+Action:
+
+Exporta la variable de entorno JWT_SECRET_BASE64 con 32 bytes en Base64, por ejemplo:
+    export JWT_SECRET_BASE64=$(openssl rand -base64 32)
+```
+
+**Fallo deliberado:** anota `SecretoFaltanteAnalyzer` con `@Component` y borra `spring.factories`. **Error esperado:** vuelve a aparecer la pila larga sin el recuadro. **Diagnóstico:** el analizador corre cuando el contexto ya falló, así que no puede ser un bean. Regístralo en `spring.factories`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** arranca sin la variable y lee el recuadro.
+2. **Variación:** arranca con `--debug` y compara con la pila completa.
+3. **Diagnóstico:** reproduce el fallo deliberado con `@Component`.
+4. **Integración:** escribe un segundo analizador para una URL de base de datos sin `jdbc:` al inicio.
+5. **Diseño:** lista los tres errores de arranque más comunes de RutaFlow y decide cuáles merecen analizador.
+
+**Pista:** si tu analizador no aparece, revisa la ruta exacta `META-INF/spring.factories` y el nombre completo de la clase.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una prueba con `SpringApplication` que arranque sin la propiedad, capture la salida con `OutputCaptureExtension` y compruebe que contiene «Action:».
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué devuelve un `FailureAnalysis`.
+- [ ] Sin el secreto, el arranque muestra tu descripción y tu acción.
+- [ ] Reprodujiste el analizador ignorado por ser bean.
+- [ ] Sabes ver la pila completa con `--debug`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** registrar el analizador como bean, ocultar la causa original y escribir acciones vagas como «revisa la configuración». **Siguiente paso:** el tema «Manejo global de excepciones consistente» aplica la misma idea a los errores de las peticiones.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega a RutaFlow analizadores para el secreto JWT y la URL de la base, y prueba que el recuadro aparece en el CI.
+
+**Fuente oficial:** [Spring Boot — Create Your Own FailureAnalyzer](https://docs.spring.io/spring-boot/how-to/application.html#howto.application.failure-analyzer).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** configurar propiedades tipadas y validadas al arranque, sin valores hardcodeados.

@@ -39,6 +39,8 @@ El modificador `.task { }` en una vista SwiftUI lanza una `Task` vinculada autom
 
 **Límites y decisión de uso:** Async permite suspender, pero no hace que cualquier cálculo deje de bloquear el contexto donde se ejecuta. La cancelación es cooperativa: compruébala y libera recursos en las operaciones largas, sin asumir que cancelar mata trabajo arbitrario.
 
+**¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 func obtenerEnvio(guia: String) async throws -> Envio {
@@ -64,7 +66,7 @@ struct DetalleEnvio: View {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -76,7 +78,6 @@ Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.slee
 
 #### Paso 7 · Cierre
 Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
-**¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 
 ### Tema 2: Actors para estado mutable seguro
 
@@ -86,6 +87,27 @@ Al finalizar vas a proteger con un `actor` el contador de "entregas confirmadas 
 Si varias confirmaciones de entrega llegan casi al mismo tiempo (varios conductores confirmando en simultáneo), un contador compartido sin protección podría perder actualizaciones, el mismo problema de `capacidad -= 1` que ya viste en el Módulo 8 de Foundations, ahora en Swift.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un `actor` es una caja fuerte con un único mecanismo de acceso que atiende solicitudes una a la vez, sin importar cuántas lleguen al mismo tiempo — el compilador garantiza la serialización, no la disciplina de quien llama.
+
+**¿Por qué es importante?** Porque un `actor` serializa el acceso a su estado mutable y previene data races que una `class` normal no previene, sin que el desarrollador escriba ningún lock manual.
+**Conceptos clave:** acceso serializado garantizado por el compilador, sin locks manuales.
+
+```swift
+actor CacheTareas {
+    private var datos: [String: Tarea] = [:]
+    func guardar(_ tarea: Tarea) { datos[tarea.id] = tarea }
+}
+```
+
+Un `actor` es un tipo de referencia (similar a una `class`) cuyo estado interno mutable está protegido automáticamente por el compilador de Swift contra el acceso concurrente no seguro: dos llamadas concurrentes desde distintas partes del código nunca pueden modificar `datos` simultáneamente de forma que corrompan su estado interno, dado que el compilador serializa automáticamente el acceso al aislamiento del actor, rechazando en tiempo de compilación cualquier intento de acceso directo no seguro desde fuera del actor sin pasar por `await`.
+
+Esta garantía elimina una categoría completa de bugs de concurrencia (data races) sin requerir locks, mutexes o primitivas de sincronización manual explícitas por parte del desarrollador, un enfoque que traslada la responsabilidad de correctitud de concurrencia desde la disciplina manual del programador hacia una verificación automática del compilador, de forma análoga (aunque con mecanismos internos distintos) a `Mutex` en Kotlin Coroutines (Módulo 3 del track de Kotlin Multiplatform), donde también se busca proteger estado mutable compartido de accesos concurrentes inseguros.
+
+**Analogía:** un actor es como una caja fuerte con un único mecanismo de acceso que atiende solicitudes una a la vez en estricto orden de llegada, sin importar cuántas personas intenten acceder simultáneamente: el propio mecanismo (no la disciplina de quienes solicitan acceso) garantiza que nunca dos personas manipulen el contenido al mismo tiempo.
+
+* Proyecto: en el proyecto integrador RutaFlow, protege el contador de intentos con un actor.
+
+**Límites y decisión de uso:** Un actor protege acceso a su estado, pero una operación puede intercalarse con otra al suspenderse. Revalida las condiciones después de await; agrupa los cambios que requieren atomicidad sin depender de una suposición anterior a la suspensión.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 actor ContadorEntregas {
@@ -108,9 +130,11 @@ print(await contador.confirmar()) // debería ser 101 tras 100 confirmaciones co
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
+# pega el código en Practica/Sources/Practica/main.swift
+cd Practica && swift run
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
 Resultado esperado: tras 100 confirmaciones concurrentes, el contador llega exactamente a 101 — ninguna actualización se pierde, porque el actor serializa el acceso a `confirmadasHoy` sin que escribas ningún lock manual.
 #### Paso 5 · Práctica guiada
@@ -119,35 +143,6 @@ Pista: reemplazá `actor ContadorEntregas` por `class ContadorEntregas` (sin pro
 Corregí el Paso 5 volviendo a `actor`, y agregá un método `reiniciar()` al actor para poner el contador en cero al empezar un nuevo día — confirmá que llamarlo desde fuera del actor también exige `await`, igual que `confirmar()`.
 #### Paso 7 · Cierre
 Entregá el contador correcto con `actor` del Paso 4, la condición de carrera real con `class` del Paso 5, y el método `reiniciar()` del Paso 6; explicá por qué el compilador rechaza acceder a `confirmadasHoy` sin `await` desde fuera del actor. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
-**¿Por qué es importante?** Porque un `actor` serializa el acceso a su estado mutable y previene data races que una `class` normal no previene, sin que el desarrollador escriba ningún lock manual.
-**Conceptos clave:** acceso serializado garantizado por el compilador, sin locks manuales.
-
-```swift
-actor CacheTareas {
-    private var datos: [String: Tarea] = [:]
-    func guardar(_ tarea: Tarea) { datos[tarea.id] = tarea }
-}
-```
-
-Un `actor` es un tipo de referencia (similar a una `class`) cuyo estado interno mutable está protegido automáticamente por el compilador de Swift contra el acceso concurrente no seguro: dos llamadas concurrentes desde distintas partes del código nunca pueden modificar `datos` simultáneamente de forma que corrompan su estado interno, dado que el compilador serializa automáticamente el acceso al aislamiento del actor, rechazando en tiempo de compilación cualquier intento de acceso directo no seguro desde fuera del actor sin pasar por `await`.
-
-Esta garantía elimina una categoría completa de bugs de concurrencia (data races) sin requerir locks, mutexes o primitivas de sincronización manual explícitas por parte del desarrollador, un enfoque que traslada la responsabilidad de correctitud de concurrencia desde la disciplina manual del programador hacia una verificación automática del compilador, de forma análoga (aunque con mecanismos internos distintos) a `Mutex` en Kotlin Coroutines (Módulo 3 del track de Kotlin Multiplatform), donde también se busca proteger estado mutable compartido de accesos concurrentes inseguros.
-
-**Analogía:** un actor es como una caja fuerte con un único mecanismo de acceso que atiende solicitudes una a la vez en estricto orden de llegada, sin importar cuántas personas intenten acceder simultáneamente: el propio mecanismo (no la disciplina de quienes solicitan acceso) garantiza que nunca dos personas manipulen el contenido al mismo tiempo.
-
-**Código del ejemplo:**
-
-```swift
-actor CacheTareas {
-    private var datos: [String: Tarea] = [:]
-    func guardar(_ tarea: Tarea) { datos[tarea.id] = tarea }
-}
-// El compilador exige `await` para acceder desde fuera del actor, serializando el acceso automáticamente
-```
-
-* Proyecto: en el proyecto integrador RutaFlow, protege el contador de intentos con un actor.
-
-**Límites y decisión de uso:** Un actor protege acceso a su estado, pero una operación puede intercalarse con otra al suspenderse. Revalida las condiciones después de await; agrupa los cambios que requieren atomicidad sin depender de una suposición anterior a la suspensión.
 
 ### Tema 3: TaskGroup y MainActor
 
@@ -215,7 +210,7 @@ class DetalleEnvioViewModel {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -317,3 +312,279 @@ Crea una variante sin `cancel` y con una espera de 50 ms: muestra el envío. Añ
 El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Errores comunes:** usar `try?` para esconder cancelación, suponer que cancelar mata el hilo y reutilizar estado de un detalle antiguo. **Límites y decisión de uso:** el programa de consola valida el mecanismo, no la UI, el simulador ni el comportamiento de una red real.
 
 **Fuentes oficiales:** [Swift concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/) y [Task.checkCancellation](https://developer.apple.com/documentation/swift/task/checkcancellation()).
+
+### Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min
+
+**Prerrequisito:** temas «Actors para estado mutable seguro» y «TaskGroup y MainActor» de este módulo.
+
+**Al finalizar podrás:** activar el modo de lenguaje Swift 6, leer los errores de concurrencia que aparecen y corregirlos con tipos `Sendable`, `@MainActor` y actores, en lugar de silenciarlos.
+
+**¿Por qué es importante?** En Swift 6, el compilador rechaza el código que puede tener *data races*: dos tareas tocando el mismo estado mutable a la vez. Es más trabajo al migrar, pero elimina una clase entera de errores que antes aparecían al azar en producción.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 16 o superior. En el paquete `RutaFlowKit` del módulo 12 (o en uno nuevo), pon `// swift-tools-version: 6.0` en `Package.swift`: eso activa el modo Swift 6.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía un error que aparecía una vez por semana: el contador de entregas del día mostraba un número menor al real. Al activar Swift 6, el compilador señaló la línea exacta: una clase compartida modificada desde dos tareas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** dominio de aislamiento, `Sendable`, `@MainActor`, actor, cruce de frontera, `nonisolated`, `@unchecked Sendable`, modo de lenguaje Swift 6.
+
+Swift divide el código en **dominios de aislamiento**: cada actor es uno, `@MainActor` es otro y el código no aislado es otro. Cuando un valor **cruza** de un dominio a otro (por ejemplo, entra a una `Task`), debe ser **`Sendable`**: seguro de compartir.
+
+| Tipo | ¿Sendable? |
+|---|---|
+| `struct` o `enum` con propiedades `Sendable` | sí, automáticamente si no es público |
+| `final class` con solo `let` de tipos `Sendable` | sí, si lo declaras |
+| `class` con `var` | no: usa un actor o aíslala con `@MainActor` |
+| actor | sí |
+
+En modo Swift 6 estas reglas son **errores**. `@unchecked Sendable` apaga la comprobación: úsalo solo si proteges el estado tú mismo (con un lock) y lo documentas.
+
+**Analogía:** los dominios son cuartos con una sola persona adentro; `Sendable` es la etiqueta de los objetos que se pueden pasar por debajo de la puerta sin riesgo. La analogía falla en que el compilador revisa cada objeto que pasa, no solo los que tienen etiqueta.
+
+**Límite de uso:** no conviertas todo en actor: agrega `await` y saltos de hilo. Para estado de interfaz, `@MainActor` es la respuesta más simple. Migra módulo por módulo: el modo de lenguaje se puede activar por target.
+
+```mermaid
+flowchart LR
+    M["@MainActor<br/>VistaResumen"] -->|"await"| A["actor ContadorEntregas"]
+    T["Task.detached"] -->|"envía Entrega: Sendable"| A
+    T -. "class con var: error en Swift 6" .-> X["❌"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `RutaFlowKit/Sources/Dominio/Contador.swift`:
+
+```swift
+// ❌ Antes: clase con estado mutable compartida entre tareas.
+// final class ContadorEntregas { var total = 0; func sumar() { total += 1 } }
+
+// ✅ Valor que cruza fronteras: struct inmutable, Sendable.
+public struct Entrega: Sendable {
+    public let codigo: String
+    public init(codigo: String) { self.codigo = codigo }
+}
+
+// ✅ Estado mutable compartido: un actor serializa el acceso.
+public actor ContadorEntregas {
+    private var codigos: Set<String> = []
+    public init() {}
+    public func registrar(_ entrega: Entrega) { codigos.insert(entrega.codigo) }
+    public var total: Int { codigos.count }
+}
+
+public func registrarEnParalelo(_ entregas: [Entrega], en contador: ContadorEntregas) async -> Int {
+    await withTaskGroup(of: Void.self) { grupo in
+        for entrega in entregas {
+            grupo.addTask { await contador.registrar(entrega) } // cruza: Entrega es Sendable
+        }
+    }
+    return await contador.total
+}
+```
+
+Archivo `RutaFlowKit/Tests/DominioTests/ContadorTests.swift`:
+
+```swift
+import Testing
+@testable import Dominio
+
+@Test func registraMilEntregasSinPerder() async {
+    let entregas = (1...1000).map { Entrega(codigo: "ENV-\($0)") }
+    #expect(await registrarEnParalelo(entregas, en: ContadorEntregas()) == 1000)
+}
+```
+
+Ejecútalo:
+
+```bash
+cd RutaFlowKit
+swift test
+```
+
+**Explicación por bloques:** La clase comentada es el código original: `total += 1` desde varias tareas es una data race y en Swift 6 no compila si la clase cruza a una `Task`. `Entrega` es un struct inmutable y por eso es `Sendable`: puede entrar a cada tarea del grupo. `ContadorEntregas` es un actor: cada `registrar` se ejecuta de a uno, y desde fuera se llama con `await`. La prueba registra mil entregas en paralelo y comprueba que no se pierde ninguna.
+
+**Resultado esperado:**
+
+```text
+◇ Test run started.
+✔ Test registraMilEntregasSinPerder() passed
+✔ Test run with 1 test passed
+```
+
+**Fallo deliberado:** reemplaza el actor por la clase comentada (con `total` y `sumar()`) y llámala dentro de `grupo.addTask`. **Error esperado:** `Capture of 'contador' with non-sendable type 'ContadorEntregas' in a '@Sendable' closure` (error en modo Swift 6). **Diagnóstico:** la clase tiene estado mutable y cruzaría a varias tareas. Conviértela en actor; no la marques `@unchecked Sendable` sin un lock.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la prueba en modo Swift 6.
+2. **Variación:** cambia `swift-tools-version` a 5.10 y compara: el mismo error aparece como advertencia o no aparece.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje completo.
+4. **Integración:** marca una vista que muestra el total con `@MainActor` y lee el total con `await` desde una `.task`.
+5. **Diseño:** escribe el orden en que migrarías los targets de RutaFlow a Swift 6.
+
+**Pista:** ante un error de `Sendable`, pregunta primero si el valor necesita ser mutable; muchas veces un struct resuelve.
+
+#### Paso 6 · Práctica independiente
+
+Activa el modo Swift 6 en el target de la app (Build Settings > Swift Language Version) y corrige los tres primeros errores sin usar `@unchecked Sendable` ni `nonisolated(unsafe)`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un dominio de aislamiento.
+- [ ] La prueba registra mil entregas sin pérdidas.
+- [ ] Reprodujiste el error de captura no Sendable.
+- [ ] Sabes cuándo es aceptable `@unchecked Sendable`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** silenciar errores con `@unchecked Sendable`, convertir todo en actor y migrar toda la app de una vez. **Siguiente paso:** el tema siguiente produce valores en el tiempo con `AsyncSequence`, que también cruzan fronteras.
+
+**Transferencia al proyecto integrador «RutaFlow»:** activa el modo Swift 6 en `RutaFlowKit`, convierte el contador de entregas en actor y deja los modelos como structs `Sendable`.
+
+**Fuente oficial:** [Swift.org — Migrating to Swift 6](https://www.swift.org/migration/documentation/migrationguide/) y [Apple — Sendable](https://developer.apple.com/documentation/swift/sendable).
+
+### Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min
+
+**Prerrequisito:** temas «async/await y Task» y «Cancelación cooperativa» de este módulo.
+
+**Al finalizar podrás:** convertir una fuente de eventos con callbacks en un `AsyncStream`, consumirla con `for await` y detenerla al cancelar la tarea.
+
+**¿Por qué es importante?** Las posiciones GPS, las notificaciones y los mensajes de un socket llegan muchas veces en el tiempo. `AsyncSequence` permite leerlos en un bucle simple, con cancelación y sin anidar callbacks.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 16 o superior. Trabaja en un paquete ejecutable (`swift package init --type executable --name Posiciones`) para correrlo en la terminal.
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow recibía posiciones con un delegado y las guardaba en una variable global. Al salir de la pantalla nadie detenía el flujo y seguía consumiendo batería. Con `AsyncStream` y la tarea de la vista, el flujo se detiene solo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `AsyncSequence`, `AsyncStream`, continuación, `yield`, `finish`, `onTermination`, `for await`, cancelación.
+
+Una **`AsyncSequence`** es como una secuencia normal, pero cada siguiente elemento se espera con `await`. Se recorre con `for await valor in secuencia`.
+
+**`AsyncStream`** es la forma de crear una a partir de código con callbacks:
+
+- en el cierre de creación recibes una **continuación**;
+- `continuation.yield(valor)` entrega un elemento;
+- `continuation.finish()` termina la secuencia;
+- `continuation.onTermination` corre cuando termina o cuando **se cancela** quien la lee: ahí detienes la fuente.
+
+Si la tarea que hace el `for await` se cancela (por ejemplo, al salir de la vista con `.task`), el bucle termina y se llama `onTermination`.
+
+**Analogía:** un `AsyncStream` es una cinta transportadora: alguien pone cajas (`yield`) y tú las tomas de a una con `for await`. Cuando te vas (cancelas), la cinta se detiene (`onTermination`). La analogía falla en que, si no tomas las cajas, se acumulan: la política de búfer decide cuántas guardar.
+
+**Límite de uso:** por defecto el búfer no tiene límite: si produces más rápido de lo que consumes, crece la memoria. Usa `bufferingPolicy: .bufferingNewest(n)` para datos donde solo importa lo último, como posiciones.
+
+```mermaid
+sequenceDiagram
+    participant F as Fuente (callbacks)
+    participant S as AsyncStream
+    participant C as for await
+    F->>S: yield(posición 1)
+    S-->>C: posición 1
+    F->>S: yield(posición 2)
+    S-->>C: posición 2
+    C->>S: tarea cancelada
+    S->>F: onTermination: detener
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `Posiciones/Sources/Posiciones/main.swift`:
+
+```swift
+import Foundation
+
+// Fuente con callbacks, como un delegado de ubicación.
+final class SimuladorGPS: @unchecked Sendable { // todo ocurre en la cola serial `cola`
+    private let cola = DispatchQueue(label: "gps")
+    private var temporizador: DispatchSourceTimer?
+    private var lat = 4.60
+    var alRecibir: (@Sendable (Double) -> Void)?
+    func iniciar() {
+        let t = DispatchSource.makeTimerSource(queue: cola)
+        t.schedule(deadline: .now() + 0.1, repeating: 0.1)
+        t.setEventHandler { [self] in
+            lat += 0.01
+            alRecibir?(lat)
+        }
+        temporizador = t
+        t.resume()
+    }
+    func detener() { cola.sync { temporizador?.cancel() }; print("GPS detenido") }
+}
+
+func posiciones() -> AsyncStream<Double> {
+    AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuacion in
+        let gps = SimuladorGPS()
+        gps.alRecibir = { continuacion.yield($0) }
+        continuacion.onTermination = { _ in gps.detener() } // al cancelar o terminar
+        gps.iniciar()
+    }
+}
+
+let tarea = Task { @MainActor in
+    for await lat in posiciones() {
+        print(String(format: "posición %.2f", lat))
+    }
+    print("bucle terminado")
+}
+
+try await Task.sleep(for: .milliseconds(350))
+tarea.cancel() // como salir de la pantalla
+try await Task.sleep(for: .milliseconds(100))
+```
+
+Ejecútalo:
+
+```bash
+cd Posiciones
+swift run
+```
+
+**Explicación por bloques:** `SimuladorGPS` imita un delegado: llama un callback cada 100 ms desde su propia cola serial, sin depender del run loop. `posiciones()` lo envuelve en un `AsyncStream` que guarda solo la posición más nueva. Cada callback hace `yield`, y `onTermination` detiene el GPS. La tarea recorre las posiciones con `for await`. A los 350 ms se cancela: el bucle termina, el stream llama `onTermination` y el GPS se detiene. El número exacto de posiciones puede variar en uno según el tiempo.
+
+**Resultado esperado:**
+
+```text
+posición 4.61
+posición 4.62
+posición 4.63
+GPS detenido
+bucle terminado
+```
+
+**Fallo deliberado:** quita `continuacion.onTermination = { _ in gps.detener() }`. **Error esperado:** después de cancelar no aparece «GPS detenido»: la fuente sigue produciendo aunque nadie lee. **Diagnóstico:** cancelar el consumidor no detiene la fuente por sí solo. `onTermination` es el lugar para liberarla.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y cuenta las posiciones recibidas.
+2. **Variación:** cambia la espera antes de cancelar a 1 segundo y vuelve a contar.
+3. **Diagnóstico:** reproduce el fallo deliberado sin `onTermination`.
+4. **Integración:** usa la secuencia en una vista con `.task { for await ... }` y comprueba que se detiene al cerrar la vista.
+5. **Diseño:** reemplaza el simulador por `CLLocationUpdate.liveUpdates()` (iOS 17), que ya es una `AsyncSequence`.
+
+**Pista:** todo `AsyncStream` que envuelve una fuente necesita su `onTermination`.
+
+#### Paso 6 · Práctica independiente
+
+Crea un `AsyncStream<String>` que envuelva `NotificationCenter` para el evento de app en segundo plano y muestra un aviso cada vez que ocurra, deteniendo la observación al cancelar.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas `yield`, `finish` y `onTermination`.
+- [ ] El programa se detiene al cancelar la tarea.
+- [ ] Reprodujiste la fuente que sigue viva sin `onTermination`.
+- [ ] Eliges una política de búfer con criterio.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no detener la fuente al cancelar, usar búfer ilimitado para datos frecuentes y consumir la secuencia fuera de una tarea cancelable. **Siguiente paso:** el módulo 13 usa `CLLocationUpdate.liveUpdates()`, una `AsyncSequence` de ubicaciones reales.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la app del conductor de RutaFlow, expone las posiciones como `AsyncStream` con `bufferingNewest(1)` y consúmelas con `.task` en la pantalla de ruta.
+
+**Fuente oficial:** [Apple — AsyncStream](https://developer.apple.com/documentation/swift/asyncstream) y [Apple — AsyncSequence](https://developer.apple.com/documentation/swift/asyncsequence).
+

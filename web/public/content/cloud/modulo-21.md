@@ -343,6 +343,14 @@ flowchart LR
 
 **Diagrama interactivo:** [VPC de RutaFlow: subred pública y privada](/visuals/temas/cloud/modulo-21-tema-6-vpc.html) — arquitectura explorable con las subredes, el flujo del tráfico y la base de datos aislada.
 
+**Conceptos clave:** VPC y CIDR, subred pública vs privada, Internet Gateway, security group, principio de mínima exposición.
+**Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** copiar la regla `--cidr 0.0.0.0/0` del security group del balanceador (Paso 5) como plantilla para el security group de la base de datos, sin revisar que esta última nunca debe aceptar tráfico fuera de la VPC — es la misma línea de comando, pero correcta en un recurso y una filtración de datos en el otro.
+**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
+
 #### Paso 4 · Demostración guiada desde cero
 Con Floci corriendo (`floci start` y `eval $(floci env)`, Módulo 1):
 
@@ -368,13 +376,7 @@ Dibuja (o describe) la ruta completa de una petición de un usuario: Internet �
 
 #### Paso 7 · Cierre
 Entrega la VPC con sus subredes, el security group restrictivo y el análisis del fallo `0.0.0.0/0`. **¿Por qué es importante?** La VPC y los security groups son la base de la seguridad de red en la nube; el error de exponer una base de datos a internet es tan común como grave. Diseñar el flujo del tráfico (qué es público, qué es privado) es una decisión de arquitectura que tomarás en cada proyecto cloud. Fuentes: [AWS — VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html).
-**Conceptos clave:** VPC y CIDR, subred pública vs privada, Internet Gateway, security group, principio de mínima exposición.
-**Cuándo no usarlo:** para un experimento local efímero no necesitas diseñar subredes; pero en cuanto hay datos reales o producción, la segmentación de red no es opcional.
 
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** coloca la base de datos de RutaFlow en la subred privada y el balanceador en la pública, y demuestra que la base no acepta conexiones desde fuera de la VPC.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** copiar la regla `--cidr 0.0.0.0/0` del security group del balanceador (Paso 5) como plantilla para el security group de la base de datos, sin revisar que esta última nunca debe aceptar tráfico fuera de la VPC — es la misma línea de comando, pero correcta en un recurso y una filtración de datos en el otro.
-**Fuente oficial:** [documentación de la nube](https://docs.aws.amazon.com/).
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

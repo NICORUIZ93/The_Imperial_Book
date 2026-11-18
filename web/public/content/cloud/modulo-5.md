@@ -756,6 +756,175 @@ Compará esta integración (asíncrona, SQS invoca sin esperar respuesta) contra
 #### Paso 7 · Cierre
 Entregá la creación del mapping, el item nuevo en `ShipmentEvents` sin invocación manual, y el comportamiento del mensaje inválido del Paso 5; explicá por qué esta es la forma real en que RutaFlow conecta su cola con esta función. Siguiente paso: API Gateway. Errores comunes: duplicados y no configurar reintentos. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html.
 
+### Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min
+
+**Prerrequisito:** tema «Runtimes — Node.js, Python, Java…» de este módulo.
+
+**Al finalizar podrás:** cruzar el inventario de funciones con el calendario de fin de soporte de los runtimes, ordenar por urgencia y avisar con seis meses de anticipación.
+
+**¿Por qué es importante?** Los proveedores retiran runtimes, versiones de motores de bases de datos y APIs. Cuando una versión deja de tener soporte, ya no recibe parches de seguridad y, más adelante, no se puede actualizar ni crear. Enterarse ese día obliga a migrar con prisa.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea `academia-labs/cloud/deprecaciones`. En una cuenta real, el inventario sale de `aws lambda list-functions` y el calendario de la tabla oficial de runtimes de Lambda.
+
+#### Paso 2 · Contexto y caso real
+
+Una función de RutaFlow seguía en un runtime de Node.js retirado. Funcionaba, hasta que hubo que corregir un error urgente: el proveedor ya no permitía actualizar funciones con ese runtime, y la corrección esperó a la migración.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** fin de soporte, deprecación, calendario de runtimes, inventario, ventana de aviso, deuda técnica programada.
+
+Los proveedores publican calendarios de fin de soporte. Para Lambda, una deprecación suele tener etapas:
+
+1. **Fin de soporte:** el runtime deja de recibir parches de seguridad.
+2. Más adelante, ya **no se pueden crear** funciones nuevas con él.
+3. Después, ya **no se pueden actualizar** las existentes.
+
+El proceso para no llegar tarde:
+
+- **Inventario** automático de qué usa cada recurso (runtime, versión del motor).
+- **Calendario** con las fechas oficiales, revisado cada trimestre.
+- **Ventana de aviso** (por ejemplo, 180 días) para planear la migración como trabajo normal, no como urgencia.
+
+Lo mismo aplica a versiones de motores de bases de datos, de Kubernetes administrado y a APIs que el proveedor marca como obsoletas.
+
+**Analogía:** es la fecha de vencimiento de los medicamentos de un botiquín: revisas el botiquín cada tres meses y repones lo que vence pronto, en lugar de descubrirlo cuando lo necesitas. La analogía falla en que aquí las fechas las cambia el proveedor: hay que volver a leer el calendario oficial.
+
+**Límite de uso:** las fechas del ejemplo son ilustrativas: copia siempre las de la página oficial. El script no migra nada: solo te dice qué migrar primero.
+
+```mermaid
+flowchart LR
+    I["inventario de funciones"] --> C["cruce con el calendario oficial"]
+    C --> V["VENCIDO: migrar ya"]
+    C --> P["vence en <= 180 días: planear"]
+    C --> O["ok"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/deprecaciones/calendario.json`:
+
+```json
+{
+  "_fuente": "Copia las fechas de la tabla oficial de runtimes de AWS Lambda; estas son de ejemplo para el ejercicio.",
+  "nodejs18.x": "2025-09-01",
+  "python3.9": "2025-12-15",
+  "nodejs20.x": "2026-04-30",
+  "python3.12": "2028-10-31",
+  "java21": "2029-06-30",
+  "nodejs22.x": "2027-04-30"
+}
+```
+
+Archivo `academia-labs/cloud/deprecaciones/inventario.json`:
+
+```json
+[
+  {
+    "funcion": "cotizar-envio",
+    "runtime": "nodejs18.x"
+  },
+  {
+    "funcion": "generar-guia",
+    "runtime": "python3.9"
+  },
+  {
+    "funcion": "notificar-cliente",
+    "runtime": "nodejs22.x"
+  },
+  {
+    "funcion": "procesar-foto",
+    "runtime": "python3.12"
+  },
+  {
+    "funcion": "liquidar",
+    "runtime": "java21"
+  }
+]
+```
+
+Archivo `academia-labs/cloud/deprecaciones/deprecaciones.py`:
+
+```python
+import json
+from datetime import date
+
+HOY = date(2026, 11, 18)         # fija para que el ejercicio sea reproducible; en producción usa date.today()
+AVISO_DIAS = 180                 # avisar con seis meses de anticipación
+
+calendario = {k: date.fromisoformat(v) for k, v in json.load(open("calendario.json")).items() if not k.startswith("_")}
+inventario = json.load(open("inventario.json"))
+
+def estado(runtime: str) -> tuple[int, str]:
+    fin = calendario.get(runtime)
+    if fin is None:
+        return (0, "DESCONOCIDO: agrégalo al calendario")
+    dias = (fin - HOY).days
+    if dias < 0:
+        return (1, f"VENCIDO hace {-dias} días")
+    if dias <= AVISO_DIAS:
+        return (2, f"vence en {dias} días: planear migración")
+    return (3, f"ok hasta {fin.isoformat()}")
+
+# Ordena por urgencia: vencidos primero.
+for f in sorted(inventario, key=lambda f: estado(f["runtime"])[0] or 9):
+    print(f"{f['funcion']:<18} {f['runtime']:<12} {estado(f['runtime'])[1]}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/deprecaciones
+# en una cuenta real, genera el inventario así:
+# aws lambda list-functions --query "Functions[].{funcion:FunctionName,runtime:Runtime}" > inventario.json
+python3 deprecaciones.py
+```
+
+**Explicación por bloques:** `calendario.json` guarda la fecha de fin de soporte por runtime (las del ejemplo son ilustrativas y lo dice el campo `_fuente`). `inventario.json` tiene la forma que devuelve `list-functions`. El script fija la fecha de hoy para que el ejercicio sea reproducible, calcula cuántos días faltan para cada runtime y los clasifica en vencido, por vencer dentro de la ventana de 180 días u ok. Ordena por urgencia para que lo vencido salga primero.
+
+![Captura de terminal: dos funciones con runtimes vencidos, una que vence en 163 días y dos al día](content/figures/cloud/deprecaciones-runtimes.svg)
+
+**Resultado esperado:**
+
+```text
+cotizar-envio      nodejs18.x   VENCIDO hace 443 días
+generar-guia       python3.9    VENCIDO hace 338 días
+notificar-cliente  nodejs22.x   vence en 163 días: planear migración
+procesar-foto      python3.12   ok hasta 2028-10-31
+liquidar           java21       ok hasta 2029-06-30
+```
+
+**Fallo deliberado:** agrega al inventario una función con runtime `ruby3.2`, que no está en el calendario. **Error esperado:** la línea dice «DESCONOCIDO: agrégalo al calendario». **Diagnóstico:** un calendario incompleto da una falsa sensación de control. Trata «desconocido» como urgente hasta completarlo con la fecha oficial.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el script y explica el orden de las líneas.
+2. **Variación:** cambia `AVISO_DIAS` a 365 y observa qué cambia.
+3. **Diagnóstico:** reproduce el fallo deliberado con un runtime desconocido.
+4. **Integración:** completa el calendario con las fechas oficiales actuales de la documentación de Lambda.
+5. **Diseño:** convierte el reporte en una tarea mensual que cree un ticket por cada función vencida o por vencer.
+
+**Pista:** el inventario debe salir de la cuenta, no de una lista escrita a mano: lo escrito a mano siempre está desactualizado.
+
+#### Paso 6 · Práctica independiente
+
+Aplica la misma idea a las bases de datos: lista las versiones de motor con `aws rds describe-db-instances` y crúzalas con el calendario de fin de soporte de RDS.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las etapas de una deprecación.
+- [ ] El script clasifica las cinco funciones por urgencia.
+- [ ] Reprodujiste el caso de un runtime desconocido.
+- [ ] Tu calendario usa fechas oficiales.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mantener el inventario a mano, usar fechas sin fuente y enterarse de la deprecación cuando ya no se puede actualizar. **Siguiente paso:** el tema «Versionado y alias» permite migrar el runtime de una función sin cortar el tráfico.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega a RutaFlow una revisión mensual de runtimes de Lambda y versiones de motores, con tickets automáticos para lo que vence en 180 días.
+
+**Fuente oficial:** [AWS Lambda — Runtime deprecation policy](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy) y [Amazon RDS — Database engine versions](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBEngineVersions.html).
+
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

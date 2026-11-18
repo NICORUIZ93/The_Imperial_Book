@@ -62,18 +62,6 @@ Un `StatelessWidget` describe su UI únicamente en función de los datos que rec
 
 **¿Por qué es importante?** La distinción entre `StatelessWidget` y `StatefulWidget` determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; `setState()` es el mecanismo explícito que dispara la reconstrucción eficiente del árbol de widgets tras un cambio de estado.
 
-**Código del ejemplo:**
-
-```dart
-class Contador extends StatefulWidget {
-  State<Contador> createState() => _ContadorState();
-}
-class _ContadorState extends State<Contador> {
-  int valor = 0;
-  // setState() dispara la reconstrucción; `valor` persiste entre reconstrucciones
-}
-```
-
 En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliveries/presentation/tarjeta_envio.dart` y `ContadorIntentos` en `lib/features/deliveries/presentation/contador_intentos.dart`; practicá este mismo patrón extrayendo un widget propio en tu proyecto propio antes de seguir al próximo tema.
 
 #### Paso 4 · Demostración guiada desde cero
@@ -189,15 +177,6 @@ Column(children: [
 **Analogía:** `Row`, `Column` y `Stack` son como los tres tipos básicos de disposición de mobiliario en una habitación (en fila, apilado, superpuesto), combinables para construir cualquier distribución compleja; `initState()`/`dispose()` son como el protocolo de apertura y cierre de un local comercial (encender/apagar sistemas al inicio y fin de operación), mientras `didUpdateWidget()` es como ajustar la configuración interna del local ante un cambio de horario sin cerrar y reabrir el negocio por completo.
 
 **¿Por qué es importante?** `Row`/`Column`/`Stack` son las primitivas combinables de cualquier layout Flutter, compartidas conceptualmente con Compose y SwiftUI; los hooks del ciclo de vida (`initState`, `dispose`, `didUpdateWidget`) son el mecanismo correcto para gestionar recursos y reaccionar a cambios de configuración sin fugas de memoria.
-
-**Código del ejemplo:**
-
-```dart
-Column(children: [
-  Row(children: [Text("Izquierda"), Spacer(), Text("Derecha")]),
-  Stack(children: [Image.asset("fondo.png"), Text("Superpuesto")]),
-])
-```
 
 En el proyecto integrador RutaFlow, este layout y los hooks de ciclo de vida viven en `lib/features/deliveries/presentation/lista_envios.dart`; replicá el timer con `initState`/`dispose` en tu proyecto propio como práctica antes de avanzar.
 
@@ -349,6 +328,295 @@ Corregí el Paso 5 devolviendo `key: ValueKey(e.id)`, y agregá una prueba de wi
 #### Paso 7 · Cierre
 Entregá la lista con Key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de widget del Paso 6; explicá por qué el índice "funciona" en una lista que nunca se reordena, pero falla en cuanto eso deja de ser cierto. Siguiente paso: cerrá el módulo documentando rebuild vs re-render en tus propias palabras. Errores comunes: usar el índice como Key en listas reordenables, usar `UniqueKey()` innecesariamente, y omitir la Key por completo en listas con estado interno por fila. Fuentes oficiales: https://api.flutter.dev/flutter/foundation/Key-class.html y https://docs.flutter.dev/ui/widgets.
 **Implicación práctica:** Una Key estable es necesaria cuando se reordena una lista de widgets con estado interno propio, evitando que Flutter confunda qué estado pertenece a qué elemento tras el reordenamiento.
+
+### Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min
+
+**Prerrequisito:** temas «StatelessWidget vs StatefulWidget» y «Keys» de este módulo.
+
+**Al finalizar podrás:** explicar qué guarda cada árbol, observar con un contador de `createState` y `build` cuándo Flutter reutiliza un Element y cuándo lo reemplaza, y relacionarlo con las Keys.
+
+**¿Por qué es importante?** «Todo es un widget» es cierto pero incompleto. Los widgets son descripciones baratas que se crean en cada `build`; el estado vive en los Elements y el dibujo en los RenderObjects. Entender esto explica por qué el estado «salta» entre filas o se pierde al cambiar un tipo.
+
+#### Paso 1 · Objetivo y preparación
+
+Crea `flutter create tres_arboles` y reemplaza `lib/main.dart` con el código del tema. Ejecuta en cualquier dispositivo o en Chrome.
+
+#### Paso 2 · Contexto y caso real
+
+En la lista de RutaFlow, al envolver una fila en un `Padding` condicional, el campo de nota que el conductor estaba escribiendo se borraba. Nadie entendía por qué, hasta mirar el árbol de Elements en DevTools: el Element se había recreado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Widget (configuración inmutable), Element (instancia en el árbol, guarda el State), RenderObject (layout y pintura), `canUpdate`, `runtimeType`, Key.
+
+| Árbol | Qué es | Vida |
+|---|---|---|
+| **Widget** | descripción inmutable de una parte de la UI | se crea en cada `build` |
+| **Element** | el lugar del widget en el árbol; guarda el `State` | sobrevive mientras el widget en esa posición sea compatible |
+| **RenderObject** | calcula tamaños y pinta | lo crea y actualiza el Element |
+
+En cada reconstrucción, Flutter compara el widget nuevo con el anterior en la misma posición usando `Widget.canUpdate`: si tienen **el mismo `runtimeType` y la misma `key`**, **actualiza** el Element existente (el `State` se conserva). Si no, **desmonta** el Element viejo (el `State` se pierde) y crea uno nuevo.
+
+Por eso cambiar el tipo de un ancestro (envolver en un `Padding` solo a veces) o mover widgets sin `key` hace que el estado se pierda o se asigne a otra fila.
+
+**Analogía:** el widget es el plano de una casa, el Element es la casa construida con sus habitantes (el State) y el RenderObject es la obra física. Si el nuevo plano es del mismo tipo, se remodela la casa con la gente adentro; si cambia el tipo, se demuele y los habitantes se van.
+
+**Límite de uso:** no intentes «guardar» widgets para evitar reconstruirlos: crear widgets es barato. Las optimizaciones van en `const`, en dividir widgets y en las Keys, no en evitar `build`.
+
+```mermaid
+flowchart LR
+    W["Widget: NotaCampo<br/>(nuevo en cada build)"] -->|"canUpdate? mismo tipo y key"| E["Element<br/>guarda State"]
+    E --> R["RenderObject<br/>layout y pintura"]
+    W2["Padding(NotaCampo)"] -. "otro tipo en esa posición" .-> X["Element nuevo: State perdido"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `tres_arboles/lib/main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: Demo()));
+
+class Demo extends StatefulWidget {
+  const Demo({super.key});
+  @override
+  State<Demo> createState() => _DemoState();
+}
+
+class _DemoState extends State<Demo> {
+  bool conMargen = false;
+  @override
+  Widget build(BuildContext context) {
+    const campo = NotaCampo();
+    return Scaffold(
+      body: Center(
+        // Mismo lugar, distinto tipo según conMargen: el Element se reemplaza.
+        child: conMargen ? const Padding(padding: EdgeInsets.all(16), child: campo) : campo,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => setState(() => conMargen = !conMargen),
+        child: const Icon(Icons.swap_horiz),
+      ),
+    );
+  }
+}
+
+class NotaCampo extends StatefulWidget {
+  const NotaCampo({super.key});
+  @override
+  State<NotaCampo> createState() {
+    debugPrint('createState: nuevo Element y nuevo State');
+    return _NotaCampoState();
+  }
+}
+
+class _NotaCampoState extends State<NotaCampo> {
+  final controlador = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('build con texto "${controlador.text}"');
+    return SizedBox(width: 240, child: TextField(controller: controlador));
+  }
+  @override
+  void dispose() {
+    debugPrint('dispose: el State se pierde');
+    controlador.dispose();
+    super.dispose();
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd tres_arboles
+flutter run -d chrome
+# escribe "portería" en el campo y pulsa el botón flotante
+```
+
+**Explicación por bloques:** `Demo` alterna entre poner `NotaCampo` directo en el `Center` o envuelto en un `Padding`. En la posición hija del `Center`, el tipo cambia de `NotaCampo` a `Padding`: `canUpdate` es falso, así que Flutter desmonta el Element con su `State` (se ve `dispose`) y crea uno nuevo (`createState`). El texto escrito se pierde. Los `debugPrint` muestran cada paso en la consola.
+
+**Resultado esperado:**
+
+```text
+Al iniciar: createState: nuevo Element y nuevo State / build con texto ""
+Tras escribir "portería" y pulsar el botón: dispose: el State se pierde / createState: nuevo Element y nuevo State / build con texto ""
+El campo aparece vacío.
+```
+
+**Fallo deliberado:** da a `NotaCampo` una `GlobalKey` creada una vez en `_DemoState` (`final clave = GlobalKey();` y `NotaCampo(key: clave)`). **Resultado esperado:** al pulsar el botón ya no hay `dispose` ni `createState`, y el texto se conserva. **Diagnóstico:** una `GlobalKey` permite mover un Element entre posiciones del árbol. Úsala con moderación: es más costosa; la solución normal es mantener la misma estructura (por ejemplo, `Padding` con 0 de margen).
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta, escribe una nota y pulsa el botón; lee la consola.
+2. **Variación:** cambia la ternaria por `Padding(padding: EdgeInsets.all(conMargen ? 16 : 0), child: campo)` y comprueba que el texto se conserva.
+3. **Diagnóstico:** prueba la variante con `GlobalKey` del fallo deliberado.
+4. **Integración:** abre Flutter DevTools > Widget Inspector y mira el árbol antes y después de pulsar.
+5. **Diseño:** explica con los tres árboles el error de la lista de RutaFlow donde la nota «saltaba» de fila.
+
+**Pista:** si un estado se pierde «sin razón», busca un ancestro que cambia de tipo o un hijo que se mueve sin key.
+
+#### Paso 6 · Práctica independiente
+
+Crea una lista de tres `NotaCampo` en un `Column`, reordénala con un botón y compara qué pasa sin keys, con `ValueKey(codigo)` y con `UniqueKey()`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué guarda cada árbol.
+- [ ] Reprodujiste la pérdida del estado al cambiar el tipo.
+- [ ] Conservaste el estado manteniendo la estructura.
+- [ ] Relacionas `canUpdate` con las Keys.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** cambiar el tipo de un ancestro según una condición, mover widgets con estado sin key y usar `GlobalKey` para todo. **Siguiente paso:** el tema siguiente agrega gestos, que también viven en el árbol de render.
+
+**Transferencia al proyecto integrador «RutaFlow»:** revisa la lista de entregas de RutaFlow, elimina los envoltorios condicionales que recrean filas y usa `ValueKey(codigo)` en cada fila.
+
+**Fuente oficial:** [Flutter — Architectural overview](https://docs.flutter.dev/resources/architectural-overview) y [Flutter — Widget.canUpdate](https://api.flutter.dev/flutter/widgets/Widget/canUpdate.html).
+
+### Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min
+
+**Prerrequisito:** tema «Los tres árboles de Flutter» de este módulo.
+
+**Al finalizar podrás:** detectar toques, pulsaciones largas y arrastres con `GestureDetector`, usar `Dismissible` para deslizar y marcar una entrega con opción de deshacer, y explicar qué gesto gana cuando varios compiten.
+
+**¿Por qué es importante?** Deslizar para marcar, mantener presionado para ver detalles: los gestos aceleran las acciones repetidas. Mal configurados, compiten con el scroll o se activan sin querer.
+
+#### Paso 1 · Objetivo y preparación
+
+Continúa un proyecto Flutter (`flutter create gestos_rutaflow`). Escribe la lista en `lib/main.dart`.
+
+#### Paso 2 · Contexto y caso real
+
+Los conductores de RutaFlow marcaban entregas tocando cada fila y luego un botón. Al deslizar para marcar, la tarea es más rápida, pero un deslizamiento accidental marcó entregas que no estaban hechas. La opción «Deshacer» resolvió ese problema.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `GestureDetector`, `onTap`, `onLongPress`, `onHorizontalDragUpdate`, arena de gestos, `Dismissible`, `confirmDismiss`, `SnackBar` con deshacer, `Semantics`.
+
+`GestureDetector` envuelve un widget y llama callbacks por tipo de gesto. Cuando varios detectores podrían reconocer el mismo movimiento (un arrastre horizontal en una fila dentro de una lista vertical), compiten en la **arena de gestos**: cada uno observa el movimiento y el primero que lo reconoce con seguridad gana; los demás se retiran.
+
+`Dismissible` ya resuelve el deslizamiento para descartar: anima la fila, llama `confirmDismiss` (puedes cancelar) y luego `onDismissed`. Necesita una `key` única por fila.
+
+Toda acción por gesto necesita una alternativa accesible: un `Semantics` con acción personalizada o un botón en el detalle.
+
+**Analogía:** la arena de gestos es una competencia de adivinanzas: varios jugadores miran el mismo movimiento y el primero que está seguro grita la respuesta. La analogía falla en que un jugador también puede rendirse antes de que otro gane.
+
+**Límite de uso:** no ocultes acciones importantes solo en gestos. Las acciones de deslizar irreversibles necesitan confirmación o deshacer. Áreas táctiles menores a 48×48 dp fallan con dedos grandes.
+
+```mermaid
+flowchart TB
+    F["Fila de entrega"] --> D["Dismissible"]
+    D -->|"desliza a la derecha"| C{"confirmDismiss"}
+    C -->|"true"| M["onDismissed: marcar + SnackBar Deshacer"]
+    C -->|"false"| V["la fila vuelve"]
+    F --> G["GestureDetector.onLongPress: detalle"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `gestos_rutaflow/lib/main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: ListaEntregas()));
+
+class ListaEntregas extends StatefulWidget {
+  const ListaEntregas({super.key});
+  @override
+  State<ListaEntregas> createState() => _ListaEntregasState();
+}
+
+class _ListaEntregasState extends State<ListaEntregas> {
+  final pendientes = ['ENV-41', 'ENV-42', 'ENV-43'];
+
+  void marcar(String codigo, int indice) {
+    setState(() => pendientes.removeAt(indice));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('$codigo entregada'),
+      action: SnackBarAction(
+        label: 'Deshacer',
+        onPressed: () => setState(() => pendientes.insert(indice, codigo)),
+      ),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('${pendientes.length} pendientes')),
+      body: ListView.builder(
+        itemCount: pendientes.length,
+        itemBuilder: (context, i) {
+          final codigo = pendientes[i];
+          return Dismissible(
+            key: ValueKey(codigo), // única por fila
+            direction: DismissDirection.startToEnd,
+            background: Container(color: Colors.green, alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 24), child: const Icon(Icons.check, color: Colors.white)),
+            onDismissed: (_) => marcar(codigo, i),
+            child: Semantics(
+              customSemanticsActions: {const CustomSemanticsAction(label: 'Marcar entregada'): () => marcar(codigo, i)},
+              child: GestureDetector(
+                onLongPress: () => showModalBottomSheet(context: context, builder: (_) => Text('Detalle de $codigo')),
+                child: ListTile(title: Text(codigo), subtitle: const Text('Desliza para marcar')),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd gestos_rutaflow
+flutter run
+```
+
+**Explicación por bloques:** Cada fila es un `Dismissible` con `ValueKey(codigo)`, que solo permite deslizar hacia la derecha y muestra un fondo verde. Al soltar, `onDismissed` quita la entrega y muestra un `SnackBar` con «Deshacer», que la vuelve a insertar en su posición. La pulsación larga del `GestureDetector` abre el detalle. El arrastre horizontal de la fila y el scroll vertical de la lista compiten en la arena: como van en direcciones distintas, cada uno gana su movimiento. `Semantics` ofrece la misma acción a los lectores de pantalla.
+
+**Resultado esperado:**
+
+```text
+Deslizar ENV-42 a la derecha: la fila desaparece, el título cambia a «2 pendientes» y aparece «ENV-42 entregada» con «Deshacer».
+Pulsar «Deshacer»: ENV-42 vuelve a su lugar y el título vuelve a «3 pendientes».
+Mantener presionada una fila abre la hoja con su detalle.
+```
+
+**Fallo deliberado:** cambia la key por `ValueKey(i)` (el índice). **Error esperado:** después de deslizar una fila, a veces aparece la excepción «A dismissed Dismissible widget is still part of the tree» o se descarta la fila equivocada. **Diagnóstico:** el índice cambia al quitar elementos; la key debe identificar al dato, no su posición.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** desliza y deshace una entrega.
+2. **Variación:** agrega `confirmDismiss` que pida confirmación solo para envíos con cobro.
+3. **Diagnóstico:** reproduce el fallo deliberado con el índice como key.
+4. **Integración:** activa TalkBack o VoiceOver y ejecuta «Marcar entregada» desde las acciones.
+5. **Diseño:** decide qué acciones de la app del conductor pueden ir en gestos y cuáles necesitan botón.
+
+**Pista:** si una fila «revive» o desaparece la equivocada, revisa la key.
+
+#### Paso 6 · Práctica independiente
+
+Agrega deslizar a la izquierda para «Reportar problema» con un fondo rojo distinto, usando `secondaryBackground` y `direction: DismissDirection.horizontal`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la arena de gestos.
+- [ ] Deslizar marca la entrega y «Deshacer» la recupera.
+- [ ] Reprodujiste el error de la key por índice.
+- [ ] La acción existe también para lectores de pantalla.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar el índice como key, no ofrecer deshacer y dejar acciones solo en gestos. **Siguiente paso:** el módulo 8 anima estos cambios con animaciones implícitas y explícitas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la lista de entregas de RutaFlow, marca con deslizamiento, ofrece «Deshacer» y expón la acción a lectores de pantalla.
+
+**Fuente oficial:** [Flutter — Gestures](https://docs.flutter.dev/ui/interactivity/gestures) y [Flutter — Implement swipe to dismiss](https://docs.flutter.dev/cookbook/gestures/dismissible).
 
 ## Demo en DevTools
 

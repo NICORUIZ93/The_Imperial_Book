@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Build privacy-safe, per-stack curriculum assets for the academy web app."""
+"""Build privacy-safe, per-stack curriculum assets for the academy web app.
+
+specs/006 I1: the web temario only publishes real lessons. Book and course candidates stay in
+docs/temario-maestro-unificado.json as an internal editorial backlog and are never shown as topics.
+"""
 
 from __future__ import annotations
 
@@ -13,7 +17,8 @@ SOURCE = ROOT / "docs" / "temario-maestro-unificado.json"
 CONTENT = ROOT / "web" / "public" / "content"
 INDEX = CONTENT / "curriculum-catalog.json"
 STACKS_DIR = CONTENT / "curriculum-stacks"
-EXPECTED_STACKS = 29  # incluye microservices y control-1 (specs/003)
+EXPECTED_SOURCE_STACKS = 29  # incluye microservices y control-1 (specs/003)
+PUBLISHED_STATUSES = {"actual", "actual+libros"}
 
 
 def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
@@ -38,6 +43,9 @@ def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict
                 is_candidate = status in {"candidato-libros", "candidato-cursos"}
                 if is_current == is_candidate:
                     raise ValueError(f"Current placement and topic status disagree in {stack_id}: {topic['title']}")
+                summary[status] += 1
+                if status not in PUBLISHED_STATUSES:
+                    continue
 
                 sources = []
                 for source_ref in topic["bookSources"]:
@@ -77,8 +85,9 @@ def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict
                     "courseSources": course_sources,
                 })
                 stack_counts[status] += 1
-                summary[status] += 1
 
+            if not topics:
+                continue
             modules.append({
                 "id": module["id"],
                 "kind": module["kind"],
@@ -92,6 +101,8 @@ def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict
             for book in stack.get("booksRequiringOcr", [])
         ]
         summary["booksRequiringOcr"] += len(ocr_books)
+        if not modules:
+            continue
         stacks[stack_id] = {
             "schemaVersion": 1,
             "stackId": stack_id,
@@ -118,18 +129,18 @@ def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict
     for field, actual in checks.items():
         if actual != expected[field]:
             raise ValueError(f"{field} mismatch: source says {expected[field]}, generated {actual}")
-    if len(stacks) != EXPECTED_STACKS:
-        raise ValueError(f"Expected {EXPECTED_STACKS} stacks, found {len(stacks)}")
+    if len(source["stacks"]) != EXPECTED_SOURCE_STACKS:
+        raise ValueError(f"Expected {EXPECTED_SOURCE_STACKS} source stacks, found {len(source['stacks'])}")
 
     index = {
         "schemaVersion": 1,
         "summary": {
             "currentTopics": current_topics,
             "currentTopicsWithExactBookEvidence": summary["actual+libros"],
-            "bookCandidates": book_candidate_topics,
-            "courseCandidates": course_candidate_topics,
-            "courses": checks["courses"],
-            "provisionalTopics": provisional_topics,
+            "bookCandidates": 0,
+            "courseCandidates": 0,
+            "courses": sum(len(stack["courses"]) for stack in stacks.values()),
+            "provisionalTopics": current_topics,
             "booksRequiringOcr": summary["booksRequiringOcr"],
         },
         "stacks": [],
@@ -175,6 +186,9 @@ def main() -> None:
     source = json.loads(SOURCE.read_text(encoding="utf-8"))
     index, stacks = build_assets(source)
     write_json(INDEX, index)
+    for stale in STACKS_DIR.glob("*.json"):
+        if stale.stem not in stacks:
+            stale.unlink()
     for stack_id, data in stacks.items():
         write_json(STACKS_DIR / f"{stack_id}.json", data)
 

@@ -2,31 +2,31 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1331
-- Revisados humanamente para subtemas: 175
+- Temas inventariados: 1430
+- Revisados humanamente para subtemas: 274
 - Pendientes: 1156
-- Candidatos prioritarios por señales: 1008
+- Candidatos prioritarios por señales: 1017
 
 ## Cobertura por track
 
 | Track | Temas | Revisados | Pendientes |
 |---|---:|---:|---:|
-| android | 74 | 0 | 74 |
-| angular | 71 | 71 | 0 |
-| cloud | 156 | 0 | 156 |
+| android | 83 | 9 | 74 |
+| angular | 78 | 78 | 0 |
+| cloud | 168 | 12 | 156 |
 | control-1 | 70 | 0 | 70 |
-| devops | 130 | 0 | 130 |
-| flutter | 109 | 63 | 46 |
+| devops | 138 | 8 | 130 |
+| flutter | 119 | 73 | 46 |
 | foundations | 102 | 0 | 102 |
-| ios | 56 | 0 | 56 |
-| java | 111 | 22 | 89 |
-| javascript | 88 | 0 | 88 |
-| kotlin-multiplatform | 56 | 0 | 56 |
+| ios | 69 | 13 | 56 |
+| java | 117 | 28 | 89 |
+| javascript | 92 | 4 | 88 |
+| kotlin-multiplatform | 66 | 10 | 56 |
 | microservices | 24 | 17 | 7 |
-| node | 83 | 0 | 83 |
-| react | 58 | 0 | 58 |
+| node | 90 | 7 | 83 |
+| react | 64 | 6 | 58 |
 | rutaflow | 29 | 0 | 29 |
-| spring-boot | 114 | 2 | 112 |
+| spring-boot | 121 | 9 | 112 |
 
 ## Cola prioritaria
 
@@ -247,13 +247,19 @@
 - `cloud/modulo-9` — Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto — lista conceptos clave sin mapa interno verificable
 - `cloud/modulo-9` — Tema 5: Documentación de la API y guía de despliegue — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `control-1/modulo-1` — Tema 2: Operaciones con números complejos: suma, producto y división — título agrupa varios conceptos
 - `control-1/modulo-1` — Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω) — título agrupa varios conceptos
+- `control-1/modulo-11` — Tema 1: Forma estándar de primer orden: K y τ — título agrupa varios conceptos
+- `control-1/modulo-11` — Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso — título agrupa varios conceptos
+- `control-1/modulo-12` — Tema 1: Forma estándar de segundo orden: K, ωn y ζ — título agrupa varios conceptos
 - `control-1/modulo-12` — Tema 2: Simulador: mueve ζ y ωn — título agrupa varios conceptos
 - `control-1/modulo-14` — Tema 2: Tipo de sistema y constantes — título agrupa varios conceptos
 - `control-1/modulo-17` — Tema 2: Reglas de construcción (con su porqué) — título agrupa varios conceptos
+- `control-1/modulo-18` — Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia — título agrupa varios conceptos
 - `control-1/modulo-18` — Tema 3: Cada acción, con números — título agrupa varios conceptos
 - `control-1/modulo-18` — Tema 4: Ventajas y desventajas (punto 4 del Parcial 1) — título agrupa varios conceptos
 - `control-1/modulo-19` — Tema 3: Implementación con op-amps — título agrupa varios conceptos
+- `control-1/modulo-2` — Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s — título agrupa varios conceptos
 - `control-1/modulo-2` — Tema 4: Valor final y valor inicial — título agrupa varios conceptos
 - `control-1/modulo-20` — Tema 2: Decibeles y la escala logarítmica — título agrupa varios conceptos
 - `control-1/modulo-22` — Tema 1: Simulacro con solución — título agrupa varios conceptos
@@ -261,7 +267,10 @@
 - `control-1/modulo-3` — Tema 2: Caso 2: polos repetidos — título agrupa varios conceptos
 - `control-1/modulo-3` — Tema 3: Caso 3: polos complejos (completar el cuadrado) — título agrupa varios conceptos
 - `control-1/modulo-6` — Tema 4: Referencia y perturbación juntas — título agrupa varios conceptos
+- `control-1/modulo-7` — Tema 1: Impedancias de resistencia, bobina y condensador en s — título agrupa varios conceptos
 - `control-1/modulo-7` — Tema 2: Circuitos pasivos: divisor de voltaje — título agrupa varios conceptos
+- `control-1/modulo-8` — Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos — título agrupa varios conceptos
+- `control-1/modulo-9` — Tema 1: La idea de la linealización: aproximar con la recta tangente — título agrupa varios conceptos
 - `devops/modulo-0` — Tema 1: Sistema de archivos y permisos (chmod/chown) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 2: Procesos, señales y jobs en segundo plano — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-0` — Tema 3: Pipes, redirección y filtros (grep, awk, sed) — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -315,7 +324,7 @@
 - `devops/modulo-16` — Tema 3: Newman en profundidad — reportes y el contrato del código de salida — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-16` — Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-16` — Tema 5: Integración completa — Newman dentro de un pipeline Jenkins — lista conceptos clave sin mapa interno verificable
-- `devops/modulo-16` — Tema complementario: Bruno y Postman, evaluar con el mismo contrato — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-16` — Tema 6: Bruno y Postman, evaluar con el mismo contrato — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `devops/modulo-17` — Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-17` — Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-17` — Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -384,7 +393,7 @@
 - `devops/modulo-8` — Tema 5: Workspaces para múltiples entornos — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-8` — Tema 6: Ansible — playbooks, roles, inventory y módulos — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `devops/modulo-8` — Tema 7: Pulumi como alternativa a HCL — lista conceptos clave sin mapa interno verificable
-- `devops/modulo-8` — Tema complementario: OpenTofu, plan y estado sin recursos cloud — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `devops/modulo-8` — Tema 8: OpenTofu, plan y estado sin recursos cloud — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `devops/modulo-9` — Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 2: PromQL esencial — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 3: Dashboards en Grafana — lista conceptos clave sin mapa interno verificable
@@ -432,7 +441,7 @@
 - `foundations/modulo-0` — Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 3: Archivos, carpetas y rutas sin perderse — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-0` — Tema 5: Primer programa, primer error y primera evidencia — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `foundations/modulo-0` — Tema complementario: VS Code, comandos y atajos comprobables — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `foundations/modulo-0` — Tema 6: VS Code, comandos y atajos comprobables — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `foundations/modulo-1` — Tema 1: Del problema al algoritmo y a los casos de prueba — título agrupa varios conceptos
 - `foundations/modulo-1` — Tema 2: Variables, tipos, expresiones y cambios de estado — título agrupa varios conceptos
 - `foundations/modulo-1` — Tema 3: Decisiones, repeticiones y trazado de ejecución — título agrupa varios conceptos
@@ -793,8 +802,8 @@
 - `kotlin-multiplatform/modulo-9` — Tema 1: kotlin.test en commonTest — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 2: Fakes en vez de mocks — lista conceptos clave sin mapa interno verificable
 - `kotlin-multiplatform/modulo-9` — Tema 3: runTest para coroutines — lista conceptos clave sin mapa interno verificable
-- `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
-- `microservices/modulo-1` — Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
+- `microservices/modulo-0` — Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
+- `microservices/modulo-1` — Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `node/modulo-0` — Tema 3: process, global y módulos core · Básico · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-0` — Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos
 - `node/modulo-1` — Tema 1: package.json y semver · Básico · 50 min — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
@@ -1041,6 +1050,15 @@
 
 ## Revisados
 
+- `android/modulo-12` — Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min — dominio
+- `android/modulo-15` — Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min — maps
+- `android/modulo-15` — Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min — geofencing
+- `android/modulo-15` — Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min — camera; scanning
+- `android/modulo-15` — Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min — sensors
+- `android/modulo-15` — Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min — Bluetooth
+- `android/modulo-16` — Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min — Play Integrity
+- `android/modulo-18` — Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min — Macrobenchmark
+- `android/modulo-2` — Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min — Material 3
 - `angular/modulo-0` — Tema 1: El CLI ya no genera NgModules — standalone por defecto desde Angular 17
 - `angular/modulo-0` — Tema 2: Interpolación y property binding — property binding vs atributo HTML
 - `angular/modulo-0` — Tema 3: TypeScript a fondo — unknown, any, never y utility types — unknown exige narrowing; never exhaustivo
@@ -1060,6 +1078,8 @@
 - `angular/modulo-11` — Tema 2: Hidratación — contenido no-determinista rompe hidratación
 - `angular/modulo-11` — Tema 3: `@defer` — estados reales, incluyendo error — @error block; DeferBlockState forzado en test
 - `angular/modulo-11` — Tema 4: Zoneless — provideZonelessChangeDetection(); fixture.whenStable()
+- `angular/modulo-11` — Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min — SSG; streaming
+- `angular/modulo-11` — Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min — incremental hydration
 - `angular/modulo-12` — Tema 1: Reconocer la versión y la arquitectura de un proyecto — detectar NgModules vs standalone
 - `angular/modulo-12` — Tema 2: Leer la guía de actualización antes de modificar archivos — ng update; guía de migración oficial
 - `angular/modulo-12` — Tema 3: Migrar una versión mayor a la vez y verificar cada salto — una versión mayor a la vez
@@ -1070,6 +1090,8 @@
 - `angular/modulo-14` — Tema 2: La seguridad automática tiene fronteras explícitas — DomSanitizer; bypassSecurityTrust* como frontera explícita
 - `angular/modulo-14` — Tema 3: Internacionalizar implica significado, no reemplazo de texto — i18n más allá de reemplazo literal de strings
 - `angular/modulo-14` — Tema 4: Rendimiento y actualización son contratos de experiencia — rendimiento como contrato, no solo métrica
+- `angular/modulo-14` — Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min — CSP y Trusted Types
+- `angular/modulo-14` — Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min — profiling
 - `angular/modulo-15` — Tema 1: TestBed y ComponentFixture — ComponentFixture.detectChanges()
 - `angular/modulo-15` — Tema 2: Pruebas de Signals — probar effect()/computed() con TestBed.tick()
 - `angular/modulo-15` — Tema 3: Cypress y Playwright — Cypress vs Playwright para E2E
@@ -1095,6 +1117,7 @@
 - `angular/modulo-4` — Tema 3: Lazy loading con loadComponent — loadComponent
 - `angular/modulo-4` — Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing — ActivatedRoute params/queryParams
 - `angular/modulo-4` — Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización — CanDeactivate funcional
+- `angular/modulo-4` — Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min — resolvers
 - `angular/modulo-5` — Tema 1: Reactive Forms — FormGroup y FormControl — FormGroup/FormControl
 - `angular/modulo-5` — Tema 2: Validadores asíncronos — AsyncValidatorFn
 - `angular/modulo-5` — Tema 3: FormArray para campos dinámicos — FormArray
@@ -1109,16 +1132,43 @@
 - `angular/modulo-8` — Tema 1: Bootstrap sin NgModules — bootstrapApplication
 - `angular/modulo-8` — Tema 2: Organización por feature — carpetas por feature sin NgModule
 - `angular/modulo-8` — Tema 3: Migración desde NgModules — migración incremental standalone
+- `angular/modulo-8` — Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min — librerías; monorepos
+- `angular/modulo-8` — Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min — microfrontends con criterio
 - `angular/modulo-9` — Tema 1: Store propio con signals — signal store casero
 - `angular/modulo-9` — Tema 2: NgRx — actions, reducers y selectors — createReducer; createSelector
 - `angular/modulo-9` — Tema 3: Cuándo NgRx justifica su complejidad — signals vs NgRx: criterio de decisión
+- `cloud/modulo-0` — Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min — IaaS PaaS SaaS; regions and zones
+- `cloud/modulo-14` — Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min — supply chain
+- `cloud/modulo-16` — Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min — batch
+- `cloud/modulo-20` — Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min — AI ML governance
+- `cloud/modulo-22` — Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min — WAF and DDoS
+- `cloud/modulo-28` — Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min — time-series
+- `cloud/modulo-31` — Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min — migration
+- `cloud/modulo-31` — Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min — hybrid
+- `cloud/modulo-32` — Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min — Well-Architected; sustainability; performance
+- `cloud/modulo-32` — Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min — residency
+- `cloud/modulo-33` — Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min — threat detection
+- `cloud/modulo-5` — Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min — deprecations
+- `devops/modulo-12` — Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min — FinOps
+- `devops/modulo-2` — Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min — rootless; runtime security
+- `devops/modulo-4` — Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min — quality gates; promotion
+- `devops/modulo-6` — Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min — architecture
+- `devops/modulo-6` — Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min — scheduling
+- `devops/modulo-7` — Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min — policies
+- `devops/modulo-8` — Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min — import; policy as code
+- `devops/modulo-9` — Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min — chaos
 - `flutter/modulo-0` — Tema 1: Sound null safety — tipos nullable explícitos (?); operador !
 - `flutter/modulo-0` — Tema 2: Clases y mixins — mixin con 'with'
 - `flutter/modulo-0` — Tema 3: Futures, async/await y colecciones funcionales — Future/async/await; map/where/fold
 - `flutter/modulo-0` — Tema 4: Lints y estilo con analysis_options.yaml — analysis_options.yaml; package:flutter_lints
+- `flutter/modulo-0` — Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min — streams
+- `flutter/modulo-0` — Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min — records; patterns
+- `flutter/modulo-0` — Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min — extensions
 - `flutter/modulo-1` — Tema 1: StatelessWidget vs StatefulWidget — StatelessWidget; StatefulWidget + State
 - `flutter/modulo-1` — Tema 2: Layout con Row, Column y Stack, y ciclo de vida — Row/Column/Stack; initState/dispose
 - `flutter/modulo-1` — Tema 3: Keys — ValueKey/ObjectKey/GlobalKey
+- `flutter/modulo-1` — Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min — widget-element-render object
+- `flutter/modulo-1` — Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min — gestures
 - `flutter/modulo-10` — Tema 1: ThemeData con Material 3 — ColorScheme.fromSeed
 - `flutter/modulo-10` — Tema 2: Adaptación Material vs Cupertino — Platform.isIOS para adaptar widgets
 - `flutter/modulo-10` — Tema 3: Accesibilidad con Semantics y dark mode — Semantics widget; ThemeMode.system
@@ -1126,9 +1176,11 @@
 - `flutter/modulo-11` — Tema 2: Iconos y splash screens — flutter_launcher_icons; flutter_native_splash
 - `flutter/modulo-11` — Tema 3: CI/CD con Codemagic o Fastlane — codemagic.yaml; Fastfile
 - `flutter/modulo-11` — Tema 4: Entornos y flavors con --dart-define-from-file — flavors por plataforma; --dart-define-from-file
+- `flutter/modulo-11` — Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min — web y desktop
 - `flutter/modulo-12` — Tema 1: Arquitectura por features y Clean Architecture — presentation/application/domain/data
 - `flutter/modulo-12` — Tema 2: Uniendo los módulos del track — integración go_router+Riverpod+dio+Hive
 - `flutter/modulo-12` — Tema 3: Cierre del track — checklist de cierre
+- `flutter/modulo-12` — Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min — views y view models; repositories; services
 - `flutter/modulo-13` — Tema 1: Una API Dart puede terminar en una frontera nativa — frontera Dart/nativo
 - `flutter/modulo-13` — Tema 2: Los secretos no pertenecen al binario — --dart-define no es un secreto seguro
 - `flutter/modulo-13` — Tema 3: Fluidez se mide contra el presupuesto de cada frame — presupuesto de 16ms/frame
@@ -1163,10 +1215,13 @@
 - `flutter/modulo-6` — Tema 2: sqflite vs Hive — @HiveType/@HiveField; sqflite SQL real vs Hive objeto directo
 - `flutter/modulo-6` — Tema 3: Offline-first y Firebase — UI lee siempre de caché local; sincronización en background separada
 - `flutter/modulo-6` — Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación — RestorationMixin; RestorationBucket
+- `flutter/modulo-6` — Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min — files
 - `flutter/modulo-7` — Tema 1: MethodChannel — MethodChannel bidireccional; implementación Kotlin + Swift
 - `flutter/modulo-7` — Tema 2: Plugins federados — arquitectura de plugin federado (app-facing + platform packages)
 - `flutter/modulo-7` — Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio — permission_handler vs platform channel propio
 - `flutter/modulo-7` — Tema 4: Cámara, galería y carga multipart de una evidencia — image_picker; multipart/form-data
+- `flutter/modulo-7` — Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min — add-to-app
+- `flutter/modulo-7` — Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min — background
 - `flutter/modulo-8` — Tema 1: Animaciones implícitas vs explícitas — AnimatedContainer vs AnimationController
 - `flutter/modulo-8` — Tema 2: Flutter DevTools y detección de jank — DevTools Performance view; jank (frames >16ms)
 - `flutter/modulo-8` — Tema 3: const widgets, RepaintBoundary y shouldRepaint — const constructor evita rebuild; RepaintBoundary
@@ -1175,6 +1230,19 @@
 - `flutter/modulo-9` — Tema 1: Unit tests y widget tests — testWidgets; WidgetTester.pump
 - `flutter/modulo-9` — Tema 2: Mocking con mocktail — mocktail when()/verify()
 - `flutter/modulo-9` — Tema 3: Integration tests — integration_test package
+- `ios/modulo-0` — Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min — ownership
+- `ios/modulo-10` — Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min — localization
+- `ios/modulo-12` — Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min — Swift packages
+- `ios/modulo-13` — Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min — Core Location
+- `ios/modulo-13` — Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min — background tasks
+- `ios/modulo-13` — Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min — biometrics
+- `ios/modulo-14` — Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min — gestures
+- `ios/modulo-14` — Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min — widgets
+- `ios/modulo-14` — Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min — App Intents
+- `ios/modulo-4` — Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min — Sendable; Swift 6 isolation
+- `ios/modulo-4` — Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min — AsyncSequence
+- `ios/modulo-6` — Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min — CloudKit
+- `ios/modulo-6` — Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min — files
 - `java/modulo-0` — Tema 1: Del código fuente a la JVM — compilación fuente→bytecode; classpath (-cp); inspección de bytecode con javap; clase principal ausente (Could not find or load main class); dependencia ausente en runtime (NoClassDefFoundError)
 - `java/modulo-0` — Tema 2: public static void main — qué significa cada palabra — modificadores public/static/void; String[] args y su orden; método main ausente o mal nombrado; forma compacta de Java 25 (JEP 512); visibilidad de la clase vs. visibilidad de main
 - `java/modulo-0` — Tema 3: JDK, JRE y JVM — javac compila / java ejecuta; versión mayor coincidente; java.vm.name y java.version en runtime; JRE ya no es paquete separado desde Java 9 (JEP 220)
@@ -1187,6 +1255,11 @@
 - `java/modulo-1` — Tema 2: Herencia y sobreescritura — extends y super() con constructor propio; @Override detecta error de escritura en compilación; despacho dinámico por tipo concreto, no por tipo declarado; RetentionPolicy.RUNTIME requerido para leer anotaciones por reflexión
 - `java/modulo-1` — Tema 3: Interfaces, clases abstractas y cuándo usar cada una — implements vs extends para interfaces; clase abstracta no instanciable con método pendiente; subclase concreta debe completar todos los métodos abstractos; interfaz + clase abstracta combinadas (contrato + estado compartido)
 - `java/modulo-1` — Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso — sobrecarga por parámetros, no por retorno; sobrecarga (estática) vs sobreescritura (dinámica); private/package-private/protected/public; protected en subclase de otro paquete: solo a través de this, no de una instancia arbitraria de la base
+- `java/modulo-14` — Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min — CDS y AOT
+- `java/modulo-14` — Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min — migración LTS
+- `java/modulo-18` — Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min — criptografía
+- `java/modulo-19` — Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min — class loading
+- `java/modulo-19` — Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min — method handles
 - `java/modulo-21` — Tema 1: Qué es la superficie pública de una API · Básico · 40 min — niveles de acceso frente a superficie real; tipos expuestos en la firma; constante public static final en línea; encapsulación por paquete y JPMS; error de tipo de retorno inaccesible; javap -public como vista del cliente; sacar el tipo interno de la firma
 - `java/modulo-21` — Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min — compatibilidad de fuente frente a binaria; enlace perezoso de la JVM; NoSuchMethodError con descriptor completo; constante en línea no se propaga; casos de ida y vuelta fuente/binario; confundir NoClassDefFoundError con NoSuchMethodError; subir versión mayor con todos los consumidores
 - `java/modulo-21` — Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min — método default como crecimiento seguro; delegación del default al método abstracto; método abstracto añadido rompe binarios; AbstractMethodError frente a NoSuchMethodError; deprecación con forRemoval y since; interfaz sellada cambia el cálculo; documentar la política de retirada
@@ -1197,22 +1270,57 @@
 - `java/modulo-22` — Tema 3: Copia defensiva, copia superficial y clone · Intermedio · 40 min — copia superficial comparte referencias; constructor de copia defensiva; copiar colecciones internas (List.copyOf/new ArrayList); clone() superficial y Cloneable; inmutabilidad como alternativa a copiar; copiar en el getter frente a en el constructor; fuga de estado mutable por referencia compartida
 - `java/modulo-22` — Tema 4: Enums de dominio: estado, código y comportamiento · Intermedio · 45 min — campo propio y constructor privado; comportamiento por constante (método abstracto); ordinal inestable frente a código estable; switch exhaustivo sin default; values() devuelve arreglo nuevo; EnumMap/EnumSet con orden de declaración; serialización por nombre devuelve la misma instancia
 - `java/modulo-22` — Tema 5: Clases anidadas, this$0 y la referencia que retiene · Avanzado · 45 min — clase interna no estática y su exterior; campo sintético this$0; clase anidada static sin exterior; retención del exterior por la interna; this en clase anónima frente a lambda; interna inconstruible sin exterior; static por defecto como decisión de diseño
-- `microservices/modulo-0` — Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min — presupuesto inicial convertido una sola vez; deadline absoluto compartido; cálculo de tiempo restante por salto; propagación sin renovar el instante límite; reserva del llamador para completar la respuesta; rechazo temprano por presupuesto insuficiente; sesgo y sincronización de relojes; límite de confianza para deadlines externos; cancelación local frente a efectos remotos
-- `microservices/modulo-0` — Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min — intención de negocio y clave estable; huella canónica y conflicto de payload; reserva atómica bajo concurrencia; respuesta original almacenada; estados PROCESSING/SUCCEEDED/FAILED; recuperación de reservas huérfanas; ámbito por actor y autorización; TTL según ventana de reintentos; durabilidad y restricción única transaccional
-- `microservices/modulo-0` — Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min — agregado como unidad de orden; versión de dominio; duplicado exacto; evento obsoleto; hueco de secuencia; concurrencia de escritores; compare-and-set; buffer acotado; cuarentena y reconciliación
+- `java/modulo-9` — Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min — property testing
+- `javascript/modulo-14` — Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min — using y await using; DisposableStack
+- `javascript/modulo-6` — Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min — Fetch y streams
+- `javascript/modulo-7` — Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min — top-level await; ciclos; import maps
+- `javascript/modulo-7` — Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min — supply chain
+- `kotlin-multiplatform/modulo-1` — Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min — genéricos
+- `kotlin-multiplatform/modulo-3` — Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min — version catalogs; convention plugins
+- `kotlin-multiplatform/modulo-3` — Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min — JVM; JS y Wasm
+- `kotlin-multiplatform/modulo-6` — Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min — seguridad
+- `kotlin-multiplatform/modulo-7` — Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min — recursos; localización
+- `kotlin-multiplatform/modulo-7` — Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min — deep links
+- `kotlin-multiplatform/modulo-7` — Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min — accesibilidad
+- `kotlin-multiplatform/modulo-7` — Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min — Hot Reload
+- `kotlin-multiplatform/modulo-8` — Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min — UIKit y SwiftUI
+- `kotlin-multiplatform/modulo-9` — Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min — benchmarks
+- `microservices/modulo-0` — Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min — presupuesto inicial convertido una sola vez; deadline absoluto compartido; cálculo de tiempo restante por salto; propagación sin renovar el instante límite; reserva del llamador para completar la respuesta; rechazo temprano por presupuesto insuficiente; sesgo y sincronización de relojes; límite de confianza para deadlines externos; cancelación local frente a efectos remotos
+- `microservices/modulo-0` — Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min — intención de negocio y clave estable; huella canónica y conflicto de payload; reserva atómica bajo concurrencia; respuesta original almacenada; estados PROCESSING/SUCCEEDED/FAILED; recuperación de reservas huérfanas; ámbito por actor y autorización; TTL según ventana de reintentos; durabilidad y restricción única transaccional
+- `microservices/modulo-0` — Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min — agregado como unidad de orden; versión de dominio; duplicado exacto; evento obsoleto; hueco de secuencia; concurrencia de escritores; compare-and-set; buffer acotado; cuarentena y reconciliación
 - `microservices/modulo-0` — Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min — serialización a bytes; framing por longitud; límite antes de reservar; frame truncado; bytes UTF-8 frente a caracteres; tamaño descomprimido; streaming frente a memoria
 - `microservices/modulo-0` — Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min — hipótesis comprobable; perturbación reproducible; señal observable; impacto; mitigación específica; límites del laboratorio; prueba operativa y responsable
-- `microservices/modulo-1` — Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min — contrato compatible; propiedad de datos; despliegue independiente; operación y on-call; beneficio medido; costo distribuido; decisión reversible
-- `microservices/modulo-1` — Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min — motivo de cambio; cohesión funcional; invariante; vocabulario; acoplamiento aferente/eferente; cohesión accidental
-- `microservices/modulo-1` — Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min — API proporcionada; implementación interna; DTO de contrato; modelo compartido; dependencia no Java
-- `microservices/modulo-1` — Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min — política y mecanismo; invariante; tipo de dominio; error de dominio; dependencia hacia dentro; pureza pragmática
-- `microservices/modulo-1` — Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min — puerto de entrada; puerto de salida; adaptador de entrada; adaptador de salida; inversión de dependencias; abstracción accidental
-- `microservices/modulo-1` — Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min — grafo dirigido; dependencia estable; ciclo directo/transitivo; acoplamiento temporal; acoplamiento de datos; ruptura de ciclo
-- `microservices/modulo-1` — Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min — mover responsabilidad; invertir dependencia; evento pasado; acoplamiento temporal; acoplamiento de datos; consistencia eventual; costo de coordinación
-- `microservices/modulo-1` — Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min — importación de bytecode; regla de internals real y ejecutada; mensaje de violación con origen y destino; proyecto compartido con spring-boot/modulo-15 no modificado
-- `microservices/modulo-1` — Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min — slices().matching(...) con el import real de SlicesRuleDefinition; ciclo directo vs transitivo; camino circular completo en el reporte; falso verde por patrón que no captura módulos
-- `microservices/modulo-1` — Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min — failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1; aserción explícita de alcance no vacío como documentación de intención; exclusiones con dueño y vencimiento; controles complementarios fuera de bytecode
+- `microservices/modulo-1` — Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min — contrato compatible; propiedad de datos; despliegue independiente; operación y on-call; beneficio medido; costo distribuido; decisión reversible
+- `microservices/modulo-1` — Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min — motivo de cambio; cohesión funcional; invariante; vocabulario; acoplamiento aferente/eferente; cohesión accidental
+- `microservices/modulo-1` — Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min — API proporcionada; implementación interna; DTO de contrato; modelo compartido; dependencia no Java
+- `microservices/modulo-1` — Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min — política y mecanismo; invariante; tipo de dominio; error de dominio; dependencia hacia dentro; pureza pragmática
+- `microservices/modulo-1` — Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min — puerto de entrada; puerto de salida; adaptador de entrada; adaptador de salida; inversión de dependencias; abstracción accidental
+- `microservices/modulo-1` — Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min — grafo dirigido; dependencia estable; ciclo directo/transitivo; acoplamiento temporal; acoplamiento de datos; ruptura de ciclo
+- `microservices/modulo-1` — Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min — mover responsabilidad; invertir dependencia; evento pasado; acoplamiento temporal; acoplamiento de datos; consistencia eventual; costo de coordinación
+- `microservices/modulo-1` — Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min — importación de bytecode; regla de internals real y ejecutada; mensaje de violación con origen y destino; proyecto compartido con spring-boot/modulo-15 no modificado
+- `microservices/modulo-1` — Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min — slices().matching(...) con el import real de SlicesRuleDefinition; ciclo directo vs transitivo; camino circular completo en el reporte; falso verde por patrón que no captura módulos
+- `microservices/modulo-1` — Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min — failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1; aserción explícita de alcance no vacío como documentación de intención; exclusiones con dueño y vencimiento; controles complementarios fuera de bytecode
 - `microservices/modulo-1` — Tema 12: Medir señales que justifican una extracción · Experto · 40 min — cadencia de cambio; perfil de capacidad atribuido; aislamiento de fallo; ownership completo; acoplamiento de datos; costo distribuido; umbral de revisión
 - `microservices/modulo-1` — Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min — opción de mantener como alternativa real; disparador de revisión cuantificable; consecuencias negativas explícitas; reversión verificable
+- `node/modulo-10` — Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min — permission model
+- `node/modulo-2` — Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min — buffers; blobs; Web APIs compatibles
+- `node/modulo-2` — Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min — compresión
+- `node/modulo-3` — Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min — HTTP/2; TLS
+- `node/modulo-3` — Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min — DNS; TCP/UDP
+- `node/modulo-7` — Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min — coverage
+- `node/modulo-9` — Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min — AsyncLocalStorage; diagnostics_channel
+- `react/modulo-1` — Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min — pureza; estado como snapshot
+- `react/modulo-13` — Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min — migración
+- `react/modulo-2` — Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min — useLayoutEffect; useEffectEvent
+- `react/modulo-3` — Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min — useActionState; useOptimistic
+- `react/modulo-9` — Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min — use
+- `react/modulo-9` — Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min — React Compiler; reglas del compilador
+- `spring-boot/modulo-0` — Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min — lifecycle; graceful shutdown
+- `spring-boot/modulo-11` — Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min — Buildpacks
+- `spring-boot/modulo-18` — Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min — SAML
 - `spring-boot/modulo-26` — Tema 1: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min — autoinvocación bypasea el proxy @Async; bean orquestador separado restaura el proxy; thenCombine/exceptionally/orTimeout sobre CompletableFuture
 - `spring-boot/modulo-26` — Tema 2: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min — deadlock por locks en orden inverso, verificado con join(timeout); orden total consistente elimina el deadlock; Semaphore acota concurrencia máxima; MDC es ThreadLocal y requiere TaskDecorator para propagarse a un executor
+- `spring-boot/modulo-3` — Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min — MongoDB
+- `spring-boot/modulo-5` — Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min — failure analyzers
+- `spring-boot/modulo-7` — Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min — logging
+- `spring-boot/modulo-8` — Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min — JMS

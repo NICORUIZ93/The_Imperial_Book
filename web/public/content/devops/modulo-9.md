@@ -605,6 +605,127 @@ Ya calculas Lead Time real a partir de tu propio historial de Git, y sabes qué 
 
 ---
 
+### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min
+
+**Prerrequisito:** temas «SLI, SLO, SLA» y «Alertmanager y reglas de alerta» de este módulo.
+
+**Al finalizar podrás:** diseñar un experimento con hipótesis, alcance y condición de parada, matar pods de la API mientras se mide el SLO, y decidir con los datos si el sistema resiste.
+
+**¿Por qué es importante?** Los sistemas fallan aunque nadie lo planee. Provocar fallos pequeños y controlados en horario laboral, con el equipo atento, es mejor que descubrirlos a las tres de la mañana. Pero sin hipótesis ni medición, «romper cosas» no enseña nada.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa el clúster local con la API de RutaFlow desplegada con 3 réplicas, un Service y Prometheus. Instala Chaos Mesh con Helm o usa `kubectl delete pod` en un bucle para la versión sin herramientas.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow «sabía» que su API soportaba perder un pod. El primer experimento mostró otra cosa: las peticiones en curso fallaban durante 30 segundos porque el pod no tenía readiness probe y el Service seguía enviándole tráfico.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** hipótesis de estado estable, radio de impacto, condición de parada, inyección de fallos, Chaos Mesh, `PodChaos`, día de juego (*game day*).
+
+Un experimento de caos sigue un método:
+
+1. **Estado estable:** una métrica que muestra que todo va bien (por ejemplo, 99 % de peticiones exitosas en 5 minutos).
+2. **Hipótesis:** «si muere un pod de la API, el estado estable se mantiene».
+3. **Fallo:** el más pequeño que pruebe la hipótesis (un pod, en staging).
+4. **Radio de impacto y parada:** qué puede afectarse y cuándo detener (si los errores pasan del 5 %).
+5. **Conclusión:** si la hipótesis falló, es un hallazgo: se corrige y se repite.
+
+Herramientas como **Chaos Mesh** describen el fallo como un recurso de Kubernetes (`PodChaos`, `NetworkChaos`), con duración y selección de pods.
+
+**Analogía:** es un simulacro de incendio: avisas, defines quién participa, mides cuánto tarda la evacuación y paras si alguien se lastima. La analogía falla en que aquí el «incendio» es real, aunque pequeño: por eso se empieza en staging.
+
+**Límite de uso:** no empieces en producción ni sin observabilidad: si no puedes medir el estado estable, no sabrás qué pasó. Avisa al equipo y define quién puede detener el experimento.
+
+```mermaid
+flowchart LR
+    E["estado estable: éxito >= 99 %"] --> H["hipótesis: perder 1 pod no lo afecta"]
+    H --> F["PodChaos: matar 1 pod cada 30 s"]
+    F --> M{"¿éxito < 95 %?"}
+    M -->|sí| P["parar y registrar hallazgo"]
+    M -->|no| C["confirmar hipótesis"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/caos/pod-kill.yaml`:
+
+```yaml
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: matar-pod-api
+  namespace: staging
+spec:
+  action: pod-kill
+  mode: one              # un solo pod por vez: radio de impacto pequeño
+  selector:
+    namespaces: [staging]
+    labelSelectors: { app: api }
+  duration: "5m"
+```
+
+Archivo `academia-labs/devops/caos/experimento.md`:
+
+```markdown
+# Experimento: perder un pod de la API
+- Estado estable: tasa de éxito >= 99 % (PromQL: sum(rate(http_requests_total{code!~"5.."}[1m])) / sum(rate(http_requests_total[1m])))
+- Hipótesis: con 3 réplicas, matar 1 pod no baja el éxito de 99 %.
+- Alcance: namespace staging, 1 pod por vez, 5 minutos.
+- Parada: si el éxito baja de 95 % durante 1 minuto, kubectl delete podchaos matar-pod-api.
+- Resultado: (completar con los datos)
+```
+
+Ejecútalo:
+
+```bash
+helm repo add chaos-mesh https://charts.chaos-mesh.org
+helm install chaos-mesh chaos-mesh/chaos-mesh -n chaos-mesh --create-namespace
+hey -z 6m -c 10 http://api.staging.local/health &   # carga constante durante el experimento
+kubectl apply -f academia-labs/devops/caos/pod-kill.yaml
+kubectl get pods -n staging -w
+```
+
+**Explicación por bloques:** `experimento.md` deja por escrito el método antes de romper nada: métrica de estado estable con su consulta PromQL, hipótesis, alcance y condición de parada. `pod-kill.yaml` mata un solo pod con la etiqueta `app=api` en staging durante cinco minutos. Mientras tanto, `hey` genera carga constante para que haya peticiones en curso cuando cada pod muere. Con `kubectl get pods -w` ves cómo el Deployment reemplaza cada pod.
+
+**Resultado esperado:**
+
+```text
+kubectl get pods -w muestra pods de la API pasando a Terminating y nuevos pods en ContainerCreating y Running.
+Con readiness probe correcta: la tasa de éxito en Grafana se mantiene por encima de 99 % y hey reporta solo algunos errores aislados.
+Sin readiness probe: hey reporta ráfagas de errores 502/503 y la tasa baja por debajo de 95 %: la hipótesis falla.
+```
+
+**Fallo deliberado:** quita la readiness probe del Deployment de la API y repite el experimento. **Error esperado:** la tasa de éxito cae por debajo de 95 % y se activa la condición de parada. **Diagnóstico:** el Service envía tráfico a pods que todavía no están listos o que ya se están cerrando. Es el hallazgo que el experimento debía revelar: agrega readiness probe y apagado ordenado, y repite.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** escribe tu propio `experimento.md` antes de ejecutar nada.
+2. **Variación:** ejecuta el experimento y registra el mínimo de la tasa de éxito.
+3. **Diagnóstico:** reproduce el fallo deliberado sin readiness probe.
+4. **Integración:** agrega un `NetworkChaos` con 300 ms de latencia hacia la base y mide el p95 de la API.
+5. **Diseño:** organiza un «día de juego» de una hora con el equipo: roles, experimento y reunión de cierre.
+
+**Pista:** si no puedes escribir la condición de parada como una consulta, todavía no estás listo para el experimento.
+
+#### Paso 6 · Práctica independiente
+
+Automatiza el experimento con un `Schedule` de Chaos Mesh que corra cada semana en staging y una alerta que avise si la hipótesis falla.
+
+#### Paso 7 · Cierre
+
+- [ ] Tu experimento tiene hipótesis, alcance y parada escritos.
+- [ ] Mediste el estado estable durante el fallo.
+- [ ] Reprodujiste el hallazgo sin readiness probe.
+- [ ] Sabes por qué no se empieza en producción.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** romper cosas sin hipótesis, empezar en producción y no tener cómo medir el estado estable. **Siguiente paso:** el módulo 14 convierte los hallazgos en alertas que conducen a acciones.
+
+**Transferencia al proyecto integrador «RutaFlow»:** ejecuta en staging el experimento de perder un pod de la API de RutaFlow y registra el resultado y las correcciones en el runbook.
+
+**Fuente oficial:** [Principles of Chaos Engineering](https://principlesofchaos.org/) y [Chaos Mesh — PodChaos](https://chaos-mesh.org/docs/simulate-pod-chaos-on-kubernetes/).
 
 ## Laboratorio práctico
 

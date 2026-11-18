@@ -11,7 +11,7 @@ Cuando subes la ganancia \(K\) de un lazo, los polos de lazo cerrado se mueven. 
 
 ## Aprende construyendo
 
-### Tema 1: Las dos condiciones
+### Tema 1: Las dos condiciones del lugar de las raíces
 
 **¿Por qué es importante?** Las condiciones de ángulo y magnitud son la base de todo el método: deciden qué puntos son polos posibles y con qué ganancia.
 

@@ -8,37 +8,37 @@ El estado «completo» de este reporte solo significa que aparecen los criterios
 
 | Criterio | Cubierto | Pendiente |
 |---|---:|---:|
-| Explicación | 1331 | 0 |
-| Código | 1331 | 0 |
-| Ruta | 1331 | 0 |
-| Ejecución | 1331 | 0 |
-| Resultado | 1331 | 0 |
-| Modificación | 1331 | 0 |
-| Conexión con un proyecto | 1266 | 65 |
-| Modelo mental | 1331 | 0 |
-| Límites | 1331 | 0 |
-| **Perfil de criterios detectado** | **1331** | **0** |
+| Explicación | 1430 | 0 |
+| Código | 1430 | 0 |
+| Ruta | 1430 | 0 |
+| Ejecución | 1430 | 0 |
+| Resultado | 1430 | 0 |
+| Modificación | 1430 | 0 |
+| Conexión con un proyecto | 1365 | 65 |
+| Modelo mental | 1430 | 0 |
+| Límites | 1430 | 0 |
+| **Perfil de criterios detectado** | **1430** | **0** |
 
 ## Prioridad por track
 
 | Track | Temas | Sin código | Sin ruta | Sin ejecución | Sin resultado | Sin modificación | Sin proyecto | Sin límites |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| angular | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| cloud | 156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| android | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| angular | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| cloud | 168 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | control-1 | 70 | 0 | 0 | 0 | 0 | 0 | 65 | 0 |
-| devops | 130 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| flutter | 109 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| devops | 138 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| flutter | 119 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | foundations | 102 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ios | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| java | 111 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| javascript | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| kotlin-multiplatform | 56 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| ios | 69 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| java | 117 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| javascript | 92 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| kotlin-multiplatform | 66 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | microservices | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| node | 83 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| react | 58 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| node | 90 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| react | 64 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | rutaflow | 29 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| spring-boot | 114 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| spring-boot | 121 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Pendientes por tema
 

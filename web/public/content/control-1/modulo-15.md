@@ -335,7 +335,7 @@ cambia el polinomio a `s**3 + 2*s**2 + 3*s + 10` y confirma `raices_en_semiplano
 
 **Límite:** este script resuelve el polinomio exactamente con sympy, algo que no se puede hacer a mano para orden 3 o más; el valor real del arreglo de Routh es que da el conteo de raíces inestables **sin** tener que resolver el polinomio.
 
-### Tema 3: Casos especiales
+### Tema 3: Casos especiales del arreglo de Routh
 
 **¿Por qué es importante?** Los casos especiales aparecen justo en el límite de estabilidad, que es donde se hacen las preguntas difíciles.
 

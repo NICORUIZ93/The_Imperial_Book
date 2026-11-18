@@ -40,6 +40,27 @@ graph TD
     style E fill:#e8f5e9
 ```
 
+**¿Por qué es importante?** `useQuery` elimina el "loading hell" de gestionar manualmente estado de carga/error/cache en cada componente, agregando deduplicación y cache compartida automáticamente.
+**Conceptos clave:** `queryKey`, deduplicación, refetch automático.
+
+Manejar fetching manualmente con `useState` + `useEffect` (guardar el resultado, un booleano de carga, y un posible error, todo como estados separados sincronizados manualmente en cada componente que necesita datos de una API) es un patrón que se repite virtualmente idéntico en cada componente que consume datos remotos, y que además omite fácilmente casos importantes (deduplicación de peticiones idénticas simultáneas desde distintos componentes, revalidación automática cuando el usuario vuelve a la pestaña tras un tiempo ausente, cancelación de peticiones obsoletas) a menos que se implemente esa lógica adicional manualmente y de forma repetida en cada lugar.
+
+`useQuery({ queryKey: ['tareas'], queryFn: () => fetch('/api/tareas').then(r => r.json()) })` reemplaza todo ese patrón manual con una única llamada declarativa: TanStack Query gestiona automáticamente el estado de `isLoading`, `error` y `data`, cachea el resultado bajo la clave `queryKey` proporcionada (permitiendo que múltiples componentes que usan la misma `queryKey` compartan automáticamente el mismo resultado cacheado sin disparar peticiones duplicadas), revalida automáticamente en segundo plano cuando la ventana del navegador recupera el foco (asumiendo que los datos podrían haber cambiado mientras el usuario estaba en otra pestaña), y deduplica peticiones idénticas simultáneas lanzadas por distintos componentes en el mismo instante, consolidándolas en una única petición de red real.
+
+**Analogía:** manejar fetching manualmente con `useState`/`useEffect` en cada componente es como cada persona de una oficina llamando individualmente al mismo proveedor para pedir la misma información, sin coordinarse entre sí; TanStack Query es como un único departamento centralizado que recibe todas esas solicitudes, consulta al proveedor una única vez cuando es necesario, y distribuye la misma respuesta a quien la solicitó, evitando llamadas redundantes.
+
+**Código del ejemplo:**
+
+```jsx
+const { data, isLoading, error } = useQuery({
+  queryKey: ['tareas'],
+  queryFn: () => fetch('/api/tareas').then(r => r.json()),
+});
+```
+
+
+**Límites y decisión de uso:** La caché de consultas no conoce por sí sola cambios realizados fuera de su cliente. Define claves, caducidad e invalidación, y prueba mutaciones y cambio de identidad para no reutilizar datos privados de otra sesión.
+
 #### Paso 4 · Demostración guiada desde cero
 Ejemplo independiente con React, Vite 8 y TanStack Query 5. Comprueba que tu Node es compatible con Vite y crea el proyecto desde una carpeta vacía:
 ```bash
@@ -100,26 +121,6 @@ Corregí el Paso 5 devolviendo `zona` a la `queryKey`, y agregá una tercera con
 
 #### Paso 7 · Cierre
 Entregá la deduplicación del Paso 4, la cache desincronizada por `queryKey` incompleta del Paso 5, y la tercera consulta del Paso 6; explicá por qué la `queryKey` debe incluir cualquier variable que afecte qué datos trae `queryFn`, no solo las que "parecen importantes". Siguiente paso: estudia mutations e invalidación. Errores comunes: una `queryKey` que no incluye todas las variables relevantes del `queryFn`, seguir usando `useState`+`useEffect` para datos que ya tiene una query equivalente, y no aprovechar React Query Devtools para inspeccionar el estado real de la cache. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/queries y https://tanstack.com/query/latest/docs/framework/react/guides/query-keys.
-**¿Por qué es importante?** `useQuery` elimina el "loading hell" de gestionar manualmente estado de carga/error/cache en cada componente, agregando deduplicación y cache compartida automáticamente.
-**Conceptos clave:** `queryKey`, deduplicación, refetch automático.
-
-Manejar fetching manualmente con `useState` + `useEffect` (guardar el resultado, un booleano de carga, y un posible error, todo como estados separados sincronizados manualmente en cada componente que necesita datos de una API) es un patrón que se repite virtualmente idéntico en cada componente que consume datos remotos, y que además omite fácilmente casos importantes (deduplicación de peticiones idénticas simultáneas desde distintos componentes, revalidación automática cuando el usuario vuelve a la pestaña tras un tiempo ausente, cancelación de peticiones obsoletas) a menos que se implemente esa lógica adicional manualmente y de forma repetida en cada lugar.
-
-`useQuery({ queryKey: ['tareas'], queryFn: () => fetch('/api/tareas').then(r => r.json()) })` reemplaza todo ese patrón manual con una única llamada declarativa: TanStack Query gestiona automáticamente el estado de `isLoading`, `error` y `data`, cachea el resultado bajo la clave `queryKey` proporcionada (permitiendo que múltiples componentes que usan la misma `queryKey` compartan automáticamente el mismo resultado cacheado sin disparar peticiones duplicadas), revalida automáticamente en segundo plano cuando la ventana del navegador recupera el foco (asumiendo que los datos podrían haber cambiado mientras el usuario estaba en otra pestaña), y deduplica peticiones idénticas simultáneas lanzadas por distintos componentes en el mismo instante, consolidándolas en una única petición de red real.
-
-**Analogía:** manejar fetching manualmente con `useState`/`useEffect` en cada componente es como cada persona de una oficina llamando individualmente al mismo proveedor para pedir la misma información, sin coordinarse entre sí; TanStack Query es como un único departamento centralizado que recibe todas esas solicitudes, consulta al proveedor una única vez cuando es necesario, y distribuye la misma respuesta a quien la solicitó, evitando llamadas redundantes.
-
-**Código del ejemplo:**
-
-```jsx
-const { data, isLoading, error } = useQuery({
-  queryKey: ['tareas'],
-  queryFn: () => fetch('/api/tareas').then(r => r.json()),
-});
-```
-
-
-**Límites y decisión de uso:** La caché de consultas no conoce por sí sola cambios realizados fuera de su cliente. Define claves, caducidad e invalidación, y prueba mutaciones y cambio de identidad para no reutilizar datos privados de otra sesión.
 
 ### Tema 2: Mutations e invalidación
 

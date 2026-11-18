@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.card').first()).toBeVisible();
-  await expect(page.locator('.hero-stats')).toContainText('15');
+  await expect(page.locator('.hero-stats')).toContainText('16');
 });
 
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
@@ -25,50 +25,31 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
   await expect(page.locator('.group-title').first()).toBeVisible();
   await expect(page.locator('.card')).toHaveCount(16);
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
-  await expect(page.getByRole('link', { name: /Consultar inventario bibliográfico provisional/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Ver el temario completo/ })).toBeVisible();
 });
 
-test('temario bibliográfico: separa los temas actuales de los candidatos y conserva fuentes sin rutas privadas', async ({ page }) => {
+test('temario: solo publica temas con lección real, sin candidatos ni rutas privadas (specs/006 I1)', async ({ page }) => {
   await page.goto('/temario');
 
-  await expect(page.getByRole('heading', { name: /Un índice de temas, no una colección de lecciones/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText('74.189');
-  await expect(page.locator('.curriculum-stats')).toContainText('73.027');
-  await expect(page.locator('.curriculum-stats')).toContainText('18');
-  await expect(page.locator('.curriculum-caveat')).toContainText('no se presentan como lecciones publicadas');
+  await expect(page.getByRole('heading', { name: /Todos los temas, cada uno con su lección/i })).toBeVisible();
+  await expect(page.locator('.curriculum-stats')).toContainText('1430');
+  await expect(page.locator('.stack-row')).toHaveCount(16);
+  await expect(page.locator('body')).not.toContainText('candidato');
 
   await page.goto('/temario/foundations');
   await expect(page.getByRole('heading', { name: 'Fundamentos de Ingeniería de Software' })).toBeVisible();
-  await expect(page.locator('.stack-detail-hero')).toContainText('2421');
-  await page.getByRole('button', { name: 'Candidatos de libros' }).click();
-  await expect(page.locator('.topic-list .topic-row').first()).toContainText('Candidato de libros');
-  await page.locator('.source-details summary').first().click();
-  await expect(page.locator('.source-details').first()).toContainText('p.');
+  const rows = page.locator('.topic-list .topic-row');
+  await expect(rows.first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /Abrir lección/ })).toHaveCount(await rows.count());
   await expect(page.locator('body')).not.toContainText('/Volumes/');
-
-  await page.goto('/temario/foundations');
-  await page.getByRole('button', { name: 'Temas actuales' }).click();
-  await page.getByRole('link', { name: 'Abrir tema actual' }).first().click();
+  await page.getByRole('link', { name: /Abrir lección/ }).first().click();
   await expect(page).toHaveURL(/\/curso\/foundations\/0\/tema\/tema-1$/);
-  await expect(page.locator('.topic-card').first()).toContainText('Del hardware al programa en ejecución');
+  await expect(page.locator('.topic-card').first()).toContainText('Computador, sistema operativo, programa y proceso');
 });
 
-test('temario Angular: incluye el curso de Udemy como fuente provisional y separada', async ({ page }) => {
-  await page.goto('/temario/angular');
-
-  const courseTitle = 'Angular Native: Crea apps nativas para Android y iOS desde cero usando Angular 22';
-  await expect(page.locator('.course-source-card')).toContainText(courseTitle);
-  await expect(page.locator('.course-source-card')).toContainText('no parte de cero absoluto');
-  await page.locator('.course-source-card details summary').click();
-  await expect(page.locator('.course-source-card')).toContainText('Row Level Security');
-
-  await page.getByRole('button', { name: 'Temas de cursos externos' }).click();
-  await expect(page.locator('.section-heading > span')).toContainText('18 resultados');
-  await expect(page.locator('.topic-list .topic-row').first()).toContainText('Angular Native');
-  await page.locator('.topic-list .source-details summary').first().click();
-  const courseLink = page.locator('.topic-list .source-details a').first();
-  await expect(courseLink).toHaveAttribute('href', /^https:\/\/www\.udemy\.com\/course\/angular-native-/);
-  await expect(courseLink).not.toHaveAttribute('href', /fbclid/);
+test('temario de una ruta sin lecciones no existe: no hay stacks propuestos (specs/006 I1)', async ({ page }) => {
+  await page.goto('/temario/electronics');
+  await expect(page.getByRole('heading', { name: 'No se pudo abrir esta ruta' })).toBeVisible();
 });
 
 test('Fundamentos módulo 1: muestra los estados inválidos y bytes UTF-8 en la lección', async ({ page }) => {
@@ -186,7 +167,7 @@ test('Flutter módulo 0: renderiza mixins y el flujo de Future sin confundirlo c
   await page.goto('/curso/flutter/0');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(4);
+  await expect(topics).toHaveCount(7);
   for (const index of [1, 2]) {
     await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
   }
@@ -281,20 +262,20 @@ test('prototipo: los seis contextos muestran contenido y progreso navegable', as
 test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async ({ page }) => {
   const chapters = [
     { track: 'android', module: 17, diagrams: 5 },
-    { track: 'android', module: 18, diagrams: 4 },
+    { track: 'android', module: 18, diagrams: 5 },
     { track: 'cloud', module: 1, diagrams: 5 },
     { track: 'cloud', module: 2, diagrams: 6 },
     { track: 'cloud', module: 4, diagrams: 7 },
-    { track: 'devops', module: 7, diagrams: 6 },
-    { track: 'devops', module: 8, diagrams: 5 },
+    { track: 'devops', module: 7, diagrams: 7 },
+    { track: 'devops', module: 8, diagrams: 6 },
     { track: 'devops', module: 19, diagrams: 4 },
     { track: 'devops', module: 20, diagrams: 4 },
     { track: 'devops', module: 21, diagrams: 4 },
     { track: 'devops', module: 22, diagrams: 4 },
-    { track: 'flutter', module: 5, diagrams: 3 },
+    { track: 'flutter', module: 5, diagrams: 4 },
     { track: 'foundations', module: 8, diagrams: 5 },
-    { track: 'ios', module: 12, diagrams: 3 },
-    { track: 'ios', module: 14, diagrams: 7 },
+    { track: 'ios', module: 12, diagrams: 4 },
+    { track: 'ios', module: 14, diagrams: 10 },
     { track: 'react', module: 6, diagrams: 3 },
     { track: 'spring-boot', module: 2, diagrams: 5 },
   ];

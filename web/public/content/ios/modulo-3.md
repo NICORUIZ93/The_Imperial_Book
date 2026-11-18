@@ -13,37 +13,7 @@ Al finalizar vas a navegar programáticamente de la lista de envíos al `Detalle
 Cuando llega una notificación push de "nueva entrega asignada", RutaFlow necesita abrir `DetalleEnvio` directamente desde código, no esperar a que el conductor navegue manualmente hasta ahí.
 #### Paso 3 · Teoría, modelo mental y analogía
 `NavigationStack` con `.navigationDestination(for:)` declara qué vista corresponde a cada tipo; `NavigationPath` deja manipular ese stack desde código, como un GPS que salta directamente a un punto de la ruta en vez de seguir letrero por letrero.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-struct Envio: Hashable { let guia: String }
 
-struct AppRutaFlow: View {
-    @State private var path = NavigationPath()
-    var body: some View {
-        NavigationStack(path: $path) {
-            ListaEnvios()
-                .navigationDestination(for: Envio.self) { envio in DetalleEnvio(guia: envio.guia) }
-        }
-    }
-}
-// Simula abrir una notificación push:
-// path.append(Envio(guia: "RF-4471"))
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: llamar `path.append(Envio(guia: "RF-4471"))` desde cualquier parte del código navega directamente a `DetalleEnvio`, sin que el usuario haya tocado nada en la lista.
-#### Paso 5 · Práctica guiada
-Pista: agregá un segundo tipo `EnvioUrgente` sin declarar su `.navigationDestination(for:)` correspondiente, y hacé `path.append(EnvioUrgente(guia: "RF-9999"))` — ese es el fallo deliberado: SwiftUI no tiene ninguna vista registrada para ese tipo, y la navegación se queda en un estado indefinido en vez de mostrar `DetalleEnvio`.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando el `.navigationDestination(for: EnvioUrgente.self)` correspondiente, y agregá un botón "volver al inicio" que resetee `path` a un `NavigationPath()` vacío desde cualquier profundidad del stack.
-#### Paso 7 · Cierre
-Entregá la navegación programática funcionando del Paso 4, el destino sin registrar del Paso 5, y el reseteo completo del stack del Paso 6; explicá por qué esto sería difícil de lograr con `NavigationLink` anidados puros, sin `NavigationPath`. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque `NavigationPath` permite manipular el stack de navegación completo desde código (agregar, resetear), habilitando deep links y flujos complejos que serían difíciles de expresar solo con `NavigationLink` anidados.
 **Conceptos clave:** navegación declarada por tipo de dato, manipulable programáticamente.
 
@@ -79,6 +49,38 @@ path.append(tarea) // push programático
 
 **Límites y decisión de uso:** La pila de navegación representa destinos, no autorización sobre sus datos. Guarda identidades estables en lugar de objetos vivos y valida una ruta restaurada: el recurso pudo eliminarse o dejar de pertenecer al usuario.
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+struct Envio: Hashable { let guia: String }
+
+struct AppRutaFlow: View {
+    @State private var path = NavigationPath()
+    var body: some View {
+        NavigationStack(path: $path) {
+            ListaEnvios()
+                .navigationDestination(for: Envio.self) { envio in DetalleEnvio(guia: envio.guia) }
+        }
+    }
+}
+// Simula abrir una notificación push:
+// path.append(Envio(guia: "RF-4471"))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: llamar `path.append(Envio(guia: "RF-4471"))` desde cualquier parte del código navega directamente a `DetalleEnvio`, sin que el usuario haya tocado nada en la lista.
+#### Paso 5 · Práctica guiada
+Pista: agregá un segundo tipo `EnvioUrgente` sin declarar su `.navigationDestination(for:)` correspondiente, y hacé `path.append(EnvioUrgente(guia: "RF-9999"))` — ese es el fallo deliberado: SwiftUI no tiene ninguna vista registrada para ese tipo, y la navegación se queda en un estado indefinido en vez de mostrar `DetalleEnvio`.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 agregando el `.navigationDestination(for: EnvioUrgente.self)` correspondiente, y agregá un botón "volver al inicio" que resetee `path` a un `NavigationPath()` vacío desde cualquier profundidad del stack.
+#### Paso 7 · Cierre
+Entregá la navegación programática funcionando del Paso 4, el destino sin registrar del Paso 5, y el reseteo completo del stack del Paso 6; explicá por qué esto sería difícil de lograr con `NavigationLink` anidados puros, sin `NavigationPath`. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
+
 ### Tema 2: Sheets, full screen covers y TabView
 
 #### Paso 1 · Objetivo y preparación
@@ -87,31 +89,7 @@ Al finalizar vas a decidir, para dos flujos reales de RutaFlow, si necesitan un 
 Confirmar una entrega es una acción rápida y descartable; completar el onboarding de un conductor nuevo (aceptar términos, verificar identidad) es un flujo obligatorio que no debería poder cerrarse deslizando por accidente.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un sheet es abrir un cajón parcialmente sin perder de vista el resto de la habitación; un full screen cover es entrar a una sala separada donde la puerta se cierra completamente — la intensidad de la interrupción debe coincidir con la importancia real de la acción.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-.sheet(isPresented: $mostrarConfirmarEntrega) { ConfirmarEntregaBoton(entregado: $entregado) }
-.fullScreenCover(isPresented: $mostrarOnboarding) { OnboardingConductorView() }
 
-TabView {
-    NavigationStack { ListaEnvios() }.tabItem { Label("Envíos", systemImage: "shippingbox") }
-    NavigationStack { HistorialEnvios() }.tabItem { Label("Historial", systemImage: "clock") }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: la confirmación de entrega aparece como un sheet descartable; el onboarding cubre toda la pantalla sin gesto de descarte trivial; cada pestaña mantiene su propio `NavigationStack`, así que cambiar de "Envíos" a "Historial" y volver preserva el punto exacto donde quedó cada una.
-#### Paso 5 · Práctica guiada
-Pista: cambiá el onboarding obligatorio de `.fullScreenCover` a `.sheet` — ese es el fallo deliberado: ahora el conductor puede deslizar hacia abajo y descartar el onboarding sin completarlo, exactamente la interrupción "liviana" que este flujo NO debería permitir.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a `.fullScreenCover`, y navegá a `DetalleEnvio` dentro de la pestaña "Envíos", cambiá a "Historial", y volvé a "Envíos" — confirmá que seguís viendo `DetalleEnvio`, no la lista desde el principio.
-#### Paso 7 · Cierre
-Entregá la elección correcta de sheet/fullScreenCover del Paso 4, el onboarding descartable por error del Paso 5, y el historial de navegación preservado por pestaña del Paso 6; explicá qué comunica cada nivel de presentación modal sobre qué tan obligatoria es la acción. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 **¿Por qué es importante?** Porque elegir sheet o full screen cover comunica al usuario qué tan obligatoria es la acción, y un onboarding crítico presentado como sheet puede descartarse por error sin completarse.
 **Conceptos clave:** dos niveles de intensidad de presentación modal, cada uno apropiado para un tipo distinto de interrupción.
 
@@ -145,6 +123,32 @@ TabView
 * Proyecto: en el proyecto integrador RutaFlow, presenta la confirmación como sheet y conserva el estado al cerrar.
 
 **Límites y decisión de uso:** Una presentación modal no debe ocultar una tarea incompleta sin posibilidad de recuperación. Define qué se guarda al cerrar y prueba cancelación; evita abrir varios modales simultáneos como respuesta a eventos repetidos.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+.sheet(isPresented: $mostrarConfirmarEntrega) { ConfirmarEntregaBoton(entregado: $entregado) }
+.fullScreenCover(isPresented: $mostrarOnboarding) { OnboardingConductorView() }
+
+TabView {
+    NavigationStack { ListaEnvios() }.tabItem { Label("Envíos", systemImage: "shippingbox") }
+    NavigationStack { HistorialEnvios() }.tabItem { Label("Historial", systemImage: "clock") }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: la confirmación de entrega aparece como un sheet descartable; el onboarding cubre toda la pantalla sin gesto de descarte trivial; cada pestaña mantiene su propio `NavigationStack`, así que cambiar de "Envíos" a "Historial" y volver preserva el punto exacto donde quedó cada una.
+#### Paso 5 · Práctica guiada
+Pista: cambiá el onboarding obligatorio de `.fullScreenCover` a `.sheet` — ese es el fallo deliberado: ahora el conductor puede deslizar hacia abajo y descartar el onboarding sin completarlo, exactamente la interrupción "liviana" que este flujo NO debería permitir.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a `.fullScreenCover`, y navegá a `DetalleEnvio` dentro de la pestaña "Envíos", cambiá a "Historial", y volvé a "Envíos" — confirmá que seguís viendo `DetalleEnvio`, no la lista desde el principio.
+#### Paso 7 · Cierre
+Entregá la elección correcta de sheet/fullScreenCover del Paso 4, el onboarding descartable por error del Paso 5, y el historial de navegación preservado por pestaña del Paso 6; explicá qué comunica cada nivel de presentación modal sobre qué tan obligatoria es la acción. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 
 ### Tema 3: Deep linking y controles de formulario
 
@@ -197,7 +201,7 @@ En tu propio proyecto RutaFlow, escribe este handler en `ContentView.swift`, jun
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 

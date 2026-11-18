@@ -329,6 +329,143 @@ experiencia completa; combínalo con métricas de campo.
 [optimización](https://developer.android.com/build/shrink-code) y
 [Baseline Profiles](https://developer.android.com/topic/performance/baselineprofiles/overview).
 
+### Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min
+
+**Prerrequisito:** tema «R8, recursos, Baseline Profiles y pipeline reproducible» de este módulo.
+
+**Al finalizar podrás:** crear un módulo de Macrobenchmark que mida el arranque en frío y los fotogramas al hacer scroll en una build de release, y comparar el resultado con y sin Baseline Profile.
+
+**¿Por qué es importante?** Las mediciones en una build de depuración engañan: el código no está optimizado. Macrobenchmark instala la build de release, la arranca desde fuera del proceso y repite la medición varias veces, como la vive el usuario.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Android Studio con la plantilla **Baseline Profile / Macrobenchmark** (File > New > New Module). Necesitas un dispositivo real o un emulador con imagen de Android 10+; los resultados de emulador solo sirven para comparar entre sí.
+
+#### Paso 2 · Contexto y caso real
+
+Los conductores de RutaFlow se quejaban de que la app tardaba en abrir al empezar el día. El equipo no sabía si un cambio mejoraba o empeoraba, porque medía con un cronómetro. Con Macrobenchmark, cada pull request muestra el arranque medido.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Macrobenchmark, arranque en frío, `StartupTimingMetric`, `FrameTimingMetric`, iteraciones, `CompilationMode`, mediana y percentil.
+
+**Macrobenchmark** corre en un módulo de pruebas aparte que controla la app desde fuera:
+
+- `measureRepeated` instala, arranca y repite la acción varias veces (**iteraciones**).
+- `StartupTimingMetric` mide el tiempo hasta el primer fotograma (`timeToInitialDisplayMs`).
+- `FrameTimingMetric` mide cuánto tarda cada fotograma durante una interacción, como el scroll.
+- `CompilationMode.None()` simula la app sin optimizar; `CompilationMode.Partial()` aplica el Baseline Profile.
+
+El resultado muestra mínimo, mediana y máximo. Compara **medianas** entre variantes, no una sola ejecución.
+
+**Analogía:** es cronometrar una carrera diez veces con el mismo corredor, en la pista real, en lugar de una vez en el pasillo. La analogía falla en que el dispositivo también influye: compara siempre en el mismo teléfono.
+
+**Límite de uso:** no midas en builds de depuración. Las cifras de un emulador no representan un teléfono real de gama baja. Microbenchmark (otra librería) es para funciones sueltas; Macrobenchmark es para flujos completos.
+
+```mermaid
+flowchart LR
+    T["Módulo :macrobenchmark"] -->|"instala build benchmark"| A["App"]
+    T -->|"10 iteraciones"| A
+    A --> S["StartupTimingMetric"]
+    A --> F["FrameTimingMetric"]
+    S & F --> R["mínimo / mediana / máximo"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `macrobenchmark/src/main/java/co/rutaflow/benchmark/ArranqueBenchmark.kt`:
+
+```kotlin
+package co.rutaflow.benchmark
+
+import androidx.benchmark.macro.CompilationMode
+import androidx.benchmark.macro.FrameTimingMetric
+import androidx.benchmark.macro.StartupMode
+import androidx.benchmark.macro.StartupTimingMetric
+import androidx.benchmark.macro.junit4.MacrobenchmarkRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class ArranqueBenchmark {
+    @get:Rule val regla = MacrobenchmarkRule()
+
+    @Test fun arranqueSinPerfil() = arranque(CompilationMode.None())
+    @Test fun arranqueConPerfil() = arranque(CompilationMode.Partial())
+
+    private fun arranque(modo: CompilationMode) = regla.measureRepeated(
+        packageName = "co.rutaflow.conductor",
+        metrics = listOf(StartupTimingMetric()),
+        compilationMode = modo,
+        startupMode = StartupMode.COLD,
+        iterations = 10,
+    ) { startActivityAndWait() }
+
+    @Test fun scrollListaEnvios() = regla.measureRepeated(
+        packageName = "co.rutaflow.conductor",
+        metrics = listOf(FrameTimingMetric()),
+        iterations = 5,
+        setupBlock = { startActivityAndWait() },
+    ) {
+        val lista = device.findObject(By.res("lista_envios")) // testTag en Compose
+        lista.setGestureMargin(device.displayWidth / 5)
+        lista.fling(Direction.DOWN)
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :macrobenchmark:connectedBenchmarkAndroidTest
+# resultados en macrobenchmark/build/outputs/connected_android_test_additional_output/
+```
+
+**Explicación por bloques:** `MacrobenchmarkRule` controla la app desde fuera. Las dos pruebas de arranque son iguales salvo el modo de compilación: sin perfil y con el Baseline Profile aplicado. Cada una arranca en frío diez veces y espera el primer fotograma. La prueba de scroll abre la app una vez (`setupBlock`), busca la lista por su `testTag` (expuesto con `testTagsAsResourceId` en Compose) y la desliza mientras mide los fotogramas.
+
+**Resultado esperado:**
+
+```text
+ArranqueBenchmark_arranqueSinPerfil
+timeToInitialDisplayMs   min 612,   median 655,   max 720
+ArranqueBenchmark_arranqueConPerfil
+timeToInitialDisplayMs   min 431,   median 462,   max 510
+(las cifras dependen del dispositivo; lo que importa es la diferencia entre medianas)
+```
+
+**Fallo deliberado:** cambia la variante de la app a `debug` en el módulo de benchmark. **Error esperado:** la prueba falla con un aviso de que la app objetivo es depurable (`DEBUGGABLE`). **Diagnóstico:** una build depurable no representa el rendimiento real. Usa la variante `benchmark` que crea la plantilla, firmada como release.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta las pruebas y anota las medianas de arranque.
+2. **Variación:** regenera el Baseline Profile después de agregar una pantalla y vuelve a medir.
+3. **Diagnóstico:** reproduce el fallo deliberado con la variante depurable.
+4. **Integración:** agrega `testTag("lista_envios")` y `Modifier.semantics { testTagsAsResourceId = true }` en la pantalla para que el scroll encuentre la lista.
+5. **Diseño:** define un umbral de arranque para RutaFlow y qué hacer si un pull request lo supera.
+
+**Pista:** compara medianas de la misma prueba en el mismo dispositivo; una sola ejecución no prueba nada.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una prueba que mida el tiempo desde que se toca un envío en la lista hasta que aparece su detalle, con `TraceSectionMetric` y una sección `trace("abrirDetalle")` en el código de la app.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué no se mide en debug.
+- [ ] Obtuviste medianas con y sin perfil.
+- [ ] Reprodujiste el rechazo de la app depurable.
+- [ ] Mides scroll además del arranque.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** medir en debug, comparar ejecuciones sueltas y mezclar resultados de dispositivos distintos. **Siguiente paso:** el módulo 13 convierte estas mediciones en objetivos de calidad por dispositivo y versión.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega Macrobenchmark a la app del conductor de RutaFlow y publica las medianas de arranque en cada pull request.
+
+**Fuente oficial:** [Android Developers — Write a Macrobenchmark](https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview).
+
 ## Proyecto del módulo
 
 Convierte RutaFlow en proyecto multi-módulo con demo/prod, catálogo verificado, release

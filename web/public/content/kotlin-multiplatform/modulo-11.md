@@ -49,6 +49,8 @@ flowchart TD
     Repo --> IOS[iosApp: solo UI]
 ```
 
+**¿Por qué es importante?** El proyecto integrador demuestra el patrón central de KMP en su forma más completa: maximizar código compartido verificado una única vez, aislando en cada plataforma únicamente lo que genuinamente requiere integración nativa específica.
+
 #### Paso 4 · Demostración guiada desde cero
 ```text
 shared/src/
@@ -77,7 +79,6 @@ Corregí el Paso 5 moviendo la validación a `dominio/` en `commonMain`, escribi
 
 #### Paso 7 · Cierre
 Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform-architect-your-app.html.
-**¿Por qué es importante?** El proyecto integrador demuestra el patrón central de KMP en su forma más completa: maximizar código compartido verificado una única vez, aislando en cada plataforma únicamente lo que genuinamente requiere integración nativa específica.
 
 ### Tema 2: Sincronización de datos remotos con caché local
 
@@ -132,6 +133,8 @@ En tu núcleo compartido de RutaFlow puedes resolver el mismo problema desde el 
 
 **Cuándo no conviene este patrón:** si los datos cambian con una frecuencia tan alta que una lectura desde caché desactualizada induce al usuario a tomar una decisión incorrecta (precios en una subasta en vivo, por ejemplo), servir un fallback silencioso es peor que mostrar explícitamente un error de conectividad; el trade-off entre disponibilidad (mostrar algo, aunque esté desactualizado) y consistencia (no mostrar nada que no esté confirmado) depende del costo real de un dato obsoleto en ese dominio específico.
 
+**¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
+
 #### Paso 4 · Demostración guiada desde cero
 ```kotlin
 class TareaRepositoryImpl(
@@ -163,11 +166,10 @@ Pista: quitá el bloque `try/catch` dejando solo la llamada directa a `api.get(.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.selectTodas()`, y verificá manualmente el comportamiento apagando el servidor Floci local (Módulo 5) y confirmando que la pantalla sigue mostrando las tareas de la última sincronización exitosa.
 
+**Proyecto integrador:** implementa en RutaFlow un `EnvioRepository` compartido que persista la última respuesta válida y muéstrela con antigüedad visible cuando falle la sincronización, sin presentarla como confirmación nueva.
+
 #### Paso 7 · Cierre
 Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-response-validation.html y https://sqldelight.github.io/sqldelight/2.1.0/.
-**¿Por qué es importante?** Combinar Ktor y SQLDelight en el repositorio compartido, con fallback offline a la caché local, hace que ambas plataformas se beneficien exactamente del mismo comportamiento de resiliencia ante conectividad intermitente, sin duplicar esa lógica de sincronización por separado.
-
-**Proyecto integrador:** implementa en RutaFlow un `EnvioRepository` compartido que persista la última respuesta válida y muéstrela con antigüedad visible cuando falle la sincronización, sin presentarla como confirmación nueva.
 
 ### Tema 3: Cierre del track — la promesa realista de KMP
 

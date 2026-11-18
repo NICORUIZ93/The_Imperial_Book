@@ -259,6 +259,135 @@ Construí una tabla de tres filas (clave exacta / relación multi-salto / texto 
 #### Paso 7 · Cierre
 Entregá las tres consultas nativas del Paso 4, el Scan forzado y lento del Paso 5, y la tabla de decisión del Paso 6; explicá por qué en sistemas reales es común usar los tres almacenes a la vez para distintas partes del mismo dominio, en vez de elegir uno solo "para todo". Siguiente paso: búsqueda. Errores comunes: modelar sin medir y olvidar cardinalidad. Fuente oficial: https://docs.aws.amazon.com/architecture-well-architected/latest/framework/welcome.html.
 
+### Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min
+
+**Prerrequisito:** tema «Eligiendo entre Neptune, OpenSearch…» de este módulo.
+
+**Al finalizar podrás:** modelar lecturas de sensores como serie temporal, reducir su resolución por hora con mínimo, promedio y máximo, y decidir cuándo usar una base especializada (Timestream, InfluxDB) en lugar de una relacional.
+
+**¿Por qué es importante?** Los camiones refrigerados de RutaFlow envían la temperatura cada minuto: medio millón de filas al día. Guardarlas todas para siempre y consultarlas con la misma resolución vuelve lentos los reportes y caro el almacenamiento.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior (trae SQLite). Crea la carpeta `academia-labs/cloud/series`. No necesitas instalar nada.
+
+#### Paso 2 · Contexto y caso real
+
+Un cliente farmacéutico exige demostrar que su carga nunca superó 8 °C. El reporte mensual con lecturas por minuto tardaba minutos en generarse. Un resumen por hora con el máximo responde la pregunta en milisegundos sin perder el pico.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** serie temporal, marca de tiempo, etiqueta (dimensión), reducción de resolución (*downsampling*), agregados, política de retención, almacenamiento por niveles.
+
+Una **serie temporal** es una secuencia de valores con su instante y unas **etiquetas** (qué camión, qué sensor). Se escribe casi siempre al final (datos nuevos) y se consulta por rangos de tiempo.
+
+Prácticas básicas:
+
+- **Reducir la resolución:** guardar resúmenes por hora o por día con **mínimo, promedio y máximo**. El máximo conserva los picos que importan (la puerta abierta).
+- **Retención por niveles:** datos crudos por días, resúmenes por hora por meses, por día por años.
+- **Índice por etiqueta y tiempo**, porque casi todas las consultas filtran así.
+
+| Base | Úsala cuando |
+|---|---|
+| relacional con índice | volumen moderado y pocas consultas de tiempo |
+| Timestream, InfluxDB, TimescaleDB | millones de puntos al día, retención automática, funciones de tiempo |
+
+**Analogía:** es el diario de temperatura de una nevera: no hace falta leer cada minuto del año, basta el resumen de cada hora; pero si una hora tuvo un pico, el resumen debe mostrarlo. La analogía falla en que el resumen se calcula solo, no a mano.
+
+**Límite de uso:** el promedio solo esconde los picos: guarda siempre el máximo y el mínimo. Si borras los datos crudos, no podrás recalcular con otro intervalo; decide la retención con el área de negocio y la regulación.
+
+```mermaid
+flowchart LR
+    S["sensor cada minuto"] --> C["crudo: 7 días"]
+    C -->|"por hora: min, prom, max"| H["horario: 12 meses"]
+    H -->|"por día"| D["diario: 5 años"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/series/series.py`:
+
+```python
+import sqlite3
+from datetime import datetime, timedelta
+
+db = sqlite3.connect(":memory:")
+# Tabla típica de series temporales: tiempo + etiqueta + valor, ordenada por tiempo.
+db.execute("CREATE TABLE temperatura (instante TEXT, camion TEXT, grados REAL)")
+db.execute("CREATE INDEX idx_tiempo ON temperatura (camion, instante)")
+
+inicio = datetime(2026, 11, 18, 8, 0)
+lecturas = []
+for minuto in range(180):  # 3 horas, una lectura por minuto
+    grados = 4.0 + (minuto % 60) / 30  # sube durante cada hora y vuelve a bajar
+    if minuto == 125:
+        grados = 9.5                   # puerta abierta: pico
+    lecturas.append(((inicio + timedelta(minutes=minuto)).isoformat(), "CAM-7", grados))
+db.executemany("INSERT INTO temperatura VALUES (?, ?, ?)", lecturas)
+
+# Reducción de resolución (downsampling): una fila por hora con mínimo, promedio y máximo.
+filas = db.execute("""
+    SELECT substr(instante, 1, 13) || ':00' AS hora,
+           round(min(grados), 1), round(avg(grados), 1), round(max(grados), 1), count(*)
+    FROM temperatura WHERE camion = 'CAM-7'
+    GROUP BY hora ORDER BY hora
+""").fetchall()
+
+print(f"{len(lecturas)} lecturas crudas -> {len(filas)} filas por hora")
+for hora, minimo, promedio, maximo, n in filas:
+    alerta = "  <- revisar cadena de frío" if maximo > 8 else ""
+    print(f"{hora}  min {minimo}  prom {promedio}  max {maximo}  ({n} lecturas){alerta}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/series
+python3 series.py
+```
+
+**Explicación por bloques:** La tabla tiene la forma típica: instante, etiqueta (`camion`) y valor, con un índice por etiqueta y tiempo. Se generan 180 lecturas de tres horas con un pico de 9,5 °C a los 125 minutos (una puerta abierta). La consulta agrupa por hora (los primeros 13 caracteres del instante) y calcula mínimo, promedio, máximo y cantidad. El promedio de las 10:00 apenas cambia (5,1), pero el máximo muestra el pico, y por eso la alerta se basa en el máximo.
+
+![Captura de terminal: 180 lecturas se reducen a 3 filas por hora y la hora de las 10:00 muestra un máximo de 9.5 grados con alerta de cadena de frío](content/figures/cloud/series-temporales.svg)
+
+**Resultado esperado:**
+
+```text
+180 lecturas crudas -> 3 filas por hora
+2026-11-18T08:00  min 4.0  prom 5.0  max 6.0  (60 lecturas)
+2026-11-18T09:00  min 4.0  prom 5.0  max 6.0  (60 lecturas)
+2026-11-18T10:00  min 4.0  prom 5.1  max 9.5  (60 lecturas)  <- revisar cadena de frío
+```
+
+**Fallo deliberado:** quita `max(grados)` del resumen y alerta cuando el promedio pase de 8. **Error esperado:** ninguna hora genera alerta, aunque hubo 9,5 °C. **Diagnóstico:** el promedio esconde los picos. Para cumplimiento, guarda y revisa el máximo de cada periodo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el script y ubica el pico en el resumen.
+2. **Variación:** cambia el resumen a intervalos de 15 minutos y compara.
+3. **Diagnóstico:** reproduce el fallo deliberado con el promedio.
+4. **Integración:** agrega una tabla `temperatura_hora` y un paso que borre los datos crudos de más de 7 días después de resumirlos.
+5. **Diseño:** escribe la política de retención de RutaFlow para temperatura y posiciones GPS.
+
+**Pista:** antes de borrar datos crudos, pregunta qué consulta futura los necesitaría.
+
+#### Paso 6 · Práctica independiente
+
+Escribe la misma consulta para Amazon Timestream (`bin(time, 1h)`, `max`, `avg`) o InfluxDB (`aggregateWindow`) y compara con la de SQLite.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas instante, etiqueta y valor.
+- [ ] El resumen muestra el pico de 9,5 °C.
+- [ ] Reprodujiste la alerta perdida con el promedio.
+- [ ] Tienes una política de retención por niveles.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** resumir solo con promedio, guardar datos crudos para siempre y no indexar por etiqueta y tiempo. **Siguiente paso:** el tema «OpenSearch — modo simulado y modo real» busca dentro de registros de texto, otro tipo de dato que crece con el tiempo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda la temperatura de los camiones de RutaFlow como serie temporal con resúmenes por hora y alertas por el máximo.
+
+**Fuente oficial:** [Amazon Timestream — Concepts](https://docs.aws.amazon.com/timestream/latest/developerguide/concepts.html) y [InfluxDB — Downsample and retain data](https://docs.influxdata.com/influxdb/v2/process-data/common-tasks/downsample-data/).
+
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

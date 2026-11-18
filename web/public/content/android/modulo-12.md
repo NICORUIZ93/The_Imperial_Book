@@ -310,6 +310,145 @@ Ya articulas, con una checklist verificable contra artefactos de código reales,
 
 ---
 
+### Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min
+
+**Prerrequisito:** temas «Arquitectura MVVM completa con UDF» e «Inyección de dependencias en toda la app» de este módulo.
+
+**Al finalizar podrás:** extraer una regla de negocio del ViewModel a un caso de uso de Kotlin puro, combinar dos repositorios en él y probarlo sin Android.
+
+**¿Por qué es importante?** Cuando la regla «¿puede este conductor tomar otro envío?» vive en un ViewModel, se duplica en cada pantalla que la necesita y solo se puede probar con dependencias de Android. Un caso de uso la deja en un solo lugar, fácil de probar.
+
+#### Paso 1 · Objetivo y preparación
+
+Continúa la app `RutaFlowConductor` con Hilt configurado. Crea el paquete `co.rutaflow.conductor.domain`. Los casos de uso no importan nada de `android.*`.
+
+#### Paso 2 · Contexto y caso real
+
+La pantalla de lista y la de detalle de RutaFlow calculaban por separado si el conductor tenía capacidad para un envío más. Una cambió el límite de peso y la otra no, y los conductores veían respuestas distintas según la pantalla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** capa de dominio, caso de uso, `operator fun invoke`, repositorio, Kotlin puro, prueba unitaria sin Android.
+
+La guía de arquitectura de Android propone tres capas: **UI** (pantallas y ViewModels), **dominio** (opcional) y **datos** (repositorios). La capa de dominio contiene **casos de uso**: clases pequeñas con una sola responsabilidad que combinan datos de uno o más repositorios y aplican reglas del negocio.
+
+- Un caso de uso se nombra con un verbo: `PuedeTomarEnvioUseCase`.
+- Expone una sola función, normalmente `operator fun invoke(...)`, para llamarlo como `puedeTomar(envio)`.
+- No conoce Android ni la interfaz: recibe datos y devuelve un resultado.
+
+Solo crea casos de uso cuando la lógica se reutiliza o es compleja; si un ViewModel solo pasa datos de un repositorio, un caso de uso agrega una capa vacía.
+
+**Analogía:** el caso de uso es el reglamento del depósito pegado en una sola pared: todos los turnos lo consultan en el mismo lugar. La analogía falla en que el reglamento no sabe quién lo lee; el caso de uso tampoco sabe qué pantalla lo llama.
+
+**Límite de uso:** no crees un caso de uso por cada llamada a un repositorio. No pongas en el dominio formatos de pantalla (textos, colores): eso es de la UI.
+
+```mermaid
+flowchart LR
+    L["ListaViewModel"] --> U["PuedeTomarEnvioUseCase"]
+    D["DetalleViewModel"] --> U
+    U --> C["ConductorRepository"]
+    U --> E["EnvioRepository"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `app/src/main/java/co/rutaflow/conductor/domain/PuedeTomarEnvioUseCase.kt`:
+
+```kotlin
+package co.rutaflow.conductor.domain
+
+import javax.inject.Inject
+
+data class Envio(val codigo: String, val kilos: Int)
+data class Conductor(val id: String, val capacidadKilos: Int, val cargaActualKilos: Int)
+
+interface ConductorRepository { suspend fun actual(): Conductor }
+
+sealed interface Decision {
+    data object Puede : Decision
+    data class NoPuede(val faltanKilos: Int) : Decision
+}
+
+class PuedeTomarEnvioUseCase @Inject constructor(
+    private val conductores: ConductorRepository,
+) {
+    suspend operator fun invoke(envio: Envio): Decision {
+        val conductor = conductores.actual()
+        val libre = conductor.capacidadKilos - conductor.cargaActualKilos
+        return if (envio.kilos <= libre) Decision.Puede else Decision.NoPuede(envio.kilos - libre)
+    }
+}
+```
+
+Archivo `app/src/test/java/co/rutaflow/conductor/domain/PuedeTomarEnvioUseCaseTest.kt`:
+
+```kotlin
+package co.rutaflow.conductor.domain
+
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class PuedeTomarEnvioUseCaseTest {
+    private val repo = object : ConductorRepository {
+        override suspend fun actual() = Conductor("C-7", capacidadKilos = 100, cargaActualKilos = 80)
+    }
+    private val puedeTomar = PuedeTomarEnvioUseCase(repo)
+
+    @Test fun `acepta si cabe`() = runTest { assertEquals(Decision.Puede, puedeTomar(Envio("ENV-1", 20))) }
+
+    @Test fun `rechaza y dice cuánto falta`() = runTest {
+        assertEquals(Decision.NoPuede(faltanKilos = 5), puedeTomar(Envio("ENV-2", 25)))
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :app:testDebugUnitTest --tests "*PuedeTomarEnvioUseCaseTest"
+```
+
+**Explicación por bloques:** El caso de uso recibe por constructor un `ConductorRepository` (Hilt lo inyecta en la app). Su único método calcula la capacidad libre y devuelve una `Decision` sellada: `Puede` o `NoPuede` con los kilos que faltan, para que la pantalla muestre un mensaje útil. La prueba usa un repositorio falso de una línea y `runTest` para la función `suspend`; corre en la JVM, sin emulador.
+
+**Resultado esperado:**
+
+```text
+> Task :app:testDebugUnitTest
+PuedeTomarEnvioUseCaseTest > acepta si cabe PASSED
+PuedeTomarEnvioUseCaseTest > rechaza y dice cuánto falta PASSED
+BUILD SUCCESSFUL
+```
+
+**Fallo deliberado:** agrega en el caso de uso `import android.util.Log` y un `Log.d(...)`. **Error esperado:** la prueba falla con `Method d in android.util.Log not mocked`. **Diagnóstico:** el dominio dejó de ser Kotlin puro. Quita la dependencia de Android; si necesitas registrar, inyecta una interfaz propia.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta las pruebas y lee el reporte en `app/build/reports/tests`.
+2. **Variación:** agrega un límite de diez envíos por conductor y una nueva decisión `NoPuede` por cantidad.
+3. **Diagnóstico:** reproduce el fallo deliberado con `android.util.Log`.
+4. **Integración:** usa el caso de uso desde dos ViewModels y comprueba que dan la misma respuesta.
+5. **Diseño:** revisa los ViewModels de la app y lista qué lógica merece un caso de uso y cuál no.
+
+**Pista:** si una regla aparece en dos ViewModels, es candidata a caso de uso.
+
+#### Paso 6 · Práctica independiente
+
+Crea `CalcularRutaDelDiaUseCase` que combine `EnvioRepository` y `ConductorRepository` y ordene los envíos por cercanía; pruébalo con datos falsos.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué va en la capa de dominio y qué no.
+- [ ] Las dos pruebas pasan sin emulador.
+- [ ] Reprodujiste el error por usar Android en el dominio.
+- [ ] Sabes cuándo no crear un caso de uso.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear casos de uso vacíos, importar Android en el dominio y devolver textos de pantalla desde el dominio. **Siguiente paso:** el tema «Cierre del track» reúne estas capas en la app completa.
+
+**Transferencia al proyecto integrador «RutaFlow»:** mueve la regla de capacidad del conductor de RutaFlow a `PuedeTomarEnvioUseCase` y úsala en la lista y el detalle.
+
+**Fuente oficial:** [Android Developers — Domain layer](https://developer.android.com/topic/architecture/domain-layer).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una app Android con Compose, datos reales, persistencia offline y tests.

@@ -136,6 +136,19 @@ Al finalizar vas a resolver dinámicamente el puerto real de `demo-cache` (Tema 
 Si el servicio de RutaFlow que lee posiciones GPS tuviera el puerto de `demo-cache` hardcodeado y alguien creara un segundo clúster de prueba, el puerto real podría no ser el que el código asume.
 #### Paso 3 · Teoría, modelo mental y analogía
 Crear el clúster instala la flota; `describe-replication-groups` es preguntarle a recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma.
+
+**Conceptos clave:** `CreateReplicationGroup`, `DescribeReplicationGroups`, puerto de conexión dinámico.
+
+Crear un clúster es una sola llamada: `CreateReplicationGroup` con un identificador y una descripción arranca el contenedor Valkey correspondiente. El puerto real de conexión no lo eliges tú directamente: se lo pides a Floci con `DescribeReplicationGroups`, que devuelve el `PrimaryEndpoint.Port` asignado dentro del rango configurado — el mismo patrón de "no asumas el puerto, pregúntalo" que ya viste con otros servicios de Floci respaldados por contenedores reales, como Neptune o RDS. Una vez que tienes el puerto, te conectas con cualquier cliente Redis estándar apuntando a `localhost:<puerto>`.
+
+Eliminar el clúster (`DeleteReplicationGroup`) detiene y elimina el contenedor Docker subyacente, liberando el puerto para futuros clústeres. Como con cualquier caché, recuerda que los datos en modo memoria desaparecen al eliminar el clúster — si necesitas persistencia entre reinicios, ese es un caso de uso distinto (bases de datos) más que de caché.
+
+**Analogía:** pedir el puerto de conexión con `DescribeReplicationGroups` es como preguntar en recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma: cada clúster nuevo puede terminar en un número de puerto distinto dentro del rango disponible.
+
+**¿Por qué es importante?** Este patrón de "no hardcodees el puerto, consúltalo" es exactamente el que necesitas para escribir código de aplicación robusto que no se rompa si en algún momento cambia la configuración de rango de puertos de tu entorno de Floci.
+
+**Cuándo no usarlo:** no hardcodees `6379` en tu aplicación pensando que siempre será ese puerto; en Floci, con varios clústeres activos, ya viste que no lo es.
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
@@ -161,17 +174,6 @@ Resultado esperado: el puerto devuelto cae dentro del rango 6379–6399, y `ping
 Pista: probá `aws elasticache describe-replication-groups --replication-group-id demo-cache-que-no-existe` — ese es el fallo deliberado: `ReplicationGroupNotFoundFault`, dejando claro que consultar el endpoint de un grupo que nunca creaste no devuelve un puerto "por defecto", directamente falla.
 #### Paso 6 · Práctica independiente
 Creá un segundo clúster (`demo-cache-2`) y confirmá que `describe-replication-groups` le asigna un puerto distinto al de `demo-cache` — la prueba concreta de que el puerto no se puede asumir fijo en el código.
-#### Paso 7 · Cierre
-Entregá el puerto resuelto y el `PONG` del Paso 4, el error de grupo inexistente del Paso 5, y los dos puertos distintos del Paso 6; explicá por qué hardcodear `6379` en el servicio de RutaFlow sería un error incluso si "funciona hoy". Siguiente paso: autenticación. Errores comunes: fijar IP y no esperar estado available. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-replication-groups.html.
-**Conceptos clave:** `CreateReplicationGroup`, `DescribeReplicationGroups`, puerto de conexión dinámico.
-
-Crear un clúster es una sola llamada: `CreateReplicationGroup` con un identificador y una descripción arranca el contenedor Valkey correspondiente. El puerto real de conexión no lo eliges tú directamente: se lo pides a Floci con `DescribeReplicationGroups`, que devuelve el `PrimaryEndpoint.Port` asignado dentro del rango configurado — el mismo patrón de "no asumas el puerto, pregúntalo" que ya viste con otros servicios de Floci respaldados por contenedores reales, como Neptune o RDS. Una vez que tienes el puerto, te conectas con cualquier cliente Redis estándar apuntando a `localhost:<puerto>`.
-
-Eliminar el clúster (`DeleteReplicationGroup`) detiene y elimina el contenedor Docker subyacente, liberando el puerto para futuros clústeres. Como con cualquier caché, recuerda que los datos en modo memoria desaparecen al eliminar el clúster — si necesitas persistencia entre reinicios, ese es un caso de uso distinto (bases de datos) más que de caché.
-
-**Analogía:** pedir el puerto de conexión con `DescribeReplicationGroups` es como preguntar en recepción "¿en qué habitación me hospedé?" en vez de asumir que siempre es la misma: cada clúster nuevo puede terminar en un número de puerto distinto dentro del rango disponible.
-
-**¿Por qué es importante?** Este patrón de "no hardcodees el puerto, consúltalo" es exactamente el que necesitas para escribir código de aplicación robusto que no se rompa si en algún momento cambia la configuración de rango de puertos de tu entorno de Floci.
 
 **Practícalo tú:**
 
@@ -186,11 +188,12 @@ redis-cli -h localhost -p "$PUERTO" ping
 
 **Modifica esto:** crea un segundo clúster (`demo-cache-2`) y confirma que `describe-replication-groups` le asigna un puerto distinto al primero — la prueba de que no puedes asumir un puerto fijo.
 
-**Cuándo no usarlo:** no hardcodees `6379` en tu aplicación pensando que siempre será ese puerto; en Floci, con varios clústeres activos, ya viste que no lo es.
-
 **Cómo crece tu proyecto:** el servicio lee este puerto dinámicamente desde `describe-replication-groups` al arrancar, en vez de asumirlo fijo en su configuración.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Levanta un clúster de prueba y conecta el backend con su cliente estándar. Prueba reconexión después de un reinicio y conserva el error controlado que aparece mientras el servicio no está disponible.
+
+#### Paso 7 · Cierre
+Entregá el puerto resuelto y el `PONG` del Paso 4, el error de grupo inexistente del Paso 5, y los dos puertos distintos del Paso 6; explicá por qué hardcodear `6379` en el servicio de RutaFlow sería un error incluso si "funciona hoy". Siguiente paso: autenticación. Errores comunes: fijar IP y no esperar estado available. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-replication-groups.html.
 
 ### Tema 4: Autenticación IAM para el plano de datos de ElastiCache
 

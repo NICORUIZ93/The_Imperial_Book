@@ -65,6 +65,25 @@ flowchart TD
     RES --> DRAWABLE
 ```
 
+**Errores comunes:** escribir código Kotlin directamente dentro de `res/` por error de ubicación; modificar `AndroidManifest.xml` sin sincronizar Gradle después, dejando cambios sin aplicar realmente al build.
+
+**Cuándo no usarlo:** para un prototipo desechable de un único archivo sin intención de mantenerlo ni traducirlo, seguir esta estructura completa con múltiples módulos Gradle es una sobre-ingeniería; la plantilla mínima de un solo módulo `:app` es suficiente en ese caso.
+
+##### Profundización · Diseño: Estructura del proyecto integrador RutaFlow
+
+**Escenario real:** El proyecto integrador RutaFlow (entregas en tiempo real) necesita capturar ubicación, manejar permisos, y ejecutar trabajo en background. La estructura que aprendiste en este tema es exactamente cómo RutaFlow organiza su código.
+
+**Decisiones de diseño observables:**
+1. Definición clara de `data class LocationPolicy` — no es solo un mapa, es una clase tipada con responsabilidad única (política de GPS).
+2. `fun locationPolicy(activity, batteryPercent)` es una función pura sin side effects — testeable y predecible.
+3. Separación entre decisión (qué política aplicar según contexto) y ejecución (que tu Activity implementará en módulos posteriores).
+
+**Límites y trade-offs:**
+- Una política centralizada aporta consistencia; pero implementarla requiere integración con `WorkManager` en módulos posteriores.
+- Externalizar a `LocationPolicy.kt` permite testeo unitario sin emulador; ceder eso por hardcodeo gana "velocidad" falsa.
+
+`LocationPolicy` es un ejemplo de lógica de dominio pura (decide el intervalo de muestreo sin tocar ningún sensor real). El mismo criterio de separación — decidir una política sin acoplarla al recurso físico que la ejecuta — es el que aplicarás en **Ciclo de vida** (Módulo 1) al decidir en qué método del ciclo de vida iniciar y liberar un sensor real (por ejemplo, una suscripción a ubicación), sin que esa decisión dependa de cómo se calculó la política.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Desde una carpeta vacía, crea un proyecto nuevo con la plantilla **Empty Activity** (Kotlin + Compose) desde Android Studio, llamado `academia-android`, e inspecciona su estructura real (`app/src/main/`) desde la terminal integrada:
@@ -106,18 +125,6 @@ Ejecuta `find app/src/main/res -type d` y para cada carpeta que veas (`values/`,
 
 Agrega un nuevo recurso de color en `app/src/main/res/values/colors.xml` (créalo si no existe) y úsalo desde el `MainActivity.kt` generado por la plantilla, confirmando con `grep` que el color se referencia por nombre de recurso (`R.color.tu_color`), no como un valor hexadecimal hardcodeado en Kotlin.
 
-#### Paso 7 · Cierre
-
-Ya ubicas con confianza dónde vive el código, los recursos y la configuración de build de cualquier proyecto Android. El siguiente tema profundiza específicamente en cómo y por qué externalizar recursos de texto. Fuente oficial: [Android Developers — App resources overview](https://developer.android.com/guide/topics/resources/providing-resources).
-
-**Errores comunes:** escribir código Kotlin directamente dentro de `res/` por error de ubicación; modificar `AndroidManifest.xml` sin sincronizar Gradle después, dejando cambios sin aplicar realmente al build.
-
-**Cuándo no usarlo:** para un prototipo desechable de un único archivo sin intención de mantenerlo ni traducirlo, seguir esta estructura completa con múltiples módulos Gradle es una sobre-ingeniería; la plantilla mínima de un solo módulo `:app` es suficiente en ese caso.
-
-#### Profundización · Diseño: Estructura del proyecto integrador RutaFlow
-
-**Escenario real:** El proyecto integrador RutaFlow (entregas en tiempo real) necesita capturar ubicación, manejar permisos, y ejecutar trabajo en background. La estructura que aprendiste en este tema es exactamente cómo RutaFlow organiza su código.
-
 **Tu tarea:** parte de una carpeta vacía y crea con Android Studio un proyecto llamado `LocationPolicyLab` usando la plantilla Empty Activity. Añade un módulo Android Library llamado `:core` y crea manualmente `core/src/main/java/com/rutaflow/core/LocationPolicy.kt`. La política de muestreo de ubicación (basada en batería y actividad) vivirá en `:core`, separada de la UI y de la integración con sensores:
 
 ```kotlin
@@ -140,16 +147,9 @@ fun locationPolicy(activity: RouteActivity, batteryPercent: Int): LocationPolicy
 
 Ejecuta `./gradlew :core:assembleDebug` desde la carpeta `LocationPolicyLab`. Después añade en `core/src/test/java/com/rutaflow/core/LocationPolicyTest.kt` pruebas JUnit para batería baja, conducción y un porcentaje inválido; verifica los intervalos y distancias con `./gradlew :core:testDebugUnitTest`.
 
-**Decisiones de diseño observables:**
-1. Definición clara de `data class LocationPolicy` — no es solo un mapa, es una clase tipada con responsabilidad única (política de GPS).
-2. `fun locationPolicy(activity, batteryPercent)` es una función pura sin side effects — testeable y predecible.
-3. Separación entre decisión (qué política aplicar según contexto) y ejecución (que tu Activity implementará en módulos posteriores).
+#### Paso 7 · Cierre
 
-**Límites y trade-offs:**
-- Una política centralizada aporta consistencia; pero implementarla requiere integración con `WorkManager` en módulos posteriores.
-- Externalizar a `LocationPolicy.kt` permite testeo unitario sin emulador; ceder eso por hardcodeo gana "velocidad" falsa.
-
-`LocationPolicy` es un ejemplo de lógica de dominio pura (decide el intervalo de muestreo sin tocar ningún sensor real). El mismo criterio de separación — decidir una política sin acoplarla al recurso físico que la ejecuta — es el que aplicarás en **Ciclo de vida** (Módulo 1) al decidir en qué método del ciclo de vida iniciar y liberar un sensor real (por ejemplo, una suscripción a ubicación), sin que esa decisión dependa de cómo se calculó la política.
+Ya ubicas con confianza dónde vive el código, los recursos y la configuración de build de cualquier proyecto Android. El siguiente tema profundiza específicamente en cómo y por qué externalizar recursos de texto. Fuente oficial: [Android Developers — App resources overview](https://developer.android.com/guide/topics/resources/providing-resources).
 
 ### Tema 2: Recursos externalizados
 
@@ -186,6 +186,16 @@ flowchart TD
     SEL --> NIGHT
     SEL --> XHDPI
 ```
+
+**Errores comunes:** agregar una traducción nueva sin mantener la misma clave exacta que la versión por defecto, rompiendo la resolución automática; hardcodear un string directamente en un composable "solo por ahora" y olvidar externalizarlo después.
+
+**Cuándo no usarlo:** para una app interna de un solo idioma sin ninguna intención de traducirse ni de soportar modo oscuro distinto, externalizar cada valor a calificadores múltiples aporta menos valor inmediato, aunque sigue siendo buena práctica para el string en sí.
+
+##### Profundización · Diseño: Externalización de textos en el proyecto integrador RutaFlow
+
+**Escenario real:** El proyecto integrador RutaFlow necesita mostrar estados de entrega ("Entregado", "En camino") en múltiples idiomas. La política de externalización que aprendiste en este tema es exactamente cómo el proyecto integrador RutaFlow mantiene sus textos traducibles sin tocar código Kotlin.
+
+**Límite importante:** externalizar textos es esencial para un proyecto real de producción; un prototipo desechable de un idioma puede posponer esto, pero el proyecto integrador RutaFlow, como sistema de entregas real, no puede permitirse hardcodeos de texto.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -248,18 +258,6 @@ Agrega `res/values-night/colors.xml` con un color de fondo oscuro para la misma 
 
 Agrega un tercer idioma (`values-pt/strings.xml`, portugués) con la traducción de `titulo_bienvenida`, y confirma con el script de comparación que las tres versiones (español, inglés, portugués) comparten exactamente la misma clave.
 
-#### Paso 7 · Cierre
-
-Ya externalizas textos y confirmas programáticamente que las traducciones mantienen las mismas claves de recurso. El siguiente tema cubre el manifiesto que declara los componentes de la app ante el sistema operativo. Fuente oficial: [Android Developers — Localization](https://developer.android.com/guide/topics/resources/localization).
-
-**Errores comunes:** agregar una traducción nueva sin mantener la misma clave exacta que la versión por defecto, rompiendo la resolución automática; hardcodear un string directamente en un composable "solo por ahora" y olvidar externalizarlo después.
-
-**Cuándo no usarlo:** para una app interna de un solo idioma sin ninguna intención de traducirse ni de soportar modo oscuro distinto, externalizar cada valor a calificadores múltiples aporta menos valor inmediato, aunque sigue siendo buena práctica para el string en sí.
-
-#### Profundización · Diseño: Externalización de textos en el proyecto integrador RutaFlow
-
-**Escenario real:** El proyecto integrador RutaFlow necesita mostrar estados de entrega ("Entregado", "En camino") en múltiples idiomas. La política de externalización que aprendiste en este tema es exactamente cómo el proyecto integrador RutaFlow mantiene sus textos traducibles sin tocar código Kotlin.
-
 **Tu tarea (sin mirar solución primero):** 
 1. ¿Cómo soportaría el proyecto integrador un usuario portugués viendo la pantalla de seguimiento sin duplicar código Kotlin?
 2. Si un text de estado cambia ("En ruta" → "En recorrido"), ¿cuántos archivos deben modificarse?
@@ -270,7 +268,9 @@ Ya externalizas textos y confirmas programáticamente que las traducciones manti
 2. Solo `strings.xml` (y sus variantes) — el código Kotlin no cambia, centralizando la verdad.
 3. Android no reinicia la app automáticamente; un observador de configuración (`onConfigurationChanged`) o recomposición detectaría el cambio.
 
-**Límite importante:** externalizar textos es esencial para un proyecto real de producción; un prototipo desechable de un idioma puede posponer esto, pero el proyecto integrador RutaFlow, como sistema de entregas real, no puede permitirse hardcodeos de texto.
+#### Paso 7 · Cierre
+
+Ya externalizas textos y confirmas programáticamente que las traducciones mantienen las mismas claves de recurso. El siguiente tema cubre el manifiesto que declara los componentes de la app ante el sistema operativo. Fuente oficial: [Android Developers — Localization](https://developer.android.com/guide/topics/resources/localization).
 
 ### Tema 3: AndroidManifest.xml y módulos Gradle
 
@@ -309,6 +309,34 @@ flowchart TD
     INTENT --> CATEGORY
     MANIFEST -->|"leído por el SO antes de instalar"| SO
 ```
+
+**Errores comunes:** declarar un componente `exported="true"` sin necesidad real, exponiendo innecesariamente esa Activity a otras apps; crear una dependencia circular entre módulos de distinto nivel de abstracción.
+
+**Cuándo no usarlo:** para un proyecto de un solo módulo pequeño sin ninguna intención de escalar en equipo o funcionalidades, dividir en `:app`/`:core` desde el día uno puede ser una sobre-ingeniería prematura; la modularización aporta valor claramente a partir de cierto tamaño y número de personas trabajando en paralelo.
+
+##### Profundización · Diseño: Modularización en el proyecto integrador RutaFlow
+
+**Escenario real:** RutaFlow debe dividir lógica de dominio (decidir política de GPS), UI (mostrar ubicación), y trabajo en background (capturar coordenadas). Sin módulos Gradle, cambios menores en UI rompen compilaciones de la lógica de dominio. Con módulos, cada equipo trabaja independientemente.
+
+**Dependencias visuales:**
+
+```mermaid
+flowchart TD
+    CORE["modulo :core<br/>LocationPolicy.kt<br/>RouteActivity enum"]
+    APP["modulo :app<br/>MainActivity<br/>Compose UI"]
+    LOC["modulo :location-service<br/>PermissionHandler<br/>GpsTracker"]
+
+    LOC -->|depende de| CORE
+    APP -->|depende de| LOC
+    APP -->|depende de| CORE
+```
+
+**Límites importantes:**
+- `:core` jamás puede depender de `:app` o `:location-service` — inversión de dependencias.
+- Cambios en `:core` requieren recompilación de `:location-service` y `:app`, pero cambios en `:app` solo afectan su propia compilación.
+- Un equipo puede mantener `:location-service` sin coordinarse constantemente con UI.
+
+La estructura queda ejemplificada en el `LocationPolicy.kt` que acabas de crear dentro de `:core`. El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -362,42 +390,14 @@ Agrega el permiso `INTERNET` al `AndroidManifest.xml` (`<uses-permission android
 
 Agrega una segunda función a `core/src/main/kotlin/com/academia/core/Formateador.kt` y úsala desde `MainActivity.kt` en `:app`, confirmando visualmente que el import (`import com.academia.core.NombreDeLaFuncion`) referencia correctamente el paquete del módulo `:core`.
 
-#### Paso 7 · Cierre
-
-Ya declaras componentes y permisos en el manifiesto, y divides un proyecto en módulos Gradle con dependencias explícitas y unidireccionales. El siguiente módulo del track construye sobre esta base con Jetpack Compose y estado. Fuente oficial: [Android Developers — App manifest overview](https://developer.android.com/guide/topics/manifest/manifest-intro).
-
-**Errores comunes:** declarar un componente `exported="true"` sin necesidad real, exponiendo innecesariamente esa Activity a otras apps; crear una dependencia circular entre módulos de distinto nivel de abstracción.
-
-**Cuándo no usarlo:** para un proyecto de un solo módulo pequeño sin ninguna intención de escalar en equipo o funcionalidades, dividir en `:app`/`:core` desde el día uno puede ser una sobre-ingeniería prematura; la modularización aporta valor claramente a partir de cierto tamaño y número de personas trabajando en paralelo.
-
-#### Profundización · Diseño: Modularización en el proyecto integrador RutaFlow
-
-**Escenario real:** RutaFlow debe dividir lógica de dominio (decidir política de GPS), UI (mostrar ubicación), y trabajo en background (capturar coordenadas). Sin módulos Gradle, cambios menores en UI rompen compilaciones de la lógica de dominio. Con módulos, cada equipo trabaja independientemente.
-
 **Tu tarea:** Inspecciona la estructura esperada del proyecto integrador RutaFlow si este se extendiera hacia una integración GPS completa (fuera del alcance de los módulos siguientes de este track, que a partir de aquí trabajan sobre la app genérica de tareas con Compose, Room, Hilt y testing):
 - `:core` → contiene `LocationPolicy` (lógica pura, sin dependencias Android).
 - `:location-service` → contendría la implementación real de permisos en tiempo de ejecución y el sensor GPS.
 - `:app` → Activity/Compose UI que consumiría ambas dependencias.
 
-**Dependencias visuales:**
+#### Paso 7 · Cierre
 
-```mermaid
-flowchart TD
-    CORE["modulo :core<br/>LocationPolicy.kt<br/>RouteActivity enum"]
-    APP["modulo :app<br/>MainActivity<br/>Compose UI"]
-    LOC["modulo :location-service<br/>PermissionHandler<br/>GpsTracker"]
-
-    LOC -->|depende de| CORE
-    APP -->|depende de| LOC
-    APP -->|depende de| CORE
-```
-
-**Límites importantes:**
-- `:core` jamás puede depender de `:app` o `:location-service` — inversión de dependencias.
-- Cambios en `:core` requieren recompilación de `:location-service` y `:app`, pero cambios en `:app` solo afectan su propia compilación.
-- Un equipo puede mantener `:location-service` sin coordinarse constantemente con UI.
-
-La estructura queda ejemplificada en el `LocationPolicy.kt` que acabas de crear dentro de `:core`. El resto de este track no vuelve a `:location-service`: a partir de aquí, los módulos siguientes aplican estos mismos principios de modularización y separación de responsabilidades (Módulo 1 en adelante) sobre el proyecto de tareas que construyes a lo largo del curso.
+Ya declaras componentes y permisos en el manifiesto, y divides un proyecto en módulos Gradle con dependencias explícitas y unidireccionales. El siguiente módulo del track construye sobre esta base con Jetpack Compose y estado. Fuente oficial: [Android Developers — App manifest overview](https://developer.android.com/guide/topics/manifest/manifest-intro).
 
 ### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla
 

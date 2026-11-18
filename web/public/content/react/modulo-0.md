@@ -158,6 +158,8 @@ Usar el índice del array como `key` (`key={indice}`) parece funcionar en casos 
 
 **Límites y decisión de uso:** La key identifica hermanos a lo largo de los renders; no debe generarse de nuevo cada vez ni basarse en posición si la lista cambia. Usa identidad persistente según la [guía de listas de React](https://react.dev/learn/rendering-lists).
 
+**¿Por qué es importante?** Porque una key inestable asocia estado o referencias del DOM al elemento equivocado en cuanto la lista se reordena, filtra, o modifica.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function ListaEnvios({ envios }) {
@@ -209,7 +211,6 @@ Corregí el Paso 5 devolviendo `key={envio.id}`, y agregá un botón "mover al p
 
 #### Paso 7 · Cierre
 Entregá la lista con key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de reordenamiento del Paso 6; explicá por qué el índice "funciona" en una lista que nunca cambia de orden ni de longitud, pero falla en cuanto eso deja de ser cierto. Siguiente paso: estudia composición con `children` y Fragments. Errores comunes: usar el índice como key en listas que se reordenan o filtran, generar una key aleatoria en cada render (`key={Math.random()}`), y repetir keys duplicadas dentro de la misma lista. Fuentes oficiales: https://react.dev/learn/rendering-lists y https://react.dev/learn/preserving-and-resetting-state.
-**¿Por qué es importante?** Porque una key inestable asocia estado o referencias del DOM al elemento equivocado en cuanto la lista se reordena, filtra, o modifica.
 
 ### Tema 3: Composición sobre herencia, y Fragments
 
@@ -354,6 +355,8 @@ graph TD
     style H fill:#e3f2fd
 ```
 
+**¿Por qué es importante?** Elegir entre `&&` y el ternario según si existe una única alternativa o dos alternativas de contenido reales evita bugs como el "0" fantasma y produce código más predecible.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function EnvioCard({ envio, cargando }) {
@@ -410,7 +413,7 @@ Entregá el renderizado condicional del Paso 4, el "0" fantasma detectado en el 
 
 * Ejecutar: `npm test -- --match="*conditional*"`
 * Código: `src/components/ConditionalRendering.tsx`
-**¿Por qué es importante?** Elegir entre `&&` y el ternario según si existe una única alternativa o dos alternativas de contenido reales evita bugs como el "0" fantasma y produce código más predecible.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `npm create vite@latest academia-react -- --template react-ts && cd academia-react && git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

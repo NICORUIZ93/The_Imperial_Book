@@ -169,6 +169,132 @@ Construí una tabla de dos filas (`confirmar-entrega` / planificador de rutas) c
 #### Paso 7 · Cierre
 Entregá el error de timeout del Paso 4, la decisión de plataforma del Paso 5 y la tabla del Paso 6; explicá por qué "¿cuánto dura la tarea?" es la primera pregunta antes de elegir Lambda o contenedores, no la única pero sí la más decisiva acá. Siguiente paso: seguridad operacional. Errores comunes: elegir por moda y olvidar observabilidad. Fuente oficial: https://aws.amazon.com/compute/.
 
+### Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min
+
+**Prerrequisito:** temas «ECR y por qué no basta con Docker Hub» y «Task Definition y ECS Cluster» de este módulo.
+
+**Al finalizar podrás:** escanear las imágenes al subirlas a ECR, firmarlas con Notation o cosign, y desplegar en ECS solo imágenes firmadas e identificadas por digest.
+
+**¿Por qué es importante?** Si alguien sube una imagen alterada al registro con la misma etiqueta, el siguiente despliegue la usa sin preguntar. Escanear encuentra vulnerabilidades conocidas; firmar y verificar garantiza que la imagen viene de tu pipeline.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas la AWS CLI, Docker y una herramienta de firma (cosign o Notation). Las firmas y la verificación se prueban en una cuenta real; el emulador local permite practicar la creación del repositorio y las etiquetas inmutables.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, alguien con acceso al registro subió por error una imagen de pruebas con la etiqueta `api:1.4.0`. Producción la desplegó al escalar. Con etiquetas inmutables, firma y verificación por digest, ese despliegue habría sido rechazado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** cadena de suministro, escaneo al subir, etiqueta inmutable, digest, firma de imagen, cosign, Notation, verificación en el despliegue, SBOM.
+
+Tres defensas que se suman:
+
+1. **Escanear al subir** (`scanOnPush`): ECR busca vulnerabilidades conocidas en el sistema operativo y los paquetes de la imagen.
+2. **Etiquetas inmutables:** una vez que `api:1.4.0` existe, nadie puede sobrescribirla. Y el despliegue usa el **digest** (`@sha256:...`), que identifica el contenido exacto.
+3. **Firmar y verificar:** el pipeline firma la imagen con una clave (cosign con KMS, o Notation con AWS Signer). El despliegue verifica la firma antes de usarla y rechaza las que no la tienen.
+
+Un **SBOM** (lista de componentes de la imagen) se puede adjuntar como artefacto firmado para saber qué contiene cada versión.
+
+**Analogía:** es la cadena de custodia de una evidencia: se fotografía al entrar (escaneo), se sella con un número (digest), alguien autorizado firma el acta (firma) y quien la recibe revisa el sello antes de aceptarla (verificación).
+
+**Límite de uso:** el escaneo solo conoce vulnerabilidades publicadas. La firma prueba quién publicó la imagen, no que sea segura. Si la clave de firma se filtra, la cadena se rompe: guárdala en KMS o Signer.
+
+```mermaid
+flowchart LR
+    B["CI: build"] --> P["push a ECR<br/>scanOnPush + inmutable"]
+    P --> F["firma con KMS / Signer"]
+    F --> V{"despliegue: ¿firma válida?"}
+    V -->|sí| D["ECS usa @sha256:..."]
+    V -->|no| X["rechazado"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `infra/ecr.tf`:
+
+```hcl
+resource "aws_ecr_repository" "api" {
+  name                 = "rutaflow/api"
+  image_tag_mutability = "IMMUTABLE" # nadie sobrescribe una etiqueta existente
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "KMS"
+  }
+}
+```
+
+Archivo `ci/firmar-y-verificar.sh`:
+
+```bash
+set -euo pipefail
+IMAGEN="$CUENTA.dkr.ecr.us-east-1.amazonaws.com/rutaflow/api"
+DIGEST=$(aws ecr describe-images --repository-name rutaflow/api --image-ids imageTag="$VERSION" \
+  --query 'imageDetails[0].imageDigest' --output text)
+
+# Revisa el escaneo antes de firmar.
+CRITICAS=$(aws ecr describe-image-scan-findings --repository-name rutaflow/api --image-id imageDigest="$DIGEST" \
+  --query 'imageScanFindings.findingSeverityCounts.CRITICAL' --output text)
+[ "$CRITICAS" = "None" ] || { echo "hay $CRITICAS vulnerabilidades críticas"; exit 1; }
+
+# Firma por digest con una clave de KMS (la clave nunca sale de KMS).
+cosign sign --key "awskms:///alias/rutaflow-firma" "$IMAGEN@$DIGEST"
+
+# En el despliegue: verifica antes de usar.
+cosign verify --key "awskms:///alias/rutaflow-firma" "$IMAGEN@$DIGEST" > /dev/null && echo "firma válida: $DIGEST"
+```
+
+Ejecútalo:
+
+```bash
+terraform -chdir=infra apply
+VERSION=1.4.0 CUENTA=111122223333 bash ci/firmar-y-verificar.sh
+docker push "$IMAGEN:1.4.0"   # segundo intento con la misma etiqueta
+```
+
+**Explicación por bloques:** El repositorio tiene etiquetas inmutables, escaneo al subir y cifrado con KMS. El script obtiene el digest de la versión, revisa que el escaneo no tenga vulnerabilidades críticas, firma la imagen por digest con una clave de KMS y la verifica. El último comando intenta subir otra imagen con una etiqueta que ya existe, lo que el repositorio inmutable debe rechazar.
+
+**Resultado esperado:**
+
+```text
+firma válida: sha256:3f1c...
+El segundo push con la etiqueta 1.4.0 falla con: tag invalid: The image tag '1.4.0' already exists in the 'rutaflow/api' repository and cannot be overwritten because the repository is immutable.
+```
+
+**Fallo deliberado:** firma la imagen por etiqueta (`$IMAGEN:1.4.0`) en un repositorio mutable y luego sube otra imagen con esa etiqueta. **Error esperado:** la verificación por etiqueta ahora apunta a una imagen sin firma o con otro contenido. **Diagnóstico:** las etiquetas se mueven; los digests no. Firma, verifica y despliega siempre por digest, y usa repositorios inmutables.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** crea el repositorio y sube una imagen; revisa el resultado del escaneo en la consola.
+2. **Variación:** sube una imagen con una vulnerabilidad crítica conocida (por ejemplo, una base antigua) y comprueba que el script no la firma.
+3. **Diagnóstico:** reproduce el fallo deliberado con etiquetas mutables.
+4. **Integración:** genera un SBOM con `syft` y adjúntalo firmado con `cosign attest`.
+5. **Diseño:** escribe la regla de despliegue de RutaFlow: qué se verifica, quién guarda la clave y qué pasa si la verificación falla.
+
+**Pista:** si dudas de qué imagen corre en producción, compara el digest de la tarea de ECS con el firmado en el pipeline.
+
+#### Paso 6 · Práctica independiente
+
+Configura la verificación en el despliegue con una política de admisión (por ejemplo, Kyverno o el verificador de imágenes de tu orquestador) para que rechace automáticamente imágenes sin firma.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las tres defensas y qué protege cada una.
+- [ ] El repositorio es inmutable y escanea al subir.
+- [ ] Firmas y verificas por digest.
+- [ ] Reprodujiste el problema de firmar por etiqueta.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** firmar por etiqueta, guardar la clave de firma en el CI y creer que una imagen firmada no tiene vulnerabilidades. **Siguiente paso:** el tema «Contenedores vs Lambda, y EKS» aplica la misma verificación a los otros destinos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** haz que el pipeline de RutaFlow suba a un ECR inmutable, firme por digest con KMS y que el despliegue verifique la firma.
+
+**Fuente oficial:** [Amazon ECR — Image scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) y [Amazon ECR — Image tag mutability](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html) y [Sigstore — cosign](https://docs.sigstore.dev/cosign/signing/overview/).
+
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

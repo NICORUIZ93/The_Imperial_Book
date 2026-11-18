@@ -270,16 +270,6 @@ Un enum con valores asociados modela un estado como un conjunto cerrado y exhaus
 
 **¿Por qué es importante?** Los protocolos permiten composición de comportamiento entre tipos no relacionados sin depender de herencia rígida; los enums con valores asociados modelan estado de forma exhaustiva y verificada por el compilador, previniendo casos no manejados que pasarían desapercibidos en un modelo menos estricto.
 
-**Código del ejemplo:**
-
-```swift
-enum Resultado {
-    case exito(String)
-    case error(mensaje: String, codigo: Int)
-}
-// El compilador exige manejar TODOS los casos en un switch, o un default explícito
-```
-
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Modela el resultado de confirmar como enum con éxito y errores explícitos. Prueba cada variante y verifica que el consumidor no confunde falta de red con falta de autorización.
 
 #### Paso 4 · Demostración guiada desde cero
@@ -481,9 +471,168 @@ Corregí el Paso 5 restaurando el rango `(-90...90)` para latitud, y agregá una
 Entregá el filtro de coordenadas del Paso 4, la prueba fallida por rango de latitud/longitud confundidos del Paso 5, y la validación de longitud independiente del Paso 6; explicá por qué nombrar explícitamente cada regla de rango (latitud vs longitud) evita que una se confunda silenciosamente con la otra. Siguiente paso: construí una app SwiftUI completa que use estos mismos modelos. Errores comunes: usar `$0` en closures con varias reglas distintas, perdiendo legibilidad; descartar valores inválidos con `compactMap` sin documentar si esconder el dato inválido es realmente la decisión correcta para ese caso. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/ y https://developer.apple.com/documentation/swift/generics.
 **Implicación práctica:** Nombrar explícitamente cada regla de filtrado (latitud vs longitud) evita que una se confunda silenciosamente con otra al descartar datos con `compactMap`.
 
+### Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min
+
+**Prerrequisito:** tema «struct vs class» de este módulo.
+
+**Al finalizar podrás:** modelar un recurso que no se puede copiar con `~Copyable`, pasarlo a funciones como `borrowing` o `consuming` y comprobar que el compilador impide usarlo después de consumirlo.
+
+**¿Por qué es importante?** Algunos valores no deben duplicarse: un token de un solo uso, un descriptor de archivo, un permiso de entrega. Con `~Copyable`, el compilador garantiza que existe una sola copia y que nadie lo usa después de entregarlo.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 16 o superior (Swift 6). Crea un paquete de línea de comandos: `swift package init --type executable --name Propiedad` y escribe el código en `Sources/Propiedad/main.swift`.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, cada entrega genera un código de confirmación de un solo uso. Un error permitía usar el mismo código dos veces, porque se copiaba en varios lugares. Un tipo no copiable hace imposible ese error: el compilador lo rechaza.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** propiedad (*ownership*), copia implícita, `~Copyable`, `borrowing`, `consuming`, `deinit` en structs, uso después de consumir.
+
+Por defecto, los tipos de valor de Swift son **copiables**: asignar o pasar un `struct` crea una copia. Con `struct Token: ~Copyable` declaras que el tipo **no** se puede copiar: solo se **mueve**.
+
+Al pasar un valor no copiable a una función, eliges cómo:
+
+| Modificador | Significa | Después de la llamada |
+|---|---|---|
+| `borrowing` | la función lo mira, sin quedárselo | sigues teniéndolo |
+| `consuming` | la función se lo queda | ya no lo puedes usar |
+
+Un tipo `~Copyable` puede tener `deinit`, que corre cuando el valor se destruye. Si intentas usar un valor después de consumirlo, el compilador da un error, no un fallo en ejecución.
+
+**Analogía:** un tipo no copiable es una llave física única: puedes prestarla para que alguien mire el llavero (`borrowing`) o entregarla (`consuming`), pero no fotocopiarla. La analogía falla en que el compilador vigila cada entrega, algo que con llaves reales nadie hace.
+
+**Límite de uso:** los tipos `~Copyable` todavía no funcionan con todas las APIs genéricas de la biblioteca estándar (por ejemplo, muchos métodos de colecciones). Úsalos para recursos únicos, no para modelos de datos comunes.
+
+```mermaid
+flowchart LR
+    T["CodigoEntrega (~Copyable)"] -->|"borrowing mostrar()"| T
+    T -->|"consuming confirmar()"| X["consumido: deinit"]
+    X -.->|"usar otra vez"| E["error de compilación"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `Propiedad/Sources/Propiedad/main.swift`:
+
+```swift
+struct CodigoEntrega: ~Copyable {
+    let valor: String
+    deinit { print("código \(valor) destruido") }
+}
+
+// Solo mira el código: quien llama lo conserva.
+func mostrar(_ codigo: borrowing CodigoEntrega) {
+    print("mostrando \(codigo.valor)")
+}
+
+// Se queda con el código: después de esto nadie más puede usarlo.
+func confirmar(_ codigo: consuming CodigoEntrega) {
+    print("confirmando entrega con \(codigo.valor)")
+}
+
+let codigo = CodigoEntrega(valor: "7Q4K")
+mostrar(codigo)
+mostrar(codigo)    // se puede mirar varias veces
+confirmar(codigo)  // lo entrega
+// confirmar(codigo) // ❌ error: 'codigo' used after consume
+print("fin")
+```
+
+Ejecútalo:
+
+```bash
+cd Propiedad
+swift run
+```
+
+**Explicación por bloques:** `CodigoEntrega` es `~Copyable`, así que no se copia al pasarlo. `mostrar` lo recibe como `borrowing`: lo lee y lo devuelve. `confirmar` lo recibe como `consuming`: se lo queda, y al terminar la función el valor se destruye y corre el `deinit`. La línea comentada es el error que el compilador evita: usar el código después de entregarlo.
+
+**Resultado esperado:**
+
+```text
+mostrando 7Q4K
+mostrando 7Q4K
+confirmando entrega con 7Q4K
+código 7Q4K destruido
+fin
+```
+
+**Fallo deliberado:** descomenta la segunda llamada a `confirmar(codigo)`. **Error esperado:** el compilador rechaza el programa con `'codigo' used after consume`. **Diagnóstico:** el código ya se entregó; la regla de un solo uso se cumple antes de ejecutar. Esa es la ventaja frente a una comprobación en tiempo de ejecución.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y explica por qué el `deinit` sale antes de «fin».
+2. **Variación:** quita `~Copyable` y observa que ahora puedes confirmar dos veces.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje del compilador.
+4. **Integración:** agrega un método `consuming func usar() -> String` al struct y llámalo en lugar de la función libre.
+5. **Diseño:** lista qué valores de RutaFlow deberían ser de un solo uso.
+
+**Pista:** si dudas entre `borrowing` y `consuming`, pregunta: ¿quien llama necesita el valor después?
+
+#### Paso 6 · Práctica independiente
+
+Modela un `PermisoEscritura: ~Copyable` para un archivo de reporte: solo quien tiene el permiso puede escribir, y al cerrar (`consuming func cerrar()`) el permiso desaparece.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué cambia `~Copyable`.
+- [ ] El programa imprime las cinco líneas esperadas.
+- [ ] Reprodujiste el error de uso después de consumir.
+- [ ] Eliges entre `borrowing` y `consuming` con criterio.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `~Copyable` para modelos comunes, olvidar que `consuming` destruye el valor al final y esperar que funcione con todas las APIs genéricas. **Siguiente paso:** el tema «Protocolos y enums con valores asociados» combina estos tipos con protocolos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** modela el código de confirmación de entrega de RutaFlow como `~Copyable` y consúmelo al confirmar.
+
+**Fuente oficial:** [Swift Evolution — SE-0390 Noncopyable structs and enums](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md) y [The Swift Programming Language — Memory Safety](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/memorysafety/).
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
-No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con crea una carpeta vacía `academia-ios`, genera dentro un proyecto **iOS App / SwiftUI** con Xcode y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
+No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). La sección siguiente crea ese repositorio paso a paso: la carpeta `academia-ios`, el proyecto `RutaFlowApp` y el primer commit.
+
+| Hito | Evolución acumulativa | Antes de avanzar |
+|---|---|---|
+| Base | SwiftUI, estado y navegación. | Arranque reproducible, commit limpio y prueba mínima. |
+| Aplicación | concurrencia, red y SwiftData. | Casos normales, límite y error automatizados. |
+| Integración | Conecta capas y reemplaza dobles por infraestructura controlada. | Diagrama, contratos y prueba de integración. |
+| Experto | testing, seguridad y TestFlight. | Perfil o threat model, telemetría y runbook de recuperación. |
+
+Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
+
+## Crea el proyecto base RutaFlowApp
+
+Desde el capítulo 1, cada tema termina con «Ejecuta el ejemplo» y un comando `xcodebuild -scheme RutaFlowApp`. Ese esquema no existe hasta que lo creas aquí, una sola vez; después el mismo proyecto crece durante todo el curso. Etiqueta cada hito con `git tag modulo-N`.
+
+1. Crea una carpeta vacía `academia-ios` y ábrela en Finder.
+2. En Xcode: **File → New → Project… → iOS → App**. Escribe estos valores y no cambies los demás:
+   - **Product Name:** `RutaFlowApp`
+   - **Interface:** SwiftUI
+   - **Language:** Swift
+   - **Testing System:** Swift Testing con XCTest UI Tests, para que se creen `RutaFlowAppTests` y `RutaFlowAppUITests`
+   - **Storage:** None. SwiftData se agrega a mano en el capítulo 6.
+3. Guárdalo dentro de `academia-ios` y marca **Create Git repository on my Mac**.
+4. Comprueba en Terminal que el esquema existe:
+
+```bash
+cd academia-ios/RutaFlowApp
+xcodebuild -list                     # debe listar el esquema RutaFlowApp
+xcrun simctl list devices available  # elige un simulador instalado, por ejemplo iPhone 17
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+
+Resultado esperado: `xcodebuild -list` muestra `RutaFlowApp` en **Schemes**, y el build termina con `** BUILD SUCCEEDED **`. Si dice que no encuentra el esquema, estás en otra carpeta: entra a la que contiene `RutaFlowApp.xcodeproj`.
+
+| El código del tema es… | Dónde lo pegas | Cómo lo ejecutas |
+|---|---|---|
+| Una vista (`struct X: View`) o un modelo, servicio o tipo | Un archivo nuevo en el grupo `RutaFlowApp` (**File → New → File… → Swift File**) | `xcodebuild … build`, luego ⌘R o el canvas de Preview (⌥⌘↵) |
+| Pruebas con `@Test` o `XCTestCase` | Un archivo dentro de `RutaFlowAppTests` o `RutaFlowAppUITests` | `xcodebuild … test` con un simulador concreto |
+| Instrucciones sueltas al nivel superior (`let`, `await`, `print` fuera de una función) | Un paquete aparte: `swift package init --type executable --name Practica` y el código en `Sources/Practica/main.swift` | `swift run` dentro de `Practica` |
+
+Las instrucciones sueltas no compilan dentro de la app, porque en un target de app solo `main.swift` admite código de nivel superior y `RutaFlowApp` usa `@main`.
+
 
 | Hito | Evolución acumulativa | Antes de avanzar |
 |---|---|---|

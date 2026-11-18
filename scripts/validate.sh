@@ -219,6 +219,8 @@ python3 scripts/verify_professional_bridges.py
 python3 scripts/validate_rutaflow_material.py
 # SDD: trazabilidad de specs/ y criterios verificables de specs/001 y specs/002.
 python3 scripts/validate_specs.py
+# specs/006: temario sin temas fantasmas ni huecos (I1–I6).
+python3 scripts/audit_topic_integrity.py
 python3 scripts/audit_lesson_assets.py
 python3 scripts/audit_lesson_substance.py --strict
 python3 scripts/audit_visual_aids.py

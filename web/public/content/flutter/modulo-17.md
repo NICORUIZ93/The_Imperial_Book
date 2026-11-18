@@ -35,6 +35,8 @@ flowchart LR
   F --> A
 ```
 
+**¿Por qué es importante?** Evita basar una app en una capacidad que el SDK no ofrece y enseña la alternativa que el equipo mantiene.
+
 #### Paso 4 · Demostración guiada
 Crea `lib/macros_status_lab.dart` con el modelo y `bin/demo.dart` para ejecutarlo:
 
@@ -84,13 +86,12 @@ dart run bin/demo.dart
 #### Paso 6 · Práctica independiente
 Agrega el campo `status` a `Delivery`, regenera y comprueba la salida. Escribe en `README.md` una nota que distinga macros (trabajo detenido), generación con `build_runner` y reflexión en runtime (no disponible en Flutter). Añade una decisión sobre qué harías si el plugin necesita leer esa clase.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: presentar macros como disponibles, editar el `.g.dart` manualmente y confundir generación de código con reflexión. Entrega el archivo generado, salida JSON, error del `part` eliminado y la nota de estado del lenguaje. **Proyecto integrador RutaFlow:** genera el JSON de `Entrega` antes de enviar la solicitud en `lib/macros_status_lab.dart`. Siguiente tema: controlar, depurar y configurar la generación de código. Fuentes oficiales: [actualización de macros Dart](https://dart.dev/blog/an-update-on-dart-macros-data-serialization), [Dart 3.7: estado de macros](https://dart.dev/blog/announcing-dart-3-7) y [build_runner](https://dart.dev/tools/build_runner).
-
-**¿Por qué es importante?** Evita basar una app en una capacidad que el SDK no ofrece y enseña la alternativa que el equipo mantiene.
 **Evidencia:** código generado por comando, JSON observado y explicación de por qué macros no son una opción de Flutter.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: presentar macros como disponibles, editar el `.g.dart` manualmente y confundir generación de código con reflexión. Entrega el archivo generado, salida JSON, error del `part` eliminado y la nota de estado del lenguaje. **Proyecto integrador RutaFlow:** genera el JSON de `Entrega` antes de enviar la solicitud en `lib/macros_status_lab.dart`. Siguiente tema: controlar, depurar y configurar la generación de código. Fuentes oficiales: [actualización de macros Dart](https://dart.dev/blog/an-update-on-dart-macros-data-serialization), [Dart 3.7: estado de macros](https://dart.dev/blog/announcing-dart-3-7) y [build_runner](https://dart.dev/tools/build_runner).
 
 ### Tema 2: generación avanzada con build_runner
 
@@ -119,6 +120,8 @@ targets:
         options:
           explicit_to_json: true
 ```
+
+**¿Por qué es importante?** Una salida reproducible evita que el código generado quede desfasado o sea una segunda fuente de verdad.
 
 #### Paso 4 · Demostración guiada
 Guarda `lib/generation_lab.dart` con este modelo:
@@ -173,13 +176,12 @@ dart test
 #### Paso 6 · Práctica independiente
 Activa `dart run build_runner watch` y modifica un campo; observa cuándo se actualiza la salida. Detén el watcher, ejecuta `dart run build_runner clean`, vuelve a generar y compara resultado. Escribe una nota corta que distinga salida fuente confirmada en Git, caché de build y comando de CI.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: modificar salida generada, dejar `watch` corriendo en CI y no regenerar tras editar la fuente. Entrega diff de entrada/salida, log de build limpio y test actualizado. **Proyecto integrador RutaFlow:** genera el adaptador JSON de la entrega y añade `dart run build_runner build` a las instrucciones de desarrollo. Siguiente tema: reemplazar la reflexión en runtime por un registro tipado. Fuentes oficiales: [build_runner](https://dart.dev/tools/build_runner), [opciones de builders](https://pub.dev/documentation/build_runner/latest/index.html) y [paquete json_serializable](https://pub.dev/packages/json_serializable).
-
-**¿Por qué es importante?** Una salida reproducible evita que el código generado quede desfasado o sea una segunda fuente de verdad.
 **Evidencia:** diff regenerado desde los modelos y ejecución limpia de analyzer y tests.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: modificar salida generada, dejar `watch` corriendo en CI y no regenerar tras editar la fuente. Entrega diff de entrada/salida, log de build limpio y test actualizado. **Proyecto integrador RutaFlow:** genera el adaptador JSON de la entrega y añade `dart run build_runner build` a las instrucciones de desarrollo. Siguiente tema: reemplazar la reflexión en runtime por un registro tipado. Fuentes oficiales: [build_runner](https://dart.dev/tools/build_runner), [opciones de builders](https://pub.dev/documentation/build_runner/latest/index.html) y [paquete json_serializable](https://pub.dev/packages/json_serializable).
 
 ### Tema 3: reflexión limitada y registro tipado
 
@@ -205,6 +207,8 @@ flowchart LR
   R -->|stop| S[Stop.fromJson]
   R --> X[Rechazar tipo desconocido]
 ```
+
+**¿Por qué es importante?** El registro limita de forma visible qué datos externos pueden convertirse en objetos de la aplicación.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/reflection_lab.dart` con modelos sencillos y un registro:
@@ -270,13 +274,12 @@ dart test
 #### Paso 6 · Práctica independiente
 Añade `invoice` con su decoder, prueba ambos tipos y prueba `type: 7`. Comprueba que la app muestra un error manejable y conserva un registro de tipos permitidos. Compara el registro escrito a mano con uno generado desde anotaciones; documenta cuál es más fácil de auditar.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: creer que `runtimeType` deserializa JSON, aceptar cualquier nombre externo y ocultar errores de esquema. Entrega registro, tests y error desconocido diagnosticado. **Proyecto integrador RutaFlow:** despacha eventos de entrega a decoders conocidos antes de actualizarlos en `lib/reflection_lab.dart`. Siguiente tema: leer el AST cuando el código fuente de Dart, y no un objeto en runtime, es la entrada. Fuentes oficiales: [Flutter FAQ: reflection/mirrors](https://docs.flutter.dev/resources/faq) y [Dart: generación de código](https://dart.dev/tools/build_runner).
-
-**¿Por qué es importante?** El registro limita de forma visible qué datos externos pueden convertirse en objetos de la aplicación.
 **Evidencia:** tipos permitidos probados, tipo desconocido rechazado y explicación de por qué `runtimeType` no reemplaza reflexión.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: creer que `runtimeType` deserializa JSON, aceptar cualquier nombre externo y ocultar errores de esquema. Entrega registro, tests y error desconocido diagnosticado. **Proyecto integrador RutaFlow:** despacha eventos de entrega a decoders conocidos antes de actualizarlos en `lib/reflection_lab.dart`. Siguiente tema: leer el AST cuando el código fuente de Dart, y no un objeto en runtime, es la entrada. Fuentes oficiales: [Flutter FAQ: reflection/mirrors](https://docs.flutter.dev/resources/faq) y [Dart: generación de código](https://dart.dev/tools/build_runner).
 
 ### Tema 4: recorrer el AST de Dart con analyzer
 
@@ -303,6 +306,8 @@ flowchart LR
   V --> N[Nombres de clases]
   C[Comentario con la palabra class] -. no es declaración .-> A
 ```
+
+**¿Por qué es importante?** El AST distingue la estructura del programa del texto que solo se parece a código.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/list_classes.dart`:
@@ -360,13 +365,12 @@ void main() {
 
 Ejecuta `dart test`, agrega una clase abstracta y decide si el visitor la incluye. No reescribas texto fuente con reemplazos globales; para transformaciones, preserva offsets y formato con herramientas diseñadas para ello.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: analizar código con regex, no fijar la versión de analyzer y asumir que el AST de todas las versiones es idéntico. Entrega visitor, salida, test y comentario que no produce falso positivo. **Proyecto integrador RutaFlow:** usa el visitor como herramienta de migración local para identificar clases `*Dto` y proponer nombres consistentes. Siguiente tema: convertir una regla propia en un builder de build_runner. Fuentes oficiales: [paquete analyzer](https://pub.dev/packages/analyzer), [AST visitors](https://pub.dev/documentation/analyzer/latest/dart_ast_visitor/) y [build_runner](https://dart.dev/tools/build_runner).
-
-**¿Por qué es importante?** El AST distingue la estructura del programa del texto que solo se parece a código.
 **Evidencia:** visitor ejecutado, resultado repetible y test que descarta una clase mencionada solo en comentario.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: analizar código con regex, no fijar la versión de analyzer y asumir que el AST de todas las versiones es idéntico. Entrega visitor, salida, test y comentario que no produce falso positivo. **Proyecto integrador RutaFlow:** usa el visitor como herramienta de migración local para identificar clases `*Dto` y proponer nombres consistentes. Siguiente tema: convertir una regla propia en un builder de build_runner. Fuentes oficiales: [paquete analyzer](https://pub.dev/packages/analyzer), [AST visitors](https://pub.dev/documentation/analyzer/latest/dart_ast_visitor/) y [build_runner](https://dart.dev/tools/build_runner).
 
 ### Tema 5: crear un builder pequeño para build_runner
 
@@ -392,6 +396,8 @@ flowchart LR
   O --> D[demo.dart lo importa]
   I -->|cambio| B
 ```
+
+**¿Por qué es importante?** Un builder convierte una regla repetible del proyecto en salida compilable y fácil de revisar.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/route_names.routes` con dos nombres, `delivery` y `pickup`. Crea `lib/route_catalog_builder.dart`:
@@ -459,13 +465,12 @@ dart run bin/demo.dart
 #### Paso 6 · Práctica independiente
 Añade test para la lista generada y una entrada con espacios al inicio; prueba limpieza y regeneración. Rechaza nombres que no cumplan `^[a-z][a-z0-9_]*$` antes de emitir código, y muestra el mensaje claro si una fila es inválida. Documenta cómo pasarías el builder a un paquete separado.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: no declarar la extensión, escribir salidas fuera de `allowedOutputs` y generar código desde texto sin validar. Entrega builder, `build.yaml`, entrada, salida y fallo por extensión diagnosticado. **Proyecto integrador RutaFlow:** genera una lista de estados de entrega permitidos que comparta la app y el validador de solicitudes. Siguiente tema: organizar y preparar la distribución de un paquete Dart. Fuentes oficiales: [build_runner: crear builders](https://dart.dev/tools/build_runner), [interfaz Builder](https://pub.dev/documentation/build/latest/build/Builder-class.html) y [build package](https://pub.dev/packages/build).
-
-**¿Por qué es importante?** Un builder convierte una regla repetible del proyecto en salida compilable y fácil de revisar.
 **Evidencia:** builder registrado, salida generada, entrada inválida diagnosticada y regla de nombres probada.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: no declarar la extensión, escribir salidas fuera de `allowedOutputs` y generar código desde texto sin validar. Entrega builder, `build.yaml`, entrada, salida y fallo por extensión diagnosticado. **Proyecto integrador RutaFlow:** genera una lista de estados de entrega permitidos que comparta la app y el validador de solicitudes. Siguiente tema: organizar y preparar la distribución de un paquete Dart. Fuentes oficiales: [build_runner: crear builders](https://dart.dev/tools/build_runner), [interfaz Builder](https://pub.dev/documentation/build/latest/build/Builder-class.html) y [build package](https://pub.dev/packages/build).
 
 ### Tema 6: diseñar y validar un paquete Dart
 
@@ -477,6 +482,8 @@ Dos apps necesitan los mismos nombres y reglas de estado de ruta. Copiar la clas
 
 #### Paso 3 · Teoría, modelo mental y analogía
 El API importable vive bajo `lib/`; implementación que no prometes mantener va en `lib/src/`, y la fachada exporta solo lo necesario. `test/` verifica contrato, `example/` enseña uso, `README.md` explica instalación y `CHANGELOG.md` registra cambios. Es como una caja de herramientas: la tapa muestra piezas que prometes soportar, mientras el mecanismo interno puede cambiar.
+
+**¿Por qué es importante?** Un paquete bien delimitado comparte una regla útil sin convertir cada detalle interno en una promesa permanente.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/route_labels.dart`:
@@ -531,13 +538,12 @@ dart pub publish --dry-run
 #### Paso 6 · Práctica independiente
 Agrega `CHANGELOG.md`, una guía de uso en `README.md` y un caso para cada estado. Examina la lista de archivos de `dart pub publish --dry-run`. No ejecutes `dart pub publish`: prepara la revisión, no publiques una versión real en el ejercicio.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: exponer `lib/src`, publicar sin revisar el dry run y depender de un archivo de ejemplo que no compila. Entrega el paquete, salida de analyzer/tests/docs/dry run y lista de archivos que incluiría. **Proyecto integrador RutaFlow:** reemplaza copias de reglas de estado por la dependencia local `route_labels` y prueba ambas apps contra el mismo API. Siguiente módulo: aplicar lo aprendido a producción y entregas multiplataforma. Fuentes oficiales: [crear paquetes](https://dart.dev/tools/pub/create-packages), [convenciones del paquete](https://dart.dev/tools/pub/package-layout) y [publicación dry-run](https://dart.dev/tools/pub/publishing).
-
-**¿Por qué es importante?** Un paquete bien delimitado comparte una regla útil sin convertir cada detalle interno en una promesa permanente.
 **Evidencia:** paquete verificable, API pública pequeña, tests, ejemplo, documentación y dry run revisado.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: exponer `lib/src`, publicar sin revisar el dry run y depender de un archivo de ejemplo que no compila. Entrega el paquete, salida de analyzer/tests/docs/dry run y lista de archivos que incluiría. **Proyecto integrador RutaFlow:** reemplaza copias de reglas de estado por la dependencia local `route_labels` y prueba ambas apps contra el mismo API. Siguiente módulo: aplicar lo aprendido a producción y entregas multiplataforma. Fuentes oficiales: [crear paquetes](https://dart.dev/tools/pub/create-packages), [convenciones del paquete](https://dart.dev/tools/pub/package-layout) y [publicación dry-run](https://dart.dev/tools/pub/publishing).
 
 ## Proyecto integrador del módulo
 

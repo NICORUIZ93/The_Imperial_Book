@@ -180,7 +180,7 @@ cambia `z` por \(-5+12j\) y vuelve a ejecutar. Resultado esperado: magnitud 13 y
 
 **Límite:** la forma polar no está definida en \(z=0\) (el ángulo queda indeterminado); ese caso se trata aparte, no con esta fórmula.
 
-### Tema 2: Operaciones
+### Tema 2: Operaciones con números complejos: suma, producto y división
 
 **¿Por qué es importante?** Multiplicar conjugados y dividir complejos aparece en cada cálculo de polos, ángulos y respuestas en frecuencia.
 

@@ -8,7 +8,7 @@ RutaFlow empieza como un solo artefacto desplegable con módulos de Envíos y Fa
 
 Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/microservices/modular-rutaflow`; usa JDK 25 y Maven Wrapper. La demostración de ArchUnit incluye un proyecto independiente generado desde una carpeta limpia para que la prueba no dependa de avances ocultos.
 
-### Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min
+### Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min
 
 **Prerrequisito:** tema «Refutar falacias distribuidas mediante evidencia reproducible» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T10).
 
@@ -105,7 +105,7 @@ Clasifica cuatro variantes de RutaFlow y defiende cada resultado con artefacto, 
 
 Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Evaluar autonomía antes de extraer un proceso» (referencia interna M1 T2). **Errores comunes:** equiparar repositorio, API o contenedor con microservicio. **Fuentes oficiales:** [Azure microservices style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices).
 
-### Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min
+### Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min
 
 **Prerrequisito:** tema «Distinguir estructura lógica de unidad de despliegue» del módulo «Construir un monolito modular antes de extraer servicios» (referencia interna M1 T1).
 
@@ -191,7 +191,7 @@ Evalúa Envíos y Facturación por separado. Propón una extracción y una no ex
 
 Si fallas 2 o más puntos, vuelve a la matriz. **Siguiente tema:** «Agrupar código por capacidad de negocio» (referencia interna M1 T3). **Errores comunes:** extraer por moda, CPU global o cantidad de líneas. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
-### Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min
+### Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min
 
 **Prerrequisito:** tema «Evaluar autonomía antes de extraer un proceso» de este módulo (referencia interna M1 T2).
 
@@ -273,7 +273,7 @@ Clasifica doce clases de RutaFlow en capacidades. Defiende dos decisiones difíc
 
 Si fallas 2 o más puntos, repite el inventario. **Siguiente tema:** «Proteger la API pública de un módulo» (referencia interna M1 T4). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
-### Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min
+### Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min
 
 **Prerrequisito:** tema «Agrupar código por capacidad de negocio» de este módulo (referencia interna M1 T3).
 
@@ -359,7 +359,7 @@ Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener
 
 **Conexión con el proyecto integrador:** `RegistrarEnvio` es el contrato que el módulo Envíos de RutaFlow expone a Facturación; ningún otro módulo debe depender de `ServicioEnvios` ni de su entidad JPA.
 
-### Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min
+### Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min
 
 **Prerrequisito:** tema «Proteger la API pública de un módulo» de este módulo (referencia interna M1 T4).
 
@@ -438,7 +438,7 @@ Implementa recargo por zona con tabla de casos, límites y errores. Demuestra qu
 
 **Siguiente tema:** «Sustituir adaptadores mediante puertos» (referencia interna M1 T6). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
-### Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min
+### Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min
 
 **Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
 
@@ -518,7 +518,7 @@ Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba
 
 **Conexión con el proyecto integrador:** `RegistrarEnvio` del módulo Envíos recibe su puerto `GuardarEnvio` desde la composición de RutaFlow, no lo instancia; así la prueba del caso de uso usa `Memoria` y producción usa el adaptador JPA real.
 
-### Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min
+### Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min
 
 **Prerrequisito:** tema «Sustituir adaptadores mediante puertos» de este módulo (referencia interna M1 T6).
 
@@ -587,7 +587,7 @@ Modela cinco módulos, incluye un ciclo transitivo y demuestra el camino. Propó
 
 **Conexión con el proyecto integrador:** el ciclo Envíos→Facturación→Notificaciones→Envíos es exactamente el riesgo que este grafo debe exponer antes de que RutaFlow extraiga cualquiera de esos tres módulos a un proceso independiente.
 
-### Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min
+### Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min
 
 **Prerrequisito:** tema «Representar dependencias de módulos como un grafo» de este módulo (referencia interna M1 T7).
 
@@ -652,7 +652,7 @@ Rompe dos ciclos distintos: uno de código y otro de datos. Justifica estrategia
 
 **Conexión con el proyecto integrador:** reemplazar la llamada síncrona `notificaciones -> envios` por el evento `EnvioConfirmado` es la ruptura concreta que RutaFlow necesita antes de poder desplegar Notificaciones como proceso independiente.
 
-### Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min
+### Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min
 
 **Prerrequisito:** tema «Romper ciclos según el tipo de acoplamiento» de este módulo (referencia interna M1 T8).
 
@@ -738,7 +738,7 @@ Protege internals de tres módulos y redacta mensajes accionables. Documenta una
 
 **Conexión con el proyecto integrador:** esta prueba vive en `examples/archunit-hexagonal-rutaflow` y corre en cada pull request de RutaFlow; es la fitness function que convierte en fallo reproducible el límite que el Tema 4 solo describió en prosa.
 
-### Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min
+### Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min
 
 **Prerrequisito:** tema «Bloquear accesos a internals con ArchUnit» de este módulo (referencia interna M1 T9).
 
@@ -803,7 +803,7 @@ Adapta el patrón a una estructura con prefijo `rutaflow.modulos.<nombre>`. Demu
 
 **Conexión con el proyecto integrador:** este `beFreeOfCycles()` sobre `academia.rutaflow.modules` es la regla que RutaFlow necesita en verde antes de prometer que Envíos, Facturación y Notificaciones pueden desplegarse en un orden independiente. **Límite:** la regla solo cubre el ciclo que el patrón `slices().matching(...)` logra capturar; si el patrón tiene un error tipográfico o agrupa capas técnicas en vez de módulos de negocio, la prueba pasa en verde sin haber evaluado nada real — confirma siempre que el conteo de clases importadas no sea cero.
 
-### Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min
+### Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min
 
 **Prerrequisito:** tema «Detectar ciclos de paquetes con ArchUnit» de este módulo (referencia interna M1 T10).
 
@@ -999,7 +999,7 @@ Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias d
 **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 
-### Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min
+### Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min
 
 **Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
 

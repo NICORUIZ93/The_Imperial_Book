@@ -16,6 +16,27 @@ Al finalizar vas a extraer la lógica de carga de `ListaEnvios` (que hoy llama a
 #### Paso 3 · Teoría, modelo mental y analogía
 MVVM separa la vista (cómo se ve) del ViewModel (cómo se comporta); la vista solo lee propiedades del ViewModel e invoca sus funciones, nunca decide qué hacer con una respuesta de red — un mostrador de atención al público no fija la política de reembolsos, solo la aplica.
 
+**¿Por qué es importante?** Porque separar qué se ve de cómo se comporta permite probar la lógica de negocio sin renderizar ninguna vista.
+**Conceptos clave:** la vista describe, el ViewModel orquesta y decide.
+
+Una vista que mezcla fetching de red, decisiones sobre errores y formateo de datos directamente en su `body` se vuelve progresivamente difícil de mantener y, más grave aún, imposible de testear sin renderizar la vista completa; extraer esa lógica a un `@Observable` ViewModel deja a la vista con la única responsabilidad de describir cómo se ve el estado actual (`vm.envios`), mientras el ViewModel decide qué hacer con cada resultado de `ServicioAPI` — el mismo problema y la misma solución arquitectónica estudiada de forma independiente en Android con `ViewModel` (Módulo 4 de ese track) y en React con hooks personalizados (Módulo 3 del track de React).
+
+**Analogía:** una vista que hace fetching, decide sobre errores y formatea datos es como un mostrador de atención al público que además fija la política de reembolsos y audita el inventario: funciona si el local es pequeño, pero se vuelve insostenible cuando el negocio crece; separar esas responsabilidades entre el mostrador (vista) y la oficina que define la política (ViewModel) es lo que MVVM logra.
+
+**Código del ejemplo:**
+
+```swift
+struct ListaEnvios: View {
+    @State var vm: EnviosViewModel  // la vista solo describe, no decide
+    var body: some View { List(vm.envios, id: \.self) { Text($0) } }
+}
+```
+
+* Código: escribe la práctica en `ContentView.swift` y `EnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, separa la vista de detalle en vista, modelo y servicio.
+
+**Límites y decisión de uso:** MVVM no exige que cada vista tenga una clase nueva ni que toda transformación pase por un ViewModel. Extrae reglas y efectos que necesiten pruebas; conserva presentación simple en la vista cuando no introduce dependencias ocultas.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 // Antes: ListaEnvios hace fetching y decide qué hacer con el resultado en su body
@@ -51,7 +72,7 @@ struct ListaEnvios: View {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -65,26 +86,6 @@ Corregí el Paso 5 quitando la referencia a `UIApplication`, y escribí una prue
 
 #### Paso 7 · Cierre
 Entregá el ViewModel extraído del Paso 4, el acoplamiento a UIKit detectado en el Paso 5, y la prueba sin SwiftUI del Paso 6; explicá por qué una vista que decide qué hacer con el resultado de una llamada de red es tan difícil de testear como un ViewModel que importa UIKit en su lógica de negocio. Siguiente paso: estudia cómo organizar las carpetas del proyecto por capa. Errores comunes: ViewModel que importa SwiftUI, lógica de negocio en el `body`, y pruebas que necesitan renderizar la vista completa. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/observation.
-**¿Por qué es importante?** Porque separar qué se ve de cómo se comporta permite probar la lógica de negocio sin renderizar ninguna vista.
-**Conceptos clave:** la vista describe, el ViewModel orquesta y decide.
-
-Una vista que mezcla fetching de red, decisiones sobre errores y formateo de datos directamente en su `body` se vuelve progresivamente difícil de mantener y, más grave aún, imposible de testear sin renderizar la vista completa; extraer esa lógica a un `@Observable` ViewModel deja a la vista con la única responsabilidad de describir cómo se ve el estado actual (`vm.envios`), mientras el ViewModel decide qué hacer con cada resultado de `ServicioAPI` — el mismo problema y la misma solución arquitectónica estudiada de forma independiente en Android con `ViewModel` (Módulo 4 de ese track) y en React con hooks personalizados (Módulo 3 del track de React).
-
-**Analogía:** una vista que hace fetching, decide sobre errores y formatea datos es como un mostrador de atención al público que además fija la política de reembolsos y audita el inventario: funciona si el local es pequeño, pero se vuelve insostenible cuando el negocio crece; separar esas responsabilidades entre el mostrador (vista) y la oficina que define la política (ViewModel) es lo que MVVM logra.
-
-**Código del ejemplo:**
-
-```swift
-struct ListaEnvios: View {
-    @State var vm: EnviosViewModel  // la vista solo describe, no decide
-    var body: some View { List(vm.envios, id: \.self) { Text($0) } }
-}
-```
-
-* Código: escribe la práctica en `ContentView.swift` y `EnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, separa la vista de detalle en vista, modelo y servicio.
-
-**Límites y decisión de uso:** MVVM no exige que cada vista tenga una clase nueva ni que toda transformación pase por un ViewModel. Extrae reglas y efectos que necesiten pruebas; conserva presentación simple en la vista cuando no introduce dependencias ocultas.
 
 ### Tema 2: Capas del proyecto e inyección por inicializador
 
@@ -96,6 +97,25 @@ Si `EnviosViewModel` creara su propio `ServicioAPI()` internamente (`private let
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Separar el proyecto en carpetas por capa (Vistas/ViewModels/Servicios/Dominio) hace visible la arquitectura en la estructura de archivos; inyectar por inicializador permite construir el mismo ViewModel con dependencias distintas según el contexto (producción vs. test).
+
+**¿Por qué es importante?** Porque la inyección por inicializador permite sustituir dependencias en tests sin singletons globales difíciles de aislar.
+**Conceptos clave:** inyección por inicializador, límites explícitos entre capas.
+
+Organizar el proyecto en carpetas que reflejan estas responsabilidades (en vez de agrupar archivos solo por pantalla) hace visible la arquitectura directamente en la estructura del proyecto, y ayuda a que cualquier persona nueva en el equipo sepa dónde debería vivir código nuevo según su responsabilidad. Pasar `ServicioAPI` por el inicializador del ViewModel (con un valor por defecto que apunta a la implementación real) en vez de acceder a un singleton global (`ServicioAPI.shared`) permite sustituir esa dependencia por una falsa en tests sin ninguna configuración adicional — el mismo principio de inyección por constructor estudiado en Spring Boot (Módulo 0 de ese track) y en Hilt para Android (Módulo 7 de ese track).
+
+**Analogía:** organizar el proyecto en carpetas por capa es como un edificio con señalización clara de qué sucede en cada piso, en vez de un espacio abierto sin ninguna distinción de función; inyectar por inicializador es como entregarle a cada empleado sus propias herramientas al contratarlo, en vez de que todos compartan un único almacén común sin control sobre qué toma cada uno.
+
+**Implicación práctica:** La organización en capas hace visible la arquitectura en la estructura del proyecto; la inyección por inicializador permite sustituir `ServicioAPI` por una versión falsa en tests sin singletons globales.
+
+**Código del ejemplo:**
+
+```swift
+init(servicio: ServicioAPI = ServicioAPI()) { self.servicio = servicio }
+// Producción: EnviosViewModel()
+// Test: EnviosViewModel(servicio: ServicioAPIFalso())
+```
+
+**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Inyecta el repositorio de ruta por inicializador en el modelo de vista. Prueba con un fake que falla y verifica que la pantalla ofrece recuperación sin construir clientes de red dentro de body.
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
@@ -120,7 +140,7 @@ class EnviosViewModel {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -134,24 +154,6 @@ Corregí el Paso 5 devolviendo el parámetro al inicializador, y movés `Servici
 
 #### Paso 7 · Cierre
 Entregá el inicializador con valor por defecto del Paso 4, la dependencia fija detectada en el Paso 5, y la estructura de carpetas del Paso 6; explicá por qué un valor por defecto en el inicializador (`servicio: ServicioAPI = ServicioAPI()`) no es lo mismo que un singleton global, aunque en producción ambos acaben usando "la misma" implementación real. Siguiente paso: estudia cuándo esta arquitectura simple no alcanza. Errores comunes: servicio creado dentro del ViewModel sin parámetro, carpetas organizadas por pantalla en vez de por capa, y Dominio que importa Servicios. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
-**¿Por qué es importante?** Porque la inyección por inicializador permite sustituir dependencias en tests sin singletons globales difíciles de aislar.
-**Conceptos clave:** inyección por inicializador, límites explícitos entre capas.
-
-Organizar el proyecto en carpetas que reflejan estas responsabilidades (en vez de agrupar archivos solo por pantalla) hace visible la arquitectura directamente en la estructura del proyecto, y ayuda a que cualquier persona nueva en el equipo sepa dónde debería vivir código nuevo según su responsabilidad. Pasar `ServicioAPI` por el inicializador del ViewModel (con un valor por defecto que apunta a la implementación real) en vez de acceder a un singleton global (`ServicioAPI.shared`) permite sustituir esa dependencia por una falsa en tests sin ninguna configuración adicional — el mismo principio de inyección por constructor estudiado en Spring Boot (Módulo 0 de ese track) y en Hilt para Android (Módulo 7 de ese track).
-
-**Analogía:** organizar el proyecto en carpetas por capa es como un edificio con señalización clara de qué sucede en cada piso, en vez de un espacio abierto sin ninguna distinción de función; inyectar por inicializador es como entregarle a cada empleado sus propias herramientas al contratarlo, en vez de que todos compartan un único almacén común sin control sobre qué toma cada uno.
-
-**Implicación práctica:** La organización en capas hace visible la arquitectura en la estructura del proyecto; la inyección por inicializador permite sustituir `ServicioAPI` por una versión falsa en tests sin singletons globales.
-
-**Código del ejemplo:**
-
-```swift
-init(servicio: ServicioAPI = ServicioAPI()) { self.servicio = servicio }
-// Producción: EnviosViewModel()
-// Test: EnviosViewModel(servicio: ServicioAPIFalso())
-```
-
-**Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Inyecta el repositorio de ruta por inicializador en el modelo de vista. Prueba con un fake que falla y verifica que la pantalla ofrece recuperación sin construir clientes de red dentro de body.
 
 ### Tema 3: Cuándo MVVM no alcanza
 
@@ -164,43 +166,6 @@ Si `EnviosViewModel` y un futuro `DetalleEnvioViewModel` necesitan ambos calcula
 #### Paso 3 · Teoría, modelo mental y analogía
 Cuando una regla de negocio se repite entre varios ViewModels, equipos suelen agregar una capa de "casos de uso" entre el ViewModel y el Servicio — cada caso de uso encapsula una sola operación de negocio reutilizable.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-// Antes: la regla "está atrasado" duplicada en dos ViewModels
-class EnviosViewModel {
-    func estaAtrasado(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() }
-}
-class DetalleEnvioViewModel {
-    func estaAtrasado(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() } // copiada
-}
-
-// Después: un caso de uso reutilizable
-struct EsEnvioAtrasado {
-    func ejecutar(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() }
-}
-class EnviosViewModel { private let esAtrasado = EsEnvioAtrasado() }
-class DetalleEnvioViewModel { private let esAtrasado = EsEnvioAtrasado() }
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: la regla de negocio vive en un solo lugar (`EsEnvioAtrasado`); si RutaFlow cambia la definición de "atrasado" (agregando, por ejemplo, un margen de tolerancia de 15 minutos), se corrige en un único archivo en vez de buscar cada copia dispersa entre ViewModels.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá un tercer ViewModel (`ResumenRutaViewModel`) que vuelva a copiar `envio.fechaEstimada < Date()` directamente, "porque es solo una línea" — ese es el fallo deliberado: ahora hay tres copias de la misma regla, y agregar el margen de tolerancia exige recordar actualizar las tres, no una.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 haciendo que `ResumenRutaViewModel` también use `EsEnvioAtrasado`, y agregá el margen de tolerancia de 15 minutos solo dentro de `EsEnvioAtrasado.ejecutar` — confirmá que los tres ViewModels reflejan el nuevo comportamiento sin que ninguno haya cambiado su propio código.
-
-**Proyecto integrador:** en ese proyecto iniciado desde una carpeta vacía, conecta `EnviosViewModel.swift`, `DetalleEnvioViewModel.swift` y `ResumenRutaViewModel.swift` al mismo `EsEnvioAtrasado`, inyectando también un reloj para no depender de `Date()` en las pruebas. Crea `RutaFlowAppTests/ReglaAtrasoTests.swift` con un envío vencido hace 20 minutos y otro vencido hace 10: con una tolerancia de 15 minutos, el primero debe quedar atrasado en las tres pantallas y el segundo no. Cambia la tolerancia únicamente en el caso de uso y vuelve a ejecutar las pruebas para demostrar que ninguna copia de la regla quedó escondida en un ViewModel.
-
-#### Paso 7 · Cierre
-Entregá la duplicación provocada en el Paso 5, la corrección centralizada del Paso 6, y una frase explicando en qué punto decidiste que la regla merecía su propio caso de uso en vez de quedarse copiada; mencioná también cuándo NO conviene: una regla usada en un solo ViewModel no necesita todavía esta capa. Siguiente paso: estudia testing con XCTest. Errores comunes: extraer un caso de uso para lógica usada en un solo lugar, duplicar reglas "porque es solo una línea", y adoptar arquitecturas complejas (como TCA) antes de que la app lo necesite genuinamente. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 **¿Por qué es importante?** Porque reconocer cuándo una regla se duplica evita tanto la sub-arquitectura (lógica copiada entre ViewModels) como la sobre-arquitectura (casos de uso para reglas usadas una sola vez).
 **Conceptos clave:** caso de uso como regla de negocio reutilizable; límite entre MVVM simple y capas adicionales.
 
@@ -237,6 +202,43 @@ En tu propio proyecto RutaFlow, crea `Dominio/EsEnvioAtrasado.swift`: primero cr
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+// Antes: la regla "está atrasado" duplicada en dos ViewModels
+class EnviosViewModel {
+    func estaAtrasado(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() }
+}
+class DetalleEnvioViewModel {
+    func estaAtrasado(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() } // copiada
+}
+
+// Después: un caso de uso reutilizable
+struct EsEnvioAtrasado {
+    func ejecutar(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() }
+}
+class EnviosViewModel { private let esAtrasado = EsEnvioAtrasado() }
+class DetalleEnvioViewModel { private let esAtrasado = EsEnvioAtrasado() }
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: la regla de negocio vive en un solo lugar (`EsEnvioAtrasado`); si RutaFlow cambia la definición de "atrasado" (agregando, por ejemplo, un margen de tolerancia de 15 minutos), se corrige en un único archivo en vez de buscar cada copia dispersa entre ViewModels.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá un tercer ViewModel (`ResumenRutaViewModel`) que vuelva a copiar `envio.fechaEstimada < Date()` directamente, "porque es solo una línea" — ese es el fallo deliberado: ahora hay tres copias de la misma regla, y agregar el margen de tolerancia exige recordar actualizar las tres, no una.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 haciendo que `ResumenRutaViewModel` también use `EsEnvioAtrasado`, y agregá el margen de tolerancia de 15 minutos solo dentro de `EsEnvioAtrasado.ejecutar` — confirmá que los tres ViewModels reflejan el nuevo comportamiento sin que ninguno haya cambiado su propio código.
+
+**Proyecto integrador:** en ese proyecto iniciado desde una carpeta vacía, conecta `EnviosViewModel.swift`, `DetalleEnvioViewModel.swift` y `ResumenRutaViewModel.swift` al mismo `EsEnvioAtrasado`, inyectando también un reloj para no depender de `Date()` en las pruebas. Crea `RutaFlowAppTests/ReglaAtrasoTests.swift` con un envío vencido hace 20 minutos y otro vencido hace 10: con una tolerancia de 15 minutos, el primero debe quedar atrasado en las tres pantallas y el segundo no. Cambia la tolerancia únicamente en el caso de uso y vuelve a ejecutar las pruebas para demostrar que ninguna copia de la regla quedó escondida en un ViewModel.
+
+#### Paso 7 · Cierre
+Entregá la duplicación provocada en el Paso 5, la corrección centralizada del Paso 6, y una frase explicando en qué punto decidiste que la regla merecía su propio caso de uso en vez de quedarse copiada; mencioná también cuándo NO conviene: una regla usada en un solo ViewModel no necesita todavía esta capa. Siguiente paso: estudia testing con XCTest. Errores comunes: extraer un caso de uso para lógica usada en un solo lugar, duplicar reglas "porque es solo una línea", y adoptar arquitecturas complejas (como TCA) antes de que la app lo necesite genuinamente. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 
 ## Laboratorio práctico
 

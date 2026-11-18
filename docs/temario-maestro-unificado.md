@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1331
+- Temas actuales conservados: 1430
 - Temas actuales con evidencia exacta en libros: 3
 - Temas adicionales únicos de libros: 73027
 - Temas candidatos provenientes de cursos: 54
 - Cursos externos inventariados: 7
-- Total unificado provisional: 74412
+- Total unificado provisional: 74511
 - Libros pendientes de OCR: 109
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -4908,7 +4908,7 @@ Total provisional: 2429 temas.
 
 ## Stack: javascript
 
-Total provisional: 2725 temas.
+Total provisional: 2729 temas.
 
 ### Módulo actual 0
 
@@ -4968,6 +4968,7 @@ Total provisional: 2725 temas.
 4. **Reintentos y timeouts manuales** — `actual`
 5. **Generadores — function*, yield y yield*** — `actual`
 6. **Proxies y Reflect** — `actual`
+7. **Streams web: leer una respuesta de fetch por partes** — `actual`
 
 ### Módulo actual 7
 
@@ -4977,6 +4978,8 @@ Total provisional: 2725 temas.
 4. **package.json — exports, type y scripts** — `actual`
 5. **import() dinámico e import.meta** — `actual`
 6. **Webpack, Rollup y Babel/SWC** — `actual`
+7. **Módulos ES a fondo: top-level await, ciclos de importación e import maps** — `actual`
+8. **Cadena de suministro npm: lockfile, integridad y paquetes alterados** — `actual`
 
 ### Módulo actual 8
 
@@ -5042,6 +5045,7 @@ Total provisional: 2725 temas.
 12. **WebSocket y comunicación en tiempo real** — `actual`
 13. **Typed Arrays, ArrayBuffer y DataView** — `actual`
 14. **ECMAScript moderno, Temporal e iterator helpers** — `actual`
+15. **Gestión explícita de recursos: using, await using y DisposableStack** — `actual`
 
 ### Expansión editorial por organizar
 
@@ -10543,7 +10547,7 @@ Total provisional: 2725 temas.
 
 ## Stack: node
 
-Total provisional: 558 temas.
+Total provisional: 565 temas.
 
 ### Módulo actual 0
 
@@ -10567,6 +10571,8 @@ Total provisional: 558 temas.
 2. **Streams básicos: Readable, Writable y Transform** — `actual`
 3. **Backpressure: write() y el evento drain** — `actual`
 4. **pipeline() para componer streams de forma segura** — `actual`
+5. **Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador** — `actual`
+6. **Compresión con zlib: gzip y Brotli por streams** — `actual`
 
 ### Módulo actual 3
 
@@ -10575,6 +10581,8 @@ Total provisional: 558 temas.
 3. **Parsing de body y headers** — `actual`
 4. **Códigos de estado y content negotiation** — `actual`
 5. **Paginación por cursor y límites de entrada comprobables** — `actual`
+6. **HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión** — `actual`
+7. **Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS** — `actual`
 
 ### Módulo actual 4
 
@@ -10609,6 +10617,7 @@ Total provisional: 558 temas.
 4. **Alternativas de testing y debugging** — `actual`
 5. **node:test — test runner nativo sin dependencias** — `actual`
 6. **TDD práctico: rojo, verde y refactor con node:test** — `actual`
+7. **Cobertura de pruebas con node:test: líneas, ramas y umbrales** — `actual`
 
 ### Módulo actual 8
 
@@ -10625,6 +10634,7 @@ Total provisional: 558 temas.
 3. **Excepciones no capturadas y graceful shutdown** — `actual`
 4. **REST, GraphQL y gRPC** — `actual`
 5. **Métricas Prometheus y trazas distribuidas con OpenTelemetry** — `actual`
+6. **Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel** — `actual`
 
 ### Módulo actual 10
 
@@ -10633,6 +10643,7 @@ Total provisional: 558 temas.
 3. **Inyección SQL y sanitización contra XSS** — `actual`
 4. **OWASP API Security Top 10 y auditoría de dependencias** — `actual`
 5. **CVE, CWE y npm audit en el pipeline** — `actual`
+6. **Modelo de permisos de Node: limitar archivos, procesos y workers** — `actual`
 
 ### Módulo actual 11
 
@@ -11683,7 +11694,7 @@ Total provisional: 558 temas.
 
 ## Stack: angular
 
-Total provisional: 110 temas.
+Total provisional: 117 temas.
 
 ### Módulo actual 0
 
@@ -11725,6 +11736,7 @@ Total provisional: 110 temas.
 3. **Lazy loading con loadComponent** — `actual`
 4. **Parámetros de ruta, query params y capacidades avanzadas de routing** — `actual`
 5. **CanDeactivate: proteger un borrador sin confundir navegación con autorización** — `actual`
+6. **Resolvers funcionales: datos listos antes de mostrar la ruta** — `actual`
 
 ### Módulo actual 5
 
@@ -11751,6 +11763,8 @@ Total provisional: 110 temas.
 1. **Bootstrap sin NgModules** — `actual`
 2. **Organización por feature** — `actual`
 3. **Migración desde NgModules** — `actual`
+4. **Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido** — `actual`
+5. **Microfrontends con criterio: Native Federation y cuándo no usarlos** — `actual`
 
 ### Módulo actual 9
 
@@ -11771,6 +11785,8 @@ Total provisional: 110 temas.
 2. **Hidratación** — `actual`
 3. **`@defer` — estados reales, incluyendo error** — `actual`
 4. **Zoneless** — `actual`
+5. **Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts** — `actual`
+6. **Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa** — `actual`
 
 ### Módulo actual 12
 
@@ -11790,6 +11806,8 @@ Total provisional: 110 temas.
 2. **La seguridad automática tiene fronteras explícitas** — `actual`
 3. **Internacionalizar implica significado, no reemplazo de texto** — `actual`
 4. **Rendimiento y actualización son contratos de experiencia** — `actual`
+5. **CSP con nonce y Trusted Types en Angular** — `actual`
+6. **Perfilar con Angular DevTools y el panel Performance de Chrome** — `actual`
 
 ### Módulo actual 15
 
@@ -11913,7 +11931,7 @@ Total provisional: 110 temas.
 
 ## Stack: react
 
-Total provisional: 950 temas.
+Total provisional: 956 temas.
 
 ### Módulo actual 0
 
@@ -11928,6 +11946,7 @@ Total provisional: 950 temas.
 2. **Render frente a commit** — `actual`
 3. **Batching de actualizaciones** — `actual`
 4. **Componentes controlados** — `actual`
+5. **Componentes puros y el estado como instantánea** — `actual`
 
 ### Módulo actual 2
 
@@ -11937,12 +11956,14 @@ Total provisional: 950 temas.
 4. **Reglas de los hooks, useReducer y useImperativeHandle** — `actual`
 5. **Error Boundaries — contener errores de render sin romper toda la app** — `actual`
 6. **Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual** — `actual`
+7. **useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar** — `actual`
 
 ### Módulo actual 3
 
 1. **React Hook Form y el problema del re-render por tecla** — `actual`
 2. **Validación con zod y formularios multi-paso** — `actual`
 3. **Eventos sintéticos** — `actual`
+4. **Formularios con Actions: useActionState y useOptimistic** — `actual`
 
 ### Módulo actual 4
 
@@ -11982,6 +12003,8 @@ Total provisional: 950 temas.
 3. **Virtualización y code-splitting** — `actual`
 4. **useTransition, useDeferredValue y Fiber** — `actual`
 5. **Suspense y React.lazy — carga diferida del lado cliente** — `actual`
+6. **El hook use: leer una promesa con Suspense y un contexto de forma condicional** — `actual`
+7. **React Compiler y las reglas de React: memoización automática** — `actual`
 
 ### Módulo actual 10
 
@@ -12008,6 +12031,7 @@ Total provisional: 950 temas.
 2. **La composición visual debe conservar semántica y foco** — `actual`
 3. **Cliente y servidor forman una sola frontera de seguridad** — `actual`
 4. **Hidratación determinista, idioma y releases medibles** — `actual`
+5. **Migrar a React 19: codemods, cambios que rompen y verificación** — `actual`
 
 ### Módulo actual 14
 
@@ -14202,7 +14226,7 @@ Total provisional: 950 temas.
 
 ## Stack: java
 
-Total provisional: 3111 temas.
+Total provisional: 3117 temas.
 
 ### Módulo actual 0
 
@@ -14276,6 +14300,7 @@ Total provisional: 3111 temas.
 1. **JUnit 5 — anotaciones y ciclo de vida** — `actual`
 2. **Mockito — aislar dependencias** — `actual`
 3. **Tests parametrizados y cobertura** — `actual`
+4. **Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada** — `actual`
 
 ### Módulo actual 10
 
@@ -14311,6 +14336,8 @@ Total provisional: 3111 temas.
 2. **La JVM optimiza y puede invalidar un cronómetro ingenuo** — `actual`
 3. **Deserializar es permitir construcción y comportamiento** — `actual`
 4. **El runtime es parte del artefacto y necesita ciclo de vida** — `actual`
+5. **Arranque más rápido: archivos CDS y la caché AOT** — `actual`
+6. **Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps** — `actual`
 
 ### Módulo actual 15
 
@@ -14341,6 +14368,7 @@ Total provisional: 3111 temas.
 
 1. **HttpClient, REST, timeouts y fallos** — `actual`
 2. **Tokens, validación y límites de seguridad** — `actual`
+3. **Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos** — `actual`
 
 ### Módulo actual 19
 
@@ -14351,6 +14379,8 @@ Total provisional: 3111 temas.
 5. **ServiceLoader: plugins sin acoplar implementaciones** — `actual`
 6. **Proxies dinámicos: así funcionan @Transactional y los mocks** — `actual`
 7. **Internacionalización: números, monedas, fechas y orden de texto** — `actual`
+8. **Carga de clases: cargadores, delegación y plugins con URLClassLoader** — `actual`
+9. **MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado** — `actual`
 
 ### Módulo actual 20
 
@@ -21174,13 +21204,14 @@ Total provisional: 3111 temas.
 
 ## Stack: spring-boot
 
-Total provisional: 142 temas.
+Total provisional: 149 temas.
 
 ### Módulo actual 0
 
 1. **Inversión de control y el contenedor de Spring** — `actual`
 2. **Inyección por constructor vs por campo** — `actual`
 3. **Estereotipos, autoconfiguración y scopes** — `actual`
+4. **Ciclo de vida de los beans y apagado ordenado** — `actual`
 
 ### Módulo actual 1
 
@@ -21202,6 +21233,7 @@ Total provisional: 142 temas.
 1. **Entidades y repositorios derivados** — `actual`
 2. **El problema N+1 y su corrección** — `actual`
 3. **Migraciones con Flyway** — `actual`
+4. **Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos** — `actual`
 
 ### Módulo actual 4
 
@@ -21216,6 +21248,7 @@ Total provisional: 142 temas.
 1. **@ConfigurationProperties tipado** — `actual`
 2. **Fallar rápido al arranque** — `actual`
 3. **Manejo global de excepciones consistente entre entornos** — `actual`
+4. **FailureAnalyzer: errores de arranque que explican la causa y la solución** — `actual`
 
 ### Módulo actual 6
 
@@ -21228,6 +21261,7 @@ Total provisional: 142 temas.
 1. **Actuator y health checks personalizados** — `actual`
 2. **Contar operaciones de negocio con Micrometer** — `actual`
 3. **Liveness y readiness sin reinicios en cadena** — `actual`
+4. **Logging en Spring Boot: niveles, grupos y logs estructurados en JSON** — `actual`
 
 ### Módulo actual 8
 
@@ -21240,6 +21274,7 @@ Total provisional: 142 temas.
 7. **Kafka Streams con Spring para transformar eventos** — `actual`
 8. **Avro y Schema Registry para contratos de eventos** — `actual`
 9. **RabbitMQ con Spring AMQP: routing, ack y prefetch** — `actual`
+10. **JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones** — `actual`
 
 ### Módulo actual 9
 
@@ -21267,6 +21302,7 @@ Total provisional: 142 temas.
 1. **Fat JAR vs capas de Docker** — `actual`
 2. **GraalVM native image** — `actual`
 3. **Health checks para Kubernetes** — `actual`
+4. **Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile** — `actual`
 
 ### Módulo actual 12
 
@@ -21315,6 +21351,7 @@ Total provisional: 142 temas.
 
 1. **SecurityFilterChain y autorización** — `actual`
 2. **DTO validation, CORS, JWT/OIDC y clientes HTTP** — `actual`
+3. **SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa** — `actual`
 
 ### Módulo actual 19
 
@@ -21452,37 +21489,37 @@ Total provisional: 24 temas.
 
 ### Módulo actual 0
 
-1. **Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min** — `actual`
-2. **Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min** — `actual`
-3. **Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min** — `actual`
-4. **Clasificar un resultado desconocido antes de reintentar · Integración · 45 min** — `actual`
-5. **Evitar efectos duplicados con una clave idempotente · Integración · 45 min** — `actual`
-6. **Seleccionar un reloj según la evidencia temporal · Integración · 40 min** — `actual`
-7. **Preservar el orden de eventos por versión del agregado · Integración · 45 min** — `actual`
+1. **Ejecutar dos procesos Java y comprobar su socket HTTP** — `actual`
+2. **Imponer un presupuesto temporal a una solicitud HTTP** — `actual`
+3. **Propagar un deadline absoluto entre servicios HTTP** — `actual`
+4. **Clasificar un resultado desconocido antes de reintentar** — `actual`
+5. **Evitar efectos duplicados con una clave idempotente** — `actual`
+6. **Seleccionar un reloj según la evidencia temporal** — `actual`
+7. **Preservar el orden de eventos por versión del agregado** — `actual`
 8. **Evolucionar un contrato JSON sin romper consumidores** — `actual`
 9. **Rechazar un frame excesivo antes de reservar memoria** — `actual`
 10. **Refutar falacias distribuidas mediante evidencia reproducible** — `actual`
 
 ### Módulo actual 1
 
-1. **Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min** — `actual`
-2. **Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min** — `actual`
-3. **Agrupar código por capacidad de negocio · Aplicación · 40 min** — `actual`
-4. **Proteger la API pública de un módulo · Aplicación · 45 min** — `actual`
-5. **Mantener reglas de dominio libres de frameworks · Aplicación · 40 min** — `actual`
-6. **Sustituir adaptadores mediante puertos · Aplicación · 45 min** — `actual`
-7. **Representar dependencias de módulos como un grafo · Integración · 35 min** — `actual`
-8. **Romper ciclos según el tipo de acoplamiento · Integración · 45 min** — `actual`
-9. **Bloquear accesos a internals con ArchUnit · Integración · 40 min** — `actual`
-10. **Detectar ciclos de paquetes con ArchUnit · Integración · 35 min** — `actual`
-11. **Evitar falsos verdes en fitness functions · Integración · 35 min** — `actual`
+1. **Distinguir estructura lógica de unidad de despliegue** — `actual`
+2. **Evaluar autonomía antes de extraer un proceso** — `actual`
+3. **Agrupar código por capacidad de negocio** — `actual`
+4. **Proteger la API pública de un módulo** — `actual`
+5. **Mantener reglas de dominio libres de frameworks** — `actual`
+6. **Sustituir adaptadores mediante puertos** — `actual`
+7. **Representar dependencias de módulos como un grafo** — `actual`
+8. **Romper ciclos según el tipo de acoplamiento** — `actual`
+9. **Bloquear accesos a internals con ArchUnit** — `actual`
+10. **Detectar ciclos de paquetes con ArchUnit** — `actual`
+11. **Evitar falsos verdes en fitness functions** — `actual`
 12. **Medir señales que justifican una extracción** — `actual`
 13. **Registrar una decisión reversible en un ADR** — `actual`
-14. **Separar mitos y verdades de Domain-Driven Design · Integración · 40 min** — `actual`
+14. **Separar mitos y verdades de Domain-Driven Design** — `actual`
 
 ## Stack: kotlin-multiplatform
 
-Total provisional: 2467 temas.
+Total provisional: 2477 temas.
 
 ### Módulo actual 0
 
@@ -21497,6 +21534,7 @@ Total provisional: 2467 temas.
 2. **Scope functions** — `actual`
 3. **Sealed classes y colecciones funcionales** — `actual`
 4. **Lambdas con receptor y builders tipo DSL** — `actual`
+5. **Genéricos en Kotlin: varianza con in y out, restricciones y reified** — `actual`
 
 ### Módulo actual 2
 
@@ -21511,6 +21549,8 @@ Total provisional: 2467 temas.
 2. **expect/actual** — `actual`
 3. **Gradle multiplataforma y targets disponibles** — `actual`
 4. **Jerarquía de source sets intermedios** — `actual`
+5. **Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle** — `actual`
+6. **Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común** — `actual`
 
 ### Módulo actual 4
 
@@ -21534,6 +21574,7 @@ Total provisional: 2467 temas.
 2. **Drivers por plataforma** — `actual`
 3. **Migraciones de esquema** — `actual`
 4. **Transacciones: atomicidad en operaciones multi-tabla** — `actual`
+5. **Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común** — `actual`
 
 ### Módulo actual 7
 
@@ -21541,18 +21582,24 @@ Total provisional: 2467 temas.
 2. **Estado y recomposición — mutableStateOf y por qué la UI se redibuja** — `actual`
 3. **Theming y navegación compartidos** — `actual`
 4. **Limitaciones en iOS y otros targets** — `actual`
+5. **Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes** — `actual`
+6. **Deep links en Compose Multiplatform: abrir una pantalla desde un enlace** — `actual`
+7. **Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver** — `actual`
+8. **Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app** — `actual`
 
 ### Módulo actual 8
 
 1. **El framework generado para iOS** — `actual`
 2. **Mapeo de tipos Kotlin ↔ Swift** — `actual`
 3. **Coroutines desde Swift, y distribución del framework** — `actual`
+4. **Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose** — `actual`
 
 ### Módulo actual 9
 
 1. **kotlin.test en commonTest** — `actual`
 2. **Fakes en vez de mocks** — `actual`
 3. **runTest para coroutines** — `actual`
+4. **Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target** — `actual`
 
 ### Módulo actual 10
 
@@ -26900,7 +26947,7 @@ Total provisional: 2467 temas.
 
 ## Stack: android
 
-Total provisional: 1874 temas.
+Total provisional: 1883 temas.
 
 ### Módulo actual 0
 
@@ -26922,6 +26969,7 @@ Total provisional: 1874 temas.
 1. **Composables y recomposición** — `actual`
 2. **State hoisting** — `actual`
 3. **remember, rememberSaveable y layout básico** — `actual`
+4. **Material 3 en Compose: tema, color dinámico y componentes** — `actual`
 
 ### Módulo actual 3
 
@@ -26984,6 +27032,7 @@ Total provisional: 1874 temas.
 1. **Arquitectura MVVM completa con UDF** — `actual`
 2. **Inyección de dependencias en toda la app** — `actual`
 3. **Cierre del track y próximos pasos** — `actual`
+4. **Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel** — `actual`
 
 ### Módulo actual 13
 
@@ -27008,6 +27057,11 @@ Total provisional: 1874 temas.
 2. **BroadcastReceiver: reaccionar a eventos del sistema** — `actual`
 3. **Foreground Service de ubicación con FusedLocationProvider** — `actual`
 4. **Compartir archivos con FileProvider y content://** — `actual`
+5. **Mapas con Maps Compose: marcadores, cámara y ruta** — `actual`
+6. **Geofencing: avisar al entrar en la zona de una parada** — `actual`
+7. **CameraX y ML Kit: foto de entrega y escaneo de códigos de barras** — `actual`
+8. **Sensores con SensorManager: detectar caídas del paquete y orientación** — `actual`
+9. **Bluetooth LE: buscar y leer una báscula del vehículo** — `actual`
 
 ### Módulo actual 16
 
@@ -27017,6 +27071,7 @@ Total provisional: 1874 temas.
 4. **FCM, permiso de notificaciones y sincronización confiable** — `actual`
 5. **Interfaces adaptativas para teléfono, tablet y foldable** — `actual`
 6. **Credential Manager, passkeys y verificación en servidor** — `actual`
+7. **Play Integrity API: comprobar en el servidor que la petición viene de tu app real** — `actual`
 
 ### Módulo actual 17
 
@@ -27032,6 +27087,7 @@ Total provisional: 1874 temas.
 2. **Build types, product flavors y configuración segura** — `actual`
 3. **Modularización, convenciones y fronteras de arquitectura** — `actual`
 4. **R8, recursos, Baseline Profiles y pipeline reproducible** — `actual`
+5. **Macrobenchmark: medir el arranque y el scroll como lo vive el usuario** — `actual`
 
 ### Expansión editorial por organizar
 
@@ -30709,7 +30765,7 @@ Total provisional: 1874 temas.
 
 ## Stack: ios
 
-Total provisional: 4692 temas.
+Total provisional: 4705 temas.
 
 ### Módulo actual 0
 
@@ -30717,6 +30773,7 @@ Total provisional: 4692 temas.
 2. **struct vs class** — `actual`
 3. **Protocolos y enums con valores asociados** — `actual`
 4. **Closures, colecciones y genéricos con propósito** — `actual`
+5. **Ownership en Swift: borrowing, consuming y tipos ~Copyable** — `actual`
 
 ### Módulo actual 1
 
@@ -30742,6 +30799,8 @@ Total provisional: 4692 temas.
 2. **Actors para estado mutable seguro** — `actual`
 3. **TaskGroup y MainActor** — `actual`
 4. **Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red** — `actual`
+5. **Swift 6: aislamiento, Sendable y data races detectadas al compilar** — `actual`
+6. **AsyncSequence y AsyncStream: recibir valores en el tiempo con for await** — `actual`
 
 ### Módulo actual 5
 
@@ -30754,6 +30813,8 @@ Total provisional: 4692 temas.
 1. **@Model y ModelContainer** — `actual`
 2. **@Query y operaciones de escritura** — `actual`
 3. **Migraciones y SwiftData vs Core Data** — `actual`
+4. **CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario** — `actual`
+5. **Archivos en iOS: FileManager, carpetas de la app y fileImporter** — `actual`
 
 ### Módulo actual 7
 
@@ -30780,6 +30841,7 @@ Total provisional: 4692 temas.
 2. **Accesibilidad con VoiceOver** — `actual`
 3. **Human Interface Guidelines, Dynamic Type e interop con UIKit** — `actual`
 4. **UIKit desde cero para mantener aplicaciones reales** — `actual`
+5. **Localización con String Catalogs: textos, plurales y formatos por idioma** — `actual`
 
 ### Módulo actual 11
 
@@ -30792,6 +30854,7 @@ Total provisional: 4692 temas.
 1. **Arquitectura del proyecto integrador** — `actual`
 2. **Sincronización entre red y persistencia local** — `actual`
 3. **Cierre del track** — `actual`
+4. **Swift Package Manager: separar la app en paquetes locales y declarar dependencias** — `actual`
 
 ### Módulo actual 13
 
@@ -30802,6 +30865,9 @@ Total provisional: 4692 temas.
 5. **Keychain — guardar secretos de forma segura** — `actual`
 6. **Permisos y privacidad — pedir acceso con criterio** — `actual`
 7. **Notificaciones push con APNs** — `actual`
+8. **Core Location moderno: CLLocationUpdate, permisos y precisión** — `actual`
+9. **BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite** — `actual`
+10. **Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles** — `actual`
 
 ### Módulo actual 14
 
@@ -30812,6 +30878,9 @@ Total provisional: 4692 temas.
 5. **UIViewRepresentable** — `actual`
 6. **UIViewControllerRepresentable y Coordinator** — `actual`
 7. **Core ML y Vision — inferencia en el dispositivo** — `actual`
+8. **Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos** — `actual`
+9. **WidgetKit: un widget con las entregas pendientes del día** — `actual`
+10. **App Intents: acciones de la app en Siri, Atajos y Spotlight** — `actual`
 
 ### Expansión editorial por organizar
 
@@ -41987,7 +42056,7 @@ Total provisional: 4692 temas.
 
 ## Stack: flutter
 
-Total provisional: 2826 temas.
+Total provisional: 2836 temas.
 
 ### Módulo actual 0
 
@@ -41995,12 +42064,17 @@ Total provisional: 2826 temas.
 2. **Clases y mixins** — `actual`
 3. **Futures, async/await y colecciones funcionales** — `actual`
 4. **Lints y estilo con analysis_options.yaml** — `actual`
+5. **Streams en Dart: secuencias de eventos asíncronos con await for y StreamController** — `actual`
+6. **Records y patterns en Dart: varios valores sin clases y switch exhaustivo** — `actual`
+7. **Extension methods y extension types: agregar comportamiento sin heredar** — `actual`
 
 ### Módulo actual 1
 
 1. **StatelessWidget vs StatefulWidget** — `actual`
 2. **Layout con Row, Column y Stack, y ciclo de vida** — `actual`
 3. **Keys** — `actual`
+4. **Los tres árboles de Flutter: Widget, Element y RenderObject** — `actual`
+5. **Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos** — `actual`
 
 ### Módulo actual 2
 
@@ -42035,6 +42109,7 @@ Total provisional: 2826 temas.
 2. **sqflite vs Hive** — `actual`
 3. **Offline-first y Firebase** — `actual`
 4. **Restauración de formularios con RestorationMixin y una prueba de recreación** — `actual`
+5. **Archivos en Flutter: path_provider, carpetas correctas y escritura segura** — `actual`
 
 ### Módulo actual 7
 
@@ -42043,6 +42118,8 @@ Total provisional: 2826 temas.
 2. **Plugins federados** — `actual`
 3. **Permisos de plataforma y cuándo escribir un platform channel propio** — `actual`
 4. **Cámara, galería y carga multipart de una evidencia** — `actual`
+5. **Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente** — `actual`
+6. **Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada** — `actual`
 
 ### Módulo actual 8
 
@@ -42070,12 +42147,14 @@ Total provisional: 2826 temas.
 2. **Iconos y splash screens** — `actual`
 3. **CI/CD con Codemagic o Fastlane** — `actual`
 4. **Entornos y flavors con --dart-define-from-file** — `actual`
+5. **Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador** — `actual`
 
 ### Módulo actual 12
 
 1. **Arquitectura por features y Clean Architecture** — `actual`
 2. **Uniendo los módulos del track** — `actual`
 3. **Cierre del track** — `actual`
+4. **Arquitectura recomendada de Flutter: views, view models, repositories y services** — `actual`
 
 ### Módulo actual 13
 
@@ -48480,7 +48559,7 @@ Total provisional: 2826 temas.
 
 ## Stack: devops
 
-Total provisional: 349 temas.
+Total provisional: 357 temas.
 
 ### Módulo actual 0
 
@@ -48515,6 +48594,7 @@ Total provisional: 349 temas.
 5. **Redes en Docker** — `actual`
 6. **Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor** — `actual`
 7. **Operación diaria: inspect, stats, events y respaldo de volúmenes** — `actual`
+8. **Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas** — `actual`
 
 ### Módulo actual 3
 
@@ -48529,6 +48609,7 @@ Total provisional: 349 temas.
 2. **Caché de dependencias en CI** — `actual`
 3. **Artifacts y reportes de cobertura** — `actual`
 4. **Pipelines como código (GitHub Actions/GitLab CI)** — `actual`
+5. **Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción** — `actual`
 
 ### Módulo actual 5
 
@@ -48550,6 +48631,8 @@ Total provisional: 349 temas.
 6. **StatefulSets, DaemonSets, Jobs y CronJobs** — `actual`
 7. **Persistent Volumes, PVCs y StorageClasses** — `actual`
 8. **Clúster local con Minikube: perfiles, addons e Ingress** — `actual`
+9. **Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación** — `actual`
+10. **Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations** — `actual`
 
 ### Módulo actual 7
 
@@ -48560,6 +48643,7 @@ Total provisional: 349 temas.
 5. **RBAC en Kubernetes** — `actual`
 6. **Service Mesh — Istio, Linkerd, Envoy y mTLS** — `actual`
 7. **Estrategias de despliegue — Recreate vs RollingUpdate** — `actual`
+8. **Políticas en Kubernetes: NetworkPolicy y Pod Security Admission** — `actual`
 
 ### Módulo actual 8
 
@@ -48571,6 +48655,7 @@ Total provisional: 349 temas.
 6. **Ansible — playbooks, roles, inventory y módulos** — `actual`
 7. **Pulumi como alternativa a HCL** — `actual`
 8. **OpenTofu, plan y estado sin recursos cloud** — `actual`
+9. **terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas** — `actual`
 
 ### Módulo actual 9
 
@@ -48581,6 +48666,7 @@ Total provisional: 349 temas.
 5. **SLI, SLO, SLA** — `actual`
 6. **OpenTelemetry como estándar de instrumentación** — `actual`
 7. **Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate** — `actual`
+8. **Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos** — `actual`
 
 ### Módulo actual 10
 
@@ -48607,6 +48693,7 @@ Total provisional: 349 temas.
 4. **Checklist de salida a producción** — `actual`
 5. **GitOps con ArgoCD y FluxCD** — `actual`
 6. **Platform Engineering — Internal Developer Platforms (IDPs)** — `actual`
+7. **FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas** — `actual`
 
 ### Módulo actual 13
 
@@ -49138,7 +49225,7 @@ Total provisional: 349 temas.
 
 ## Stack: cloud
 
-Total provisional: 156 temas.
+Total provisional: 168 temas.
 
 ### Módulo actual 0
 
@@ -49149,6 +49236,7 @@ Total provisional: 156 temas.
 5. **Servicios que emula Floci — AWS, Azure y GCP** — `actual`
 6. **Ventajas y limitaciones de practicar con un emulador local** — `actual`
 7. **Metodología de estudio — teoría, laboratorio y evaluación en cada módulo** — `actual`
+8. **Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad** — `actual`
 
 ### Módulo actual 1
 
@@ -49190,6 +49278,7 @@ Total provisional: 156 temas.
 4. **Payload de entrada y respuesta** — `actual`
 5. **Versionado y alias** — `actual`
 6. **Integración con S3, DynamoDB Streams y API Gateway** — `actual`
+7. **Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte** — `actual`
 
 ### Módulo actual 6
 
@@ -49250,6 +49339,7 @@ Total provisional: 156 temas.
 1. **ECR y por qué no basta con Docker Hub** — `actual`
 2. **Task Definition y ECS Cluster** — `actual`
 3. **Contenedores vs Lambda, y EKS** — `actual`
+4. **Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR** — `actual`
 
 ### Módulo actual 15
 
@@ -49262,6 +49352,7 @@ Total provisional: 156 temas.
 1. **State machine y Task states** — `actual`
 2. **Choice state, Retry y Catch** — `actual`
 3. **Express vs Standard, y cuándo EventBridge Pipes es suficiente** — `actual`
+4. **Procesamiento por lotes: trabajos independientes, reintentos e idempotencia** — `actual`
 
 ### Módulo actual 17
 
@@ -49286,6 +49377,7 @@ Total provisional: 156 temas.
 1. **Bedrock Runtime y respuestas stub deterministas** — `actual`
 2. **Textract y Transcribe** — `actual`
 3. **Stub vs mock, y qué probar localmente** — `actual`
+4. **Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar** — `actual`
 
 ### Módulo actual 21
 
@@ -49303,6 +49395,7 @@ Total provisional: 156 temas.
 3. **CloudFront — distribución de contenido y control de acceso al origen** — `actual`
 4. **Route53 — zonas alojadas y registros de recursos** — `actual`
 5. **Cómo se integran los cuatro servicios en una arquitectura de borde real** — `actual`
+6. **WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde** — `actual`
 
 ### Módulo actual 23
 
@@ -49348,6 +49441,7 @@ Total provisional: 156 temas.
 2. **Neptune en Floci — un servidor Gremlin real, no una simulación** — `actual`
 3. **OpenSearch — modo simulado y modo real** — `actual`
 4. **Eligiendo entre Neptune, OpenSearch y DynamoDB** — `actual`
+5. **Datos de series temporales: escritura por tiempo, reducción de resolución y retención** — `actual`
 
 ### Módulo actual 29
 
@@ -49370,6 +49464,8 @@ Total provisional: 156 temas.
 2. **Arquitectura interna de cloud local y su uso en CI/CD** — `actual`
 3. **Migración desde otros emuladores, y límites de un emulador** — `actual`
 4. **Testcontainers — pruebas de integración automatizadas** — `actual`
+5. **Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación** — `actual`
+6. **Nube híbrida: conectar el centro de datos con la nube de forma segura y medible** — `actual`
 
 ### Módulo actual 32
 
@@ -49377,6 +49473,8 @@ Total provisional: 156 temas.
 2. **Una landing zone convierte gobierno en una base repetible** — `actual`
 3. **Disponibilidad y recuperación responden preguntas distintas** — `actual`
 4. **Un backup solo existe operativamente después de restaurarlo** — `actual`
+5. **Well-Architected: revisar una arquitectura con los seis pilares** — `actual`
+6. **Residencia y soberanía de datos: que los datos personales vivan donde la ley permite** — `actual`
 
 ### Módulo actual 33
 
@@ -49386,6 +49484,7 @@ Total provisional: 156 temas.
 4. **Lambda, API Gateway y observabilidad avanzada** — `actual`
 5. **Seguridad, auditoría y FinOps** — `actual`
 6. **Microservicios, Big Data, AI/ML y multi-cloud** — `actual`
+7. **Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso** — `actual`
 
 ### Módulo actual 34
 
@@ -49469,15 +49568,15 @@ Total provisional: 70 temas.
 ### Módulo actual 1
 
 1. **¿Qué es un número complejo?** — `actual`
-2. **Operaciones** — `actual`
+2. **Operaciones con números complejos: suma, producto y división** — `actual`
 3. **Raíces de s²+bs+c** — `actual`
 4. **Forma polar, fórmula de Euler y evaluación de G(jω)** — `actual`
 
 ### Módulo actual 2
 
-1. **La idea** — `actual`
-2. **La tabla** — `actual`
-3. **Propiedades** — `actual`
+1. **La idea de la transformada de Laplace: del tiempo al dominio s** — `actual`
+2. **La tabla de transformadas de Laplace** — `actual`
+3. **Propiedades de la transformada de Laplace** — `actual`
 4. **Valor final y valor inicial** — `actual`
 
 ### Módulo actual 3
@@ -49494,19 +49593,19 @@ Total provisional: 70 temas.
 ### Módulo actual 5
 
 1. **¿Qué es un sistema de control?** — `actual`
-2. **Los elementos** — `actual`
+2. **Los elementos de un lazo de control** — `actual`
 3. **Álgebra de bloques** — `actual`
 
 ### Módulo actual 6
 
-1. **Reglas para mover bloques** — `actual`
+1. **Reglas para mover bloques en un diagrama** — `actual`
 2. **Grafos de flujo de señal** — `actual`
 3. **Regla de Mason** — `actual`
 4. **Referencia y perturbación juntas** — `actual`
 
 ### Módulo actual 7
 
-1. **Impedancias** — `actual`
+1. **Impedancias de resistencia, bobina y condensador en s** — `actual`
 2. **Circuitos pasivos: divisor de voltaje** — `actual`
 3. **El op-amp inversor** — `actual`
 
@@ -49516,27 +49615,27 @@ Total provisional: 70 temas.
 2. **Mecánico de rotación** — `actual`
 3. **Motor DC (electromecánico)** — `actual`
 4. **Sistemas térmicos e hidráulicos** — `actual`
-5. **Analogías** — `actual`
+5. **Analogías entre sistemas eléctricos, mecánicos y térmicos** — `actual`
 
 ### Módulo actual 9
 
-1. **La idea** — `actual`
+1. **La idea de la linealización: aproximar con la recta tangente** — `actual`
 
 ### Módulo actual 10
 
-1. **La forma de estado** — `actual`
+1. **La forma de espacio de estados** — `actual`
 2. **De estados a función de transferencia** — `actual`
 
 ### Módulo actual 11
 
-1. **Forma estándar** — `actual`
-2. **Respuestas** — `actual`
+1. **Forma estándar de primer orden: K y τ** — `actual`
+2. **Respuestas de primer orden al escalón, la rampa y el impulso** — `actual`
 3. **Retardo o tiempo muerto** — `actual`
 4. **Identificación desde una gráfica** — `actual`
 
 ### Módulo actual 12
 
-1. **Forma estándar** — `actual`
+1. **Forma estándar de segundo orden: K, ωn y ζ** — `actual`
 2. **Simulador: mueve ζ y ωn** — `actual`
 3. **Los cuatro casos según ζ** — `actual`
 4. **Fórmulas del caso subamortiguado** — `actual`
@@ -49550,31 +49649,31 @@ Total provisional: 70 temas.
 
 ### Módulo actual 14
 
-1. **Fórmula general** — `actual`
+1. **Fórmula general del error en estado estacionario** — `actual`
 2. **Tipo de sistema y constantes** — `actual`
 
 ### Módulo actual 15
 
 1. **Qué es estabilidad** — `actual`
 2. **El arreglo de Routh** — `actual`
-3. **Casos especiales** — `actual`
+3. **Casos especiales del arreglo de Routh** — `actual`
 4. **Rango de K para estabilidad** — `actual`
 
 ### Módulo actual 16
 
-1. **Geometría de un polo** — `actual`
-2. **Estabilidad** — `actual`
+1. **Geometría de un polo en el plano s** — `actual`
+2. **Estabilidad según la posición de los polos** — `actual`
 3. **La zona de diseño** — `actual`
 
 ### Módulo actual 17
 
-1. **Las dos condiciones** — `actual`
+1. **Las dos condiciones del lugar de las raíces** — `actual`
 2. **Reglas de construcción (con su porqué)** — `actual`
 3. **Elegir K desde el lugar de las raíces** — `actual`
 
 ### Módulo actual 18
 
-1. **La idea** — `actual`
+1. **La idea de las acciones P, I y D: presente, pasado y tendencia** — `actual`
 2. **Error en estado estacionario** — `actual`
 3. **Cada acción, con números** — `actual`
 4. **Ventajas y desventajas (punto 4 del Parcial 1)** — `actual`
@@ -49590,12 +49689,12 @@ Total provisional: 70 temas.
 
 1. **Qué es la respuesta en frecuencia** — `actual`
 2. **Decibeles y la escala logarítmica** — `actual`
-3. **Los bloques básicos** — `actual`
+3. **Los bloques básicos del diagrama de Bode** — `actual`
 4. **Márgenes de estabilidad** — `actual`
 
 ### Módulo actual 21
 
-1. **Parcial 1** — `actual`
+1. **Parcial 1 resuelto paso a paso** — `actual`
 
 ### Módulo actual 22
 

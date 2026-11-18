@@ -27,6 +27,12 @@ JDBC es la API estándar para ejecutar SQL desde Java. `DataSource` abstrae la o
 
 Un parámetro preparado protege valores, no nombres dinámicos de tabla u ordenamiento. Para ordenar por una columna elegida por el usuario, usa una lista permitida explícita.
 **Analogía:** un `PreparedStatement` es como un formulario con casillas fijas donde solo rellenas los huecos: nadie puede "reescribir" las preguntas (por eso frena la inyección SQL). El DAO es la ventanilla única que sabe rellenar ese formulario, de modo que el resto de la app no toca SQL directamente.
+
+**¿Por qué es importante?** Porque `PreparedStatement` permite consultas precisas sin sacrificar seguridad frente a datos hostiles, y un DAO con responsabilidades acotadas evita repetir SQL y mapeo inconsistente entre servicios distintos.
+**Conceptos clave:** `DataSource`, `PreparedStatement`, DAO, allowlist de columnas, inyección SQL.
+
+**Cuándo no usarlo:** no crees un DAO genérico que oculte consultas distintas detrás de operaciones vagas; para CRUD estándar, Spring Data puede reducir código repetitivo.
+
 #### Paso 4 · Demostración guiada
 
 #### Subtema 1.1: Buscar una referencia con parámetro · 10 min
@@ -168,14 +174,11 @@ Pasa datos con `?`; elige nombres de columna con una lista permitida.
 
 Guarda la salida segura y el rechazo de la columna inyectada.
 
+**Evidencia de aprendizaje:** entrega el DAO funcionando contra H2, el caso hallado/ausente, y el fallo deliberado de concatenación SQL corregido con `PreparedStatement`.
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega el DAO, el `DataSource` de test y casos para hallado, ausente e input hostil como parte del proyecto integrador de RutaFlow, por ejemplo, para consultar reportes especializados; como siguiente paso agrupa varias escrituras relacionadas en una transacción. Errores comunes: concatenar valores directamente en el SQL en vez de usar `PreparedStatement`, permitir que el nombre de columna o el orden de una consulta provengan directamente de un parámetro del usuario sin una allowlist, y crear un DAO genérico que oculte consultas distintas detrás de operaciones vagas. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html y https://jakarta.ee/specifications/persistence/.
-**¿Por qué es importante?** Porque `PreparedStatement` permite consultas precisas sin sacrificar seguridad frente a datos hostiles, y un DAO con responsabilidades acotadas evita repetir SQL y mapeo inconsistente entre servicios distintos.
-**Evidencia de aprendizaje:** entrega el DAO funcionando contra H2, el caso hallado/ausente, y el fallo deliberado de concatenación SQL corregido con `PreparedStatement`.
-**Conceptos clave:** `DataSource`, `PreparedStatement`, DAO, allowlist de columnas, inyección SQL.
-
-**Cuándo no usarlo:** no crees un DAO genérico que oculte consultas distintas detrás de operaciones vagas; para CRUD estándar, Spring Data puede reducir código repetitivo.
 
 ### Tema 2: Transacciones, ACID y aislamiento
 
@@ -193,6 +196,13 @@ Una transacción agrupa operaciones bajo propiedades ACID: atomicidad, consisten
 
 La transacción es como una sola operación de caja: o se registran todas las líneas del recibo o se cancela el recibo entero.
 **Analogía:** una transacción es como una transferencia bancaria: o se descuenta de una cuenta y se suma en la otra, o no pasa nada; nunca queda a medias. El aislamiento es la cortina que impide que otro cajero vea el saldo mientras la transferencia está a mitad de camino.
+
+**¿Por qué es importante?** Porque las transacciones convierten varias escrituras relacionadas en una sola unidad de negocio recuperable: si el proceso falla a mitad de camino, el `rollback` garantiza que no quede ningún cambio parcial, nunca un estado a medio actualizar.
+**Conceptos clave:** ACID, `setAutoCommit(false)`, `commit`/`rollback`, nivel de aislamiento, bloqueo optimista.
+
+**Cuándo no usarlo:** no mantengas una transacción abierta mientras haces llamadas HTTP; coordinar una transacción local con otros servicios requiere patrones como outbox o saga.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
 #### Paso 4 · Demostración guiada
 
 #### Subtema 2.1: Confirmar dos escrituras juntas · 10 min
@@ -305,12 +315,9 @@ Rollback conserva la regla de negocio completa aunque el segundo paso falle.
 
 Guarda el error esperado y confirma que la tabla de cobros quedó vacía.
 
+**Evidencia de aprendizaje:** entrega el test del rollback sin escrituras parciales tras un fallo intermedio, y el test de actualización concurrente con su corrección (bloqueo optimista o la operación atómica elegida).
+
 #### Paso 7 · Cierre y evidencia
 
 Entrega la prueba del rollback, el test concurrente y una explicación del aislamiento elegido para el proyecto integrador de RutaFlow: una liquidación no debe actualizar el estado sin registrar su movimiento; con esto cerrás el módulo. Errores comunes: mantener una transacción abierta mientras se hacen llamadas HTTP u otras operaciones lentas, asumir que `SERIALIZABLE` es siempre necesario sin medir el costo de contención, y no probar el escenario de fallo a mitad de transacción, solo el camino feliz. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html y https://jakarta.ee/specifications/persistence/.
-**¿Por qué es importante?** Porque las transacciones convierten varias escrituras relacionadas en una sola unidad de negocio recuperable: si el proceso falla a mitad de camino, el `rollback` garantiza que no quede ningún cambio parcial, nunca un estado a medio actualizar.
-**Evidencia de aprendizaje:** entrega el test del rollback sin escrituras parciales tras un fallo intermedio, y el test de actualización concurrente con su corrección (bloqueo optimista o la operación atómica elegida).
-**Conceptos clave:** ACID, `setAutoCommit(false)`, `commit`/`rollback`, nivel de aislamiento, bloqueo optimista.
 
-**Cuándo no usarlo:** no mantengas una transacción abierta mientras haces llamadas HTTP; coordinar una transacción local con otros servicios requiere patrones como outbox o saga.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.

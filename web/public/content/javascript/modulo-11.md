@@ -443,6 +443,15 @@ flowchart LR
     T[tarifas satisfies Record] --> K[keyof: Bogotá o Medellín]
 ```
 
+**¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
+**Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
+**Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
+**Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** anotar un objeto literal con un tipo amplio (`Record<string, number>`) cuando `satisfies` conservaría sus claves literales, perdiendo así la comprobación en tiempo de compilación; apilar varios niveles de tipos condicionales anidados donde una interfaz explícita se leería mejor.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -538,14 +547,8 @@ Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `n
 Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
-**Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
-**Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
-**Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
 
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** anotar un objeto literal con un tipo amplio (`Record<string, number>`) cuando `satisfies` conservaría sus claves literales, perdiendo así la comprobación en tiempo de compilación; apilar varios niveles de tipos condicionales anidados donde una interfaz explícita se leería mejor.
+
 ### Tema 6: Decoradores estándar de TypeScript 5
 
 #### Paso 1 · Objetivo y preparación
@@ -568,6 +571,15 @@ flowchart LR
     R["@registrar"] --> ME[método cotizar]
     ME --> L[log de cada llamada]
 ```
+
+**¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
+**Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
+**Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
+**Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar de TypeScript 5, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -665,14 +677,7 @@ Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un 
 Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
-**Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
-**Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
-**Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.
 
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar de TypeScript 5, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
 
 ## Construcción guiada del capítulo
 

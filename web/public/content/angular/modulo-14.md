@@ -523,6 +523,276 @@ Ya confirmas en código, con la API oficial de test de bloques diferidos, que `@
 
 **Cuándo no usarlo:** para contenido pequeño y crítico para la primera impresión del usuario (por ejemplo, el encabezado principal de la página), diferir su renderizado empeoraría la experiencia en vez de mejorarla.
 
+### Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min
+
+**Prerrequisito:** tema «La seguridad automática tiene fronteras explícitas» de este módulo.
+
+**Al finalizar podrás:** servir una aplicación Angular con una Content Security Policy estricta basada en nonce y activar Trusted Types para que el navegador bloquee inyecciones de HTML.
+
+**¿Por qué es importante?** Angular ya escapa lo que interpolas, pero una dependencia, un `innerHTML` mal usado o un `bypassSecurityTrust...` pueden abrir un hueco de XSS. CSP y Trusted Types son una segunda barrera en el navegador: aunque llegue código inyectado, no se ejecuta.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Angular 19 o superior. Para la parte con SSR necesitas un proyecto creado con `--ssr`. Probarás las cabeceras con las DevTools del navegador (pestañas Network y Console).
+
+#### Paso 2 · Contexto y caso real
+
+Una librería de gráficos usada en el panel de RutaFlow insertaba HTML con `innerHTML` a partir de etiquetas de los envíos. Un envío con el nombre `<img src=x onerror=alert(1)>` ejecutó código en el navegador del operador. CSP habría bloqueado ese script.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Content Security Policy (CSP), nonce, `script-src`, `strict-dynamic`, Trusted Types, `require-trusted-types-for`, `CSP_NONCE`, `autoCsp`.
+
+**CSP** es una cabecera HTTP que dice al navegador qué scripts puede ejecutar. Con una política basada en **nonce**, cada respuesta lleva un valor aleatorio y solo se ejecutan los `<script>` que lo tienen. Un script inyectado no conoce el nonce y se bloquea.
+
+Angular necesita el mismo nonce para sus estilos en línea. Se lo das con el atributo `ngCspNonce` en el componente raíz o con el token `CSP_NONCE`. Con SSR, la opción `autoCsp` del build genera la política con hashes para los scripts que Angular agrega.
+
+**Trusted Types** obliga a que las asignaciones peligrosas (`innerHTML`, `src` de scripts) reciban un objeto creado por una política conocida, no un texto cualquiera. Angular trae sus políticas `angular` y `angular#unsafe-bypass`.
+
+```text
+Content-Security-Policy: script-src 'nonce-R4nd0m' 'strict-dynamic'; object-src 'none'; base-uri 'self';
+  require-trusted-types-for 'script'; trusted-types angular angular#unsafe-bypass
+```
+
+**Analogía:** el nonce es la contraseña del día en la puerta de un evento: solo entra quien la conoce, y cambia cada día. Trusted Types es el detector de metales: aunque tengas entrada, no pasas con un objeto prohibido. La analogía falla en que la contraseña la inventa el servidor en cada respuesta, no una vez al día.
+
+**Límite de uso:** un nonce fijo no protege: debe ser aleatorio en cada respuesta, así que necesitas un servidor (SSR o un proxy) que lo genere. Librerías antiguas que usan `eval` o `innerHTML` pueden romperse; prueba primero con `Content-Security-Policy-Report-Only`.
+
+```mermaid
+flowchart LR
+    S["Servidor: genera nonce aleatorio"] -->|"cabecera CSP + index.html con nonce"| N["Navegador"]
+    N --> A{"¿El script tiene el nonce?"}
+    A -->|sí| OK["se ejecuta"]
+    A -->|no| B["bloqueado y reportado"]
+    N --> T{"¿innerHTML con TrustedHTML?"}
+    T -->|no| B
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/server.ts`:
+
+```ts
+import { AngularNodeAppEngine, createNodeRequestHandler, writeResponseToNodeResponse } from '@angular/ssr/node';
+import express from 'express';
+import { randomBytes } from 'node:crypto';
+
+const app = express();
+const angularApp = new AngularNodeAppEngine();
+
+app.use(async (req, res, next) => {
+  const nonce = randomBytes(16).toString('base64'); // uno distinto por respuesta
+  res.setHeader('Content-Security-Policy', [
+    `script-src 'nonce-${nonce}' 'strict-dynamic'`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "require-trusted-types-for 'script'",
+    'trusted-types angular angular#unsafe-bypass',
+  ].join('; '));
+  const respuesta = await angularApp.handle(req);
+  if (!respuesta) return next();
+  // Reemplaza el marcador del index.html por el nonce real.
+  const html = (await respuesta.text()).replaceAll('RANDOM_NONCE', nonce);
+  const cabeceras = new Headers(respuesta.headers);
+  cabeceras.delete('content-length'); // el tamaño cambió al reemplazar el marcador
+  await writeResponseToNodeResponse(new Response(html, { status: respuesta.status, headers: cabeceras }), res);
+});
+
+export const reqHandler = createNodeRequestHandler(app);
+```
+
+Archivo `src/index.html`:
+
+```html
+<!doctype html>
+<html lang="es">
+  <body>
+    <!-- Angular usa este nonce para sus estilos en línea. -->
+    <app-root ngCspNonce="RANDOM_NONCE"></app-root>
+  </body>
+</html>
+```
+
+Ejecútalo:
+
+```bash
+ng build
+npm run serve:ssr:academia-ssr
+# en DevTools > Network, revisa la cabecera Content-Security-Policy del documento
+```
+
+**Explicación por bloques:** El middleware genera 16 bytes aleatorios por respuesta y arma la política: solo scripts con ese nonce (y los que ellos carguen, gracias a `strict-dynamic`), nada de `<object>`, `<base>` solo del mismo origen y Trusted Types con las políticas de Angular. `index.html` lleva el marcador `RANDOM_NONCE` en `ngCspNonce`; el servidor lo reemplaza por el valor real antes de enviar el HTML. El navegador compara el nonce de cada script con el de la cabecera.
+
+**Resultado esperado:**
+
+```text
+La cabecera Content-Security-Policy del documento muestra un nonce distinto en cada recarga.
+La aplicación funciona sin errores de CSP en la consola.
+Un <script> inyectado sin nonce aparece en consola como «Refused to execute inline script because it violates the following Content Security Policy directive».
+```
+
+**Fallo deliberado:** en un componente, asigna `elemento.nativeElement.innerHTML = '<b>' + nombre + '</b>'` usando `ElementRef`. **Error esperado:** `This document requires 'TrustedHTML' assignment`. **Diagnóstico:** Trusted Types bloquea el texto crudo. Usa interpolación o `[innerHTML]` (que Angular sanea y convierte en TrustedHTML) en lugar de manipular el DOM a mano.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** recarga la página dos veces y compara el nonce de la cabecera.
+2. **Variación:** cambia la cabecera a `Content-Security-Policy-Report-Only` y observa que las violaciones se reportan sin bloquear.
+3. **Diagnóstico:** reproduce el fallo deliberado de Trusted Types y corrígelo con `[innerHTML]`.
+4. **Integración:** agrega `report-to` con un endpoint propio que registre las violaciones en el servidor.
+5. **Diseño:** revisa las dependencias del panel de RutaFlow y lista cuáles usan `innerHTML` o `eval`.
+
+**Pista:** despliega primero en modo `Report-Only` una semana y corrige lo que aparezca antes de bloquear.
+
+#### Paso 6 · Práctica independiente
+
+Activa `"security": { "autoCsp": true }` en las opciones de build de `angular.json` en un proyecto con SSR y compara la política generada (basada en hashes) con la tuya basada en nonce.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué el nonce debe cambiar en cada respuesta.
+- [ ] La aplicación funciona con la política estricta y sin errores en consola.
+- [ ] Reprodujiste el bloqueo de Trusted Types.
+- [ ] Sabes empezar con `Report-Only`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar un nonce fijo, agregar `unsafe-inline` para «arreglar» errores y activar la política sin probar en `Report-Only`. **Siguiente paso:** el tema «Rendimiento y actualización son contratos de experiencia» mide el impacto de estas cabeceras y de cada dependencia.
+
+**Transferencia al proyecto integrador «RutaFlow»:** sirve el panel de RutaFlow con CSP basada en nonce y Trusted Types, primero en modo `Report-Only` y después en bloqueo.
+
+**Fuente oficial:** [Angular — Security: Content security policy](https://angular.dev/best-practices/security#content-security-policy) y [MDN — Content Security Policy](https://developer.mozilla.org/es/docs/Web/HTTP/CSP).
+
+### Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min
+
+**Prerrequisito:** temas «Hacia zoneless change detection» (módulo 2) y «Rendimiento y actualización son contratos de experiencia» de este módulo.
+
+**Al finalizar podrás:** grabar una sesión con el Profiler de Angular DevTools, encontrar el componente que más tiempo consume en cada detección de cambios y confirmar la mejora con una segunda medición.
+
+**¿Por qué es importante?** Optimizar sin medir lleva a cambiar el código equivocado. El Profiler de Angular muestra cuánto tarda cada componente y por qué se actualizó, que es justo lo que el panel genérico del navegador no sabe.
+
+#### Paso 1 · Objetivo y preparación
+
+Instala la extensión **Angular DevTools** en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (`ng serve`): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar `enableProfiling()` para ver los eventos de Angular en el panel Performance de Chrome.
+
+#### Paso 2 · Contexto y caso real
+
+La lista de envíos del panel de RutaFlow se trababa al escribir en el buscador. El equipo sospechaba del servicio HTTP, pero el Profiler mostró que cada tecla volvía a calcular una función costosa en la plantilla de 500 filas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** detección de cambios, ciclo, Profiler, gráfico de llamas (*flame graph*), método en plantilla, `computed`, `enableProfiling`.
+
+Cada vez que algo puede haber cambiado (un evento, una respuesta, una señal), Angular hace un **ciclo de detección de cambios** y revisa las plantillas. El **Profiler** de Angular DevTools graba esos ciclos:
+
+- La barra superior muestra un bloque por ciclo; su altura es el tiempo total.
+- Al elegir un ciclo, el **gráfico de llamas** muestra cada componente: el ancho es el tiempo que tardó.
+- El panel lateral dice qué disparó el ciclo (un evento, un temporizador).
+
+Una causa típica de lentitud es llamar un **método en la plantilla** (`{{ calcular(envio) }}`): se ejecuta en cada ciclo para cada fila. Moverlo a un `computed` hace que se calcule solo cuando cambian sus señales.
+
+**Analogía:** el Profiler es el cronómetro de una carrera de relevos por tramo: no te dice solo que el equipo tardó, sino qué corredor se demoró. La analogía falla en que el «corredor» lento puede ser lento porque lo llaman demasiadas veces, no porque corra mal.
+
+**Límite de uso:** mide en modo desarrollo, que es más lento que producción; compara mediciones entre sí, no contra números absolutos. Para el tiempo de carga y la red, usa Lighthouse o el panel Performance, no el Profiler.
+
+```mermaid
+flowchart LR
+    G["Grabar en Profiler"] --> C["Elegir el ciclo más alto"]
+    C --> F["Flame graph: componente más ancho"]
+    F --> H["Hipótesis: método en plantilla"]
+    H --> X["Cambiar a computed"]
+    X --> G2["Grabar otra vez y comparar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/app/envios/lista-envios.ts`:
+
+```ts
+import { Component, computed, signal } from '@angular/core';
+
+interface Envio { codigo: string; paradas: number[]; }
+
+@Component({
+  selector: 'app-lista-envios',
+  template: `
+    <input (input)="filtro.set($any($event.target).value)" placeholder="Buscar" />
+    <!-- ANTES: puntaje(envio) corría en cada ciclo, para cada fila -->
+    @for (fila of filas(); track fila.codigo) {
+      <p>{{ fila.codigo }} · puntaje {{ fila.puntaje }}</p>
+    }
+  `,
+})
+export class ListaEnvios {
+  readonly filtro = signal('');
+  private readonly envios = signal<Envio[]>(
+    Array.from({ length: 500 }, (_, i) => ({ codigo: `ENV-${i}`, paradas: Array.from({ length: 200 }, (_, j) => j * i) })),
+  );
+  // DESPUÉS: el cálculo se hace una vez por cambio de filtro, no en cada ciclo.
+  readonly filas = computed(() =>
+    this.envios()
+      .filter((e) => e.codigo.includes(this.filtro().toUpperCase()))
+      .map((e) => ({ codigo: e.codigo, puntaje: e.paradas.reduce((a, b) => a + Math.sqrt(b), 0).toFixed(0) })),
+  );
+}
+```
+
+Archivo `src/main.ts`:
+
+```ts
+import { enableProfiling } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
+
+enableProfiling(); // Angular 20+: eventos de Angular en el panel Performance de Chrome
+bootstrapApplication(App, appConfig);
+```
+
+Ejecútalo:
+
+```bash
+ng serve
+# 1) abre Angular DevTools > Profiler > Start recording
+# 2) escribe "ENV-1" en el buscador y detén la grabación
+# 3) elige el ciclo más alto y busca ListaEnvios en el flame graph
+```
+
+**Explicación por bloques:** La versión lenta tenía en la plantilla `{{ puntaje(envio) }}`, un método que suma raíces de 200 números; con 500 filas, cada tecla hacía 100 000 operaciones por ciclo. La versión del archivo usa `filas`, un `computed` que depende de `envios` y `filtro`: solo se recalcula cuando cambia alguna de las dos señales, y la plantilla lee valores ya calculados. `enableProfiling()` agrega una pista de Angular en el panel Performance para ver la misma información junto a la red y el pintado.
+
+**Resultado esperado:**
+
+```text
+Antes: el flame graph muestra ListaEnvios como el bloque más ancho de cada ciclo al escribir.
+Después: el ciclo al escribir baja de forma visible y ListaEnvios deja de ser el bloque dominante.
+```
+
+**Fallo deliberado:** graba el Profiler con un build de producción (`ng build` y un servidor estático). **Error esperado:** Angular DevTools muestra que la aplicación está en modo producción y el Profiler no graba. **Diagnóstico:** el Profiler depende de información de depuración que el build de producción quita. Perfila en `ng serve` y valida el resultado final con Lighthouse en producción.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** escribe una versión con el método en la plantilla y graba cinco teclas.
+2. **Variación:** cambia a la versión con `computed` y graba otra vez; compara la altura de los ciclos.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el aviso de DevTools.
+4. **Integración:** activa `enableProfiling()` y encuentra la pista de Angular en el panel Performance de Chrome.
+5. **Diseño:** escribe en una línea la regla de plantillas que adoptarías en RutaFlow después de esta medición.
+
+**Pista:** primero encuentra el ciclo más alto; después el componente más ancho de ese ciclo. Optimiza solo eso.
+
+#### Paso 6 · Práctica independiente
+
+Perfila la pantalla más usada de tu proyecto, guarda una captura del flame graph antes y después de un cambio, y escribe qué medición confirma la mejora.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un ciclo de detección de cambios.
+- [ ] Encontraste el componente más costoso en el flame graph.
+- [ ] Confirmaste la mejora con una segunda grabación.
+- [ ] Sabes que el Profiler solo funciona en desarrollo.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** optimizar sin grabar antes, llamar métodos costosos en las plantillas y comparar mediciones de desarrollo con producción. **Siguiente paso:** el tema «Zoneless» del módulo 11 reduce la cantidad de ciclos que el Profiler tiene que mostrar.
+
+**Transferencia al proyecto integrador «RutaFlow»:** perfila la lista de envíos del panel de RutaFlow, reemplaza los métodos de plantilla por `computed` y adjunta las capturas antes y después al pull request.
+
+**Fuente oficial:** [Angular — DevTools: Profiler](https://angular.dev/tools/devtools/profiler) y [Angular — enableProfiling](https://angular.dev/api/core/enableProfiling).
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Angular v22 y adopción según estabilidad

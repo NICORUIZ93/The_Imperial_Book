@@ -83,7 +83,7 @@ function isNonNegativeInteger(value: unknown): value is number {
 
 function parseCatalog(value: unknown): CurriculumCatalog {
   if (!isRecord(value) || value['schemaVersion'] !== 1 || !isRecord(value['summary']) || !Array.isArray(value['stacks'])) {
-    throw new Error('El índice del temario bibliográfico tiene un formato inválido.');
+    throw new Error('El índice del temario tiene un formato inválido.');
   }
 
   const rawSummary = value['summary'];
@@ -101,7 +101,7 @@ function parseCatalog(value: unknown): CurriculumCatalog {
     || !isNonNegativeInteger(courses)
     || !isNonNegativeInteger(provisionalTopics)
     || !isNonNegativeInteger(booksRequiringOcr)) {
-    throw new Error('El resumen del temario bibliográfico está incompleto.');
+    throw new Error('El resumen del temario está incompleto.');
   }
   const summary = {
     currentTopics,
@@ -121,7 +121,7 @@ function parseCatalog(value: unknown): CurriculumCatalog {
       || !rawStack['asset'].endsWith('.json')
       || typeof rawStack['hasCurrentTrack'] !== 'boolean'
       || !Array.isArray(rawStack['modules'])) {
-      throw new Error('Una ruta del temario bibliográfico tiene un formato inválido.');
+      throw new Error('Una ruta del temario tiene un formato inválido.');
     }
 
     const currentTopicCount = rawStack['currentTopicCount'];
@@ -178,10 +178,10 @@ function parseCatalog(value: unknown): CurriculumCatalog {
   }
 
   if (new Set(stacks.map(stack => stack.id)).size !== stacks.length) {
-    throw new Error('El índice del temario bibliográfico repite rutas.');
+    throw new Error('El índice del temario repite rutas.');
   }
   if (summary.provisionalTopics !== summary.currentTopics + summary.bookCandidates + summary.courseCandidates) {
-    throw new Error('Los totales del temario bibliográfico no coinciden.');
+    throw new Error('Los totales del temario no coinciden.');
   }
 
   return { summary, stacks };
@@ -191,14 +191,14 @@ function parseStack(value: unknown, expectedId: string): CurriculumStack {
   if (!isRecord(value) || value['schemaVersion'] !== 1 || value['stackId'] !== expectedId
     || !Array.isArray(value['modules']) || !Array.isArray(value['books']) || !Array.isArray(value['courses'])
     || !Array.isArray(value['booksRequiringOcr'])) {
-    throw new Error(`El contenido bibliográfico de ${expectedId} tiene un formato inválido.`);
+    throw new Error(`El temario de ${expectedId} tiene un formato inválido.`);
   }
 
   const books = value['books'].map(book => {
     if (!isRecord(book) || typeof book['title'] !== 'string'
       || !['es', 'en', 'indeterminado'].includes(String(book['language']))
       || 'path' in book) {
-      throw new Error(`Una fuente bibliográfica de ${expectedId} tiene un formato inválido.`);
+      throw new Error(`Una referencia de ${expectedId} tiene un formato inválido.`);
     }
     return { title: book['title'], language: book['language'] as CurriculumBook['language'] };
   });
@@ -367,7 +367,7 @@ export class CurriculumLibraryService {
     if (existing) return existing;
     const summary = this.stackSummary(stackId);
     if (!summary) {
-      this.stackErrors.update(errors => ({ ...errors, [stackId]: 'Esta ruta no existe en el índice provisional.' }));
+      this.stackErrors.update(errors => ({ ...errors, [stackId]: 'Esta ruta no existe en el temario.' }));
       return Promise.resolve();
     }
 

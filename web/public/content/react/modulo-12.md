@@ -49,6 +49,34 @@ graph TD
     style H fill:#4caf50
 ```
 
+**¿Por qué es importante?** Separar features por dominio, y aislar el estado de UI puro en un store dedicado sin mezclarlo con datos de servidor, mantiene el proyecto comprensible y evita complicaciones de mezclar estados con ciclos de vida distintos.
+**Conceptos clave:** organización por feature, separación entre `features/` y `store/`.
+
+Siguiendo el principio de organización por feature (el mismo criterio aplicado en el proyecto integrador de Angular, Módulo 13 del track de Angular), el proyecto se estructura en `features/tareas/` (con `ListaTareas.tsx` para la vista y `useTareas.ts` como hook dedicado que encapsula el acceso a datos con TanStack Query) y `features/auth/` (con `RutaProtegida.tsx` y `useAuth.ts`), manteniendo separadas las responsabilidades de dominio de gestión de tareas y de autenticación, comunicándose entre sí únicamente a través de puntos de integración explícitos, exactamente el mismo criterio de cohesión estudiado en profundidad en el Módulo 8 del track de Angular.
+
+`store/uiStore.ts`, un store de Zustand (Módulo 7) reservado exclusivamente para estado de interfaz puro (por ejemplo, si la barra lateral está abierta o cerrada), vive deliberadamente separado de la lógica de datos de cada feature, reflejando la separación estudiada en el Módulo 7 entre estado de servidor (que pertenece a los hooks de TanStack Query dentro de cada feature) y estado de cliente puro (que pertenece a este store dedicado, sin mezclarse con datos de red).
+
+**Analogía:** la estructura del proyecto integrador es como una empresa con departamentos claramente delimitados por función (tareas, autenticación) más una oficina central separada que gestiona únicamente aspectos generales de la instalación (como si las luces de cierta sección están encendidas), sin que esa oficina central se entrometa en la lógica de negocio específica de cada departamento.
+
+**Diagrama:**
+
+```
+src/
+  features/
+    tareas/
+      ListaTareas.tsx
+      useTareas.ts        ← hook con TanStack Query
+    auth/
+      RutaProtegida.tsx
+      useAuth.ts
+  store/
+    uiStore.ts             ← Zustand, solo estado de cliente
+  router.tsx
+```
+
+
+**Límites y decisión de uso:** Organizar por funcionalidades no exige duplicar cada componente compartido ni crear una capa para cada carpeta. Mueve piezas según responsabilidades y cambios conjuntos, manteniendo las pruebas que permiten reorganizar sin alterar comportamiento.
+
 #### Paso 4 · Demostración guiada desde cero
 ```text
 src/
@@ -82,33 +110,6 @@ Corregí el Paso 5 quitando el estado de sesión de `uiStore.ts`, dejando que `u
 
 #### Paso 7 · Cierre
 Entregá la estructura organizada por feature del Paso 4, la duplicación de fuente de verdad provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todos los módulos del track en un solo proyecto expone violaciones de organización que un módulo aislado nunca mostraría. Siguiente paso: integra rutas, TanStack Query y Zustand coordinadamente. Errores comunes: mezclar features sin un punto de integración explícito, duplicar en un store de UI un dato que ya tiene una fuente de verdad propia, y organizar carpetas por tipo de archivo en vez de por dominio. Fuentes oficiales: https://react.dev/learn/thinking-in-react y https://tanstack.com/query/latest/docs/framework/react/overview.
-**¿Por qué es importante?** Separar features por dominio, y aislar el estado de UI puro en un store dedicado sin mezclarlo con datos de servidor, mantiene el proyecto comprensible y evita complicaciones de mezclar estados con ciclos de vida distintos.
-**Conceptos clave:** organización por feature, separación entre `features/` y `store/`.
-
-Siguiendo el principio de organización por feature (el mismo criterio aplicado en el proyecto integrador de Angular, Módulo 13 del track de Angular), el proyecto se estructura en `features/tareas/` (con `ListaTareas.tsx` para la vista y `useTareas.ts` como hook dedicado que encapsula el acceso a datos con TanStack Query) y `features/auth/` (con `RutaProtegida.tsx` y `useAuth.ts`), manteniendo separadas las responsabilidades de dominio de gestión de tareas y de autenticación, comunicándose entre sí únicamente a través de puntos de integración explícitos, exactamente el mismo criterio de cohesión estudiado en profundidad en el Módulo 8 del track de Angular.
-
-`store/uiStore.ts`, un store de Zustand (Módulo 7) reservado exclusivamente para estado de interfaz puro (por ejemplo, si la barra lateral está abierta o cerrada), vive deliberadamente separado de la lógica de datos de cada feature, reflejando la separación estudiada en el Módulo 7 entre estado de servidor (que pertenece a los hooks de TanStack Query dentro de cada feature) y estado de cliente puro (que pertenece a este store dedicado, sin mezclarse con datos de red).
-
-**Analogía:** la estructura del proyecto integrador es como una empresa con departamentos claramente delimitados por función (tareas, autenticación) más una oficina central separada que gestiona únicamente aspectos generales de la instalación (como si las luces de cierta sección están encendidas), sin que esa oficina central se entrometa en la lógica de negocio específica de cada departamento.
-
-**Diagrama:**
-
-```
-src/
-  features/
-    tareas/
-      ListaTareas.tsx
-      useTareas.ts        ← hook con TanStack Query
-    auth/
-      RutaProtegida.tsx
-      useAuth.ts
-  store/
-    uiStore.ts             ← Zustand, solo estado de cliente
-  router.tsx
-```
-
-
-**Límites y decisión de uso:** Organizar por funcionalidades no exige duplicar cada componente compartido ni crear una capa para cada carpeta. Mueve piezas según responsabilidades y cambios conjuntos, manteniendo las pruebas que permiten reorganizar sin alterar comportamiento.
 
 ### Tema 2: Integrando rutas, TanStack Query y Zustand
 
@@ -187,37 +188,6 @@ Si tres componentes distintos (`ListaEnvios`, `ResumenZona`, `ContadorPendientes
 #### Paso 3 · Teoría, modelo mental y analogía
 Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos en un único lugar — un mostrador de atención específico, sin que quien consulta necesite saber cómo se obtiene la información.
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-function useEnvios() {
-  return useQuery<Envio[]>({
-    queryKey: ['envios'],
-    queryFn: () => fetch('/api/envios').then(r => r.json()),
-  });
-}
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-
-Resultado esperado: `ListaEnvios`, `ResumenZona` y `ContadorPendientes` llaman los tres a `useEnvios()` sin que ninguno escriba `queryKey` ni `queryFn` directamente — los tres comparten automáticamente la misma cache, sin riesgo de un typo que rompa la deduplicación entre ellos.
-
-Ejecuta `npm test` y confirma que las pruebas del hook de TanStack Query pasan.
-
-#### Paso 5 · Práctica guiada
-Pista: agregá un cuarto componente que, "para un caso puntual", invoque `useQuery` directamente con `queryKey: ['envio']` (singular, un typo) en vez de usar `useEnvios()` — ese es el fallo deliberado: ese componente mantiene su propia cache separada y desincronizada del resto, disparando una petición de red adicional redundante que los otros tres ya tenían cacheada bajo la key correcta.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo ese cuarto componente a `useEnvios()`, y agregá un `useCrearEnvio()` complementario que envuelva `useMutation` con su propia invalidación de `['envios']` configurada. Extrae el hook de tareas del proyecto integrador RutaFlow y comprueba que dos componentes compartan la misma query sin duplicar peticiones.
-
-#### Paso 7 · Cierre
-Entregá `useEnvios()` compartido por tres componentes del Paso 4, la cache duplicada por typo del Paso 5, y `useCrearEnvio()` del Paso 6; explicá por qué encapsular el acceso a datos detrás de un hook con nombre significativo previene exactamente la clase de error que ocurrió en el Paso 5. Siguiente paso: cerrá el track con el laboratorio integrador completo. Errores comunes: invocar `useQuery` directamente en vez de a través de un hook dedicado, escribir la misma `queryKey` a mano en múltiples lugares, y no extender la misma capa de hooks a las mutaciones relacionadas. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/query-keys y https://react.dev/learn/reusing-logic-with-custom-hooks.
-
 **Diagrama:**
 
 ```mermaid
@@ -251,6 +221,38 @@ graph TD
 * Cuándo: encapsular `useQuery` siempre cuando múltiples componentes lo usen; no conviene si es usado una única vez en un componente aislado (entonces usa `useQuery` directamente).
 
 **¿Por qué es importante?** Encapsular `queryKey`/`queryFn` detrás de un hook con nombre significativo centraliza los detalles de acceso a datos, facilitando cambios futuros y evitando inconsistencias entre componentes.
+
+#### Paso 4 · Demostración guiada desde cero
+```tsx
+function useEnvios() {
+  return useQuery<Envio[]>({
+    queryKey: ['envios'],
+    queryFn: () => fetch('/api/envios').then(r => r.json()),
+  });
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+
+Resultado esperado: `ListaEnvios`, `ResumenZona` y `ContadorPendientes` llaman los tres a `useEnvios()` sin que ninguno escriba `queryKey` ni `queryFn` directamente — los tres comparten automáticamente la misma cache, sin riesgo de un typo que rompa la deduplicación entre ellos.
+
+Ejecuta `npm test` y confirma que las pruebas del hook de TanStack Query pasan.
+
+#### Paso 5 · Práctica guiada
+Pista: agregá un cuarto componente que, "para un caso puntual", invoque `useQuery` directamente con `queryKey: ['envio']` (singular, un typo) en vez de usar `useEnvios()` — ese es el fallo deliberado: ese componente mantiene su propia cache separada y desincronizada del resto, disparando una petición de red adicional redundante que los otros tres ya tenían cacheada bajo la key correcta.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo ese cuarto componente a `useEnvios()`, y agregá un `useCrearEnvio()` complementario que envuelva `useMutation` con su propia invalidación de `['envios']` configurada. Extrae el hook de tareas del proyecto integrador RutaFlow y comprueba que dos componentes compartan la misma query sin duplicar peticiones.
+
+#### Paso 7 · Cierre
+Entregá `useEnvios()` compartido por tres componentes del Paso 4, la cache duplicada por typo del Paso 5, y `useCrearEnvio()` del Paso 6; explicá por qué encapsular el acceso a datos detrás de un hook con nombre significativo previene exactamente la clase de error que ocurrió en el Paso 5. Siguiente paso: cerrá el track con el laboratorio integrador completo. Errores comunes: invocar `useQuery` directamente en vez de a través de un hook dedicado, escribir la misma `queryKey` a mano en múltiples lugares, y no extender la misma capa de hooks a las mutaciones relacionadas. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/query-keys y https://react.dev/learn/reusing-logic-with-custom-hooks.
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir la SPA integradora completa con rutas protegidas, TanStack Query, Zustand para UI, y tests del flujo crítico.

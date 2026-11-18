@@ -238,7 +238,7 @@
     {
       "track": "foundations",
       "path": "web/public/content/foundations/modulo-0.md",
-      "topic": "Tema complementario: VS Code, comandos y atajos comprobables",
+      "topic": "Tema 6: VS Code, comandos y atajos comprobables",
       "providerCitations": [
         "https://code.visualstudio.com/docs/configure/keybindings"
       ],
@@ -452,7 +452,7 @@
         "https://scikit-learn.org/stable/user_guide.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 306,
+      "line": 308,
       "originalProseUrls": [
         "https://scikit-learn.org/stable/user_guide.html"
       ],
@@ -467,7 +467,7 @@
         "https://matplotlib.org/stable/users/explain/quick_start.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 417,
+      "line": 419,
       "originalProseUrls": [
         "https://matplotlib.org/stable/users/explain/quick_start.html"
       ],
@@ -482,7 +482,7 @@
         "https://owasp.org/www-project-top-ten/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 517,
+      "line": 519,
       "originalProseUrls": [
         "https://owasp.org/www-project-top-ten/"
       ],
@@ -772,7 +772,7 @@
         "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 122,
+      "line": 123,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
@@ -787,7 +787,7 @@
         "https://docs.python.org/3/library/heapq.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 232,
+      "line": 234,
       "originalProseUrls": [
         "https://docs.python.org/3/library/heapq.html",
         "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm"
@@ -803,7 +803,7 @@
         "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 342,
+      "line": 345,
       "originalProseUrls": [
         "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf"
       ],
@@ -818,7 +818,7 @@
         "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 453,
+      "line": 457,
       "originalProseUrls": [
         "https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/"
       ],
@@ -850,7 +850,7 @@
         "https://refactoring.guru/es/design-patterns/state"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 113,
+      "line": 115,
       "originalProseUrls": [
         "https://refactoring.guru/es/design-patterns/state"
       ],
@@ -866,7 +866,7 @@
         "https://refactoring.guru/es/design-patterns/template-method"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 217,
+      "line": 221,
       "originalProseUrls": [
         "https://docs.python.org/3/library/abc.html",
         "https://refactoring.guru/es/design-patterns/template-method"
@@ -882,7 +882,7 @@
         "https://refactoring.guru/es/design-patterns/chain-of-responsibility"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 332,
+      "line": 338,
       "originalProseUrls": [
         "https://refactoring.guru/es/design-patterns/chain-of-responsibility"
       ],
@@ -897,7 +897,7 @@
         "https://refactoring.guru/es/design-patterns/mediator"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 438,
+      "line": 446,
       "originalProseUrls": [
         "https://refactoring.guru/es/design-patterns/mediator"
       ],
@@ -913,7 +913,7 @@
         "https://refactoring.guru/es/design-patterns/memento"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 541,
+      "line": 551,
       "originalProseUrls": [
         "https://docs.python.org/3/library/dataclasses.html",
         "https://refactoring.guru/es/design-patterns/memento"
@@ -930,7 +930,7 @@
         "https://refactoring.guru/es/design-patterns/visitor"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 649,
+      "line": 661,
       "originalProseUrls": [
         "https://docs.python.org/3/library/ast.html#ast.NodeVisitor",
         "https://refactoring.guru/es/design-patterns/visitor"
@@ -947,7 +947,7 @@
         "https://refactoring.guru/es/design-patterns/flyweight"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 744,
+      "line": 758,
       "originalProseUrls": [
         "https://docs.python.org/3/library/tracemalloc.html",
         "https://refactoring.guru/es/design-patterns/flyweight"
@@ -981,7 +981,7 @@
         "https://refactoring.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 111,
+      "line": 113,
       "originalProseUrls": [
         "https://peps.python.org/pep-0008/",
         "https://refactoring.com/"
@@ -998,7 +998,7 @@
         "https://refactoring.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 213,
+      "line": 217,
       "originalProseUrls": [
         "https://peps.python.org/pep-0008/",
         "https://refactoring.com/"
@@ -1015,7 +1015,7 @@
         "https://refactoring.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 315,
+      "line": 321,
       "originalProseUrls": [
         "https://peps.python.org/pep-0008/",
         "https://refactoring.com/"
@@ -1186,7 +1186,7 @@
         "https://www.postgresql.org/docs/current/sql-createprocedure.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 754,
+      "line": 756,
       "originalProseUrls": [
         "https://www.postgresql.org/docs/current/plpgsql.html",
         "https://www.postgresql.org/docs/current/sql-createprocedure.html"
@@ -1203,7 +1203,7 @@
         "https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 892,
+      "line": 897,
       "originalProseUrls": [
         "https://openpyxl.readthedocs.io/en/stable/",
         "https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html"
@@ -1451,7 +1451,7 @@
         "https://man7.org/linux/man-pages/man8/ss.8.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 240,
+      "line": 242,
       "originalProseUrls": [
         "http://127.0.0.1:8765/",
         "https://man7.org/linux/man-pages/man8/lsof.8.html",
@@ -1468,7 +1468,7 @@
         "https://docs.python.org/3/library/threading.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 444,
+      "line": 446,
       "originalProseUrls": [
         "https://docs.python.org/3/library/threading.html",
         "https://en.wikipedia.org/wiki/Dining_philosophers_problem"
@@ -1499,7 +1499,7 @@
         "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 152,
+      "line": 154,
       "originalProseUrls": [
         "https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set"
       ],
@@ -1514,7 +1514,7 @@
         "https://docs.python.org/3/library/graphlib.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 261,
+      "line": 263,
       "originalProseUrls": [
         "https://docs.python.org/3/library/graphlib.html"
       ],
@@ -1529,7 +1529,7 @@
         "https://docs.python.org/3/library/statistics.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 388,
+      "line": 390,
       "originalProseUrls": [
         "https://docs.python.org/3/library/statistics.html"
       ],
@@ -1544,7 +1544,7 @@
         "https://git-scm.com/doc"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 333,
+      "line": 342,
       "originalProseUrls": [
         "https://git-scm.com/doc"
       ],
@@ -1589,7 +1589,7 @@
         "https://aws.amazon.com/step-functions/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 147,
+      "line": 148,
       "originalProseUrls": [
         "https://aws.amazon.com/step-functions/"
       ],
@@ -1694,7 +1694,7 @@
         "https://docs.localstack.cloud/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 218,
+      "line": 220,
       "originalProseUrls": [
         "https://docs.localstack.cloud/"
       ],
@@ -1709,7 +1709,7 @@
         "https://testcontainers.com/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 269,
+      "line": 271,
       "originalProseUrls": [
         "https://testcontainers.com/"
       ],
@@ -1721,13 +1721,11 @@
       "path": "web/public/content/cloud/modulo-32.md",
       "topic": "Tema 4: Un backup solo existe operativamente después de restaurarlo",
       "providerCitations": [
-        "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
         "https://sre.google/sre-book/testing-reliability/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 218,
+      "line": 224,
       "originalProseUrls": [
-        "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
         "https://sre.google/sre-book/testing-reliability/"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -1741,7 +1739,7 @@
         "https://aws.amazon.com/architecture/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 318,
+      "line": 322,
       "originalProseUrls": [
         "https://aws.amazon.com/architecture/"
       ],
@@ -1942,7 +1940,7 @@
         "https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 921,
+      "line": 923,
       "originalProseUrls": [
         "https://www.freedesktop.org/software/systemd/man/latest/journalctl.html",
         "https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html",
@@ -2367,7 +2365,7 @@
         "https://helm.sh/docs/topics/charts_hooks/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 146,
+      "line": 148,
       "originalProseUrls": [
         "https://helm.sh/docs/chart_template_guide/",
         "https://helm.sh/docs/topics/charts_hooks/"
@@ -2384,7 +2382,7 @@
         "https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 236,
+      "line": 240,
       "originalProseUrls": [
         "https://istio.io/latest/docs/concepts/traffic-management/",
         "https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/"
@@ -2400,7 +2398,7 @@
         "https://opengitops.dev/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 324,
+      "line": 329,
       "originalProseUrls": [
         "https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/",
         "https://opengitops.dev/"
@@ -2417,7 +2415,7 @@
         "https://docs.ansible.com/ansible/latest/vault_guide/index.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 392,
+      "line": 398,
       "originalProseUrls": [
         "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html",
         "https://docs.ansible.com/ansible/latest/vault_guide/index.html"
@@ -2512,7 +2510,7 @@
     {
       "track": "devops",
       "path": "web/public/content/devops/modulo-16.md",
-      "topic": "Tema complementario: Bruno y Postman, evaluar con el mismo contrato",
+      "topic": "Tema 6: Bruno y Postman, evaluar con el mismo contrato",
       "providerCitations": [
         "https://docs.usebruno.com/"
       ],
@@ -2880,7 +2878,7 @@
     {
       "track": "devops",
       "path": "web/public/content/devops/modulo-8.md",
-      "topic": "Tema complementario: OpenTofu, plan y estado sin recursos cloud",
+      "topic": "Tema 8: OpenTofu, plan y estado sin recursos cloud",
       "providerCitations": [
         "https://opentofu.org/docs/language/resources/tf-data/"
       ],
@@ -3114,7 +3112,7 @@
         "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 549,
+      "line": 552,
       "originalProseUrls": [
         "https://github.com/tc39/proposal-decorators",
         "https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators"
@@ -4110,7 +4108,7 @@
         "https://tanstack.com/query/latest/docs/framework/react/overview"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 113,
+      "line": 114,
       "originalProseUrls": [
         "https://reactrouter.com/start/framework/routing",
         "https://tanstack.com/query/latest/docs/framework/react/overview"
@@ -4127,7 +4125,7 @@
         "https://www.w3.org/WAI/ARIA/apg/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 133,
+      "line": 134,
       "originalProseUrls": [
         "https://testing-library.com/docs/queries/byrole/",
         "https://www.w3.org/WAI/ARIA/apg/"
@@ -4227,7 +4225,7 @@
         "https://zod.dev/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 92,
+      "line": 93,
       "originalProseUrls": [
         "https://react-hook-form.com/docs/useform",
         "https://zod.dev/"
@@ -4261,7 +4259,7 @@
         "https://reactrouter.com/start/framework/data-loading"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 102,
+      "line": 103,
       "originalProseUrls": [
         "https://reactrouter.com/how-to/error-boundary",
         "https://reactrouter.com/start/framework/data-loading"
@@ -4296,7 +4294,7 @@
         "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 124,
+      "line": 125,
       "originalProseUrls": [
         "https://tanstack.com/query/latest/docs/framework/react/guides/mutations",
         "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
@@ -4312,7 +4310,7 @@
         "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 221,
+      "line": 222,
       "originalProseUrls": [
         "https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates"
       ],
@@ -4610,13 +4608,11 @@
       "path": "web/public/content/java/modulo-14.md",
       "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
       "providerCitations": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
       "line": 313,
       "originalProseUrls": [
-        "https://docs.oracle.com/en/java/javase/25/",
         "https://docs.oracle.com/en/java/javase/25/docs/specs/man/jlink.html"
       ],
       "recognitionStatus": "primary-domain-detected",
@@ -4778,7 +4774,7 @@
         "https://jakarta.ee/specifications/persistence/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 180,
+      "line": 183,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html",
         "https://jakarta.ee/specifications/persistence/"
@@ -4811,7 +4807,7 @@
         "https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 306,
+      "line": 308,
       "originalProseUrls": [
         "https://127.0.0.1/admin",
         "https://cheatsheetseries.owasp.org/",
@@ -4829,7 +4825,7 @@
         "https://docs.oracle.com/javase/tutorial/i18n/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 1228,
+      "line": 1234,
       "originalProseUrls": [
         "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html",
         "https://docs.oracle.com/javase/tutorial/i18n/"
@@ -5385,7 +5381,7 @@
         "https://docs.fastlane.tools/actions/upload_to_testflight/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 109,
+      "line": 110,
       "originalProseUrls": [
         "https://docs.fastlane.tools/",
         "https://docs.fastlane.tools/actions/upload_to_testflight/"
@@ -5402,7 +5398,7 @@
         "https://sqldelight.github.io/sqldelight/2.1.0/"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 82,
+      "line": 83,
       "originalProseUrls": [
         "https://ktor.io/docs/client-response-validation.html",
         "https://sqldelight.github.io/sqldelight/2.1.0/"
@@ -5748,7 +5744,7 @@
         "https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 167,
+      "line": 159,
       "originalProseUrls": [
         "https://dart.dev/language/class-modifiers#sealed",
         "https://pub.dev/documentation/dio/latest/dio/InterceptorsWrapper-class.html"
@@ -5782,7 +5778,7 @@
         "https://pub.dev/packages/image_picker"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 234,
+      "line": 235,
       "originalProseUrls": [
         "https://pub.dev/packages/dio",
         "https://pub.dev/packages/image_picker"
@@ -5799,7 +5795,7 @@
         "https://api.flutter.dev/flutter/widgets/CustomPaint-class.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 322,
+      "line": 323,
       "originalProseUrls": [
         "https://api.flutter.dev/flutter/rendering/CustomPainter-class.html",
         "https://api.flutter.dev/flutter/widgets/CustomPaint-class.html"
@@ -6135,7 +6131,7 @@
         "https://www.postgresql.org/docs/current/backup-dump.html"
       ],
       "applicabilityReview": "revisión manual pendiente",
-      "line": 335,
+      "line": 337,
       "originalProseUrls": [
         "https://www.postgresql.org/docs/current/app-pgdump.html",
         "https://www.postgresql.org/docs/current/backup-dump.html"
@@ -6497,15 +6493,6 @@
       "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
-      "url": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
-      "status": 200,
-      "finalUrl": "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
-      "contentType": "text/html",
-      "title": null,
-      "checkedAt": "2026-10-31T15:37:57.771341+00:00",
-      "scope": "HTTP GET; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
       "url": "https://docs.bullmq.io/",
       "status": 200,
       "finalUrl": "https://docs.bullmq.io/",
@@ -6817,15 +6804,6 @@
       "title": null,
       "checkedAt": null,
       "scope": "Comprobación HTTP pendiente; no valida pertinencia, vigencia ni afirmaciones"
-    },
-    {
-      "url": "https://docs.oracle.com/en/java/javase/25/",
-      "status": 200,
-      "finalUrl": "https://docs.oracle.com/en/java/javase/25/",
-      "contentType": "text/html",
-      "title": "JDK 25 Documentation - Home",
-      "checkedAt": "2026-10-31T15:07:22.860711+00:00",
-      "scope": "HTTP GET y título; no valida pertinencia ni afirmaciones"
     },
     {
       "url": "https://docs.oracle.com/en/java/javase/25/core/java-serialization-filters.html",
@@ -10686,8 +10664,8 @@
     "additionalRecognizedTopics": 362,
     "remainingUnrecognizedTopics": 4,
     "applicabilityPendingTopics": 366,
-    "urlsChecked": 503,
-    "urlsReachable": 452,
+    "urlsChecked": 501,
+    "urlsReachable": 450,
     "urlsPending": 51
   },
   "corrections": [

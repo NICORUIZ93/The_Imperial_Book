@@ -465,6 +465,15 @@ flowchart LR
     E --> R["...publica sin guia"]
 ```
 
+**¿Por qué es importante?** porque es sintaxis de uso diario y la causa de muchos `TypeError` cuando llegan datos incompletos.
+**Fuente oficial:** [MDN: Destructuring assignment](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
+**Conceptos clave:** desestructuración de objetos y arrays, renombrado, valor por defecto, anidamiento, rest en objetos, parámetros de opciones.
+**Cuándo no usarlo:** no desestructures estructuras muy profundas en una sola línea: si un nivel puede faltar, combina con encadenamiento opcional (`?.`) o valida antes.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** desestructura la respuesta del API de seguimiento y muestra solo los campos públicos, dejando fuera los internos con rest.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** desestructurar un parámetro de opciones sin el `= {}` final, provocando `TypeError: Cannot destructure property ... of 'undefined'` en la primera llamada sin argumentos; confundir el valor por defecto con una validación: solo se activa cuando el valor es exactamente `undefined`, nunca con `null` o cadena vacía.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -540,14 +549,7 @@ Escribe `resumen({ guia, destino: { barrio }, paquetes })` que devuelva un texto
 Toma una respuesta de una API pública de tu elección y extrae con una sola desestructuración anidada tres campos de distintos niveles, con valores por defecto para los opcionales.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque es sintaxis de uso diario y la causa de muchos `TypeError` cuando llegan datos incompletos.
-**Fuente oficial:** [MDN: Destructuring assignment](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
-**Conceptos clave:** desestructuración de objetos y arrays, renombrado, valor por defecto, anidamiento, rest en objetos, parámetros de opciones.
-**Cuándo no usarlo:** no desestructures estructuras muy profundas en una sola línea: si un nivel puede faltar, combina con encadenamiento opcional (`?.`) o valida antes.
 
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** desestructura la respuesta del API de seguimiento y muestra solo los campos públicos, dejando fuera los internos con rest.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** desestructurar un parámetro de opciones sin el `= {}` final, provocando `TypeError: Cannot destructure property ... of 'undefined'` en la primera llamada sin argumentos; confundir el valor por defecto con una validación: solo se activa cuando el valor es exactamente `undefined`, nunca con `null` o cadena vacía.
 
 ## Construcción guiada del capítulo
 

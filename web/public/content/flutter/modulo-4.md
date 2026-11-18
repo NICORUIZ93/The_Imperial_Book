@@ -496,6 +496,8 @@ stateDiagram-v2
 
 **Límites y decisión de uso:** Validar en el formulario mejora la interacción, pero el servidor debe repetir reglas y autorización. No descartes el borrador ante un error recuperable y evita que estado válido se interprete como permiso para confirmar una entrega.
 
+**¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 enum ReasonError { empty }
@@ -526,7 +528,6 @@ Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submit
 
 #### Paso 7 · Cierre
 Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts2/providers.
-**¿Por qué es importante?** Centralizar validación en tipos puros permite probar reglas sin renderizar widgets; separar `isValid` de `SubmitStatus` evita confundir "datos correctos" con "datos ya guardados" y previene envíos duplicados.
 
 ### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones
 
@@ -549,6 +550,15 @@ flowchart LR
     R -- app --> H[RepositorioEnviosHttp]
     R -- prueba con override --> F[RepositorioEnviosFalso]
 ```
+
+**¿Por qué es importante?** porque sin DI las pruebas son lentas y frágiles, y cambiar de backend obliga a tocar toda la app.
+**Fuente oficial:** [Riverpod: Testing](https://riverpod.dev/docs/how_to/testing), [Flutter: App architecture](https://docs.flutter.dev/app-architecture).
+**Conceptos clave:** inyección de dependencias, interfaz, proveedor, `ProviderContainer`, `overrides`, `overrideWithValue`, localizador de servicios.
+**Cuándo no usarlo:** en un widget pequeño que no tiene dependencias externas no hace falta un proveedor: pasa los datos por constructor.
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** inyecta el repositorio de entregas de la app y escribe sus pruebas con una implementación falsa.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -635,14 +645,7 @@ Agrega `RepositorioEnviosCache` que envuelva a otro repositorio y guarde la últ
 Implementa el mismo ejemplo con `get_it` y compara cómo se reemplaza la dependencia en pruebas y qué tan visibles quedan las dependencias de cada clase.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque sin DI las pruebas son lentas y frágiles, y cambiar de backend obliga a tocar toda la app.
-**Fuente oficial:** [Riverpod: Testing](https://riverpod.dev/docs/how_to/testing), [Flutter: App architecture](https://docs.flutter.dev/app-architecture).
-**Conceptos clave:** inyección de dependencias, interfaz, proveedor, `ProviderContainer`, `overrides`, `overrideWithValue`, localizador de servicios.
-**Cuándo no usarlo:** en un widget pequeño que no tiene dependencias externas no hace falta un proveedor: pasa los datos por constructor.
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** inyecta el repositorio de entregas de la app y escribe sus pruebas con una implementación falsa.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar pasar `overrides` al crear el `ProviderContainer` (o al `ProviderScope` en un widget test) y asumir que alcanza con declarar `RepositorioEnviosFalso` — sin la lista `overrides`, el contenedor sigue construyendo `RepositorioEnviosHttp` a través del proveedor original, y la prueba termina llamando a la implementación real que debía evitar.
 
 ## Aplicación guiada: RutaFlow Flutter
 

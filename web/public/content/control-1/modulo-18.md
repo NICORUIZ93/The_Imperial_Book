@@ -11,7 +11,7 @@ El controlador decide cuánta acción aplicar según el error. Aquí verás qué
 
 ## Aprende construyendo
 
-### Tema 1: La idea
+### Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia
 
 **¿Por qué es importante?** Entender qué mira cada acción (presente, pasado, tendencia) explica para qué sirve cada término del PID.
 

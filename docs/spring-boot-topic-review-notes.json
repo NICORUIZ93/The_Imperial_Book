@@ -2,7 +2,8 @@
   "0": [
     "Contrato → repositorio → servicio → HTTP. Corregidos reinicio tras crear controller y restauración del ejercicio antes del test siguiente.",
     "Contrasta new y repositorio falso con contexto e inyección por campo; ambos tests tienen contenido completo.",
-    "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request."
+    "Estereotipos → árbol de dependencias → prototype/ObjectProvider; no confunde prototype con scope request.",
+    "Ciclo de vida del contexto → SmartLifecycle y apagado ordenado; demuestra graceful shutdown con un request en vuelo; no confunde @PreDestroy con drenar tráfico."
   ],
   "1": [
     "Generación aislada con Boot y paquete fijados; vuelve explícitamente al proyecto acumulativo. Maven original y alternativa Gradle con Wrapper y comandos propios.",
@@ -20,7 +21,8 @@
   "3": [
     "Guardar → derivación → JPQL. Añadida instrucción real para instalar starter-data-jpa-test, antes solo mencionado como prerrequisito.",
     "Conteo N+1 → JOIN FETCH → EntityGraph; consulta perezosa separada conserva el contraste. Referencia ampliada a los tres casos.",
-    "V1 → V2 → duplicado/checksum; pruebas incluyen guardado y versiones aplicadas; SQL H2 no equivale a todos los motores."
+    "V1 → V2 → duplicado/checksum; pruebas incluyen guardado y versiones aplicadas; SQL H2 no equivale a todos los motores.",
+    "Spring Data MongoDB → documento, repositorio e índice; prueba con Testcontainers; límite: no reemplaza transacciones relacionales."
   ],
   "4": [
     "Cadena Basic → MockMvc → rutas públicas. Añadido starter-webmvc-test antes del primer import modular que lo necesita.",
@@ -32,7 +34,8 @@
   "5": [
     "Record validado → binding tests → JwtService; incluye actualización del constructor del test previo.",
     "Configuración ausente/vacía → validación → fallo rápido; no afirma que @NotBlank valide fuerza o Base64 de la clave.",
-    "Regla 20/21 → handler compartido → borde exacto. Referencia ampliada con controller, excepción y ambos tests."
+    "Regla 20/21 → handler compartido → borde exacto. Referencia ampliada con controller, excepción y ambos tests.",
+    "FailureAnalyzer → error de arranque legible con causa y acción; límite: no oculta la excepción original."
   ],
   "6": [
     "Slice web → validación → mock ausente; addFilters=false limita lo que acredita sobre seguridad.",
@@ -42,7 +45,8 @@
   "7": [
     "Indicador → UP/DOWN/401 → falsa salud; la dependencia controlada no es una pasarela real.",
     "Contador → endpoint/tag → incremento ausente; un contador después de save no es contabilidad transaccional durable.",
-    "Activación → dependencia solo en readiness → estados; distingue estado de la app y acción del orquestador."
+    "Activación → dependencia solo en readiness → estados; distingue estado de la app y acción del orquestador.",
+    "Logging estructurado → niveles por paquete y MDC; ejemplo con correlación por petición; límite: no registrar datos personales."
   ],
   "8": [
     "Key → dos grupos → partición/orden. Broker embebido real, sin afirmar un clúster de producción.",
@@ -53,7 +57,8 @@
     "Función → binder → rechazo → broker. Test binder no acredita Kafka/Rabbit ni su DLQ.",
     "Filtro → ventana → TopologyTestDriver → aplicación. Actualizada referencia Boot 4.1 y enlace oficial de testing Kafka.",
     "Schema → evolución → serde mock → Registry HTTP. Corregida regla antigua del default de unión para Avro 1.12; Registry desplegado requiere ejecución aparte.",
-    "Topología → confirm/return → ack/DLQ → prefetch; tests usan dobles y no acreditan medición real del broker."
+    "Topología → confirm/return → ack/DLQ → prefetch; tests usan dobles y no acreditan medición real del broker.",
+    "JMS → cola, listener y transacción local; contrasta con Kafka; límite: requiere broker externo."
   ],
   "9": [
     "Cero/uno/secuencia → error → defer → demanda. No confunde evaluación de just con defer.",
@@ -77,7 +82,8 @@
   "11": [
     "Inspección JAR → tools/capas → Dockerfile → cambio; reutilización de imagen requiere build y runtime aparte.",
     "AOT → hint → native compile → comparación. Corregido log del script para funcionar sin target; JVM AOT no es un binario nativo.",
-    "Probes → estado → Deployment → fallos; enlace oficial corregido. Kubernetes requiere clúster e imagen disponible."
+    "Probes → estado → Deployment → fallos; enlace oficial corregido. Kubernetes requiere clúster e imagen disponible.",
+    "Buildpacks → imagen OCI sin Dockerfile con bootBuildImage/spring-boot:build-image; límite: necesita Docker para construir."
   ],
   "12": [
     "Capas → Flyway → validación → HTTP/PostgreSQL. Corregidos conteo 5→7 y afirmación de que el lab final aún carecía de JWT.",
@@ -118,7 +124,8 @@
   ],
   "18": [
     "Filtro → roles → 401/403 → propiedad; repasa M4/M10 con lab OIDC, no añade un segundo sistema de login.",
-    "DTO → CORS → issuer → SSRF; cambia de lab explícitamente; JWT mock no acredita firma real de Keycloak."
+    "DTO → CORS → issuer → SSRF; cambia de lab explícitamente; JWT mock no acredita firma real de Keycloak.",
+    "SAML 2.0 con relying party → metadatos y aserciones firmadas; límite: el IdP real se configura fuera del laboratorio."
   ],
   "19": [
     "Job/Step → lectura/proceso → chunk → filas; H2 y tamaño de chunk didáctico.",

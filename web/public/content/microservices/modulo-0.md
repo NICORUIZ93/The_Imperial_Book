@@ -10,7 +10,7 @@ El laboratorio crece de un servidor local a un flujo que hace visibles latencia,
 
 Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java --version`, `javac --version` y `curl --version`. Todos los comandos parten de esa carpeta. En Windows usa PowerShell para crear archivos y `Get-NetTCPConnection`; los ejemplos de shell siguientes presuponen macOS/Linux.
 
-### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min
+### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min
 
 **Prerrequisito:** ninguno. Este es el primer tema del track.
 
@@ -140,7 +140,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. *
 
 **Conexión con el proyecto integrador RutaFlow Distribuido:** este servidor mínimo en `127.0.0.1:8081/health` es el primer proceso del proyecto; los siguientes temas lo dividen en servicios reales que se comunican por red, no por memoria compartida.
 
-### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min
+### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min
 
 **Prerrequisito:** tema «Ejecutar dos procesos Java y comprobar su socket HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T1).
 
@@ -325,7 +325,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desd
 
 **Errores comunes:** interpretar todo timeout como «el servidor no hizo nada», medir solo el promedio, usar el timeout de conexión como límite total o aumentar valores sin observar saturación. **Fuentes oficiales:** la API de Java 27 enlazada arriba define el alcance y las excepciones; la elección numérica sigue dependiendo del presupuesto y de mediciones propias.
 
-### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min
+### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min
 
 **Prerrequisito:** tema «Imponer un presupuesto temporal a una solicitud HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T2).
 
@@ -531,7 +531,7 @@ Añade una segunda dependencia de 200 ms después de tarifas sin cambiar el dead
 
 Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Clasificar un resultado desconocido antes de reintentar» (referencia interna M0 T4). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
 
-### Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min
+### Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min
 
 **Prerrequisito:** tema «Propagar un deadline absoluto entre servicios HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T3).
 
@@ -619,7 +619,7 @@ Añade `fallar-antes`, que responde 503 sin escribir, y `fallar-despues`, que es
 
 Si fallas 2 o más puntos, vuelve a la demostración. **Siguiente tema:** «Evitar efectos duplicados con una clave idempotente» (referencia interna M0 T5). **Errores comunes:** equiparar timeout con rollback y reconciliar otro ID. **Fuentes oficiales:** [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) y [AWS Builders' Library — retries](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/).
 
-### Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min
+### Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min
 
 **Prerrequisito:** tema «Clasificar un resultado desconocido antes de reintentar» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T4).
 
@@ -763,7 +763,7 @@ Implementa `PROCESSING`, `SUCCEEDED` y `FAILED` con un fallo después de reserva
 
 Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar orden causal por agregado» (referencia interna M0 T6). **Errores comunes:** generar clave nueva en cada retry, aceptar otra huella, usar `get`+`put` y confiar en memoria local. **Fuentes oficiales:** [AWS Powertools — idempotency](https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/) y [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry).
 
-### Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min
+### Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min
 
 **Prerrequisito:** tema «Evitar efectos duplicados con una clave idempotente» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T5).
 
@@ -854,7 +854,7 @@ Crea una política de vencimiento que reciba `Clock` y expire una reserva tras 3
 
 Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar el orden de eventos por versión del agregado» (referencia interna M0 T7). **Errores comunes:** medir duración con pared, comparar `nanoTime` entre JVM y ordenar negocio por fecha. **Fuentes oficiales:** [Java 27 `Clock`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/Clock.html) y [`System.nanoTime`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#nanoTime()).
 
-### Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min
+### Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min
 
 **Prerrequisito:** tema «Seleccionar un reloj según la evidencia temporal» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T6).
 

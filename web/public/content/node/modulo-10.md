@@ -631,6 +631,139 @@ El umbral es `high` al publicar en `main` y `critical` en otras ramas. Crea `pol
 
 ---
 
+### Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min
+
+**Prerrequisito:** tema «OWASP API Security Top 10 y auditoría de dependencias» de este módulo.
+
+**Al finalizar podrás:** ejecutar un script con `--permission` y permitir solo las carpetas que necesita, para que una dependencia comprometida no pueda leer ni escribir fuera de ellas.
+
+**¿Por qué es importante?** Por defecto, cualquier código que corre en Node (el tuyo o el de un paquete) puede leer todo el disco y lanzar procesos. El modelo de permisos aplica el principio de menor privilegio dentro del propio proceso.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 22.13 o superior (en Node 20 la opción se llama `--experimental-permission`). Crea la carpeta `academia-labs/node/permisos` y dentro `datos/envios.csv` con la línea `ENV-1,EN_RUTA`.
+
+**Contexto y caso real.**
+
+Un script de RutaFlow importa un paquete para leer CSV. Si una versión maliciosa de ese paquete intentara leer las claves de `~/.ssh` o el archivo `.env`, hoy lo lograría. Con el modelo de permisos, el script solo puede leer `datos/`.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** principio de menor privilegio, `--permission`, `--allow-fs-read`, `--allow-fs-write`, `--allow-child-process`, `ERR_ACCESS_DENIED`, `process.permission.has`.
+
+Con `--permission`, Node **niega por defecto** el acceso al sistema de archivos, los procesos hijos, los workers y los complementos nativos. Tú abres lo necesario:
+
+| Opción | Qué permite |
+|---|---|
+| `--allow-fs-read=<ruta>` | leer en esa carpeta o archivo (incluye el propio script) |
+| `--allow-fs-write=<ruta>` | escribir en esa carpeta o archivo |
+| `--allow-child-process` | lanzar procesos hijos |
+| `--allow-worker` | crear worker threads |
+
+Si el código intenta algo no permitido, recibe un error con código `ERR_ACCESS_DENIED`. En tiempo de ejecución puedes preguntar con `process.permission.has('fs.write', ruta)`.
+
+**Analogía:** es una tarjeta de acceso de oficina: abre solo las puertas que te asignaron, aunque el edificio tenga muchas más. La analogía falla en que el modelo no protege contra código que ya tiene permiso: si permites leer `datos/`, cualquier paquete también puede leer `datos/`.
+
+**Límite de uso:** no es una caja de arena completa: Node lo documenta como una red de seguridad, no como aislamiento frente a código malicioso decidido. Para aislar de verdad usa contenedores, usuarios del sistema sin privilegios y políticas del sistema operativo.
+
+```mermaid
+flowchart LR
+    S["leer-envios.mjs<br/>+ dependencias"] -->|"leer datos/"| OK["permitido"]
+    S -->|"leer /etc/hostname"| NO["ERR_ACCESS_DENIED"]
+    S -->|"escribir datos/"| W{"¿--allow-fs-write?"}
+    W -->|no| NO
+    W -->|sí| OK
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/permisos/leer-envios.mjs`:
+
+```js
+import { readFile, writeFile } from 'node:fs/promises';
+
+const contenido = await readFile('datos/envios.csv', 'utf8');
+console.log(`leído: ${contenido.trim()}`);
+
+try {
+  await readFile('/etc/hostname', 'utf8');
+  console.log('leyó /etc/hostname');
+} catch (error) {
+  console.log(`lectura fuera de datos/: ${error.code}`);
+}
+
+try {
+  await writeFile('datos/reporte.txt', 'listo');
+  console.log('escribió el reporte');
+} catch (error) {
+  console.log(`escritura: ${error.code}`);
+}
+
+console.log(`¿puede usar child_process?: ${process.permission.has('child')}`);
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/permisos
+# 1) solo lectura de datos/ y del script
+node --permission --allow-fs-read=./datos/ --allow-fs-read=./leer-envios.mjs leer-envios.mjs
+# 2) además, escritura en datos/
+node --permission --allow-fs-read=./datos/ --allow-fs-read=./leer-envios.mjs --allow-fs-write=./datos/ leer-envios.mjs
+```
+
+**Explicación por bloques:** El script hace tres intentos: leer su CSV, leer un archivo del sistema y escribir un reporte. En la primera ejecución solo se permite leer `datos/` y el propio script, así que la lectura del sistema y la escritura fallan con `ERR_ACCESS_DENIED`; el código captura el error y sigue. En la segunda se agrega `--allow-fs-write=./datos/` y el reporte se escribe. `process.permission.has('child')` confirma que lanzar procesos sigue prohibido en las dos.
+
+![Captura de terminal: con --permission la lectura fuera de datos y la escritura se niegan con ERR_ACCESS_DENIED, y con --allow-fs-write el reporte se escribe](content/figures/node/modelo-de-permisos.svg)
+
+**Resultado esperado:**
+
+```text
+leído: ENV-1,EN_RUTA
+lectura fuera de datos/: ERR_ACCESS_DENIED
+escritura: ERR_ACCESS_DENIED
+¿puede usar child_process?: false
+leído: ENV-1,EN_RUTA
+lectura fuera de datos/: ERR_ACCESS_DENIED
+escribió el reporte
+¿puede usar child_process?: false
+```
+
+**Fallo deliberado:** quita `--allow-fs-read=./leer-envios.mjs` de la primera ejecución. **Error esperado:** Node no arranca y muestra `ERR_ACCESS_DENIED` al intentar leer el propio script. **Diagnóstico:** el permiso de lectura también aplica al archivo que ejecutas. Agrega su ruta o la de su carpeta.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta los dos comandos y compara qué línea cambia.
+2. **Variación:** agrega al script un `spawnSync("ls")` y comprueba que falla hasta que agregas `--allow-child-process`.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de error.
+4. **Integración:** agrega el comando con permisos a `package.json` como script `importar` para que nadie lo ejecute sin ellos.
+5. **Diseño:** escribe qué permisos mínimos necesita el importador de RutaFlow y por qué no necesita red de procesos.
+
+**Pista:** empieza sin permisos, ejecuta y agrega solo lo que pida el error.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Toma un script tuyo que use un paquete de npm y ejecútalo con `--permission`. Agrega permisos uno por uno hasta que funcione y anota la lista final en el README.
+
+**Checklist de salida.**
+
+- [ ] Explicas qué niega `--permission` por defecto.
+- [ ] Los dos comandos imprimen las ocho líneas esperadas.
+- [ ] Reprodujiste el error de lectura del propio script.
+- [ ] Sabes por qué no reemplaza a un contenedor sin privilegios.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** permitir `--allow-fs-read=*` por comodidad, olvidar el permiso del propio script y creer que es una caja de arena completa. **Siguiente paso:** el tema «CVE, CWE y npm audit en el pipeline» complementa esta defensa detectando versiones vulnerables.
+
+**Transferencia al proyecto integrador «RutaFlow»:** ejecuta el importador nocturno de RutaFlow con `--permission`, leyendo solo `datos/entrada/` y escribiendo solo en `datos/salida/`.
+
+**Fuente oficial:** [Node.js — Permissions](https://nodejs.org/api/permissions.html).
+
 ## Laboratorio práctico
 
 Construye una API pequeña desde una carpeta vacía para integrar cabeceras, límite por ruta, parámetros SQL, salida HTML y auditoría. Es un proyecto nuevo: no copies archivos de los temas ni uses sus carpetas.

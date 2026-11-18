@@ -549,6 +549,138 @@ Ejecuta solo esta prueba:
 
 **Aplicación y decisión:** En el proyecto integrador, conserva liveness independiente de la pasarela externa y prueba readiness con esa dependencia caída. Este límite evita reinicios en cadena, pero el test no acredita comportamiento del kubelet ni balanceo del clúster.
 
+### Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min
+
+**Prerrequisito:** tema «Actuator y health checks personalizados» de este módulo.
+
+**Al finalizar podrás:** configurar niveles de log por paquete y por grupo, cambiar un nivel en caliente con Actuator y emitir logs estructurados en formato JSON listos para un agregador.
+
+**¿Por qué es importante?** Los logs son lo primero que miras en un incidente. Si todo está en `DEBUG`, no encuentras nada; si todo está en `WARN`, falta información. Y si son texto libre, el agregador no puede filtrar por envío o por petición.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.4 o superior (los logs estructurados llegaron en 3.4) con `spring-boot-starter-web` y `spring-boot-starter-actuator`.
+
+#### Paso 2 · Contexto y caso real
+
+Durante un incidente en RutaFlow, alguien activó `DEBUG` en todo el servicio y el disco se llenó en una hora. Con niveles por paquete y cambios en caliente, el equipo puede subir el detalle solo del paquete de asignación y bajarlo al terminar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** nivel (TRACE, DEBUG, INFO, WARN, ERROR), logger por paquete, grupo de logs, endpoint `/actuator/loggers`, log estructurado, formato ECS, MDC.
+
+Cada clase tiene un **logger** con el nombre de su paquete. El **nivel** decide qué mensajes se escriben: con `INFO`, se escriben INFO, WARN y ERROR, pero no DEBUG.
+
+- En `application.properties`: `logging.level.com.rutaflow.asignacion=DEBUG`.
+- Un **grupo** junta varios paquetes bajo un nombre: `logging.group.asignacion=com.rutaflow.asignacion,com.rutaflow.rutas`.
+- Actuator expone `/actuator/loggers` para **leer y cambiar niveles sin reiniciar**.
+
+Los **logs estructurados** escriben cada línea como un objeto JSON con campos fijos. Spring Boot trae formatos listos: `ecs` (Elastic), `gelf` y `logstash`. Los valores del **MDC** (por ejemplo, el id de la petición) aparecen como campos propios.
+
+**Analogía:** los niveles son el volumen de una radio por emisora: subes solo la que necesitas escuchar. El log estructurado es una planilla en lugar de una carta: cada dato va en su columna. La analogía falla en que el volumen alto también cuesta disco y dinero.
+
+**Límite de uso:** no actives `DEBUG` global en producción. No escribas datos personales ni tokens en los logs, ni siquiera en `DEBUG`. Protege `/actuator/loggers`: cambiar niveles es una operación sensible.
+
+```mermaid
+flowchart LR
+    C["AsignacionService<br/>log.debug(...)"] --> L{"nivel del paquete"}
+    L -->|"DEBUG activo"| J["consola en JSON (ECS)"]
+    L -->|"INFO"| X["descartado"]
+    A["POST /actuator/loggers/asignacion"] -->|"cambia en caliente"| L
+    J --> G["agregador: Loki, Elastic"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/resources/application.properties`:
+
+```properties
+logging.level.root=INFO
+logging.group.asignacion=com.rutaflow.asignacion,com.rutaflow.rutas
+logging.level.asignacion=INFO
+logging.structured.format.console=ecs
+management.endpoints.web.exposure.include=health,loggers
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/asignacion/AsignacionController.java`:
+
+```java
+package com.rutaflow.asignacion;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class AsignacionController {
+    private static final Logger log = LoggerFactory.getLogger(AsignacionController.class);
+
+    @PostMapping("/envios/{codigo}/asignar")
+    public String asignar(@PathVariable String codigo) {
+        MDC.put("envio", codigo); // aparece como campo propio en el JSON
+        try {
+            log.debug("calculando candidatos para {}", codigo);
+            log.info("envío asignado");
+            return "asignado";
+        } finally {
+            MDC.remove("envio");
+        }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./mvnw spring-boot:run
+curl -X POST localhost:8080/envios/ENV-42/asignar
+curl -X POST localhost:8080/actuator/loggers/asignacion \
+     -H 'Content-Type: application/json' -d '{"configuredLevel":"DEBUG"}'
+curl -X POST localhost:8080/envios/ENV-42/asignar
+```
+
+**Explicación por bloques:** `logging.group.asignacion` agrupa dos paquetes bajo un nombre, y su nivel empieza en `INFO`. `logging.structured.format.console=ecs` hace que cada línea de consola sea JSON con el formato de Elastic. El controlador pone el código del envío en el MDC antes de registrar y lo quita en el `finally`, porque los hilos se reutilizan. La primera petición solo registra `envío asignado`; después de cambiar el grupo a `DEBUG` con Actuator, la segunda también registra el cálculo de candidatos, sin reiniciar.
+
+**Resultado esperado:**
+
+```text
+Primera petición: una línea JSON con "log.level":"INFO", "message":"envío asignado" y "envio":"ENV-42".
+Tras el POST a /actuator/loggers/asignacion: respuesta 204 sin cuerpo.
+Segunda petición: además aparece una línea con "log.level":"DEBUG" y "message":"calculando candidatos para ENV-42".
+```
+
+**Fallo deliberado:** quita el `finally` y deja `MDC.put` sin `MDC.remove`. **Error esperado:** después de varias peticiones, logs de otras operaciones aparecen con un `envio` que no les corresponde. **Diagnóstico:** el MDC vive en el hilo, y el servidor reutiliza los hilos. Limpia siempre lo que pones.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** haz la primera petición y localiza el campo `envio` en el JSON.
+2. **Variación:** cambia el formato a `logstash` y compara los nombres de los campos.
+3. **Diagnóstico:** reproduce el fallo deliberado del MDC con diez peticiones a dos endpoints distintos.
+4. **Integración:** consulta `GET /actuator/loggers/asignacion` y explica `configuredLevel` y `effectiveLevel`.
+5. **Diseño:** escribe la política de niveles de RutaFlow: qué va en INFO, qué en DEBUG y qué nunca se registra.
+
+**Pista:** si un log no aparece, consulta el `effectiveLevel` de su logger en Actuator.
+
+#### Paso 6 · Práctica independiente
+
+Deja la consola en texto para desarrollo y JSON solo en el perfil `prod` (`application-prod.properties`), y comprueba los dos con `--spring.profiles.active`.
+
+#### Paso 7 · Cierre
+
+- [ ] Configuras niveles por paquete y por grupo.
+- [ ] Cambiaste un nivel en caliente con Actuator.
+- [ ] Los logs salen en JSON con el campo del MDC.
+- [ ] Limpias el MDC en un `finally`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** activar DEBUG global en producción, registrar datos personales y no limpiar el MDC. **Siguiente paso:** el tema «Contar operaciones de negocio con Micrometer» complementa los logs con métricas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el servicio de asignación de RutaFlow, emite logs ECS con el código del envío y el correlation id en el MDC, y documenta cómo subir el nivel del grupo `asignacion` durante un incidente.
+
+**Fuente oficial:** [Spring Boot — Logging](https://docs.spring.io/spring-boot/reference/features/logging.html) y [Spring Boot — Loggers endpoint](https://docs.spring.io/spring-boot/api/rest/actuator/loggers.html).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** exponer Actuator con al menos una métrica de negocio custom y health checks apropiados.

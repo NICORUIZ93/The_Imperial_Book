@@ -856,6 +856,125 @@ npm test
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas. Define primero los bordes y conserva las pruebas como especificación ejecutable mientras refactorizas.
 
+### Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min
+
+**Prerrequisito:** tema «node:test — test runner nativo sin dependencias» de este módulo.
+
+**Al finalizar podrás:** medir la cobertura de tus pruebas con `--experimental-test-coverage`, entender por qué la cobertura de líneas puede engañar y hacer fallar el pipeline con un umbral de ramas.
+
+**¿Por qué es importante?** La cobertura muestra qué código nunca se ejecutó en las pruebas. No prueba que el código sea correcto, pero sí revela caminos que nadie probó, como el manejo de errores.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 22 o superior (el umbral `--test-coverage-branches` llegó en Node 22.8). Crea la carpeta `academia-labs/node/cobertura`.
+
+**Contexto y caso real.**
+
+El cálculo de tarifas de RutaFlow tenía «100 % de cobertura». Aun así, un envío urgente se cobró mal en producción. El reporte de líneas estaba en 100 %, pero el de ramas mostraba que nadie había probado el caso urgente.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** cobertura de líneas, cobertura de ramas, cobertura de funciones, umbral, `--experimental-test-coverage`, `--test-coverage-branches`.
+
+- **Líneas:** qué líneas se ejecutaron al menos una vez.
+- **Ramas:** qué caminos de cada decisión (`if`, `?:`, `&&`, valores por defecto) se recorrieron. Un `if` tiene dos ramas: verdadero y falso.
+- **Funciones:** qué funciones se llamaron.
+
+Una línea como `if (urgente) return base * 2;` cuenta como **ejecutada** aunque `urgente` nunca haya sido verdadero. Por eso la cobertura de ramas es más honesta. Un **umbral** convierte la medición en una regla: si baja de cierto porcentaje, el comando termina con código 1 y el pipeline falla.
+
+**Analogía:** la cobertura de líneas dice qué calles del mapa recorriste; la de ramas dice si en cada cruce probaste girar a ambos lados. La analogía falla en que haber pasado por un cruce no garantiza que llegaste al lugar correcto: eso lo comprueban las aserciones.
+
+**Límite de uso:** 100 % de cobertura no significa ausencia de errores: una prueba sin aserciones también cubre. No persigas el número en código trivial; úsalo para encontrar caminos importantes sin probar.
+
+```mermaid
+flowchart TB
+    T["tarifa(kilos, urgente)"] --> D{"kilos <= 0"}
+    D -->|"sí: sin probar"| E["RangeError"]
+    D -->|"no: probado"| U{"urgente"}
+    U -->|"sí: sin probar"| X["base * 2"]
+    U -->|"no: probado"| B["base"]
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/cobertura/tarifa.mjs`:
+
+```js
+export function tarifa(kilos, urgente = false) {
+  if (kilos <= 0) throw new RangeError('peso inválido');
+  const base = 1000 + kilos * 120;
+  if (urgente) return base * 2;
+  return base;
+}
+```
+
+Archivo `academia-labs/node/cobertura/tarifa.test.mjs`:
+
+```js
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { tarifa } from './tarifa.mjs';
+
+test('tarifa normal', () => {
+  assert.equal(tarifa(2), 1240);
+});
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/cobertura
+node --test --experimental-test-coverage --test-reporter=spec tarifa.test.mjs
+```
+
+**Explicación por bloques:** `tarifa.mjs` tiene dos decisiones: el peso inválido y el envío urgente. La única prueba usa 2 kilos sin urgencia, así que recorre solo un lado de cada decisión. El reporte muestra 100 % de líneas, porque las dos líneas con `if` se ejecutaron, pero 50 % de ramas: el error y el caso urgente nunca corrieron. La duración de la prueba cambia en cada ejecución; el resto del reporte debe coincidir.
+
+![Captura de terminal: la prueba pasa y el reporte muestra tarifa.mjs con 100 % de líneas pero 50 % de ramas](content/figures/node/cobertura-node-test.svg)
+
+**Resultado esperado:**
+
+```text
+✔ tarifa normal
+ℹ pass 1
+ℹ file            | line % | branch % | funcs % | uncovered lines
+ℹ tarifa.mjs      | 100.00 |    50.00 |  100.00 |
+```
+
+**Fallo deliberado:** agrega `--test-coverage-branches=80` al comando. **Error esperado:** el comando termina con código 1 y el reporte dice `66.67% branch coverage does not meet threshold of 80%` (el porcentaje incluye el archivo de prueba). **Diagnóstico:** el umbral funciona: hay caminos sin probar. Escribe las pruebas del caso urgente y del peso inválido hasta pasar el umbral.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el comando y localiza las columnas de líneas y ramas.
+2. **Variación:** agrega una prueba para `tarifa(2, true)` y observa cómo sube la cobertura de ramas.
+3. **Diagnóstico:** reproduce el fallo deliberado con el umbral y revisa el código de salida con `echo $?`.
+4. **Integración:** agrega `assert.throws(() => tarifa(0), RangeError)` y llega a 100 % de ramas.
+5. **Diseño:** escribe una prueba que cubra todo pero no compruebe nada (sin `assert`) y explica por qué la cobertura no la detecta.
+
+**Pista:** mira la columna de ramas antes que la de líneas: ahí aparecen los casos olvidados.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Agrega en `package.json` el script `"test:cov": "node --test --experimental-test-coverage --test-coverage-branches=90"` y úsalo en un proyecto propio. Excluye los archivos de prueba del reporte con `--test-coverage-exclude`.
+
+**Checklist de salida.**
+
+- [ ] Explicas la diferencia entre cobertura de líneas y de ramas.
+- [ ] El reporte muestra 100 % de líneas y 50 % de ramas en `tarifa.mjs`.
+- [ ] Hiciste fallar el comando con un umbral.
+- [ ] Sabes por qué 100 % no significa «sin errores».
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** mirar solo la cobertura de líneas, escribir pruebas sin aserciones para subir el número y exigir 100 % en código trivial. **Siguiente paso:** el tema «TDD práctico» usa estas mediciones para guiar qué prueba escribir después.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el CI de RutaFlow, ejecuta las pruebas con cobertura y un umbral de ramas de 80 % para el módulo de tarifas.
+
+**Fuente oficial:** [Node.js — Test runner: collecting code coverage](https://nodejs.org/api/test.html#collecting-code-coverage).
+
 ## Laboratorio práctico: suite independiente para una API de entregas
 
 **Al terminar podrás:** construir desde cero una API pequeña con pruebas HTTP y PostgreSQL real, aislar un notificador externo, ejecutar además pruebas nativas y definir CI con evidencia de descubrimiento.

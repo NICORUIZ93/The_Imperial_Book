@@ -118,18 +118,7 @@ Al finalizar vas a separar, para RutaFlow, qué va en SSM Parameter Store y qué
 RutaFlow necesita guardar la URL base del proveedor de SMS (pública, no sensible) junto a la API key del Tema 1 (sensible) — mezclarlas en el mismo servicio sería tratar dos cosas distintas igual.
 #### Paso 3 · Teoría, modelo mental y analogía
 Parameter Store es el tablero de anuncios de configuración general; Secrets Manager es la bóveda reservada para lo que de verdad necesita rotación y auditoría.
-#### Paso 4 · Demostración guiada
-```bash
-aws ssm put-parameter --name /rutaflow/sms-gateway-url --value "https://sms-provider.example.com/v1" --type String
-aws ssm get-parameter --name /rutaflow/sms-gateway-url --query Parameter.Value --output text
-```
-Resultado esperado: `get-parameter` devuelve la URL sin ningún cifrado de por medio — es configuración pública, no necesita las garantías de Secrets Manager, y además es gratis en SSM mientras que cada secreto en Secrets Manager tiene costo mensual.
-#### Paso 5 · Práctica guiada
-Pista: usá `aws iam simulate-custom-policy` con la política `policy-crud.json` del Módulo 9 (la de `lambda-crud-tareas`, que nunca menciona `ssm:GetParameter` ni `secretsmanager:GetSecretValue`) contra la acción `ssm:GetParameter` sobre `/rutaflow/sms-gateway-url` — ese es el fallo deliberado: `implicitDeny`, el mismo patrón de "denegado por defecto" del Módulo 7, ahora aplicado a configuración, no solo a datos.
-#### Paso 6 · Práctica independiente
-Clasificá estos cinco valores de RutaFlow como "SSM Parameter Store" o "Secrets Manager", justificando cada uno en una frase: la URL del proveedor de SMS, la API key del proveedor de SMS, el nombre de la tabla `ShipmentEvents`, la contraseña de una futura base de datos relacional (Módulo 13), y el `BatchSize` del event source mapping del Módulo 5.
-#### Paso 7 · Cierre
-Entregá el parámetro creado, la denegación simulada del Paso 5 y la clasificación justificada del Paso 6; explicá qué regla usaste para decidir cada caso. Siguiente paso: mensajería. Errores comunes: guardar secretos como configuración común y no rotar. Fuente oficial: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html.
+
 **Conceptos clave:** configuración general frente a secretos sensibles con rotación automática.
 
 ```bash
@@ -157,6 +146,19 @@ flowchart LR
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Clasifica endpoint público, bandera de función y credencial de notificaciones. Guarda cada dato en el servicio apropiado y prueba que cambiar configuración no exige insertar secretos en el repositorio.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws ssm put-parameter --name /rutaflow/sms-gateway-url --value "https://sms-provider.example.com/v1" --type String
+aws ssm get-parameter --name /rutaflow/sms-gateway-url --query Parameter.Value --output text
+```
+Resultado esperado: `get-parameter` devuelve la URL sin ningún cifrado de por medio — es configuración pública, no necesita las garantías de Secrets Manager, y además es gratis en SSM mientras que cada secreto en Secrets Manager tiene costo mensual.
+#### Paso 5 · Práctica guiada
+Pista: usá `aws iam simulate-custom-policy` con la política `policy-crud.json` del Módulo 9 (la de `lambda-crud-tareas`, que nunca menciona `ssm:GetParameter` ni `secretsmanager:GetSecretValue`) contra la acción `ssm:GetParameter` sobre `/rutaflow/sms-gateway-url` — ese es el fallo deliberado: `implicitDeny`, el mismo patrón de "denegado por defecto" del Módulo 7, ahora aplicado a configuración, no solo a datos.
+#### Paso 6 · Práctica independiente
+Clasificá estos cinco valores de RutaFlow como "SSM Parameter Store" o "Secrets Manager", justificando cada uno en una frase: la URL del proveedor de SMS, la API key del proveedor de SMS, el nombre de la tabla `ShipmentEvents`, la contraseña de una futura base de datos relacional (Módulo 13), y el `BatchSize` del event source mapping del Módulo 5.
+#### Paso 7 · Cierre
+Entregá el parámetro creado, la denegación simulada del Paso 5 y la clasificación justificada del Paso 6; explicá qué regla usaste para decidir cada caso. Siguiente paso: mensajería. Errores comunes: guardar secretos como configuración común y no rotar. Fuente oficial: https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html.
 
 ## Laboratorio práctico
 

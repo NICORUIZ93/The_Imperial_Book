@@ -5,7 +5,7 @@
 **Proyecto continuo:** RutaFlow Driver: aplicación de entregas conectada.
 **Prerrequisito de entrada:** Dart y fundamentos de UI; el módulo 0 comienza con el lenguaje..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 1/109 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 1/119 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -19,6 +19,9 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 2: Clases y mixins
 - [pendiente de migrar] Tema 3: Futures, async/await y colecciones funcionales
 - [pendiente de migrar] Tema 4: Lints y estilo con analysis_options.yaml
+- [pendiente de migrar] Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min
+- [pendiente de migrar] Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min
+- [pendiente de migrar] Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min
 
 ### Módulo 1: Widgets: stateless vs stateful
 
@@ -27,6 +30,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 1: StatelessWidget vs StatefulWidget
 - [pendiente de migrar] Tema 2: Layout con Row, Column y Stack, y ciclo de vida
 - [pendiente de migrar] Tema 3: Keys
+- [pendiente de migrar] Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min
+- [pendiente de migrar] Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min
 
 ### Módulo 2: Layout y diseño responsive
 
@@ -71,6 +76,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 2: sqflite vs Hive
 - [pendiente de migrar] Tema 3: Offline-first y Firebase
 - [pendiente de migrar] Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación
+- [pendiente de migrar] Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min
 
 ### Módulo 7: Integración con plataformas nativas
 
@@ -80,6 +86,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 2: Plugins federados
 - [pendiente de migrar] Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio
 - [pendiente de migrar] Tema 4: Cámara, galería y carga multipart de una evidencia
+- [pendiente de migrar] Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min
+- [pendiente de migrar] Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min
 
 ### Módulo 8: Animaciones y rendimiento
 
@@ -115,6 +123,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 2: Iconos y splash screens
 - [pendiente de migrar] Tema 3: CI/CD con Codemagic o Fastlane
 - [pendiente de migrar] Tema 4: Entornos y flavors con --dart-define-from-file
+- [pendiente de migrar] Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min
 
 ### Módulo 12: Proyecto integrador: app Flutter completa
 
@@ -123,6 +132,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 1: Arquitectura por features y Clean Architecture
 - [pendiente de migrar] Tema 2: Uniendo los módulos del track
 - [pendiente de migrar] Tema 3: Cierre del track
+- [pendiente de migrar] Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min
 
 ### Módulo 13: Flutter en producción — seguridad, isolates y operación
 
@@ -261,7 +271,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 109 temas en 23 módulos; 1 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 119 temas en 23 módulos; 1 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

@@ -1551,6 +1551,17 @@
       ]
     },
     {
+      "id": "javascript:6:7",
+      "track": "javascript",
+      "module": 6,
+      "position": 7,
+      "title": "Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min",
+      "file": "web/public/content/javascript/modulo-6.md",
+      "requires": [
+        "javascript:6:6"
+      ]
+    },
+    {
       "id": "javascript:7:1",
       "track": "javascript",
       "module": 7,
@@ -1558,7 +1569,7 @@
       "title": "ESM frente a CommonJS",
       "file": "web/public/content/javascript/modulo-7.md",
       "requires": [
-        "javascript:6:6"
+        "javascript:6:7"
       ]
     },
     {
@@ -1617,6 +1628,28 @@
       ]
     },
     {
+      "id": "javascript:7:7",
+      "track": "javascript",
+      "module": 7,
+      "position": 7,
+      "title": "Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",
+      "file": "web/public/content/javascript/modulo-7.md",
+      "requires": [
+        "javascript:7:6"
+      ]
+    },
+    {
+      "id": "javascript:7:8",
+      "track": "javascript",
+      "module": 7,
+      "position": 8,
+      "title": "Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",
+      "file": "web/public/content/javascript/modulo-7.md",
+      "requires": [
+        "javascript:7:7"
+      ]
+    },
+    {
       "id": "javascript:8:1",
       "track": "javascript",
       "module": 8,
@@ -1624,7 +1657,7 @@
       "title": "Selección y manipulación del DOM",
       "file": "web/public/content/javascript/modulo-8.md",
       "requires": [
-        "javascript:7:6"
+        "javascript:7:8"
       ]
     },
     {
@@ -2101,6 +2134,17 @@
       ]
     },
     {
+      "id": "javascript:14:15",
+      "track": "javascript",
+      "module": 14,
+      "position": 15,
+      "title": "Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
+      "file": "web/public/content/javascript/modulo-14.md",
+      "requires": [
+        "javascript:14:14"
+      ]
+    },
+    {
       "id": "java:0:1",
       "track": "java",
       "module": 0,
@@ -2572,6 +2616,17 @@
       ]
     },
     {
+      "id": "java:9:4",
+      "track": "java",
+      "module": 9,
+      "position": 4,
+      "title": "Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min",
+      "file": "web/public/content/java/modulo-9.md",
+      "requires": [
+        "java:9:3"
+      ]
+    },
+    {
       "id": "java:10:1",
       "track": "java",
       "module": 10,
@@ -2579,7 +2634,7 @@
       "title": "module-info.java y encapsulación fuerte",
       "file": "web/public/content/java/modulo-10.md",
       "requires": [
-        "java:9:3"
+        "java:9:4"
       ]
     },
     {
@@ -2792,6 +2847,28 @@
       ]
     },
     {
+      "id": "java:14:5",
+      "track": "java",
+      "module": 14,
+      "position": 5,
+      "title": "Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min",
+      "file": "web/public/content/java/modulo-14.md",
+      "requires": [
+        "java:14:4"
+      ]
+    },
+    {
+      "id": "java:14:6",
+      "track": "java",
+      "module": 14,
+      "position": 6,
+      "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min",
+      "file": "web/public/content/java/modulo-14.md",
+      "requires": [
+        "java:14:5"
+      ]
+    },
+    {
       "id": "java:15:1",
       "track": "java",
       "module": 15,
@@ -2799,7 +2876,7 @@
       "title": "Maven avanzado",
       "file": "web/public/content/java/modulo-15.md",
       "requires": [
-        "java:14:4"
+        "java:14:6"
       ]
     },
     {
@@ -2990,6 +3067,17 @@
       ]
     },
     {
+      "id": "java:18:3",
+      "track": "java",
+      "module": 18,
+      "position": 3,
+      "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",
+      "file": "web/public/content/java/modulo-18.md",
+      "requires": [
+        "java:18:2"
+      ]
+    },
+    {
       "id": "java:19:1",
       "track": "java",
       "module": 19,
@@ -2997,7 +3085,7 @@
       "title": "Reflexión y anotaciones en tiempo de ejecución",
       "file": "web/public/content/java/modulo-19.md",
       "requires": [
-        "java:18:2"
+        "java:18:3"
       ]
     },
     {
@@ -3067,6 +3155,28 @@
       ]
     },
     {
+      "id": "java:19:8",
+      "track": "java",
+      "module": 19,
+      "position": 8,
+      "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:7"
+      ]
+    },
+    {
+      "id": "java:19:9",
+      "track": "java",
+      "module": 19,
+      "position": 9,
+      "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min",
+      "file": "web/public/content/java/modulo-19.md",
+      "requires": [
+        "java:19:8"
+      ]
+    },
+    {
       "id": "java:20:1",
       "track": "java",
       "module": 20,
@@ -3074,7 +3184,7 @@
       "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
       "file": "web/public/content/java/modulo-20.md",
       "requires": [
-        "java:19:7"
+        "java:19:9"
       ]
     },
     {
@@ -3327,7 +3437,7 @@
       "title": "Node no es \"JavaScript en el servidor\" sin más · Básico · 75 min",
       "file": "web/public/content/node/modulo-0.md",
       "requires": [
-        "javascript:14:14"
+        "javascript:14:15"
       ]
     },
     {
@@ -3474,6 +3584,28 @@
       ]
     },
     {
+      "id": "node:2:5",
+      "track": "node",
+      "module": 2,
+      "position": 5,
+      "title": "Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",
+      "file": "web/public/content/node/modulo-2.md",
+      "requires": [
+        "node:2:4"
+      ]
+    },
+    {
+      "id": "node:2:6",
+      "track": "node",
+      "module": 2,
+      "position": 6,
+      "title": "Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min",
+      "file": "web/public/content/node/modulo-2.md",
+      "requires": [
+        "node:2:5"
+      ]
+    },
+    {
       "id": "node:3:1",
       "track": "node",
       "module": 3,
@@ -3481,7 +3613,7 @@
       "title": "El modelo request/response · Básico · 60 min",
       "file": "web/public/content/node/modulo-3.md",
       "requires": [
-        "node:2:4"
+        "node:2:6"
       ]
     },
     {
@@ -3529,6 +3661,28 @@
       ]
     },
     {
+      "id": "node:3:6",
+      "track": "node",
+      "module": 3,
+      "position": 6,
+      "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",
+      "file": "web/public/content/node/modulo-3.md",
+      "requires": [
+        "node:3:5"
+      ]
+    },
+    {
+      "id": "node:3:7",
+      "track": "node",
+      "module": 3,
+      "position": 7,
+      "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",
+      "file": "web/public/content/node/modulo-3.md",
+      "requires": [
+        "node:3:6"
+      ]
+    },
+    {
       "id": "node:4:1",
       "track": "node",
       "module": 4,
@@ -3536,7 +3690,7 @@
       "title": "Middleware — orden de ejecución y next() · Básico · 75 min",
       "file": "web/public/content/node/modulo-4.md",
       "requires": [
-        "node:3:5"
+        "node:3:7"
       ]
     },
     {
@@ -3771,6 +3925,17 @@
       ]
     },
     {
+      "id": "node:7:7",
+      "track": "node",
+      "module": 7,
+      "position": 7,
+      "title": "Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",
+      "file": "web/public/content/node/modulo-7.md",
+      "requires": [
+        "node:7:6"
+      ]
+    },
+    {
       "id": "node:8:1",
       "track": "node",
       "module": 8,
@@ -3778,7 +3943,7 @@
       "title": "Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
       "file": "web/public/content/node/modulo-8.md",
       "requires": [
-        "node:7:6"
+        "node:7:7"
       ]
     },
     {
@@ -3881,6 +4046,17 @@
       ]
     },
     {
+      "id": "node:9:6",
+      "track": "node",
+      "module": 9,
+      "position": 6,
+      "title": "Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min",
+      "file": "web/public/content/node/modulo-9.md",
+      "requires": [
+        "node:9:5"
+      ]
+    },
+    {
       "id": "node:10:1",
       "track": "node",
       "module": 10,
@@ -3888,7 +4064,7 @@
       "title": "Cabeceras seguras con helmet · Intermedio · 55 min",
       "file": "web/public/content/node/modulo-10.md",
       "requires": [
-        "node:9:5"
+        "node:9:6"
       ]
     },
     {
@@ -3936,6 +4112,17 @@
       ]
     },
     {
+      "id": "node:10:6",
+      "track": "node",
+      "module": 10,
+      "position": 6,
+      "title": "Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",
+      "file": "web/public/content/node/modulo-10.md",
+      "requires": [
+        "node:10:5"
+      ]
+    },
+    {
       "id": "node:11:1",
       "track": "node",
       "module": 11,
@@ -3943,7 +4130,7 @@
       "title": "Dockerfile multi-stage para Node · Intermedio · 75 min",
       "file": "web/public/content/node/modulo-11.md",
       "requires": [
-        "node:10:5"
+        "node:10:6"
       ]
     },
     {
@@ -4266,6 +4453,17 @@
       ]
     },
     {
+      "id": "spring-boot:0:4",
+      "track": "spring-boot",
+      "module": 0,
+      "position": 4,
+      "title": "Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
+      "file": "web/public/content/spring-boot/modulo-0.md",
+      "requires": [
+        "spring-boot:0:3"
+      ]
+    },
+    {
       "id": "spring-boot:1:1",
       "track": "spring-boot",
       "module": 1,
@@ -4273,7 +4471,7 @@
       "title": "Spring Initializr y starters",
       "file": "web/public/content/spring-boot/modulo-1.md",
       "requires": [
-        "spring-boot:0:3"
+        "spring-boot:0:4"
       ]
     },
     {
@@ -4398,6 +4596,17 @@
       ]
     },
     {
+      "id": "spring-boot:3:4",
+      "track": "spring-boot",
+      "module": 3,
+      "position": 4,
+      "title": "Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min",
+      "file": "web/public/content/spring-boot/modulo-3.md",
+      "requires": [
+        "spring-boot:3:3"
+      ]
+    },
+    {
       "id": "spring-boot:4:1",
       "track": "spring-boot",
       "module": 4,
@@ -4405,7 +4614,7 @@
       "title": "SecurityFilterChain moderno",
       "file": "web/public/content/spring-boot/modulo-4.md",
       "requires": [
-        "spring-boot:3:3"
+        "spring-boot:3:4"
       ]
     },
     {
@@ -4486,6 +4695,17 @@
       ]
     },
     {
+      "id": "spring-boot:5:4",
+      "track": "spring-boot",
+      "module": 5,
+      "position": 4,
+      "title": "FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min",
+      "file": "web/public/content/spring-boot/modulo-5.md",
+      "requires": [
+        "spring-boot:5:3"
+      ]
+    },
+    {
       "id": "spring-boot:6:1",
       "track": "spring-boot",
       "module": 6,
@@ -4493,7 +4713,7 @@
       "title": "Probar un controller con `@WebMvcTest`",
       "file": "web/public/content/spring-boot/modulo-6.md",
       "requires": [
-        "spring-boot:5:3"
+        "spring-boot:5:4"
       ]
     },
     {
@@ -4552,6 +4772,17 @@
       ]
     },
     {
+      "id": "spring-boot:7:4",
+      "track": "spring-boot",
+      "module": 7,
+      "position": 4,
+      "title": "Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min",
+      "file": "web/public/content/spring-boot/modulo-7.md",
+      "requires": [
+        "spring-boot:7:3"
+      ]
+    },
+    {
       "id": "spring-boot:8:1",
       "track": "spring-boot",
       "module": 8,
@@ -4559,7 +4790,7 @@
       "title": "Producers y consumers con Spring Kafka",
       "file": "web/public/content/spring-boot/modulo-8.md",
       "requires": [
-        "spring-boot:7:3"
+        "spring-boot:7:4"
       ]
     },
     {
@@ -4651,6 +4882,17 @@
       ]
     },
     {
+      "id": "spring-boot:8:10",
+      "track": "spring-boot",
+      "module": 8,
+      "position": 10,
+      "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min",
+      "file": "web/public/content/spring-boot/modulo-8.md",
+      "requires": [
+        "spring-boot:8:9"
+      ]
+    },
+    {
       "id": "spring-boot:9:1",
       "track": "spring-boot",
       "module": 9,
@@ -4658,7 +4900,7 @@
       "title": "Mono y Flux",
       "file": "web/public/content/spring-boot/modulo-9.md",
       "requires": [
-        "spring-boot:8:9"
+        "spring-boot:8:10"
       ]
     },
     {
@@ -4849,6 +5091,17 @@
       ]
     },
     {
+      "id": "spring-boot:11:4",
+      "track": "spring-boot",
+      "module": 11,
+      "position": 4,
+      "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min",
+      "file": "web/public/content/spring-boot/modulo-11.md",
+      "requires": [
+        "spring-boot:11:3"
+      ]
+    },
+    {
       "id": "spring-boot:12:1",
       "track": "spring-boot",
       "module": 12,
@@ -4856,7 +5109,7 @@
       "title": "Arquitectura del microservicio integrador",
       "file": "web/public/content/spring-boot/modulo-12.md",
       "requires": [
-        "spring-boot:11:3"
+        "spring-boot:11:4"
       ]
     },
     {
@@ -5146,6 +5399,17 @@
       ]
     },
     {
+      "id": "spring-boot:18:3",
+      "track": "spring-boot",
+      "module": 18,
+      "position": 3,
+      "title": "SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min",
+      "file": "web/public/content/spring-boot/modulo-18.md",
+      "requires": [
+        "spring-boot:18:2"
+      ]
+    },
+    {
       "id": "spring-boot:19:1",
       "track": "spring-boot",
       "module": 19,
@@ -5153,7 +5417,7 @@
       "title": "Job, Step, Tasklet y chunk processing",
       "file": "web/public/content/spring-boot/modulo-19.md",
       "requires": [
-        "spring-boot:18:2"
+        "spring-boot:18:3"
       ]
     },
     {
@@ -5491,7 +5755,7 @@
       "track": "microservices",
       "module": 0,
       "position": 1,
-      "title": "Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+      "title": "Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "spring-boot:26:2"
@@ -5502,7 +5766,7 @@
       "track": "microservices",
       "module": 0,
       "position": 2,
-      "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+      "title": "Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:1"
@@ -5513,7 +5777,7 @@
       "track": "microservices",
       "module": 0,
       "position": 3,
-      "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+      "title": "Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:2"
@@ -5524,7 +5788,7 @@
       "track": "microservices",
       "module": 0,
       "position": 4,
-      "title": "Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+      "title": "Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:3"
@@ -5535,7 +5799,7 @@
       "track": "microservices",
       "module": 0,
       "position": 5,
-      "title": "Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+      "title": "Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:4"
@@ -5546,7 +5810,7 @@
       "track": "microservices",
       "module": 0,
       "position": 6,
-      "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+      "title": "Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:5"
@@ -5557,7 +5821,7 @@
       "track": "microservices",
       "module": 0,
       "position": 7,
-      "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "title": "Preservar el orden de eventos por versión del agregado · Avanzado · 45 min",
       "file": "web/public/content/microservices/modulo-0.md",
       "requires": [
         "microservices:0:6"
@@ -5601,7 +5865,7 @@
       "track": "microservices",
       "module": 1,
       "position": 1,
-      "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+      "title": "Distinguir estructura lógica de unidad de despliegue · Básico · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:0:10"
@@ -5612,7 +5876,7 @@
       "track": "microservices",
       "module": 1,
       "position": 2,
-      "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+      "title": "Evaluar autonomía antes de extraer un proceso · Básico · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:1"
@@ -5623,7 +5887,7 @@
       "track": "microservices",
       "module": 1,
       "position": 3,
-      "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
+      "title": "Agrupar código por capacidad de negocio · Intermedio · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:2"
@@ -5634,7 +5898,7 @@
       "track": "microservices",
       "module": 1,
       "position": 4,
-      "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
+      "title": "Proteger la API pública de un módulo · Intermedio · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:3"
@@ -5645,7 +5909,7 @@
       "track": "microservices",
       "module": 1,
       "position": 5,
-      "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+      "title": "Mantener reglas de dominio libres de frameworks · Intermedio · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:4"
@@ -5656,7 +5920,7 @@
       "track": "microservices",
       "module": 1,
       "position": 6,
-      "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+      "title": "Sustituir adaptadores mediante puertos · Intermedio · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:5"
@@ -5667,7 +5931,7 @@
       "track": "microservices",
       "module": 1,
       "position": 7,
-      "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
+      "title": "Representar dependencias de módulos como un grafo · Avanzado · 35 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:6"
@@ -5678,7 +5942,7 @@
       "track": "microservices",
       "module": 1,
       "position": 8,
-      "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "title": "Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:7"
@@ -5689,7 +5953,7 @@
       "track": "microservices",
       "module": 1,
       "position": 9,
-      "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "title": "Bloquear accesos a internals con ArchUnit · Avanzado · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:8"
@@ -5700,7 +5964,7 @@
       "track": "microservices",
       "module": 1,
       "position": 10,
-      "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "title": "Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:9"
@@ -5711,7 +5975,7 @@
       "track": "microservices",
       "module": 1,
       "position": 11,
-      "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "title": "Evitar falsos verdes en fitness functions · Avanzado · 35 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:10"
@@ -5744,7 +6008,7 @@
       "track": "microservices",
       "module": 1,
       "position": 14,
-      "title": "Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+      "title": "Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
       "file": "web/public/content/microservices/modulo-1.md",
       "requires": [
         "microservices:1:13"
@@ -5758,7 +6022,7 @@
       "title": "El CLI ya no genera NgModules",
       "file": "web/public/content/angular/modulo-0.md",
       "requires": [
-        "javascript:14:14"
+        "javascript:14:15"
       ]
     },
     {
@@ -6037,6 +6301,17 @@
       ]
     },
     {
+      "id": "angular:4:6",
+      "track": "angular",
+      "module": 4,
+      "position": 6,
+      "title": "Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min",
+      "file": "web/public/content/angular/modulo-4.md",
+      "requires": [
+        "angular:4:5"
+      ]
+    },
+    {
       "id": "angular:5:1",
       "track": "angular",
       "module": 5,
@@ -6044,7 +6319,7 @@
       "title": "Reactive Forms — FormGroup y FormControl",
       "file": "web/public/content/angular/modulo-5.md",
       "requires": [
-        "angular:4:5"
+        "angular:4:6"
       ]
     },
     {
@@ -6191,6 +6466,28 @@
       ]
     },
     {
+      "id": "angular:8:4",
+      "track": "angular",
+      "module": 8,
+      "position": 4,
+      "title": "Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min",
+      "file": "web/public/content/angular/modulo-8.md",
+      "requires": [
+        "angular:8:3"
+      ]
+    },
+    {
+      "id": "angular:8:5",
+      "track": "angular",
+      "module": 8,
+      "position": 5,
+      "title": "Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min",
+      "file": "web/public/content/angular/modulo-8.md",
+      "requires": [
+        "angular:8:4"
+      ]
+    },
+    {
       "id": "angular:9:1",
       "track": "angular",
       "module": 9,
@@ -6198,7 +6495,7 @@
       "title": "Store propio con signals",
       "file": "web/public/content/angular/modulo-9.md",
       "requires": [
-        "angular:8:3"
+        "angular:8:5"
       ]
     },
     {
@@ -6312,6 +6609,28 @@
       ]
     },
     {
+      "id": "angular:11:5",
+      "track": "angular",
+      "module": 11,
+      "position": 5,
+      "title": "Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min",
+      "file": "web/public/content/angular/modulo-11.md",
+      "requires": [
+        "angular:11:4"
+      ]
+    },
+    {
+      "id": "angular:11:6",
+      "track": "angular",
+      "module": 11,
+      "position": 6,
+      "title": "Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min",
+      "file": "web/public/content/angular/modulo-11.md",
+      "requires": [
+        "angular:11:5"
+      ]
+    },
+    {
       "id": "angular:12:1",
       "track": "angular",
       "module": 12,
@@ -6319,7 +6638,7 @@
       "title": "Reconocer la versión y la arquitectura de un proyecto",
       "file": "web/public/content/angular/modulo-12.md",
       "requires": [
-        "angular:11:4"
+        "angular:11:6"
       ]
     },
     {
@@ -6422,6 +6741,28 @@
       ]
     },
     {
+      "id": "angular:14:5",
+      "track": "angular",
+      "module": 14,
+      "position": 5,
+      "title": "CSP con nonce y Trusted Types en Angular · Experto · 45 min",
+      "file": "web/public/content/angular/modulo-14.md",
+      "requires": [
+        "angular:14:4"
+      ]
+    },
+    {
+      "id": "angular:14:6",
+      "track": "angular",
+      "module": 14,
+      "position": 6,
+      "title": "Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
+      "file": "web/public/content/angular/modulo-14.md",
+      "requires": [
+        "angular:14:5"
+      ]
+    },
+    {
       "id": "angular:15:1",
       "track": "angular",
       "module": 15,
@@ -6429,7 +6770,7 @@
       "title": "TestBed y ComponentFixture",
       "file": "web/public/content/angular/modulo-15.md",
       "requires": [
-        "angular:14:4"
+        "angular:14:6"
       ]
     },
     {
@@ -6539,7 +6880,7 @@
       "title": "JSX es azúcar sintáctica sobre createElement",
       "file": "web/public/content/react/modulo-0.md",
       "requires": [
-        "javascript:14:14"
+        "javascript:14:15"
       ]
     },
     {
@@ -6620,6 +6961,17 @@
       ]
     },
     {
+      "id": "react:1:5",
+      "track": "react",
+      "module": 1,
+      "position": 5,
+      "title": "Componentes puros y el estado como instantánea · Básico · 40 min",
+      "file": "web/public/content/react/modulo-1.md",
+      "requires": [
+        "react:1:4"
+      ]
+    },
+    {
       "id": "react:2:1",
       "track": "react",
       "module": 2,
@@ -6627,7 +6979,7 @@
       "title": "useEffect — dependencias y limpieza",
       "file": "web/public/content/react/modulo-2.md",
       "requires": [
-        "react:1:4"
+        "react:1:5"
       ]
     },
     {
@@ -6686,6 +7038,17 @@
       ]
     },
     {
+      "id": "react:2:7",
+      "track": "react",
+      "module": 2,
+      "position": 7,
+      "title": "useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min",
+      "file": "web/public/content/react/modulo-2.md",
+      "requires": [
+        "react:2:6"
+      ]
+    },
+    {
       "id": "react:3:1",
       "track": "react",
       "module": 3,
@@ -6693,7 +7056,7 @@
       "title": "React Hook Form y el problema del re-render por tecla",
       "file": "web/public/content/react/modulo-3.md",
       "requires": [
-        "react:2:6"
+        "react:2:7"
       ]
     },
     {
@@ -6719,6 +7082,17 @@
       ]
     },
     {
+      "id": "react:3:4",
+      "track": "react",
+      "module": 3,
+      "position": 4,
+      "title": "Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min",
+      "file": "web/public/content/react/modulo-3.md",
+      "requires": [
+        "react:3:3"
+      ]
+    },
+    {
       "id": "react:4:1",
       "track": "react",
       "module": 4,
@@ -6726,7 +7100,7 @@
       "title": "createContext y useContext",
       "file": "web/public/content/react/modulo-4.md",
       "requires": [
-        "react:3:3"
+        "react:3:4"
       ]
     },
     {
@@ -6950,6 +7324,28 @@
       ]
     },
     {
+      "id": "react:9:6",
+      "track": "react",
+      "module": 9,
+      "position": 6,
+      "title": "El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min",
+      "file": "web/public/content/react/modulo-9.md",
+      "requires": [
+        "react:9:5"
+      ]
+    },
+    {
+      "id": "react:9:7",
+      "track": "react",
+      "module": 9,
+      "position": 7,
+      "title": "React Compiler y las reglas de React: memoización automática · Avanzado · 45 min",
+      "file": "web/public/content/react/modulo-9.md",
+      "requires": [
+        "react:9:6"
+      ]
+    },
+    {
       "id": "react:10:1",
       "track": "react",
       "module": 10,
@@ -6957,7 +7353,7 @@
       "title": "Server Components por defecto",
       "file": "web/public/content/react/modulo-10.md",
       "requires": [
-        "react:9:5"
+        "react:9:7"
       ]
     },
     {
@@ -7104,6 +7500,17 @@
       ]
     },
     {
+      "id": "react:13:5",
+      "track": "react",
+      "module": 13,
+      "position": 5,
+      "title": "Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min",
+      "file": "web/public/content/react/modulo-13.md",
+      "requires": [
+        "react:13:4"
+      ]
+    },
+    {
       "id": "react:14:1",
       "track": "react",
       "module": 14,
@@ -7111,7 +7518,7 @@
       "title": "Server Components y streaming",
       "file": "web/public/content/react/modulo-14.md",
       "requires": [
-        "react:13:4"
+        "react:13:5"
       ]
     },
     {
@@ -7258,6 +7665,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:1:5",
+      "track": "kotlin-multiplatform",
+      "module": 1,
+      "position": 5,
+      "title": "Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-1.md",
+      "requires": [
+        "kotlin-multiplatform:1:4"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:2:1",
       "track": "kotlin-multiplatform",
       "module": 2,
@@ -7265,7 +7683,7 @@
       "title": "suspend functions y concurrencia estructurada",
       "file": "web/public/content/kotlin-multiplatform/modulo-2.md",
       "requires": [
-        "kotlin-multiplatform:1:4"
+        "kotlin-multiplatform:1:5"
       ]
     },
     {
@@ -7346,6 +7764,28 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:3:5",
+      "track": "kotlin-multiplatform",
+      "module": 3,
+      "position": 5,
+      "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-3.md",
+      "requires": [
+        "kotlin-multiplatform:3:4"
+      ]
+    },
+    {
+      "id": "kotlin-multiplatform:3:6",
+      "track": "kotlin-multiplatform",
+      "module": 3,
+      "position": 6,
+      "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-3.md",
+      "requires": [
+        "kotlin-multiplatform:3:5"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:4:1",
       "track": "kotlin-multiplatform",
       "module": 4,
@@ -7353,7 +7793,7 @@
       "title": "Modelos de dominio y casos de uso",
       "file": "web/public/content/kotlin-multiplatform/modulo-4.md",
       "requires": [
-        "kotlin-multiplatform:3:4"
+        "kotlin-multiplatform:3:6"
       ]
     },
     {
@@ -7500,6 +7940,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:6:5",
+      "track": "kotlin-multiplatform",
+      "module": 6,
+      "position": 5,
+      "title": "Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-6.md",
+      "requires": [
+        "kotlin-multiplatform:6:4"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:7:1",
       "track": "kotlin-multiplatform",
       "module": 7,
@@ -7507,7 +7958,7 @@
       "title": "Compose Multiplatform vs Jetpack Compose",
       "file": "web/public/content/kotlin-multiplatform/modulo-7.md",
       "requires": [
-        "kotlin-multiplatform:6:4"
+        "kotlin-multiplatform:6:5"
       ]
     },
     {
@@ -7544,6 +7995,50 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:7:5",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "position": 5,
+      "title": "Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-7.md",
+      "requires": [
+        "kotlin-multiplatform:7:4"
+      ]
+    },
+    {
+      "id": "kotlin-multiplatform:7:6",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "position": 6,
+      "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-7.md",
+      "requires": [
+        "kotlin-multiplatform:7:5"
+      ]
+    },
+    {
+      "id": "kotlin-multiplatform:7:7",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "position": 7,
+      "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-7.md",
+      "requires": [
+        "kotlin-multiplatform:7:6"
+      ]
+    },
+    {
+      "id": "kotlin-multiplatform:7:8",
+      "track": "kotlin-multiplatform",
+      "module": 7,
+      "position": 8,
+      "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-7.md",
+      "requires": [
+        "kotlin-multiplatform:7:7"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:8:1",
       "track": "kotlin-multiplatform",
       "module": 8,
@@ -7551,7 +8046,7 @@
       "title": "El framework generado para iOS",
       "file": "web/public/content/kotlin-multiplatform/modulo-8.md",
       "requires": [
-        "kotlin-multiplatform:7:4"
+        "kotlin-multiplatform:7:8"
       ]
     },
     {
@@ -7577,6 +8072,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:8:4",
+      "track": "kotlin-multiplatform",
+      "module": 8,
+      "position": 4,
+      "title": "Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-8.md",
+      "requires": [
+        "kotlin-multiplatform:8:3"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:9:1",
       "track": "kotlin-multiplatform",
       "module": 9,
@@ -7584,7 +8090,7 @@
       "title": "kotlin.test en commonTest",
       "file": "web/public/content/kotlin-multiplatform/modulo-9.md",
       "requires": [
-        "kotlin-multiplatform:8:3"
+        "kotlin-multiplatform:8:4"
       ]
     },
     {
@@ -7610,6 +8116,17 @@
       ]
     },
     {
+      "id": "kotlin-multiplatform:9:4",
+      "track": "kotlin-multiplatform",
+      "module": 9,
+      "position": 4,
+      "title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min",
+      "file": "web/public/content/kotlin-multiplatform/modulo-9.md",
+      "requires": [
+        "kotlin-multiplatform:9:3"
+      ]
+    },
+    {
       "id": "kotlin-multiplatform:10:1",
       "track": "kotlin-multiplatform",
       "module": 10,
@@ -7617,7 +8134,7 @@
       "title": "Pipeline Gradle multiplataforma en CI",
       "file": "web/public/content/kotlin-multiplatform/modulo-10.md",
       "requires": [
-        "kotlin-multiplatform:9:3"
+        "kotlin-multiplatform:9:4"
       ]
     },
     {
@@ -7918,6 +8435,17 @@
       ]
     },
     {
+      "id": "android:2:4",
+      "track": "android",
+      "module": 2,
+      "position": 4,
+      "title": "Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min",
+      "file": "web/public/content/android/modulo-2.md",
+      "requires": [
+        "android:2:3"
+      ]
+    },
+    {
       "id": "android:3:1",
       "track": "android",
       "module": 3,
@@ -7925,7 +8453,7 @@
       "title": "NavHost y NavController",
       "file": "web/public/content/android/modulo-3.md",
       "requires": [
-        "android:2:3"
+        "android:2:4"
       ]
     },
     {
@@ -8270,6 +8798,17 @@
       ]
     },
     {
+      "id": "android:12:4",
+      "track": "android",
+      "module": 12,
+      "position": 4,
+      "title": "Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min",
+      "file": "web/public/content/android/modulo-12.md",
+      "requires": [
+        "android:12:3"
+      ]
+    },
+    {
       "id": "android:13:1",
       "track": "android",
       "module": 13,
@@ -8277,7 +8816,7 @@
       "title": "El sistema operativo conecta tu app con entradas externas",
       "file": "web/public/content/android/modulo-13.md",
       "requires": [
-        "android:12:3"
+        "android:12:4"
       ]
     },
     {
@@ -8435,6 +8974,61 @@
       ]
     },
     {
+      "id": "android:15:5",
+      "track": "android",
+      "module": 15,
+      "position": 5,
+      "title": "Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:4"
+      ]
+    },
+    {
+      "id": "android:15:6",
+      "track": "android",
+      "module": 15,
+      "position": 6,
+      "title": "Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:5"
+      ]
+    },
+    {
+      "id": "android:15:7",
+      "track": "android",
+      "module": 15,
+      "position": 7,
+      "title": "CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:6"
+      ]
+    },
+    {
+      "id": "android:15:8",
+      "track": "android",
+      "module": 15,
+      "position": 8,
+      "title": "Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:7"
+      ]
+    },
+    {
+      "id": "android:15:9",
+      "track": "android",
+      "module": 15,
+      "position": 9,
+      "title": "Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min",
+      "file": "web/public/content/android/modulo-15.md",
+      "requires": [
+        "android:15:8"
+      ]
+    },
+    {
       "id": "android:16:1",
       "track": "android",
       "module": 16,
@@ -8442,7 +9036,7 @@
       "title": "Permisos en tiempo de ejecución y alternativas sin permiso",
       "file": "web/public/content/android/modulo-16.md",
       "requires": [
-        "android:15:4"
+        "android:15:9"
       ]
     },
     {
@@ -8501,6 +9095,17 @@
       ]
     },
     {
+      "id": "android:16:7",
+      "track": "android",
+      "module": 16,
+      "position": 7,
+      "title": "Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min",
+      "file": "web/public/content/android/modulo-16.md",
+      "requires": [
+        "android:16:6"
+      ]
+    },
+    {
       "id": "android:17:1",
       "track": "android",
       "module": 17,
@@ -8508,7 +9113,7 @@
       "title": "Constraints, Modifier y componentes con slots",
       "file": "web/public/content/android/modulo-17.md",
       "requires": [
-        "android:16:6"
+        "android:16:7"
       ]
     },
     {
@@ -8600,6 +9205,17 @@
       ]
     },
     {
+      "id": "android:18:5",
+      "track": "android",
+      "module": 18,
+      "position": 5,
+      "title": "Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min",
+      "file": "web/public/content/android/modulo-18.md",
+      "requires": [
+        "android:18:4"
+      ]
+    },
+    {
       "id": "ios:0:1",
       "track": "ios",
       "module": 0,
@@ -8642,6 +9258,17 @@
       ]
     },
     {
+      "id": "ios:0:5",
+      "track": "ios",
+      "module": 0,
+      "position": 5,
+      "title": "Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min",
+      "file": "web/public/content/ios/modulo-0.md",
+      "requires": [
+        "ios:0:4"
+      ]
+    },
+    {
       "id": "ios:1:1",
       "track": "ios",
       "module": 1,
@@ -8649,7 +9276,7 @@
       "title": "El protocolo View y composición",
       "file": "web/public/content/ios/modulo-1.md",
       "requires": [
-        "ios:0:4"
+        "ios:0:5"
       ]
     },
     {
@@ -8785,6 +9412,28 @@
       ]
     },
     {
+      "id": "ios:4:5",
+      "track": "ios",
+      "module": 4,
+      "position": 5,
+      "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
+      "file": "web/public/content/ios/modulo-4.md",
+      "requires": [
+        "ios:4:4"
+      ]
+    },
+    {
+      "id": "ios:4:6",
+      "track": "ios",
+      "module": 4,
+      "position": 6,
+      "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
+      "file": "web/public/content/ios/modulo-4.md",
+      "requires": [
+        "ios:4:5"
+      ]
+    },
+    {
       "id": "ios:5:1",
       "track": "ios",
       "module": 5,
@@ -8792,7 +9441,7 @@
       "title": "URLSession con async/await y Codable",
       "file": "web/public/content/ios/modulo-5.md",
       "requires": [
-        "ios:4:4"
+        "ios:4:6"
       ]
     },
     {
@@ -8851,6 +9500,28 @@
       ]
     },
     {
+      "id": "ios:6:4",
+      "track": "ios",
+      "module": 6,
+      "position": 4,
+      "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
+      "file": "web/public/content/ios/modulo-6.md",
+      "requires": [
+        "ios:6:3"
+      ]
+    },
+    {
+      "id": "ios:6:5",
+      "track": "ios",
+      "module": 6,
+      "position": 5,
+      "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
+      "file": "web/public/content/ios/modulo-6.md",
+      "requires": [
+        "ios:6:4"
+      ]
+    },
+    {
       "id": "ios:7:1",
       "track": "ios",
       "module": 7,
@@ -8858,7 +9529,7 @@
       "title": "Publishers y Subscribers",
       "file": "web/public/content/ios/modulo-7.md",
       "requires": [
-        "ios:6:3"
+        "ios:6:5"
       ]
     },
     {
@@ -8994,6 +9665,17 @@
       ]
     },
     {
+      "id": "ios:10:5",
+      "track": "ios",
+      "module": 10,
+      "position": 5,
+      "title": "Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
+      "file": "web/public/content/ios/modulo-10.md",
+      "requires": [
+        "ios:10:4"
+      ]
+    },
+    {
       "id": "ios:11:1",
       "track": "ios",
       "module": 11,
@@ -9001,7 +9683,7 @@
       "title": "Certificados y provisioning profiles",
       "file": "web/public/content/ios/modulo-11.md",
       "requires": [
-        "ios:10:4"
+        "ios:10:5"
       ]
     },
     {
@@ -9060,6 +9742,17 @@
       ]
     },
     {
+      "id": "ios:12:4",
+      "track": "ios",
+      "module": 12,
+      "position": 4,
+      "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
+      "file": "web/public/content/ios/modulo-12.md",
+      "requires": [
+        "ios:12:3"
+      ]
+    },
+    {
       "id": "ios:13:1",
       "track": "ios",
       "module": 13,
@@ -9067,7 +9760,7 @@
       "title": "El sandbox reduce superficie, pero no valida intenciones",
       "file": "web/public/content/ios/modulo-13.md",
       "requires": [
-        "ios:12:3"
+        "ios:12:4"
       ]
     },
     {
@@ -9137,6 +9830,39 @@
       ]
     },
     {
+      "id": "ios:13:8",
+      "track": "ios",
+      "module": 13,
+      "position": 8,
+      "title": "Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:7"
+      ]
+    },
+    {
+      "id": "ios:13:9",
+      "track": "ios",
+      "module": 13,
+      "position": 9,
+      "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:8"
+      ]
+    },
+    {
+      "id": "ios:13:10",
+      "track": "ios",
+      "module": 13,
+      "position": 10,
+      "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+      "file": "web/public/content/ios/modulo-13.md",
+      "requires": [
+        "ios:13:9"
+      ]
+    },
+    {
       "id": "ios:14:1",
       "track": "ios",
       "module": 14,
@@ -9144,7 +9870,7 @@
       "title": "Swift Testing y pruebas asíncronas",
       "file": "web/public/content/ios/modulo-14.md",
       "requires": [
-        "ios:13:7"
+        "ios:13:10"
       ]
     },
     {
@@ -9214,6 +9940,39 @@
       ]
     },
     {
+      "id": "ios:14:8",
+      "track": "ios",
+      "module": 14,
+      "position": 8,
+      "title": "Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
+      "file": "web/public/content/ios/modulo-14.md",
+      "requires": [
+        "ios:14:7"
+      ]
+    },
+    {
+      "id": "ios:14:9",
+      "track": "ios",
+      "module": 14,
+      "position": 9,
+      "title": "WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min",
+      "file": "web/public/content/ios/modulo-14.md",
+      "requires": [
+        "ios:14:8"
+      ]
+    },
+    {
+      "id": "ios:14:10",
+      "track": "ios",
+      "module": 14,
+      "position": 10,
+      "title": "App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min",
+      "file": "web/public/content/ios/modulo-14.md",
+      "requires": [
+        "ios:14:9"
+      ]
+    },
+    {
       "id": "flutter:0:1",
       "track": "flutter",
       "module": 0,
@@ -9256,6 +10015,39 @@
       ]
     },
     {
+      "id": "flutter:0:5",
+      "track": "flutter",
+      "module": 0,
+      "position": 5,
+      "title": "Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min",
+      "file": "web/public/content/flutter/modulo-0.md",
+      "requires": [
+        "flutter:0:4"
+      ]
+    },
+    {
+      "id": "flutter:0:6",
+      "track": "flutter",
+      "module": 0,
+      "position": 6,
+      "title": "Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min",
+      "file": "web/public/content/flutter/modulo-0.md",
+      "requires": [
+        "flutter:0:5"
+      ]
+    },
+    {
+      "id": "flutter:0:7",
+      "track": "flutter",
+      "module": 0,
+      "position": 7,
+      "title": "Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min",
+      "file": "web/public/content/flutter/modulo-0.md",
+      "requires": [
+        "flutter:0:6"
+      ]
+    },
+    {
       "id": "flutter:1:1",
       "track": "flutter",
       "module": 1,
@@ -9263,7 +10055,7 @@
       "title": "StatelessWidget vs StatefulWidget",
       "file": "web/public/content/flutter/modulo-1.md",
       "requires": [
-        "flutter:0:4"
+        "flutter:0:7"
       ]
     },
     {
@@ -9289,6 +10081,28 @@
       ]
     },
     {
+      "id": "flutter:1:4",
+      "track": "flutter",
+      "module": 1,
+      "position": 4,
+      "title": "Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min",
+      "file": "web/public/content/flutter/modulo-1.md",
+      "requires": [
+        "flutter:1:3"
+      ]
+    },
+    {
+      "id": "flutter:1:5",
+      "track": "flutter",
+      "module": 1,
+      "position": 5,
+      "title": "Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min",
+      "file": "web/public/content/flutter/modulo-1.md",
+      "requires": [
+        "flutter:1:4"
+      ]
+    },
+    {
       "id": "flutter:2:1",
       "track": "flutter",
       "module": 2,
@@ -9296,7 +10110,7 @@
       "title": "MediaQuery vs LayoutBuilder",
       "file": "web/public/content/flutter/modulo-2.md",
       "requires": [
-        "flutter:1:3"
+        "flutter:1:5"
       ]
     },
     {
@@ -9498,6 +10312,17 @@
       ]
     },
     {
+      "id": "flutter:6:5",
+      "track": "flutter",
+      "module": 6,
+      "position": 5,
+      "title": "Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min",
+      "file": "web/public/content/flutter/modulo-6.md",
+      "requires": [
+        "flutter:6:4"
+      ]
+    },
+    {
       "id": "flutter:7:1",
       "track": "flutter",
       "module": 7,
@@ -9505,7 +10330,7 @@
       "title": "MethodChannel",
       "file": "web/public/content/flutter/modulo-7.md",
       "requires": [
-        "flutter:6:4"
+        "flutter:6:5"
       ]
     },
     {
@@ -9542,6 +10367,28 @@
       ]
     },
     {
+      "id": "flutter:7:5",
+      "track": "flutter",
+      "module": 7,
+      "position": 5,
+      "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
+      "file": "web/public/content/flutter/modulo-7.md",
+      "requires": [
+        "flutter:7:4"
+      ]
+    },
+    {
+      "id": "flutter:7:6",
+      "track": "flutter",
+      "module": 7,
+      "position": 6,
+      "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
+      "file": "web/public/content/flutter/modulo-7.md",
+      "requires": [
+        "flutter:7:5"
+      ]
+    },
+    {
       "id": "flutter:8:1",
       "track": "flutter",
       "module": 8,
@@ -9549,7 +10396,7 @@
       "title": "Animaciones implícitas vs explícitas",
       "file": "web/public/content/flutter/modulo-8.md",
       "requires": [
-        "flutter:7:4"
+        "flutter:7:6"
       ]
     },
     {
@@ -9707,6 +10554,17 @@
       ]
     },
     {
+      "id": "flutter:11:5",
+      "track": "flutter",
+      "module": 11,
+      "position": 5,
+      "title": "Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min",
+      "file": "web/public/content/flutter/modulo-11.md",
+      "requires": [
+        "flutter:11:4"
+      ]
+    },
+    {
       "id": "flutter:12:1",
       "track": "flutter",
       "module": 12,
@@ -9714,7 +10572,7 @@
       "title": "Arquitectura por features y Clean Architecture",
       "file": "web/public/content/flutter/modulo-12.md",
       "requires": [
-        "flutter:11:4"
+        "flutter:11:5"
       ]
     },
     {
@@ -9740,6 +10598,17 @@
       ]
     },
     {
+      "id": "flutter:12:4",
+      "track": "flutter",
+      "module": 12,
+      "position": 4,
+      "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min",
+      "file": "web/public/content/flutter/modulo-12.md",
+      "requires": [
+        "flutter:12:3"
+      ]
+    },
+    {
       "id": "flutter:13:1",
       "track": "flutter",
       "module": 13,
@@ -9747,7 +10616,7 @@
       "title": "Una API Dart puede terminar en una frontera nativa",
       "file": "web/public/content/flutter/modulo-13.md",
       "requires": [
-        "flutter:12:3"
+        "flutter:12:4"
       ]
     },
     {
@@ -10686,6 +11555,17 @@
       ]
     },
     {
+      "id": "devops:2:8",
+      "track": "devops",
+      "module": 2,
+      "position": 8,
+      "title": "Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",
+      "file": "web/public/content/devops/modulo-2.md",
+      "requires": [
+        "devops:2:7"
+      ]
+    },
+    {
       "id": "devops:3:1",
       "track": "devops",
       "module": 3,
@@ -10693,7 +11573,7 @@
       "title": "Servicios, dependencias y healthchecks",
       "file": "web/public/content/devops/modulo-3.md",
       "requires": [
-        "devops:2:7"
+        "devops:2:8"
       ]
     },
     {
@@ -10774,6 +11654,17 @@
       ]
     },
     {
+      "id": "devops:4:5",
+      "track": "devops",
+      "module": 4,
+      "position": 5,
+      "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min",
+      "file": "web/public/content/devops/modulo-4.md",
+      "requires": [
+        "devops:4:4"
+      ]
+    },
+    {
       "id": "devops:5:1",
       "track": "devops",
       "module": 5,
@@ -10781,7 +11672,7 @@
       "title": "Blue-green deployment",
       "file": "web/public/content/devops/modulo-5.md",
       "requires": [
-        "devops:4:4"
+        "devops:4:5"
       ]
     },
     {
@@ -10939,6 +11830,28 @@
       ]
     },
     {
+      "id": "devops:6:9",
+      "track": "devops",
+      "module": 6,
+      "position": 9,
+      "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min",
+      "file": "web/public/content/devops/modulo-6.md",
+      "requires": [
+        "devops:6:8"
+      ]
+    },
+    {
+      "id": "devops:6:10",
+      "track": "devops",
+      "module": 6,
+      "position": 10,
+      "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min",
+      "file": "web/public/content/devops/modulo-6.md",
+      "requires": [
+        "devops:6:9"
+      ]
+    },
+    {
       "id": "devops:7:1",
       "track": "devops",
       "module": 7,
@@ -10946,7 +11859,7 @@
       "title": "Helm charts y values",
       "file": "web/public/content/devops/modulo-7.md",
       "requires": [
-        "devops:6:8"
+        "devops:6:10"
       ]
     },
     {
@@ -11016,6 +11929,17 @@
       ]
     },
     {
+      "id": "devops:7:8",
+      "track": "devops",
+      "module": 7,
+      "position": 8,
+      "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min",
+      "file": "web/public/content/devops/modulo-7.md",
+      "requires": [
+        "devops:7:7"
+      ]
+    },
+    {
       "id": "devops:8:1",
       "track": "devops",
       "module": 8,
@@ -11023,7 +11947,7 @@
       "title": "Providers, resources y data sources",
       "file": "web/public/content/devops/modulo-8.md",
       "requires": [
-        "devops:7:7"
+        "devops:7:8"
       ]
     },
     {
@@ -11104,6 +12028,17 @@
       ]
     },
     {
+      "id": "devops:8:9",
+      "track": "devops",
+      "module": 8,
+      "position": 9,
+      "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min",
+      "file": "web/public/content/devops/modulo-8.md",
+      "requires": [
+        "devops:8:8"
+      ]
+    },
+    {
       "id": "devops:9:1",
       "track": "devops",
       "module": 9,
@@ -11111,7 +12046,7 @@
       "title": "Modelo de métricas de Prometheus — counter, gauge, histogram",
       "file": "web/public/content/devops/modulo-9.md",
       "requires": [
-        "devops:8:8"
+        "devops:8:9"
       ]
     },
     {
@@ -11181,6 +12116,17 @@
       ]
     },
     {
+      "id": "devops:9:8",
+      "track": "devops",
+      "module": 9,
+      "position": 8,
+      "title": "Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+      "file": "web/public/content/devops/modulo-9.md",
+      "requires": [
+        "devops:9:7"
+      ]
+    },
+    {
       "id": "devops:10:1",
       "track": "devops",
       "module": 10,
@@ -11188,7 +12134,7 @@
       "title": "Logging estructurado (JSON)",
       "file": "web/public/content/devops/modulo-10.md",
       "requires": [
-        "devops:9:7"
+        "devops:9:8"
       ]
     },
     {
@@ -11368,6 +12314,17 @@
       ]
     },
     {
+      "id": "devops:12:7",
+      "track": "devops",
+      "module": 12,
+      "position": 7,
+      "title": "FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min",
+      "file": "web/public/content/devops/modulo-12.md",
+      "requires": [
+        "devops:12:6"
+      ]
+    },
+    {
       "id": "devops:13:1",
       "track": "devops",
       "module": 13,
@@ -11375,7 +12332,7 @@
       "title": "El pipeline completo — de commit a producción verificada",
       "file": "web/public/content/devops/modulo-13.md",
       "requires": [
-        "devops:12:6"
+        "devops:12:7"
       ]
     },
     {
@@ -11918,6 +12875,17 @@
       ]
     },
     {
+      "id": "cloud:0:8",
+      "track": "cloud",
+      "module": 0,
+      "position": 8,
+      "title": "Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min",
+      "file": "web/public/content/cloud/modulo-0.md",
+      "requires": [
+        "cloud:0:7"
+      ]
+    },
+    {
       "id": "cloud:1:1",
       "track": "cloud",
       "module": 1,
@@ -11925,7 +12893,7 @@
       "title": "Virtualización vs contenedores",
       "file": "web/public/content/cloud/modulo-1.md",
       "requires": [
-        "cloud:0:7"
+        "cloud:0:8"
       ]
     },
     {
@@ -12204,6 +13172,17 @@
       ]
     },
     {
+      "id": "cloud:5:7",
+      "track": "cloud",
+      "module": 5,
+      "position": 7,
+      "title": "Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min",
+      "file": "web/public/content/cloud/modulo-5.md",
+      "requires": [
+        "cloud:5:6"
+      ]
+    },
+    {
       "id": "cloud:6:1",
       "track": "cloud",
       "module": 6,
@@ -12211,7 +13190,7 @@
       "title": "Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
       "file": "web/public/content/cloud/modulo-6.md",
       "requires": [
-        "cloud:5:6"
+        "cloud:5:7"
       ]
     },
     {
@@ -12567,6 +13546,17 @@
       ]
     },
     {
+      "id": "cloud:14:4",
+      "track": "cloud",
+      "module": 14,
+      "position": 4,
+      "title": "Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-14.md",
+      "requires": [
+        "cloud:14:3"
+      ]
+    },
+    {
       "id": "cloud:15:1",
       "track": "cloud",
       "module": 15,
@@ -12574,7 +13564,7 @@
       "title": "Stack, Template y por qué no crear recursos manualmente con la CLI",
       "file": "web/public/content/cloud/modulo-15.md",
       "requires": [
-        "cloud:14:3"
+        "cloud:14:4"
       ]
     },
     {
@@ -12633,6 +13623,17 @@
       ]
     },
     {
+      "id": "cloud:16:4",
+      "track": "cloud",
+      "module": 16,
+      "position": 4,
+      "title": "Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",
+      "file": "web/public/content/cloud/modulo-16.md",
+      "requires": [
+        "cloud:16:3"
+      ]
+    },
+    {
       "id": "cloud:17:1",
       "track": "cloud",
       "module": 17,
@@ -12640,7 +13641,7 @@
       "title": "Streams vs colas",
       "file": "web/public/content/cloud/modulo-17.md",
       "requires": [
-        "cloud:16:3"
+        "cloud:16:4"
       ]
     },
     {
@@ -12765,6 +13766,17 @@
       ]
     },
     {
+      "id": "cloud:20:4",
+      "track": "cloud",
+      "module": 20,
+      "position": 4,
+      "title": "Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-20.md",
+      "requires": [
+        "cloud:20:3"
+      ]
+    },
+    {
       "id": "cloud:21:1",
       "track": "cloud",
       "module": 21,
@@ -12772,7 +13784,7 @@
       "title": "El modelo de ejecución de EC2 — instancias que son contenedores Docker reales",
       "file": "web/public/content/cloud/modulo-21.md",
       "requires": [
-        "cloud:20:3"
+        "cloud:20:4"
       ]
     },
     {
@@ -12886,6 +13898,17 @@
       ]
     },
     {
+      "id": "cloud:22:6",
+      "track": "cloud",
+      "module": 22,
+      "position": 6,
+      "title": "WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-22.md",
+      "requires": [
+        "cloud:22:5"
+      ]
+    },
+    {
       "id": "cloud:23:1",
       "track": "cloud",
       "module": 23,
@@ -12893,7 +13916,7 @@
       "title": "Qué resuelve un caché en memoria — y cuándo no ayuda",
       "file": "web/public/content/cloud/modulo-23.md",
       "requires": [
-        "cloud:22:5"
+        "cloud:22:6"
       ]
     },
     {
@@ -13183,6 +14206,17 @@
       ]
     },
     {
+      "id": "cloud:28:5",
+      "track": "cloud",
+      "module": 28,
+      "position": 5,
+      "title": "Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",
+      "file": "web/public/content/cloud/modulo-28.md",
+      "requires": [
+        "cloud:28:4"
+      ]
+    },
+    {
       "id": "cloud:29:1",
       "track": "cloud",
       "module": 29,
@@ -13190,7 +14224,7 @@
       "title": "Cost Explorer — costos sintetizados a partir de tu estado real",
       "file": "web/public/content/cloud/modulo-29.md",
       "requires": [
-        "cloud:28:4"
+        "cloud:28:5"
       ]
     },
     {
@@ -13326,6 +14360,28 @@
       ]
     },
     {
+      "id": "cloud:31:5",
+      "track": "cloud",
+      "module": 31,
+      "position": 5,
+      "title": "Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min",
+      "file": "web/public/content/cloud/modulo-31.md",
+      "requires": [
+        "cloud:31:4"
+      ]
+    },
+    {
+      "id": "cloud:31:6",
+      "track": "cloud",
+      "module": 31,
+      "position": 6,
+      "title": "Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-31.md",
+      "requires": [
+        "cloud:31:5"
+      ]
+    },
+    {
       "id": "cloud:32:1",
       "track": "cloud",
       "module": 32,
@@ -13333,7 +14389,7 @@
       "title": "Una red segura empieza por flujos, no por subredes",
       "file": "web/public/content/cloud/modulo-32.md",
       "requires": [
-        "cloud:31:4"
+        "cloud:31:6"
       ]
     },
     {
@@ -13370,6 +14426,28 @@
       ]
     },
     {
+      "id": "cloud:32:5",
+      "track": "cloud",
+      "module": 32,
+      "position": 5,
+      "title": "Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-32.md",
+      "requires": [
+        "cloud:32:4"
+      ]
+    },
+    {
+      "id": "cloud:32:6",
+      "track": "cloud",
+      "module": 32,
+      "position": 6,
+      "title": "Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min",
+      "file": "web/public/content/cloud/modulo-32.md",
+      "requires": [
+        "cloud:32:5"
+      ]
+    },
+    {
       "id": "cloud:33:1",
       "track": "cloud",
       "module": 33,
@@ -13377,7 +14455,7 @@
       "title": "Terraform avanzado y CI/CD cloud",
       "file": "web/public/content/cloud/modulo-33.md",
       "requires": [
-        "cloud:32:4"
+        "cloud:32:6"
       ]
     },
     {
@@ -13436,6 +14514,17 @@
       ]
     },
     {
+      "id": "cloud:33:7",
+      "track": "cloud",
+      "module": 33,
+      "position": 7,
+      "title": "Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min",
+      "file": "web/public/content/cloud/modulo-33.md",
+      "requires": [
+        "cloud:33:6"
+      ]
+    },
+    {
       "id": "cloud:34:1",
       "track": "cloud",
       "module": 34,
@@ -13443,7 +14532,7 @@
       "title": "Instalación en macOS, Linux y Windows",
       "file": "web/public/content/cloud/modulo-34.md",
       "requires": [
-        "cloud:33:6"
+        "cloud:33:7"
       ]
     },
     {

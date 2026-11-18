@@ -367,3 +367,132 @@ Añade un segundo campo restaurable con otro identificador y prueba dos valores 
 El siguiente paso es ensayar recuperación en dispositivo y persistencia duradera con la política del producto. **Errores comunes:** reutilizar IDs, no disponer controladores y creer que hot reload valida restauración. **Límites y decisión de uso:** no almacenes fotografías, listas grandes ni secretos como estado transitorio; tampoco prometas recuperación tras desinstalar.
 
 **Fuente oficial:** [Flutter: restaurar estado](https://docs.flutter.dev/platform-integration/android/restore-state-android).
+
+### Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min
+
+**Prerrequisito:** tema «sqflite vs Hive» de este módulo.
+
+**Al finalizar podrás:** obtener la carpeta adecuada con `path_provider`, guardar la foto de una entrega de forma atómica y limpiar la caché temporal sin perder evidencia.
+
+**¿Por qué es importante?** Guardar en la carpeta equivocada hace que el sistema borre archivos importantes o que los temporales llenen el teléfono. Escribir sin cuidado deja archivos a medias si la app se cierra.
+
+#### Paso 1 · Objetivo y preparación
+
+Agrega `path_provider` y `path` con `flutter pub add path_provider path`. Ejecuta en Android o iOS (en web no hay sistema de archivos).
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow guardaba las fotos de entrega en la carpeta temporal. En teléfonos con poco espacio, el sistema las borraba antes de subirlas y se perdía la evidencia de entregas reales.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `getApplicationDocumentsDirectory`, `getApplicationSupportDirectory`, `getTemporaryDirectory`, escritura atómica, ruta relativa, limpieza de temporales.
+
+| Función | Carpeta | ¿El sistema la borra? | Úsala para |
+|---|---|---|---|
+| `getApplicationDocumentsDirectory()` | documentos de la app | no | archivos del usuario |
+| `getApplicationSupportDirectory()` | datos internos | no | evidencia pendiente de subir, bases |
+| `getTemporaryDirectory()` | temporales | sí, cuando necesita espacio | miniaturas, descargas que se pueden repetir |
+
+**Escritura atómica:** escribe primero en un archivo `.tmp` y luego renómbralo. Renombrar dentro de la misma carpeta es atómico: o existe el archivo completo o no existe.
+
+Guarda en la base solo la **ruta relativa** (`entregas/ENV-42.jpg`): la carpeta absoluta de la app puede cambiar entre instalaciones o actualizaciones en iOS.
+
+**Analogía:** la carpeta temporal es la mesa de trabajo que limpian cada noche; `Application Support` es el archivador con llave. La analogía falla en que no sabes a qué hora limpian la mesa.
+
+**Límite de uso:** no guardes archivos grandes en SharedPreferences ni en la base: guarda el archivo y su ruta. En web, `path_provider` no aplica; usa almacenamiento del navegador o el servidor.
+
+```mermaid
+flowchart LR
+    F["foto (bytes)"] --> T["ENV-42.jpg.tmp"]
+    T -->|"rename (atómico)"| A["Application Support/entregas/ENV-42.jpg"]
+    A -->|"subida confirmada"| B["borrar"]
+    M["miniatura"] --> C["Temporary"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `lib/data/almacen_fotos.dart`:
+
+```dart
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+class AlmacenFotos {
+  Future<Directory> _carpeta() async {
+    final base = await getApplicationSupportDirectory();
+    return Directory(p.join(base.path, 'entregas')).create(recursive: true);
+  }
+
+  /// Guarda de forma atómica y devuelve la ruta RELATIVA para la base de datos.
+  Future<String> guardar(String codigo, Uint8List bytes) async {
+    final carpeta = await _carpeta();
+    final destino = File(p.join(carpeta.path, '$codigo.jpg'));
+    final temporal = File('${destino.path}.tmp');
+    await temporal.writeAsBytes(bytes, flush: true);
+    await temporal.rename(destino.path); // o queda completo o no queda
+    return p.join('entregas', '$codigo.jpg');
+  }
+
+  Future<File> abrir(String rutaRelativa) async =>
+      File(p.join((await getApplicationSupportDirectory()).path, rutaRelativa));
+
+  Future<int> limpiarTemporales() async {
+    final tmp = await getTemporaryDirectory();
+    var borrados = 0;
+    await for (final f in tmp.list()) {
+      if (f is File && f.path.endsWith('.miniatura.jpg')) { await f.delete(); borrados++; }
+    }
+    return borrados;
+  }
+}
+```
+
+Ejecútalo:
+
+```bash
+flutter run
+# en Android, revisa el archivo con:
+adb shell run-as co.rutaflow.app ls files/entregas
+```
+
+**Explicación por bloques:** `_carpeta` usa `Application Support` y crea `entregas` si no existe. `guardar` escribe en un `.tmp` con `flush: true` (los bytes llegan al disco) y luego renombra: si la app muere a la mitad, no queda un JPG corrupto. Devuelve la ruta relativa para guardarla en la base. `abrir` reconstruye la ruta completa en el momento. `limpiarTemporales` recorre la carpeta temporal y borra solo las miniaturas.
+
+**Resultado esperado:**
+
+```text
+Tras guardar ENV-42, `adb shell run-as co.rutaflow.app ls files/entregas` muestra ENV-42.jpg (en Android, Application Support corresponde a files/).
+La base guarda «entregas/ENV-42.jpg», no la ruta absoluta.
+```
+
+**Fallo deliberado:** cambia `getApplicationSupportDirectory` por `getTemporaryDirectory` y llena el almacenamiento del emulador. **Error esperado:** después de que el sistema libera espacio, `abrir` devuelve un archivo que ya no existe (`PathNotFoundException`). **Diagnóstico:** la carpeta temporal se puede borrar en cualquier momento. La evidencia pendiente va en `Application Support`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** guarda una foto y encuéntrala con `adb` o en el contenedor del simulador de iOS.
+2. **Variación:** guarda una miniatura en la carpeta temporal y bórrala con `limpiarTemporales`.
+3. **Diagnóstico:** reproduce el fallo deliberado o simúlalo borrando la carpeta temporal a mano.
+4. **Integración:** escribe una prueba con un directorio temporal falso usando `PathProviderPlatform` de `plugin_platform_interface`.
+5. **Diseño:** lista los archivos de la app de RutaFlow y en qué carpeta va cada uno.
+
+**Pista:** si un archivo desaparece solo, revisa si estaba en la carpeta temporal.
+
+#### Paso 6 · Práctica independiente
+
+Después de que el servidor confirme la subida de una foto, bórrala de `entregas/` y registra cuántos bytes se liberaron.
+
+#### Paso 7 · Cierre
+
+- [ ] Eliges la carpeta correcta para cada archivo.
+- [ ] Guardas de forma atómica.
+- [ ] Guardas rutas relativas en la base.
+- [ ] Limpias los temporales que creas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** guardar evidencia en temporales, guardar rutas absolutas y escribir directo al archivo final. **Siguiente paso:** el tema «Offline-first y Firebase» sube estos archivos cuando hay conexión.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda las fotos de entrega de RutaFlow en `Application Support/entregas` de forma atómica y bórralas solo tras confirmar la subida.
+
+**Fuente oficial:** [pub.dev — path_provider](https://pub.dev/packages/path_provider) y [Flutter — Read and write files](https://docs.flutter.dev/cookbook/persistence/reading-writing-files).
+

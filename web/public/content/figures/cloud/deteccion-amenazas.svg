@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 525 161" width="525" height="161" role="img" aria-label="Captura de terminal: python3 detectar.py">
+<title>Captura de terminal: python3 detectar.py</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos en orden: python3 detectar.py. Código de salida final: 0.</desc>
+<rect width="525" height="161" rx="8" fill="#1e1f24"/>
+<rect width="525" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="525" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="262.5" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">python3 detectar.py</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">python3 detectar.py</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">[ALTA] uso de root (ConsoleLogin) desde 203.0.113.7, MFA=No</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">[ALTA] arn:aws:iam::111:user/ci intentó StopLogging</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">[MEDIA] arn:aws:iam::111:user/ci: 3 accesos denegados seguidos</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">3 alerta(s) de 6 eventos</text>
+</g>
+</svg>

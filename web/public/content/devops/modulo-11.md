@@ -595,6 +595,15 @@ flowchart LR
     P -- sin respuesta --> F[filtrado]
 ```
 
+**¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
+**Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [socket (docs.python.org)](https://docs.python.org/3/library/socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
+**Conceptos clave:** reconocimiento, escaneo TCP connect, abierto, cerrado y filtrado, banner, `nmap -sV`, alcance y autorización.
+**Cuándo no usarlo:** nunca contra redes, IPs o dominios que no te pertenecen o sin autorización escrita. En la nube, revisa también las políticas del proveedor sobre pruebas de penetración.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un escaneo de los puertos que expone el entorno de pruebas y falla si aparece uno no declarado.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectionRefusedError` (RST), mientras que el filtrado tarda hasta agotar el `timeout` de `create_connection` sin respuesta alguna; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -674,14 +683,7 @@ Agrega una columna con el tiempo de respuesta de cada puerto abierto y ordena lo
 Escanea con `nmap -sV` un contenedor tuyo de Docker Compose (Módulo 3) y redacta un informe: puertos expuestos, cuáles no deberían estarlo, qué banners revelan versiones y cómo cerrarlos.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque conocer tu superficie de ataque antes que un atacante es la base de DevSecOps.
-**Fuente oficial:** [Nmap Reference Guide](https://nmap.org/book/man.html), [socket (docs.python.org)](https://docs.python.org/3/library/socket.html), [OWASP Web Security Testing Guide: Information Gathering](https://owasp.org/www-project-web-security-testing-guide/).
-**Conceptos clave:** reconocimiento, escaneo TCP connect, abierto, cerrado y filtrado, banner, `nmap -sV`, alcance y autorización.
-**Cuándo no usarlo:** nunca contra redes, IPs o dominios que no te pertenecen o sin autorización escrita. En la nube, revisa también las políticas del proveedor sobre pruebas de penetración.
 
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un escaneo de los puertos que expone el entorno de pruebas y falla si aparece uno no declarado.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** confundir un puerto "cerrado" con uno "filtrado" porque ninguno devuelve banner — el cerrado responde casi al instante con `ConnectionRefusedError` (RST), mientras que el filtrado tarda hasta agotar el `timeout` de `create_connection` sin respuesta alguna; medí cuánto demora cada resultado antes de concluir si hay un firewall descartando los paquetes en silencio.
 
 ## Laboratorio práctico
 

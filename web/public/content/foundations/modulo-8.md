@@ -198,6 +198,8 @@ El proyecto integrador Fundamentos tiene la misma sección crítica escondida en
 **Límites y decisión de uso:** Más concurrencia no implica más velocidad y puede introducir carreras o presión de memoria. Identifica estado compartido y trabajo independiente antes de añadir tareas; compara resultados y recursos con la versión secuencial.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
+**¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
+
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.py` con el contenido de este tema.
 ```bash
@@ -236,7 +238,7 @@ Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (com
 
 #### Paso 7 · Cierre
 Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
-**¿Por qué es importante?** Porque las pruebas secuenciales de `reservar_lugar()` pueden pasar siempre y el sistema real fallar solo bajo tráfico concurrente — la condición de carrera no se ve leyendo el código línea por línea.
+
 ### Tema 3: Linux como entorno observable
 
 #### Paso 1 · Objetivo y preparación
@@ -466,6 +468,15 @@ flowchart LR
     M4 -. espera .-> R0
 ```
 
+**¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
+**Fuente oficial:** [threading (docs.python.org)](https://docs.python.org/3/library/threading.html), [Dining philosophers problem (Wikipedia)](https://en.wikipedia.org/wiki/Dining_philosophers_problem); Robert C. Martin, *Código limpio*, cap. 13.
+**Conceptos clave:** interbloqueo, condiciones de Coffman, espera circular, orden global de recursos, inanición, lectores-escritores, `threading.Lock`.
+**Cuándo no usarlo:** si puedes evitar compartir estado (colas, mensajes, datos inmutables), hazlo: es más simple que coordinar locks.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** protege con un orden fijo de bloqueos la asignación de dos recursos (persona y vehículo) a una tarea.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** tomar los locks en el orden "natural" de cada hilo (izquierda, derecha) en vez de un orden global por número, lo que crea una espera circular y bloquea todo el programa (el fallo deliberado); y usar la versión de lectores-escritores que favorece lectores sin medir que, bajo lectura constante, un escritor puede quedar esperando indefinidamente (inanición).
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -555,14 +566,7 @@ Cuenta cuánto tiempo espera cada mensajero para obtener sus dos radios y muestr
 Escribe una versión de lectores-escritores que dé prioridad a los escritores y demuestra con un experimento que un escritor ya no espera indefinidamente.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque los interbloqueos no lanzan errores: congelan sistemas en producción, y reconocer la espera circular es la clave para diagnosticarlos.
-**Fuente oficial:** [threading (docs.python.org)](https://docs.python.org/3/library/threading.html), [Dining philosophers problem (Wikipedia)](https://en.wikipedia.org/wiki/Dining_philosophers_problem); Robert C. Martin, *Código limpio*, cap. 13.
-**Conceptos clave:** interbloqueo, condiciones de Coffman, espera circular, orden global de recursos, inanición, lectores-escritores, `threading.Lock`.
-**Cuándo no usarlo:** si puedes evitar compartir estado (colas, mensajes, datos inmutables), hazlo: es más simple que coordinar locks.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** protege con un orden fijo de bloqueos la asignación de dos recursos (persona y vehículo) a una tarea.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** tomar los locks en el orden "natural" de cada hilo (izquierda, derecha) en vez de un orden global por número, lo que crea una espera circular y bloquea todo el programa (el fallo deliberado); y usar la versión de lectores-escritores que favorece lectores sin medir que, bajo lectura constante, un escritor puede quedar esperando indefinidamente (inanición).
 
 ## Construcción guiada del capítulo
 

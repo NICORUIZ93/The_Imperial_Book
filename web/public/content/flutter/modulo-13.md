@@ -16,40 +16,6 @@ Cualquier app puede construir y enviar un link con la forma `https://rutaflow.ap
 #### Paso 3 · Teoría, modelo mental y analogía
 Todo link o mensaje de channel es entrada no confiable; validar esquema, host, ruta y tipos es el primer paso, pero autenticar y autorizar el recurso es un paso distinto e igualmente necesario.
 
-#### Paso 4 · Demostración guiada desde cero
-```dart
-EnvioId parseEnvioLink(Uri uri, Session session) {
-  if (uri.scheme != 'https' || uri.host != 'rutaflow.app') {
-    throw const FormatException('Origen inválido');
-  }
-  if (uri.pathSegments.length != 2 || uri.pathSegments.first != 'envios') {
-    throw const FormatException('Ruta inválida');
-  }
-  final id = EnvioId.parse(uri.pathSegments.last);
-  if (!session.canRead(id)) throw const ForbiddenException();
-  return id;
-}
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
-```bash
-flutter create demo_flutter
-cd demo_flutter
-flutter run
-```
-Para las pruebas de widget: `flutter test`.
-
-Resultado esperado: `parseEnvioLink` lanza `FormatException` si la URL no tiene exactamente la forma esperada, y lanza `ForbiddenException` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá la línea `if (!session.canRead(id)) throw const ForbiddenException();` "porque el App Link ya confirmó que es RutaFlow la app correcta" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, confundiendo la verificación de dominio con la autorización del recurso.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la verificación de `session.canRead(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `ForbiddenException`.
-
-#### Paso 7 · Cierre
-Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar la asociación de dominio de un App Link/Universal Link no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia por qué los secretos no pertenecen al binario. Errores comunes: confundir verificación de dominio con autorización de recurso, auditar solo `pubspec.yaml` sin revisar el manifest/entitlements resultantes del build, y mantener plugins sin uso real que amplían la superficie de permisos. Fuente oficial: https://docs.flutter.dev/ui/navigation/deep-linking.
 **¿Por qué es importante?** El código multiplataforma hereda la superficie de ambas plataformas y de cada plugin; una entrada válida técnicamente puede intentar acceder a un recurso ajeno.
 **Conceptos clave:** sandbox, permission, entitlement, manifest, plugin, platform channel, deep link, Universal Link, App Link, validation, authentication, authorization y threat model.
 
@@ -98,6 +64,41 @@ flowchart TD
 ```
 
 En el proyecto integrador RutaFlow, `parseEnvioLink` vive en `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: validar esquema/host/ruta no conviene tratarlo como suficiente por sí solo — ese paso confirma que el link tiene la forma esperada, pero nunca reemplaza la autorización real del recurso (`session.canRead(id)`); confundir ambos pasos es exactamente el fallo deliberado del Paso 5.
+
+#### Paso 4 · Demostración guiada desde cero
+```dart
+EnvioId parseEnvioLink(Uri uri, Session session) {
+  if (uri.scheme != 'https' || uri.host != 'rutaflow.app') {
+    throw const FormatException('Origen inválido');
+  }
+  if (uri.pathSegments.length != 2 || uri.pathSegments.first != 'envios') {
+    throw const FormatException('Ruta inválida');
+  }
+  final id = EnvioId.parse(uri.pathSegments.last);
+  if (!session.canRead(id)) throw const ForbiddenException();
+  return id;
+}
+```
+
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+
+```bash
+flutter create demo_flutter
+cd demo_flutter
+flutter run
+```
+Para las pruebas de widget: `flutter test`.
+
+Resultado esperado: `parseEnvioLink` lanza `FormatException` si la URL no tiene exactamente la forma esperada, y lanza `ForbiddenException` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá la línea `if (!session.canRead(id)) throw const ForbiddenException();` "porque el App Link ya confirmó que es RutaFlow la app correcta" — ese es el fallo deliberado: ahora cualquier link con la forma correcta abre el envío correspondiente sin verificar si el conductor actual tiene permiso de verlo, confundiendo la verificación de dominio con la autorización del recurso.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando la verificación de `session.canRead(id)`, y agregá un test que confirme que un link bien formado pero para un envío ajeno lanza `ForbiddenException`.
+
+#### Paso 7 · Cierre
+Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar la asociación de dominio de un App Link/Universal Link no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia por qué los secretos no pertenecen al binario. Errores comunes: confundir verificación de dominio con autorización de recurso, auditar solo `pubspec.yaml` sin revisar el manifest/entitlements resultantes del build, y mantener plugins sin uso real que amplían la superficie de permisos. Fuente oficial: https://docs.flutter.dev/ui/navigation/deep-linking.
 
 ### Tema 2: Los secretos no pertenecen al binario
 

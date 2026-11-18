@@ -13,100 +13,100 @@
       "officialSource": 102
     },
     "cloud": {
-      "topics": 156,
-      "code": 156,
-      "commentedCode": 119,
-      "mermaid": 74,
+      "topics": 168,
+      "code": 168,
+      "commentedCode": 144,
+      "mermaid": 86,
       "archifyVisual": 4,
       "asciiVisual": 18,
       "misleadingDiagramLabel": 0,
-      "filePath": 150,
-      "runCommand": 156,
-      "officialSource": 154
+      "filePath": 161,
+      "runCommand": 168,
+      "officialSource": 166
     },
     "devops": {
-      "topics": 130,
-      "code": 130,
-      "commentedCode": 84,
-      "mermaid": 83,
+      "topics": 138,
+      "code": 138,
+      "commentedCode": 97,
+      "mermaid": 91,
       "archifyVisual": 2,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 130,
-      "runCommand": 129,
-      "officialSource": 130
+      "filePath": 138,
+      "runCommand": 137,
+      "officialSource": 137
     },
     "javascript": {
-      "topics": 88,
-      "code": 88,
-      "commentedCode": 76,
-      "mermaid": 58,
+      "topics": 92,
+      "code": 92,
+      "commentedCode": 80,
+      "mermaid": 62,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 88,
-      "runCommand": 88,
-      "officialSource": 88
+      "filePath": 92,
+      "runCommand": 92,
+      "officialSource": 92
     },
     "node": {
-      "topics": 83,
-      "code": 83,
-      "commentedCode": 30,
-      "mermaid": 32,
+      "topics": 90,
+      "code": 90,
+      "commentedCode": 41,
+      "mermaid": 39,
       "archifyVisual": 0,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 83,
-      "runCommand": 83,
-      "officialSource": 80
+      "filePath": 90,
+      "runCommand": 90,
+      "officialSource": 87
     },
     "angular": {
-      "topics": 71,
-      "code": 71,
-      "commentedCode": 69,
-      "mermaid": 30,
+      "topics": 78,
+      "code": 78,
+      "commentedCode": 76,
+      "mermaid": 37,
       "archifyVisual": 0,
       "asciiVisual": 20,
       "misleadingDiagramLabel": 0,
-      "filePath": 71,
-      "runCommand": 70,
-      "officialSource": 71
+      "filePath": 78,
+      "runCommand": 74,
+      "officialSource": 78
     },
     "react": {
-      "topics": 58,
-      "code": 58,
-      "commentedCode": 42,
-      "mermaid": 37,
+      "topics": 64,
+      "code": 64,
+      "commentedCode": 53,
+      "mermaid": 43,
       "archifyVisual": 0,
       "asciiVisual": 9,
       "misleadingDiagramLabel": 0,
-      "filePath": 58,
-      "runCommand": 58,
-      "officialSource": 58
+      "filePath": 64,
+      "runCommand": 64,
+      "officialSource": 64
     },
     "java": {
-      "topics": 111,
-      "code": 111,
-      "commentedCode": 55,
-      "mermaid": 18,
+      "topics": 117,
+      "code": 117,
+      "commentedCode": 61,
+      "mermaid": 24,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 111,
-      "runCommand": 111,
-      "officialSource": 106
+      "filePath": 117,
+      "runCommand": 117,
+      "officialSource": 112
     },
     "spring-boot": {
-      "topics": 114,
-      "code": 114,
-      "commentedCode": 41,
-      "mermaid": 37,
+      "topics": 121,
+      "code": 121,
+      "commentedCode": 48,
+      "mermaid": 44,
       "archifyVisual": 1,
       "asciiVisual": 0,
       "misleadingDiagramLabel": 0,
-      "filePath": 114,
-      "runCommand": 114,
-      "officialSource": 113
+      "filePath": 121,
+      "runCommand": 121,
+      "officialSource": 120
     },
     "microservices": {
       "topics": 24,
@@ -121,52 +121,52 @@
       "officialSource": 24
     },
     "kotlin-multiplatform": {
-      "topics": 56,
-      "code": 56,
-      "commentedCode": 45,
-      "mermaid": 32,
+      "topics": 66,
+      "code": 66,
+      "commentedCode": 59,
+      "mermaid": 42,
       "archifyVisual": 0,
       "asciiVisual": 22,
       "misleadingDiagramLabel": 0,
-      "filePath": 56,
-      "runCommand": 56,
-      "officialSource": 56
+      "filePath": 66,
+      "runCommand": 64,
+      "officialSource": 65
     },
     "android": {
-      "topics": 74,
-      "code": 74,
-      "commentedCode": 65,
-      "mermaid": 27,
+      "topics": 83,
+      "code": 83,
+      "commentedCode": 74,
+      "mermaid": 36,
       "archifyVisual": 0,
       "asciiVisual": 40,
       "misleadingDiagramLabel": 0,
-      "filePath": 72,
-      "runCommand": 71,
-      "officialSource": 73
+      "filePath": 81,
+      "runCommand": 80,
+      "officialSource": 81
     },
     "ios": {
-      "topics": 56,
-      "code": 56,
-      "commentedCode": 40,
-      "mermaid": 34,
+      "topics": 69,
+      "code": 69,
+      "commentedCode": 55,
+      "mermaid": 47,
       "archifyVisual": 0,
       "asciiVisual": 16,
       "misleadingDiagramLabel": 0,
-      "filePath": 55,
-      "runCommand": 56,
-      "officialSource": 56
+      "filePath": 68,
+      "runCommand": 69,
+      "officialSource": 68
     },
     "flutter": {
-      "topics": 109,
-      "code": 109,
-      "commentedCode": 64,
-      "mermaid": 85,
+      "topics": 119,
+      "code": 119,
+      "commentedCode": 80,
+      "mermaid": 95,
       "archifyVisual": 0,
       "asciiVisual": 14,
       "misleadingDiagramLabel": 0,
-      "filePath": 106,
-      "runCommand": 106,
-      "officialSource": 102
+      "filePath": 116,
+      "runCommand": 114,
+      "officialSource": 112
     },
     "rutaflow": {
       "topics": 29,
@@ -268,34 +268,6 @@
     },
     {
       "track": "cloud",
-      "module": 10,
-      "topic": "Tema 3: SSM Parameter Store vs Secrets Manager",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 11,
-      "topic": "Tema 3: SNS + SQS juntos, y Azure Event Hubs",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 12,
-      "topic": "Tema 3: Diagnóstico sistemático y X-Ray",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 13,
-      "topic": "Tema 3: Migrations",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
       "module": 14,
       "topic": "Tema 1: ECR y por qué no basta con Docker Hub",
       "missingCode": false,
@@ -326,69 +298,6 @@
       "track": "cloud",
       "module": 16,
       "topic": "Tema 2: Choice state, Retry y Catch",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 16,
-      "topic": "Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 17,
-      "topic": "Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 31,
-      "topic": "Tema 2: Arquitectura interna de cloud local y su uso en CI/CD",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 32,
-      "topic": "Tema 1: Una red segura empieza por flujos, no por subredes",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 32,
-      "topic": "Tema 2: Una landing zone convierte gobierno en una base repetible",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 32,
-      "topic": "Tema 3: Disponibilidad y recuperación responden preguntas distintas",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 32,
-      "topic": "Tema 4: Un backup solo existe operativamente después de restaurarlo",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 33,
-      "topic": "Tema 1: Terraform avanzado y CI/CD cloud",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "cloud",
-      "module": 33,
-      "topic": "Tema 2: Kubernetes administrado, ECS y Service Mesh",
       "missingCode": false,
       "missingComments": true
     },
@@ -590,41 +499,6 @@
     },
     {
       "track": "devops",
-      "module": 15,
-      "topic": "Tema 1: Docker y Compose avanzados",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 15,
-      "topic": "Tema 2: Kubernetes extensible y Helm avanzado",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 15,
-      "topic": "Tema 3: Service Mesh con Istio o Linkerd",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 15,
-      "topic": "Tema 4: GitOps con Argo CD y Flux",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
-      "module": 15,
-      "topic": "Tema 5: Ansible, inventarios, roles y Vault",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "devops",
       "module": 16,
       "topic": "Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales",
       "missingCode": false,
@@ -647,7 +521,7 @@
     {
       "track": "devops",
       "module": 16,
-      "topic": "Tema complementario: Bruno y Postman, evaluar con el mismo contrato",
+      "topic": "Tema 6: Bruno y Postman, evaluar con el mismo contrato",
       "missingCode": false,
       "missingComments": true
     },
@@ -1032,35 +906,7 @@
     {
       "track": "node",
       "module": 14,
-      "topic": "Tema 1: TypeScript en Node.js",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 14,
-      "topic": "Tema 2: GraphQL avanzado y Federation",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 14,
       "topic": "Tema 3: Compensar una entrega cuando falla un paso",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 14,
-      "topic": "Tema 5: Docker productivo con Node",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "node",
-      "module": 14,
-      "topic": "Tema 6: CI/CD y promoción de artefactos",
       "missingCode": false,
       "missingComments": true
     },
@@ -1290,13 +1136,6 @@
     },
     {
       "track": "react",
-      "module": 10,
-      "topic": "Tema 4: Server Actions",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
       "module": 11,
       "topic": "Tema 2: Hooks genéricos",
       "missingCode": false,
@@ -1306,13 +1145,6 @@
       "track": "react",
       "module": 12,
       "topic": "Tema 2: Integrando rutas, TanStack Query y Zustand",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 12,
-      "topic": "Tema 3: useTareas — hook dedicado con TanStack Query",
       "missingCode": false,
       "missingComments": true
     },
@@ -1341,27 +1173,6 @@
       "track": "react",
       "module": 3,
       "topic": "Tema 2: Validación con zod y formularios multi-paso",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 3,
-      "topic": "Tema 3: Eventos sintéticos",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 4,
-      "topic": "Tema 3: Componentes compuestos, render props y hooks personalizados",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "react",
-      "module": 5,
-      "topic": "Tema 3: Rutas protegidas y code-splitting por ruta",
       "missingCode": false,
       "missingComments": true
     },
@@ -2292,21 +2103,21 @@
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+      "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+      "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 0,
-      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+      "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -2334,77 +2145,77 @@
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+      "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+      "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+      "topic": "Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+      "topic": "Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+      "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+      "topic": "Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+      "topic": "Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+      "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+      "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+      "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min",
       "missingCode": false,
       "missingComments": true
     },
     {
       "track": "microservices",
       "module": 1,
-      "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+      "topic": "Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min",
       "missingCode": false,
       "missingComments": true
     },
@@ -2433,34 +2244,6 @@
       "track": "kotlin-multiplatform",
       "module": 13,
       "topic": "Tema 2: Interop con C",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 13,
-      "topic": "Tema 3: Swift Export",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 13,
-      "topic": "Tema 4: XCFramework y API pública",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 13,
-      "topic": "Tema 5: Publicación en Maven Central",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "kotlin-multiplatform",
-      "module": 13,
-      "topic": "Tema 6: Compatibilidad binaria y CI multi-target",
       "missingCode": false,
       "missingComments": true
     },
@@ -2557,6 +2340,13 @@
     },
     {
       "track": "ios",
+      "module": 0,
+      "topic": "Tema 3: Protocolos y enums con valores asociados",
+      "missingCode": false,
+      "missingComments": true
+    },
+    {
+      "track": "ios",
       "module": 10,
       "topic": "Tema 1: Instruments",
       "missingCode": false,
@@ -2587,27 +2377,6 @@
       "track": "ios",
       "module": 13,
       "topic": "Tema 7: Notificaciones push con APNs",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 14,
-      "topic": "Tema 3: Combine avanzado",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 14,
-      "topic": "Tema 5: UIViewRepresentable",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "ios",
-      "module": 14,
-      "topic": "Tema 6: UIViewControllerRepresentable y Coordinator",
       "missingCode": false,
       "missingComments": true
     },
@@ -2671,48 +2440,6 @@
       "track": "flutter",
       "module": 12,
       "topic": "Tema 1: Arquitectura por features y Clean Architecture",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 13,
-      "topic": "Tema 1: Una API Dart puede terminar en una frontera nativa",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 1: Diseño de pantallas y Riverpod",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 2: Google Maps y localización en tiempo real",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 4: Animaciones de localización",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 5: Almacenamiento local, imágenes y offline",
-      "missingCode": false,
-      "missingComments": true
-    },
-    {
-      "track": "flutter",
-      "module": 14,
-      "topic": "Tema 6: Dio y notificaciones push",
       "missingCode": false,
       "missingComments": true
     },

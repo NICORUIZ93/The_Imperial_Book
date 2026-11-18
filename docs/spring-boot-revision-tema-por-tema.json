@@ -3,7 +3,7 @@
   "scope": "Lectura técnica asistida y revisión de secuencia por tema; inventario de todos los subtemas. No revisión pedagógica humana ni ejecución individual de 393 ejercicios.",
   "summary": {
     "modules": 26,
-    "topics": 112,
+    "topics": 119,
     "subtopics": 393,
     "subtopicsWithBody": 393,
     "explicitRepositoryPaths": 169,
@@ -184,7 +184,7 @@
             {
               "heading": "Subtema 3.3: Pide un bean nuevo cuando de verdad lo necesitas · 15 min",
               "line": 443,
-              "proseWords": 764,
+              "proseWords": 313,
               "codeLines": 56,
               "hasBodyBeyondHeading": true,
               "codeLanguages": [
@@ -193,6 +193,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
+          "line": 547,
+          "review": "Ciclo de vida del contexto → SmartLifecycle y apagado ordenado; demuestra graceful shutdown con un request en vuelo; no confunde @PreDestroy con drenar tráfico.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -701,7 +709,7 @@
             {
               "heading": "Subtema 3.9 · Diagnosticar versiones repetidas · 8 min",
               "line": 620,
-              "proseWords": 283,
+              "proseWords": 160,
               "codeLines": 2,
               "hasBodyBeyondHeading": true,
               "codeLanguages": [
@@ -710,6 +718,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min",
+          "line": 644,
+          "review": "Spring Data MongoDB → documento, repositorio e índice; prueba con Testcontainers; límite: no reemplaza transacciones relacionales.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -1042,7 +1058,7 @@
             {
               "heading": "Subtema 4.24 · Comprobar el borde del límite con MockMvc · 10 min",
               "line": 441,
-              "proseWords": 389,
+              "proseWords": 183,
               "codeLines": 10,
               "hasBodyBeyondHeading": true,
               "codeLanguages": [
@@ -1051,6 +1067,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min",
+          "line": 479,
+          "review": "FailureAnalyzer → error de arranque legible con causa y acción; límite: no oculta la excepción original.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -1304,7 +1328,7 @@
             {
               "heading": "Subtema 7.9 · Probar estados distintos y diagnosticar el error · 10 min",
               "line": 452,
-              "proseWords": 531,
+              "proseWords": 308,
               "codeLines": 73,
               "hasBodyBeyondHeading": true,
               "codeLanguages": [
@@ -1313,6 +1337,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min",
+          "line": 552,
+          "review": "Logging estructurado → niveles por paquete y MDC; ejemplo con correlación por petición; límite: no registrar datos personales.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -1756,6 +1788,14 @@
               "codeLanguages": []
             }
           ]
+        },
+        {
+          "topic": 10,
+          "title": "Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min",
+          "line": 1361,
+          "review": "JMS → cola, listener y transacción local; contrasta con Kafka; límite: requiere broker externo.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -2635,7 +2675,7 @@
             {
               "heading": "Subtema 3.4: Evita reinicios en cascada · 10 min",
               "line": 427,
-              "proseWords": 453,
+              "proseWords": 251,
               "codeLines": 2,
               "hasBodyBeyondHeading": true,
               "codeLanguages": [
@@ -2643,6 +2683,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 4,
+          "title": "Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min",
+          "line": 460,
+          "review": "Buildpacks → imagen OCI sin Dockerfile con bootBuildImage/spring-boot:build-image; límite: necesita Docker para construir.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },
@@ -4027,6 +4075,14 @@
               ]
             }
           ]
+        },
+        {
+          "topic": 3,
+          "title": "Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min",
+          "line": 206,
+          "review": "SAML 2.0 con relying party → metadatos y aserciones firmadas; límite: el IdP real se configura fuera del laboratorio.",
+          "buildRoute": "Maven y alternativa Gradle",
+          "subtopics": []
         }
       ]
     },

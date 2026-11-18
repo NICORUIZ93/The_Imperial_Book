@@ -11,7 +11,7 @@ Los diagramas reales tienen lazos dentro de lazos y señales que se cruzan. Aqu�
 
 ## Aprende construyendo
 
-### Tema 1: Reglas para mover bloques
+### Tema 1: Reglas para mover bloques en un diagrama
 
 **¿Por qué es importante?** Mover bloques correctamente permite simplificar diagramas que no se pueden reducir con solo serie y paralelo.
 

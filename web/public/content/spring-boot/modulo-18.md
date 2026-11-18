@@ -202,3 +202,166 @@ curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 **Cierra:** para el cliente de geocodificación de RutaFlow, registra hosts permitidos, timeout, política de redirect y la prueba que impide llegar a una IP interna.
 
 **Fuentes primarias:** [Spring Framework MVC Validation](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html); [CORS en Spring Security](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html); [Spring Security Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html); [Spring Boot HTTP clients y filtros de direcciones](https://docs.spring.io/spring-boot/reference/io/rest-client.html).
+
+### Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min
+
+**Prerrequisito:** tema «DTO validation, CORS, JWT/OIDC y cliente» de este módulo.
+
+**Al finalizar podrás:** configurar una aplicación Spring Boot como proveedor de servicio (SP) SAML 2.0, iniciar sesión contra un proveedor de identidad (IdP) de prueba y leer los atributos del usuario.
+
+**¿Por qué es importante?** Muchas empresas grandes usan SAML para el inicio de sesión único de sus empleados. Si RutaFlow vende su panel a esas empresas, tiene que aceptar su IdP aunque el resto del sistema use OIDC.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x con `spring-boot-starter-security` y `spring-security-saml2-service-provider`. Necesitas un IdP de prueba: Keycloak en Docker (`docker run -p 8180:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak start-dev`) con un cliente SAML.
+
+#### Paso 2 · Contexto y caso real
+
+Un cliente corporativo de RutaFlow exige que sus operadores entren al panel con la cuenta de la empresa, a través de su IdP SAML. Si un empleado deja la empresa, su acceso al panel debe terminar el mismo día, sin que RutaFlow gestione contraseñas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** SAML 2.0, proveedor de identidad (IdP), proveedor de servicio (SP), aserción firmada, metadatos, ACS (*Assertion Consumer Service*), `Saml2AuthenticatedPrincipal`.
+
+En SAML hay dos partes:
+
+- El **IdP** autentica al usuario y emite una **aserción**: un XML firmado que dice quién es y sus atributos (correo, grupos).
+- El **SP** (tu aplicación) confía en el IdP, verifica la firma y crea la sesión.
+
+El intercambio usa el navegador: el SP redirige al IdP, el usuario inicia sesión allá y el IdP envía la aserción por POST a la URL **ACS** del SP (`/login/saml2/sso/{registrationId}`).
+
+Para configurarlo, el SP necesita los **metadatos** del IdP (su URL, su certificado). Spring Security los descarga de `metadata-uri`. El IdP necesita los del SP, que Spring publica en `/saml2/service-provider-metadata/{registrationId}`.
+
+| SAML | OIDC |
+|---|---|
+| XML firmado, habitual en empresas | JSON y JWT, habitual en apps modernas |
+| flujo por el navegador | también para APIs y móviles |
+
+**Analogía:** la aserción SAML es una carta de recomendación sellada por la empresa: el panel no conoce al empleado, pero sí reconoce el sello. La analogía falla en que el sello caduca en minutos y la carta sirve para un solo destinatario.
+
+**Límite de uso:** SAML no sirve para proteger APIs llamadas por apps móviles: para eso usa OIDC y tokens. Valida siempre la firma y la audiencia; nunca desactives esas verificaciones para «probar».
+
+```mermaid
+sequenceDiagram
+    participant U as Navegador
+    participant SP as Panel RutaFlow (SP)
+    participant IdP as IdP de la empresa
+    U->>SP: GET /panel
+    SP-->>U: redirección con AuthnRequest
+    U->>IdP: inicia sesión
+    IdP-->>U: formulario con aserción firmada
+    U->>SP: POST /login/saml2/sso/empresa
+    SP->>SP: verifica firma y audiencia, crea sesión
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          empresa:
+            assertingparty:
+              metadata-uri: http://localhost:8180/realms/rutaflow/protocol/saml/descriptor
+            entity-id: rutaflow-panel
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/seguridad/SamlConfig.java`:
+
+```java
+package com.rutaflow.seguridad;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+class SamlConfig {
+    @Bean
+    SecurityFilterChain panel(HttpSecurity http) throws Exception {
+        return http
+            .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+            .saml2Login(withDefaults())   // redirige al IdP y recibe la aserción
+            .saml2Metadata(withDefaults()) // publica los metadatos del SP
+            .build();
+    }
+}
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/seguridad/YoController.java`:
+
+```java
+package com.rutaflow.seguridad;
+
+import java.util.Map;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+class YoController {
+    @GetMapping("/yo")
+    Map<String, Object> yo(@AuthenticationPrincipal Saml2AuthenticatedPrincipal usuario) {
+        return Map.of(
+            "nombre", usuario.getName(),
+            "correo", String.valueOf(usuario.getFirstAttribute("email")),
+            "idp", usuario.getRelyingPartyRegistrationId());
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./mvnw spring-boot:run
+curl -s localhost:8080/saml2/service-provider-metadata/empresa | head -c 300
+# en el navegador: http://localhost:8080/yo  -> redirige a Keycloak -> vuelve con la sesión
+```
+
+**Explicación por bloques:** En `application.yml`, el registro `empresa` apunta a los metadatos del IdP (Keycloak) y define el `entity-id` del SP, que debe coincidir con el cliente SAML creado en Keycloak. `SamlConfig` exige autenticación, activa el inicio de sesión SAML y publica los metadatos del SP para dárselos al IdP. `YoController` recibe el usuario autenticado como `Saml2AuthenticatedPrincipal` y devuelve su nombre, su correo (un atributo de la aserción) y el IdP que lo autenticó.
+
+**Resultado esperado:**
+
+```text
+/saml2/service-provider-metadata/empresa devuelve XML que empieza con <md:EntityDescriptor ... entityID="rutaflow-panel">.
+Al abrir /yo sin sesión, el navegador va a la página de inicio de sesión de Keycloak.
+Después de iniciar sesión, /yo devuelve {"nombre":"operadora1","correo":"operadora1@empresa.co","idp":"empresa"}.
+```
+
+**Fallo deliberado:** cambia `entity-id` a `rutaflow-otro` sin cambiarlo en Keycloak. **Error esperado:** Keycloak responde «Invalid requester» o Spring rechaza la aserción por audiencia inválida. **Diagnóstico:** el IdP emite la aserción para un destinatario concreto; si el SP se presenta con otro nombre, no coincide. Usa el mismo `entity-id` en los dos lados.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** descarga los metadatos del SP y encuentra la URL ACS.
+2. **Variación:** agrega en Keycloak un mapeador que envíe el atributo `email` y comprueba que llega a `/yo`.
+3. **Diagnóstico:** reproduce el fallo deliberado del `entity-id`.
+4. **Integración:** convierte un atributo `grupos` en autoridades de Spring con un `ResponseAuthenticationConverter` y protege `/admin` con `hasAuthority`.
+5. **Diseño:** escribe qué pasa con la sesión del panel cuando la empresa desactiva a un empleado, y cómo reducir ese tiempo.
+
+**Pista:** casi todos los errores de SAML son de configuración: compara `entity-id`, URL ACS y certificado en los dos lados.
+
+#### Paso 6 · Práctica independiente
+
+Registra un segundo IdP (`empresa2`) en el mismo `application.yml` y comprueba que `/saml2/authenticate/empresa2` lleva al otro proveedor.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas los papeles de IdP y SP.
+- [ ] Iniciaste sesión con el IdP de prueba y `/yo` muestra los atributos.
+- [ ] Reprodujiste el error de audiencia.
+- [ ] Sabes cuándo usar SAML y cuándo OIDC.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** desactivar la validación de firmas, usar SAML para proteger APIs y mezclar `entity-id` entre ambientes. **Siguiente paso:** el módulo 10 integra OIDC con Keycloak y Token Relay para los servicios internos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** permite que los operadores del cliente corporativo de RutaFlow entren al panel con su IdP SAML y mapea sus grupos a roles del panel.
+
+**Fuente oficial:** [Spring Security — SAML 2.0 Login](https://docs.spring.io/spring-security/reference/servlet/saml2/login/overview.html) y [Keycloak — SAML clients](https://www.keycloak.org/docs/latest/server_admin/#_client-saml-configuration).
+

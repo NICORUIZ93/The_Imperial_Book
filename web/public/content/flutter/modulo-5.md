@@ -52,14 +52,6 @@ Para una app de tamaño real que necesita manejar autenticación (agregando un h
 
 **¿Por qué es importante?** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente, requiriendo construir esa infraestructura manualmente si se usara el paquete más básico.
 
-**Código del ejemplo:**
-
-```dart
-final dio = Dio();
-dio.interceptors.add(LogInterceptor());
-final respuesta = await dio.get('/tareas');
-```
-
 En el proyecto integrador RutaFlow, el cliente `dio` vive en `lib/core/api_client.dart`. Práctica: migrá una segunda llamada de tu proyecto propio de `http` a `dio` con `CancelToken`.
 
 #### Paso 4 · Demostración guiada desde cero
@@ -221,15 +213,6 @@ Modelar explícitamente los tres estados posibles de una pantalla que depende de
 **Analogía:** un interceptor de `dio` es como una estación de control por la que pasa obligatoriamente cada paquete de un servicio de logística, aplicando el mismo sello a todos sin que el remitente individual deba solicitarlo en cada envío; modelar estados explícitos con sealed classes es como un formulario con secciones obligatorias claramente marcadas para cada resultado posible de un trámite, garantizando que ninguna posibilidad quede sin una sección correspondiente de manejo.
 
 **¿Por qué es importante?** Los interceptores centralizan transformaciones transversales sin duplicar lógica en cada llamada; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado (especialmente el de error) en la UI.
-
-**Código del ejemplo:**
-
-```dart
-sealed class EstadoTareas {}
-class Cargando extends EstadoTareas {}
-class Exito extends EstadoTareas { final List<Tarea> tareas; Exito(this.tareas); }
-class Error extends EstadoTareas { final String mensaje; Error(this.mensaje); }
-```
 
 En el proyecto integrador RutaFlow, el interceptor vive en `lib/core/api_client.dart` y `EstadoEnvios` en `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: no conviene modelar una `sealed class` para una pantalla que solo tiene un estado posible (sin error ni carga real) — frente a esa pantalla trivial, un valor directo basta; la sealed class se justifica cuando hay al menos tres estados mutuamente excluyentes que la UI debe diferenciar.
 

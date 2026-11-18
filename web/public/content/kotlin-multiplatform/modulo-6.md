@@ -595,6 +595,226 @@ Ya agrupas escrituras relacionadas en una transacción atómica, confirmando con
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Guarda el cambio de entrega y su entrada en outbox en una transacción. Provoca un fallo en la segunda escritura y comprueba que ninguna plataforma conserva un estado parcialmente actualizado.
 
+### Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min
+
+**Prerrequisito:** temas «Drivers por plataforma» de este módulo y «expect/actual» (módulo 3).
+
+**Al finalizar podrás:** definir en `commonMain` una interfaz `AlmacenSecreto`, implementarla con EncryptedSharedPreferences sobre Android Keystore y con el Keychain de iOS, y probar la lógica común con una versión falsa.
+
+**¿Por qué es importante?** Los tokens de sesión no pueden ir en archivos o preferencias normales: cualquiera con acceso al dispositivo o a un respaldo los lee. Cada plataforma tiene un almacén seguro; el código común debe usarlos sin conocer sus detalles.
+
+#### Paso 1 · Objetivo y preparación
+
+No necesitas dependencias extra: en Android se usa el Android Keystore del sistema y en iOS el Keychain con `platform.Security`. (La librería `androidx.security:security-crypto` y su EncryptedSharedPreferences quedaron obsoletas en 2025; no la uses en código nuevo.) Trabajarás en `shared/src/{commonMain,androidMain,iosMain}`.
+
+#### Paso 2 · Contexto y caso real
+
+La primera versión de RutaFlow guardaba el token del conductor en `SharedPreferences` y en `NSUserDefaults`. Un respaldo sin cifrar de un teléfono robado permitió entrar a la cuenta. Mover el token al almacén seguro de cada sistema cerró ese camino.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** secreto, Android Keystore, AES-GCM, iOS Keychain, `kSecAttrAccessible`, interfaz común, implementación por plataforma.
+
+Una **interfaz común** (`AlmacenSecreto`) dice qué se puede hacer: guardar, leer y borrar un secreto. Cada plataforma lo implementa con su almacén seguro:
+
+| Plataforma | Almacén | Protección |
+|---|---|---|
+| Android | valor cifrado con AES-GCM usando una clave del **Keystore** | la clave nunca sale del hardware seguro |
+| iOS | **Keychain** con `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` | cifrado por el sistema, no viaja a otros dispositivos |
+
+El código común (por ejemplo, el repositorio de sesión) recibe la interfaz por constructor. En las pruebas comunes usas una implementación falsa en memoria.
+
+Los **secretos de la app** (claves de API del servidor) no van en el binario: cualquiera puede extraerlos. Esos se quedan en el servidor.
+
+**Analogía:** la interfaz es la palabra «caja fuerte» en el manual; cada sistema operativo trae su propia marca de caja fuerte. El código común solo pide «guarda esto en la caja fuerte». La analogía falla en que ninguna caja protege un secreto que ya viene impreso en el manual (el binario).
+
+**Límite de uso:** un dispositivo con root o jailbreak puede leer más de lo esperado: el almacén seguro reduce el riesgo, no lo elimina. No guardes en el cliente secretos compartidos entre usuarios.
+
+```mermaid
+flowchart TB
+    C["commonMain: SesionRepository"] --> I["interface AlmacenSecreto"]
+    I --> A["androidMain: AES-GCM + Keystore"]
+    I --> S["iosMain: Keychain"]
+    I --> F["commonTest: AlmacenFalso"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `shared/src/commonMain/kotlin/co/rutaflow/seguridad/AlmacenSecreto.kt`:
+
+```kotlin
+package co.rutaflow.seguridad
+
+interface AlmacenSecreto {
+    fun guardar(clave: String, valor: String)
+    fun leer(clave: String): String?
+    fun borrar(clave: String)
+}
+
+class SesionRepository(private val almacen: AlmacenSecreto) {
+    fun iniciar(token: String) = almacen.guardar("token", token)
+    fun token(): String? = almacen.leer("token")
+    fun cerrar() = almacen.borrar("token")
+}
+```
+
+Archivo `shared/src/androidMain/kotlin/co/rutaflow/seguridad/AlmacenAndroid.kt`:
+
+```kotlin
+package co.rutaflow.seguridad
+
+import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
+
+class AlmacenAndroid(contexto: Context) : AlmacenSecreto {
+    private val prefs = contexto.getSharedPreferences("secretos", Context.MODE_PRIVATE)
+    private val alias = "rutaflow-secretos"
+
+    // La clave AES vive en el Android Keystore y nunca sale de él.
+    private fun claveMaestra(): SecretKey {
+        val keystore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+        (keystore.getKey(alias, null) as? SecretKey)?.let { return it }
+        val generador = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+        generador.init(KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .build())
+        return generador.generateKey()
+    }
+
+    override fun guardar(clave: String, valor: String) {
+        val cifrador = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, claveMaestra()) }
+        val datos = cifrador.iv + cifrador.doFinal(valor.encodeToByteArray()) // IV de 12 bytes + cifrado
+        prefs.edit().putString(clave, Base64.encodeToString(datos, Base64.NO_WRAP)).apply()
+    }
+
+    override fun leer(clave: String): String? {
+        val datos = Base64.decode(prefs.getString(clave, null) ?: return null, Base64.NO_WRAP)
+        val cifrador = Cipher.getInstance("AES/GCM/NoPadding")
+        cifrador.init(Cipher.DECRYPT_MODE, claveMaestra(), GCMParameterSpec(128, datos, 0, 12))
+        return cifrador.doFinal(datos, 12, datos.size - 12).decodeToString()
+    }
+
+    override fun borrar(clave: String) = prefs.edit().remove(clave).apply()
+}
+```
+
+Archivo `shared/src/iosMain/kotlin/co/rutaflow/seguridad/AlmacenIos.kt`:
+
+```kotlin
+package co.rutaflow.seguridad
+
+import kotlinx.cinterop.*
+import platform.CoreFoundation.*
+import platform.Foundation.*
+import platform.Security.*
+
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+class AlmacenIos(private val servicio: String = "co.rutaflow.app") : AlmacenSecreto {
+    private fun consulta(clave: String, extra: Map<Any?, Any?> = emptyMap()): CFDictionaryRef? =
+        CFBridgingRetain(mapOf<Any?, Any?>(kSecClass to kSecClassGenericPassword, kSecAttrService to servicio,
+            kSecAttrAccount to clave) + extra) as CFDictionaryRef?
+
+    override fun guardar(clave: String, valor: String) {
+        borrar(clave)
+        val datos = (valor as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+        SecItemAdd(consulta(clave, mapOf(kSecValueData to datos,
+            kSecAttrAccessible to kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)), null)
+    }
+
+    override fun leer(clave: String): String? = memScoped {
+        val resultado = alloc<CFTypeRefVar>()
+        val estado = SecItemCopyMatching(consulta(clave, mapOf(kSecReturnData to kCFBooleanTrue,
+            kSecMatchLimit to kSecMatchLimitOne)), resultado.ptr)
+        if (estado != errSecSuccess) return null
+        val datos = CFBridgingRelease(resultado.value) as NSData
+        NSString.create(datos, NSUTF8StringEncoding) as String?
+    }
+
+    override fun borrar(clave: String) { SecItemDelete(consulta(clave)) }
+}
+```
+
+Archivo `shared/src/commonTest/kotlin/co/rutaflow/seguridad/SesionRepositoryTest.kt`:
+
+```kotlin
+package co.rutaflow.seguridad
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+
+class AlmacenFalso : AlmacenSecreto {
+    private val datos = mutableMapOf<String, String>()
+    override fun guardar(clave: String, valor: String) { datos[clave] = valor }
+    override fun leer(clave: String) = datos[clave]
+    override fun borrar(clave: String) { datos.remove(clave) }
+}
+
+class SesionRepositoryTest {
+    @Test fun cerrarSesionBorraElToken() {
+        val sesion = SesionRepository(AlmacenFalso())
+        sesion.iniciar("tok-123")
+        assertEquals("tok-123", sesion.token())
+        sesion.cerrar()
+        assertNull(sesion.token())
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :shared:allTests
+./gradlew :composeApp:installDebug   # inicia sesión y revisa que el token no aparece en texto plano:
+adb shell run-as co.rutaflow.app cat shared_prefs/secretos.xml
+```
+
+**Explicación por bloques:** La interfaz común define tres operaciones y `SesionRepository` solo depende de ella. En Android, cada valor se cifra con AES-GCM usando una clave creada dentro del Keystore; en las preferencias solo queda el IV y el texto cifrado en Base64. En iOS, `AlmacenIos` usa el Keychain: cada secreto es un «generic password» identificado por servicio y cuenta, accesible después del primer desbloqueo y solo en este dispositivo. La prueba común usa un almacén falso en memoria y comprueba que cerrar sesión borra el token, sin depender de ninguna plataforma.
+
+**Resultado esperado:**
+
+```text
+./gradlew :shared:allTests aprueba cerrarSesionBorraElToken en JVM e iOS.
+`adb shell run-as ... cat shared_prefs/secretos.xml` muestra el valor de `token` como Base64 ilegible, nunca «tok-123».
+```
+
+**Fallo deliberado:** cambia `guardar` en Android para escribir `valor` directo en las preferencias, sin cifrar. **Error esperado:** el mismo comando de `adb` muestra `<string name="token">tok-123</string>` en texto plano. **Diagnóstico:** el token queda expuesto en respaldos y en dispositivos comprometidos. Usa el almacén cifrado.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta las pruebas comunes.
+2. **Variación:** inicia sesión en Android y revisa el archivo de preferencias: el token debe verse cifrado.
+3. **Diagnóstico:** reproduce el fallo deliberado con preferencias normales.
+4. **Integración:** inyecta la implementación correcta en cada plataforma con Koin o con un `expect fun crearAlmacen(): AlmacenSecreto`.
+5. **Diseño:** lista los secretos de RutaFlow y decide cuáles van en el dispositivo y cuáles solo en el servidor.
+
+**Pista:** si un secreto aparece en texto plano en el dispositivo, no está en el almacén seguro.
+
+#### Paso 6 · Práctica independiente
+
+Agrega a `AlmacenSecreto` una operación `borrarTodo()` para el cierre de sesión completo y pruébala con el almacén falso.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué los tokens no van en preferencias normales.
+- [ ] La prueba común pasa con el almacén falso.
+- [ ] Comprobaste que el archivo de Android está cifrado.
+- [ ] Sabes qué secretos nunca van en el binario.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** guardar tokens en preferencias normales, poner claves de API del servidor en el binario y probar la lógica común solo en dispositivos. **Siguiente paso:** el tema «Migraciones de esquema» trata los datos que no son secretos pero sí persistentes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda el token de sesión de RutaFlow cifrado con el Keystore y en el Keychain detrás de `AlmacenSecreto`, con pruebas comunes del repositorio de sesión.
+
+**Fuente oficial:** [Android Developers — Work with data more securely](https://developer.android.com/privacy-and-security/security-tips) y [Apple — Keychain services](https://developer.apple.com/documentation/security/keychain-services).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una capa de persistencia compartida con al menos una migración de esquema y una transacción multi-tabla.

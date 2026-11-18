@@ -27,6 +27,12 @@ El servicio de envíos consulta una API externa para validar una dirección. Si 
 
 Piensa en el timeout como el tiempo máximo que mantienes abierta una llamada telefónica, no como una garantía de que el otro sistema no haya recibido el mensaje.
 **Analogía:** llamar a un servicio remoto es como pedir algo por teléfono a otra oficina: a veces no contestan (timeout), a veces contestan tarde o con un "no" (fallo). El `HttpClient` es tu teléfono; poner un timeout es colgar si nadie responde en vez de esperar para siempre con el auricular en la oreja.
+
+**¿Por qué es importante?** Porque un timeout explícito y un manejo de errores diferenciado por código de estado protegen la capacidad del propio servicio cuando una dependencia externa falla o no responde, en vez de acumular hilos bloqueados indefinidamente.
+**Conceptos clave:** `HttpClient`, `HttpRequest`/`HttpResponse`, timeout, reintento idempotente con backoff y jitter.
+
+**Cuándo no usarlo:** llamadas con cuerpo enorme no deben cargarse sin límite en memoria; usa un `BodyHandler` de streaming.
+
 #### Paso 4 · Demostración guiada
 
 En `src/main/java/academia/http/ConsultaDireccion.java`:
@@ -290,18 +296,14 @@ Ejecuta `java --add-modules jdk.httpserver java-http-t01/src/Reintento.java`.
 
 Limita intentos y espera; decide qué operación se puede repetir antes de automatizar el retry.
 
-#### Paso 7 · Cierre y evidencia
-
-Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado para el proyecto integrador de RutaFlow, usando el cliente para consultar un proveedor externo; como siguiente paso transporta una credencial de forma segura sobre ese mismo cliente. Errores comunes: no fijar un timeout explícito y dejar que una API externa caída bloquee hilos indefinidamente, reintentar automáticamente un POST no idempotente ante una respuesta perdida, y cargar un cuerpo de respuesta potencialmente enorme completo en memoria sin un `BodyHandler` de streaming. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html.
-**¿Por qué es importante?** Porque un timeout explícito y un manejo de errores diferenciado por código de estado protegen la capacidad del propio servicio cuando una dependencia externa falla o no responde, en vez de acumular hilos bloqueados indefinidamente.
 **Evidencia de aprendizaje:** entrega los tests de éxito (200), error de cliente (404) y timeout, junto con el reintento acotado verificado solo para operaciones idempotentes.
-**Conceptos clave:** `HttpClient`, `HttpRequest`/`HttpResponse`, timeout, reintento idempotente con backoff y jitter.
-
-**Cuándo no usarlo:** llamadas con cuerpo enorme no deben cargarse sin límite en memoria; usa un `BodyHandler` de streaming.
-
 **4. Cierra**
 
 Guarda secuencia de respuestas y cantidad de intentos.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado para el proyecto integrador de RutaFlow, usando el cliente para consultar un proveedor externo; como siguiente paso transporta una credencial de forma segura sobre ese mismo cliente. Errores comunes: no fijar un timeout explícito y dejar que una API externa caída bloquee hilos indefinidamente, reintentar automáticamente un POST no idempotente ante una respuesta perdida, y cargar un cuerpo de respuesta potencialmente enorme completo en memoria sin un `BodyHandler` de streaming. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html.
 
 ### Tema 2: Tokens, validación y límites de seguridad
 
@@ -319,6 +321,13 @@ JWT es un formato de claims firmado, no necesariamente cifrado: quien lo obtiene
 
 Valida longitud, formato, rangos y reglas de negocio en cada frontera. Las consultas parametrizadas evitan inyección SQL, pero no reemplazan autorización por objeto. Para SSRF, valida esquema/host, resuelve DNS y bloquea rangos privados/no enrutable también en la conexión; una comprobación textual de URL no es suficiente.
 **Analogía:** un token es como la pulsera de un festival: demuestra que pagaste la entrada sin tener que mostrar el DNI en cada puesto. Validarlo es revisar que la pulsera sea auténtica y no haya caducado; el límite de seguridad es que la pulsera de la zona general no te abre el backstage.
+
+**¿Por qué es importante?** Porque la identidad (quién eres), los permisos sobre cada recurso específico (qué podés hacer con ESTE envío) y la protección de la credencial misma resuelven tres amenazas distintas; un token válido nunca implica por sí solo que su dueño pueda leer cualquier recurso.
+**Conceptos clave:** JWT, OAuth 2.0, OpenID Connect, autenticación frente a autorización, SSRF.
+
+**Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+
 #### Paso 4 · Demostración guiada
 
 En el cliente del tema anterior, añade una credencial cargada desde una variable de entorno y evita imprimirla:
@@ -527,16 +536,164 @@ Ejecuta `java java-http-t02/src/ValidarGuia.java`.
 
 Formato, autorización y parametrización SQL resuelven problemas distintos.
 
-#### Paso 7 · Cierre y evidencia
-
-Entrega pruebas del header, validación y denegación, sin incluir credenciales reales, como incremento del proyecto integrador de RutaFlow: cada consulta de envío debe comprobar la propiedad o el permiso además del rol; con esto cerrás el módulo. Errores comunes: registrar el token completo en logs o guardarlo en el código fuente, confundir un token válido (autenticación) con permiso sobre un recurso específico (autorización), y validar una URL externa solo con una expresión regular en vez de resolver DNS y bloquear rangos privados. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html y https://cheatsheetseries.owasp.org/.
-**¿Por qué es importante?** Porque la identidad (quién eres), los permisos sobre cada recurso específico (qué podés hacer con ESTE envío) y la protección de la credencial misma resuelven tres amenazas distintas; un token válido nunca implica por sí solo que su dueño pueda leer cualquier recurso.
 **Evidencia de aprendizaje:** entrega la prueba del header `Authorization: Bearer` sin exponerlo en logs, la validación de entradas hostiles, y el rechazo de una URL con IP privada por política explícita.
-**Conceptos clave:** JWT, OAuth 2.0, OpenID Connect, autenticación frente a autorización, SSRF.
-
-**Cuándo no usarlo:** no guardes contraseñas dentro de JWT ni uses JWT como sustituto automático de sesiones; el servidor debe poder revocar o limitar tokens según el diseño.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-
 **4. Cierra**
 
 Guarda entrada válida, inválida y la regla que la rechazó.
+
+#### Paso 7 · Cierre y evidencia
+
+Entrega pruebas del header, validación y denegación, sin incluir credenciales reales, como incremento del proyecto integrador de RutaFlow: cada consulta de envío debe comprobar la propiedad o el permiso además del rol; con esto cerrás el módulo. Errores comunes: registrar el token completo en logs o guardarlo en el código fuente, confundir un token válido (autenticación) con permiso sobre un recurso específico (autorización), y validar una URL externa solo con una expresión regular en vez de resolver DNS y bloquear rangos privados. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html y https://cheatsheetseries.owasp.org/.
+
+### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
+
+**Prerrequisito:** tema «Tokens, validación y límites de seguridad» de este módulo.
+
+**Al finalizar podrás:** calcular un hash SHA-256, firmar y verificar un mensaje con HMAC, y cifrar con AES-GCM detectando cualquier alteración, usando solo la Java Cryptography Architecture.
+
+**¿Por qué es importante?** Casi todo error de criptografía viene de elegir mal la herramienta: hashear una contraseña con SHA-256, cifrar sin autenticar o repetir un IV. Saber qué resuelve cada primitiva evita esos errores.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa JDK 17 o superior; todo viene en el JDK. Crea la carpeta `academia-labs/java/cripto`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow recibe avisos de entrega de un socio por webhook. Hay que comprobar que el aviso viene del socio (HMAC) y guardar la dirección del cliente cifrada en la base (AES-GCM). Un desarrollador había usado AES en modo ECB: los datos se cifraban, pero un atacante podía cambiar bloques sin que nadie lo notara.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** hash, HMAC, cifrado simétrico, AES-GCM, IV (*nonce*), etiqueta de autenticación, comparación en tiempo constante, `SecureRandom`.
+
+| Necesitas | Usa | No uses |
+|---|---|---|
+| huella de un archivo | SHA-256 (`MessageDigest`) | MD5, SHA-1 |
+| saber que un mensaje viene de quien tiene la clave | HMAC-SHA256 (`Mac`) | un hash sin clave |
+| ocultar datos y detectar cambios | AES-GCM (`Cipher`) | AES/ECB, AES/CBC sin MAC |
+| guardar contraseñas | Argon2, bcrypt o PBKDF2 | SHA-256 directo |
+
+**AES-GCM** cifra y además calcula una **etiqueta** de 16 bytes. Al descifrar, si un solo bit cambió, lanza `AEADBadTagException`. Necesita un **IV** de 12 bytes **distinto en cada cifrado con la misma clave**: repetirlo rompe la seguridad. Se genera con `SecureRandom` y se guarda junto al texto cifrado (no es secreto).
+
+Para comparar firmas usa `MessageDigest.isEqual`, que tarda lo mismo sin importar dónde está la diferencia.
+
+**Analogía:** un hash es la huella digital de un documento; HMAC es la huella con un sello que solo tú y tu socio tienen; AES-GCM es una caja fuerte con precinto: además de cerrarla, sabes si alguien la abrió. La analogía falla en que el precinto (la etiqueta) no impide que alguien rompa la caja: solo garantiza que lo notarás.
+
+**Límite de uso:** nunca inventes algoritmos ni combines primitivas a mano. Las claves no van en el código: van en un gestor de secretos. Para contraseñas usa una función lenta diseñada para eso.
+
+```mermaid
+flowchart LR
+    D["datos"] -->|"SHA-256"| H["huella"]
+    D -->|"HMAC + clave compartida"| F["firma: ¿viene del socio?"]
+    D -->|"AES-GCM + clave + IV nuevo"| C["cifrado + etiqueta"]
+    C -->|"un bit cambiado"| X["AEADBadTagException"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/cripto/Cripto.java`:
+
+```java
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.HexFormat;
+import javax.crypto.AEADBadTagException;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+public class Cripto {
+    public static void main(String[] args) throws Exception {
+        byte[] datos = "ENV-42;Calle 26;5000".getBytes(StandardCharsets.UTF_8);
+        HexFormat hex = HexFormat.of();
+
+        // 1) Hash SHA-256: huella del contenido. Mismo dato, misma huella.
+        byte[] huella = MessageDigest.getInstance("SHA-256").digest(datos);
+        System.out.println("SHA-256: " + hex.formatHex(huella).substring(0, 16) + "…");
+
+        // 2) HMAC: huella con clave. Prueba que el mensaje viene de quien tiene la clave.
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec("clave-compartida-de-prueba".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        byte[] firma = mac.doFinal(datos);
+        System.out.println("HMAC válido: " + MessageDigest.isEqual(firma, mac.doFinal(datos)));
+
+        // 3) AES-GCM: cifra y además detecta alteraciones.
+        KeyGenerator generador = KeyGenerator.getInstance("AES");
+        generador.init(256);
+        SecretKey clave = generador.generateKey();
+        byte[] iv = new byte[12];
+        new SecureRandom().nextBytes(iv); // nunca repitas un IV con la misma clave
+
+        Cipher cifrador = Cipher.getInstance("AES/GCM/NoPadding");
+        cifrador.init(Cipher.ENCRYPT_MODE, clave, new GCMParameterSpec(128, iv));
+        byte[] cifrado = cifrador.doFinal(datos);
+        System.out.println("Cifrado: " + cifrado.length + " bytes (" + datos.length + " de datos + 16 de etiqueta)");
+
+        Cipher descifrador = Cipher.getInstance("AES/GCM/NoPadding");
+        descifrador.init(Cipher.DECRYPT_MODE, clave, new GCMParameterSpec(128, iv));
+        System.out.println("Descifrado: " + new String(descifrador.doFinal(cifrado), StandardCharsets.UTF_8));
+
+        cifrado[0] ^= 1; // un atacante cambia un bit
+        try {
+            descifrador.init(Cipher.DECRYPT_MODE, clave, new GCMParameterSpec(128, iv));
+            descifrador.doFinal(cifrado);
+        } catch (AEADBadTagException e) {
+            System.out.println("Alteración detectada: " + e.getClass().getSimpleName());
+        }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/cripto
+java Cripto.java
+```
+
+**Explicación por bloques:** El hash SHA-256 siempre da la misma huella para los mismos bytes. El HMAC usa una clave compartida y `MessageDigest.isEqual` compara las firmas en tiempo constante. Para AES-GCM se genera una clave de 256 bits y un IV de 12 bytes aleatorio; el texto cifrado mide 36 bytes: 20 de datos más 16 de etiqueta. El descifrado devuelve el texto original. Al cambiar un solo bit, la etiqueta ya no coincide y Java lanza `AEADBadTagException` en lugar de devolver datos falsos.
+
+![Captura de terminal: SHA-256 del envío, HMAC válido, cifrado AES-GCM de 36 bytes, descifrado correcto y alteración detectada con AEADBadTagException](content/figures/java/criptografia-jca.svg)
+
+**Resultado esperado:**
+
+```text
+SHA-256: 4ae9d9fa731b5bbc…
+HMAC válido: true
+Cifrado: 36 bytes (20 de datos + 16 de etiqueta)
+Descifrado: ENV-42;Calle 26;5000
+Alteración detectada: AEADBadTagException
+```
+
+**Fallo deliberado:** cifra dos veces con el mismo `cifrador` y el mismo IV (llama otra vez `cifrador.init(Cipher.ENCRYPT_MODE, clave, new GCMParameterSpec(128, iv))` y `doFinal`). **Error esperado:** `InvalidAlgorithmParameterException: Cannot reuse iv for GCM encryption`. **Diagnóstico:** Java protege contra el error más grave de GCM. Genera un IV nuevo para cada cifrado y guárdalo junto al resultado.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el ejemplo y explica de dónde salen los 36 bytes.
+2. **Variación:** cambia una letra de los datos y compara la nueva huella SHA-256.
+3. **Diagnóstico:** reproduce el fallo deliberado del IV repetido.
+4. **Integración:** guarda el IV y el texto cifrado juntos en Base64 (`iv:cifrado`) y escribe el método que los separa y descifra.
+5. **Diseño:** para cada dato de RutaFlow (contraseña, dirección, webhook, archivo de respaldo) elige la primitiva de la tabla.
+
+**Pista:** si dudas entre hash, HMAC y cifrado, pregunta: ¿necesito ocultar el dato, probar quién lo envió o solo saber si cambió?
+
+#### Paso 6 · Práctica independiente
+
+Implementa `verificarWebhook(cuerpo, firmaHexRecibida, clave)` que calcule el HMAC-SHA256 del cuerpo y lo compare con `MessageDigest.isEqual`. Pruébalo con una firma correcta y con una alterada.
+
+#### Paso 7 · Cierre
+
+- [ ] Eliges hash, HMAC o AES-GCM según el problema.
+- [ ] El programa imprime las cinco líneas esperadas.
+- [ ] Reprodujiste el rechazo de un IV repetido.
+- [ ] Sabes por qué SHA-256 no sirve para contraseñas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar AES/ECB, repetir el IV, comparar firmas con `Arrays.equals` y guardar claves en el código. **Siguiente paso:** el módulo 19 vuelve a la seguridad con assertions y diseño por contrato.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, verifica los webhooks del socio con HMAC-SHA256 y cifra la dirección del cliente con AES-GCM antes de guardarla, con la clave en un gestor de secretos.
+
+**Fuente oficial:** [Oracle — Java Cryptography Architecture Reference Guide](https://docs.oracle.com/en/java/javase/21/security/java-cryptography-architecture-jca-reference-guide.html) y [OWASP — Cryptographic Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html).
+

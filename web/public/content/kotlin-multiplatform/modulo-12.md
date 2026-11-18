@@ -70,6 +70,8 @@ flowchart LR
 
 **Cuándo no conviene** una facade tan estricta: en un prototipo de un solo desarrollador sin consumidor Swift todavío, exponer directamente los tipos del repositorio ahorra una capa de traducción que nadie va a usar todavía; la frontera mínima paga su costo de diseño recién cuando existe un segundo consumidor real (otra plataforma, otro equipo) del que proteger ese cambio interno — es el mismo trade-off de "YAGNI" frente a diseñar para un futuro consumidor que todavía no existe.
 
+**¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
+
 #### Paso 4 · Demostración guiada desde cero
 ```kotlin
 public interface TaskClient {
@@ -100,11 +102,10 @@ Pista: marcá como `public` (en vez de `internal`) la clase `TareaRepositoryImpl
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo únicamente la interfaz `TaskClient` como facade pública, e inspeccionando la API exportada (el dump ABI del Tema 3) para confirmar que ningún tipo de infraestructura aparece en la superficie pública.
 
+**Proyecto integrador:** define una facade `EnvioClient` para RutaFlow que exponga solo estados de dominio y mantenga Ktor, SQLDelight y las implementaciones fuera de la API consumida por Swift.
+
 #### Paso 7 · Cierre
 Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
-**¿Por qué es importante?** El coste de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación, compatibilidad y soporte; una frontera deliberadamente pequeña mantiene ese coste bajo control.
-
-**Proyecto integrador:** define una facade `EnvioClient` para RutaFlow que exponga solo estados de dominio y mantenga Ktor, SQLDelight y las implementaciones fuera de la API consumida por Swift.
 
 ### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos
 

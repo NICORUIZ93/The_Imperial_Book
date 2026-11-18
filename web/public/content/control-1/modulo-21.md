@@ -4,7 +4,7 @@ Los dos parciales del curso, resueltos paso a paso. Intenta cada punto en papel 
 
 ## Aprende construyendo
 
-### Tema 1: Parcial 1
+### Tema 1: Parcial 1 resuelto paso a paso
 
 **¿Por qué es importante?** Resolver el Parcial 1 completo muestra cómo se combinan los capítulos en una sola evaluación.
 

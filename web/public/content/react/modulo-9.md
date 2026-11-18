@@ -42,6 +42,25 @@ graph TD
     style G fill:#e8f5e9
 ```
 
+**¿Por qué es importante?** El Profiler proporciona evidencia concreta de qué componentes se re-renderizan innecesariamente y por qué, evitando esfuerzo de optimización desperdiciado en suposiciones incorrectas.
+**Conceptos clave:** React DevTools Profiler, evidencia antes que intuición.
+
+React DevTools Profiler graba una interacción específica de la aplicación (un clic, escribir en un input, navegar entre vistas) y muestra exactamente qué componentes se re-renderizaron durante esa interacción y por qué (props que cambiaron, estado que cambió, o simplemente que su componente padre se re-renderizó, arrastrando consigo un re-render del hijo aunque sus props sean idénticas), información concreta y medible que reemplaza la intuición o suposición sobre qué parte del código podría estar causando lentitud.
+
+Optimizar código sin esta información concreta es, en la inmensa mayoría de los casos, esfuerzo desperdiciado en el lugar equivocado: es común intuir que cierto componente "parece pesado" y envolverlo preventivamente en `React.memo` (Tema 2), cuando en realidad el componente que efectivamente causa el problema de rendimiento percibido es otro completamente distinto, identificable únicamente inspeccionando el Profiler durante la interacción real que el usuario reporta como lenta, en vez de adivinar basándose en una impresión general del código.
+
+**Analogía:** optimizar sin el Profiler es como intentar reparar un motor de auto basándose únicamente en la intuición de qué pieza "suena mal", en vez de conectar un diagnóstico real que muestre exactamente qué componente específico está fallando y por qué.
+
+**Diagrama:**
+
+```
+Profiler graba una interacción → muestra QUÉ componentes se re-renderizaron y POR QUÉ
+(props cambiadas / estado cambiado / re-render heredado del padre)
+```
+
+
+**Límites y decisión de uso:** Una medición aislada mezcla variabilidad, herramientas y trabajo de desarrollo. Repite el mismo recorrido con datos y build comparables; optimiza el cuello observado y verifica que la mejora no cambia el resultado funcional.
+
 #### Paso 4 · Demostración guiada desde cero
 ```text
 1. Abrí React DevTools > pestaña Profiler
@@ -69,24 +88,6 @@ Corregí el Paso 5 identificando con el Profiler cuál es el componente que sí 
 
 #### Paso 7 · Cierre
 Entregá la grabación del Paso 4 señalando el componente real afectado, la optimización desperdiciada del Paso 5, y la corrección dirigida del Paso 6; explicá por qué memoizar basándose en intuición en vez de en evidencia del Profiler puede hacer que el esfuerzo de optimización se invierta en el componente equivocado. Siguiente paso: estudia React.memo con criterio. Errores comunes: optimizar sin medir primero, confiar en percepción subjetiva de qué componente "parece lento", y asumir que el componente visualmente más grande es automáticamente el más costoso de renderizar. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/Profiler.
-**¿Por qué es importante?** El Profiler proporciona evidencia concreta de qué componentes se re-renderizan innecesariamente y por qué, evitando esfuerzo de optimización desperdiciado en suposiciones incorrectas.
-**Conceptos clave:** React DevTools Profiler, evidencia antes que intuición.
-
-React DevTools Profiler graba una interacción específica de la aplicación (un clic, escribir en un input, navegar entre vistas) y muestra exactamente qué componentes se re-renderizaron durante esa interacción y por qué (props que cambiaron, estado que cambió, o simplemente que su componente padre se re-renderizó, arrastrando consigo un re-render del hijo aunque sus props sean idénticas), información concreta y medible que reemplaza la intuición o suposición sobre qué parte del código podría estar causando lentitud.
-
-Optimizar código sin esta información concreta es, en la inmensa mayoría de los casos, esfuerzo desperdiciado en el lugar equivocado: es común intuir que cierto componente "parece pesado" y envolverlo preventivamente en `React.memo` (Tema 2), cuando en realidad el componente que efectivamente causa el problema de rendimiento percibido es otro completamente distinto, identificable únicamente inspeccionando el Profiler durante la interacción real que el usuario reporta como lenta, en vez de adivinar basándose en una impresión general del código.
-
-**Analogía:** optimizar sin el Profiler es como intentar reparar un motor de auto basándose únicamente en la intuición de qué pieza "suena mal", en vez de conectar un diagnóstico real que muestre exactamente qué componente específico está fallando y por qué.
-
-**Diagrama:**
-
-```
-Profiler graba una interacción → muestra QUÉ componentes se re-renderizaron y POR QUÉ
-(props cambiadas / estado cambiado / re-render heredado del padre)
-```
-
-
-**Límites y decisión de uso:** Una medición aislada mezcla variabilidad, herramientas y trabajo de desarrollo. Repite el mismo recorrido con datos y build comparables; optimiza el cuello observado y verifica que la mejora no cambia el resultado funcional.
 
 ### Tema 2: React.memo con criterio
 
@@ -306,6 +307,16 @@ En RutaFlow, el panel de analítica (gráficos pesados, con una librería grande
 
 **Analogía:** es como un menú de restaurante donde los platos no se cocinan todos al abrir: cada uno se prepara cuando alguien lo pide. `Suspense` es el "su pedido está en preparación" mientras llega.
 
+**Conceptos clave:** import diferido, chunk/bundle, `fallback`, carga bajo demanda, impacto en el bundle inicial.
+**Cuándo no usarlo:** no difieras componentes pequeños o que se ven de inmediato: el costo de una petición de red extra supera el ahorro. `lazy` brilla con componentes pesados o pantallas poco frecuentes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** carga de forma diferida el panel de analítica y el mapa, y demuestra con `npm run build` que el bundle inicial del operador baja de tamaño frente a importarlos directamente.
+
+---
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** usar `lazy()` sobre un componente que se muestra de inmediato al cargar la página, agregando una espera de red donde antes no había ninguna; no envolver el `<Suspense>` en un Error Boundary, dejando que un chunk que falla al descargarse rompa toda la pantalla en vez de mostrar un mensaje de recuperación.
+**Fuente oficial:** [documentación de React](https://react.dev/reference/react).
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```jsx
@@ -350,15 +361,265 @@ Divide por ruta: carga de forma diferida un componente de página completa en un
 
 #### Paso 7 · Cierre
 Entrega la analítica diferida, la comparación de bundles y el boundary sobre el Suspense. **¿Por qué es importante?** El tamaño del bundle inicial es uno de los factores que más afecta el tiempo de carga (y las Core Web Vitals, Tema 1). `React.lazy` + `Suspense` es la herramienta estándar para que el usuario descargue solo lo que usa, clave en apps grandes donde el 80% del código corresponde a pantallas que la mayoría nunca visita. Fuentes: [React — lazy](https://react.dev/reference/react/lazy) y [React — Suspense](https://react.dev/reference/react/Suspense).
-**Conceptos clave:** import diferido, chunk/bundle, `fallback`, carga bajo demanda, impacto en el bundle inicial.
-**Cuándo no usarlo:** no difieras componentes pequeños o que se ven de inmediato: el costo de una petición de red extra supera el ahorro. `lazy` brilla con componentes pesados o pantallas poco frecuentes.
 
-**Transferencia al proyecto integrador «RutaFlow»:** carga de forma diferida el panel de analítica y el mapa, y demuestra con `npm run build` que el bundle inicial del operador baja de tamaño frente a importarlos directamente.
+### Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min
 
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** usar `lazy()` sobre un componente que se muestra de inmediato al cargar la página, agregando una espera de red donde antes no había ninguna; no envolver el `<Suspense>` en un Error Boundary, dejando que un chunk que falla al descargarse rompa toda la pantalla en vez de mostrar un mensaje de recuperación.
-**Fuente oficial:** [documentación de React](https://react.dev/reference/react).
+**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado del cliente» de este módulo.
+
+**Al finalizar podrás:** leer el resultado de una promesa con `use` dentro de un límite de `Suspense` y un límite de errores, y leer un contexto dentro de un `if`.
+
+**¿Por qué es importante?** `use` permite escribir componentes que leen datos asíncronos como si fueran síncronos, mientras `Suspense` muestra la espera. También es la única forma de leer un contexto después de un `return` temprano o dentro de una condición.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa React 19 o superior. Parte del proyecto de Vite del módulo y trabaja en `src/DetalleEnvio.jsx`.
+
+#### Paso 2 · Contexto y caso real
+
+El detalle de un envío en RutaFlow necesita datos del servidor. Antes, cada componente tenía su `useEffect`, su `useState` de carga y su `useState` de error. Con `use` y `Suspense`, la espera y el error se manejan en un solo lugar para toda la sección.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `use`, promesa estable, `Suspense`, límite de errores (*Error Boundary*), contexto condicional.
+
+`use(promesa)` **suspende** el componente mientras la promesa está pendiente: React muestra el `fallback` del `Suspense` más cercano. Cuando se resuelve, vuelve a renderizar con el valor. Si se rechaza, el error sube al límite de errores más cercano.
+
+La regla clave: **la promesa no se crea durante el render** del componente que la lee. Si la creas ahí, cada render crea una promesa nueva y el componente suspende para siempre. Créala en un componente padre, en un cargador de ruta o guárdala en una caché.
+
+`use(Contexto)` lee un contexto como `useContext`, pero **puede ir dentro de condiciones y bucles**. Las demás reglas de los hooks siguen igual para el resto.
+
+**Analogía:** `use` es pedir un plato y quedarte en la mesa: el mesero (`Suspense`) muestra el letrero «en preparación» hasta que llega. La analogía falla en que, si pides el plato de nuevo cada vez que miras la mesa, la cocina nunca termina: por eso la promesa se crea una sola vez.
+
+**Límite de uso:** no reemplaza a una librería de datos con caché, reintentos e invalidación (TanStack Query). No llames `use` en un `try/catch`: el error debe llegar al límite de errores.
+
+```mermaid
+flowchart TB
+    P["Padre: crea la promesa una vez"] --> S["Suspense fallback: Cargando"]
+    S --> D["DetalleEnvio: use(promesa)"]
+    D -->|pendiente| S
+    D -->|resuelta| V["muestra el envío"]
+    D -->|rechazada| E["ErrorBoundary: mensaje"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-react/src/DetalleEnvio.jsx`:
+
+```jsx
+import { createContext, Suspense, use, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+const PreferenciasContext = createContext({ mostrarRuta: false });
+
+function pedirEnvio(codigo) {
+  return new Promise((resolver, rechazar) => setTimeout(() => {
+    if (codigo === 'ENV-404') rechazar(new Error('Envío no encontrado'));
+    else resolver({ codigo, estado: 'EN_RUTA', ruta: ['Bodega', 'Calle 26'] });
+  }, 800));
+}
+
+function Detalle({ promesaEnvio }) {
+  const envio = use(promesaEnvio); // suspende hasta que llega
+  if (envio.estado !== 'EN_RUTA') return <p>{envio.codigo}: {envio.estado}</p>;
+  const { mostrarRuta } = use(PreferenciasContext); // contexto después de un return
+  return <p>{envio.codigo} · {mostrarRuta ? envio.ruta.join(' → ') : 'en ruta'}</p>;
+}
+
+export default function DetalleEnvio() {
+  // La promesa se crea en un evento del padre, no en el render del hijo.
+  const [promesa, setPromesa] = useState(() => pedirEnvio('ENV-42'));
+  return (
+    <PreferenciasContext value={{ mostrarRuta: true }}>
+      <button onClick={() => setPromesa(pedirEnvio('ENV-404'))}>Pedir envío inexistente</button>
+      <ErrorBoundary fallback={<p role="alert">No se pudo cargar el envío</p>} resetKeys={[promesa]}>
+        <Suspense fallback={<p>Cargando envío…</p>}>
+          <Detalle promesaEnvio={promesa} />
+        </Suspense>
+      </ErrorBoundary>
+    </PreferenciasContext>
+  );
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-react
+npm install react-error-boundary
+npm run dev
+```
+
+**Explicación por bloques:** `pedirEnvio` simula el servidor y rechaza el código `ENV-404`. El padre crea la promesa una sola vez con el inicializador de `useState` y crea otra solo cuando el usuario pulsa el botón. `Detalle` lee la promesa con `use`: mientras espera, se ve el `fallback` de `Suspense`; si falla, el `ErrorBoundary` muestra el mensaje. Después de un `return` temprano, `use(PreferenciasContext)` lee el contexto, algo prohibido para `useContext`. En React 19, `<PreferenciasContext value>` funciona como proveedor.
+
+**Resultado esperado:**
+
+```text
+Al cargar: «Cargando envío…» durante unos 800 ms y luego «ENV-42 · Bodega → Calle 26».
+Al pulsar «Pedir envío inexistente»: «Cargando envío…» y luego «No se pudo cargar el envío».
+```
+
+**Fallo deliberado:** mueve `pedirEnvio('ENV-42')` dentro de `Detalle` y llama `use(pedirEnvio('ENV-42'))`. **Error esperado:** la pantalla queda en «Cargando envío…» para siempre y la consola avisa de una promesa no cacheada creada durante el render. **Diagnóstico:** cada render crea una promesa nueva, que nunca está resuelta. Crea la promesa fuera del render del componente que la lee.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** carga la página y mide cuánto dura el estado de carga.
+2. **Variación:** cambia `mostrarRuta` a `false` y comprueba el texto.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica el bucle de suspensiones.
+4. **Integración:** mueve el `Suspense` para que envuelva dos detalles y observa que esperan juntos.
+5. **Diseño:** decide qué pantallas de RutaFlow usarían `use` y cuáles TanStack Query, y justifica.
+
+**Pista:** si algo queda cargando para siempre, busca dónde se crea la promesa.
+
+#### Paso 6 · Práctica independiente
+
+Crea una pequeña caché `const cache = new Map()` con una función `obtenerEnvio(codigo)` que devuelve la misma promesa para el mismo código, y úsala para que dos componentes lean el mismo envío con una sola petición.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué hace `use` con una promesa pendiente, resuelta y rechazada.
+- [ ] La pantalla muestra carga, datos y error en los casos esperados.
+- [ ] Reprodujiste la promesa creada en el render.
+- [ ] Lees un contexto después de un `return` temprano.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear la promesa en el render, envolver `use` en `try/catch` y olvidar el límite de errores. **Siguiente paso:** el tema siguiente, React Compiler, memoiza automáticamente lo que antes hacías con `useMemo`.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el detalle de envío de RutaFlow, carga los datos con una promesa creada en el cargador de la ruta y léela con `use` dentro de `Suspense` y un límite de errores.
+
+**Fuente oficial:** [React — use](https://react.dev/reference/react/use) y [React — Suspense](https://react.dev/reference/react/Suspense).
+
+### Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min
+
+**Prerrequisito:** temas «Medir antes de optimizar» y «React.memo con criterio» de este módulo.
+
+**Al finalizar podrás:** activar React Compiler en un proyecto de Vite, comprobar con React DevTools qué componentes memoizó, y corregir con el linter el código que rompe las reglas de React.
+
+**¿Por qué es importante?** Escribir `useMemo`, `useCallback` y `memo` a mano es fácil de olvidar y fácil de equivocar. El compilador lo hace automáticamente, pero solo si el código respeta las reglas de React. Por eso el compilador y su linter van juntos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa React 19 y un proyecto de Vite. Instalarás `babel-plugin-react-compiler` y `eslint-plugin-react-hooks` 6 o superior. Necesitas la extensión React DevTools en el navegador.
+
+#### Paso 2 · Contexto y caso real
+
+La lista de envíos de RutaFlow tenía `useMemo` en algunos lugares y en otros no; nadie sabía cuáles eran necesarios. Con el compilador activo, el equipo borró la mayoría y el linter encontró dos componentes que mutaban props, que eran la causa real de renders de más.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** memoización, React Compiler, reglas de React (pureza, inmutabilidad, reglas de los hooks), `eslint-plugin-react-hooks`, directiva `"use no memo"`.
+
+**React Compiler** analiza tus componentes al compilar y agrega memoización donde sirve: si las entradas de un cálculo o de un elemento JSX no cambiaron, reutiliza el resultado anterior. Funciona con componentes y hooks.
+
+Para hacerlo de forma segura, supone que el código cumple las **reglas de React**:
+
+1. Componentes y hooks son **puros** e idempotentes durante el render.
+2. Props y estado son **inmutables**: no se modifican, se reemplazan.
+3. Los hooks se llaman siempre en el mismo orden, en el nivel superior.
+
+Si un componente rompe una regla, el compilador **lo salta** (no lo optimiza) y el linter `eslint-plugin-react-hooks` lo marca. La directiva `"use no memo"` excluye un componente a propósito mientras lo corriges.
+
+**Analogía:** el compilador es un asistente que guarda copias de lo que ya calculaste para no repetirlo. Solo puede hacerlo si tus recetas no cambian los ingredientes a escondidas. La analogía falla en que el asistente no te avisa en voz alta: el aviso lo da el linter.
+
+**Límite de uso:** no compensa algoritmos lentos ni listas enormes sin virtualizar: memoizar no reduce el trabajo de un cálculo que sí cambió. No borres `useMemo` que se usan para mantener una referencia estable en dependencias de efectos sin probar antes.
+
+```mermaid
+flowchart LR
+    C["Código del componente"] --> L{"¿Cumple las reglas de React?"}
+    L -->|sí| M["Compiler agrega memoización"]
+    L -->|no| S["Compiler lo salta + aviso del linter"]
+    M --> D["React DevTools: insignia Memo ✨"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-react/vite.config.js`:
+
+```js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [
+    react({
+      babel: { plugins: ['babel-plugin-react-compiler'] }, // debe ir primero
+    }),
+  ],
+});
+```
+
+Archivo `academia-react/eslint.config.js`:
+
+```js
+import reactHooks from 'eslint-plugin-react-hooks';
+
+export default [
+  reactHooks.configs.flat.recommended, // incluye las reglas que usa el compilador
+];
+```
+
+Archivo `academia-react/src/ListaEnvios.jsx`:
+
+```jsx
+export default function ListaEnvios({ envios, filtro }) {
+  // ❌ Rompe la inmutabilidad: ordena el array que llegó por props.
+  // envios.sort((a, b) => a.codigo.localeCompare(b.codigo));
+
+  // ✅ Crea una copia. El compilador memoiza este cálculo sin useMemo.
+  const visibles = envios
+    .filter((e) => e.codigo.includes(filtro))
+    .toSorted((a, b) => a.codigo.localeCompare(b.codigo));
+
+  return <ul>{visibles.map((e) => <li key={e.codigo}>{e.codigo}</li>)}</ul>;
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-react
+npm install -D babel-plugin-react-compiler eslint-plugin-react-hooks@latest
+npx eslint src
+npm run dev
+```
+
+**Explicación por bloques:** En `vite.config.js`, el plugin del compilador se agrega a Babel a través del plugin de React de Vite; debe ser el primero de la lista. `eslint.config.js` activa las reglas recomendadas de hooks, que incluyen las validaciones del compilador. En `ListaEnvios`, la línea comentada ordena el array de props en su lugar y rompe la inmutabilidad; la versión correcta usa `filter` y `toSorted`, que crean copias. Sin escribir `useMemo`, el compilador memoiza `visibles` y el JSX mientras `envios` y `filtro` no cambien.
+
+**Resultado esperado:**
+
+```text
+npx eslint src termina sin errores.
+En React DevTools > Components, ListaEnvios muestra la insignia «Memo ✨».
+Al escribir en un campo que no afecta a la lista, el Profiler muestra que ListaEnvios no se volvió a renderizar.
+```
+
+**Fallo deliberado:** descomenta `envios.sort(...)`. **Error esperado:** `npx eslint src` reporta que no se deben modificar valores que el componente recibe (props), y DevTools ya no muestra la insignia del compilador en ese componente. **Diagnóstico:** el compilador saltó el componente porque rompe la regla de inmutabilidad. Usa `toSorted` o una copia.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** activa el compilador y busca la insignia en React DevTools.
+2. **Variación:** graba el Profiler escribiendo en un campo ajeno a la lista, con y sin compilador.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de ESLint.
+4. **Integración:** agrega `"use no memo"` como primera línea del componente y confirma que la insignia desaparece.
+5. **Diseño:** busca en un proyecto tuyo tres `useMemo` y decide cuáles puede reemplazar el compilador.
+
+**Pista:** si un componente no muestra la insignia, corre el linter: casi siempre explica qué regla rompe.
+
+#### Paso 6 · Práctica independiente
+
+Activa el compilador solo para la carpeta `src/envios` con la opción `sources` del plugin, corrige lo que marque el linter ahí y documenta el plan para el resto del proyecto.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras las tres reglas de React que el compilador supone.
+- [ ] ListaEnvios aparece memoizado en DevTools.
+- [ ] Reprodujiste el aviso del linter por mutar props.
+- [ ] Sabes para qué sirve `"use no memo"`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** activar el compilador sin el linter, mutar props o estado y borrar memoizaciones sin medir antes y después. **Siguiente paso:** el tema «Virtualización y code-splitting» ataca lo que la memoización no puede: listas muy largas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** activa React Compiler en el panel de RutaFlow, corrige todos los avisos del linter y adjunta al pull request una grabación del Profiler antes y después.
+
+**Fuente oficial:** [React — React Compiler](https://react.dev/learn/react-compiler) y [React — Rules of React](https://react.dev/reference/rules).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** medir con el Profiler, aplicar `React.memo` con criterio, y virtualizar una lista larga.

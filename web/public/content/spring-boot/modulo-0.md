@@ -544,6 +544,158 @@ Guarda dos respuestas y marca cuáles IDs se repiten. Elige `singleton` para obj
 
 Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son los que organizan las clases del proyecto integrador de este track (microservicio productivo, Módulo 12).
 
+### Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min
+
+**Prerrequisito:** temas «Inversión de control y el contenedor de Spring» y «Estereotipos, autoconfiguración y scopes» de este módulo.
+
+**Al finalizar podrás:** ejecutar código al iniciar y al detener un bean con `@PostConstruct`, `@PreDestroy` y `SmartLifecycle`, y apagar el servidor web sin cortar las peticiones en curso.
+
+**¿Por qué es importante?** Cuando Kubernetes reinicia un pod, Spring recibe una señal de apagado. Si el servidor se cierra de golpe, las peticiones a medio camino fallan y los mensajes pendientes se pierden. Conocer el ciclo de vida permite terminar el trabajo antes de salir.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x con Java 21 y el starter `spring-boot-starter-web`. Crea el proyecto en start.spring.io con el nombre `academia-spring` o continúa el de los temas anteriores.
+
+#### Paso 2 · Contexto y caso real
+
+El servicio de asignación de RutaFlow guarda en memoria un lote de envíos y lo envía a la base cada 10 segundos. En cada despliegue se perdían algunos envíos: el proceso se cerraba antes de vaciar el lote.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** ciclo de vida de un bean, `@PostConstruct`, `@PreDestroy`, `SmartLifecycle`, fase, `server.shutdown=graceful`, `spring.lifecycle.timeout-per-shutdown-phase`.
+
+Spring crea cada bean, le inyecta sus dependencias y entonces llama a `@PostConstruct`. Al cerrar el contexto, llama a `@PreDestroy` en orden inverso de creación.
+
+`SmartLifecycle` sirve para componentes que **arrancan y se detienen** (un consumidor, un planificador): Spring llama `start()` cuando el contexto está listo y `stop()` al apagar. El número de **fase** decide el orden: fases más altas arrancan después y se detienen antes.
+
+Con `server.shutdown=graceful` (activo por defecto desde Spring Boot 3.4), al recibir `SIGTERM` el servidor deja de aceptar peticiones nuevas y espera a las que están en curso, hasta el tiempo de `spring.lifecycle.timeout-per-shutdown-phase` (30 s por defecto).
+
+| Momento | Úsalo para |
+|---|---|
+| `@PostConstruct` | validar configuración, preparar cachés pequeñas |
+| `SmartLifecycle.start()` | arrancar consumidores o tareas de fondo |
+| `SmartLifecycle.stop()` | dejar de tomar trabajo nuevo y vaciar lo pendiente |
+| `@PreDestroy` | liberar recursos propios |
+
+**Analogía:** el apagado ordenado es el cierre de un restaurante: se cierra la puerta a clientes nuevos, se terminan los platos que ya están en la cocina y al final se apagan los fogones. La analogía falla en que, si el cierre tarda más del tiempo permitido, Kubernetes apaga las luces igual (`SIGKILL`).
+
+**Límite de uso:** no hagas trabajo largo en `@PostConstruct`: retrasa el arranque y la readiness. El tiempo de apagado debe ser menor que `terminationGracePeriodSeconds` del pod, o Kubernetes matará el proceso a la mitad.
+
+```mermaid
+sequenceDiagram
+    participant K as Kubernetes
+    participant S as Servidor web
+    participant L as LoteEnvios (SmartLifecycle)
+    K->>S: SIGTERM
+    S->>S: no acepta peticiones nuevas, termina las activas
+    S->>L: stop(): vacía el lote pendiente
+    L-->>S: listo
+    S-->>K: el proceso termina antes del plazo
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/java/com/rutaflow/asignacion/LoteEnvios.java`:
+
+```java
+package com.rutaflow.asignacion;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.SmartLifecycle;
+import org.springframework.stereotype.Component;
+
+@Component
+public class LoteEnvios implements SmartLifecycle {
+    private static final Logger log = LoggerFactory.getLogger(LoteEnvios.class);
+    private final List<String> pendientes = new ArrayList<>();
+    private volatile boolean corriendo;
+
+    @PostConstruct
+    void validar() { log.info("1. bean creado y dependencias inyectadas"); }
+
+    @Override public void start() { corriendo = true; log.info("2. empieza a aceptar envíos"); }
+
+    public synchronized void agregar(String codigo) {
+        if (!corriendo) throw new IllegalStateException("apagando: no se aceptan envíos");
+        pendientes.add(codigo);
+    }
+
+    @Override public synchronized void stop() {
+        corriendo = false;
+        log.info("3. vacía {} envíos pendientes antes de salir", pendientes.size());
+        pendientes.clear(); // aquí iría el guardado en la base
+    }
+
+    @Override public boolean isRunning() { return corriendo; }
+
+    @PreDestroy
+    void liberar() { log.info("4. libera recursos propios"); }
+}
+```
+
+Archivo `academia-spring/src/main/resources/application.properties`:
+
+```properties
+server.shutdown=graceful
+spring.lifecycle.timeout-per-shutdown-phase=20s
+```
+
+Ejecútalo:
+
+```bash
+cd academia-spring
+./mvnw spring-boot:run
+# en otra terminal, cuando arranque:
+kill -TERM $(pgrep -f academia-spring)
+```
+
+**Explicación por bloques:** `LoteEnvios` registra cada etapa con un número. `@PostConstruct` corre apenas el bean existe. `start()` lo llama Spring cuando el contexto está listo; desde ahí acepta envíos. Al recibir `SIGTERM`, el servidor web hace su apagado ordenado y Spring llama `stop()`, que deja de aceptar trabajo y vacía lo pendiente. Al final, `@PreDestroy` libera recursos. Las dos propiedades activan el apagado ordenado y fijan el tiempo máximo por fase.
+
+**Resultado esperado:**
+
+```text
+... LoteEnvios : 1. bean creado y dependencias inyectadas
+... LoteEnvios : 2. empieza a aceptar envíos
+... Commencing graceful shutdown. Waiting for active requests to complete
+... Graceful shutdown complete
+... LoteEnvios : 3. vacía 0 envíos pendientes antes de salir
+... LoteEnvios : 4. libera recursos propios
+```
+
+**Fallo deliberado:** detén la aplicación con `kill -9` en lugar de `kill -TERM`. **Error esperado:** no aparece ninguna de las líneas 3 y 4. **Diagnóstico:** `SIGKILL` no se puede capturar: el proceso muere sin ejecutar nada. Kubernetes lo envía si el apagado supera `terminationGracePeriodSeconds`; mantén el tiempo de Spring por debajo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** arranca y detén la aplicación y relaciona cada línea con su método.
+2. **Variación:** agrega un endpoint que llame `agregar` y otro que tarde 10 segundos; detén la app durante la petición lenta y comprueba que termina.
+3. **Diagnóstico:** reproduce el fallo deliberado con `kill -9`.
+4. **Integración:** implementa `getPhase()` devolviendo `Integer.MAX_VALUE - 100` y explica por qué el lote debe detenerse antes que otros componentes.
+5. **Diseño:** calcula el `terminationGracePeriodSeconds` del pod de RutaFlow a partir del tiempo de apagado de Spring.
+
+**Pista:** si no ves las líneas de apagado, revisa con qué señal se detuvo el proceso.
+
+#### Paso 6 · Práctica independiente
+
+Convierte un consumidor que lea de una cola en `SmartLifecycle`: en `stop()` debe dejar de pedir mensajes nuevos y esperar a que termine el que está procesando.
+
+#### Paso 7 · Cierre
+
+- [ ] Ordenas `@PostConstruct`, `start`, `stop` y `@PreDestroy`.
+- [ ] El registro muestra las cuatro etapas y el apagado ordenado.
+- [ ] Reprodujiste el apagado sin limpieza con `kill -9`.
+- [ ] Alineaste el tiempo de Spring con el de Kubernetes.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** hacer trabajo pesado en `@PostConstruct`, olvidar `isRunning()` y dar a Spring más tiempo de apagado que el que da Kubernetes. **Siguiente paso:** el tema «Inyección por constructor vs por campo» explica el paso anterior a `@PostConstruct`: cómo llegan las dependencias.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el servicio de asignación de RutaFlow, convierte el lote en `SmartLifecycle`, activa el apagado ordenado y ajusta `terminationGracePeriodSeconds` en el despliegue.
+
+**Fuente oficial:** [Spring Boot — Graceful Shutdown](https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html) y [Spring Framework — Lifecycle Callbacks](https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html).
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza generando `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.

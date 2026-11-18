@@ -10,7 +10,7 @@ Es la herramienta central del curso. Convierte funciones del tiempo en funciones
 
 ## Aprende construyendo
 
-### Tema 1: La idea
+### Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s
 
 **¿Por qué es importante?** Laplace convierte ecuaciones diferenciales en álgebra; es la herramienta con la que se resuelve todo el curso.
 
@@ -141,7 +141,7 @@ cambia `exp(-2 * t)` por `t**2` y vuelve a ejecutar. Resultado esperado: `2/s**3
 
 **Límite:** la integral de la definición solo converge para \(s\) mayor que cierto valor (aquí \(s>-2\)); por eso la tabla y sus propiedades existen, para no repetir esa integral (y su análisis de convergencia) en cada ejercicio.
 
-### Tema 2: La tabla
+### Tema 2: La tabla de transformadas de Laplace
 
 **¿Por qué es importante?** La tabla es lo que usarás en cada examen para pasar del tiempo a \(s\) y de vuelta; entender cada fila evita errores de memoria.
 
@@ -304,7 +304,7 @@ cambia `t * exp(-4 * t)` por `3*exp(-2*t)*sympy.sin(5*t)` (importa `sin` de symp
 
 **Límite:** la tabla solo cubre las formas listadas (escalón, rampa, exponencial, seno/coseno y sus combinaciones); una función que no se pueda descomponer en esos bloques exige volver a la integral de definición o usar una tabla más amplia.
 
-### Tema 3: Propiedades
+### Tema 3: Propiedades de la transformada de Laplace
 
 **¿Por qué es importante?** Las propiedades (derivada, desplazamiento, retardo) explican por qué una función de transferencia tiene la forma que tiene.
 

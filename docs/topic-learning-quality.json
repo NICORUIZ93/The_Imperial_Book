@@ -13,50 +13,50 @@
   ],
   "summary": {
     "android": {
-      "topics": 74,
-      "explanation": 74,
-      "code": 74,
-      "visual": 67,
-      "filePath": 74,
-      "runCommand": 74,
-      "expectedResult": 74,
-      "practice": 74,
-      "project": 74,
-      "modelMental": 74,
-      "limitsDecision": 74,
-      "practicable": 74,
+      "topics": 83,
+      "explanation": 83,
+      "code": 83,
+      "visual": 76,
+      "filePath": 83,
+      "runCommand": 83,
+      "expectedResult": 83,
+      "practice": 83,
+      "project": 83,
+      "modelMental": 83,
+      "limitsDecision": 83,
+      "practicable": 83,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "angular": {
-      "topics": 71,
-      "explanation": 71,
-      "code": 71,
-      "visual": 68,
-      "filePath": 71,
-      "runCommand": 71,
-      "expectedResult": 71,
-      "practice": 71,
-      "project": 71,
-      "modelMental": 71,
-      "limitsDecision": 71,
-      "practicable": 71,
+      "topics": 78,
+      "explanation": 78,
+      "code": 78,
+      "visual": 75,
+      "filePath": 78,
+      "runCommand": 78,
+      "expectedResult": 78,
+      "practice": 78,
+      "project": 78,
+      "modelMental": 78,
+      "limitsDecision": 78,
+      "practicable": 78,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "cloud": {
-      "topics": 156,
-      "explanation": 156,
-      "code": 156,
-      "visual": 96,
-      "filePath": 156,
-      "runCommand": 156,
-      "expectedResult": 156,
-      "practice": 156,
-      "project": 156,
-      "modelMental": 156,
-      "limitsDecision": 156,
-      "practicable": 156,
+      "topics": 168,
+      "explanation": 168,
+      "code": 168,
+      "visual": 108,
+      "filePath": 168,
+      "runCommand": 168,
+      "expectedResult": 168,
+      "practice": 168,
+      "project": 168,
+      "modelMental": 168,
+      "limitsDecision": 168,
+      "practicable": 168,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -77,34 +77,34 @@
       "repeatedDemo": 0
     },
     "devops": {
-      "topics": 130,
-      "explanation": 130,
-      "code": 130,
-      "visual": 123,
-      "filePath": 130,
-      "runCommand": 130,
-      "expectedResult": 130,
-      "practice": 130,
-      "project": 130,
-      "modelMental": 130,
-      "limitsDecision": 130,
-      "practicable": 130,
+      "topics": 138,
+      "explanation": 138,
+      "code": 138,
+      "visual": 131,
+      "filePath": 138,
+      "runCommand": 138,
+      "expectedResult": 138,
+      "practice": 138,
+      "project": 138,
+      "modelMental": 138,
+      "limitsDecision": 138,
+      "practicable": 138,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "flutter": {
-      "topics": 109,
-      "explanation": 109,
-      "code": 109,
-      "visual": 86,
-      "filePath": 109,
-      "runCommand": 109,
-      "expectedResult": 109,
-      "practice": 109,
-      "project": 109,
-      "modelMental": 109,
-      "limitsDecision": 109,
-      "practicable": 109,
+      "topics": 119,
+      "explanation": 119,
+      "code": 119,
+      "visual": 96,
+      "filePath": 119,
+      "runCommand": 119,
+      "expectedResult": 119,
+      "practice": 119,
+      "project": 119,
+      "modelMental": 119,
+      "limitsDecision": 119,
+      "practicable": 119,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -125,66 +125,66 @@
       "repeatedDemo": 0
     },
     "ios": {
-      "topics": 56,
-      "explanation": 56,
-      "code": 56,
-      "visual": 35,
-      "filePath": 56,
-      "runCommand": 56,
-      "expectedResult": 56,
-      "practice": 56,
-      "project": 56,
-      "modelMental": 56,
-      "limitsDecision": 56,
-      "practicable": 56,
+      "topics": 69,
+      "explanation": 69,
+      "code": 69,
+      "visual": 48,
+      "filePath": 69,
+      "runCommand": 69,
+      "expectedResult": 69,
+      "practice": 69,
+      "project": 69,
+      "modelMental": 69,
+      "limitsDecision": 69,
+      "practicable": 69,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "java": {
-      "topics": 111,
-      "explanation": 111,
-      "code": 111,
-      "visual": 19,
-      "filePath": 111,
-      "runCommand": 111,
-      "expectedResult": 111,
-      "practice": 111,
-      "project": 111,
-      "modelMental": 111,
-      "limitsDecision": 111,
-      "practicable": 111,
+      "topics": 117,
+      "explanation": 117,
+      "code": 117,
+      "visual": 25,
+      "filePath": 117,
+      "runCommand": 117,
+      "expectedResult": 117,
+      "practice": 117,
+      "project": 117,
+      "modelMental": 117,
+      "limitsDecision": 117,
+      "practicable": 117,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "javascript": {
-      "topics": 88,
-      "explanation": 88,
-      "code": 88,
-      "visual": 58,
-      "filePath": 88,
-      "runCommand": 88,
-      "expectedResult": 88,
-      "practice": 88,
-      "project": 88,
-      "modelMental": 88,
-      "limitsDecision": 88,
-      "practicable": 88,
+      "topics": 92,
+      "explanation": 92,
+      "code": 92,
+      "visual": 62,
+      "filePath": 92,
+      "runCommand": 92,
+      "expectedResult": 92,
+      "practice": 92,
+      "project": 92,
+      "modelMental": 92,
+      "limitsDecision": 92,
+      "practicable": 92,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "kotlin-multiplatform": {
-      "topics": 56,
-      "explanation": 56,
-      "code": 56,
-      "visual": 47,
-      "filePath": 56,
-      "runCommand": 56,
-      "expectedResult": 56,
-      "practice": 56,
-      "project": 56,
-      "modelMental": 56,
-      "limitsDecision": 56,
-      "practicable": 56,
+      "topics": 66,
+      "explanation": 66,
+      "code": 66,
+      "visual": 57,
+      "filePath": 66,
+      "runCommand": 66,
+      "expectedResult": 66,
+      "practice": 66,
+      "project": 66,
+      "modelMental": 66,
+      "limitsDecision": 66,
+      "practicable": 66,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -205,34 +205,34 @@
       "repeatedDemo": 0
     },
     "node": {
-      "topics": 83,
-      "explanation": 83,
-      "code": 83,
-      "visual": 36,
-      "filePath": 83,
-      "runCommand": 83,
-      "expectedResult": 83,
-      "practice": 83,
-      "project": 83,
-      "modelMental": 83,
-      "limitsDecision": 83,
-      "practicable": 83,
+      "topics": 90,
+      "explanation": 90,
+      "code": 90,
+      "visual": 43,
+      "filePath": 90,
+      "runCommand": 90,
+      "expectedResult": 90,
+      "practice": 90,
+      "project": 90,
+      "modelMental": 90,
+      "limitsDecision": 90,
+      "practicable": 90,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
     "react": {
-      "topics": 58,
-      "explanation": 58,
-      "code": 58,
-      "visual": 37,
-      "filePath": 58,
-      "runCommand": 58,
-      "expectedResult": 58,
-      "practice": 58,
-      "project": 58,
-      "modelMental": 58,
-      "limitsDecision": 58,
-      "practicable": 58,
+      "topics": 64,
+      "explanation": 64,
+      "code": 64,
+      "visual": 43,
+      "filePath": 64,
+      "runCommand": 64,
+      "expectedResult": 64,
+      "practice": 64,
+      "project": 64,
+      "modelMental": 64,
+      "limitsDecision": 64,
+      "practicable": 64,
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
@@ -253,18 +253,18 @@
       "repeatedDemo": 0
     },
     "spring-boot": {
-      "topics": 114,
-      "explanation": 114,
-      "code": 114,
-      "visual": 44,
-      "filePath": 114,
-      "runCommand": 114,
-      "expectedResult": 114,
-      "practice": 114,
-      "project": 114,
-      "modelMental": 114,
-      "limitsDecision": 114,
-      "practicable": 114,
+      "topics": 121,
+      "explanation": 121,
+      "code": 121,
+      "visual": 51,
+      "filePath": 121,
+      "runCommand": 121,
+      "expectedResult": 121,
+      "practice": 121,
+      "project": 121,
+      "modelMental": 121,
+      "limitsDecision": 121,
+      "practicable": 121,
       "genericScaffold": 0,
       "repeatedDemo": 0
     }
@@ -668,6 +668,28 @@
         }
       },
       {
+        "module": 12,
+        "topic": "Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 13,
         "topic": "Tema 1: El sistema operativo conecta tu app con entradas externas",
         "criteria": {
@@ -998,6 +1020,116 @@
         }
       },
       {
+        "module": 15,
+        "topic": "Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 15,
+        "topic": "Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 16,
         "topic": "Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso",
         "criteria": {
@@ -1110,6 +1242,28 @@
       {
         "module": 16,
         "topic": "Tema 6: Credential Manager, passkeys y verificación en servidor",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -1328,6 +1482,28 @@
         }
       },
       {
+        "module": 18,
+        "topic": "Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Composables y recomposición",
         "criteria": {
@@ -1374,6 +1550,28 @@
       {
         "module": 2,
         "topic": "Tema 3: remember, rememberSaveable y layout básico",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -2320,6 +2518,50 @@
         }
       },
       {
+        "module": 11,
+        "topic": "Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 12,
         "topic": "Tema 1: Reconocer la versión y la arquitectura de un proyecto",
         "criteria": {
@@ -2520,6 +2762,50 @@
       {
         "module": 14,
         "topic": "Tema 4: Rendimiento y actualización son contratos de experiencia",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -3090,6 +3376,28 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: Reactive Forms — FormGroup y FormControl",
         "criteria": {
@@ -3398,6 +3706,50 @@
         }
       },
       {
+        "module": 8,
+        "topic": "Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 9,
         "topic": "Tema 1: Store propio con signals",
         "criteria": {
@@ -3600,6 +3952,28 @@
       {
         "module": 0,
         "topic": "Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -4060,6 +4434,28 @@
         }
       },
       {
+        "module": 14,
+        "topic": "Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 15,
         "topic": "Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI",
         "criteria": {
@@ -4172,6 +4568,28 @@
       {
         "module": 16,
         "topic": "Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 16,
+        "topic": "Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -4566,6 +4984,28 @@
         }
       },
       {
+        "module": 20,
+        "topic": "Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 21,
         "topic": "Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales",
         "criteria": {
@@ -4788,6 +5228,28 @@
       {
         "module": 22,
         "topic": "Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 22,
+        "topic": "Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -5402,6 +5864,28 @@
         }
       },
       {
+        "module": 28,
+        "topic": "Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 29,
         "topic": "Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real",
         "criteria": {
@@ -5776,6 +6260,50 @@
         }
       },
       {
+        "module": 31,
+        "topic": "Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 31,
+        "topic": "Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 32,
         "topic": "Tema 1: Una red segura empieza por flujos, no por subredes",
         "criteria": {
@@ -5844,6 +6372,50 @@
       {
         "module": 32,
         "topic": "Tema 4: Un backup solo existe operativamente después de restaurarlo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 32,
+        "topic": "Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 32,
+        "topic": "Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -5976,6 +6548,28 @@
       {
         "module": 33,
         "topic": "Tema 6: Microservicios, Big Data, AI/ML y multi-cloud",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 33,
+        "topic": "Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -6502,6 +7096,28 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",
         "criteria": {
@@ -6945,7 +7561,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Operaciones",
+        "topic": "Tema 2: Operaciones con números complejos: suma, producto y división",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7011,7 +7627,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: La forma de estado",
+        "topic": "Tema 1: La forma de espacio de estados",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7055,7 +7671,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Forma estándar",
+        "topic": "Tema 1: Forma estándar de primer orden: K y τ",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7077,7 +7693,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Respuestas",
+        "topic": "Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7143,7 +7759,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Forma estándar",
+        "topic": "Tema 1: Forma estándar de segundo orden: K, ωn y ζ",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7319,7 +7935,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: Fórmula general",
+        "topic": "Tema 1: Fórmula general del error en estado estacionario",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7407,7 +8023,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 3: Casos especiales",
+        "topic": "Tema 3: Casos especiales del arreglo de Routh",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7451,7 +8067,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 1: Geometría de un polo",
+        "topic": "Tema 1: Geometría de un polo en el plano s",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7473,7 +8089,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 2: Estabilidad",
+        "topic": "Tema 2: Estabilidad según la posición de los polos",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7517,7 +8133,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 1: Las dos condiciones",
+        "topic": "Tema 1: Las dos condiciones del lugar de las raíces",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7583,7 +8199,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 1: La idea",
+        "topic": "Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7759,7 +8375,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: La idea",
+        "topic": "Tema 1: La idea de la transformada de Laplace: del tiempo al dominio s",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7781,7 +8397,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: La tabla",
+        "topic": "Tema 2: La tabla de transformadas de Laplace",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7803,7 +8419,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Propiedades",
+        "topic": "Tema 3: Propiedades de la transformada de Laplace",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7891,7 +8507,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: Los bloques básicos",
+        "topic": "Tema 3: Los bloques básicos del diagrama de Bode",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -7935,7 +8551,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 1: Parcial 1",
+        "topic": "Tema 1: Parcial 1 resuelto paso a paso",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8111,7 +8727,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: Los elementos",
+        "topic": "Tema 2: Los elementos de un lazo de control",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8155,7 +8771,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: Reglas para mover bloques",
+        "topic": "Tema 1: Reglas para mover bloques en un diagrama",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8243,7 +8859,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: Impedancias",
+        "topic": "Tema 1: Impedancias de resistencia, bobina y condensador en s",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8397,7 +9013,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 5: Analogías",
+        "topic": "Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -8419,7 +9035,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: La idea",
+        "topic": "Tema 1: La idea de la linealización: aproximar con la recta tangente",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -9212,6 +9828,28 @@
         }
       },
       {
+        "module": 12,
+        "topic": "Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 13,
         "topic": "Tema 1: El pipeline completo — de commit a producción verificada",
         "criteria": {
@@ -9609,7 +10247,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema complementario: Bruno y Postman, evaluar con el mismo contrato",
+        "topic": "Tema 6: Bruno y Postman, evaluar con el mismo contrato",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -10028,6 +10666,28 @@
       {
         "module": 2,
         "topic": "Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -10488,6 +11148,28 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: Blue-green deployment",
         "criteria": {
@@ -10818,6 +11500,50 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: Helm charts y values",
         "criteria": {
@@ -10966,6 +11692,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -11127,7 +11875,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema complementario: OpenTofu, plan y estado sin recursos cloud",
+        "topic": "Tema 8: OpenTofu, plan y estado sin recursos cloud",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -11142,6 +11890,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -11300,6 +12070,28 @@
           "genericScaffold": false,
           "repeatedDemo": false
         }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
       }
     ],
     "flutter": [
@@ -11392,6 +12184,72 @@
         }
       },
       {
+        "module": 0,
+        "topic": "Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 1,
         "topic": "Tema 1: StatelessWidget vs StatefulWidget",
         "criteria": {
@@ -11438,6 +12296,50 @@
       {
         "module": 1,
         "topic": "Tema 3: Keys",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -11612,6 +12514,28 @@
         }
       },
       {
+        "module": 11,
+        "topic": "Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 12,
         "topic": "Tema 1: Arquitectura por features y Clean Architecture",
         "criteria": {
@@ -11658,6 +12582,28 @@
       {
         "module": 12,
         "topic": "Tema 3: Cierre del track",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13438,6 +14384,28 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: MethodChannel",
         "criteria": {
@@ -13506,6 +14474,50 @@
       {
         "module": 7,
         "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13815,7 +14827,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema complementario: VS Code, comandos y atajos comprobables",
+        "topic": "Tema 6: VS Code, comandos y atajos comprobables",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -16038,6 +17050,28 @@
         }
       },
       {
+        "module": 0,
+        "topic": "Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 1,
         "topic": "Tema 1: El protocolo View y composición",
         "criteria": {
@@ -16192,6 +17226,28 @@
         }
       },
       {
+        "module": 10,
+        "topic": "Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 11,
         "topic": "Tema 1: Certificados y provisioning profiles",
         "criteria": {
@@ -16304,6 +17360,28 @@
       {
         "module": 12,
         "topic": "Tema 3: Cierre del track",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 12,
+        "topic": "Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -16478,6 +17556,72 @@
         }
       },
       {
+        "module": 13,
+        "topic": "Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 13,
+        "topic": "Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 14,
         "topic": "Tema 1: Swift Testing y pruebas asíncronas",
         "criteria": {
@@ -16612,6 +17756,72 @@
       {
         "module": 14,
         "topic": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -16852,6 +18062,50 @@
         }
       },
       {
+        "module": 4,
+        "topic": "Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 4,
+        "topic": "Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 5,
         "topic": "Tema 1: URLSession con async/await y Codable",
         "criteria": {
@@ -16964,6 +18218,50 @@
       {
         "module": 6,
         "topic": "Tema 3: Migraciones y SwiftData vs Core Data",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 6,
+        "topic": "Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17888,6 +19186,50 @@
         }
       },
       {
+        "module": 14,
+        "topic": "Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 14,
+        "topic": "Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 15,
         "topic": "Tema 1: Maven avanzado",
         "criteria": {
@@ -18284,6 +19626,28 @@
         }
       },
       {
+        "module": 18,
+        "topic": "Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 19,
         "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
         "criteria": {
@@ -18418,6 +19782,50 @@
       {
         "module": 19,
         "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 19,
+        "topic": "Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19624,6 +21032,28 @@
           "genericScaffold": false,
           "repeatedDemo": false
         }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
       }
     ],
     "javascript": [
@@ -20596,6 +22026,28 @@
         }
       },
       {
+        "module": 14,
+        "topic": "Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 2,
         "topic": "Tema 1: Scope léxico y closures",
         "criteria": {
@@ -21190,6 +22642,28 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: ESM frente a CommonJS",
         "criteria": {
@@ -21302,6 +22776,50 @@
       {
         "module": 7,
         "topic": "Tema 6: Webpack, Rollup y Babel/SWC",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21722,6 +23240,28 @@
       {
         "module": 1,
         "topic": "Tema 4: Lambdas con receptor y builders tipo DSL",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22270,6 +23810,50 @@
         }
       },
       {
+        "module": 3,
+        "topic": "Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 4,
         "topic": "Tema 1: Modelos de dominio y casos de uso",
         "criteria": {
@@ -22578,6 +24162,28 @@
         }
       },
       {
+        "module": 6,
+        "topic": "Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 7,
         "topic": "Tema 1: Compose Multiplatform vs Jetpack Compose",
         "criteria": {
@@ -22666,6 +24272,94 @@
         }
       },
       {
+        "module": 7,
+        "topic": "Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 8,
         "topic": "Tema 1: El framework generado para iOS",
         "criteria": {
@@ -22726,6 +24420,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -22796,12 +24512,34 @@
           "genericScaffold": false,
           "repeatedDemo": false
         }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
       }
     ],
     "microservices": [
       {
         "module": 0,
-        "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+        "topic": "Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22823,7 +24561,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+        "topic": "Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22845,7 +24583,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+        "topic": "Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22867,7 +24605,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+        "topic": "Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22889,7 +24627,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+        "topic": "Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22911,7 +24649,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+        "topic": "Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22933,7 +24671,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+        "topic": "Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23021,7 +24759,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+        "topic": "Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23043,7 +24781,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+        "topic": "Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23065,7 +24803,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min",
+        "topic": "Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23087,7 +24825,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min",
+        "topic": "Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23109,7 +24847,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+        "topic": "Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23131,7 +24869,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+        "topic": "Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23153,7 +24891,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min",
+        "topic": "Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23175,7 +24913,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+        "topic": "Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23197,7 +24935,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+        "topic": "Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23219,7 +24957,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+        "topic": "Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23241,7 +24979,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min",
+        "topic": "Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23307,7 +25045,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23654,6 +25392,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 10,
+        "topic": "Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -24342,6 +26102,50 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 2,
+        "topic": "Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 3,
         "topic": "Tema 1: El modelo request/response · Básico · 60 min",
         "criteria": {
@@ -24446,6 +26250,50 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -24936,6 +26784,28 @@
         }
       },
       {
+        "module": 7,
+        "topic": "Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 8,
         "topic": "Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min",
         "criteria": {
@@ -25154,6 +27024,28 @@
           "genericScaffold": false,
           "repeatedDemo": false
         }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
       }
     ],
     "react": [
@@ -25314,6 +27206,28 @@
       {
         "module": 1,
         "topic": "Tema 4: Componentes controlados",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 1,
+        "topic": "Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25642,6 +27556,28 @@
         }
       },
       {
+        "module": 13,
+        "topic": "Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 14,
         "topic": "Tema 1: Server Components y streaming",
         "criteria": {
@@ -25906,6 +27842,28 @@
         }
       },
       {
+        "module": 2,
+        "topic": "Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 3,
         "topic": "Tema 1: React Hook Form y el problema del re-render por tecla",
         "criteria": {
@@ -25952,6 +27910,28 @@
       {
         "module": 3,
         "topic": "Tema 3: Eventos sintéticos",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 3,
+        "topic": "Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26428,6 +28408,50 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 9,
+        "topic": "Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -27142,6 +29166,28 @@
         }
       },
       {
+        "module": 0,
+        "topic": "Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 1,
         "topic": "Tema 1: Spring Initializr y starters",
         "criteria": {
@@ -27518,6 +29564,28 @@
       {
         "module": 11,
         "topic": "Tema 3: Health checks para Kubernetes",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 11,
+        "topic": "Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28112,6 +30180,28 @@
       {
         "module": 18,
         "topic": "Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 18,
+        "topic": "Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -29012,6 +31102,28 @@
         }
       },
       {
+        "module": 3,
+        "topic": "Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 4,
         "topic": "Tema 1: SecurityFilterChain moderno",
         "criteria": {
@@ -29188,6 +31300,28 @@
         }
       },
       {
+        "module": 5,
+        "topic": "Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
         "module": 6,
         "topic": "Tema 1: Probar un controller con `@WebMvcTest`",
         "criteria": {
@@ -29314,6 +31448,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 7,
+        "topic": "Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false
@@ -29512,6 +31668,28 @@
         },
         "classification": {
           "rubricScore": 14,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 8,
+        "topic": "Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
           "practicable": true,
           "genericScaffold": false,
           "repeatedDemo": false

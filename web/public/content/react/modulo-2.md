@@ -118,6 +118,24 @@ graph TD
     style E fill:#2196f3
 ```
 
+**¿Por qué es importante?** `useRef` permite mantener valores mutables persistentes entre renders sin el costo ni la semántica de disparar un nuevo render cada vez que cambian.
+**Conceptos clave:** persistencia entre renders sin disparar actualización, acceso a nodos del DOM.
+
+`useRef` crea un objeto mutable (`{ current: valorInicial }`) que persiste con la misma identidad a través de renders sucesivos del componente, con una diferencia crucial respecto a `useState`: modificar `.current` (`renderCount.current++`) no dispara un nuevo render del componente, a diferencia de llamar a un setter de `useState`, que sí lo hace siempre. Esto hace a `useRef` apropiado específicamente para valores que el componente necesita recordar entre renders pero que no deben influir en lo que se renderiza visualmente (un contador interno de cuántas veces se renderizó el componente con fines de depuración, el valor anterior de una prop para compararlo con el actual, o un identificador de un temporizador activo que debe poder cancelarse después).
+
+Otro uso extremadamente común de `useRef` es obtener una referencia directa a un nodo del DOM real renderizado por el componente (`<input ref={inputRef} />`, permitiendo después llamar `inputRef.current.focus()` imperativamente), un escape hatch deliberado hacia manipulación imperativa del DOM para casos donde el modelo declarativo de React no ofrece una forma directa de expresar la operación deseada (poner foco en un campo, medir sus dimensiones reales, iniciar una animación imperativa con una librería externa).
+
+**Analogía:** `useRef` es como una libreta personal que el componente puede modificar libremente sin tener que anunciar públicamente cada cambio (sin disparar un re-render); `useState`, en cambio, es como un anuncio público formal que notifica a todos los interesados (incluyendo al propio proceso de renderizado) cada vez que cambia.
+
+**Implicación práctica:** `useRef` permite mantener valores mutables persistentes entre renders (o acceder directamente a nodos del DOM) sin el costo ni la semántica de disparar un nuevo render cada vez que cambian.
+
+**Código del ejemplo:**
+
+```jsx
+const renderCount = useRef(0);
+renderCount.current++; // no causa re-render, a diferencia de useState
+```
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function PanelEnvios() {
@@ -146,24 +164,6 @@ Corregí el Paso 5 devolviendo `useRef`, y agregá una segunda referencia que gu
 
 #### Paso 7 · Cierre
 Entregá el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explicá por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
-**¿Por qué es importante?** `useRef` permite mantener valores mutables persistentes entre renders sin el costo ni la semántica de disparar un nuevo render cada vez que cambian.
-**Conceptos clave:** persistencia entre renders sin disparar actualización, acceso a nodos del DOM.
-
-`useRef` crea un objeto mutable (`{ current: valorInicial }`) que persiste con la misma identidad a través de renders sucesivos del componente, con una diferencia crucial respecto a `useState`: modificar `.current` (`renderCount.current++`) no dispara un nuevo render del componente, a diferencia de llamar a un setter de `useState`, que sí lo hace siempre. Esto hace a `useRef` apropiado específicamente para valores que el componente necesita recordar entre renders pero que no deben influir en lo que se renderiza visualmente (un contador interno de cuántas veces se renderizó el componente con fines de depuración, el valor anterior de una prop para compararlo con el actual, o un identificador de un temporizador activo que debe poder cancelarse después).
-
-Otro uso extremadamente común de `useRef` es obtener una referencia directa a un nodo del DOM real renderizado por el componente (`<input ref={inputRef} />`, permitiendo después llamar `inputRef.current.focus()` imperativamente), un escape hatch deliberado hacia manipulación imperativa del DOM para casos donde el modelo declarativo de React no ofrece una forma directa de expresar la operación deseada (poner foco en un campo, medir sus dimensiones reales, iniciar una animación imperativa con una librería externa).
-
-**Analogía:** `useRef` es como una libreta personal que el componente puede modificar libremente sin tener que anunciar públicamente cada cambio (sin disparar un re-render); `useState`, en cambio, es como un anuncio público formal que notifica a todos los interesados (incluyendo al propio proceso de renderizado) cada vez que cambia.
-
-**Implicación práctica:** `useRef` permite mantener valores mutables persistentes entre renders (o acceder directamente a nodos del DOM) sin el costo ni la semántica de disparar un nuevo render cada vez que cambian.
-
-**Código del ejemplo:**
-
-```jsx
-const renderCount = useRef(0);
-renderCount.current++; // no causa re-render, a diferencia de useState
-```
-
 
 ### Tema 3: useMemo y useCallback con criterio
 
@@ -215,6 +215,7 @@ const resultado = useMemo(() => calculoCostoso(datos), [datos]); // memoiza un V
 const manejarClick = useCallback(() => hacer(id), [id]);          // memoiza una FUNCIÓN
 ```
 
+**¿Por qué es importante?** `useMemo`/`useCallback` solo aportan beneficio real cuando el cálculo es genuinamente costoso o cuando previenen un re-render mensurable de un hijo memoizado; usarlos sin esa justificación agrega complejidad sin beneficio.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -252,7 +253,6 @@ Corregí el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lu
 
 #### Paso 7 · Cierre
 Entregá la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explicá la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
-**¿Por qué es importante?** `useMemo`/`useCallback` solo aportan beneficio real cuando el cálculo es genuinamente costoso o cuando previenen un re-render mensurable de un hijo memoizado; usarlos sin esa justificación agrega complejidad sin beneficio.
 
 ### Tema 4: Reglas de los hooks, useReducer y useImperativeHandle
 
@@ -360,6 +360,16 @@ graph TD
     C -.captura.-> E[UI de recuperación: 'No se pudo cargar el mapa']
 ```
 
+**Conceptos clave:** error de render vs error async, `getDerivedStateFromError`, UI de recuperación, aislamiento de fallos.
+**Cuándo no usarlo:** no sirven para errores de manejadores de eventos (un `onClick`) ni de código async (un `fetch`): esos se atrapan con `try/catch` normal. El boundary es solo para errores que ocurren durante el renderizado.
+
+**Transferencia al proyecto integrador «RutaFlow»:** envuelve el widget del mapa y el panel de notificaciones en boundaries separados, y demuestra que un fallo en uno no derriba al otro ni a la lista de envíos.
+
+---
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** esperar que un Error Boundary atrape errores de un manejador de eventos o de un `fetch` asíncrono, cuando solo captura errores lanzados durante el render; envolver toda la app en un único boundary en vez de uno por sección, perdiendo el aislamiento que evita que un widget derribe a los demás.
+**Fuente oficial:** [documentación de React](https://react.dev/reference/react).
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```jsx
@@ -420,15 +430,7 @@ Reemplaza tu boundary de clase por la librería `react-error-boundary` (`npm ins
 
 #### Paso 7 · Cierre
 Entrega la app con el mapa contenido, el reintento y la versión con `react-error-boundary`. **¿Por qué es importante?** Sin Error Boundaries, un solo componente con un bug deja al usuario ante una pantalla en blanco sin explicación — la peor experiencia posible. En producción, los boundaries son los que convierten "la app se cayó" en "esta sección no cargó, el resto funciona", y suelen conectarse a un servicio de reporte de errores (Sentry) en `componentDidCatch`. Fuentes: [React — Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
-**Conceptos clave:** error de render vs error async, `getDerivedStateFromError`, UI de recuperación, aislamiento de fallos.
-**Cuándo no usarlo:** no sirven para errores de manejadores de eventos (un `onClick`) ni de código async (un `fetch`): esos se atrapan con `try/catch` normal. El boundary es solo para errores que ocurren durante el renderizado.
 
-**Transferencia al proyecto integrador «RutaFlow»:** envuelve el widget del mapa y el panel de notificaciones en boundaries separados, y demuestra que un fallo en uno no derriba al otro ni a la lista de envíos.
-
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** esperar que un Error Boundary atrape errores de un manejador de eventos o de un `fetch` asíncrono, cuando solo captura errores lanzados durante el render; envolver toda la app en un único boundary en vez de uno por sección, perdiendo el aislamiento que evita que un widget derribe a los demás.
-**Fuente oficial:** [documentación de React](https://react.dev/reference/react).
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un componente con un efecto de suscripción externa correctamente limpiado, y aplicar memoización con criterio.
@@ -520,3 +522,144 @@ Añade una zona que rechace con un error distinto de `AbortError`. Comprueba que
 El siguiente paso es aplicar la señal a `fetch` y luego comparar con una librería de estado remoto. **Errores comunes:** ignorar dependencias, tratar toda cancelación como fallo y asumir que detener una UI revierte una escritura. **Límites y decisión de uso:** el ejemplo no implementa caché ni deduplicación; esas responsabilidades se estudian en el módulo de datos remotos.
 
 **Fuentes oficiales:** [React useEffect](https://react.dev/reference/react/useEffect) y [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
+
+### Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min
+
+**Prerrequisito:** tema «useEffect — dependencias y limpieza» de este módulo.
+
+**Al finalizar podrás:** medir un elemento y ajustar la posición de un tooltip antes de que el usuario vea un parpadeo con `useLayoutEffect`, y leer el valor más reciente de una prop dentro de un efecto sin reiniciarlo con `useEffectEvent`.
+
+**¿Por qué es importante?** `useEffect` corre después de pintar, así que una medición puede causar un salto visible. Y meter cada valor en las dependencias de un efecto lo reinicia cuando no debería, por ejemplo reconectando un socket cada vez que cambia el tema visual.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa React 19.2 o superior (ahí `useEffectEvent` es estable). Parte del proyecto de Vite del módulo y trabaja en `src/Tooltip.jsx` y `src/Seguimiento.jsx`.
+
+#### Paso 2 · Contexto y caso real
+
+El panel de RutaFlow tiene un tooltip junto a cada parada. Cerca del borde, aparecía cortado un instante y luego saltaba a su lugar. En otra pantalla, la conexión en vivo con un envío se cerraba y abría cada vez que el operador cambiaba entre tema claro y oscuro.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** fase de layout, pintado, `useLayoutEffect`, `getBoundingClientRect`, evento de efecto, `useEffectEvent`, dependencias.
+
+**Orden de un render:** React calcula el JSX, actualiza el DOM, ejecuta `useLayoutEffect`, el navegador **pinta** y después corre `useEffect`.
+
+- Usa `useLayoutEffect` solo cuando necesitas **leer el DOM y corregir algo antes del pintado** (medidas, posiciones). Bloquea el pintado, así que debe ser rápido.
+- Usa `useEffect` para todo lo demás: peticiones, suscripciones, registros.
+
+**`useEffectEvent`** crea una función que siempre ve las props y el estado más recientes, pero **no es una dependencia** del efecto. Sirve para la parte de un efecto que es «reacción a un evento» y no debe reiniciarlo. Solo se llama desde dentro de efectos.
+
+| Situación | Herramienta |
+|---|---|
+| medir y reposicionar sin parpadeo | `useLayoutEffect` |
+| conectar a algo que depende de `codigo` | `useEffect` con `[codigo]` |
+| leer `tema` al llegar un mensaje, sin reconectar | `useEffectEvent` |
+
+**Analogía:** `useLayoutEffect` es acomodar los muebles con la puerta cerrada, antes de que entren los invitados. `useEffectEvent` es mirar el reloj de la pared cuando suena el timbre: no cambias de casa cada vez que el reloj avanza. La analogía falla en que acomodar muebles con la puerta cerrada hace esperar a los invitados: un `useLayoutEffect` lento congela la pantalla.
+
+**Límite de uso:** no uses `useLayoutEffect` para peticiones ni trabajo pesado: retrasa el pintado. En SSR no corre en el servidor. No uses `useEffectEvent` para esconder dependencias que sí deberían reiniciar el efecto.
+
+```mermaid
+flowchart LR
+    R["render: JSX"] --> D["actualiza el DOM"]
+    D --> L["useLayoutEffect<br/>mide y corrige"]
+    L --> P["el navegador pinta"]
+    P --> E["useEffect<br/>conecta, pide datos"]
+    E -. "usa" .-> V["useEffectEvent<br/>valores recientes"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-react/src/Tooltip.jsx`:
+
+```jsx
+import { useLayoutEffect, useRef, useState } from 'react';
+
+export default function Tooltip({ texto, x }) {
+  const ref = useRef(null);
+  const [izquierda, setIzquierda] = useState(x);
+
+  useLayoutEffect(() => {
+    const { width } = ref.current.getBoundingClientRect();
+    // Si se sale por la derecha, lo corre antes de que el usuario lo vea.
+    const maximo = window.innerWidth - width - 8;
+    setIzquierda(Math.min(x, maximo));
+  }, [x, texto]);
+
+  return <div ref={ref} className="tooltip" style={{ position: 'fixed', left: izquierda, top: 40 }}>{texto}</div>;
+}
+```
+
+Archivo `academia-react/src/Seguimiento.jsx`:
+
+```jsx
+import { useEffect, useEffectEvent, useState } from 'react';
+
+function conectar(codigo, alMensaje) {
+  console.log(`conecta a ${codigo}`);
+  const id = setInterval(() => alMensaje(`posición de ${codigo}`), 2000);
+  return () => { clearInterval(id); console.log(`desconecta de ${codigo}`); };
+}
+
+export default function Seguimiento({ codigo, tema }) {
+  const [ultimo, setUltimo] = useState('');
+
+  // Lee el tema más reciente, pero NO hace que el efecto se reinicie.
+  const alMensaje = useEffectEvent((mensaje) => {
+    setUltimo(`${mensaje} (tema ${tema})`);
+  });
+
+  useEffect(() => conectar(codigo, alMensaje), [codigo]); // solo depende del envío
+
+  return <p>{ultimo || 'esperando posición…'}</p>;
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-react
+npm install react@latest react-dom@latest
+npm run dev
+```
+
+**Explicación por bloques:** En `Tooltip`, `useLayoutEffect` mide el ancho real con `getBoundingClientRect` y corrige `left` antes del pintado, así el usuario nunca ve la versión cortada. En `Seguimiento`, el efecto depende solo de `codigo`: conecta al envío y devuelve la función de limpieza. El mensaje se procesa en `alMensaje`, creado con `useEffectEvent`, que siempre lee el `tema` actual sin estar en las dependencias. Cambiar el tema actualiza el texto del siguiente mensaje pero no reconecta.
+
+**Resultado esperado:**
+
+```text
+Un tooltip con x cerca del borde derecho aparece directamente dentro de la pantalla, sin salto visible.
+La consola muestra «conecta a ENV-42» una sola vez; al cambiar el tema no aparece «desconecta de ENV-42».
+Al cambiar de envío aparece «desconecta de ENV-42» y luego «conecta a ENV-43».
+```
+
+**Fallo deliberado:** quita `useEffectEvent` y escribe el `setUltimo` directamente en el efecto, agregando `tema` a las dependencias para calmar al linter. **Error esperado:** cada cambio de tema imprime «desconecta» y «conecta». **Diagnóstico:** `tema` no debería reiniciar la conexión; la lectura del tema es parte del evento «llegó un mensaje». Vuelve a `useEffectEvent`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** coloca el tooltip con `x={window.innerWidth - 20}` y compara `useLayoutEffect` contra `useEffect` con la CPU ralentizada x6 en DevTools.
+2. **Variación:** agrega un botón que cambie el tema y verifica que no reconecta.
+3. **Diagnóstico:** reproduce el fallo deliberado y cuenta cuántas reconexiones hay al cambiar el tema tres veces.
+4. **Integración:** cambia el `codigo` y confirma que el efecto sí se reinicia, como debe.
+5. **Diseño:** revisa los efectos de un proyecto tuyo y marca qué dependencias son «reactivas» y cuáles son lecturas de evento.
+
+**Pista:** pregunta: si este valor cambia, ¿debe reiniciarse la conexión? Si la respuesta es no, va en un evento de efecto.
+
+#### Paso 6 · Práctica independiente
+
+Crea un componente `Chat` que se conecte a una sala (`sala` como prop) y muestre una notificación con el sonido elegido por el usuario (`sonido` como prop) sin reconectar cuando cambia el sonido.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas el orden render → DOM → layout → pintado → efecto.
+- [ ] El tooltip no parpadea cerca del borde.
+- [ ] Cambiar el tema no reconecta.
+- [ ] Sabes cuándo no usar `useLayoutEffect`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `useLayoutEffect` para peticiones, quitar dependencias reales del efecto para evitar reconexiones y llamar a un evento de efecto desde el render. **Siguiente paso:** el tema «useMemo y useCallback con criterio» vuelve a las dependencias, ahora para memoizar cálculos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, corrige el tooltip de paradas con `useLayoutEffect` y evita que la conexión en vivo se reinicie al cambiar preferencias visuales con `useEffectEvent`.
+
+**Fuente oficial:** [React — useLayoutEffect](https://react.dev/reference/react/useLayoutEffect) y [React — useEffectEvent](https://react.dev/reference/react/useEffectEvent).
+

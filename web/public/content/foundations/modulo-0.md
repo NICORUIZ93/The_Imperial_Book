@@ -380,7 +380,7 @@ Para cerrar la sesión, vuelve a ejecutar uno de los archivos sin consultar la d
 
 ## Ampliación de la página 50 del PDF
 
-### Tema complementario: VS Code, comandos y atajos comprobables
+### Tema 6: VS Code, comandos y atajos comprobables
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás abrir, guardar y localizar archivos usando comandos identificados por nombre, sin depender de una tabla incorrecta. **Prerrequisitos:** VS Code instalado y el programa `saludo.py` del primer tema. La captura del PDF mezcla atajos de edición de texto con otros programas; los bindings varían según sistema, teclado y extensiones.

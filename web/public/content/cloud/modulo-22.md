@@ -329,6 +329,165 @@ Corregí el `CNAME` de vuelta al nombre del ALB, y documentá qué pasaría si e
 #### Paso 7 · Cierre
 Entregá la cadena completa declarada en el Paso 4, el `CNAME` apuntado al destino equivocado del Paso 5, y la corrección más la reflexión sobre dominios no coincidentes del Paso 6; explicá por qué las fotos (CloudFront) y la API (ALB) de RutaFlow necesitan cadenas DNS separadas aunque comparten el mismo dominio base. Siguiente paso: observabilidad. Errores comunes: terminación en lugar incorrecto y mixed content. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-certificates.html.
 
+### Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min
+
+**Prerrequisito:** temas «ELB v2 — balanceadores…» y «CloudFront — distribución de contenido» de este módulo.
+
+**Al finalizar podrás:** poner un Web Application Firewall delante de la API con una regla administrada contra ataques comunes y una regla de límite de peticiones por IP, y explicar qué cubre la protección DDoS del proveedor.
+
+**¿Por qué es importante?** La API de seguimiento de RutaFlow es pública. Sin protección, un bot puede consultarla millones de veces o probar inyecciones SQL. Filtrar en el borde evita que ese tráfico llegue a tu código y a tu factura.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Terraform con el proveedor AWS. Puedes practicar el plan contra el emulador local; el bloqueo real se prueba en una cuenta con CloudFront o un balanceador.
+
+#### Paso 2 · Contexto y caso real
+
+Un competidor raspaba la API de seguimiento de RutaFlow con miles de peticiones por minuto para conocer volúmenes de envío. La base de datos se saturó en hora pico. Una regla de límite por IP en el WAF lo frenó sin tocar el código.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** WAF, ACL web, regla administrada, regla basada en tasa (*rate-based*), acción `block` y `count`, ataque DDoS de capa 3/4 y de capa 7, AWS Shield.
+
+Hay dos tipos de ataques de denegación de servicio:
+
+| Capa | Ejemplo | Quién protege |
+|---|---|---|
+| 3/4 (red) | inundación de paquetes SYN o UDP | protección del proveedor (Shield Standard, incluida) |
+| 7 (aplicación) | miles de peticiones HTTP «válidas» | tú, con un WAF |
+
+Un **WAF** revisa cada petición HTTP con reglas en orden:
+
+- **Reglas administradas:** conjuntos mantenidos por el proveedor contra ataques comunes (inyección SQL, XSS, bots conocidos).
+- **Reglas basadas en tasa:** bloquean una IP que supera N peticiones en una ventana de tiempo.
+- **Acción `count`:** cuenta sin bloquear; úsala primero para ver el efecto antes de bloquear.
+
+**Analogía:** la protección DDoS del proveedor es el muro del edificio contra una multitud; el WAF es el guardia de la puerta que revisa a cada persona y no deja entrar a quien ya pasó cien veces en un minuto. La analogía falla en que el guardia también puede equivocarse: por eso se empieza contando.
+
+**Límite de uso:** un WAF no corrige vulnerabilidades del código: es una capa más. Los límites por IP afectan a usuarios detrás de la misma IP (una empresa, un operador móvil); ajusta el umbral con datos reales.
+
+```mermaid
+flowchart LR
+    I["Internet"] --> S["Shield: capas 3/4"]
+    S --> W["WAF: reglas administradas + límite por IP"]
+    W -->|permitido| C["CloudFront / ALB"]
+    W -->|bloqueado| X["403"]
+    C --> A["API RutaFlow"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `infra/waf.tf`:
+
+```hcl
+resource "aws_wafv2_web_acl" "api" {
+  name  = "rutaflow-api"
+  scope = "REGIONAL" # "CLOUDFRONT" si va delante de una distribución
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "reglas-comunes"
+    priority = 1
+    override_action {
+      none {}
+    }
+    statement {
+      managed_rule_group_statement {
+        vendor_name = "AWS"
+        name        = "AWSManagedRulesCommonRuleSet"
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "reglas-comunes"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  rule {
+    name     = "limite-por-ip"
+    priority = 2
+    action {
+      block {} # empieza con count {} una semana y revisa las métricas
+    }
+    statement {
+      rate_based_statement {
+        limit              = 600 # peticiones por IP en la ventana
+        aggregate_key_type = "IP"
+        evaluation_window_sec = 300
+      }
+    }
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "limite-por-ip"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "rutaflow-api"
+    sampled_requests_enabled   = true
+  }
+}
+
+resource "aws_wafv2_web_acl_association" "alb" {
+  resource_arn = aws_lb.api.arn
+  web_acl_arn  = aws_wafv2_web_acl.api.arn
+}
+```
+
+Ejecútalo:
+
+```bash
+cd infra
+terraform plan
+# con el WAF activo, prueba el límite desde una sola IP:
+hey -n 2000 -c 50 https://api.rutaflow.co/seguimiento/ENV-42
+```
+
+**Explicación por bloques:** La ACL web deja pasar todo por defecto y evalúa dos reglas en orden. La primera aplica el conjunto administrado de reglas comunes de AWS (`override_action none` respeta las acciones del conjunto). La segunda bloquea cualquier IP que supere 600 peticiones en cinco minutos. Cada regla publica métricas y muestras de peticiones para revisar qué bloquea. La asociación conecta la ACL con el balanceador de la API.
+
+**Resultado esperado:**
+
+```text
+terraform plan: «Plan: 2 to add» con aws_wafv2_web_acl.api y su asociación.
+En la prueba de carga desde una IP: las primeras peticiones responden 200 y, al superar el límite, el resto responde 403.
+En CloudWatch, la métrica limite-por-ip muestra las peticiones bloqueadas.
+```
+
+**Fallo deliberado:** activa la regla de límite directamente con `block` y un umbral de 50. **Error esperado:** los operadores de una oficina que comparten IP pública reciben 403 en horas pico. **Diagnóstico:** el umbral no se midió. Empieza con `count {}`, revisa la distribución de peticiones por IP una semana y fija el límite por encima del uso legítimo más alto.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** planea la ACL y explica el orden de las reglas.
+2. **Variación:** cambia la regla de límite a `count {}` y revisa las peticiones de muestra.
+3. **Diagnóstico:** reproduce el fallo deliberado con un umbral muy bajo.
+4. **Integración:** agrega una regla que bloquee países donde RutaFlow no opera, y discute sus riesgos.
+5. **Diseño:** escribe qué harías durante un ataque DDoS de capa 7: métricas a mirar, a quién avisar y qué regla ajustar.
+
+**Pista:** antes de bloquear, cuenta: las métricas te dicen si la regla atraparía usuarios legítimos.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una regla basada en tasa solo para la ruta `/login` (con `scope_down_statement` por URI) con un límite más estricto que el resto.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingues ataques de capa 3/4 y de capa 7.
+- [ ] La ACL tiene reglas administradas y un límite por IP.
+- [ ] Reprodujiste el bloqueo de usuarios legítimos.
+- [ ] Sabes empezar en modo conteo.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** bloquear sin medir, creer que el WAF arregla vulnerabilidades del código y no revisar las muestras de peticiones bloqueadas. **Siguiente paso:** el tema «Cómo se integran los cuatro servicios» coloca el WAF en la cadena completa del borde.
+
+**Transferencia al proyecto integrador «RutaFlow»:** protege la API pública de seguimiento de RutaFlow con reglas administradas y un límite por IP medido con datos de una semana.
+
+**Fuente oficial:** [AWS WAF — How AWS WAF works](https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html) y [AWS Shield — Overview](https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html).
+
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

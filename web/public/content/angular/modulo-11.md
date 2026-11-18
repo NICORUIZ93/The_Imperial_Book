@@ -510,6 +510,271 @@ Ya confirmas con `provideZonelessChangeDetection()` real que el estado modelado 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Actualiza el estado de una guía desde una operación asíncrona en modo zoneless. Verifica que Signals notifica el cambio y que la pantalla no depende de un evento incidental para refrescarse.
 
+### Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min
+
+**Prerrequisito:** temas «Server-Side Rendering» e «Hidratación» de este módulo.
+
+**Al finalizar podrás:** decidir para cada ruta si se prerenderiza al compilar, se renderiza en el servidor en cada petición o solo en el navegador, y configurarlo en `app.routes.server.ts`.
+
+**¿Por qué es importante?** No todas las páginas cambian igual. La página «Cómo funciona» es la misma para todos y puede servirse como HTML estático, la más rápida y barata. El seguimiento de un envío cambia cada minuto y necesita el servidor. Elegir mal cuesta velocidad o dinero.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Angular 19 o superior con SSR: `ng new academia-ssr --ssr` o `ng add @angular/ssr` en un proyecto existente. Trabajarás en `src/app/app.routes.server.ts`.
+
+#### Paso 2 · Contexto y caso real
+
+El sitio público de RutaFlow tiene páginas de ayuda, una página por ciudad y el seguimiento de envíos. Con todo en SSR, el servidor renderizaba miles de veces la misma página de ayuda. Prerenderizar las estáticas bajó la carga del servidor y el tiempo de respuesta.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** renderizado en el servidor (SSR), prerender o generación estática (SSG), renderizado en el cliente (CSR), `RenderMode`, `getPrerenderParams`, envío del HTML completo.
+
+| Modo | Cuándo se genera el HTML | Úsalo para |
+|---|---|---|
+| `RenderMode.Prerender` (SSG) | una vez, al ejecutar `ng build` | páginas iguales para todos: ayuda, precios, una página por ciudad |
+| `RenderMode.Server` (SSR) | en cada petición | datos que cambian o dependen del usuario: seguimiento |
+| `RenderMode.Client` (CSR) | en el navegador | zonas privadas donde el SEO no importa: panel interno |
+
+Para una ruta con parámetros (`ciudades/:slug`), `getPrerenderParams` devuelve la lista de valores a generar en el build.
+
+**Sobre el streaming:** el SSR de Angular envía el HTML de la página **completo** en cada respuesta; no lo manda por trozos fuera de orden como el streaming de React. La forma de Angular de no bloquear la primera pintura con partes lentas es `@defer`: lo diferido no se renderiza en el servidor y se carga después en el navegador.
+
+**Analogía:** prerender es imprimir folletos antes de abrir la tienda; SSR es imprimir cada folleto cuando el cliente lo pide; CSR es darle papel y que lo arme en su casa. La analogía falla en que el folleto prerenderizado también se vuelve interactivo en el navegador al hidratarse.
+
+**Límite de uso:** una ruta prerenderizada muestra los datos del momento del build: si cambian, hay que volver a compilar y desplegar. No prerenderices páginas con datos personales: el mismo HTML lo verían todos.
+
+```mermaid
+flowchart TB
+    R{"¿El HTML es igual para todos<br/>y cambia poco?"} -->|sí| P["RenderMode.Prerender<br/>ng build"]
+    R -->|no| S{"¿Necesita SEO o<br/>primera pintura rápida?"}
+    S -->|sí| SSR["RenderMode.Server<br/>cada petición"]
+    S -->|no| C["RenderMode.Client<br/>navegador"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/app/app.routes.server.ts`:
+
+```ts
+import { RenderMode, ServerRoute } from '@angular/ssr';
+
+export const serverRoutes: ServerRoute[] = [
+  { path: '', renderMode: RenderMode.Prerender },
+  { path: 'ayuda', renderMode: RenderMode.Prerender },
+  {
+    path: 'ciudades/:slug',
+    renderMode: RenderMode.Prerender,
+    // Una página HTML por ciudad, generada en ng build.
+    async getPrerenderParams() {
+      return [{ slug: 'bogota' }, { slug: 'medellin' }, { slug: 'cali' }];
+    },
+  },
+  { path: 'seguimiento/:codigo', renderMode: RenderMode.Server },
+  { path: 'panel/**', renderMode: RenderMode.Client },
+  { path: '**', renderMode: RenderMode.Server },
+];
+```
+
+Archivo `src/app/app.config.server.ts`:
+
+```ts
+import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
+import { provideServerRendering, withRoutes } from '@angular/ssr';
+import { appConfig } from './app.config';
+import { serverRoutes } from './app.routes.server';
+
+const serverConfig: ApplicationConfig = {
+  providers: [provideServerRendering(withRoutes(serverRoutes))],
+};
+
+export const config = mergeApplicationConfig(appConfig, serverConfig);
+```
+
+Ejecútalo:
+
+```bash
+ng build
+ls dist/academia-ssr/browser/ciudades
+# bogota  cali  medellin   <- cada carpeta tiene su index.html prerenderizado
+npm run serve:ssr:academia-ssr
+```
+
+**Explicación por bloques:** Cada entrada de `serverRoutes` asocia un patrón de ruta con un modo. La raíz, `ayuda` y las ciudades se prerenderizan: `getPrerenderParams` dice qué valores de `:slug` generar. El seguimiento usa el servidor en cada petición y el panel se renderiza solo en el navegador. La regla `**` es el caso por defecto. En `app.config.server.ts`, `withRoutes(serverRoutes)` conecta esta tabla con el motor de SSR.
+
+**Resultado esperado:**
+
+```text
+ng build termina con una línea «Prerendered N static routes» y crea dist/academia-ssr/browser/ciudades/bogota/index.html, medellin/index.html y cali/index.html.
+Al pedir /seguimiento/ENV-42 con el servidor SSR, el HTML de la respuesta ya trae el contenido de la página.
+```
+
+**Fallo deliberado:** quita `getPrerenderParams` de la ruta `ciudades/:slug` y deja `RenderMode.Prerender`. **Error esperado:** `ng build` falla indicando que la ruta tiene parámetros y necesita `getPrerenderParams`. **Diagnóstico:** el build no puede adivinar qué ciudades existen. Devuelve la lista o cambia esa ruta a `RenderMode.Server`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** compila y cuenta cuántos `index.html` se generaron.
+2. **Variación:** agrega la ciudad `barranquilla` y vuelve a compilar.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de `ng build`.
+4. **Integración:** en `getPrerenderParams`, usa `inject()` de un servicio que lea la lista de ciudades de un JSON del proyecto.
+5. **Diseño:** clasifica las diez rutas del sitio de RutaFlow en los tres modos y justifica cada una.
+
+**Pista:** pregunta por cada ruta: ¿quién ve este HTML y cada cuánto cambia?
+
+#### Paso 6 · Práctica independiente
+
+Agrega una ruta `tarifas` que hoy es SSR y mide con `curl -w "%{time_starttransfer}"` el tiempo de primera respuesta antes y después de prerenderizarla.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas los tres modos con un ejemplo de RutaFlow cada uno.
+- [ ] `ng build` generó una carpeta por ciudad.
+- [ ] Reprodujiste el error de una ruta con parámetros sin `getPrerenderParams`.
+- [ ] Explicas qué hace Angular en lugar de streaming de HTML.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prerenderizar páginas con datos personales, olvidar que el prerender congela los datos del build y poner todo en SSR por defecto. **Siguiente paso:** el tema siguiente, hidratación incremental, hace interactiva solo la parte de la página que el usuario usa.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el sitio público de RutaFlow, prerenderiza la página de inicio, la ayuda y una página por ciudad, y deja el seguimiento en SSR.
+
+**Fuente oficial:** [Angular — Server and hybrid rendering](https://angular.dev/guide/ssr) y [Angular — Prerendering (SSG)](https://angular.dev/guide/prerendering).
+
+### Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min
+
+**Prerrequisito:** temas «Hidratación» y «`@defer` — estados reales, incluyendo error» de este módulo.
+
+**Al finalizar podrás:** renderizar un bloque en el servidor y descargar e hidratar su JavaScript solo cuando el usuario lo necesita, con `withIncrementalHydration()` y los disparadores `hydrate on`.
+
+**¿Por qué es importante?** En una página con SSR, la hidratación clásica descarga y ejecuta el JavaScript de toda la página aunque el usuario nunca baje hasta el mapa o los comentarios. La hidratación incremental reduce ese costo sin perder el HTML del servidor.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Angular 19 o superior con SSR activo. Trabajarás en `src/app/app.config.ts` y en la plantilla de la página de seguimiento.
+
+#### Paso 2 · Contexto y caso real
+
+La página de seguimiento de RutaFlow muestra arriba el estado del envío y abajo un mapa pesado. En teléfonos de gama baja, la página tardaba en responder al primer toque porque hidrataba el mapa antes que el botón «Reportar problema».
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** hidratación, hidratación incremental, `withIncrementalHydration`, `@defer (hydrate on ...)`, `hydrate when`, `hydrate never`, repetición de eventos.
+
+Con SSR, el navegador recibe el HTML ya pintado. **Hidratar** es conectar ese HTML con el JavaScript de Angular para que responda a clics.
+
+Con `withIncrementalHydration()`, un bloque `@defer` con disparador `hydrate` se **renderiza en el servidor** (el usuario lo ve) pero su JavaScript se descarga e hidrata solo cuando se cumple el disparador:
+
+| Disparador | Hidrata cuando… |
+|---|---|
+| `hydrate on viewport` | el bloque entra en pantalla |
+| `hydrate on interaction` | el usuario toca o hace clic en el bloque |
+| `hydrate on idle` | el navegador está libre |
+| `hydrate when condicion` | una expresión se vuelve verdadera |
+| `hydrate never` | nunca: queda como HTML estático |
+
+Si el usuario hace clic antes de que el bloque esté hidratado, Angular **guarda el evento y lo repite** al terminar (la repetición de eventos se activa sola con la hidratación incremental).
+
+**Analogía:** la página llega como una casa amoblada con las luces apagadas; la hidratación incremental enciende cada cuarto cuando alguien entra. La analogía falla en que el cuarto ya es visible antes de encender la luz: el HTML del servidor siempre se ve.
+
+**Límite de uso:** no sirve sin SSR: en una app solo de cliente no hay HTML que hidratar. `hydrate never` deja el bloque sin interacción para siempre; úsalo solo en contenido realmente estático.
+
+```mermaid
+sequenceDiagram
+    participant S as Servidor
+    participant N as Navegador
+    S->>N: HTML completo: estado + mapa
+    N->>N: hidrata el estado (crítico)
+    Note over N: el mapa se ve, pero sin JS
+    N->>N: el usuario baja hasta el mapa
+    N->>S: descarga el chunk del mapa
+    N->>N: hidrata el mapa
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/app/app.config.ts`:
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { provideClientHydration, withIncrementalHydration } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideClientHydration(withIncrementalHydration()), // incluye la repetición de eventos
+  ],
+};
+```
+
+Archivo `src/app/seguimiento/seguimiento.html`:
+
+```html
+<app-estado-envio [codigo]="codigo()" />
+
+<!-- Se ve desde el servidor; su JS llega cuando entra en pantalla. -->
+@defer (hydrate on viewport) {
+  <app-mapa-ruta [codigo]="codigo()" />
+} @placeholder {
+  <p>Mapa de la ruta</p>
+}
+
+<!-- Se hidrata al primer clic; el clic no se pierde. -->
+@defer (hydrate on interaction) {
+  <app-reportar-problema [codigo]="codigo()" />
+}
+
+<!-- Texto legal: nunca necesita JavaScript. -->
+@defer (hydrate never) {
+  <app-terminos-envio />
+}
+```
+
+Ejecútalo:
+
+```bash
+ng build
+npm run serve:ssr:academia-ssr
+# abre /seguimiento/ENV-42 con DevTools > Network filtrado por JS y baja hasta el mapa
+```
+
+**Explicación por bloques:** `withIncrementalHydration()` habilita los disparadores `hydrate`. En la plantilla, el estado del envío se hidrata normalmente porque es lo primero que el usuario usa. El mapa se ve desde el servidor, pero su chunk de JavaScript solo se descarga cuando el bloque entra en pantalla. El botón de reportar se hidrata al primer clic, y ese clic se repite cuando termina. Los términos quedan como HTML puro.
+
+**Resultado esperado:**
+
+```text
+Al cargar la página, la pestaña Network no muestra el chunk del mapa; aparece al bajar hasta él.
+Al hacer clic en «Reportar problema» antes de que cargue su chunk, el formulario se abre igual (el evento se repitió).
+```
+
+**Fallo deliberado:** quita `withIncrementalHydration()` y deja los bloques con `hydrate on viewport`. **Error esperado:** el build o la consola avisan que los disparadores `hydrate` requieren hidratación incremental, y el contenido diferido ya no viene en el HTML del servidor. **Diagnóstico:** sin esa función, `@defer` vuelve al comportamiento normal: no renderiza en el servidor. Vuelve a agregarla.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** carga la página con la red en «Slow 4G» y anota cuándo aparece cada chunk.
+2. **Variación:** cambia el mapa a `hydrate on idle` y compara.
+3. **Diagnóstico:** reproduce el fallo deliberado y mira el HTML del servidor con «Ver código fuente».
+4. **Integración:** usa `hydrate when envioEntregado()` para hidratar la encuesta de satisfacción solo cuando el envío se entregó.
+5. **Diseño:** clasifica cada bloque de la página de seguimiento según cuándo necesita interacción.
+
+**Pista:** para comprobar qué vino del servidor, mira el código fuente de la página, no el DOM de DevTools.
+
+#### Paso 6 · Práctica independiente
+
+Mide con Lighthouse (modo móvil) el «Total Blocking Time» de la página de seguimiento antes y después de la hidratación incremental, y registra los dos valores.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre `@defer` normal y `@defer (hydrate ...)`.
+- [ ] El chunk del mapa se descarga solo al hacer scroll.
+- [ ] Reprodujiste el fallo sin `withIncrementalHydration`.
+- [ ] Sabes cuándo usar `hydrate never`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `hydrate never` en algo que necesita clics, olvidar `withIncrementalHydration` y medir en el DOM en lugar del HTML del servidor. **Siguiente paso:** el tema «Zoneless» reduce aún más el trabajo del navegador quitando Zone.js.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la página de seguimiento de RutaFlow, hidrata el mapa con `hydrate on viewport` y el formulario de problemas con `hydrate on interaction`, y registra el antes y después en Lighthouse.
+
+**Fuente oficial:** [Angular — Incremental hydration](https://angular.dev/guide/incremental-hydration) y [Angular — Deferrable views](https://angular.dev/guide/templates/defer).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** configurar SSR con hidratación, y usar `@defer` para diferir contenido pesado.

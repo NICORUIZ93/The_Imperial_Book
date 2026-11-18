@@ -137,7 +137,7 @@ struct ListaEnvios: View {
 En otra carpeta vacía llamada `ComposicionDemo`, crea un segundo proyecto independiente en Xcode con **File ▸ New ▸ Project ▸ App** (interfaz SwiftUI), nómbralo `RutaFlowApp` y escribe el código anterior en `ContentView.swift`, seguido de `#Preview { ListaEnvios() }`. No copies este segundo ejemplo dentro de la integración anterior: cada proyecto contiene su propia versión de `TarjetaEnvio` y `ListaEnvios`. Compila tu proyecto con:
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
@@ -264,7 +264,7 @@ Text("RF-4471: en ruta").background(Color.blue).padding()   // el fondo queda aj
 Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices los proyectos del Tema 1. Escribe ambas líneas dentro de un `VStack` en el `ContentView.swift` generado y ejecútalo. Para los Pasos 5 y 6 declara en ese mismo archivo las vistas nuevas indicadas, sin importar archivos de otro tema:
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 Luego ⌘R en el simulador, o ⌥⌘↵ para el canvas de Preview. Para medir las dos versiones, pausa la app y abre **Debug ▸ View Hierarchy**.
@@ -346,15 +346,6 @@ El sistema de Previews de Xcode renderiza una vista directamente en el canvas de
 
 **¿Por qué es importante?** El sistema de Previews acelera drásticamente la iteración de diseño de una vista específica, evitando el costo de recompilar y navegar manualmente en la app completa para cada ajuste visual menor.
 
-**Código del ejemplo:**
-
-```swift
-#Preview {
-    TarjetaTarea(titulo: "Comprar leche")
-}
-// Renderiza en el canvas de Xcode, sin compilar ni correr la app completa
-```
-
 **Diagrama: Preview vs red real**
 
 ```mermaid
@@ -411,7 +402,7 @@ struct ListaEnviosGrid: View {
 Pega el código en `ContentView.swift`. Este tema se practica en el canvas de Preview (⌥⌘↵), pero confirma primero que el proyecto compila:
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** el `#Preview` renderiza la grilla completa en el canvas de Xcode, sin compilar la app ni abrir el simulador — cambiar el array de `envios` se refleja casi al instante.

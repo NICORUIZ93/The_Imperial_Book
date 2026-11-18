@@ -42,5 +42,5 @@ python3 scripts/validate_specs.py --run    # además ejecuta cada verificación 
 | [003](003-prompt-maestro-v2-de-cero-a-master.md) | Prompt maestro v2, ingreso de capturas y cobertura de cero a master | vigente |
 | [004](004-programa-cursos-de-cero-a-master.md) | Programa: todas las rutas con temas reales y el estándar del prompt maestro | vigente |
 | [005](005-integracion-total-capturas-y-skillevaluator.md) | Integración total de capturas, video Flutter y SkillEvaluator | hecho |
-| [006](006-integridad-del-temario-sin-fantasmas-ni-huecos.md) | Integridad del temario: cero temas fantasma y cero huecos | vigente |
+| [006](006-integridad-del-temario-sin-fantasmas-ni-huecos.md) | Integridad del temario: cero temas fantasma y cero huecos | hecho |
 | [tracks/](tracks/) | Una spec por ruta con criterios T1–T7 y sus temas reales pendientes | en-curso |

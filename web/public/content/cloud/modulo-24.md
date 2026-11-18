@@ -89,6 +89,19 @@ Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Dock
 El pipeline debe saber qué ejecutar y qué entregar.
 #### Paso 3 · Teoría, modelo mental y analogía
 Phases son estaciones; artifacts son paquetes listos para transportar.
+
+**Conceptos clave:** `phases`, `artifacts.files`, `artifacts.base-directory`, `buildspecOverride`.
+
+Un `buildspec.yml` (o su equivalente enviado como `buildspecOverride` en la propia llamada a `StartBuild`) define listas de comandos para cada fase: `install` para dependencias del entorno, `pre_build` para pasos previos (login a un registro, por ejemplo), `build` para el comando de compilación principal, y `post_build` para pasos finales como empaquetar o notificar. La sección `artifacts.files` especifica qué archivos recolectar al terminar —soporta patrones glob como `**/*` o nombres específicos—, y `artifacts.base-directory` indica desde qué carpeta son relativas esas rutas, por defecto `$CODEBUILD_SRC_DIR`.
+
+Cuando el tipo de artefactos es `S3`, el bucket destino debe existir de antemano —Floci no lo crea automáticamente—, y las rutas de los archivos subidos preservan la estructura relativa al directorio base configurado, exactamente como en AWS real.
+
+**Analogía:** las fases de un buildspec son como las etapas de una receta de cocina escritas explícitamente: primero reunir ingredientes (`install`), luego prepararlos (`pre_build`), cocinar (`build`), y finalmente emplatar (`post_build`) — cada fase asume que la anterior se completó correctamente.
+
+**¿Por qué es importante?** Separar explícitamente las fases de un pipeline de build es lo que permite diagnosticar rápidamente en cuál de ellas falló una compilación, en vez de tener que revisar un script monolítico de principio a fin.
+
+**Cuándo no usarlo:** no metas lógica de negocio compleja directamente en el buildspec; para pipelines grandes, invoca scripts versionados en tu repositorio desde cada fase en vez de inline.
+
 #### Paso 4 · Demostración guiada
 Crea `buildspec.yml` y `src/app.js` desde una carpeta vacía.
 ```bash
@@ -109,17 +122,6 @@ Resultado esperado: Node disponible.
 Pista: apunta a una carpeta de artefactos inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Publica logs y artefacto.
-#### Paso 7 · Cierre
-Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: despliegue. Errores comunes: incluir archivos secretos y rutas relativas incorrectas. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html.
-**Conceptos clave:** `phases`, `artifacts.files`, `artifacts.base-directory`, `buildspecOverride`.
-
-Un `buildspec.yml` (o su equivalente enviado como `buildspecOverride` en la propia llamada a `StartBuild`) define listas de comandos para cada fase: `install` para dependencias del entorno, `pre_build` para pasos previos (login a un registro, por ejemplo), `build` para el comando de compilación principal, y `post_build` para pasos finales como empaquetar o notificar. La sección `artifacts.files` especifica qué archivos recolectar al terminar —soporta patrones glob como `**/*` o nombres específicos—, y `artifacts.base-directory` indica desde qué carpeta son relativas esas rutas, por defecto `$CODEBUILD_SRC_DIR`.
-
-Cuando el tipo de artefactos es `S3`, el bucket destino debe existir de antemano —Floci no lo crea automáticamente—, y las rutas de los archivos subidos preservan la estructura relativa al directorio base configurado, exactamente como en AWS real.
-
-**Analogía:** las fases de un buildspec son como las etapas de una receta de cocina escritas explícitamente: primero reunir ingredientes (`install`), luego prepararlos (`pre_build`), cocinar (`build`), y finalmente emplatar (`post_build`) — cada fase asume que la anterior se completó correctamente.
-
-**¿Por qué es importante?** Separar explícitamente las fases de un pipeline de build es lo que permite diagnosticar rápidamente en cuál de ellas falló una compilación, en vez de tener que revisar un script monolítico de principio a fin.
 
 **Practícalo tú:**
 
@@ -149,11 +151,12 @@ artifacts:
 
 **Modifica esto:** haz que `pre_build` falle (`exit 1`) y confirma que `build` y `post_build` nunca se ejecutan — las fases son secuenciales y una falla detiene el pipeline.
 
-**Cuándo no usarlo:** no metas lógica de negocio compleja directamente en el buildspec; para pipelines grandes, invoca scripts versionados en tu repositorio desde cada fase en vez de inline.
-
 **Cómo crece tu proyecto:** estas cuatro fases son las que compilan, prueban y empaquetan cada servicio antes de que CodeDeploy lo despliegue.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Define las fases de instalación, prueba y empaquetado del consumidor en buildspec.yml. Provoca un test fallido y comprueba que no se produce un artefacto marcado como publicable.
+
+#### Paso 7 · Cierre
+Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: despliegue. Errores comunes: incluir archivos secretos y rutas relativas incorrectas. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html.
 
 ### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas
 

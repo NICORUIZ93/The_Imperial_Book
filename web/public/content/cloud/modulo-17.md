@@ -131,20 +131,7 @@ Al finalizar vas a decidir qué parte del flujo de ubicaciones de RutaFlow neces
 Las alertas de desvío (Tema 2) necesitan procesamiento inmediato con lógica propia sobre cada ping; el histórico de ubicaciones para auditoría solo necesita terminar guardado en S3, sin ninguna lógica personalizada en el camino.
 #### Paso 3 · Teoría, modelo mental y analogía
 Kinesis Data Streams da control fino sobre cada registro; Firehose es una cinta transportadora que entrega automáticamente hacia un destino, sin que escribas código de consumidor.
-#### Paso 4 · Demostración guiada
-```bash
-aws s3 mb s3://rutaflow-ubicaciones-historico
-aws firehose create-delivery-stream --delivery-stream-name ubicaciones-a-s3 \
-  --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/firehose-role,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico
-aws firehose put-record --delivery-stream-name ubicaciones-a-s3 --record Data=$(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
-```
-Resultado esperado: el registro queda en el buffer de Firehose y, pasado el intervalo de buffering configurado, aparece como un objeto nuevo en `rutaflow-ubicaciones-historico` — sin que hayas escrito ninguna función que leyera el stream y lo copiara a mano.
-#### Paso 5 · Práctica guiada
-Pista: probá `aws firehose create-delivery-stream --delivery-stream-name ubicaciones-invalido --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/rol-sin-permiso-s3,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico` con un rol que nunca tuvo permiso de escritura sobre ese bucket — ese es el fallo deliberado: Firehose acepta registros pero nunca logra entregarlos al destino, acumulando errores de entrega en silencio hasta que alguien revisa las métricas de Firehose.
-#### Paso 6 · Práctica independiente
-Construí una tabla de dos filas (alertas de desvío del Tema 2 / histórico de este Tema) con tres columnas (¿necesita lógica personalizada por registro?, latencia tolerable, mantenimiento del consumidor) y completala para justificar por qué una usa Kinesis Data Streams y la otra Firehose.
-#### Paso 7 · Cierre
-Entregá la entrega exitosa a S3 del Paso 4, el fallo de permisos del Paso 5, y la tabla comparativa del Paso 6; explicá la misma distinción "control fino vs conveniencia gestionada" que ya viste entre contenedores y Lambda en el Módulo 14. Siguiente paso: analytics. Errores comunes: ignorar buffering y coste por destino. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
+
 **Conceptos clave:** streaming de bajo nivel con control fino frente a entrega automatizada hacia un destino final.
 
 Kinesis Data Streams (lo estudiado en este módulo) da control de bajo nivel sobre cómo se leen y procesan los registros, apropiado cuando la aplicación necesita lógica de procesamiento personalizada en tiempo real sobre cada evento; Kinesis Data Firehose, en cambio, es un servicio de entrega completamente gestionado que automáticamente transporta registros desde un stream hacia un destino final (S3, un data warehouse, un servicio de búsqueda) con transformaciones opcionales configurables, sin que el desarrollador escriba código de consumidor personalizado para ese caso de uso específico de "simplemente mover datos de A a B con alguna transformación estándar", una distinción similar a la de "control fino vs conveniencia gestionada" ya vista entre EC2/contenedores y Lambda.
@@ -171,6 +158,20 @@ propia plantilla `template.yaml`.
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+aws s3 mb s3://rutaflow-ubicaciones-historico
+aws firehose create-delivery-stream --delivery-stream-name ubicaciones-a-s3 \
+  --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/firehose-role,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico
+aws firehose put-record --delivery-stream-name ubicaciones-a-s3 --record Data=$(echo -n '{"conductorId":"c-891","lat":4.6097,"lon":-74.0817}' | base64)
+```
+Resultado esperado: el registro queda en el buffer de Firehose y, pasado el intervalo de buffering configurado, aparece como un objeto nuevo en `rutaflow-ubicaciones-historico` — sin que hayas escrito ninguna función que leyera el stream y lo copiara a mano.
+#### Paso 5 · Práctica guiada
+Pista: probá `aws firehose create-delivery-stream --delivery-stream-name ubicaciones-invalido --s3-destination-configuration RoleARN=arn:aws:iam::000000000000:role/rol-sin-permiso-s3,BucketARN=arn:aws:s3:::rutaflow-ubicaciones-historico` con un rol que nunca tuvo permiso de escritura sobre ese bucket — ese es el fallo deliberado: Firehose acepta registros pero nunca logra entregarlos al destino, acumulando errores de entrega en silencio hasta que alguien revisa las métricas de Firehose.
+#### Paso 6 · Práctica independiente
+Construí una tabla de dos filas (alertas de desvío del Tema 2 / histórico de este Tema) con tres columnas (¿necesita lógica personalizada por registro?, latencia tolerable, mantenimiento del consumidor) y completala para justificar por qué una usa Kinesis Data Streams y la otra Firehose.
+#### Paso 7 · Cierre
+Entregá la entrega exitosa a S3 del Paso 4, el fallo de permisos del Paso 5, y la tabla comparativa del Paso 6; explicá la misma distinción "control fino vs conveniencia gestionada" que ya viste entre contenedores y Lambda en el Módulo 14. Siguiente paso: analytics. Errores comunes: ignorar buffering y coste por destino. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 
 ## Laboratorio práctico
 

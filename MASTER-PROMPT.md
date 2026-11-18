@@ -15,7 +15,7 @@
 > Microservicios → Docker/Kubernetes → Flutter**. También quedan aprobados como cursos separados
 > Build (Maven/Gradle) y JDBC/Bases de datos.
 
-> **Versión 2 (2026-11-18, specs/003).** Cifras vigentes: **16 rutas · 291 módulos · 1331 temas**
+> **Versión 2 (2026-11-18, specs/003).** Cifras vigentes: **16 rutas · 291 módulos · 1430 temas**
 > (fuente: `web/public/content/topic-index.json`). Novedades: trabajo guiado por especificación (SDD),
 > explicación fácil para principiantes, ayudas visuales, capturas reales y ayudas de código
 > obligatorias (specs/002), mapa de cobertura **de cero a master** por ruta y procedimiento para

@@ -138,19 +138,7 @@ Al finalizar vas a comprobar que `notificaciones-cliente` (Tema 1) no pierde nin
 Si el servicio que envía los SMS reales estuviera caído por mantenimiento, los eventos de entrega de RutaFlow no pueden perderse — tienen que quedar esperando hasta que el servicio vuelva.
 #### Paso 3 · Teoría, modelo mental y analogía
 SNS reparte el mensaje a cada suscriptor; la cola SQS detrás de cada uno lo conserva hasta que alguien lo retire — juntos separan "distribuir rápido" de "garantizar que nadie se quede sin recibirlo".
-#### Paso 4 · Demostración guiada
-```bash
-aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5002","estado":"entregado"}'
-aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5003","estado":"entregado"}'
-aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names ApproximateNumberOfMessages
-```
-Resultado esperado: `ApproximateNumberOfMessages` muestra 2 — nadie llamó a `receive-message` todavía (el "servicio de SMS" simulado está caído), y los dos mensajes siguen esperando intactos en `notificaciones-cliente`, sin que SNS ni SQS los descarten por no haber sido leídos.
-#### Paso 5 · Práctica guiada
-Pista: el fallo real que este patrón evita es el contrario — probá qué pasaría SIN la cola: si `notificaciones-cliente` fuera un endpoint HTTP directo (en vez de SQS) y ese endpoint estuviera caído en el momento exacto de la publicación, SNS reintentaría un número limitado de veces y después descartaría el mensaje para siempre. Documentá esa diferencia como el "fallo deliberado" conceptual de este Tema: la ausencia de la cola, no un comando roto.
-#### Paso 6 · Práctica independiente
-"Reanudá" el consumidor corriendo `aws sqs receive-message --queue-url "$NOTIF_Q" --max-number-of-messages 10` y confirmá que los dos mensajes del Paso 4 aparecen completos, con el mismo contenido que se publicó, demostrando que la espera no corrompió ni perdió nada.
-#### Paso 7 · Cierre
-Entregá los dos mensajes retenidos del Paso 4, la comparación conceptual del Paso 5 y la recepción completa del Paso 6; explicá por qué SNS+SQS es más robusto que SNS entregando directo a un endpoint HTTP. Siguiente paso: observabilidad. Errores comunes: publicar sin DLQ y olvidar visibilidad. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html.
+
 **Conceptos clave:** combinar fan-out con garantía de entrega, no perder mensajes si un consumidor está temporalmente caído.
 
 Combinar SNS con una cola SQS como suscriptor (en vez de un endpoint HTTP directo o una Lambda invocada directamente) agrega una capa de resiliencia importante: si el consumidor final que procesa los mensajes de esa cola SQS está temporalmente caído o sobrecargado, los mensajes permanecen retenidos de forma segura en la cola hasta que el consumidor pueda procesarlos, en vez de perderse si SNS hubiera intentado entregarlos directamente a un endpoint HTTP que no respondió en ese momento; esto combina el fan-out de SNS (distribución a múltiples destinos) con la garantía de entrega y reintentos de SQS (Módulo 3) para cada destino individual, un patrón arquitectónico extremadamente común conocido informalmente como "fan-out con colas".
@@ -176,6 +164,19 @@ detrás de una cola, en vez de dejar que su disponibilidad afecte al resto del s
 
 ---
 
+#### Paso 4 · Demostración guiada
+```bash
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5002","estado":"entregado"}'
+aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-5003","estado":"entregado"}'
+aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names ApproximateNumberOfMessages
+```
+Resultado esperado: `ApproximateNumberOfMessages` muestra 2 — nadie llamó a `receive-message` todavía (el "servicio de SMS" simulado está caído), y los dos mensajes siguen esperando intactos en `notificaciones-cliente`, sin que SNS ni SQS los descarten por no haber sido leídos.
+#### Paso 5 · Práctica guiada
+Pista: el fallo real que este patrón evita es el contrario — probá qué pasaría SIN la cola: si `notificaciones-cliente` fuera un endpoint HTTP directo (en vez de SQS) y ese endpoint estuviera caído en el momento exacto de la publicación, SNS reintentaría un número limitado de veces y después descartaría el mensaje para siempre. Documentá esa diferencia como el "fallo deliberado" conceptual de este Tema: la ausencia de la cola, no un comando roto.
+#### Paso 6 · Práctica independiente
+"Reanudá" el consumidor corriendo `aws sqs receive-message --queue-url "$NOTIF_Q" --max-number-of-messages 10` y confirmá que los dos mensajes del Paso 4 aparecen completos, con el mismo contenido que se publicó, demostrando que la espera no corrompió ni perdió nada.
+#### Paso 7 · Cierre
+Entregá los dos mensajes retenidos del Paso 4, la comparación conceptual del Paso 5 y la recepción completa del Paso 6; explicá por qué SNS+SQS es más robusto que SNS entregando directo a un endpoint HTTP. Siguiente paso: observabilidad. Errores comunes: publicar sin DLQ y olvidar visibilidad. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html.
 
 ## Laboratorio práctico
 

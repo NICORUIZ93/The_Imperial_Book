@@ -660,6 +660,14 @@ graph TD
 
 **Diagrama interactivo:** [Árbol binario de búsqueda: invariante de orden y por qué degenera](/visuals/temas/foundations/modulo-2-tema-5-bst.html) — versión explorable con temas claro/oscuro y la regla de orden de cada nodo.
 
+**Conceptos clave:** jerarquía, invariante de orden, búsqueda logarítmica, degeneración y equilibrio.
+**Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** insertar datos ya ordenados en un BST sin balancear (como `[20, 30, 40, 50, 60, 70, 80]`), lo que lo degenera en una lista enlazada y hace que `buscar` cueste O(n) en vez de O(log n); y asumir que "es un BST" garantiza O(log n) sin verificar si quedó equilibrado.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
+
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `bst.py` con el contenido de este tema.
 ```bash
@@ -726,13 +734,7 @@ Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo 
 
 #### Paso 7 · Cierre
 Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en Java, `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
-**Conceptos clave:** jerarquía, invariante de orden, búsqueda logarítmica, degeneración y equilibrio.
-**Cuándo no usarlo:** si solo necesitas buscar por igualdad exacta sin orden, una tabla hash (Tema 6) da O(1) promedio y es más simple; el BST brilla cuando necesitas orden (rangos, mínimo, máximo, recorrido ordenado).
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** indexa las tareas por fecha de vencimiento en un BST y compara el número de comparaciones de una búsqueda contra el recorrido lineal de la lista, con 100 y 10.000 tareas.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** insertar datos ya ordenados en un BST sin balancear (como `[20, 30, 40, 50, 60, 70, 80]`), lo que lo degenera en una lista enlazada y hace que `buscar` cueste O(n) en vez de O(log n); y asumir que "es un BST" garantiza O(log n) sin verificar si quedó equilibrado.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 6: Tablas hash — búsqueda en tiempo constante
 
 #### Paso 1 · Objetivo y preparación
@@ -745,6 +747,14 @@ En el gestor de tareas, buscar una tarea por su ID exacto debería ser instantá
 Una tabla hash usa una **función hash** que transforma una clave en un índice de un arreglo. Como dos claves distintas pueden caer en el mismo índice (**colisión**), se guarda una lista en cada posición (encadenamiento). Mientras las colisiones sean pocas, acceder es O(1).
 
 **Analogía:** es como un guardarropa numerado: en vez de buscar tu abrigo revisando todos, la función hash (tu número de ficha) te lleva directo al casillero. Una colisión es cuando dos personas comparten casillero: hay que mirar los pocos abrigos de ESE casillero, no los de todo el guardarropa.
+
+**Conceptos clave:** función hash, colisión, encadenamiento, factor de carga, O(1) amortizado.
+**Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** usar una capacidad demasiado chica para la tabla (como `capacidad=1`), lo que fuerza a todas las claves a la misma cubeta y degrada `obtener` a O(n); y confundir el O(1) *promedio* con una garantía absoluta, ignorando que un factor de carga alto o una mala función hash lo rompen.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `tabla_hash.py` con el contenido de este tema.
@@ -803,13 +813,7 @@ Mide cuántas claves caen en cada cubeta al insertar 1000 claves con `capacidad=
 
 #### Paso 7 · Cierre
 Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado con capacidad 1. **¿Por qué es importante?** las tablas hash son probablemente la estructura más usada en programación real — todo `dict`, `Map`, `HashMap`, caché o índice en memoria es una. Entender colisiones y factor de carga explica por qué a veces un `dict` "se pone lento" y cómo evitarlo. Fuentes: [Hash table (Wikipedia)](https://en.wikipedia.org/wiki/Hash_table).
-**Conceptos clave:** función hash, colisión, encadenamiento, factor de carga, O(1) amortizado.
-**Cuándo no usarlo:** si necesitas recorrer los datos en orden o buscar rangos, usa un árbol (Tema 5); una tabla hash no tiene orden.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** guarda las tareas en una tabla hash indexada por ID y mide el factor de carga a medida que crece el inventario, confirmando que la búsqueda por ID se mantiene constante.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** usar una capacidad demasiado chica para la tabla (como `capacidad=1`), lo que fuerza a todas las claves a la misma cubeta y degrada `obtener` a O(n); y confundir el O(1) *promedio* con una garantía absoluta, ignorando que un factor de carga alto o una mala función hash lo rompen.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 7: Grafos y recorridos BFS/DFS
 
 #### Paso 1 · Objetivo y preparación
@@ -833,6 +837,14 @@ graph LR
     C --- D
     D --- E[Ciudad E]
 ```
+
+**Conceptos clave:** vértices y aristas, lista de adyacencia, BFS con cola, DFS con pila/recursión, marcar visitados.
+**Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** recorrer un grafo con ciclos sin marcar los nodos visitados (como en el fallo deliberado), lo que produce un bucle infinito porque, a diferencia de un árbol, un grafo puede volver al mismo nodo; y usar DFS cuando el problema necesita el camino más corto, que es exactamente lo que garantiza BFS por niveles.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `grafos.py` con el contenido de este tema.
@@ -896,13 +908,7 @@ Añade una ciudad aislada (sin aristas) y confirma que no aparece en el recorrid
 
 #### Paso 7 · Cierre
 Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del fallo deliberado. **¿Por qué es importante?** los grafos y sus recorridos están detrás de los mapas (rutas), las redes sociales (amigos de amigos), los planificadores de tareas (orden de dependencias) y los rastreadores web. BFS para "el más cercano", DFS para "explorar todo" es una decisión que tomarás muchas veces. Fuentes: [Graph traversal (Wikipedia)](https://en.wikipedia.org/wiki/Graph_traversal).
-**Conceptos clave:** vértices y aristas, lista de adyacencia, BFS con cola, DFS con pila/recursión, marcar visitados.
-**Cuándo no usarlo:** para datos jerárquicos de un solo padre (un sistema de archivos, un organigrama) un árbol (Tema 5) es más simple; el grafo general se justifica cuando hay múltiples conexiones o ciclos.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela las dependencias entre tareas (una tarea que debe hacerse antes que otra) como un grafo y usa un recorrido para detectar si hay un ciclo de dependencias imposible de resolver.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** recorrer un grafo con ciclos sin marcar los nodos visitados (como en el fallo deliberado), lo que produce un bucle infinito porque, a diferencia de un árbol, un grafo puede volver al mismo nodo; y usar DFS cuando el problema necesita el camino más corto, que es exactamente lo que garantiza BFS por niveles.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ### Tema 8: Programación dinámica — resolver una vez, recordar el resultado
 
 #### Paso 1 · Objetivo y preparación
@@ -915,6 +921,14 @@ En RutaFlow, calcular el costo mínimo de una ruta con muchos tramos recalcula l
 La **programación dinámica (DP)** aplica a problemas con dos propiedades: subproblemas que se **solapan** (se repiten) y una solución que se construye desde subproblemas más pequeños. La **memoización** guarda cada resultado ya calculado en un diccionario (una tabla hash, Tema 6) y lo reutiliza.
 
 **Analogía:** es como hacer un examen donde varias preguntas comparten el mismo cálculo intermedio: en vez de rehacerlo cada vez, lo escribes una vez en el margen y lo copias. Fibonacci ingenuo recalcula `fib(5)` miles de veces; con memoización, cada valor se calcula exactamente una vez.
+
+**Conceptos clave:** subproblemas solapados, memoización, tabla de resultados, exponencial vs lineal.
+**Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** no reconocer que un problema tiene subproblemas solapados y resolverlo con recursión simple (como `fib_ingenuo`), lo que vuelve exponencial algo que debería ser lineal y cuelga el programa con entradas apenas más grandes; y aplicar memoización a un problema cuyos subproblemas no se repiten, agregando complejidad sin ningún beneficio.
+**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `dp.py` con el contenido de este tema.
@@ -968,13 +982,7 @@ Resuelve con DP el problema de "cuántas formas hay de subir una escalera de n e
 
 #### Paso 7 · Cierre
 Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y el problema de la escalera. **¿Por qué es importante?** la DP aparece en entrevistas técnicas constantemente y en problemas reales: rutas óptimas, diffs de texto, asignación de recursos, subsecuencias. Reconocer "esto tiene subproblemas repetidos" y aplicar memoización es una de las habilidades que más distingue a un programador que resuelve de uno que solo codifica. Fuentes: [Dynamic programming (Wikipedia)](https://en.wikipedia.org/wiki/Dynamic_programming).
-**Conceptos clave:** subproblemas solapados, memoización, tabla de resultados, exponencial vs lineal.
-**Cuándo no usarlo:** si los subproblemas no se repiten (cada uno es único), la DP no aporta y añade complejidad; úsala solo cuando detectes recálculo del mismo subproblema.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor calcula alguna métrica acumulada sobre rangos de fechas repetidos, memoiza el resultado por rango y demuestra con un contador que evitas recalcular los mismos rangos.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** no reconocer que un problema tiene subproblemas solapados y resolverlo con recursión simple (como `fib_ingenuo`), lo que vuelve exponencial algo que debería ser lineal y cuelga el programa con entradas apenas más grandes; y aplicar memoización a un problema cuyos subproblemas no se repiten, agregando complejidad sin ningún beneficio.
-**Fuente oficial:** [documentación de fundamentos](https://developer.mozilla.org/es/).
 ## Construcción guiada del capítulo
 
 ### Proyecto 2: gestor de inventario con análisis de rendimiento

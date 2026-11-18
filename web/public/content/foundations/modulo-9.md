@@ -72,6 +72,8 @@ En la práctica escribirás una implementación mínima de `transition()` para q
 **Límites y decisión de uso:** Una especificación lógica solo protege las propiedades que expresa. Añade casos límite y supuestos del entorno; una implementación puede satisfacer una condición parcial y seguir siendo incorrecta para requisitos omitidos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
+**¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea manualmente `contrato.txt`, `domain.py` y `test_contrato.py`:
 
@@ -148,7 +150,7 @@ Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.
 
 #### Paso 7 · Cierre
 Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
-**¿Por qué es importante?** Porque una precondición y una postcondición escritas explícitamente convierten un contrato implícito en algo que una prueba generativa puede atacar y confirmar, no solo algo que "se entiende" leyendo el código.
+
 ### Tema 2: Conjuntos, relaciones, funciones e inducción
 
 #### Paso 1 · Objetivo y preparación
@@ -444,6 +446,8 @@ Esta medición de percentiles corre sobre una implementación manual de `nearest
 **Límites y decisión de uso:** Una muestra pequeña o sesgada no permite generalizar resultados con certeza. Registra procedencia, tamaño y variabilidad, y distingue asociación de causalidad antes de elegir una solución a partir de una medición.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
+**¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea manualmente `domain.py` y `medir.py`:
 
@@ -513,7 +517,6 @@ Repetí el Paso 4 con 1000 paradas en vez de 200, y compará el p95 de ambos tam
 
 #### Paso 7 · Cierre
 Entregá la distribución con 30 repeticiones del Paso 4, la conclusión frágil con 3 repeticiones del Paso 5, y la comparación de tamaños del Paso 6; explicá por qué el tamaño de muestra y los percentiles importan más que un único número de "tiempo promedio" al decidir cuántas paradas por zona puede manejar RutaFlow. Errores comunes: sacar conclusiones de una muestra demasiado chica, reportar solo el promedio y ocultar la dispersión, y no documentar bajo qué condiciones (tamaño de entrada, hardware, repeticiones) se midió. Fuente oficial: https://docs.python.org/3/library/statistics.html.
-**¿Por qué es importante?** Porque decidir cuántas paradas por zona puede manejar RutaFlow con un solo promedio esconde exactamente la cola larga que determina si el sistema se siente lento en el peor caso, no en el caso típico.
 
 ## Construcción guiada del capítulo
 

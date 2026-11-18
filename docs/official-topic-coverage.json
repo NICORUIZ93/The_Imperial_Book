@@ -1,0 +1,2002 @@
+{
+  "reviewedAt": "2026-11-18",
+  "method": "Para cada tema del atlas oficial: candidatos por título, encabezados y texto (scripts de apoyo), y decisión revisada leyendo el título del tema. 'hueco' = la ruta no lo enseña todavía.",
+  "tracks": {
+    "javascript": {
+      "gramática y tipos": [
+        "0#tema-1-variables-const-let-y-var",
+        "0#tema-2-tipos-primitivos-y-typeof"
+      ],
+      "coerción e igualdad": [
+        "0#tema-3-conversion-coercion-e-igualdad"
+      ],
+      "alcance y closures": [
+        "2#tema-1-scope-lexico-y-closures"
+      ],
+      "prototipos": [
+        "3#tema-1-prototype-chain-y-object-create"
+      ],
+      "clases y campos privados": [
+        "3#tema-2-class-extends-y-super",
+        "3#tema-4-encapsulacion-con-campos-privados-campo"
+      ],
+      "símbolos": [
+        "3#tema-5-symbol-y-objetos-iterables-propios"
+      ],
+      "Proxy y Reflect": [
+        "6#tema-6-proxies-y-reflect"
+      ],
+      "arrays inmutables": [
+        "4#tema-5-metodos-inmutables-modernos",
+        "4#tema-3-inmutabilidad-y-actualizacion-de-estructuras-anidadas"
+      ],
+      "Map y Set": [
+        "4#tema-2-set-y-map-frente-a-array-y-object"
+      ],
+      "WeakMap y WeakSet": [
+        "4#tema-4-weakmap-y-weakset"
+      ],
+      "typed arrays": [
+        "14#tema-13-typed-arrays-arraybuffer-y-dataview"
+      ],
+      "ArrayBuffer y DataView": [
+        "14#tema-13-typed-arrays-arraybuffer-y-dataview"
+      ],
+      "Temporal": [
+        "14#tema-14-ecmascript-moderno-temporal-e-iterator-helpers",
+        "2#tema-2-hoisting-y-temporal-dead-zone"
+      ],
+      "Intl y Unicode": [
+        "13#tema-4-compatibilidad-idioma-y-tiempo-son-requisitos-de-datos",
+        "14#tema-9-expresiones-regulares-avanzadas-y-unicode"
+      ],
+      "errores y causas": [
+        "6#tema-2-try-catch-en-flujos-asincronos",
+        "13#tema-3-errores-utiles-sin-convertir-usuarios-en-sensores-involuntarios"
+      ],
+      "promesas": [
+        "6#tema-1-async-await-sobre-promesas",
+        "5#tema-2-promesas"
+      ],
+      "async/await": [
+        "6#tema-1-async-await-sobre-promesas"
+      ],
+      "iteradores": [
+        "3#tema-5-symbol-y-objetos-iterables-propios",
+        "6#tema-5-generadores-function-yield-y-yield"
+      ],
+      "generadores": [
+        "6#tema-5-generadores-function-yield-y-yield"
+      ],
+      "iteradores asíncronos": [
+        "14#tema-14-ecmascript-moderno-temporal-e-iterator-helpers"
+      ],
+      "AbortController": [
+        "6#tema-3-fetch-api-y-abortcontroller"
+      ],
+      "ES modules": [
+        "7#tema-1-esm-frente-a-commonjs"
+      ],
+      "import dinámico": [
+        "7#tema-5-import-dinamico-e-import-meta"
+      ],
+      "top-level await": [
+        "7#tema-7-modulos-es-a-fondo-top-level-await-ciclos-de-importacion-e-import-maps"
+      ],
+      "ciclos": [
+        "7#tema-7-modulos-es-a-fondo-top-level-await-ciclos-de-importacion-e-import-maps"
+      ],
+      "import maps": [
+        "7#tema-7-modulos-es-a-fondo-top-level-await-ciclos-de-importacion-e-import-maps"
+      ],
+      "using y await using": [
+        "14#tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+      ],
+      "DisposableStack": [
+        "14#tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+      ],
+      "DOM y eventos": [
+        "8#tema-1-seleccion-y-manipulacion-del-dom",
+        "8#tema-2-delegacion-de-eventos"
+      ],
+      "formularios": [
+        "8#tema-3-formularios-y-validacion-nativa",
+        "8#tema-7-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
+      ],
+      "Fetch y streams": [
+        "6#tema-7-streams-web-leer-una-respuesta-de-fetch-por-partes"
+      ],
+      "WebSocket": [
+        "14#tema-12-websocket-y-comunicacion-en-tiempo-real"
+      ],
+      "workers": [
+        "14#tema-2-workers-y-ejecucion-fuera-del-hilo-principal",
+        "10#tema-3-web-workers-para-trabajo-pesado"
+      ],
+      "IndexedDB": [
+        "14#tema-8-sessionstorage-cookies-e-indexeddb"
+      ],
+      "service workers y PWA": [
+        "14#tema-11-service-workers-pwa-y-estrategias-de-cache"
+      ],
+      "testing": [
+        "9#tema-1-unit-testing-con-vitest"
+      ],
+      "profiling": [
+        "10#tema-4-profiling-con-devtools"
+      ],
+      "memoria y GC": [
+        "5#tema-5-stack-heap-y-garbage-collection",
+        "13#tema-2-memoria-administrada-no-significa-memoria-infinita"
+      ],
+      "accesibilidad": [
+        "14#tema-4-accesibilidad-web"
+      ],
+      "XSS y CSP": [
+        "13#tema-1-datos-no-confiables-y-seguridad-en-el-navegador"
+      ],
+      "compatibilidad": [
+        "13#tema-4-compatibilidad-idioma-y-tiempo-son-requisitos-de-datos"
+      ],
+      "supply chain": [
+        "7#tema-8-cadena-de-suministro-npm-lockfile-integridad-y-paquetes-alterados"
+      ]
+    },
+    "node": {
+      "event loop": [
+        "0#tema-2-fases-del-event-loop-de-node"
+      ],
+      "timers": [
+        "0#tema-2-fases-del-event-loop-de-node"
+      ],
+      "microtasks": [
+        "0#tema-2-fases-del-event-loop-de-node"
+      ],
+      "EventEmitter": [
+        "0#tema-4-event-driven-architecture-y-non-blocking-i-o"
+      ],
+      "buffers": [
+        "2#tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      ],
+      "streams": [
+        "2#tema-6-compresion-con-zlib-gzip-y-brotli-por-streams",
+        "2#tema-2-streams-basicos-readable-writable-y-transform"
+      ],
+      "backpressure": [
+        "2#tema-3-backpressure-write-y-el-evento-drain"
+      ],
+      "ESM y CommonJS": [
+        "1#tema-6-esm-y-commonjs-en-el-mismo-proyecto"
+      ],
+      "filesystem": [
+        "2#tema-1-fs-promises-frente-a-callbacks"
+      ],
+      "paths y URLs": [
+        "2#tema-1-fs-promises-frente-a-callbacks"
+      ],
+      "procesos": [
+        "8#tema-2-cluster-module-y-balanceo-entre-procesos",
+        "10#tema-6-modelo-de-permisos-de-node-limitar-archivos-procesos-y-workers"
+      ],
+      "señales": [
+        "9#tema-3-excepciones-no-capturadas-y-graceful-shutdown"
+      ],
+      "child_process": [
+        "10#tema-5-cve-cwe-y-npm-audit-en-el-pipeline"
+      ],
+      "worker_threads": [
+        "8#tema-1-worker-threads-para-trabajo-cpu-bound"
+      ],
+      "cluster": [
+        "8#tema-2-cluster-module-y-balanceo-entre-procesos"
+      ],
+      "permission model": [
+        "10#tema-6-modelo-de-permisos-de-node-limitar-archivos-procesos-y-workers"
+      ],
+      "HTTP/HTTPS": [
+        "3#tema-1-el-modelo-request-response"
+      ],
+      "HTTP/2": [
+        "3#tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+      ],
+      "DNS": [
+        "3#tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
+      ],
+      "TCP/UDP": [
+        "3#tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
+      ],
+      "TLS": [
+        "3#tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+      ],
+      "proxies": [
+        "11#tema-4-nginx-como-reverse-proxy-y-serverless"
+      ],
+      "timeouts": [
+        "11#tema-4-nginx-como-reverse-proxy-y-serverless"
+      ],
+      "Web APIs compatibles": [
+        "2#tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      ],
+      "SQLite": [
+        "5#tema-2-prisma-schema-migraciones-y-queries-tipadas"
+      ],
+      "serialización": [
+        "3#tema-3-parsing-de-body-y-headers"
+      ],
+      "compresión": [
+        "2#tema-6-compresion-con-zlib-gzip-y-brotli-por-streams"
+      ],
+      "crypto": [
+        "6#tema-1-hashing-de-contrasenas",
+        "13#tema-4-webhooks-verificables-y-recuperacion-por-reconciliacion"
+      ],
+      "blobs": [
+        "2#tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      ],
+      "variables de entorno": [
+        "11#tema-2-variables-de-entorno-por-ambiente-y-healthchecks"
+      ],
+      "configuración validada": [
+        "11#tema-2-variables-de-entorno-por-ambiente-y-healthchecks"
+      ],
+      "node:test": [
+        "7#tema-5-node-test-test-runner-nativo-sin-dependencias",
+        "7#tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+      ],
+      "mocks": [
+        "7#tema-3-mocks-de-servicios-externos-y-ci"
+      ],
+      "coverage": [
+        "7#tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+      ],
+      "benchmarks": [
+        "4#tema-4-express-frente-a-fastify"
+      ],
+      "diagnostics_channel": [
+        "9#tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+      ],
+      "AsyncLocalStorage": [
+        "9#tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+      ],
+      "inspector": [
+        "8#tema-4-pm2-memory-leaks-y-heap-snapshots",
+        "7#tema-4-alternativas-de-testing-y-debugging"
+      ],
+      "heap snapshots": [
+        "8#tema-4-pm2-memory-leaks-y-heap-snapshots"
+      ],
+      "TypeScript": [
+        "14#tema-1-typescript-en-node-js"
+      ],
+      "package exports": [
+        "1#tema-1-package-json-y-semver"
+      ],
+      "semver": [
+        "1#tema-1-package-json-y-semver"
+      ],
+      "seguridad de dependencias": [
+        "10#tema-5-cve-cwe-y-npm-audit-en-el-pipeline",
+        "10#tema-4-owasp-api-security-top-10-y-auditoria-de-dependencias"
+      ],
+      "graceful shutdown": [
+        "9#tema-3-excepciones-no-capturadas-y-graceful-shutdown"
+      ],
+      "observabilidad": [
+        "9#tema-5-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry",
+        "9#tema-1-logging-estructurado"
+      ],
+      "idempotencia": [
+        "8#tema-5-redis-para-cache-idempotencia-y-pub-sub"
+      ]
+    },
+    "angular": {
+      "standalone components": [
+        "8#tema-1-bootstrap-sin-ngmodules",
+        "0#tema-1-el-cli-ya-no-genera-ngmodules"
+      ],
+      "templates": [
+        "1#tema-2-control-de-flujo-nativo-if-for-switch",
+        "0#tema-2-interpolacion-y-property-binding"
+      ],
+      "bindings": [
+        "0#tema-2-interpolacion-y-property-binding"
+      ],
+      "directivas": [
+        "1#tema-6-directivas-y-pipes-personalizados"
+      ],
+      "pipes": [
+        "1#tema-7-pipes-puros-e-impuros-asyncpipe-y-signals",
+        "1#tema-6-directivas-y-pipes-personalizados"
+      ],
+      "servicios": [
+        "3#tema-1-injectable-y-providedin-root"
+      ],
+      "inyección de dependencias": [
+        "3#tema-1-injectable-y-providedin-root",
+        "3#tema-2-inject-frente-a-inyeccion-por-constructor"
+      ],
+      "signals": [
+        "9#tema-1-store-propio-con-signals",
+        "2#tema-3-signals-frente-a-observables"
+      ],
+      "computed": [
+        "2#tema-1-signal-computed-y-effect",
+        "13#tema-3-tareasstore-combinando-signals-computed-y-httpclient"
+      ],
+      "effect": [
+        "2#tema-1-signal-computed-y-effect"
+      ],
+      "linkedSignal": [
+        "2#tema-5-linkedsignal-estado-derivado-que-el-usuario-puede-sobrescribir"
+      ],
+      "resource": [
+        "2#tema-6-resource-y-httpresource-datos-asincronos-reactivos"
+      ],
+      "RxJS": [
+        "6#tema-1-observable-frente-a-promise",
+        "6#tema-2-operadores-clave-debouncetime-distinctuntilchanged-switchmap-combinelatest"
+      ],
+      "interop signal-observable": [
+        "2#tema-3-signals-frente-a-observables"
+      ],
+      "estado derivado": [
+        "2#tema-5-linkedsignal-estado-derivado-que-el-usuario-puede-sobrescribir"
+      ],
+      "router": [
+        "4#tema-1-router-config-con-rutas-standalone",
+        "16#tema-3-router-nativo-y-servicios-de-expo-inyectados-como-servicios-angular"
+      ],
+      "guards": [
+        "4#tema-2-guards-funcionales"
+      ],
+      "resolvers": [
+        "4#tema-6-resolvers-funcionales-datos-listos-antes-de-mostrar-la-ruta"
+      ],
+      "formularios reactivos": [
+        "5#tema-1-reactive-forms-formgroup-y-formcontrol"
+      ],
+      "validación": [
+        "5#tema-2-validadores-asincronos",
+        "5#tema-1-reactive-forms-formgroup-y-formcontrol"
+      ],
+      "HTTP": [
+        "7#tema-1-httpclient-con-backend-fetch"
+      ],
+      "interceptores": [
+        "7#tema-3-registro-de-interceptores-y-centralizacion-del-manejo-de-errores",
+        "7#tema-2-interceptores-funcionales"
+      ],
+      "errores": [
+        "7#tema-3-registro-de-interceptores-y-centralizacion-del-manejo-de-errores"
+      ],
+      "SSR": [
+        "11#tema-1-server-side-rendering",
+        "15#tema-5-ssr-y-transferstate"
+      ],
+      "SSG": [
+        "11#tema-5-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
+      ],
+      "hydration": [
+        "11#tema-2-hidratacion",
+        "15#tema-6-hidratacion-y-provideserverrendering"
+      ],
+      "incremental hydration": [
+        "11#tema-6-hidratacion-incremental-defer-con-hydrate-on-para-despertar-solo-lo-que-se-usa"
+      ],
+      "event replay": [
+        "15#tema-6-hidratacion-y-provideserverrendering"
+      ],
+      "zoneless": [
+        "11#tema-4-zoneless",
+        "2#tema-4-hacia-zoneless-change-detection"
+      ],
+      "deferred views": [
+        "11#tema-3-defer-estados-reales-incluyendo-error"
+      ],
+      "streaming": [
+        "11#tema-5-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
+      ],
+      "lazy loading": [
+        "4#tema-3-lazy-loading-con-loadcomponent"
+      ],
+      "dominios": [
+        "8#tema-2-organizacion-por-feature"
+      ],
+      "librerías": [
+        "8#tema-4-librerias-y-monorepos-con-angular-cli-un-workspace-varias-aplicaciones-y-codigo-compartido"
+      ],
+      "monorepos": [
+        "8#tema-4-librerias-y-monorepos-con-angular-cli-un-workspace-varias-aplicaciones-y-codigo-compartido"
+      ],
+      "configuración": [
+        "0#tema-1-el-cli-ya-no-genera-ngmodules"
+      ],
+      "i18n": [
+        "14#tema-3-internacionalizar-implica-significado-no-reemplazo-de-texto"
+      ],
+      "microfrontends con criterio": [
+        "8#tema-5-microfrontends-con-criterio-native-federation-y-cuando-no-usarlos"
+      ],
+      "testing": [
+        "10#tema-2-angular-testing-library"
+      ],
+      "harnesses": [
+        "10#tema-4-angular-material-y-cdk-componentes-accesibles-probados-con-harnesses"
+      ],
+      "accesibilidad": [
+        "14#tema-1-accesibilidad-es-comportamiento-no-una-puntuacion"
+      ],
+      "sanitización": [
+        "14#tema-2-la-seguridad-automatica-tiene-fronteras-explicitas"
+      ],
+      "CSP y Trusted Types": [
+        "14#tema-5-csp-con-nonce-y-trusted-types-en-angular"
+      ],
+      "rendimiento": [
+        "14#tema-4-rendimiento-y-actualizacion-son-contratos-de-experiencia"
+      ],
+      "profiling": [
+        "14#tema-6-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
+      ],
+      "migraciones": [
+        "12#tema-3-migrar-una-version-mayor-a-la-vez-y-verificar-cada-salto",
+        "8#tema-3-migracion-desde-ngmodules"
+      ]
+    },
+    "react": {
+      "pureza": [
+        "1#tema-5-componentes-puros-y-el-estado-como-instantanea"
+      ],
+      "JSX": [
+        "0#tema-1-jsx-es-azucar-sintactica-sobre-createelement"
+      ],
+      "props": [
+        "11#tema-1-tipado-de-props-y-children",
+        "4#tema-3-componentes-compuestos-render-props-y-hooks-personalizados"
+      ],
+      "estado": [
+        "1#tema-1-usestate-y-actualizaciones-funcionales"
+      ],
+      "keys": [
+        "0#tema-2-listas-con-key-estable"
+      ],
+      "render y commit": [
+        "1#tema-2-render-frente-a-commit"
+      ],
+      "eventos": [
+        "3#tema-3-eventos-sinteticos",
+        "11#tema-3-eventos-tipados-y-componentes-polimorficos"
+      ],
+      "estado como snapshot": [
+        "1#tema-5-componentes-puros-y-el-estado-como-instantanea"
+      ],
+      "useState": [
+        "1#tema-1-usestate-y-actualizaciones-funcionales"
+      ],
+      "useReducer": [
+        "2#tema-4-reglas-de-los-hooks-usereducer-y-useimperativehandle"
+      ],
+      "useContext": [
+        "4#tema-1-createcontext-y-usecontext"
+      ],
+      "useRef": [
+        "2#tema-2-useref-valores-mutables-sin-re-render"
+      ],
+      "useEffect": [
+        "2#tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar",
+        "2#tema-1-useeffect-dependencias-y-limpieza"
+      ],
+      "useLayoutEffect": [
+        "2#tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
+      ],
+      "useEffectEvent": [
+        "2#tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
+      ],
+      "hooks propios": [
+        "4#tema-3-componentes-compuestos-render-props-y-hooks-personalizados",
+        "8#tema-3-testing-de-hooks-personalizados"
+      ],
+      "formularios": [
+        "3#tema-4-formularios-con-actions-useactionstate-y-useoptimistic",
+        "3#tema-2-validacion-con-zod-y-formularios-multi-paso"
+      ],
+      "Actions": [
+        "10#tema-4-server-actions",
+        "14#tema-2-server-actions-y-seguridad"
+      ],
+      "useActionState": [
+        "3#tema-4-formularios-con-actions-useactionstate-y-useoptimistic"
+      ],
+      "useOptimistic": [
+        "3#tema-4-formularios-con-actions-useactionstate-y-useoptimistic"
+      ],
+      "useTransition": [
+        "9#tema-4-usetransition-usedeferredvalue-y-fiber"
+      ],
+      "Suspense": [
+        "9#tema-6-el-hook-use-leer-una-promesa-con-suspense-y-un-contexto-de-forma-condicional",
+        "10#tema-3-streaming-con-suspense-en-el-servidor"
+      ],
+      "use": [
+        "9#tema-6-el-hook-use-leer-una-promesa-con-suspense-y-un-contexto-de-forma-condicional"
+      ],
+      "error boundaries": [
+        "2#tema-5-error-boundaries-contener-errores-de-render-sin-romper-toda-la-app"
+      ],
+      "SSR": [
+        "10#tema-3-streaming-con-suspense-en-el-servidor",
+        "13#tema-4-hidratacion-determinista-idioma-y-releases-medibles"
+      ],
+      "streaming": [
+        "14#tema-1-server-components-y-streaming",
+        "10#tema-3-streaming-con-suspense-en-el-servidor"
+      ],
+      "hidratación": [
+        "13#tema-4-hidratacion-determinista-idioma-y-releases-medibles"
+      ],
+      "Server Components": [
+        "10#tema-1-server-components-por-defecto",
+        "14#tema-1-server-components-y-streaming"
+      ],
+      "Server Functions": [
+        "10#tema-4-server-actions",
+        "14#tema-2-server-actions-y-seguridad"
+      ],
+      "use client/use server": [
+        "10#tema-2-use-client-para-interactividad"
+      ],
+      "serialización": [
+        "10#tema-1-server-components-por-defecto"
+      ],
+      "React Compiler": [
+        "9#tema-7-react-compiler-y-las-reglas-de-react-memoizacion-automatica"
+      ],
+      "reglas del compilador": [
+        "9#tema-7-react-compiler-y-las-reglas-de-react-memoizacion-automatica"
+      ],
+      "memoización": [
+        "2#tema-3-usememo-y-usecallback-con-criterio",
+        "9#tema-2-react-memo-con-criterio"
+      ],
+      "profiler": [
+        "9#tema-1-medir-antes-de-optimizar"
+      ],
+      "code splitting": [
+        "9#tema-3-virtualizacion-y-code-splitting",
+        "5#tema-3-rutas-protegidas-y-code-splitting-por-ruta"
+      ],
+      "caché": [
+        "6#tema-1-usequery-y-el-problema-que-resuelve"
+      ],
+      "virtualización": [
+        "9#tema-3-virtualizacion-y-code-splitting"
+      ],
+      "routing": [
+        "5#tema-1-rutas-anidadas-y-layouts-compartidos"
+      ],
+      "testing": [
+        "8#tema-1-queries-por-rol-no-por-clase-css",
+        "8#tema-3-testing-de-hooks-personalizados"
+      ],
+      "accesibilidad": [
+        "14#tema-5-accesibilidad-y-react-aria"
+      ],
+      "seguridad RSC": [
+        "14#tema-2-server-actions-y-seguridad"
+      ],
+      "estado remoto": [
+        "6#tema-1-usequery-y-el-problema-que-resuelve",
+        "7#tema-3-estado-de-servidor-vs-estado-de-cliente-y-cuando-no-necesitas-nada-de-esto"
+      ],
+      "arquitectura": [
+        "12#tema-1-estructura-del-proyecto-integrador"
+      ],
+      "migración": [
+        "13#tema-5-migrar-a-react-19-codemods-cambios-que-rompen-y-verificacion"
+      ]
+    },
+    "java": {
+      "tipos y control": [
+        "0#tema-4-tipos-primitivos-vs-referencias",
+        "0#tema-6-operadores-precedencia-y-control-de-flujo"
+      ],
+      "objetos": [
+        "1#tema-1-clases-objetos-constructores-y-encapsulacion"
+      ],
+      "records": [
+        "7#tema-1-record-modelos-inmutables-sin-boilerplate"
+      ],
+      "sealed types": [
+        "7#tema-2-sealed-jerarquias-cerradas-y-exhaustividad"
+      ],
+      "pattern matching": [
+        "7#tema-3-pattern-matching-exhaustivo-y-para-instanceof"
+      ],
+      "genéricos": [
+        "2#tema-2-genericos-wildcards-y-type-erasure",
+        "21#tema-4-genericos-borrado-y-metodos-puente-en-la-superficie-publica"
+      ],
+      "anotaciones": [
+        "19#tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion",
+        "9#tema-1-junit-5-anotaciones-y-ciclo-de-vida"
+      ],
+      "JPMS": [
+        "10#tema-2-migracion-incremental-y-cuando-jpms-aporta-valor"
+      ],
+      "colecciones": [
+        "2#tema-1-list-set-map-y-sus-implementaciones"
+      ],
+      "streams": [
+        "20#tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden",
+        "4#tema-3-streams-paralelos-y-referencias-a-metodos"
+      ],
+      "Optional": [
+        "4#tema-2-optional-evitar-null-explicitamente",
+        "20#tema-7-optional-buscar-un-envio-que-puede-no-existir"
+      ],
+      "fechas": [
+        "0#tema-8-entrada-java-time-y-por-que-evitar-las-apis-obsoletas-date-calendar",
+        "19#tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+      ],
+      "i18n": [
+        "19#tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+      ],
+      "regex": [
+        "19#tema-2-expresiones-regulares-con-pattern-y-matcher"
+      ],
+      "NIO.2": [
+        "6#tema-1-nio-2-path-y-files"
+      ],
+      "HTTP Client": [
+        "18#tema-1-httpclient-rest-timeouts-y-fallos"
+      ],
+      "serialización segura": [
+        "14#tema-3-deserializar-es-permitir-construccion-y-comportamiento"
+      ],
+      "Java Memory Model": [
+        "14#tema-1-compartir-memoria-requiere-orden-y-visibilidad"
+      ],
+      "locks": [
+        "5#tema-4-condiciones-de-carrera-y-sincronizacion"
+      ],
+      "atomics": [
+        "5#tema-4-condiciones-de-carrera-y-sincronizacion"
+      ],
+      "concurrent collections": [
+        "5#tema-4-condiciones-de-carrera-y-sincronizacion"
+      ],
+      "CompletableFuture": [
+        "5#tema-2-completablefuture"
+      ],
+      "virtual threads": [
+        "5#tema-3-virtual-threads"
+      ],
+      "scoped values": [
+        "5#tema-6-scoped-values-frente-a-threadlocal-java-25"
+      ],
+      "structured concurrency": [
+        "5#tema-5-structured-concurrency-structuredtaskscope-java-25"
+      ],
+      "bytecode": [
+        "0#tema-1-del-codigo-fuente-a-la-jvm",
+        "21#tema-4-genericos-borrado-y-metodos-puente-en-la-superficie-publica"
+      ],
+      "class loading": [
+        "19#tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
+      ],
+      "JIT": [
+        "11#tema-2-java-flight-recorder-y-jit-compilation"
+      ],
+      "memoria": [
+        "11#tema-1-generaciones-de-memoria-y-recolectores",
+        "14#tema-1-compartir-memoria-requiere-orden-y-visibilidad"
+      ],
+      "garbage collectors": [
+        "11#tema-1-generaciones-de-memoria-y-recolectores"
+      ],
+      "Flight Recorder": [
+        "11#tema-2-java-flight-recorder-y-jit-compilation"
+      ],
+      "jcmd y jstack": [
+        "11#tema-3-referencias-especiales-y-heap-dumps"
+      ],
+      "heap dumps": [
+        "11#tema-3-referencias-especiales-y-heap-dumps"
+      ],
+      "CDS y AOT": [
+        "14#tema-5-arranque-mas-rapido-archivos-cds-y-la-cache-aot"
+      ],
+      "JDBC": [
+        "17#tema-1-jdbc-preparedstatement-y-dao"
+      ],
+      "transacciones": [
+        "17#tema-2-transacciones-acid-y-aislamiento",
+        "16#tema-7-concurrencia-transacciones-y-propagacion"
+      ],
+      "ServiceLoader": [
+        "19#tema-5-serviceloader-plugins-sin-acoplar-implementaciones"
+      ],
+      "reflection": [
+        "19#tema-1-reflexion-y-anotaciones-en-tiempo-de-ejecucion"
+      ],
+      "method handles": [
+        "19#tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
+      ],
+      "Foreign Function and Memory API": [
+        "11#tema-4-foreign-function-memory-api-java-22"
+      ],
+      "JNI": [
+        "11#tema-4-foreign-function-memory-api-java-22"
+      ],
+      "JUnit": [
+        "9#tema-1-junit-5-anotaciones-y-ciclo-de-vida",
+        "15#tema-4-junit-5-mockito-y-assertions-expresivas"
+      ],
+      "property testing": [
+        "9#tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
+      ],
+      "JMH": [
+        "14#tema-2-la-jvm-optimiza-y-puede-invalidar-un-cronometro-ingenuo"
+      ],
+      "profiling": [
+        "11#tema-2-java-flight-recorder-y-jit-compilation"
+      ],
+      "secure coding": [
+        "14#tema-3-deserializar-es-permitir-construccion-y-comportamiento",
+        "18#tema-2-tokens-validacion-y-limites-de-seguridad"
+      ],
+      "criptografía": [
+        "18#tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
+      ],
+      "jlink y jpackage": [
+        "14#tema-4-el-runtime-es-parte-del-artefacto-y-necesita-ciclo-de-vida"
+      ],
+      "migración LTS": [
+        "14#tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
+      ]
+    },
+    "spring-boot": {
+      "auto-configuration": [
+        "0#tema-3-estereotipos-autoconfiguracion-y-scopes"
+      ],
+      "starters": [
+        "1#tema-1-spring-initializr-y-starters"
+      ],
+      "configuration properties": [
+        "5#tema-1-configurationproperties-tipado"
+      ],
+      "profiles": [
+        "1#tema-3-perfiles-y-estructura-por-capas"
+      ],
+      "DI": [
+        "0#tema-1-inversion-de-control-y-el-contenedor-de-spring",
+        "0#tema-2-inyeccion-por-constructor-vs-por-campo"
+      ],
+      "lifecycle": [
+        "0#tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
+      ],
+      "logging": [
+        "7#tema-4-logging-en-spring-boot-niveles-grupos-y-logs-estructurados-en-json"
+      ],
+      "failure analyzers": [
+        "5#tema-4-failureanalyzer-errores-de-arranque-que-explican-la-causa-y-la-solucion"
+      ],
+      "MVC": [
+        "2#tema-1-por-que-dtos-en-vez-de-entidades-directamente",
+        "2#tema-3-manejo-centralizado-de-errores-con-controlleradvice"
+      ],
+      "WebFlux": [
+        "9#tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc",
+        "15#tema-1-backpressure-real-en-webflux-con-reactor-test"
+      ],
+      "validación": [
+        "2#tema-2-validacion-con-bean-validation-y-responseentity",
+        "2#tema-6-paginacion-http-con-validacion-y-un-limite-de-recursos-explicito"
+      ],
+      "Problem Details": [
+        "2#tema-3-manejo-centralizado-de-errores-con-controlleradvice",
+        "5#tema-3-manejo-global-de-excepciones-consistente-entre-entornos"
+      ],
+      "filtros": [
+        "4#tema-2-filtro-jwt-y-autorizacion-por-rol"
+      ],
+      "CORS": [
+        "18#tema-2-dto-validation-cors-jwt-oidc-y-clientes-http",
+        "4#tema-3-cors-y-csrf"
+      ],
+      "REST clients": [
+        "10#tema-5-http-interfaces-deadlines-y-descubrimiento-segun-el-entorno",
+        "9#tema-2-webclient-y-composicion-no-bloqueante"
+      ],
+      "GraphQL": [
+        "24#tema-1-schema-first-con-tipos-y-consultas"
+      ],
+      "WebSocket": [
+        "14#tema-5-tiempo-real-con-stomp"
+      ],
+      "gRPC": [
+        "10#tema-6-spring-grpc-contrato-http-2-y-evolucion-segura"
+      ],
+      "JDBC": [
+        "17#tema-1-datasource-jdbctemplate-y-dao"
+      ],
+      "JPA": [
+        "3#tema-1-entidades-y-repositorios-derivados",
+        "16#tema-1-relaciones-lado-propietario-y-ciclo-de-vida"
+      ],
+      "R2DBC": [
+        "9#tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
+      ],
+      "transacciones": [
+        "17#tema-2-transactional-rollback-y-limites-de-transaccion",
+        "13#tema-1-transactional-funciona-en-una-frontera-no-como-encantamiento"
+      ],
+      "migrations": [
+        "3#tema-3-migraciones-con-flyway"
+      ],
+      "MongoDB": [
+        "3#tema-4-spring-data-mongodb-documentos-consultas-derivadas-y-cuando-elegir-un-modelo-de-documentos"
+      ],
+      "Redis": [
+        "20#tema-4-cache-con-spring-cache-caffeine-y-redis"
+      ],
+      "cache": [
+        "20#tema-4-cache-con-spring-cache-caffeine-y-redis"
+      ],
+      "locking": [
+        "14#tema-3-jpa-e-hibernate-spatial"
+      ],
+      "Testcontainers": [
+        "15#tema-2-contenedores-testcontainers-reutilizados-entre-clases"
+      ],
+      "Spring Security": [
+        "4#tema-1-securityfilterchain-moderno"
+      ],
+      "OAuth2 y OIDC": [
+        "10#tema-4-oauth2-oidc-keycloak-y-token-relay-sin-perder-la-frontera-de-autorizacion",
+        "18#tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+      ],
+      "resource server": [
+        "4#tema-2-filtro-jwt-y-autorizacion-por-rol",
+        "10#tema-4-oauth2-oidc-keycloak-y-token-relay-sin-perder-la-frontera-de-autorizacion"
+      ],
+      "method security": [
+        "14#tema-4-jwt-bearer-y-autorizacion-por-roles"
+      ],
+      "CSRF": [
+        "4#tema-3-cors-y-csrf"
+      ],
+      "headers": [
+        "4#tema-3-cors-y-csrf"
+      ],
+      "secretos": [
+        "5#tema-1-configurationproperties-tipado"
+      ],
+      "SAML": [
+        "18#tema-3-saml-2-0-con-spring-security-iniciar-sesion-con-el-proveedor-de-identidad-de-una-empresa"
+      ],
+      "Kafka": [
+        "8#tema-1-producers-y-consumers-con-spring-kafka",
+        "21#tema-1-productor-topico-key-y-consumidor"
+      ],
+      "AMQP": [
+        "8#tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
+      ],
+      "JMS": [
+        "8#tema-10-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
+      ],
+      "scheduling": [
+        "20#tema-1-scheduling-y-tareas-periodicas"
+      ],
+      "batch": [
+        "19#tema-1-job-step-tasklet-y-chunk-processing",
+        "19#tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+      ],
+      "mail": [
+        "20#tema-3-correo-con-spring-mail-y-entrega-recuperable"
+      ],
+      "outbox": [
+        "21#tema-3-outbox-transaccional-y-flujo-de-negocio"
+      ],
+      "idempotencia": [
+        "8#tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once",
+        "21#tema-2-reintentos-dlt-entrega-al-menos-una-vez-e-idempotencia"
+      ],
+      "circuit breakers": [
+        "10#tema-3-circuit-breaker-con-resilience4j"
+      ],
+      "contratos": [
+        "8#tema-8-avro-y-schema-registry-para-contratos-de-eventos",
+        "14#tema-1-crud-api-y-contratos"
+      ],
+      "Actuator": [
+        "7#tema-1-actuator-y-health-checks-personalizados"
+      ],
+      "Micrometer": [
+        "7#tema-2-contar-operaciones-de-negocio-con-micrometer",
+        "10#tema-11-micrometer-tracing-entre-servicios"
+      ],
+      "OpenTelemetry": [
+        "10#tema-11-micrometer-tracing-entre-servicios",
+        "7#tema-2-contar-operaciones-de-negocio-con-micrometer"
+      ],
+      "health groups": [
+        "7#tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
+      ],
+      "graceful shutdown": [
+        "0#tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
+      ],
+      "native images": [
+        "11#tema-2-graalvm-native-image"
+      ],
+      "Buildpacks": [
+        "11#tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
+      ],
+      "Kubernetes": [
+        "11#tema-3-health-checks-para-kubernetes"
+      ]
+    },
+    "kotlin-multiplatform": {
+      "null safety": [
+        "0#tema-1-null-safety-real"
+      ],
+      "data classes": [
+        "0#tema-2-data-class-y-funciones-de-extension"
+      ],
+      "sealed types": [
+        "1#tema-3-sealed-classes-y-colecciones-funcionales"
+      ],
+      "genéricos": [
+        "1#tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"
+      ],
+      "coroutines": [
+        "2#tema-1-suspend-functions-y-concurrencia-estructurada"
+      ],
+      "Flow": [
+        "2#tema-2-flow-stateflow-y-sharedflow"
+      ],
+      "serialization": [
+        "5#tema-5-kotlinx-serialization-json-compartido-entre-plataformas"
+      ],
+      "time e IO": [
+        "4#tema-5-tiempo-determinista-probar-vencimientos-sin-dormir-ni-consultar-el-reloj-global"
+      ],
+      "targets": [
+        "3#tema-3-gradle-multiplataforma-y-targets-disponibles",
+        "3#tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
+      ],
+      "source sets": [
+        "3#tema-1-source-sets",
+        "3#tema-4-jerarquia-de-source-sets-intermedios"
+      ],
+      "commonMain y commonTest": [
+        "3#tema-1-source-sets",
+        "9#tema-1-kotlin-test-en-commontest"
+      ],
+      "expect/actual": [
+        "3#tema-2-expect-actual"
+      ],
+      "Gradle": [
+        "3#tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle",
+        "10#tema-1-pipeline-gradle-multiplataforma-en-ci"
+      ],
+      "version catalogs": [
+        "3#tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+      ],
+      "convention plugins": [
+        "3#tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+      ],
+      "HTTP client": [
+        "5#tema-1-ktor-client-multiplataforma"
+      ],
+      "almacenamiento": [
+        "6#tema-1-esquemas-sqldelight-y-queries-tipadas"
+      ],
+      "SQLDelight": [
+        "6#tema-1-esquemas-sqldelight-y-queries-tipadas"
+      ],
+      "repositorios": [
+        "4#tema-2-repositorios-con-interfaz-comun"
+      ],
+      "caché": [
+        "11#tema-2-sincronizacion-de-datos-remotos-con-cache-local"
+      ],
+      "offline-first": [
+        "11#tema-2-sincronizacion-de-datos-remotos-con-cache-local"
+      ],
+      "sincronización": [
+        "11#tema-2-sincronizacion-de-datos-remotos-con-cache-local"
+      ],
+      "errores tipados": [
+        "4#tema-4-modelado-de-errores-de-dominio-con-un-tipo-result-explicito",
+        "5#tema-2-manejo-de-errores-de-red-con-un-tipo-explicito"
+      ],
+      "Compose Multiplatform": [
+        "7#tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace",
+        "7#tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+      ],
+      "estado": [
+        "7#tema-2-estado-y-recomposicion-mutablestateof-y-por-que-la-ui-se-redibuja"
+      ],
+      "recursos": [
+        "7#tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
+      ],
+      "localización": [
+        "7#tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
+      ],
+      "navegación": [
+        "7#tema-3-theming-y-navegacion-compartidos"
+      ],
+      "deep links": [
+        "7#tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
+      ],
+      "accesibilidad": [
+        "7#tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+      ],
+      "UI testing": [
+        "7#tema-1-compose-multiplatform-vs-jetpack-compose",
+        "7#tema-2-estado-y-recomposicion-mutablestateof-y-por-que-la-ui-se-redibuja"
+      ],
+      "Swift export": [
+        "13#tema-3-swift-export"
+      ],
+      "Objective-C": [
+        "8#tema-1-el-framework-generado-para-ios",
+        "8#tema-2-mapeo-de-tipos-kotlin-swift"
+      ],
+      "UIKit y SwiftUI": [
+        "8#tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"
+      ],
+      "Android": [
+        "7#tema-1-compose-multiplatform-vs-jetpack-compose"
+      ],
+      "JVM": [
+        "3#tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
+      ],
+      "JS y Wasm": [
+        "3#tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
+      ],
+      "C interop": [
+        "13#tema-2-interop-con-c"
+      ],
+      "ownership": [
+        "12#tema-2-garbage-collection-no-cierra-sockets-ni-rompe-ciclos-externos"
+      ],
+      "XCFramework": [
+        "13#tema-4-xcframework-y-api-publica"
+      ],
+      "publicación": [
+        "13#tema-5-publicacion-en-maven-central"
+      ],
+      "compatibilidad binaria": [
+        "13#tema-6-compatibilidad-binaria-y-ci-multi-target"
+      ],
+      "Hot Reload": [
+        "7#tema-8-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+      ],
+      "benchmarks": [
+        "9#tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"
+      ],
+      "CI multi-target": [
+        "13#tema-6-compatibilidad-binaria-y-ci-multi-target"
+      ],
+      "seguridad": [
+        "6#tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"
+      ]
+    },
+    "android": {
+      "componentes": [
+        "2#tema-4-material-3-en-compose-tema-color-dinamico-y-componentes",
+        "17#tema-1-constraints-modifier-y-componentes-con-slots"
+      ],
+      "lifecycle": [
+        "17#tema-4-side-effects-lifecycle-y-apis-imperativas",
+        "1#tema-1-ciclo-de-vida-de-una-activity"
+      ],
+      "configuration changes": [
+        "1#tema-2-viewmodel-sobrevive-a-la-rotacion",
+        "4#tema-4-restaurar-un-borrador-tras-recreacion-remember-no-equivale-a-remembersaveable"
+      ],
+      "intents": [
+        "15#tema-1-intents-implicitos-y-activity-result-api"
+      ],
+      "deep links": [
+        "3#tema-2-argumentos-tipados-y-deep-links"
+      ],
+      "permisos": [
+        "16#tema-1-permisos-en-tiempo-de-ejecucion-y-alternativas-sin-permiso"
+      ],
+      "storage": [
+        "16#tema-2-datastore-para-preferencias-consistentes-y-migrables",
+        "6#tema-2-room-flow-reactivo-y-migraciones"
+      ],
+      "procesos y memoria": [
+        "13#tema-5-del-dispositivo-al-diagnostico-soc-memoria-limites-termicos-y-arranque-verificado"
+      ],
+      "estado y recomposición": [
+        "2#tema-1-composables-y-recomposicion",
+        "10#tema-1-detectar-y-corregir-recomposicion-innecesaria"
+      ],
+      "layout": [
+        "2#tema-3-remember-remembersaveable-y-layout-basico"
+      ],
+      "Material 3": [
+        "2#tema-4-material-3-en-compose-tema-color-dinamico-y-componentes"
+      ],
+      "navegación": [
+        "3#tema-3-navegacion-anidada-con-stacks-independientes"
+      ],
+      "listas": [
+        "17#tema-2-lazycolumn-grids-claves-estables-y-estado-de-scroll"
+      ],
+      "animación": [
+        "14#tema-5-animaciones-de-estado-y-visibilidad-usan-una-especificacion-medible"
+      ],
+      "adaptive UI": [
+        "16#tema-5-interfaces-adaptativas-para-telefono-tablet-y-foldable"
+      ],
+      "semantics": [
+        "14#tema-3-semantics-y-clearandsetsemantics-definen-que-percibe-la-accesibilidad"
+      ],
+      "UDF": [
+        "12#tema-1-arquitectura-mvvm-completa-con-udf",
+        "4#tema-2-collectasstatewithlifecycle-y-udf"
+      ],
+      "ViewModel": [
+        "9#tema-1-testing-de-viewmodels-con-fakes-y-runtest",
+        "1#tema-2-viewmodel-sobrevive-a-la-rotacion"
+      ],
+      "coroutines y Flow": [
+        "4#tema-1-stateflow-en-el-viewmodel",
+        "0#tema-6-coroutines-asincronia-sin-bloquear-la-ui"
+      ],
+      "repositorios": [
+        "12#tema-1-arquitectura-mvvm-completa-con-udf"
+      ],
+      "dominio": [
+        "12#tema-4-capa-de-dominio-y-casos-de-uso-reglas-de-negocio-fuera-del-viewmodel"
+      ],
+      "modularización": [
+        "18#tema-3-modularizacion-convenciones-y-fronteras-de-arquitectura"
+      ],
+      "DI": [
+        "7#tema-1-configuracion-basica-de-hilt",
+        "12#tema-2-inyeccion-de-dependencias-en-toda-la-app"
+      ],
+      "errores": [
+        "5#tema-2-manejo-de-errores-http"
+      ],
+      "Room": [
+        "6#tema-2-room-flow-reactivo-y-migraciones"
+      ],
+      "DataStore": [
+        "16#tema-2-datastore-para-preferencias-consistentes-y-migrables"
+      ],
+      "networking": [
+        "5#tema-1-retrofit-con-coroutines",
+        "5#tema-3-interceptores-de-okhttp"
+      ],
+      "paging": [
+        "16#tema-3-paging-3-estados-de-carga-y-remotemediator"
+      ],
+      "cache": [
+        "6#tema-3-estrategia-offline-first"
+      ],
+      "offline-first": [
+        "6#tema-3-estrategia-offline-first",
+        "13#tema-3-offline-first-necesita-un-protocolo-de-cambios"
+      ],
+      "sync": [
+        "13#tema-3-offline-first-necesita-un-protocolo-de-cambios",
+        "16#tema-4-fcm-permiso-de-notificaciones-y-sincronizacion-confiable"
+      ],
+      "WorkManager": [
+        "8#tema-1-coroutineworker-y-garantia-de-ejecucion",
+        "8#tema-2-constraints-y-trabajo-periodico"
+      ],
+      "conflictos": [
+        "13#tema-3-offline-first-necesita-un-protocolo-de-cambios"
+      ],
+      "location": [
+        "15#tema-3-foreground-service-de-ubicacion-con-fusedlocationprovider"
+      ],
+      "geofencing": [
+        "15#tema-6-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
+      ],
+      "maps": [
+        "15#tema-5-mapas-con-maps-compose-marcadores-camara-y-ruta"
+      ],
+      "camera": [
+        "15#tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
+      ],
+      "scanning": [
+        "15#tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
+      ],
+      "sensors": [
+        "15#tema-8-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+      ],
+      "Bluetooth": [
+        "15#tema-9-bluetooth-le-buscar-y-leer-una-bascula-del-vehiculo"
+      ],
+      "notifications": [
+        "8#tema-3-notificaciones-desde-background-work",
+        "16#tema-4-fcm-permiso-de-notificaciones-y-sincronizacion-confiable"
+      ],
+      "foreground services": [
+        "15#tema-3-foreground-service-de-ubicacion-con-fusedlocationprovider"
+      ],
+      "batería": [
+        "8#tema-2-constraints-y-trabajo-periodico"
+      ],
+      "testing": [
+        "9#tema-3-testing-end-to-end-con-activity-real-y-fakes-vs-mocks",
+        "7#tema-3-scopes-y-testing-con-hilt"
+      ],
+      "Macrobenchmark": [
+        "18#tema-5-macrobenchmark-medir-el-arranque-y-el-scroll-como-lo-vive-el-usuario"
+      ],
+      "Baseline Profiles": [
+        "18#tema-4-r8-recursos-baseline-profiles-y-pipeline-reproducible",
+        "10#tema-2-baseline-profiles-y-ciclo-de-efectos"
+      ],
+      "ANR": [
+        "13#tema-4-la-calidad-se-opera-por-dispositivo-y-version"
+      ],
+      "memoria": [
+        "13#tema-5-del-dispositivo-al-diagnostico-soc-memoria-limites-termicos-y-arranque-verificado"
+      ],
+      "accesibilidad": [
+        "10#tema-3-accesibilidad-e-interop-con-views",
+        "14#tema-3-semantics-y-clearandsetsemantics-definen-que-percibe-la-accesibilidad"
+      ],
+      "seguridad": [
+        "13#tema-2-proteger-datos-exige-conocer-copias-y-ciclo-de-vida",
+        "16#tema-6-credential-manager-passkeys-y-verificacion-en-servidor"
+      ],
+      "Play Integrity": [
+        "16#tema-7-play-integrity-api-comprobar-en-el-servidor-que-la-peticion-viene-de-tu-app-real"
+      ],
+      "rollout": [
+        "11#tema-3-versionado-tracks-y-politicas",
+        "13#tema-4-la-calidad-se-opera-por-dispositivo-y-version"
+      ]
+    },
+    "ios": {
+      "value types": [
+        "0#tema-2-struct-vs-class"
+      ],
+      "optionals": [
+        "0#tema-1-optionals-y-unwrapping-seguro"
+      ],
+      "protocols": [
+        "0#tema-3-protocolos-y-enums-con-valores-asociados"
+      ],
+      "generics": [
+        "0#tema-4-closures-colecciones-y-genericos-con-proposito"
+      ],
+      "errors": [
+        "5#tema-2-errores-tipados"
+      ],
+      "collections": [
+        "0#tema-4-closures-colecciones-y-genericos-con-proposito"
+      ],
+      "ARC": [
+        "10#tema-4-uikit-desde-cero-para-mantener-aplicaciones-reales"
+      ],
+      "ownership": [
+        "0#tema-5-ownership-en-swift-borrowing-consuming-y-tipos-copyable"
+      ],
+      "Swift packages": [
+        "12#tema-4-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
+      ],
+      "View": [
+        "1#tema-1-el-protocolo-view-y-composicion"
+      ],
+      "identity": [
+        "2#tema-3-environment-y-identidad-vs-valor"
+      ],
+      "state": [
+        "2#tema-1-state-y-binding"
+      ],
+      "Observation": [
+        "2#tema-2-observable"
+      ],
+      "environment": [
+        "2#tema-3-environment-y-identidad-vs-valor"
+      ],
+      "layout": [
+        "1#tema-2-orden-de-modificadores-y-layout-con-stacks"
+      ],
+      "navigation": [
+        "3#tema-1-navigationstack-y-navigationpath"
+      ],
+      "animations": [
+        "14#tema-4-animaciones-y-matchedgeometryeffect"
+      ],
+      "gestures": [
+        "14#tema-8-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+      ],
+      "localization": [
+        "10#tema-5-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
+      ],
+      "async/await": [
+        "7#tema-3-combine-vs-async-await",
+        "4#tema-1-async-await-y-task"
+      ],
+      "Task": [
+        "4#tema-1-async-await-y-task"
+      ],
+      "task groups": [
+        "4#tema-3-taskgroup-y-mainactor"
+      ],
+      "actors": [
+        "4#tema-2-actors-para-estado-mutable-seguro"
+      ],
+      "MainActor": [
+        "4#tema-3-taskgroup-y-mainactor"
+      ],
+      "Sendable": [
+        "4#tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+      ],
+      "cancelación": [
+        "4#tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red",
+        "5#tema-3-reintentos-y-cancelacion"
+      ],
+      "AsyncSequence": [
+        "4#tema-6-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
+      ],
+      "Swift 6 isolation": [
+        "4#tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+      ],
+      "URLSession": [
+        "5#tema-1-urlsession-con-async-await-y-codable"
+      ],
+      "Codable": [
+        "5#tema-1-urlsession-con-async-await-y-codable"
+      ],
+      "SwiftData y Core Data": [
+        "6#tema-1-model-y-modelcontainer",
+        "6#tema-3-migraciones-y-swiftdata-vs-core-data"
+      ],
+      "cache": [
+        "13#tema-3-offline-first-es-un-protocolo-no-una-cache"
+      ],
+      "offline-first": [
+        "13#tema-3-offline-first-es-un-protocolo-no-una-cache"
+      ],
+      "migrations": [
+        "6#tema-3-migraciones-y-swiftdata-vs-core-data"
+      ],
+      "CloudKit": [
+        "6#tema-4-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+      ],
+      "Keychain": [
+        "13#tema-5-keychain-guardar-secretos-de-forma-segura"
+      ],
+      "files": [
+        "6#tema-5-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
+      ],
+      "Core Location": [
+        "13#tema-8-core-location-moderno-cllocationupdate-permisos-y-precision"
+      ],
+      "MapKit": [
+        "14#tema-5-uiviewrepresentable"
+      ],
+      "background tasks": [
+        "13#tema-9-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
+      ],
+      "push": [
+        "13#tema-7-notificaciones-push-con-apns"
+      ],
+      "camera": [
+        "14#tema-6-uiviewcontrollerrepresentable-y-coordinator"
+      ],
+      "biometrics": [
+        "13#tema-10-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+      ],
+      "widgets": [
+        "14#tema-9-widgetkit-un-widget-con-las-entregas-pendientes-del-dia"
+      ],
+      "App Intents": [
+        "14#tema-10-app-intents-acciones-de-la-app-en-siri-atajos-y-spotlight"
+      ],
+      "UIKit interop": [
+        "14#tema-5-uiviewrepresentable",
+        "14#tema-6-uiviewcontrollerrepresentable-y-coordinator"
+      ],
+      "Swift Testing": [
+        "9#tema-1-xctest-clasico-y-swift-testing",
+        "14#tema-1-swift-testing-y-pruebas-asincronas"
+      ],
+      "XCTest": [
+        "9#tema-1-xctest-clasico-y-swift-testing"
+      ],
+      "UI tests": [
+        "9#tema-3-ui-tests-con-xcuitest"
+      ],
+      "Instruments": [
+        "10#tema-1-instruments"
+      ],
+      "VoiceOver": [
+        "10#tema-2-accesibilidad-con-voiceover"
+      ],
+      "energy": [
+        "10#tema-1-instruments",
+        "13#tema-4-operar-significa-detectar-limitar-y-aprender-del-fallo"
+      ],
+      "privacy": [
+        "13#tema-6-permisos-y-privacidad-pedir-acceso-con-criterio",
+        "13#tema-2-proteger-datos-es-controlar-todas-sus-copias"
+      ],
+      "signing": [
+        "11#tema-1-certificados-y-provisioning-profiles"
+      ],
+      "TestFlight": [
+        "11#tema-2-archivar-subir-y-testflight"
+      ],
+      "crashes": [
+        "13#tema-4-operar-significa-detectar-limitar-y-aprender-del-fallo"
+      ]
+    },
+    "flutter": {
+      "null safety": [
+        "0#tema-1-sound-null-safety"
+      ],
+      "types": [
+        "0#tema-1-sound-null-safety"
+      ],
+      "classes y mixins": [
+        "0#tema-2-clases-y-mixins"
+      ],
+      "collections": [
+        "0#tema-3-futures-async-await-y-colecciones-funcionales"
+      ],
+      "futures": [
+        "0#tema-3-futures-async-await-y-colecciones-funcionales"
+      ],
+      "streams": [
+        "0#tema-5-streams-en-dart-secuencias-de-eventos-asincronos-con-await-for-y-streamcontroller"
+      ],
+      "isolates": [
+        "8#tema-4-isolates-trabajo-pesado-sin-congelar-la-interfaz"
+      ],
+      "records": [
+        "0#tema-6-records-y-patterns-en-dart-varios-valores-sin-clases-y-switch-exhaustivo"
+      ],
+      "patterns": [
+        "0#tema-6-records-y-patterns-en-dart-varios-valores-sin-clases-y-switch-exhaustivo"
+      ],
+      "extensions": [
+        "0#tema-7-extension-methods-y-extension-types-agregar-comportamiento-sin-heredar"
+      ],
+      "widget-element-render object": [
+        "1#tema-4-los-tres-arboles-de-flutter-widget-element-y-renderobject"
+      ],
+      "constraints": [
+        "2#tema-2-como-flutter-calcula-tamanos"
+      ],
+      "state": [
+        "1#tema-1-statelesswidget-vs-statefulwidget",
+        "4#tema-1-setstate-y-sus-limites"
+      ],
+      "navigation": [
+        "3#tema-1-go-router-navegacion-como-funcion-de-la-url"
+      ],
+      "forms": [
+        "4#tema-4-formularios-profesionales-con-formz-y-riverpod"
+      ],
+      "Material y Cupertino": [
+        "10#tema-1-themedata-con-material-3",
+        "10#tema-2-adaptacion-material-vs-cupertino"
+      ],
+      "animation": [
+        "8#tema-1-animaciones-implicitas-vs-explicitas"
+      ],
+      "gestures": [
+        "1#tema-5-gestos-en-flutter-gesturedetector-dismissible-y-la-arena-de-gestos"
+      ],
+      "views y view models": [
+        "12#tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
+      ],
+      "repositories": [
+        "12#tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
+      ],
+      "services": [
+        "12#tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
+      ],
+      "domain": [
+        "12#tema-1-arquitectura-por-features-y-clean-architecture",
+        "15#tema-4-clean-architecture"
+      ],
+      "DI": [
+        "4#tema-5-inyeccion-de-dependencias-con-riverpod-reemplazar-implementaciones"
+      ],
+      "explicit states": [
+        "5#tema-3-interceptores-y-estados-explicitos"
+      ],
+      "error handling": [
+        "5#tema-3-interceptores-y-estados-explicitos"
+      ],
+      "HTTP": [
+        "5#tema-1-http-vs-dio"
+      ],
+      "serialization": [
+        "5#tema-2-json-serializable"
+      ],
+      "SQLite": [
+        "6#tema-2-sqflite-vs-hive"
+      ],
+      "files": [
+        "6#tema-5-archivos-en-flutter-path-provider-carpetas-correctas-y-escritura-segura"
+      ],
+      "secure storage": [
+        "5#tema-4-flujo-de-autenticacion-con-tokens-login-almacenamiento-seguro-renovacion-y-cierre-de-sesion",
+        "13#tema-2-los-secretos-no-pertenecen-al-binario"
+      ],
+      "cache": [
+        "6#tema-3-offline-first-y-firebase"
+      ],
+      "offline-first": [
+        "6#tema-3-offline-first-y-firebase"
+      ],
+      "outbox": [
+        "19#tema-5-confirmaciones-offline-y-sincronizacion"
+      ],
+      "sync": [
+        "19#tema-5-confirmaciones-offline-y-sincronizacion"
+      ],
+      "deep links": [
+        "3#tema-2-guards-y-deep-linking"
+      ],
+      "platform channels": [
+        "7#tema-1-methodchannel"
+      ],
+      "FFI": [
+        "16#tema-1-reconocer-cuando-usar-ffi-y-crear-el-paquete"
+      ],
+      "plugins": [
+        "7#tema-2-plugins-federados"
+      ],
+      "add-to-app": [
+        "7#tema-5-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+      ],
+      "web y desktop": [
+        "11#tema-5-flutter-para-web-y-escritorio-compilar-adaptar-la-interfaz-y-elegir-el-renderizador"
+      ],
+      "location": [
+        "14#tema-2-google-maps-y-localizacion-en-tiempo-real",
+        "19#tema-2-mapa-y-permiso-de-ubicacion"
+      ],
+      "maps": [
+        "14#tema-2-google-maps-y-localizacion-en-tiempo-real"
+      ],
+      "background": [
+        "7#tema-6-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
+      ],
+      "notifications": [
+        "14#tema-6-dio-y-notificaciones-push",
+        "19#tema-6-carga-de-evidencia-con-dio-y-notificaciones"
+      ],
+      "unit/widget/integration tests": [
+        "9#tema-1-unit-tests-y-widget-tests",
+        "9#tema-3-integration-tests"
+      ],
+      "golden tests": [
+        "15#tema-2-pumpandsettle-golden-e-integration-tests",
+        "20#tema-2-golden-e-integracion-de-un-flujo-real"
+      ],
+      "DevTools": [
+        "8#tema-2-flutter-devtools-y-deteccion-de-jank"
+      ],
+      "performance": [
+        "8#tema-2-flutter-devtools-y-deteccion-de-jank",
+        "18#tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
+      ],
+      "accessibility": [
+        "10#tema-3-accesibilidad-con-semantics-y-dark-mode"
+      ],
+      "l10n": [
+        "15#tema-5-internacionalizacion-completa"
+      ],
+      "security": [
+        "13#tema-2-los-secretos-no-pertenecen-al-binario"
+      ],
+      "flavors": [
+        "11#tema-4-entornos-y-flavors-con-dart-define-from-file"
+      ],
+      "stores": [
+        "11#tema-1-builds-de-release-para-cada-plataforma",
+        "15#tema-6-builds-firma-y-despliegue"
+      ]
+    },
+    "devops": {
+      "Linux": [
+        "0#tema-1-sistema-de-archivos-y-permisos-chmod-chown",
+        "0#tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
+      ],
+      "processes": [
+        "0#tema-2-procesos-senales-y-jobs-en-segundo-plano"
+      ],
+      "signals": [
+        "0#tema-2-procesos-senales-y-jobs-en-segundo-plano"
+      ],
+      "permissions": [
+        "0#tema-1-sistema-de-archivos-y-permisos-chmod-chown",
+        "0#tema-10-usuarios-grupos-permisos-compartidos-y-sudo-con-minimo-privilegio"
+      ],
+      "systemd": [
+        "18#tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados",
+        "0#tema-11-systemd-servicios-timers-y-logs-con-journalctl"
+      ],
+      "networks": [
+        "0#tema-7-redes-modelo-osi-tcp-ip-dns-y-balanceadores-de-carga"
+      ],
+      "DNS": [
+        "0#tema-7-redes-modelo-osi-tcp-ip-dns-y-balanceadores-de-carga",
+        "18#tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
+      ],
+      "TLS": [
+        "18#tema-2-dominio-tls-y-borde-dns-let-s-encrypt-y-cloudflare"
+      ],
+      "storage": [
+        "6#tema-7-persistent-volumes-pvcs-y-storageclasses"
+      ],
+      "troubleshooting": [
+        "0#tema-11-systemd-servicios-timers-y-logs-con-journalctl",
+        "2#tema-7-operacion-diaria-inspect-stats-events-y-respaldo-de-volumenes"
+      ],
+      "scripting": [
+        "0#tema-4-variables-de-entorno-y-scripts-bash-robustos-set-euo-pipefail"
+      ],
+      "OCI": [
+        "14#tema-3-construir-una-imagen-no-demuestra-de-donde-proviene"
+      ],
+      "image layers": [
+        "2#tema-2-capas-e-invalidacion-de-cache"
+      ],
+      "BuildKit": [
+        "15#tema-1-docker-y-compose-avanzados"
+      ],
+      "rootless": [
+        "2#tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+      ],
+      "Compose": [
+        "15#tema-1-docker-y-compose-avanzados"
+      ],
+      "registries": [
+        "2#tema-6-registries-docker-hub-aws-ecr-azure-container-registry-harbor"
+      ],
+      "scanning": [
+        "11#tema-1-escaneo-de-imagenes-y-dependencias-trivy-snyk"
+      ],
+      "SBOM": [
+        "11#tema-5-sbom-y-supply-chain-security"
+      ],
+      "signatures": [
+        "14#tema-3-construir-una-imagen-no-demuestra-de-donde-proviene"
+      ],
+      "runtime security": [
+        "2#tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+      ],
+      "pipelines": [
+        "4#tema-4-pipelines-como-codigo-github-actions-gitlab-ci",
+        "16#tema-4-jenkins-instalacion-jobs-y-el-linter-real-de-pipelines-declarativos"
+      ],
+      "quality gates": [
+        "4#tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
+      ],
+      "immutable artifacts": [
+        "14#tema-3-construir-una-imagen-no-demuestra-de-donde-proviene"
+      ],
+      "environments": [
+        "3#tema-4-perfiles-para-distintos-entornos",
+        "8#tema-5-workspaces-para-multiples-entornos"
+      ],
+      "promotion": [
+        "4#tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
+      ],
+      "progressive delivery": [
+        "5#tema-2-canary-releases",
+        "5#tema-5-rollback-automatico-por-metricas"
+      ],
+      "rollback": [
+        "5#tema-5-rollback-automatico-por-metricas",
+        "18#tema-3-despliegue-y-rollback-systemd-nginx-y-artefactos-versionados"
+      ],
+      "GitOps": [
+        "12#tema-5-gitops-con-argocd-y-fluxcd",
+        "15#tema-4-gitops-con-argo-cd-y-flux"
+      ],
+      "architecture": [
+        "6#tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
+      ],
+      "Pods": [
+        "6#tema-1-pod-replicaset-deployment"
+      ],
+      "workloads": [
+        "6#tema-1-pod-replicaset-deployment",
+        "6#tema-6-statefulsets-daemonsets-jobs-y-cronjobs"
+      ],
+      "Services": [
+        "6#tema-2-service-clusterip-nodeport-loadbalancer"
+      ],
+      "Gateway API": [
+        "7#tema-2-ingress-controllers-y-reglas-de-enrutamiento"
+      ],
+      "secrets": [
+        "6#tema-3-configmaps-y-secrets"
+      ],
+      "RBAC": [
+        "7#tema-5-rbac-en-kubernetes"
+      ],
+      "policies": [
+        "7#tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
+      ],
+      "scheduling": [
+        "6#tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
+      ],
+      "autoscaling": [
+        "7#tema-3-horizontalpodautoscaler"
+      ],
+      "operators": [
+        "15#tema-2-kubernetes-extensible-y-helm-avanzado"
+      ],
+      "Terraform language": [
+        "8#tema-1-providers-resources-y-data-sources"
+      ],
+      "modules": [
+        "8#tema-3-modulos-reutilizables"
+      ],
+      "remote state y locking": [
+        "8#tema-2-state-remoto-y-locking"
+      ],
+      "providers": [
+        "8#tema-1-providers-resources-y-data-sources"
+      ],
+      "import": [
+        "8#tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
+      ],
+      "testing": [
+        "4#tema-1-jobs-steps-y-matrices-de-build",
+        "16#tema-2-scripts-y-assertions-pruebas-automatizadas-sobre-datos-reales"
+      ],
+      "policy as code": [
+        "8#tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
+      ],
+      "drift": [
+        "15#tema-4-gitops-con-argo-cd-y-flux"
+      ],
+      "OpenTelemetry": [
+        "9#tema-6-opentelemetry-como-estandar-de-instrumentacion"
+      ],
+      "logs metrics traces": [
+        "9#tema-6-opentelemetry-como-estandar-de-instrumentacion",
+        "10#tema-1-logging-estructurado-json"
+      ],
+      "SLI y SLO": [
+        "9#tema-5-sli-slo-sla",
+        "14#tema-1-confiabilidad-es-una-expectativa-cuantificada"
+      ],
+      "burn-rate alerts": [
+        "14#tema-1-confiabilidad-es-una-expectativa-cuantificada",
+        "14#tema-2-una-alerta-debe-conducir-a-una-accion"
+      ],
+      "incidents": [
+        "14#tema-2-una-alerta-debe-conducir-a-una-accion"
+      ],
+      "capacity": [
+        "17#tema-4-capacidad-y-observabilidad-latencia-throughput-slo-y-pruebas-de-carga",
+        "7#tema-3-horizontalpodautoscaler"
+      ],
+      "chaos": [
+        "9#tema-8-chaos-engineering-experimentos-controlados-para-comprobar-que-el-sistema-resiste-fallos"
+      ],
+      "restore": [
+        "18#tema-4-respaldos-que-se-restauran-restic-rpo-rto-y-simulacro"
+      ],
+      "FinOps": [
+        "12#tema-7-finops-costos-visibles-por-servicio-etiquetas-obligatorias-y-presupuestos-con-alertas"
+      ],
+      "platform engineering": [
+        "12#tema-6-platform-engineering-internal-developer-platforms-idps"
+      ]
+    },
+    "cloud": {
+      "IaaS PaaS SaaS": [
+        "0#tema-8-modelos-de-servicio-iaas-paas-saas-regiones-y-zonas-de-disponibilidad"
+      ],
+      "regions and zones": [
+        "0#tema-8-modelos-de-servicio-iaas-paas-saas-regiones-y-zonas-de-disponibilidad"
+      ],
+      "shared responsibility": [
+        "7#tema-2-modelo-de-responsabilidad-compartida"
+      ],
+      "identity": [
+        "7#tema-3-usuarios-grupos-y-roles",
+        "29#tema-5-sts-en-profundidad-identidad-temporal-y-aislamiento-multi-cuenta"
+      ],
+      "networks": [
+        "0#tema-2-fundamentos-de-redes-direcciones-ip-puertos-http-y-apis",
+        "21#tema-6-vpc-y-redes-subredes-security-groups-y-el-flujo-del-trafico"
+      ],
+      "compute": [
+        "21#tema-1-el-modelo-de-ejecucion-de-ec2-instancias-que-son-contenedores-docker-reales",
+        "5#tema-1-que-es-serverless-ventajas-y-desventajas"
+      ],
+      "storage": [
+        "2#tema-1-objetos-buckets-y-su-nomenclatura"
+      ],
+      "databases": [
+        "4#tema-1-que-es-nosql-y-cuando-usarlo",
+        "13#tema-1-rds-instance-y-cuando-elegir-sql-sobre-nosql"
+      ],
+      "Well-Architected": [
+        "32#tema-5-well-architected-revisar-una-arquitectura-con-los-seis-pilares"
+      ],
+      "landing zones": [
+        "32#tema-2-una-landing-zone-convierte-gobierno-en-una-base-repetible"
+      ],
+      "multi-account": [
+        "32#tema-2-una-landing-zone-convierte-gobierno-en-una-base-repetible"
+      ],
+      "serverless": [
+        "5#tema-1-que-es-serverless-ventajas-y-desventajas"
+      ],
+      "containers": [
+        "1#tema-1-virtualizacion-vs-contenedores",
+        "14#tema-2-task-definition-y-ecs-cluster"
+      ],
+      "event-driven": [
+        "11#tema-2-eventbridge-bus-de-eventos-con-filtrado-declarativo",
+        "26#tema-3-eventbridge-pipes-conectar-origen-y-destino-sin-codigo-de-pegamento"
+      ],
+      "microservices": [
+        "33#tema-6-microservicios-big-data-ai-ml-y-multi-cloud"
+      ],
+      "batch": [
+        "16#tema-4-procesamiento-por-lotes-trabajos-independientes-reintentos-e-idempotencia"
+      ],
+      "edge": [
+        "22#tema-3-cloudfront-distribucion-de-contenido-y-control-de-acceso-al-origen"
+      ],
+      "relational": [
+        "13#tema-1-rds-instance-y-cuando-elegir-sql-sobre-nosql"
+      ],
+      "key-value": [
+        "4#tema-4-clave-primaria-simple-hash-vs-compuesta-hash-range"
+      ],
+      "document": [
+        "4#tema-2-tablas-items-y-atributos"
+      ],
+      "graph": [
+        "28#tema-1-bases-de-datos-de-grafos-cuando-las-relaciones-son-el-dato"
+      ],
+      "time-series": [
+        "28#tema-5-datos-de-series-temporales-escritura-por-tiempo-reduccion-de-resolucion-y-retencion"
+      ],
+      "object storage": [
+        "2#tema-1-objetos-buckets-y-su-nomenclatura"
+      ],
+      "lakehouse": [
+        "19#tema-1-data-lake-y-glue-catalog",
+        "19#tema-3-parquet-vs-csv-y-partition-pruning"
+      ],
+      "streaming": [
+        "17#tema-1-streams-vs-colas",
+        "17#tema-3-kinesis-data-streams-vs-firehose-y-gcp-managed-kafka"
+      ],
+      "governance": [
+        "32#tema-2-una-landing-zone-convierte-gobierno-en-una-base-repetible",
+        "25#tema-1-aws-config-rastrear-reglas-sobre-tus-recursos"
+      ],
+      "residency": [
+        "32#tema-6-residencia-y-soberania-de-datos-que-los-datos-personales-vivan-donde-la-ley-permite"
+      ],
+      "IAM and federation": [
+        "7#tema-3-usuarios-grupos-y-roles",
+        "18#tema-3-oauth-2-0-y-pkce"
+      ],
+      "zero trust": [
+        "32#tema-1-una-red-segura-empieza-por-flujos-no-por-subredes"
+      ],
+      "KMS": [
+        "10#tema-2-kms-y-envelope-encryption"
+      ],
+      "secrets": [
+        "10#tema-1-secrets-manager-y-por-que-no-usar-variables-de-entorno-hardcodeadas"
+      ],
+      "WAF and DDoS": [
+        "22#tema-6-waf-y-proteccion-ddos-limitar-peticiones-y-bloquear-ataques-comunes-en-el-borde"
+      ],
+      "posture": [
+        "25#tema-1-aws-config-rastrear-reglas-sobre-tus-recursos"
+      ],
+      "audit": [
+        "33#tema-5-seguridad-auditoria-y-finops"
+      ],
+      "threat detection": [
+        "33#tema-7-deteccion-de-amenazas-leer-registros-de-auditoria-y-alertar-sobre-comportamiento-sospechoso"
+      ],
+      "supply chain": [
+        "14#tema-4-cadena-de-suministro-en-la-nube-escaneo-firma-y-verificacion-de-imagenes-en-ecr"
+      ],
+      "compliance": [
+        "25#tema-1-aws-config-rastrear-reglas-sobre-tus-recursos"
+      ],
+      "HA": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas"
+      ],
+      "quorum": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas"
+      ],
+      "retries": [
+        "16#tema-2-choice-state-retry-y-catch"
+      ],
+      "idempotency": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas",
+        "9#tema-2-crud-de-tareas-sobre-dynamodb-expuesto-por-lambda"
+      ],
+      "queues": [
+        "3#tema-1-colas-productores-y-consumidores"
+      ],
+      "circuit breaker": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas"
+      ],
+      "autoscaling": [
+        "21#tema-4-auto-scaling-configuraciones-de-lanzamiento-y-grupos"
+      ],
+      "multi-region": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas"
+      ],
+      "backup": [
+        "25#tema-4-aws-backup-centralizar-la-politica-de-respaldo-de-multiples-servicios"
+      ],
+      "restore": [
+        "13#tema-2-snapshots-y-restore",
+        "25#tema-6-simulacro-de-restauracion-comprobar-contenido-no-solo-la-existencia-del-backup"
+      ],
+      "RPO RTO": [
+        "32#tema-3-disponibilidad-y-recuperacion-responden-preguntas-distintas"
+      ],
+      "chaos": [
+        "32#tema-4-un-backup-solo-existe-operativamente-despues-de-restaurarlo"
+      ],
+      "observability": [
+        "12#tema-1-log-groups-log-streams-y-correlation-id",
+        "12#tema-3-diagnostico-sistematico-y-x-ray"
+      ],
+      "SLO": [
+        "32#tema-4-un-backup-solo-existe-operativamente-despues-de-restaurarlo"
+      ],
+      "IaC": [
+        "15#tema-1-stack-template-y-por-que-no-crear-recursos-manualmente-con-la-cli",
+        "33#tema-1-terraform-avanzado-y-ci-cd-cloud"
+      ],
+      "policy": [
+        "7#tema-4-estructura-de-una-politica-acciones-recursos-y-condiciones"
+      ],
+      "FinOps": [
+        "29#tema-1-cost-explorer-costos-sintetizados-a-partir-de-tu-estado-real",
+        "33#tema-5-seguridad-auditoria-y-finops"
+      ],
+      "sustainability": [
+        "32#tema-5-well-architected-revisar-una-arquitectura-con-los-seis-pilares"
+      ],
+      "performance": [
+        "32#tema-5-well-architected-revisar-una-arquitectura-con-los-seis-pilares"
+      ],
+      "migration": [
+        "31#tema-5-migrar-a-la-nube-las-7-r-para-decidir-que-hacer-con-cada-aplicacion"
+      ],
+      "hybrid": [
+        "31#tema-6-nube-hibrida-conectar-el-centro-de-datos-con-la-nube-de-forma-segura-y-medible"
+      ],
+      "AI ML governance": [
+        "20#tema-4-gobierno-de-ia-y-ml-fichas-de-modelo-umbrales-por-grupo-y-una-puerta-antes-de-publicar"
+      ],
+      "deprecations": [
+        "5#tema-7-deprecaciones-en-la-nube-encontrar-a-tiempo-runtimes-y-versiones-que-dejan-de-tener-soporte"
+      ]
+    }
+  }
+}

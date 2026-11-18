@@ -322,6 +322,148 @@ Ya versionas el pipeline con la misma disciplina que el código de la aplicació
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Versiona build, test y publicación como pipeline revisable. Ejecuta una contribución de prueba sin secretos de despliegue y comprueba que puede validar el código sin facultades para publicar.
 
+### Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min
+
+**Prerrequisito:** temas «Artifacts y reportes de cobertura» y «Pipelines como código» de este módulo.
+
+**Al finalizar podrás:** construir la imagen una sola vez, identificarla por su digest y promoverla de `staging` a `produccion` solo si pasa puertas de calidad (pruebas, cobertura, escaneo) y una aprobación.
+
+**¿Por qué es importante?** Si cada entorno reconstruye la imagen, lo que probaste no es lo que despliegas. Si no hay puertas, cualquier commit llega a producción. Promover el mismo artefacto con reglas explícitas hace el proceso predecible.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa GitHub Actions en un repositorio con un `Dockerfile`. Crea en **Settings > Environments** los entornos `staging` y `produccion`; en `produccion` agrega revisores obligatorios.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, el job de producción volvía a construir la imagen. Un día una dependencia cambió entre el build de staging y el de producción, y apareció un error que nadie había visto en pruebas. Desde entonces se promueve el mismo digest.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** artefacto inmutable, digest, quality gate, entorno, aprobación, promoción, `needs`, salidas de job.
+
+El pipeline tiene tres fases:
+
+1. **Construir una vez:** la imagen se publica y se identifica por su **digest** (`sha256:...`), que no cambia aunque alguien mueva una etiqueta.
+2. **Puertas de calidad:** reglas que deben pasar para seguir. Si una falla, el pipeline se detiene.
+
+| Puerta | Ejemplo de regla |
+|---|---|
+| pruebas | todas pasan |
+| cobertura | ramas ≥ 80 % |
+| seguridad | sin vulnerabilidades críticas en el escaneo |
+| aprobación | una persona del equipo aprueba el despliegue a producción |
+
+3. **Promover:** cada entorno despliega **el mismo digest**, recibido como salida del job de build.
+
+En GitHub Actions, un job con `environment: produccion` espera a que un revisor apruebe.
+
+**Analogía:** es un lote de medicamentos: se fabrica una vez, se numera, pasa controles de calidad y el mismo lote numerado llega a la farmacia. Nadie fabrica otro lote «igual» para la farmacia.
+
+**Límite de uso:** las puertas no reemplazan el monitoreo en producción: pueden pasar y aun así fallar con tráfico real. Demasiadas aprobaciones manuales vuelven lento el pipeline; automatiza todo lo que se pueda medir.
+
+```mermaid
+flowchart LR
+    B["build: imagen @sha256:abc"] --> T["pruebas + cobertura >= 80 %"]
+    T --> S["escaneo: 0 críticas"]
+    S --> ST["deploy staging @sha256:abc"]
+    ST --> A{"aprobación"}
+    A --> P["deploy producción @sha256:abc"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `.github/workflows/entrega.yml`:
+
+```yaml
+name: entrega
+on: { push: { branches: [main] } }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, packages: write }
+    outputs:
+      digest: ${{ steps.imagen.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci && npm test -- --coverage --coverage.thresholds.branches=80 # puerta: pruebas y cobertura
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
+      - id: imagen
+        uses: docker/build-push-action@v6
+        with: { push: true, tags: ghcr.io/rutaflow/api:${{ github.sha }} }
+
+  escaneo:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ghcr.io/rutaflow/api@${{ needs.build.outputs.digest }}
+          severity: CRITICAL
+          exit-code: '1' # puerta: falla si hay críticas
+
+  staging:
+    needs: [build, escaneo]
+    environment: staging
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "desplegando ghcr.io/rutaflow/api@${{ needs.build.outputs.digest }} en staging"
+
+  produccion:
+    needs: [build, staging]
+    environment: produccion # espera la aprobación de un revisor
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "promoviendo el MISMO digest ${{ needs.build.outputs.digest }} a producción"
+```
+
+Ejecútalo:
+
+```bash
+git commit -am "cambio" && git push
+# en la pestaña Actions: build -> escaneo -> staging -> (aprobación) -> produccion
+```
+
+**Explicación por bloques:** El job `build` corre pruebas con un umbral de cobertura de ramas (primera puerta), publica la imagen y expone su digest como salida. `escaneo` revisa esa imagen exacta por digest y falla si encuentra vulnerabilidades críticas (segunda puerta). `staging` despliega solo si las dos anteriores pasan. `produccion` depende de staging y del entorno `produccion`, que exige aprobación (tercera puerta). Los dos despliegues usan el mismo digest, nunca vuelven a construir.
+
+**Resultado esperado:**
+
+```text
+En Actions: build ✓, escaneo ✓, staging ✓ y produccion «Waiting for review».
+Tras aprobar, el log de produccion imprime el mismo digest sha256 que el de staging.
+```
+
+**Fallo deliberado:** cambia el job `produccion` para que vuelva a ejecutar `docker/build-push-action` con la etiqueta `latest`. **Error esperado:** el pipeline pasa, pero el digest desplegado en producción es distinto del de staging. **Diagnóstico:** lo que probaste no es lo que desplegaste. Promueve por digest y elimina el segundo build.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el pipeline y compara los digests de staging y producción.
+2. **Variación:** introduce una prueba que falle y comprueba que nada se despliega.
+3. **Diagnóstico:** reproduce el fallo deliberado con un segundo build.
+4. **Integración:** agrega una puerta de «smoke test» que llame `/health` en staging antes de habilitar producción.
+5. **Diseño:** escribe la tabla de puertas de RutaFlow con su umbral y quién puede saltarla (si alguien puede).
+
+**Pista:** si dudas de qué se desplegó, compara digests, no etiquetas.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una regla de protección de rama que exija que el pipeline pase antes de fusionar a `main`, y documenta qué hacer en una urgencia sin saltarse las puertas.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué se construye una sola vez.
+- [ ] Staging y producción usan el mismo digest.
+- [ ] Una prueba fallida detiene la promoción.
+- [ ] Producción espera aprobación.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reconstruir por entorno, desplegar por etiqueta movible y llenar el pipeline de aprobaciones manuales evitables. **Siguiente paso:** el módulo 5 despliega ese digest con estrategias blue-green y canary.
+
+**Transferencia al proyecto integrador «RutaFlow»:** convierte el pipeline de RutaFlow en build único, puertas de calidad y promoción del mismo digest de staging a producción con aprobación.
+
+**Fuente oficial:** [GitHub Docs — Managing environments for deployment](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) y [GitHub Docs — Passing information between jobs](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/passing-information-between-jobs).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** crear un workflow de GitHub Actions que ejecute lint y tests en cada pull request, con caché de dependencias, una matriz de dos versiones de runtime, y publicación de un reporte de cobertura como artifact.

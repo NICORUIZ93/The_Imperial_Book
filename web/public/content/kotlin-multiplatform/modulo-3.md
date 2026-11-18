@@ -471,6 +471,320 @@ Ya usas un source set intermedio para compartir código entre un subconjunto de 
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Comparte código entre destinos que realmente soportan la misma API. Construye cada target configurado y demuestra que introducir una dependencia nativa no rompe un destino hermano.
 
+### Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min
+
+**Prerrequisito:** temas «Gradle multiplataforma y targets disponibles» y «Jerarquía de source sets intermedios» de este módulo.
+
+**Al finalizar podrás:** mover todas las versiones a `gradle/libs.versions.toml` y extraer la configuración común de los módulos KMP a un convention plugin en `build-logic`, para que cada módulo nuevo tenga tres líneas de configuración.
+
+**¿Por qué es importante?** Con varios módulos, cada `build.gradle.kts` repite targets, versiones y opciones. Un día un módulo queda con otra versión de Ktor o sin el target de iOS. Un catálogo y un plugin de convención evitan esa deriva.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa un proyecto KMP con al menos dos módulos (`shared` y `feature-envios`) y Gradle 8.5 o superior. Crea la carpeta `build-logic` en la raíz.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía cinco módulos KMP. Dos usaban Ktor 2 y tres Ktor 3, y uno olvidó el target `iosSimulatorArm64`, así que la app de iOS fallaba en Macs con chip Apple. Centralizar la configuración evitó repetirlo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** version catalog, alias (`libs.ktor.client.core`), bundle, convention plugin, `includeBuild`, `build-logic`, plugin precompilado.
+
+**Version catalog:** un archivo TOML con secciones `[versions]`, `[libraries]`, `[bundles]` y `[plugins]`. Gradle genera accesos con tipos: `libs.ktor.client.core`. Cambias una versión en un solo lugar.
+
+**Convention plugin:** un plugin de Gradle propio que aplica la configuración común (targets, opciones del compilador, dependencias base). Vive en un **build incluido** (`build-logic`) que se agrega con `includeBuild` en `settings.gradle.kts`. Cada módulo solo aplica el plugin por su id.
+
+Resultado: el `build.gradle.kts` de un módulo dice **qué es** (`id("rutaflow.kmp.library")`) y sus dependencias propias; el **cómo** está en un solo lugar.
+
+**Analogía:** el catálogo es la lista de precios oficial de la tienda; el convention plugin es el manual de montaje común a todos los muebles. La analogía falla en que, si cambias el manual, todos los muebles se rearman en el siguiente build.
+
+**Límite de uso:** no metas en el convention plugin lo que solo usa un módulo. Un plugin con demasiadas opciones vuelve a ser difícil de leer: prefiere varios plugins pequeños (librería, feature, app).
+
+```mermaid
+flowchart TB
+    T["gradle/libs.versions.toml"] --> P["build-logic: rutaflow.kmp.library"]
+    P --> S["shared/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    P --> F["feature-envios/build.gradle.kts<br/>id('rutaflow.kmp.library')"]
+    T --> S & F
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `gradle/libs.versions.toml`:
+
+```toml
+[versions]
+kotlin = "2.2.20"
+ktor = "3.3.0"
+coroutines = "1.10.2"
+
+[libraries]
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+```
+
+Archivo `build-logic/build.gradle.kts`:
+
+```kotlin
+plugins { `kotlin-dsl` }
+
+dependencies {
+    implementation(libs.kotlin.gradle.plugin) // el plugin necesita el plugin de Kotlin para configurarlo
+}
+```
+
+Archivo `build-logic/settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories { mavenCentral(); gradlePluginPortal() }
+    versionCatalogs { create("libs") { from(files("../gradle/libs.versions.toml")) } }
+}
+```
+
+Archivo `build-logic/src/main/kotlin/rutaflow.kmp.library.gradle.kts`:
+
+```kotlin
+// Plugin precompilado: su id es el nombre del archivo, "rutaflow.kmp.library".
+plugins { id("org.jetbrains.kotlin.multiplatform") }
+
+kotlin {
+    jvm()
+    iosArm64()
+    iosSimulatorArm64() // ningún módulo puede olvidarlo
+    jvmToolchain(21)
+    compilerOptions { allWarningsAsErrors.set(true) }
+}
+```
+
+Archivo `feature-envios/build.gradle.kts`:
+
+```kotlin
+plugins { id("rutaflow.kmp.library") }
+
+kotlin {
+    sourceSets.commonMain.dependencies {
+        implementation(libs.ktor.client.core)
+        implementation(libs.kotlinx.coroutines.core)
+    }
+}
+```
+
+Archivo `settings.gradle.kts`:
+
+```kotlin
+pluginManagement { includeBuild("build-logic") }
+include(":shared", ":feature-envios")
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :feature-envios:tasks --group=verification
+./gradlew :feature-envios:allTests
+```
+
+**Explicación por bloques:** El catálogo define versiones una vez y las referencia con `version.ref`. `build-logic` es un build aparte con `kotlin-dsl`; usa el mismo catálogo desde su propio `settings.gradle.kts`. El archivo `rutaflow.kmp.library.gradle.kts` es un plugin precompilado: aplica el plugin multiplataforma y fija targets, toolchain y avisos como errores. `settings.gradle.kts` de la raíz incluye `build-logic` para que sus plugins estén disponibles. El módulo `feature-envios` queda con su plugin y sus dependencias.
+
+**Resultado esperado:**
+
+```text
+./gradlew :feature-envios:tasks --group=verification lista allTests, jvmTest e iosSimulatorArm64Test, aunque el módulo no los declara.
+BUILD SUCCESSFUL
+```
+
+**Fallo deliberado:** escribe en `feature-envios` la dependencia con versión fija `implementation("io.ktor:ktor-client-core:2.3.12")`. **Error esperado:** el build compila, pero `./gradlew :feature-envios:dependencies` muestra Ktor 2 y el módulo `shared` usa Ktor 3: conflicto en ejecución. **Diagnóstico:** saltarse el catálogo reintroduce la deriva. Usa siempre `libs.*` y, si quieres impedirlo, agrega una regla en el plugin que falle con versiones literales.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** lista las tareas de verificación de `feature-envios` y comprueba los targets.
+2. **Variación:** actualiza Ktor en el catálogo y comprueba con `dependencies` que cambia en todos los módulos.
+3. **Diagnóstico:** reproduce el fallo deliberado con una versión literal.
+4. **Integración:** crea un segundo plugin `rutaflow.kmp.feature` que aplique el de librería y agregue Compose Multiplatform.
+5. **Diseño:** escribe en el README de RutaFlow qué plugin usa cada tipo de módulo.
+
+**Pista:** si Gradle no encuentra `libs` dentro de `build-logic`, revisa su propio `settings.gradle.kts`: es un build separado.
+
+#### Paso 6 · Práctica independiente
+
+Agrega un `[bundles]` llamado `ktor` con cliente, negociación de contenido y serialización JSON, y úsalo con `implementation(libs.bundles.ktor)`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas catálogo y convention plugin.
+- [ ] El módulo hereda los targets del plugin.
+- [ ] Reprodujiste la deriva por una versión literal.
+- [ ] Cada módulo tiene un `build.gradle.kts` corto.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** poner versiones literales en los módulos, crear un único plugin gigante y olvidar que `build-logic` es otro build. **Siguiente paso:** el tema siguiente agrega targets JVM, JS y Wasm desde este mismo plugin.
+
+**Transferencia al proyecto integrador «RutaFlow»:** centraliza las versiones de RutaFlow en `libs.versions.toml` y aplica `rutaflow.kmp.library` en todos los módulos compartidos.
+
+**Fuente oficial:** [Gradle — Version catalogs](https://docs.gradle.org/current/userguide/version_catalogs.html) y [Gradle — Sharing build logic with convention plugins](https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html).
+
+### Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min
+
+**Prerrequisito:** tema «Version catalogs y convention plugins» de este módulo.
+
+**Al finalizar podrás:** agregar los targets `jvm`, `js` y `wasmJs` a un módulo compartido, usar la misma regla de negocio desde un servidor Ktor y desde el navegador, y aislar lo que cambia por plataforma.
+
+**¿Por qué es importante?** La regla de tarifa de RutaFlow debe dar el mismo resultado en la app, en el servidor y en el cotizador web. Escribirla tres veces garantiza que tarde o temprano no coincidan. KMP permite compilar la misma regla para todos.
+
+#### Paso 1 · Objetivo y preparación
+
+Continúa el proyecto con el convention plugin. Necesitas Node.js para ejecutar las pruebas de JS y un navegador moderno para Wasm.
+
+#### Paso 2 · Contexto y caso real
+
+El cotizador web de RutaFlow tenía la fórmula de tarifa copiada en TypeScript. Cuando cambió el recargo por peso, el servidor cobró una cosa y la web mostró otra. Compartir la regla desde KMP eliminó la copia.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** target, `jvm()`, `js { browser(); nodejs() }`, `wasmJs`, `@JsExport`, source set por target, `expect/actual` por plataforma.
+
+Cada **target** compila el código común a una plataforma:
+
+| Target | Produce | Uso típico |
+|---|---|---|
+| `jvm()` | bytecode de Java | servidor Ktor o Spring, escritorio |
+| `js { browser() }` | JavaScript | web existente, librería npm |
+| `wasmJs { browser() }` | WebAssembly | web con Compose Multiplatform |
+
+El código de `commonMain` se compila para todos. Lo que depende de la plataforma (hora del sistema, almacenamiento) se declara con `expect` en común y se implementa con `actual` en cada source set.
+
+Para que JavaScript pueda llamar una función de Kotlin con un nombre estable, se marca con **`@JsExport`**.
+
+**Analogía:** el código común es una partitura; cada target es un instrumento que la interpreta. La analogía falla en que algunos instrumentos no tienen ciertas notas: por eso `expect/actual` da a cada uno su versión.
+
+**Límite de uso:** no todo paquete de Kotlin soporta JS o Wasm: revisa en klibs.io o en la documentación de cada librería. Wasm en el navegador todavía tiene restricciones de interoperabilidad con APIs del DOM.
+
+```mermaid
+flowchart TB
+    C["commonMain: tarifa()"] --> J["jvm: servidor Ktor"]
+    C --> S["js: cotizador web (@JsExport)"]
+    C --> W["wasmJs: Compose web"]
+    C --> I["ios / android: apps"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `shared/build.gradle.kts`:
+
+```kotlin
+plugins { id("rutaflow.kmp.library") }
+
+kotlin {
+    js { browser(); nodejs(); binaries.library() }
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs { browser() }
+}
+```
+
+Archivo `shared/src/commonMain/kotlin/co/rutaflow/tarifa/Tarifa.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport // nombre estable para JavaScript
+fun tarifaCentavos(kilos: Int, urgente: Boolean): Int {
+    require(kilos > 0) { "peso inválido" }
+    val base = 1_000 + kilos * 120
+    return if (urgente) base * 2 else base
+}
+
+expect fun plataforma(): String
+```
+
+Archivo `shared/src/jvmMain/kotlin/co/rutaflow/tarifa/Plataforma.jvm.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+actual fun plataforma(): String = "JVM ${System.getProperty("java.version")}"
+```
+
+Archivo `shared/src/jsMain/kotlin/co/rutaflow/tarifa/Plataforma.js.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+actual fun plataforma(): String = "JavaScript"
+```
+
+Archivo `shared/src/commonTest/kotlin/co/rutaflow/tarifa/TarifaTest.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class TarifaTest {
+    @Test fun mismaTarifaEnTodosLosTargets() {
+        assertEquals(1_240, tarifaCentavos(2, urgente = false))
+        assertEquals(2_480, tarifaCentavos(2, urgente = true))
+        println("probado en ${plataforma()}")
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :shared:jvmTest :shared:jsNodeTest :shared:wasmJsBrowserTest
+./gradlew :shared:jsBrowserProductionLibraryDistribution
+```
+
+**Explicación por bloques:** El módulo hereda `jvm` e iOS del convention plugin y agrega `js` (navegador y Node, como librería) y `wasmJs`. `tarifaCentavos` vive en `commonMain` y se exporta a JavaScript con `@JsExport`. `plataforma` es un `expect` con un `actual` por target (aquí JVM y JS; Wasm e iOS tendrían el suyo). La misma prueba común corre en cada target. La última tarea genera un paquete JS que el cotizador web puede importar.
+
+**Resultado esperado:**
+
+```text
+> Task :shared:jvmTest
+> Task :shared:jsNodeTest
+> Task :shared:wasmJsBrowserTest
+BUILD SUCCESSFUL
+build/dist/js/productionLibrary contiene shared.js y su archivo de tipos .d.ts con tarifaCentavos(kilos: number, urgente: boolean): number
+```
+
+**Fallo deliberado:** borra `Plataforma.js.kt`. **Error esperado:** `Expected function 'plataforma' has no actual declaration in module for JS`. **Diagnóstico:** cada `expect` necesita su `actual` en cada target que compila. Agrega la implementación o mueve la función a un source set intermedio compartido.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta las pruebas de los tres targets.
+2. **Variación:** importa `shared.js` desde un HTML de prueba y llama `tarifaCentavos(2, false)` en la consola del navegador.
+3. **Diagnóstico:** reproduce el fallo deliberado sin el `actual` de JS.
+4. **Integración:** usa la misma función desde un endpoint de Ktor en `jvmMain` y compara el resultado con la web.
+5. **Diseño:** lista qué reglas de RutaFlow conviene compartir con la web y cuáles no.
+
+**Pista:** si un target no compila, revisa primero qué `expect` le falta y si cada dependencia soporta ese target.
+
+#### Paso 6 · Práctica independiente
+
+Agrega un source set intermedio `webMain` (dependiente de `commonMain`) compartido por `js` y `wasmJs`, y mueve allí un `actual` común para los dos.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué produce cada target.
+- [ ] La prueba común pasa en JVM, JS y Wasm.
+- [ ] Reprodujiste el error de `expect` sin `actual`.
+- [ ] Exportaste la regla a JavaScript con un nombre estable.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** asumir que toda librería soporta JS y Wasm, olvidar `@JsExport` y duplicar en TypeScript reglas que ya están compartidas. **Siguiente paso:** el módulo 7 usa el target Wasm para Compose Multiplatform en el navegador.
+
+**Transferencia al proyecto integrador «RutaFlow»:** comparte la regla de tarifa de RutaFlow entre la app, el servidor Ktor y el cotizador web desde `commonMain`.
+
+**Fuente oficial:** [Kotlin — Multiplatform targets](https://kotlinlang.org/docs/multiplatform-dsl-reference.html#targets) y [Kotlin — JavaScript export](https://kotlinlang.org/docs/js-to-kotlin-interop.html#jsexport-annotation) y [Kotlin — Wasm](https://kotlinlang.org/docs/wasm-overview.html).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un proyecto KMP con un módulo compartido que compila para Android e iOS, con contratos `expect`/`actual` verificados y una jerarquía de source sets correcta.

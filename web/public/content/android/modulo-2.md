@@ -340,6 +340,159 @@ Ya eliges correctamente entre `remember` y `rememberSaveable` según la necesida
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Conserva el texto de búsqueda durante la recreación y mantén transitorio el estado de un tooltip. Prueba rotación con el teclado abierto: la consulta y la distribución de la pantalla deben seguir siendo utilizables.
 
+### Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min
+
+**Prerrequisito:** tema «remember, rememberSaveable y layout básico» de este módulo.
+
+**Al finalizar podrás:** definir el tema de la app con `MaterialTheme` de Material 3, activar el color dinámico en Android 12+ y usar componentes que leen colores y tipografía del tema en lugar de valores fijos.
+
+**¿Por qué es importante?** Si cada pantalla escribe sus propios colores, el modo oscuro, la accesibilidad y un cambio de marca obligan a tocar cientos de archivos. Con un tema, el cambio se hace en un solo lugar y los componentes de Material 3 lo respetan.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Android Studio con un proyecto «Empty Activity» (Compose) llamado `RutaFlowConductor`. Verifica que `build.gradle.kts` del módulo `app` tenga `androidx.compose.material3:material3` (viene en la plantilla).
+
+#### Paso 2 · Contexto y caso real
+
+La app del conductor de RutaFlow tenía colores escritos a mano en cada botón. En modo oscuro, el texto de los estados de entrega quedaba negro sobre fondo casi negro. Con un tema de Material 3, el mismo componente cambia sus colores según el modo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `MaterialTheme`, `ColorScheme`, roles de color (`primary`, `onPrimary`, `surface`), color dinámico, `Typography`, modo oscuro.
+
+Material 3 organiza los colores por **roles**, no por nombres de color: `primary` es el color principal de la marca y `onPrimary` es el color del texto encima de él. Cada rol tiene su versión clara y oscura en un `ColorScheme`.
+
+- `MaterialTheme(colorScheme, typography)` envuelve la app y entrega el tema a todo lo que está adentro.
+- Los componentes (`Button`, `Card`, `TopAppBar`) toman sus colores del tema.
+- En tu código lees el tema con `MaterialTheme.colorScheme.primary`, nunca con un `Color(0xFF...)` fijo.
+- En Android 12+ el **color dinámico** (`dynamicLightColorScheme`) genera el esquema a partir del fondo de pantalla del usuario.
+
+**Analogía:** los roles de color son los cargos de una empresa: «jefe de turno» es un papel, aunque cada día lo ocupe otra persona. La analogía falla en que, con color dinámico, quien elige a la persona es el usuario, no tú.
+
+**Límite de uso:** el color dinámico cambia tus colores de marca por los del usuario: desactívalo en pantallas donde la marca o un color de estado (rojo = error) deben ser exactos.
+
+```mermaid
+flowchart TB
+    T["RutaFlowTheme"] --> D{"Android 12+ y dinámico?"}
+    D -->|sí| DY["dynamicLight/DarkColorScheme"]
+    D -->|no| FX["esquema propio claro/oscuro"]
+    DY & FX --> M["MaterialTheme"]
+    M --> B["Button, Card, Text leen roles"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `app/src/main/java/co/rutaflow/conductor/ui/theme/Theme.kt`:
+
+```kotlin
+package co.rutaflow.conductor.ui.theme
+
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+
+private val Claro = lightColorScheme(primary = Color(0xFF0B57D0), secondary = Color(0xFF00897B))
+private val Oscuro = darkColorScheme(primary = Color(0xFFA8C7FA), secondary = Color(0xFF80CBC4))
+
+@Composable
+fun RutaFlowTheme(
+    oscuro: Boolean = isSystemInDarkTheme(),
+    colorDinamico: Boolean = true,
+    contenido: @Composable () -> Unit,
+) {
+    val esquema = when {
+        colorDinamico && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val contexto = LocalContext.current
+            if (oscuro) dynamicDarkColorScheme(contexto) else dynamicLightColorScheme(contexto)
+        }
+        oscuro -> Oscuro
+        else -> Claro
+    }
+    MaterialTheme(colorScheme = esquema, content = contenido)
+}
+```
+
+Archivo `app/src/main/java/co/rutaflow/conductor/TarjetaEntrega.kt`:
+
+```kotlin
+package co.rutaflow.conductor
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaEntrega(codigo: String, estado: String, alEntregar: () -> Unit) {
+    Card(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text(codigo, style = MaterialTheme.typography.titleMedium)
+            // Rol del tema, no un color fijo: funciona en claro y oscuro.
+            Text(estado, color = MaterialTheme.colorScheme.secondary)
+            Button(onClick = alEntregar) { Text("Marcar entregado") }
+        }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew installDebug
+adb shell "cmd uimode night yes"   # cambia a modo oscuro sin tocar el teléfono
+```
+
+**Explicación por bloques:** `RutaFlowTheme` elige el esquema: dinámico en Android 12+ si está activado, o el propio en claro u oscuro. `MaterialTheme` lo entrega a todo el contenido. `TarjetaEntrega` usa `Card` y `Button`, que toman sus colores del tema, y escribe el estado con el rol `secondary` y el título con la tipografía `titleMedium`. El comando `cmd uimode night yes` cambia el modo para comprobar los dos esquemas.
+
+**Resultado esperado:**
+
+```text
+En modo claro: tarjeta clara, botón con el color primary y estado en secondary legible.
+Tras `cmd uimode night yes`: la misma tarjeta con fondo oscuro y textos claros, sin recompilar.
+Con color dinámico en Android 12+: el botón toma un tono del fondo de pantalla del dispositivo.
+```
+
+**Fallo deliberado:** reemplaza `color = MaterialTheme.colorScheme.secondary` por `color = Color.Black` y activa el modo oscuro. **Error esperado:** el estado casi no se lee sobre la tarjeta oscura. **Diagnóstico:** un color fijo ignora el tema. Usa un rol del esquema; si necesitas un color propio, agrégalo al tema.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** cambia entre modo claro y oscuro con `adb` y compara la tarjeta.
+2. **Variación:** cambia `primary` en `Claro` y comprueba que todos los botones cambian.
+3. **Diagnóstico:** reproduce el fallo deliberado con `Color.Black`.
+4. **Integración:** define una `Typography` propia con otra fuente para `titleMedium` y pásala a `MaterialTheme`.
+5. **Diseño:** decide en qué pantallas de RutaFlow desactivarías el color dinámico y por qué.
+
+**Pista:** busca en el proyecto `Color(0x`: cada aparición fuera del tema es una candidata a rol.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una vista previa `@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)` de `TarjetaEntrega` y otra en modo claro, y revisa las dos en Android Studio.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un rol de color.
+- [ ] La tarjeta se ve bien en claro y en oscuro.
+- [ ] Reprodujiste el problema del color fijo.
+- [ ] Sabes cuándo desactivar el color dinámico.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** escribir colores fijos en las pantallas, olvidar los colores `on...` y usar color dinámico donde la marca debe ser exacta. **Siguiente paso:** el tema «State hoisting» separa el estado de estos componentes para reutilizarlos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** crea `RutaFlowTheme` para la app del conductor y reemplaza todos los colores fijos de las pantallas por roles del esquema.
+
+**Fuente oficial:** [Android Developers — Material Design 3 in Compose](https://developer.android.com/develop/ui/compose/designsystems/material3) y [Material Design 3 — Color roles](https://m3.material.io/styles/color/roles).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una pantalla Compose con estado elevado (state hoisting) correctamente aplicado.

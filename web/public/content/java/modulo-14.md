@@ -398,6 +398,222 @@ Modifica el comando `jlink` para omitir un módulo que la aplicación sí necesi
 
 ---
 
+### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
+
+**Prerrequisito:** tema «El runtime es parte del artefacto y necesita ciclo de vida» de este módulo.
+
+**Al finalizar podrás:** crear un archivo CDS dinámico de tu aplicación, comprobar con los registros de la JVM que las clases salen de ese archivo y conocer la caché AOT de JDK 24 y 25.
+
+**¿Por qué es importante?** En contenedores y funciones serverless, cada arranque cuesta dinero y latencia. Una parte grande del arranque es leer y verificar clases. CDS guarda ese trabajo en un archivo y lo reutiliza.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa JDK 21 o superior para CDS. Para la caché AOT necesitas JDK 24 o superior. Crea la carpeta `academia-labs/java/arranque`.
+
+#### Paso 2 · Contexto y caso real
+
+El servicio de cotización de RutaFlow escala a cero de noche y arranca con la primera petición del día. Ese primer cliente esperaba varios segundos. Con un archivo CDS dentro de la imagen del contenedor, el arranque bajó sin cambiar una línea de código.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** CDS (*Class Data Sharing*), archivo compartido, `-XX:ArchiveClassesAtExit`, `-XX:SharedArchiveFile`, `-Xlog:class+load`, caché AOT, ejecución de entrenamiento.
+
+Al arrancar, la JVM lee cada clase, la verifica y crea sus estructuras internas. **CDS** guarda ese resultado en un archivo que se mapea en memoria en el siguiente arranque.
+
+- El JDK ya trae un archivo CDS para sus propias clases.
+- Con `-XX:ArchiveClassesAtExit=app.jsa`, la JVM guarda al terminar **también las clases de tu aplicación** (deben venir de un JAR).
+- Con `-XX:SharedArchiveFile=app.jsa` la usas en los siguientes arranques.
+
+**Caché AOT (JDK 24 y 25):** va más allá: guarda clases ya cargadas y enlazadas, y en JDK 25 también perfiles de métodos. En JDK 25 basta una ejecución de entrenamiento con `-XX:AOTCacheOutput=app.aot` y luego `-XX:AOTCache=app.aot`.
+
+**Analogía:** CDS es dejar la mesa puesta desde la noche anterior: por la mañana solo te sientas. La analogía falla en que, si cambias el menú (la versión de la aplicación o del JDK), la mesa puesta ya no sirve y hay que volver a ponerla.
+
+**Límite de uso:** el archivo depende de la versión exacta del JDK y del classpath: si cambian, la JVM lo ignora con un aviso. Regenéralo en cada build. No acelera el código que ya está corriendo, solo el arranque.
+
+```mermaid
+flowchart LR
+    E["Ejecución de entrenamiento<br/>-XX:ArchiveClassesAtExit"] --> A["app.jsa"]
+    A --> R["Arranques siguientes<br/>-XX:SharedArchiveFile"]
+    R --> M["clases mapeadas desde el archivo"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/arranque/Arranque.java`:
+
+```java
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Arranque {
+    public static void main(String[] args) {
+        var paradas = List.of("Bodega", "Calle 26", "Cliente");
+        System.out.println(paradas.stream().collect(Collectors.joining(" -> ")) + " · " + LocalDate.of(2026, 11, 18));
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/arranque
+javac Arranque.java && jar --create --file app.jar Arranque.class
+java -XX:ArchiveClassesAtExit=app.jsa -cp app.jar Arranque          # entrenamiento: crea app.jsa
+java -Xshare:off -Xlog:class+load:file=sin.log -cp app.jar Arranque  # sin CDS
+java -XX:SharedArchiveFile=app.jsa -Xlog:class+load:file=con.log -cp app.jar Arranque
+grep -c "shared objects file" sin.log con.log
+```
+
+**Explicación por bloques:** El programa es mínimo a propósito: lo importante es el arranque. Primero se empaqueta en un JAR, porque CDS solo archiva clases de JARs. La ejecución de entrenamiento crea `app.jsa` al terminar. Después se arranca dos veces registrando cada clase cargada: con `-Xshare:off` ninguna sale del archivo compartido; con `app.jsa` casi todas, incluida `Arranque`. El último comando cuenta esas líneas en cada registro. Los números exactos dependen de la versión del JDK.
+
+![Captura de terminal: sin CDS ninguna clase sale del archivo compartido y con app.jsa la mayoría de las clases salen del archivo](content/figures/java/cds-aot.svg)
+
+**Resultado esperado:**
+
+```text
+Bodega -> Calle 26 -> Cliente · 2026-11-18
+sin.log:0
+con.log:652
+```
+
+**Fallo deliberado:** ejecuta el entrenamiento con `-cp .` en lugar del JAR. **Error esperado:** un aviso `[cds] Skipping Arranque: Unsupported location` y la clase de la aplicación no queda en el archivo. **Diagnóstico:** CDS solo archiva clases cargadas desde archivos JAR. Empaqueta la aplicación y vuelve a entrenar.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta los comandos y compara las dos cuentas de `grep`.
+2. **Variación:** mide el tiempo con `time java ...` diez veces con y sin archivo y calcula el promedio.
+3. **Diagnóstico:** reproduce el fallo deliberado con `-cp .` y lee el aviso.
+4. **Integración:** con JDK 25, crea una caché AOT con `-XX:AOTCacheOutput=app.aot` y úsala con `-XX:AOTCache=app.aot`.
+5. **Diseño:** escribe en qué paso del `Dockerfile` de RutaFlow generarías el archivo y por qué debe ser en el mismo build.
+
+**Pista:** si el archivo «no hace nada», revisa los avisos `[cds]`: casi siempre es otra versión del JDK u otro classpath.
+
+#### Paso 6 · Práctica independiente
+
+Genera un archivo CDS para un servicio Spring Boot propio con `-XX:ArchiveClassesAtExit` (Spring Boot 3.3+ ofrece `-Dspring.context.exit=onRefresh` para el entrenamiento) y mide el tiempo de arranque antes y después.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué trabajo de arranque guarda CDS.
+- [ ] `con.log` muestra clases desde el archivo compartido y `sin.log` ninguna.
+- [ ] Reprodujiste el aviso de ubicación no soportada.
+- [ ] Sabes cuándo hay que regenerar el archivo.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** entrenar con clases fuera de un JAR, reutilizar el archivo con otro JDK y esperar que acelere el código en caliente. **Siguiente paso:** el tema siguiente prepara la aplicación para cambiar de versión LTS, que obliga a regenerar estos archivos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega al `Dockerfile` del servicio de cotización de RutaFlow un paso de entrenamiento que genere `app.jsa` y arranca el contenedor con `-XX:SharedArchiveFile`.
+
+**Fuente oficial:** [Oracle — Class Data Sharing](https://docs.oracle.com/en/java/javase/21/vm/class-data-sharing.html) y [OpenJDK — JEP 483: Ahead-of-Time Class Loading & Linking](https://openjdk.org/jeps/483).
+
+### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
+
+**Prerrequisito:** tema «El runtime es parte del artefacto y necesita ciclo de vida» de este módulo.
+
+**Al finalizar podrás:** encontrar con `jdeprscan` y `jdeps` el código que dejará de compilar o de funcionar en la siguiente versión LTS, corregirlo y planear la migración por pasos.
+
+**¿Por qué es importante?** Cada versión LTS elimina APIs que llevaban años marcadas como obsoletas. Si esperas a que el build falle, la migración se vuelve urgente. Con las herramientas del JDK sabes de antemano qué cambiar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa el JDK de destino (21 o superior); `jdeprscan` y `jdeps` vienen incluidos. Crea la carpeta `academia-labs/java/migracion` con una subcarpeta `legado/`.
+
+#### Paso 2 · Contexto y caso real
+
+El motor de liquidación de RutaFlow seguía en Java 17. Al probar Java 21 aparecieron avisos de APIs «marcadas para eliminación». El equipo los corrigió antes de cambiar la imagen del contenedor, en lugar de descubrirlos en producción.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** LTS, obsoleto (*deprecated*), `forRemoval=true`, `jdeprscan`, `jdeps --jdk-internals`, `--release`, plan de migración.
+
+Una API **obsoleta** sigue funcionando, pero se desaconseja. Si además tiene `forRemoval=true`, se eliminará en una versión futura y tu código dejará de compilar.
+
+- `jdeprscan --release N` revisa clases compiladas y lista cada uso de APIs obsoletas en la versión N. Marca con `forRemoval=true` las que van a desaparecer.
+- `jdeps --jdk-internals` lista usos de APIs internas del JDK (`sun.misc.*`), que los módulos encapsulan desde Java 17.
+- `javac --release N` compila contra las APIs exactas de la versión N, aunque uses un JDK más nuevo.
+
+**Plan por pasos:** (1) compila y prueba con el JDK nuevo usando `--release` de la versión actual; (2) corrige lo que marquen las herramientas; (3) sube `--release`; (4) actualiza la imagen y regenera los archivos de arranque (CDS, AOT).
+
+**Analogía:** `jdeprscan` es la revisión técnica antes de un viaje largo: te dice qué piezas fallarán antes de salir a la carretera. La analogía falla en que no revisa el código que se carga por reflexión ni las dependencias que no le pasas.
+
+**Límite de uso:** las herramientas solo ven lo que compilaste o les pasas: revisa también las dependencias (los JAR de terceros). No detectan cambios de comportamiento que no son eliminaciones, como valores por defecto nuevos; para eso están las pruebas.
+
+```mermaid
+flowchart LR
+    A["Java 17 en producción"] --> B["build con JDK 21<br/>--release 17"]
+    B --> C["jdeprscan + jdeps"]
+    C --> D["corregir usos"]
+    D --> E["--release 21 + pruebas"]
+    E --> F["imagen nueva + regenerar CDS"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/migracion/legado/Legado.java`:
+
+```java
+import java.util.Date;
+
+public class Legado {
+    public static void main(String[] args) throws Exception {
+        Integer peso = new Integer(5);              // obsoleto desde Java 9, marcado para eliminar
+        Date fecha = new Date(2026 - 1900, 10, 18); // constructor obsoleto desde Java 1.1
+        Runtime.getRuntime().runFinalization();     // marcado para eliminar desde Java 18
+        System.out.println("peso " + peso + ", año " + (fecha.getYear() + 1900));
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/migracion
+javac -d legado/out legado/Legado.java
+jdeprscan --release 21 --class-path legado/out Legado
+jdeps --jdk-internals legado/out
+```
+
+**Explicación por bloques:** `Legado` usa tres APIs antiguas a propósito. `javac` compila con avisos, que en un proyecto grande se pierden entre cientos de líneas. `jdeprscan` lista cada uso con la firma exacta del método: `Integer::<init>(I)V` es el constructor `new Integer(int)`, y `forRemoval=true` indica que desaparecerá. `jdeps --jdk-internals` no imprime nada porque la clase no usa APIs internas del JDK. Las correcciones son `Integer.valueOf(5)`, `LocalDate.of(2026, 11, 18)` y quitar `runFinalization`.
+
+![Captura de terminal: jdeprscan lista cuatro usos obsoletos de Legado, tres de ellos marcados forRemoval=true o en uso de Date](content/figures/java/migracion-lts.svg)
+
+**Resultado esperado:**
+
+```text
+class Legado uses deprecated method java/lang/Integer::<init>(I)V (forRemoval=true)
+class Legado uses deprecated method java/util/Date::<init>(III)V
+class Legado uses deprecated method java/lang/Runtime::runFinalization()V (forRemoval=true)
+class Legado uses deprecated method java/util/Date::getYear()I
+```
+
+**Fallo deliberado:** ejecuta `jdeprscan` sin `--class-path legado/out`. **Error esperado:** `error: cannot find class Legado`. **Diagnóstico:** la herramienta analiza clases compiladas, no código fuente; necesita saber dónde están. Pásale la carpeta de clases o el JAR.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta los tres comandos y explica qué significa `forRemoval=true`.
+2. **Variación:** corrige los cuatro usos y comprueba que `jdeprscan` ya no imprime nada.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje.
+4. **Integración:** ejecuta `jdeprscan --release 21` sobre el JAR de una dependencia real de tu proyecto.
+5. **Diseño:** escribe el plan de migración de RutaFlow de 17 a 21 en cinco pasos con su criterio de salida.
+
+**Pista:** empieza por las líneas con `forRemoval=true`: son las que romperán el build.
+
+#### Paso 6 · Práctica independiente
+
+Agrega a tu build (Maven o Gradle) un paso que ejecute `jdeprscan --release 21` sobre los JAR generados y falle si encuentra algún uso con `forRemoval=true`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre obsoleto y marcado para eliminación.
+- [ ] `jdeprscan` lista los cuatro usos esperados.
+- [ ] Corregiste el código hasta dejar el reporte vacío.
+- [ ] Tienes un plan por pasos con `--release`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** saltar dos versiones LTS sin revisar, ignorar las dependencias de terceros y olvidar regenerar los archivos CDS o AOT. **Siguiente paso:** el módulo 15 automatiza estas comprobaciones dentro de Maven y Gradle.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, ejecuta `jdeprscan` y `jdeps` sobre el motor de liquidación y documenta en un ADR el plan de migración a la siguiente LTS.
+
+**Fuente oficial:** [Oracle — jdeprscan](https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdeprscan.html) y [Oracle — JDK Migration Guide](https://docs.oracle.com/en/java/javase/21/migrate/getting-started.html).
 
 ## Revisión oficial de plataforma — octubre de 2026
 

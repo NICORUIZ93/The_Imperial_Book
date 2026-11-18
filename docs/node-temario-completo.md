@@ -5,7 +5,7 @@
 **Proyecto continuo:** API operativa de entregas y workers RutaFlow.
 **Prerrequisito de entrada:** JavaScript, terminal y HTTP; el módulo 0 comienza por el runtime..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 2/83 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 2/90 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -39,6 +39,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min
 - [pendiente de migrar] Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min
 - [pendiente de migrar] Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min
+- [pendiente de migrar] Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min
+- [pendiente de migrar] Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min
 
 ### Módulo 3: Servidores HTTP nativos
 
@@ -49,6 +51,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 3: Parsing de body y headers · Intermedio · 75 min
 - [pendiente de migrar] Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min
 - [pendiente de migrar] Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min
+- [pendiente de migrar] Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min
+- [pendiente de migrar] Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min
 
 ### Módulo 4: Express/Fastify — routing y middleware
 
@@ -91,6 +95,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 4: Alternativas de testing y debugging · Intermedio · 45 min
 - [pendiente de migrar] Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min
 - [pendiente de migrar] Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min
+- [pendiente de migrar] Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min
 
 ### Módulo 8: Patrones asíncronos avanzados
 
@@ -111,6 +116,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min
 - [pendiente de migrar] Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min
 - [pendiente de migrar] Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min
+- [pendiente de migrar] Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min
 
 ### Módulo 10: Seguridad en Node
 
@@ -121,6 +127,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
 - [pendiente de migrar] Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min
 - [pendiente de migrar] Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min
 - [pendiente de migrar] Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min
+- [pendiente de migrar] Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min
 
 ### Módulo 11: Despliegue y contenedores
 
@@ -204,7 +211,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 83 temas en 16 módulos; 2 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 90 temas en 16 módulos; 2 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

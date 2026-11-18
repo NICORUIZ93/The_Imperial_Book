@@ -9,7 +9,7 @@ Todo lo que ves en este curso supone sistemas lineales. Los reales casi nunca lo
 
 ## Aprende construyendo
 
-### Tema 1: La idea
+### Tema 1: La idea de la linealización: aproximar con la recta tangente
 
 **¿Por qué es importante?** Casi ningún sistema real es lineal; linealizar alrededor del punto de operación es lo que permite usar todo este curso con ellos.
 

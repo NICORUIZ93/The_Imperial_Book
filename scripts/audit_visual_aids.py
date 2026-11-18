@@ -22,7 +22,7 @@ SCOPE = ROOT / "specs" / "visual-aids-scope.json"
 NO_FILENAME_NEEDED = {"bash", "sh", "shell", "text", "mermaid", "console", "powershell", ""}
 CAPTURE = re.compile(r"!\[[^\]]+\]\((content/figures/[^)\s]+)\)")
 FENCE = re.compile(r"^```(\w*)\s*$")
-FILENAME_HINT = re.compile(r"`[^`\s]+\.[A-Za-z0-9]+`")
+FILENAME_HINT = re.compile(r"`(?:[^`\s]+\.[A-Za-z0-9]+|(?:[^`\s]*/)?(?:Dockerfile|Containerfile|Makefile|Jenkinsfile|Procfile)(?:\.[\w-]+)?)`")
 EXPLANATION = re.compile(r"Explicaci[oó]n (por bloques|l[ií]nea por l[ií]nea)", re.I)
 
 

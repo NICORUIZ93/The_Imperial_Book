@@ -16,31 +16,6 @@ En el simulador, el scroll de `ListaEnvios` "se siente fluido", pero varios cond
 #### Paso 3 · Teoría, modelo mental y analogía
 Instruments mide CPU, memoria y frames reales durante una interacción concreta — un electrocardiograma que revela irregularidades que un examen visual superficial no detecta.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-1. Abrí el proyecto y elegí Product > Profile (⌘I)
-2. Seleccioná la plantilla "Time Profiler"
-3. Grabá mientras hacés scroll en ListaEnvios
-4. Detené la grabación y ordená por "Self Weight"
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: Time Profiler muestra qué función específica (por ejemplo, el formateo de fecha de cada fila dentro del `body`) consume más tiempo de CPU durante el scroll — no una sensación de "se traba", sino una función puntual identificada con un porcentaje de tiempo real.
-
-#### Paso 5 · Práctica guiada
-Pista: repetí el mismo perfil, pero esta vez en el simulador en vez de en un iPhone real — ese es el fallo deliberado: el Time Profiler muestra un consumo de CPU bajo y sin picos notorios, ocultando el problema real que sí aparece en el hardware real de un conductor con un iPhone más viejo.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a perfilar en un dispositivo real, y agregá una segunda sesión de Allocations mientras entrás y salís de `ListaEnvios` diez veces — confirmá si la memoria usada vuelve a su nivel original o queda creciendo (señal de fuga).
-
-#### Paso 7 · Cierre
-Entregá el perfil de Time Profiler del Paso 4, la diferencia detectada entre simulador y dispositivo real del Paso 5, y la sesión de Allocations del Paso 6; explicá por qué medir en el simulador no sustituye medir en el hardware real de un usuario. Siguiente paso: estudia accesibilidad con VoiceOver. Errores comunes: medir solo en el simulador, confiar en la percepción subjetiva de fluidez, y no perfilar builds de Release (que optimizan distinto a Debug). Fuentes oficiales: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance y https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-swift-code.
 **¿Por qué es importante?** Porque Instruments revela cuellos de botella reales y medibles que la percepción subjetiva de fluidez en el simulador no puede detectar.
 **Conceptos clave:** medición real de comportamiento, no percepción subjetiva.
 
@@ -63,6 +38,32 @@ Core Animation   → frames perdidos en animaciones/scroll
 * Código: escribe la práctica en `ContentView.swift` y `DetalleEntregaView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, perfila la pantalla de seguimiento y documenta la métrica medida.
 
+#### Paso 4 · Demostración guiada desde cero
+```text
+1. Abrí el proyecto y elegí Product > Profile (⌘I)
+2. Seleccioná la plantilla "Time Profiler"
+3. Grabá mientras hacés scroll en ListaEnvios
+4. Detené la grabación y ordená por "Self Weight"
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: Time Profiler muestra qué función específica (por ejemplo, el formateo de fecha de cada fila dentro del `body`) consume más tiempo de CPU durante el scroll — no una sensación de "se traba", sino una función puntual identificada con un porcentaje de tiempo real.
+
+#### Paso 5 · Práctica guiada
+Pista: repetí el mismo perfil, pero esta vez en el simulador en vez de en un iPhone real — ese es el fallo deliberado: el Time Profiler muestra un consumo de CPU bajo y sin picos notorios, ocultando el problema real que sí aparece en el hardware real de un conductor con un iPhone más viejo.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 volviendo a perfilar en un dispositivo real, y agregá una segunda sesión de Allocations mientras entrás y salís de `ListaEnvios` diez veces — confirmá si la memoria usada vuelve a su nivel original o queda creciendo (señal de fuga).
+
+#### Paso 7 · Cierre
+Entregá el perfil de Time Profiler del Paso 4, la diferencia detectada entre simulador y dispositivo real del Paso 5, y la sesión de Allocations del Paso 6; explicá por qué medir en el simulador no sustituye medir en el hardware real de un usuario. Siguiente paso: estudia accesibilidad con VoiceOver. Errores comunes: medir solo en el simulador, confiar en la percepción subjetiva de fluidez, y no perfilar builds de Release (que optimizan distinto a Debug). Fuentes oficiales: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance y https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-swift-code.
+
 ### Tema 2: Accesibilidad con VoiceOver
 
 #### Paso 1 · Objetivo y preparación
@@ -74,31 +75,6 @@ El botón de confirmar entrega en `DetalleEnvio` usa un ícono (`Image(systemNam
 #### Paso 3 · Teoría, modelo mental y analogía
 Sin `.accessibilityLabel` explícito, VoiceOver lee un ícono sin texto como "imagen" genérica — navegar la propia app con VoiceOver activado expone estos huecos como usar el producto con los ojos vendados.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-Button(action: confirmarEntrega) {
-    Image(systemName: "checkmark.circle")
-}
-.accessibilityLabel("Confirmar entrega")
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: al activar VoiceOver (Ajustes > Accesibilidad > VoiceOver) y deslizar hasta ese botón, el lector anuncia "Confirmar entrega, botón" — no "imagen, botón", que no le dice nada al usuario sobre qué hace.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `.accessibilityLabel("Confirmar entrega")` del botón — ese es el fallo deliberado: con VoiceOver activado, deslizar hasta ese botón ahora anuncia solo "imagen, botón", y un conductor con discapacidad visual no tiene forma de saber que ese es el botón para confirmar la entrega sin verlo.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `.accessibilityLabel`, y revisá el resto de `DetalleEnvio` navegando completamente con VoiceOver activado (sin mirar la pantalla) — agregá labels a cualquier otro ícono sin texto que encuentres en el camino.
-
-#### Paso 7 · Cierre
-Entregá el label agregado del Paso 4, el anuncio inútil detectado en el Paso 5, y la lista de labels adicionales agregados en el Paso 6; explicá por qué una inspección visual del diseño, por cuidadosa que sea, no detecta estos huecos. Siguiente paso: estudia HIG, Dynamic Type e interop con UIKit. Errores comunes: evaluar accesibilidad solo mirando el diseño, dejar íconos interactivos sin label, y asumir que un texto visible cercano "explica" un botón sin label propio. Fuentes oficiales: https://developer.apple.com/accessibility/ y https://developer.apple.com/documentation/swiftui/view-accessibility.
 **¿Por qué es importante?** Porque verificar activamente con VoiceOver expone huecos de accesibilidad que una inspección visual no puede revelar.
 **Conceptos clave:** verificación activa con la herramienta real, no inspección visual.
 
@@ -124,6 +100,32 @@ Image(systemName: "trash").accessibilityLabel("Eliminar tarea")
 * Proyecto: en el proyecto integrador RutaFlow, recorre el detalle de envío con VoiceOver y corrige las etiquetas.
 
 **Límites y decisión de uso:** Escuchar una etiqueta correcta no demuestra que el recorrido completo sea accesible. Prueba orden de navegación, acciones y actualizaciones; no agrupes controles independientes en un elemento que impida ejecutarlos con VoiceOver.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+Button(action: confirmarEntrega) {
+    Image(systemName: "checkmark.circle")
+}
+.accessibilityLabel("Confirmar entrega")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: al activar VoiceOver (Ajustes > Accesibilidad > VoiceOver) y deslizar hasta ese botón, el lector anuncia "Confirmar entrega, botón" — no "imagen, botón", que no le dice nada al usuario sobre qué hace.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `.accessibilityLabel("Confirmar entrega")` del botón — ese es el fallo deliberado: con VoiceOver activado, deslizar hasta ese botón ahora anuncia solo "imagen, botón", y un conductor con discapacidad visual no tiene forma de saber que ese es el botón para confirmar la entrega sin verlo.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando el `.accessibilityLabel`, y revisá el resto de `DetalleEnvio` navegando completamente con VoiceOver activado (sin mirar la pantalla) — agregá labels a cualquier otro ícono sin texto que encuentres en el camino.
+
+#### Paso 7 · Cierre
+Entregá el label agregado del Paso 4, el anuncio inútil detectado en el Paso 5, y la lista de labels adicionales agregados en el Paso 6; explicá por qué una inspección visual del diseño, por cuidadosa que sea, no detecta estos huecos. Siguiente paso: estudia HIG, Dynamic Type e interop con UIKit. Errores comunes: evaluar accesibilidad solo mirando el diseño, dejar íconos interactivos sin label, y asumir que un texto visible cercano "explica" un botón sin label propio. Fuentes oficiales: https://developer.apple.com/accessibility/ y https://developer.apple.com/documentation/swiftui/view-accessibility.
 
 ### Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit
 
@@ -160,6 +162,8 @@ UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de S
 
 **Límites y decisión de uso:** Seguir una guía visual no garantiza legibilidad con texto ampliado o idiomas largos. Prueba tamaños de accesibilidad y el ciclo de vida del componente UIKit incorporado, evitando supuestos de altura fija.
 
+**¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 Text(envio.direccion)
@@ -172,7 +176,7 @@ Button(action: confirmarEntrega) {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -186,7 +190,6 @@ Corregí el Paso 5 volviendo a `.font(.body)`, y revisá cada botón interactivo
 
 #### Paso 7 · Cierre
 Entregá la prueba con Dynamic Type grande del Paso 4, el bloqueo detectado en el Paso 5, y la revisión de áreas táctiles del Paso 6; explicá por qué usar SwiftUI por sí solo no garantiza automáticamente que una app respete las HIG. Siguiente paso: estudia UIKit desde cero para mantener pantallas existentes. Errores comunes: usar tamaños de fuente fijos en puntos, botones con área táctil menor a 44x44, y no probar con el tamaño de texto más grande disponible. Fuentes oficiales: https://developer.apple.com/design/human-interface-guidelines/ y https://developer.apple.com/documentation/swiftui/text.
-**¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
 
 ### Tema 4: UIKit desde cero para mantener aplicaciones reales
 
@@ -353,7 +356,7 @@ final class StopsViewController: UIViewController {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -368,6 +371,121 @@ Corregí el Paso 5 devolviendo la carga a `viewDidLoad()`, y agregá en su lugar
 #### Paso 7 · Cierre
 Entregá el controlador con carga única del Paso 4, la petición de red repetida provocada en el Paso 5, y el `refresh()` explícito del Paso 6; explicá la diferencia entre trabajo que debe ocurrir una sola vez (`viewDidLoad`) y trabajo que podría repetirse antes de cada aparición (`viewWillAppear`), y por qué esa segunda categoría necesita caché o control explícito. Siguiente paso: estudia distribución y certificados. Errores comunes: peticiones de red incondicionales en `viewWillAppear`, inicializar sin el ViewModel requerido, y usar el índice de fila como identidad en una fuente diffable. Fuentes oficiales: https://developer.apple.com/documentation/uikit/uiviewcontroller y https://developer.apple.com/documentation/uikit/uitableviewdiffabledatasource.
 **Implicación práctica:** Confundir trabajo de una sola vez con trabajo repetible en el ciclo de vida de UIKit produce peticiones de red redundantes o datos que nunca se actualizan.
+
+### Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min
+
+**Prerrequisito:** tema «Human Interface Guidelines, Dynamic Type y modo oscuro» de este módulo.
+
+**Al finalizar podrás:** traducir la app con un String Catalog (`.xcstrings`), manejar plurales sin `if` en el código y mostrar fechas y monedas con el formato del idioma del usuario.
+
+**¿Por qué es importante?** Concatenar textos y escribir «paquete(s)» funciona en un idioma y falla en los demás. Los String Catalogs extraen los textos automáticamente y manejan las reglas de plural de cada idioma.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 15 o superior. En `RutaFlowApp`, crea **File > New > File > String Catalog** con el nombre `Localizable`. Agrega el idioma inglés en **Project > Info > Localizations**.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow empezó a operar con conductores que prefieren inglés. La pantalla decía «1 paquetes pendientes» en español y «1 paquetes pending» en inglés, porque el texto se armaba con concatenaciones.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** String Catalog, clave de localización, `LocalizedStringKey`, interpolación, variación por plural, `formatted()`, locale.
+
+En SwiftUI, `Text("Paquetes pendientes")` ya es una **clave localizable**. Al compilar, Xcode extrae cada texto al String Catalog y te muestra qué falta traducir en cada idioma.
+
+- Con **interpolación**, la clave incluye el marcador del valor: `Text("\(cantidad) paquetes pendientes")` se guarda como `%lld paquetes pendientes`.
+- Desde el catálogo, con **Vary by Plural**, defines «uno» y «otros» (y las formas que necesite cada idioma). El código no cambia.
+- Fechas, números y monedas se formatean con `formatted()`, que usa el locale del usuario.
+
+Para probar otro idioma sin cambiar el teléfono: **Edit Scheme > Run > Options > App Language**.
+
+**Analogía:** el String Catalog es un diccionario de la app: el código dice qué idea expresar y el diccionario dice cómo se dice en cada idioma. La analogía falla en que algunos idiomas tienen más formas de plural que el español; el catálogo las pide todas.
+
+**Límite de uso:** no traduzcas datos del usuario ni códigos (`ENV-42`). Los textos que vienen del servidor no los extrae Xcode: se traducen en el servidor o con `String(localized:)` a partir de una clave conocida.
+
+```mermaid
+flowchart LR
+    C["Text con interpolación de n"] -->|"build"| X["Localizable.xcstrings<br/>%lld paquetes pendientes"]
+    X --> ES["es: 1 paquete pendiente / 3 paquetes pendientes"]
+    X --> EN["en: 1 pending package / 3 pending packages"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/ResumenDia.swift`:
+
+```swift
+import SwiftUI
+
+struct ResumenDia: View {
+    let pendientes: Int
+    let cobrado: Decimal
+    let cierre: Date
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Resumen del día")
+            // Una sola clave; las formas de plural van en el catálogo.
+            Text("\(pendientes) paquetes pendientes")
+            // Formatos del idioma del usuario, sin escribirlos a mano.
+            Text("Cobrado: \(cobrado.formatted(.currency(code: "COP")))")
+            Text("Cierre: \(cierre.formatted(date: .abbreviated, time: .shortened))")
+        }
+    }
+}
+
+#Preview("Español") { ResumenDia(pendientes: 1, cobrado: 52_000, cierre: .now) }
+#Preview("English") {
+    ResumenDia(pendientes: 3, cobrado: 52_000, cierre: .now).environment(\.locale, Locale(identifier: "en"))
+}
+```
+
+Compila para que Xcode extraiga las claves al catálogo:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# abre Localizable.xcstrings: aparecen las claves extraídas; en "%lld paquetes pendientes" elige Vary by Plural
+```
+
+**Explicación por bloques:** Cada `Text` con un literal es una clave. La interpolación de un entero se guarda como `%lld` en la clave. En el catálogo, «Vary by Plural» crea las formas «one» y «other» para español y para inglés. `formatted(.currency(code:))` y `formatted(date:time:)` usan el locale: en español se ve «$ 52.000» y en inglés «COP 52,000.00». Las dos vistas previas muestran el mismo componente en cada idioma.
+
+**Resultado esperado:**
+
+```text
+Localizable.xcstrings contiene «Resumen del día», «%lld paquetes pendientes», «Cobrado: %@» y «Cierre: %@».
+Vista previa en español con 1: «1 paquete pendiente».
+Vista previa en inglés con 3: «3 pending packages» y la fecha en formato inglés.
+```
+
+**Fallo deliberado:** cambia la línea a `Text(String(pendientes) + " paquetes pendientes")`. **Error esperado:** la clave desaparece del catálogo en el siguiente build y el texto queda sin traducir. **Diagnóstico:** una concatenación no es una clave localizable. Usa interpolación dentro del literal.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** compila y revisa las claves en el catálogo.
+2. **Variación:** completa las traducciones al inglés y la variación de plural.
+3. **Diagnóstico:** reproduce el fallo deliberado con concatenación.
+4. **Integración:** ejecuta la app con **App Language** en inglés y compara con las vistas previas.
+5. **Diseño:** busca en tu proyecto textos armados con `+` y conviértelos en claves.
+
+**Pista:** si un texto no aparece en el catálogo, revisa si está construido con `+` o guardado en una variable `String` común.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una tercera lengua (portugués) y usa la pseudolocalización de Xcode (**Double-Length Pseudolanguage**) para encontrar textos que se cortan en la interfaz.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es una clave localizable en SwiftUI.
+- [ ] El plural es correcto en los dos idiomas.
+- [ ] Reprodujiste la pérdida de la clave por concatenar.
+- [ ] Usas `formatted()` para monedas y fechas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** concatenar textos, manejar plurales con `if` en el código y formatear monedas a mano. **Siguiente paso:** el tema «Accesibilidad con VoiceOver» lee estos mismos textos en voz alta.
+
+**Transferencia al proyecto integrador «RutaFlow»:** traduce la app del conductor de RutaFlow al inglés con un String Catalog, con plurales y formatos de moneda y fecha por idioma.
+
+**Fuente oficial:** [Apple — Localizing and varying text with a string catalog](https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog).
 
 ## Laboratorio práctico
 

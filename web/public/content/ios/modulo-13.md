@@ -86,7 +86,7 @@ func envioID(from url: URL, session: Session) throws -> EnvioID {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -179,7 +179,7 @@ func guardarToken(_ data: Data, conductorID: String) throws {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -288,7 +288,7 @@ actor MotorSincronizacion {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -382,9 +382,11 @@ func sincronizacionMedida() async throws {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
+# pega el código en Practica/Sources/Practica/main.swift
+cd Practica && swift run
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
 Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
 #### Paso 5 · Práctica guiada
@@ -410,6 +412,14 @@ Tras el login, la app de RutaFlow recibe un token JWT (Módulo 5). Si lo guardas
 `UserDefaults` es para preferencias no sensibles (tema claro/oscuro, última pestaña). El **Keychain** es el almacén cifrado del sistema para secretos (tokens, contraseñas, claves), con control de acceso por biometría y atributos de accesibilidad (`kSecAttrAccessibleWhenUnlocked`).
 
 **Analogía:** `UserDefaults` es la libreta de notas en tu escritorio (cualquiera que entre la lee); el Keychain es la caja fuerte empotrada del edificio, cifrada y con control de quién la abre y cuándo.
+
+**Conceptos clave:** Keychain vs UserDefaults, `SecItemAdd`/`SecItemCopyMatching`, atributos de accesibilidad, cifrado del sistema.
+**Cuándo no usarlo:** no uses Keychain para datos no sensibles o grandes (preferencias de UI, cachés): es más lento y limitado; resérvalo para secretos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda el JWT de sesión en el Keychain tras el login y bórralo al cerrar sesión; confirma que no queda rastro en UserDefaults.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** llamar a `SecItemAdd` directamente para "actualizar" un token sin borrar antes el item existente con `SecItemDelete` para la misma cuenta — si ya hay un item guardado con ese `kSecAttrAccount`, `SecItemAdd` devuelve `errSecDuplicateItem` y el token viejo se queda guardado en el Keychain en vez de reemplazarse.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -450,7 +460,7 @@ enum Llavero {
 **Ejecuta el ejemplo** (crea el proyecto en Xcode, pega el código y úsalo desde una vista con un botón que llame a `Llavero.guardar(...)` y `Llavero.leer(...)`):
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** `Llavero.guardar("jwt-abc", cuenta: "sesion")` seguido de `Llavero.leer(cuenta: "sesion")` devuelve `"jwt-abc"`, y el valor NO aparece en ningún `.plist` legible. **Fallo deliberado:** guarda el token en `UserDefaults.standard.set(token, forKey: "token")` y localiza el archivo de preferencias en el contenedor de la app del simulador: el token está en texto plano. Diagnostica por qué eso es una fuga de credenciales esperando a ocurrir.
@@ -463,13 +473,7 @@ Protege la lectura del token con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` 
 
 #### Paso 7 · Cierre
 Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿Por qué es importante?** Toda app con login maneja un token, y dónde lo guardas es una decisión de seguridad real: el Keychain es el único lugar correcto en iOS. Equivocarse aquí es una de las fallas de seguridad móvil más comunes. Fuentes: [Apple — Keychain Services](https://developer.apple.com/documentation/security/keychain_services).
-**Conceptos clave:** Keychain vs UserDefaults, `SecItemAdd`/`SecItemCopyMatching`, atributos de accesibilidad, cifrado del sistema.
-**Cuándo no usarlo:** no uses Keychain para datos no sensibles o grandes (preferencias de UI, cachés): es más lento y limitado; resérvalo para secretos.
 
-**Transferencia al proyecto integrador «RutaFlow»:** guarda el JWT de sesión en el Keychain tras el login y bórralo al cerrar sesión; confirma que no queda rastro en UserDefaults.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** llamar a `SecItemAdd` directamente para "actualizar" un token sin borrar antes el item existente con `SecItemDelete` para la misma cuenta — si ya hay un item guardado con ese `kSecAttrAccount`, `SecItemAdd` devuelve `errSecDuplicateItem` y el token viejo se queda guardado en el Keychain en vez de reemplazarse.
-**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 ### Tema 6: Permisos y privacidad — pedir acceso con criterio
 
 #### Paso 1 · Objetivo y preparación
@@ -482,6 +486,14 @@ RutaFlow necesita la ubicación del repartidor. iOS exige declarar POR QUÉ la q
 Cada dato sensible (ubicación, cámara, contactos, notificaciones) requiere: (1) una clave de uso en `Info.plist` con una explicación en lenguaje humano, y (2) una solicitud en runtime en el momento con contexto. El usuario puede conceder, denegar o conceder "solo esta vez".
 
 **Analogía:** pedir un permiso es como pedir una llave: si no explicas para qué (Info.plist) el portero (iOS) no te deja ni preguntar; y si pides todas las llaves nada más entrar, desconfían y dicen que no. Pides la llave concreta cuando vas a usar esa puerta.
+
+**Conceptos clave:** clave de uso en Info.plist, solicitud en runtime, estados de autorización, denegación irreversible.
+**Cuándo no usarlo:** no pidas un permiso que no vas a usar de inmediato ni "por si acaso": cada permiso extra reduce la confianza y puede costar la aprobación en la App Store.
+
+**Transferencia al proyecto integrador «RutaFlow»:** pide la ubicación del repartidor en el momento en que acepta su primera entrega, con un motivo claro, y maneja el caso de denegación sin romper el flujo.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** pedir `requestWhenInUseAuthorization()` antes de declarar la clave `NSLocationWhenInUseUsageDescription` en `Info.plist` — la app no muestra un diálogo vacío, crashea de inmediato, y el mensaje de la consola rara vez deja claro a primera vista que el problema es una clave faltante en `Info.plist`, no un bug en el código Swift.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -513,7 +525,7 @@ class GestorUbicacion: NSObject, CLLocationManagerDelegate {
 **Ejecuta el ejemplo** (crea el proyecto, añade la clave a Info.plist, pega el código y llama a `pedirPermiso()` desde un botón):
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** al pulsar el botón aparece el diálogo del sistema con tu texto de motivo; conceder cambia `estado` a `.authorizedWhenInUse`, denegar lo deja en `.denied`. **Fallo deliberado:** quita la clave `NSLocationWhenInUseUsageDescription` del `Info.plist` y pide el permiso: la app **crashea** inmediatamente con un mensaje sobre la descripción de uso faltante. Diagnostica por qué iOS obliga a declarar el motivo antes de permitir siquiera preguntar.
@@ -526,13 +538,7 @@ Añade el permiso de notificaciones (`UNUserNotificationCenter.requestAuthorizat
 
 #### Paso 7 · Cierre
 Entrega la solicitud de ubicación, el manejo de denegación y el crash por motivo faltante. **¿Por qué es importante?** Los permisos son la frontera de privacidad del usuario y un punto de revisión de la App Store. Pedirlos bien (con motivo claro, en el momento adecuado, manejando la negativa) es diferencia directa entre una app que se aprueba y una que se rechaza o se desinstala. Fuentes: [Apple — Requesting authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
-**Conceptos clave:** clave de uso en Info.plist, solicitud en runtime, estados de autorización, denegación irreversible.
-**Cuándo no usarlo:** no pidas un permiso que no vas a usar de inmediato ni "por si acaso": cada permiso extra reduce la confianza y puede costar la aprobación en la App Store.
 
-**Transferencia al proyecto integrador «RutaFlow»:** pide la ubicación del repartidor en el momento en que acepta su primera entrega, con un motivo claro, y maneja el caso de denegación sin romper el flujo.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** pedir `requestWhenInUseAuthorization()` antes de declarar la clave `NSLocationWhenInUseUsageDescription` en `Info.plist` — la app no muestra un diálogo vacío, crashea de inmediato, y el mensaje de la consola rara vez deja claro a primera vista que el problema es una clave faltante en `Info.plist`, no un bug en el código Swift.
-**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 ### Tema 7: Notificaciones push con APNs
 
 #### Paso 1 · Objetivo y preparación
@@ -545,6 +551,14 @@ Cuando se asigna una entrega a un repartidor, su app debe avisarle aunque esté 
 El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
 
 **Analogía:** el device token es como la dirección postal del dispositivo, y APNs es el servicio de correos oficial de Apple: tu backend no entrega la carta en mano, se la da a correos (APNs) con la dirección (token), y correos la entrega.
+
+**Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
+**Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
+
+**Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -581,7 +595,7 @@ struct RutaFlowApp: App {
 **Ejecuta el ejemplo** (requiere capability "Push Notifications" en el target; en Simulador se puede probar con un archivo `.apns`):
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** al conceder el permiso, la consola imprime el device token (una cadena hex larga). En el Simulador, arrastrar un archivo `.apns` con el payload sobre la ventana muestra la notificación. **Fallo deliberado:** omite `registerForRemoteNotifications()`: nunca llega el device token, y aunque el permiso esté concedido, el backend no tiene a dónde enviar. Diagnostica por qué el permiso y el registro son dos pasos distintos y ambos necesarios.
@@ -594,13 +608,417 @@ Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y a
 
 #### Paso 7 · Cierre
 Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
-**Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
-**Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
 
-**Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
-**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
+### Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min
+
+**Prerrequisito:** tema «Permisos y privacidad — pedir acceso con criterio» de este módulo y «AsyncSequence y AsyncStream» (módulo 4).
+
+**Al finalizar podrás:** pedir permiso de ubicación con el texto adecuado, recibir posiciones con `CLLocationUpdate.liveUpdates()` en un bucle `for await` y manejar la precisión aproximada que el usuario puede elegir.
+
+**¿Por qué es importante?** La ubicación es uno de los permisos más sensibles. Pedirlo mal hace que el usuario lo niegue, y usarlo mal agota la batería. La API moderna reduce el código y se detiene sola al cancelar la tarea.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 15 o superior con destino iOS 17+. En `Info.plist` agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
+
+#### Paso 2 · Contexto y caso real
+
+Muchos conductores de RutaFlow negaban la ubicación porque el mensaje decía solo «La app usa tu ubicación». Al explicar el beneficio («para ordenar tus paradas por cercanía») y pedirla al abrir la pantalla de ruta, la aceptación subió.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `CLLocationUpdate`, `liveUpdates`, `CLServiceSession`, autorización «al usar la app», precisión aproximada, `isStationary`, texto de propósito.
+
+Desde iOS 17, `CLLocationUpdate.liveUpdates()` es una `AsyncSequence` de ubicaciones: la recorres con `for await` y se detiene al cancelar la tarea. Desde iOS 18, una **`CLServiceSession`** declara cuánto acceso necesitas mientras exista, y el sistema muestra el permiso cuando hace falta.
+
+- **Al usar la app** (*when in use*) basta para navegación con la app abierta.
+- El usuario puede elegir **ubicación aproximada**: recibes posiciones con error de varios kilómetros. Si la necesitas precisa para una tarea, pide precisión temporal con un texto propio (`NSLocationTemporaryUsageDescriptionDictionary`).
+- Cada actualización indica si el dispositivo está **quieto** (`isStationary`): no proceses posiciones repetidas.
+
+El texto del permiso debe decir el **beneficio para el usuario**, no solo que la app usa la ubicación.
+
+**Analogía:** pedir ubicación es pedir prestado un mapa: si explicas para qué lo quieres y lo devuelves al terminar, te lo prestan. La analogía falla en que el usuario puede prestarte un mapa borroso (aproximado) y debes funcionar igual.
+
+**Límite de uso:** la ubicación en segundo plano exige otra autorización y una justificación fuerte ante App Review; no la pidas si no la necesitas. El simulador no reproduce la precisión ni el consumo real.
+
+```mermaid
+sequenceDiagram
+    participant V as RutaView (.task)
+    participant S as CLServiceSession
+    participant L as CLLocationUpdate.liveUpdates
+    V->>S: sesión whenInUse
+    S-->>V: el sistema muestra el permiso
+    V->>L: for await update
+    L-->>V: ubicación, isStationary
+    V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaView.swift`:
+
+```swift
+import CoreLocation
+import SwiftUI
+
+struct RutaView: View {
+    @State private var texto = "Buscando tu ubicación…"
+
+    var body: some View {
+        Text(texto)
+            .task {
+                let sesion = CLServiceSession(authorization: .whenInUse) // iOS 18+
+                defer { sesion.invalidate() }
+                do {
+                    for try await actualizacion in CLLocationUpdate.liveUpdates() {
+                        if actualizacion.authorizationDenied { texto = "Activa la ubicación en Ajustes"; break }
+                        guard let ubicacion = actualizacion.location, !actualizacion.isStationary else { continue }
+                        let precision = Int(ubicacion.horizontalAccuracy)
+                        texto = String(format: "%.4f, %.4f (±%d m)", ubicacion.coordinate.latitude, ubicacion.coordinate.longitude, precision)
+                    }
+                } catch {
+                    texto = "Ubicación no disponible"
+                }
+            }
+    }
+}
+```
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/Info.plist`:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Usamos tu ubicación para ordenar tus paradas por cercanía y avisar al cliente cuando estás llegando.</string>
+```
+
+Compila, ejecuta y activa una ruta simulada:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# en el simulador: Features > Location > City Run
+```
+
+**Explicación por bloques:** La vista empieza a escuchar en `.task`, que se cancela sola al cerrar la vista. `CLServiceSession` declara que la app necesita ubicación al usarla; el sistema muestra el permiso con el texto de `Info.plist`. `liveUpdates()` entrega actualizaciones: si el permiso fue negado, se muestra cómo activarlo; si el dispositivo está quieto o no hay ubicación, se salta. La precisión horizontal dice cuánto confiar en el punto: con ubicación aproximada será de miles de metros.
+
+**Resultado esperado:**
+
+```text
+Primera vez: aparece el permiso con «Usamos tu ubicación para ordenar tus paradas…».
+Con City Run activo: el texto cambia cada segundo, por ejemplo «37.3349, -122.0090 (±5 m)».
+Con ubicación aproximada elegida por el usuario: la precisión pasa a miles de metros.
+```
+
+**Fallo deliberado:** borra `NSLocationWhenInUseUsageDescription` de `Info.plist`. **Error esperado:** no aparece ningún permiso, la vista se queda en «Buscando tu ubicación…» y la consola avisa que falta la clave de descripción. **Diagnóstico:** iOS no pide un permiso sin explicación. Agrega el texto con el beneficio para el usuario.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta con City Run y observa la precisión.
+2. **Variación:** elige «Ubicación aproximada» en Ajustes y explica cómo debería adaptarse la app.
+3. **Diagnóstico:** reproduce el fallo deliberado sin la clave de `Info.plist`.
+4. **Integración:** deja de procesar posiciones mientras `isStationary` sea verdadero y mide cuántas actualizaciones ahorras.
+5. **Diseño:** reescribe el texto del permiso para el caso de uso de RutaFlow y pídele a alguien que lo lea sin contexto.
+
+**Pista:** si no llegan ubicaciones, revisa el texto de `Info.plist`, el estado del permiso y la ruta simulada.
+
+#### Paso 6 · Práctica independiente
+
+Muestra un aviso con un botón que abra Ajustes (`UIApplication.openSettingsURLString`) cuando el permiso esté negado, en lugar de solo un texto.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre «al usar» y «siempre».
+- [ ] La vista muestra posiciones con su precisión.
+- [ ] Reprodujiste el permiso que no aparece sin texto.
+- [ ] Tu app funciona con ubicación aproximada.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** pedir ubicación «siempre» sin necesitarla, escribir textos de permiso vagos y no manejar la ubicación aproximada. **Siguiente paso:** el tema siguiente programa trabajo en segundo plano sin mantener la ubicación encendida.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la pantalla de ruta de RutaFlow, muestra la posición con `liveUpdates()` y un texto de permiso que explique el beneficio para el conductor.
+
+**Fuente oficial:** [Apple — CLLocationUpdate](https://developer.apple.com/documentation/corelocation/cllocationupdate) y [Apple — Requesting authorization to use location services](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
+
+### Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min
+
+**Prerrequisito:** tema «Offline-first es un protocolo, no una caché» de este módulo.
+
+**Al finalizar podrás:** registrar una tarea de actualización en segundo plano con `BGTaskScheduler` y el modificador `.backgroundTask` de SwiftUI, programarla y forzarla desde el depurador para probarla.
+
+**¿Por qué es importante?** Las entregas confirmadas sin señal deben subirse cuando vuelva la conexión, aunque el conductor no abra la app. iOS no deja correr código en segundo plano a voluntad: hay que pedirle tiempo y aceptar que decide cuándo.
+
+#### Paso 1 · Objetivo y preparación
+
+En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un dispositivo o simulador y el depurador de Xcode para forzar la tarea.
+
+#### Paso 2 · Contexto y caso real
+
+Algunos conductores de RutaFlow terminaban el día con entregas sin subir porque nunca volvían a abrir la app con señal. El equipo de soporte llamaba uno por uno. Una tarea en segundo plano sube lo pendiente cuando el sistema lo permite.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `BGTaskScheduler`, `BGAppRefreshTaskRequest`, `BGProcessingTaskRequest`, identificador permitido, `.backgroundTask(.appRefresh)`, `earliestBeginDate`, tiempo límite.
+
+iOS ofrece dos tipos principales:
+
+| Tipo | Duración | Para |
+|---|---|---|
+| `BGAppRefreshTaskRequest` | unos 30 segundos | refrescar datos pequeños, subir pendientes |
+| `BGProcessingTaskRequest` | minutos, a menudo con el teléfono cargando | tareas largas: limpiar, reindexar |
+
+Pasos: declarar el identificador en `Info.plist`, **programar** una solicitud con `earliestBeginDate` (el sistema decide el momento real, nunca antes) y **atenderla** con `.backgroundTask(.appRefresh("id"))` en la escena. Dentro de la tarea, vuelve a programar la siguiente.
+
+Si se acaba el tiempo, el sistema cancela la tarea: tu código debe respetar la cancelación de Swift y dejar los datos consistentes.
+
+**Analogía:** pedir una tarea en segundo plano es pedir un turno en una ventanilla que abre cuando quiere: dejas tu número y te llaman, pero no sabes a qué hora. La analogía falla en que, si el usuario casi no usa la app, el sistema te llama aún menos.
+
+**Límite de uso:** no hay garantía de ejecución ni de horario. No uses estas tareas para nada que deba pasar a una hora exacta: para eso están las notificaciones del servidor (push silenciosas, con sus propios límites).
+
+```mermaid
+sequenceDiagram
+    participant A as App
+    participant S as BGTaskScheduler
+    participant T as .backgroundTask
+    A->>S: submit(appRefresh, earliestBeginDate: +15 min)
+    Note over S: el sistema decide el momento
+    S->>T: ejecuta co.rutaflow.sincronizar
+    T->>T: sube entregas pendientes
+    T->>S: programa la siguiente
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaFlowApp.swift`:
+
+```swift
+import BackgroundTasks
+import SwiftUI
+
+@main
+struct RutaFlowApp: App {
+    @Environment(\.scenePhase) private var fase
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+            .onChange(of: fase) { _, nueva in
+                if nueva == .background { programarSincronizacion() }
+            }
+            .backgroundTask(.appRefresh("co.rutaflow.sincronizar")) {
+                programarSincronizacion() // la siguiente, antes de trabajar
+                await Sincronizador.subirPendientes()
+            }
+    }
+}
+
+func programarSincronizacion() {
+    let solicitud = BGAppRefreshTaskRequest(identifier: "co.rutaflow.sincronizar")
+    solicitud.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // no antes de 15 min
+    try? BGTaskScheduler.shared.submit(solicitud)
+}
+
+enum Sincronizador {
+    static func subirPendientes() async {
+        for codigo in ["ENV-42", "ENV-43"] {
+            if Task.isCancelled { return } // el sistema puede cortar el tiempo
+            print("subiendo \(codigo)")
+            try? await Task.sleep(for: .seconds(1))
+        }
+        print("sincronización completa")
+    }
+}
+```
+
+Fuerza la tarea desde el depurador de Xcode:
+
+```bash
+cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# 1) ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
+# 2) en la consola lldb:
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"co.rutaflow.sincronizar"]
+# 3) continúa la ejecución
+```
+
+**Explicación por bloques:** Al pasar a segundo plano, la app programa una actualización que no debe empezar antes de 15 minutos. El modificador `.backgroundTask(.appRefresh(...))` es el manejador: cuando el sistema lo ejecuta, primero programa la siguiente y luego sube los pendientes. `subirPendientes` revisa `Task.isCancelled` en cada paso para salir limpio si se acaba el tiempo. El comando de lldb pide al sistema que lance la tarea ya, solo para probar.
+
+**Resultado esperado:**
+
+```text
+subiendo ENV-42
+subiendo ENV-43
+sincronización completa
+```
+
+**Fallo deliberado:** quita `co.rutaflow.sincronizar` de `BGTaskSchedulerPermittedIdentifiers`. **Error esperado:** `submit` lanza `BGTaskSchedulerErrorDomain Code=3` (identificador no permitido) y la tarea nunca corre. **Diagnóstico:** el sistema solo acepta identificadores declarados. Agrégalo a `Info.plist` exactamente igual.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** fuerza la tarea con lldb y lee la consola.
+2. **Variación:** agrega más pendientes y simula la expiración con `_simulateExpirationForTaskWithIdentifier`; comprueba que sales limpio.
+3. **Diagnóstico:** reproduce el fallo deliberado sin el identificador en `Info.plist` (usa `do/catch` en lugar de `try?` para ver el error).
+4. **Integración:** cambia a `BGProcessingTaskRequest` con `requiresExternalPower = true` para la limpieza de fotos antiguas.
+5. **Diseño:** escribe qué le dirías a soporte sobre cuándo se suben las entregas y por qué no hay hora exacta.
+
+**Pista:** si la tarea no corre, revisa el identificador en `Info.plist`, el modo de fondo activado y que hayas programado una solicitud.
+
+#### Paso 6 · Práctica independiente
+
+Guarda en `UserDefaults` la hora de la última sincronización exitosa y muéstrala en la pantalla de ajustes como «Última sincronización: hace 12 min».
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre app refresh y processing.
+- [ ] Forzaste la tarea y viste la sincronización.
+- [ ] Reprodujiste el error de identificador no permitido.
+- [ ] Tu tarea respeta la cancelación.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** el tema siguiente protege con Face ID las acciones sensibles de la app.
+
+**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow y muestra la hora de la última sincronización.
+
+**Fuente oficial:** [Apple — BackgroundTasks](https://developer.apple.com/documentation/backgroundtasks) y [Apple — Starting and terminating tasks during development](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development).
+
+### Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
+
+**Prerrequisito:** tema «Keychain — guardar secretos de forma segura» de este módulo.
+
+**Al finalizar podrás:** pedir Face ID o Touch ID antes de una acción sensible con `LAContext`, ofrecer el código del dispositivo como alternativa y manejar los casos en que la biometría no está disponible.
+
+**¿Por qué es importante?** Confirmar el cobro contra entrega o ver datos del cliente con Face ID protege al conductor si pierde el teléfono desbloqueado, sin pedirle una contraseña más.
+
+#### Paso 1 · Objetivo y preparación
+
+Agrega a `Info.plist` la clave `NSFaceIDUsageDescription` con el motivo. En el simulador, activa **Features > Face ID > Enrolled** y usa **Matching Face** o **Non-matching Face** para probar.
+
+#### Paso 2 · Contexto y caso real
+
+Un teléfono de RutaFlow se perdió desbloqueado y alguien registró cobros falsos. Ahora, confirmar un cobro pide Face ID; si el conductor no tiene biometría configurada, el código del teléfono.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `LAContext`, política `.deviceOwnerAuthentication`, `.deviceOwnerAuthenticationWithBiometrics`, `canEvaluatePolicy`, `LAError`, texto de motivo.
+
+`LAContext` pregunta al sistema si el dueño del dispositivo está presente. Hay dos políticas:
+
+| Política | Acepta |
+|---|---|
+| `.deviceOwnerAuthenticationWithBiometrics` | solo Face ID o Touch ID |
+| `.deviceOwnerAuthentication` | biometría o, como respaldo, el código del dispositivo |
+
+Primero consulta `canEvaluatePolicy` para saber si está disponible. Luego `evaluatePolicy(_:localizedReason:)` muestra la interfaz del sistema. Los errores más comunes son `userCancel`, `biometryNotEnrolled` y `biometryLockout`.
+
+La biometría prueba que **el dueño está presente**, no quién es para tu servidor. Para proteger un secreto (un token), guárdalo en el Keychain con control de acceso biométrico en lugar de comprobar solo un `true`.
+
+**Analogía:** Face ID es el portero que reconoce al dueño del edificio; no sabe nada de la cuenta bancaria del dueño. La analogía falla en que el portero también acepta la llave de repuesto (el código) si se lo permites.
+
+**Límite de uso:** no uses la biometría como único factor ante tu servidor: un `true` local se puede falsificar en un dispositivo comprometido. Para secretos, usa `SecAccessControl` con `.biometryCurrentSet` en el Keychain.
+
+```mermaid
+flowchart TB
+    A["Confirmar cobro"] --> C{"canEvaluatePolicy?"}
+    C -->|no| X["pedir otra verificación"]
+    C -->|sí| E["evaluatePolicy: Face ID"]
+    E -->|éxito| OK["registrar cobro"]
+    E -->|falla| F["código del dispositivo"]
+    E -->|cancelado| N["no hacer nada"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/ConfirmacionSegura.swift`:
+
+```swift
+import LocalAuthentication
+
+enum ResultadoVerificacion { case verificado, cancelado, noDisponible(String) }
+
+func verificarDueno(motivo: String) async -> ResultadoVerificacion {
+    let contexto = LAContext()
+    contexto.localizedCancelTitle = "Cancelar"
+    var error: NSError?
+    // Biometría o, si no hay, el código del dispositivo.
+    guard contexto.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
+        return .noDisponible(error?.localizedDescription ?? "sin autenticación configurada")
+    }
+    do {
+        try await contexto.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: motivo)
+        return .verificado
+    } catch let error as LAError where error.code == .userCancel || error.code == .appCancel {
+        return .cancelado
+    } catch {
+        return .noDisponible(error.localizedDescription)
+    }
+}
+```
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/CobroView.swift`:
+
+```swift
+import SwiftUI
+
+struct CobroView: View {
+    @State private var estado = "Cobro pendiente: $52.000"
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(estado)
+            Button("Confirmar cobro") {
+                Task {
+                    switch await verificarDueno(motivo: "Confirma el cobro contra entrega de ENV-42") {
+                    case .verificado: estado = "Cobro registrado"
+                    case .cancelado: estado = "Cobro pendiente: $52.000"
+                    case .noDisponible(let motivo): estado = "No se pudo verificar: \(motivo)"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Compila, ejecuta y simula Face ID:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# en el simulador: Features > Face ID > Enrolled; al aparecer la solicitud, Features > Face ID > Matching Face
+```
+
+**Explicación por bloques:** `verificarDueno` crea un contexto nuevo en cada llamada (un contexto ya evaluado no vuelve a preguntar). Con `canEvaluatePolicy` revisa si hay biometría o código configurados. `evaluatePolicy` muestra la interfaz del sistema con el motivo. La cancelación del usuario se separa de los demás errores para no mostrar un mensaje de fallo cuando solo cambió de opinión. `CobroView` registra el cobro solo si el resultado es `.verificado`.
+
+**Resultado esperado:**
+
+```text
+Con Matching Face: el estado cambia a «Cobro registrado».
+Con Non-matching Face dos veces: el sistema ofrece el código del dispositivo.
+Al pulsar Cancelar: el estado sigue en «Cobro pendiente: $52.000».
+```
+
+**Fallo deliberado:** borra `NSFaceIDUsageDescription` de `Info.plist` y ejecuta en un dispositivo con Face ID. **Error esperado:** la app se cierra al llamar a `evaluatePolicy` y la consola indica que falta la descripción de uso de Face ID. **Diagnóstico:** iOS exige explicar el uso de Face ID antes de mostrarlo. Agrega la clave.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** prueba los casos de rostro correcto, incorrecto y cancelación.
+2. **Variación:** cambia a `.deviceOwnerAuthenticationWithBiometrics` y observa qué pasa al fallar varias veces.
+3. **Diagnóstico:** reproduce el fallo deliberado sin la descripción de Face ID.
+4. **Integración:** muestra en el botón el tipo de biometría disponible con `contexto.biometryType` («Confirmar con Face ID»).
+5. **Diseño:** decide qué acciones de RutaFlow deben pedir Face ID y cuáles no, para no cansar al conductor.
+
+**Pista:** si la solicitud no aparece en el simulador, revisa que Face ID esté marcado como «Enrolled».
+
+#### Paso 6 · Práctica independiente
+
+Guarda el token de la API en el Keychain con `SecAccessControlCreateWithFlags(..., .biometryCurrentSet, ...)` para que leerlo exija Face ID, y compara con la verificación de este tema.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las dos políticas de `LAContext`.
+- [ ] El cobro se registra solo tras verificar.
+- [ ] Reprodujiste el cierre sin la descripción de Face ID.
+- [ ] Sabes por qué un `true` local no basta ante el servidor.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reutilizar un `LAContext` ya evaluado, tratar la cancelación como error y confiar en la biometría como única prueba para el servidor. **Siguiente paso:** el tema «Notificaciones push con APNs» avisa al conductor de cobros pendientes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** exige Face ID o el código del dispositivo para confirmar cobros contra entrega en la app del conductor de RutaFlow.
+
+**Fuente oficial:** [Apple — Logging a user into your app with Face ID or Touch ID](https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id).
+
 ## Revisión oficial de plataforma — julio de 2026
 
 ### Swift 6.2 y actualizaciones SwiftUI de 2026

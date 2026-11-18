@@ -134,6 +134,37 @@ Al finalizar vas a agregar una columna nueva a `facturas` (Tema 1) con una migra
 RutaFlow necesita agregar `estado_pago` (`pendiente`/`pagada`) a `facturas`, una tabla que ya tiene datos reales en producción — no se puede simplemente borrar y recrear la tabla.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una migración es una receta versionada y numerada que se aplica una sola vez y queda registrada, no un comando SQL suelto que alguien corrió manualmente y nadie más puede reproducir.
+
+**Conceptos clave:** evolución versionada y reproducible del esquema, no cambios manuales ad hoc.
+
+```sql
+CREATE TABLE tareas (id SERIAL PRIMARY KEY, titulo TEXT, estado TEXT);
+INSERT INTO tareas (titulo, estado) VALUES ('Mi tarea', 'pendiente');
+```
+
+Una migration es un cambio de esquema versionado y ejecutado de forma reproducible (típicamente mediante una herramienta de migraciones que rastrea qué cambios ya se aplicaron a una base de datos específica), en vez de ejecutar comandos SQL de modificación de esquema manualmente y de forma ad hoc directamente contra la base de datos de producción; esto es importante porque garantiza que el esquema de la base de datos evolucione de forma consistente y rastreable a través de distintos entornos (desarrollo, pruebas, producción) y a través del tiempo, con un historial claro de qué cambios se aplicaron y en qué orden, permitiendo además revertir un cambio problemático de forma controlada si fuera necesario.
+
+Esta necesidad de gestionar la evolución del esquema de forma versionada es exactamente el mismo principio ya estudiado con Flyway en Spring Boot (Módulo 3 de ese track) y con las migraciones de Room en Android (Módulo 6 de ese track): sin un mecanismo formal de migraciones, cada entorno de despliegue podría terminar con un esquema ligeramente distinto e inconsistente entre sí, dependiendo de qué cambios manuales se aplicaron o se olvidaron aplicar en cada uno de ellos.
+
+**Analogía:** una migration es como una bitácora de construcción versionada que documenta cada modificación estructural realizada a un edificio en un orden específico y verificable, permitiendo reconstruir exactamente el mismo edificio en una ubicación nueva siguiendo esa misma bitácora paso a paso, en vez de intentar replicar modificaciones ad hoc no documentadas de memoria.
+
+**¿Por qué es importante?** Las migrations garantizan que el esquema de la base de datos evolucione de forma consistente y rastreable a través de distintos entornos y en el tiempo, evitando la inconsistencia de aplicar cambios manuales ad hoc no documentados directamente contra producción.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    V1["V1__crear_tabla_tareas.sql"] --> D1["aplicado en dev, staging, producción, en ese orden rastreado"]
+    D1 --> V2["V2__agregar_columna_prioridad.sql"] --> D2["aplicado consistentemente después de V1 en cada entorno"]
+```
+
+No conviene correr estas migraciones manualmente contra producción como hiciste con `psql`
+arriba: en el proyecto integrador RutaFlow, un script `scripts/migrate.py` que escribas y ejecutes
+desde el mismo pipeline que despliega tu `template.yaml` aplicaría `migraciones_aplicadas`
+automáticamente en cada entorno, en el mismo orden, sin depender de que alguien recuerde correrlo a mano.
+
+---
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
@@ -170,36 +201,6 @@ Pista: corré el mismo bloque `DO $$ ... END $$;` del Paso 4 una segunda vez SIN
 Escribí la migración de rollback correspondiente (`ALTER TABLE facturas DROP COLUMN estado_pago; DELETE FROM migraciones_aplicadas WHERE version = 1;`), y confirmá que después de aplicarla la tabla vuelve exactamente a su forma anterior al Tema 3.
 #### Paso 7 · Cierre
 Entregá la migración idempotente del Paso 4, el error de columna duplicada del Paso 5, y el rollback del Paso 6; explicá por qué `migraciones_aplicadas` es lo que hace que la migración sea segura de reintentar. Siguiente paso: almacenamiento distribuido. Errores comunes: editar producción manualmente y no respaldar. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html.
-**Conceptos clave:** evolución versionada y reproducible del esquema, no cambios manuales ad hoc.
-
-```sql
-CREATE TABLE tareas (id SERIAL PRIMARY KEY, titulo TEXT, estado TEXT);
-INSERT INTO tareas (titulo, estado) VALUES ('Mi tarea', 'pendiente');
-```
-
-Una migration es un cambio de esquema versionado y ejecutado de forma reproducible (típicamente mediante una herramienta de migraciones que rastrea qué cambios ya se aplicaron a una base de datos específica), en vez de ejecutar comandos SQL de modificación de esquema manualmente y de forma ad hoc directamente contra la base de datos de producción; esto es importante porque garantiza que el esquema de la base de datos evolucione de forma consistente y rastreable a través de distintos entornos (desarrollo, pruebas, producción) y a través del tiempo, con un historial claro de qué cambios se aplicaron y en qué orden, permitiendo además revertir un cambio problemático de forma controlada si fuera necesario.
-
-Esta necesidad de gestionar la evolución del esquema de forma versionada es exactamente el mismo principio ya estudiado con Flyway en Spring Boot (Módulo 3 de ese track) y con las migraciones de Room en Android (Módulo 6 de ese track): sin un mecanismo formal de migraciones, cada entorno de despliegue podría terminar con un esquema ligeramente distinto e inconsistente entre sí, dependiendo de qué cambios manuales se aplicaron o se olvidaron aplicar en cada uno de ellos.
-
-**Analogía:** una migration es como una bitácora de construcción versionada que documenta cada modificación estructural realizada a un edificio en un orden específico y verificable, permitiendo reconstruir exactamente el mismo edificio en una ubicación nueva siguiendo esa misma bitácora paso a paso, en vez de intentar replicar modificaciones ad hoc no documentadas de memoria.
-
-**¿Por qué es importante?** Las migrations garantizan que el esquema de la base de datos evolucione de forma consistente y rastreable a través de distintos entornos y en el tiempo, evitando la inconsistencia de aplicar cambios manuales ad hoc no documentados directamente contra producción.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    V1["V1__crear_tabla_tareas.sql"] --> D1["aplicado en dev, staging, producción, en ese orden rastreado"]
-    D1 --> V2["V2__agregar_columna_prioridad.sql"] --> D2["aplicado consistentemente después de V1 en cada entorno"]
-```
-
-No conviene correr estas migraciones manualmente contra producción como hiciste con `psql`
-arriba: en el proyecto integrador RutaFlow, un script `scripts/migrate.py` que escribas y ejecutes
-desde el mismo pipeline que despliega tu `template.yaml` aplicaría `migraciones_aplicadas`
-automáticamente en cada entorno, en el mismo orden, sin depender de que alguien recuerde correrlo a mano.
-
----
-
 
 ## Laboratorio práctico
 

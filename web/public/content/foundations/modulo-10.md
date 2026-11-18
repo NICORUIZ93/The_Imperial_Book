@@ -554,6 +554,15 @@ sequenceDiagram
     Note over M: reloj = max(0, 4) + 1 = 5
 ```
 
+**¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
+**Fuentes oficiales y primarias:** [Lamport: *Time, Clocks, and the Ordering of Events* (Microsoft Research)](https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/) y [transacciones en dos fases de PostgreSQL](https://www.postgresql.org/docs/current/two-phase.html). La primera sustenta el orden causal mediante relojes lógicos; la segunda documenta `PREPARE TRANSACTION`, `COMMIT PREPARED` y `ROLLBACK PREPARED` en una implementación real. Como lectura de contexto permanece Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3, pendiente de revisión completa en el disco externo.
+**Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
+**Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** registra cada cambio de estado de una tarea con una marca de Lamport y ordena el historial con ella.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** aplicar `max(self.reloj, marca) + 1` solo al enviar y olvidarlo al recibir (el fallo deliberado del Paso 4), lo que rompe la causalidad entre nodos; y asumir que dos eventos con la misma marca de Lamport ocurrieron "al mismo tiempo" en sentido real, cuando una marca igual solo significa que no hay relación causal establecida entre ellos.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -653,14 +662,7 @@ Agrega un cuarto nodo, `cliente`, que reciba el aviso de entrega de la moto, y v
 Simula en `dos_fases` que el coordinador cae después de recibir los votos y antes de decidir. Escribe qué estado queda en cada participante y por qué 2PC se considera un protocolo bloqueante.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque ordenar eventos, elegir líderes y acordar resultados son la base de bases de datos replicadas, Kafka, Kubernetes y cualquier sistema con varios nodos.
-**Fuentes oficiales y primarias:** [Lamport: *Time, Clocks, and the Ordering of Events* (Microsoft Research)](https://www.microsoft.com/en-us/research/publication/time-clocks-ordering-events-distributed-system/) y [transacciones en dos fases de PostgreSQL](https://www.postgresql.org/docs/current/two-phase.html). La primera sustenta el orden causal mediante relojes lógicos; la segunda documenta `PREPARE TRANSACTION`, `COMMIT PREPARED` y `ROLLBACK PREPARED` en una implementación real. Como lectura de contexto permanece Tanenbaum, *Sistemas operativos distribuidos*, caps. 2-3, pendiente de revisión completa en el disco externo.
-**Conceptos clave:** reloj lógico, relación "ocurrió antes", eventos concurrentes, elección de líder, algoritmo del matón, commit en dos fases, protocolo bloqueante.
-**Cuándo no usarlo:** no implementes estos algoritmos en producción: usa herramientas probadas (etcd, ZooKeeper, transacciones de la base de datos, sagas). Implementarlos sirve para entender sus garantías y límites.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** registra cada cambio de estado de una tarea con una marca de Lamport y ordena el historial con ella.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** aplicar `max(self.reloj, marca) + 1` solo al enviar y olvidarlo al recibir (el fallo deliberado del Paso 4), lo que rompe la causalidad entre nodos; y asumir que dos eventos con la misma marca de Lamport ocurrieron "al mismo tiempo" en sentido real, cuando una marca igual solo significa que no hay relación causal establecida entre ellos.
 
 ## Construcción guiada del capítulo
 

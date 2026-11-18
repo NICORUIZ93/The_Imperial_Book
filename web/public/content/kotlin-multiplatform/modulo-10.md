@@ -70,6 +70,8 @@ flowchart TD
 
 Aplica exactamente esta estructura a tu proyecto RutaFlow: el módulo `shared`, con `SyncEngine.kt` en `shared/src/commonMain/kotlin/com/academia/kmp/`, se valida en `test-common` antes de que corran los builds de Android e iOS, para que un cambio roto en `SyncEngine` nunca llegue a compilarse como app completa en ninguna de las dos plataformas.
 
+**¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
+
 #### Paso 4 · Demostración guiada desde cero
 ```yaml
 jobs:
@@ -100,11 +102,10 @@ Pista: quitá el job `build-ios` del workflow "para ahorrar minutos de runner ma
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando el job `build-ios` con `runs-on: macos-latest`, y agregá el job `test-common` como requisito previo (`needs:`) de ambos builds de plataforma, para que ninguno corra si la lógica compartida ya falla.
 
+**Proyecto integrador:** escribe `.github/workflows/rutaflow-kmp.yml` en tu propio proyecto y haz que `commonTest` bloquee tanto el build Android como el framework iOS antes de publicar una versión.
+
 #### Paso 7 · Cierre
 Entregá el workflow con los tres jobs del Paso 4, el pipeline verde engañoso del Paso 5, y la corrección con `needs:` del Paso 6; explicá por qué ahorrar minutos de runner quitando un target de la validación traslada el costo real a un descubrimiento tardío y más caro. Siguiente paso: automatizá la firma y distribución de cada build con Fastlane. Errores comunes: validar solo un target asumiendo que el otro compilará igual, usar un runner Linux estándar para builds de iOS, y no declarar dependencias explícitas (`needs:`) entre el test de lógica compartida y los builds de plataforma. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html y https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners.
-**¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
-
-**Proyecto integrador:** escribe `.github/workflows/rutaflow-kmp.yml` en tu propio proyecto y haz que `commonTest` bloquee tanto el build Android como el framework iOS antes de publicar una versión.
 
 ### Tema 2: Fastlane
 
@@ -198,6 +199,29 @@ Un usuario reporta un bug desde la app iOS versión "2.3.1", y el equipo tarda m
 #### Paso 3 · Teoría, modelo mental y analogía
 Centralizar el número de versión en un archivo compartido leído por ambos pipelines de build evita la confusión de no saber con certeza qué versión del módulo compartido corre cada plataforma. La analogía es todas las sucursales de una franquicia siguiendo exactamente la misma edición del manual de operaciones central.
 
+**¿Por qué es importante?** Sincronizar el versionado entre ambas plataformas evita la confusión de no saber con certeza qué versión del módulo compartido corre cada plataforma, simplificando el diagnóstico de bugs reportados por usuarios.
+**Conceptos clave:** mismo número de versión entre ambas apps, evitando confusión.
+
+Mantener el número de versión sincronizado entre la app Android y la app iOS, típicamente centralizado en un archivo de configuración compartido leído por ambos pipelines de build respectivos, evita la confusión concreta de no saber con certeza qué versión específica del módulo compartido corre efectivamente cada plataforma en un momento dado, un problema particularmente relevante al diagnosticar un bug reportado por un usuario: sin versionado sincronizado, sería necesario primero determinar qué versión específica de la lógica compartida corresponde a la versión de la app reportada por el usuario en cada plataforma, una complejidad adicional evitable centralizando el versionado desde el origen.
+
+**Analogía:** el versionado compartido es como asegurarse de que todas las sucursales de una franquicia sigan exactamente la misma edición del manual de operaciones central, evitando la confusión de que distintas sucursales operen simultáneamente según versiones distintas y potencialmente incompatibles del mismo manual base.
+
+**Casos de uso reales:**
+- Un usuario reporta un bug desde la app iOS 2.3.1; el equipo identifica de inmediato qué versión de `commonMain` corresponde.
+- Coordinar un release simultáneo donde Android e iOS despliegan la misma versión del módulo compartido el mismo día.
+- Auditar en logs de crash qué versión del módulo compartido estaba activa en el momento del fallo.
+
+**Diagrama:**
+
+```
+Archivo de versión compartido → leído por el pipeline de build de Android y de iOS
+Evita: "¿qué versión del módulo compartido corre esta versión específica de cada app?"
+```
+
+---
+
+**Límites y decisión de uso:** Cambiar una versión no prueba compatibilidad binaria, de API ni de datos persistidos. Prueba clientes Android e iOS contra el artefacto publicado y documenta migraciones y retirada de miembros antes de reemplazar una biblioteca compartida.
+
 #### Paso 4 · Demostración guiada desde cero
 ```properties
 # version.properties (leído por ambos pipelines de build)
@@ -227,28 +251,6 @@ Corregí el Paso 5 centralizando de nuevo el número de versión en `version.pro
 
 #### Paso 7 · Cierre
 Entregá el archivo de versión compartido del Paso 4, la confusión de versiones divergentes del Paso 5, y la corrección documentada del Paso 6; explicá por qué un "ciclo de release independiente por plataforma" no justifica versionar el módulo compartido de forma independiente. Siguiente paso: usá este mismo principio de fuente única de verdad al diseñar la arquitectura del proyecto integrador completo. Errores comunes: dejar que cada plataforma versione el módulo compartido por su cuenta, no documentar la fuente única de verdad del versionado para nuevos integrantes del equipo, y confundir la versión de la app con la versión del módulo compartido. Fuentes oficiales: https://docs.gradle.org/current/userguide/writing_build_scripts.html y https://developer.android.com/studio/publish/versioning.
-**¿Por qué es importante?** Sincronizar el versionado entre ambas plataformas evita la confusión de no saber con certeza qué versión del módulo compartido corre cada plataforma, simplificando el diagnóstico de bugs reportados por usuarios.
-**Conceptos clave:** mismo número de versión entre ambas apps, evitando confusión.
-
-Mantener el número de versión sincronizado entre la app Android y la app iOS, típicamente centralizado en un archivo de configuración compartido leído por ambos pipelines de build respectivos, evita la confusión concreta de no saber con certeza qué versión específica del módulo compartido corre efectivamente cada plataforma en un momento dado, un problema particularmente relevante al diagnosticar un bug reportado por un usuario: sin versionado sincronizado, sería necesario primero determinar qué versión específica de la lógica compartida corresponde a la versión de la app reportada por el usuario en cada plataforma, una complejidad adicional evitable centralizando el versionado desde el origen.
-
-**Analogía:** el versionado compartido es como asegurarse de que todas las sucursales de una franquicia sigan exactamente la misma edición del manual de operaciones central, evitando la confusión de que distintas sucursales operen simultáneamente según versiones distintas y potencialmente incompatibles del mismo manual base.
-
-**Casos de uso reales:**
-- Un usuario reporta un bug desde la app iOS 2.3.1; el equipo identifica de inmediato qué versión de `commonMain` corresponde.
-- Coordinar un release simultáneo donde Android e iOS despliegan la misma versión del módulo compartido el mismo día.
-- Auditar en logs de crash qué versión del módulo compartido estaba activa en el momento del fallo.
-
-**Diagrama:**
-
-```
-Archivo de versión compartido → leído por el pipeline de build de Android y de iOS
-Evita: "¿qué versión del módulo compartido corre esta versión específica de cada app?"
-```
-
----
-
-**Límites y decisión de uso:** Cambiar una versión no prueba compatibilidad binaria, de API ni de datos persistidos. Prueba clientes Android e iOS contra el artefacto publicado y documenta migraciones y retirada de miembros antes de reemplazar una biblioteca compartida.
 
 ## Laboratorio práctico
 

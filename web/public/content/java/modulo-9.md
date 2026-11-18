@@ -301,6 +301,161 @@ Modifica el valor esperado de la fila `"501, 7000"` a `"501, 4000"` (incorrecto 
 
 ---
 
+### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
+
+**Prerrequisito:** temas «JUnit 5 — anotaciones y ciclo de vida» y «Tests parametrizados y cobertura» de este módulo.
+
+**Al finalizar podrás:** escribir propiedades (reglas que deben cumplirse para toda entrada válida), comprobarlas con mil entradas generadas con una semilla fija y reducir un fallo al caso mínimo; después, expresarlas con jqwik.
+
+**¿Por qué es importante?** Un test con ejemplos solo prueba los casos que se te ocurrieron. Una prueba de propiedades genera cientos de casos, incluidos los bordes, y encuentra errores que nadie imaginó, como un descuento mal escrito para pesos grandes.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa JDK 21. La demostración no necesita librerías: implementa la idea en un solo archivo. La versión con jqwik necesita un proyecto Maven o Gradle con la dependencia `net.jqwik:jqwik`. Crea la carpeta `academia-labs/java/propiedades`.
+
+#### Paso 2 · Contexto y caso real
+
+Las pruebas de tarifas de RutaFlow tenían cinco ejemplos y todas pasaban. En producción, un envío de 950 kilos se cobró con valor negativo. Ninguno de los ejemplos pasaba de 100 kilos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** propiedad, generador, semilla, caso borde, encogimiento (*shrinking*), contraejemplo mínimo, jqwik.
+
+Una **propiedad** es una regla general: «la tarifa siempre es positiva», «si el peso aumenta, la tarifa no baja». La prueba:
+
+1. **Genera** muchas entradas válidas (con una **semilla** fija para poder repetir un fallo).
+2. Prueba primero los **bordes** (1, el máximo, valores alrededor de límites), donde suelen estar los errores.
+3. Si una entrada falla, **encoge**: busca la entrada más pequeña que también falla, para depurar con el caso más simple.
+
+Una propiedad que pasa no demuestra que el código sea correcto: solo que los casos generados no encontraron un error. Si un error ocurre en un único valor exacto, el generador puede no visitarlo. Por eso las librerías como **jqwik** sesgan la generación hacia los bordes.
+
+**Analogía:** los tests de ejemplos son revisar tres tornillos del puente; las propiedades son revisar mil tornillos al azar más todos los de las uniones. La analogía falla en que, aunque revises mil, un tornillo flojo justo donde no miraste sigue ahí.
+
+**Límite de uso:** no reemplaza a los tests de ejemplos, que documentan casos importantes del negocio. Escribir buenas propiedades cuesta: si te descubres repitiendo la implementación dentro de la propiedad, no estás probando nada.
+
+```mermaid
+flowchart LR
+    G["Generador<br/>bordes + 1000 al azar<br/>semilla 42"] --> P{"¿propiedad se cumple?"}
+    P -->|sí| N["siguiente caso"]
+    P -->|no| S["encoger hasta el<br/>caso mínimo"]
+    S --> R["reporte: kilos=901"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/propiedades/PropiedadesTarifa.java`:
+
+```java
+import java.util.Random;
+import java.util.function.IntPredicate;
+
+public class PropiedadesTarifa {
+    // Código bajo prueba: tiene un error a propósito para pesos grandes.
+    static long tarifa(int kilos) {
+        if (kilos <= 0) throw new IllegalArgumentException("peso inválido");
+        long base = 1_000 + kilos * 120L;
+        return kilos > 900 ? base - 200_000 : base; // error: descuento mal escrito
+    }
+
+    // Una propiedad es una regla que debe cumplirse para TODA entrada válida.
+    static void comprobar(String nombre, IntPredicate propiedad, Random azar) {
+        int[] bordes = {1, 2, 999, 1_000}; // los generadores serios prueban primero los bordes
+        for (int i = 0; i < 1_000; i++) {
+            int kilos = i < bordes.length ? bordes[i] : 1 + azar.nextInt(1_000);
+            if (!propiedad.test(kilos)) {
+                int minimo = encoger(kilos, propiedad);
+                System.out.println("FALLA " + nombre + " con kilos=" + kilos + ", caso mínimo kilos=" + minimo);
+                return;
+            }
+        }
+        System.out.println("OK " + nombre + " en 1000 casos");
+    }
+
+    // Encoger: busca el valor más pequeño que sigue fallando, para depurar fácil.
+    static int encoger(int falla, IntPredicate propiedad) {
+        int minimo = falla;
+        for (int k = falla - 1; k >= 1; k--) if (!propiedad.test(k)) minimo = k;
+        return minimo;
+    }
+
+    public static void main(String[] args) {
+        Random azar = new Random(42); // semilla fija: el fallo se puede repetir
+        comprobar("tarifa positiva", k -> tarifa(k) > 0, azar);
+        comprobar("tarifa crece con el peso", k -> tarifa(k + 1) >= tarifa(k), azar);
+        comprobar("tarifa mínima de 1120", k -> tarifa(k) >= 1_120, azar);
+    }
+}
+```
+
+Archivo `academia-labs/java/propiedades/src/test/java/TarifaPropiedadesTest.java`:
+
+```java
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.constraints.IntRange;
+
+class TarifaPropiedadesTest {
+    @Property // jqwik genera 1000 casos, prueba bordes y encoge los fallos
+    boolean tarifaPositiva(@ForAll @IntRange(min = 1, max = 1_000) int kilos) {
+        return PropiedadesTarifa.tarifa(kilos) > 0;
+    }
+
+    @Property
+    boolean tarifaCreceConElPeso(@ForAll @IntRange(min = 1, max = 999) int kilos) {
+        return PropiedadesTarifa.tarifa(kilos + 1) >= PropiedadesTarifa.tarifa(kilos);
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/propiedades
+java PropiedadesTarifa.java
+# versión con jqwik, dentro de un proyecto Maven con net.jqwik:jqwik en test:
+# mvn test
+```
+
+**Explicación por bloques:** `tarifa` tiene un error: para más de 900 kilos resta 200 000 en lugar de aplicar un descuento pequeño. `comprobar` prueba primero cuatro bordes y luego entradas al azar con semilla 42. En cuanto una entrada falla, `encoger` recorre hacia abajo para hallar el menor peso que también falla: 901, el límite exacto del error. La segunda propiedad pasa aunque el código está mal, porque solo falla en `kilos = 900` y ningún caso generado fue exactamente ese. La clase de jqwik expresa las mismas propiedades con anotaciones; la librería se encarga de generar, sesgar hacia bordes y encoger.
+
+![Captura de terminal: la propiedad de tarifa positiva falla con kilos 999 y encoge al caso mínimo 901, mientras la de crecimiento pasa](content/figures/java/pruebas-propiedades.svg)
+
+**Resultado esperado:**
+
+```text
+FALLA tarifa positiva con kilos=999, caso mínimo kilos=901
+OK tarifa crece con el peso en 1000 casos
+FALLA tarifa mínima de 1120 con kilos=999, caso mínimo kilos=901
+```
+
+**Fallo deliberado:** cambia `new Random(42)` por `new Random()` y ejecuta varias veces. **Error esperado:** los valores de `kilos` que fallan cambian en cada ejecución. **Diagnóstico:** sin semilla fija no puedes repetir un fallo para depurarlo. Las librerías imprimen la semilla del fallo para reproducirlo; aquí, déjala fija.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el archivo y explica por qué el caso mínimo es 901.
+2. **Variación:** agrega 900 a la lista de bordes y observa que la segunda propiedad ahora falla.
+3. **Diagnóstico:** reproduce el fallo deliberado sin semilla.
+4. **Integración:** corrige `tarifa` (por ejemplo, 10 % de descuento sobre 900 kilos) y comprueba que las tres propiedades pasan.
+5. **Diseño:** escribe dos propiedades más para la tarifa de RutaFlow que no repitan la fórmula dentro de la prueba.
+
+**Pista:** una buena propiedad compara relaciones (mayor, igual, inversa), no recalcula el resultado.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una propiedad para una función `codificar`/`decodificar` de códigos de envío: decodificar lo codificado debe devolver el original para cualquier texto de 1 a 20 caracteres alfanuméricos.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es una propiedad, un borde y el encogimiento.
+- [ ] El programa imprime las tres líneas esperadas.
+- [ ] Explicas por qué la segunda propiedad pasa con código incorrecto.
+- [ ] Escribiste propiedades que no repiten la implementación.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** generar sin semilla reproducible, olvidar los bordes y escribir propiedades que copian la fórmula. **Siguiente paso:** el módulo 15 integra jqwik junto a JUnit 5 en el build de Maven y Gradle.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega pruebas de propiedades con jqwik a las tarifas de RutaFlow: positiva, monótona respecto al peso y con tope máximo.
+
+**Fuente oficial:** [jqwik — User Guide](https://jqwik.net/docs/current/user-guide.html) y [JUnit 5 — User Guide](https://junit.org/junit5/docs/current/user-guide/).
 
 ## Construcción guiada del capítulo
 

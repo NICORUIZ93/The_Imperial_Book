@@ -760,6 +760,14 @@ Un **pipe** (`|`) transforma un valor solo para mostrarlo, sin cambiar el dato (
 
 **Analogía:** un pipe es un filtro de Instagram sobre una foto (cambia cómo se ve, no la foto original); una directiva es un accesorio que le pones a un mueble (una rueda, una luz) que cambia cómo se comporta sin rehacer el mueble.
 
+**Conceptos clave:** pipe puro de transformación, directiva de atributo, `ElementRef`, `HostListener`, importación en standalone.
+**Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** olvidar añadir el pipe o la directiva a los `imports` del componente standalone, produciendo el error real "The pipe 'distancia' could not be found"; usar `HostListener`/`HostBinding` para un cambio de estilo que una clase condicional en la plantilla ya resolvería de forma más simple.
+**Fuente oficial:** [documentación de Angular](https://angular.dev/).
+
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.ts` con el contenido de este tema.
 ```bash
@@ -811,13 +819,7 @@ Crea una directiva `appSoloNumeros` que impida escribir letras en un input (escu
 
 #### Paso 7 · Cierre
 Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-números. **¿Por qué es importante?** Directivas y pipes son el mecanismo de Angular para no repetir lógica de presentación y comportamiento: un pipe de fecha/moneda/distancia y una directiva de permisos o resaltado se usan en decenas de plantillas. Saber crearlos propios es lo que distingue usar Angular de dominarlo. Fuentes: [Angular — Pipes](https://angular.dev/guide/templates/pipes) y [Angular — Attribute directives](https://angular.dev/guide/directives/attribute-directives).
-**Conceptos clave:** pipe puro de transformación, directiva de atributo, `ElementRef`, `HostListener`, importación en standalone.
-**Cuándo no usarlo:** no crees una directiva/pipe para algo que se usa en un solo sitio y una sola vez; su valor está en la reutilización. Para lógica compleja de negocio, un servicio es más apropiado que un pipe.
 
-**Transferencia al proyecto integrador «Centro de control logístico»:** crea el pipe `distancia` y la directiva `appResaltar` y úsalos en la tabla de envíos para mostrar distancias legibles y marcar los urgentes.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** olvidar añadir el pipe o la directiva a los `imports` del componente standalone, produciendo el error real "The pipe 'distancia' could not be found"; usar `HostListener`/`HostBinding` para un cambio de estilo que una clase condicional en la plantilla ya resolvería de forma más simple.
-**Fuente oficial:** [documentación de Angular](https://angular.dev/).
 ### Tema 7: Pipes puros e impuros, AsyncPipe y signals
 
 #### Paso 1 · Objetivo y preparación
@@ -840,6 +842,15 @@ flowchart TD
     B -->|"sí"| D["pipe puro se ejecuta: 17 kg"]
     E["pipe impuro"] --> F["se ejecuta siempre: 17 kg"]
 ```
+
+**¿Por qué es importante?** porque los datos que "no se actualizan" son una de las quejas más comunes en Angular, y casi siempre se deben a mutaciones o a pipes impuros usados para taparlas.
+**Fuente oficial:** [Angular: Pipes](https://angular.dev/guide/templates/pipes), [Angular: AsyncPipe](https://angular.dev/api/common/AsyncPipe).
+**Conceptos clave:** pipe puro, pipe impuro, igualdad por referencia, mutación frente a inmutabilidad, `AsyncPipe`, `signal.update`, `toSignal`.
+**Cuándo no usarlo:** no marques un pipe como impuro para "arreglar" datos que no se refrescan: corrige la mutación. Los pipes impuros pesados se ejecutan decenas de veces por segundo.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** muestra el total de kilos del tablero con un pipe puro alimentado por un signal que se actualiza de forma inmutable.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** marcar un pipe como `pure: false` para "arreglar" un valor desactualizado en vez de corregir la mutación que lo causa; olvidar que `AsyncPipe` se desuscribe solo al destruir el componente, y volver a suscribirse manualmente al mismo Observable por duplicado.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -977,14 +988,7 @@ Agrega un método `agregarCopiando` que agregue el paquete creando un array nuev
 Reemplaza `camiones$ | async` por `toSignal(camiones$)` y compara las dos formas en legibilidad y manejo de la suscripción.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque los datos que "no se actualizan" son una de las quejas más comunes en Angular, y casi siempre se deben a mutaciones o a pipes impuros usados para taparlas.
-**Fuente oficial:** [Angular: Pipes](https://angular.dev/guide/templates/pipes), [Angular: AsyncPipe](https://angular.dev/api/common/AsyncPipe).
-**Conceptos clave:** pipe puro, pipe impuro, igualdad por referencia, mutación frente a inmutabilidad, `AsyncPipe`, `signal.update`, `toSignal`.
-**Cuándo no usarlo:** no marques un pipe como impuro para "arreglar" datos que no se refrescan: corrige la mutación. Los pipes impuros pesados se ejecutan decenas de veces por segundo.
 
-**Transferencia al proyecto integrador «Centro de control logístico»:** muestra el total de kilos del tablero con un pipe puro alimentado por un signal que se actualiza de forma inmutable.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** marcar un pipe como `pure: false` para "arreglar" un valor desactualizado en vez de corregir la mutación que lo causa; olvidar que `AsyncPipe` se desuscribe solo al destruir el componente, y volver a suscribirse manualmente al mismo Observable por duplicado.
 
 ## Laboratorio práctico
 

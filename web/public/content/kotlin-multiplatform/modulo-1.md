@@ -528,6 +528,146 @@ Ya distingues una lambda con receptor de una lambda normal, y construyes una fun
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Crea un builder pequeño para datos de entrega usados en pruebas. Valida que no permita una guía sin identificador y compara su legibilidad con constructores explícitos antes de añadir más DSL.
 
+### Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min
+
+**Prerrequisito:** tema «Sealed classes y colecciones funcionales» de este módulo.
+
+**Al finalizar podrás:** escribir una clase genérica `Resultado<out T>` covariante, una función con restricción `T : Comparable<T>` y una función `inline` con `reified` que filtra por tipo en `commonMain`.
+
+**¿Por qué es importante?** El código compartido de KMP vive de tipos genéricos: repositorios, resultados de red, cachés. Sin entender la varianza aparecen errores como «Type mismatch: inferred type is Resultado<Envio> but Resultado<Any> was expected» que parecen absurdos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa un proyecto KMP (por ejemplo, creado con el asistente de kmp.jetbrains.com) y escribe en `shared/src/commonMain/kotlin/co/rutaflow/genericos/`. Las pruebas van en `commonTest`.
+
+#### Paso 2 · Contexto y caso real
+
+El módulo compartido de RutaFlow tenía `Resultado<T>` sin varianza. Una función que aceptaba `Resultado<Any>` no podía recibir `Resultado<Envio>`, y el equipo lo resolvía con conversiones forzadas (`as`) que luego fallaban en ejecución.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** parámetro de tipo, covarianza (`out`), contravarianza (`in`), invarianza, restricción (`where`, `T : Comparable<T>`), `reified`, borrado de tipos.
+
+Por defecto, un genérico es **invariante**: `Caja<Envio>` no es un `Caja<Any>`, aunque `Envio` sea un `Any`.
+
+| Modificador | Significa | Ejemplo | Regla |
+|---|---|---|---|
+| `out T` | solo **produce** T | `Resultado<out T>`, `List<out E>` | `Resultado<Envio>` sirve donde se pide `Resultado<Any>` |
+| `in T` | solo **consume** T | `Comparator<in T>` | un comparador de `Any` sirve para `Envio` |
+
+Una **restricción** limita los tipos aceptados: `fun <T : Comparable<T>> mayor(a: T, b: T)`.
+
+En la JVM, los tipos genéricos se **borran** en ejecución: no puedes preguntar `x is T`. Con una función **`inline`** y **`reified T`**, el compilador copia el tipo real en cada llamada y sí puedes usar `is T` o `T::class`. Funciona igual en todos los targets de KMP.
+
+**Analogía:** `out` es una máquina expendedora: solo entrega productos, así que una de «envíos» sirve donde piden «cosas». `in` es un buzón: solo recibe, así que uno que acepta «cualquier cosa» sirve para recibir envíos. La analogía falla en que el compilador revisa cada uso: si intentas meter algo en una máquina `out`, no compila.
+
+**Límite de uso:** no marques `out` un tipo que también recibe T como parámetro: el compilador lo prohíbe por seguridad. `reified` solo existe en funciones `inline`; no lo uses en funciones grandes, porque se copian en cada llamada.
+
+```mermaid
+flowchart LR
+    E["Resultado<Envio>"] -->|"out T: se acepta"| A["Resultado<Any>"]
+    C["Comparator<Any>"] -->|"in T: se acepta"| CE["Comparator<Envio>"]
+    R["inline fun <reified T>"] --> I["is T en ejecución"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `shared/src/commonMain/kotlin/co/rutaflow/genericos/Genericos.kt`:
+
+```kotlin
+package co.rutaflow.genericos
+
+sealed interface Resultado<out T> {           // covariante: solo produce T
+    data class Exito<out T>(val valor: T) : Resultado<T>
+    data class Fallo(val mensaje: String) : Resultado<Nothing> // Nothing sirve para cualquier T
+}
+
+data class Envio(val codigo: String, val kilos: Int) : Comparable<Envio> {
+    override fun compareTo(other: Envio) = kilos.compareTo(other.kilos)
+}
+
+fun describir(r: Resultado<Any>): String = when (r) {  // acepta Resultado<Envio> gracias a out
+    is Resultado.Exito -> "ok: ${r.valor}"
+    is Resultado.Fallo -> "error: ${r.mensaje}"
+}
+
+fun <T : Comparable<T>> mayor(a: T, b: T): T = if (a >= b) a else b  // restricción
+
+inline fun <reified T> List<Any>.soloDe(): List<T> = filter { it is T }.map { it as T } // reified
+```
+
+Archivo `shared/src/commonTest/kotlin/co/rutaflow/genericos/GenericosTest.kt`:
+
+```kotlin
+package co.rutaflow.genericos
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class GenericosTest {
+    @Test fun covarianza() {
+        val r: Resultado<Envio> = Resultado.Exito(Envio("ENV-42", 2))
+        assertEquals("ok: Envio(codigo=ENV-42, kilos=2)", describir(r))
+        assertEquals("error: sin red", describir(Resultado.Fallo("sin red")))
+    }
+
+    @Test fun restriccion() {
+        assertEquals("ENV-2", mayor(Envio("ENV-1", 3), Envio("ENV-2", 7)).codigo)
+    }
+
+    @Test fun reified() {
+        val mezcla: List<Any> = listOf(Envio("ENV-1", 1), "nota", Envio("ENV-2", 2), 42)
+        assertEquals(listOf("ENV-1", "ENV-2"), mezcla.soloDe<Envio>().map { it.codigo })
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :shared:allTests
+```
+
+**Explicación por bloques:** `Resultado<out T>` solo devuelve T, así que es covariante y `describir` (que pide `Resultado<Any>`) acepta un `Resultado<Envio>`. `Fallo` extiende `Resultado<Nothing>`: como `Nothing` es subtipo de todo, un fallo sirve como resultado de cualquier tipo. `mayor` solo acepta tipos comparables consigo mismos. `soloDe` es `inline` con `reified`, así que `it is T` funciona aunque los genéricos se borren. Las tres pruebas corren en todos los targets con `allTests`.
+
+**Resultado esperado:**
+
+```text
+> Task :shared:jvmTest
+> Task :shared:iosSimulatorArm64Test
+BUILD SUCCESSFUL
+(3 pruebas aprobadas por target en shared/build/reports/tests)
+```
+
+**Fallo deliberado:** quita `out` de `sealed interface Resultado<out T>`. **Error esperado:** `Type mismatch: inferred type is Resultado<Envio> but Resultado<Any> was expected` en la prueba de covarianza. **Diagnóstico:** sin `out`, el tipo es invariante. Como `Resultado` solo produce T, `out` es correcto y seguro.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta las pruebas y abre el reporte de un target.
+2. **Variación:** agrega a `Resultado` un método `fun <R> map(f: (T) -> R): Resultado<R>` y pruébalo.
+3. **Diagnóstico:** reproduce el fallo deliberado quitando `out`.
+4. **Integración:** escribe `fun interface Validador<in T> { fun valido(x: T): Boolean }` y usa un `Validador<Any>` donde se pide uno de `Envio`.
+5. **Diseño:** revisa los genéricos del módulo compartido de RutaFlow y marca cuáles deberían ser `out` o `in`.
+
+**Pista:** pregunta si el tipo solo sale (`out`), solo entra (`in`) o las dos cosas (invariante).
+
+#### Paso 6 · Práctica independiente
+
+Escribe una caché genérica `class Cache<K, V>` en `commonMain` con `obtener(K): V?` y `guardar(K, V)`, y explica por qué no puede ser covariante en V.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas covarianza y contravarianza con un ejemplo de RutaFlow.
+- [ ] Las tres pruebas pasan en todos los targets.
+- [ ] Reprodujiste el error de invarianza.
+- [ ] Sabes cuándo usar `reified`.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** forzar tipos con `as` en lugar de declarar varianza, marcar `out` un tipo que también consume y abusar de `inline` con funciones grandes. **Siguiente paso:** el tema «Lambdas con receptor y builders tipo DSL» combina genéricos con funciones de extensión.
+
+**Transferencia al proyecto integrador «RutaFlow»:** declara `Resultado<out T>` en el módulo compartido de RutaFlow y elimina los `as` del código de red.
+
+**Fuente oficial:** [Kotlin — Generics: in, out, where](https://kotlinlang.org/docs/generics.html) y [Kotlin — Inline functions: reified type parameters](https://kotlinlang.org/docs/inline-functions.html#reified-type-parameters).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** modelar un estado de UI (loading/success/error) con sealed classes manejado exhaustivamente, y construir un builder tipo DSL simple.

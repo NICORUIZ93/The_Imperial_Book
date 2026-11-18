@@ -80,6 +80,10 @@
       {
         "title": "Cierre del track y próximos pasos",
         "fragment": "tema-3-cierre-del-track-y-proximos-pasos"
+      },
+      {
+        "title": "Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel",
+        "fragment": "tema-4-capa-de-dominio-y-casos-de-uso-reglas-de-negocio-fuera-del-viewmodel"
       }
     ],
     "13": [
@@ -146,6 +150,26 @@
       {
         "title": "Compartir archivos con FileProvider y content://",
         "fragment": "tema-4-compartir-archivos-con-fileprovider-y-content"
+      },
+      {
+        "title": "Mapas con Maps Compose: marcadores, cámara y ruta",
+        "fragment": "tema-5-mapas-con-maps-compose-marcadores-camara-y-ruta"
+      },
+      {
+        "title": "Geofencing: avisar al entrar en la zona de una parada",
+        "fragment": "tema-6-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
+      },
+      {
+        "title": "CameraX y ML Kit: foto de entrega y escaneo de códigos de barras",
+        "fragment": "tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
+      },
+      {
+        "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
+        "fragment": "tema-8-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+      },
+      {
+        "title": "Bluetooth LE: buscar y leer una báscula del vehículo",
+        "fragment": "tema-9-bluetooth-le-buscar-y-leer-una-bascula-del-vehiculo"
       }
     ],
     "16": [
@@ -172,6 +196,10 @@
       {
         "title": "Credential Manager, passkeys y verificación en servidor",
         "fragment": "tema-6-credential-manager-passkeys-y-verificacion-en-servidor"
+      },
+      {
+        "title": "Play Integrity API: comprobar en el servidor que la petición viene de tu app real",
+        "fragment": "tema-7-play-integrity-api-comprobar-en-el-servidor-que-la-peticion-viene-de-tu-app-real"
       }
     ],
     "17": [
@@ -212,6 +240,10 @@
       {
         "title": "R8, recursos, Baseline Profiles y pipeline reproducible",
         "fragment": "tema-4-r8-recursos-baseline-profiles-y-pipeline-reproducible"
+      },
+      {
+        "title": "Macrobenchmark: medir el arranque y el scroll como lo vive el usuario",
+        "fragment": "tema-5-macrobenchmark-medir-el-arranque-y-el-scroll-como-lo-vive-el-usuario"
       }
     ],
     "2": [
@@ -226,6 +258,10 @@
       {
         "title": "remember, rememberSaveable y layout básico",
         "fragment": "tema-3-remember-remembersaveable-y-layout-basico"
+      },
+      {
+        "title": "Material 3 en Compose: tema, color dinámico y componentes",
+        "fragment": "tema-4-material-3-en-compose-tema-color-dinamico-y-componentes"
       }
     ],
     "3": [
@@ -418,6 +454,14 @@
       {
         "title": "Zoneless",
         "fragment": "tema-4-zoneless"
+      },
+      {
+        "title": "Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts",
+        "fragment": "tema-5-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
+      },
+      {
+        "title": "Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa",
+        "fragment": "tema-6-hidratacion-incremental-defer-con-hydrate-on-para-despertar-solo-lo-que-se-usa"
       }
     ],
     "12": [
@@ -464,6 +508,14 @@
       {
         "title": "Rendimiento y actualización son contratos de experiencia",
         "fragment": "tema-4-rendimiento-y-actualizacion-son-contratos-de-experiencia"
+      },
+      {
+        "title": "CSP con nonce y Trusted Types en Angular",
+        "fragment": "tema-5-csp-con-nonce-y-trusted-types-en-angular"
+      },
+      {
+        "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
+        "fragment": "tema-6-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
       }
     ],
     "15": [
@@ -574,6 +626,10 @@
       {
         "title": "CanDeactivate: proteger un borrador sin confundir navegación con autorización",
         "fragment": "tema-5-candeactivate-proteger-un-borrador-sin-confundir-navegacion-con-autorizacion"
+      },
+      {
+        "title": "Resolvers funcionales: datos listos antes de mostrar la ruta",
+        "fragment": "tema-6-resolvers-funcionales-datos-listos-antes-de-mostrar-la-ruta"
       }
     ],
     "5": [
@@ -638,6 +694,14 @@
       {
         "title": "Migración desde NgModules",
         "fragment": "tema-3-migracion-desde-ngmodules"
+      },
+      {
+        "title": "Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido",
+        "fragment": "tema-4-librerias-y-monorepos-con-angular-cli-un-workspace-varias-aplicaciones-y-codigo-compartido"
+      },
+      {
+        "title": "Microfrontends con criterio: Native Federation y cuándo no usarlos",
+        "fragment": "tema-5-microfrontends-con-criterio-native-federation-y-cuando-no-usarlos"
       }
     ],
     "9": [
@@ -684,6 +748,10 @@
       {
         "title": "Metodología de estudio — teoría, laboratorio y evaluación en cada módulo",
         "fragment": "tema-7-metodologia-de-estudio-teoria-laboratorio-y-evaluacion-en-cada-modulo"
+      },
+      {
+        "title": "Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad",
+        "fragment": "tema-8-modelos-de-servicio-iaas-paas-saas-regiones-y-zonas-de-disponibilidad"
       }
     ],
     "1": [
@@ -776,6 +844,10 @@
       {
         "title": "Contenedores vs Lambda, y EKS",
         "fragment": "tema-3-contenedores-vs-lambda-y-eks"
+      },
+      {
+        "title": "Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR",
+        "fragment": "tema-4-cadena-de-suministro-en-la-nube-escaneo-firma-y-verificacion-de-imagenes-en-ecr"
       }
     ],
     "15": [
@@ -804,6 +876,10 @@
       {
         "title": "Express vs Standard, y cuándo EventBridge Pipes es suficiente",
         "fragment": "tema-3-express-vs-standard-y-cuando-eventbridge-pipes-es-suficiente"
+      },
+      {
+        "title": "Procesamiento por lotes: trabajos independientes, reintentos e idempotencia",
+        "fragment": "tema-4-procesamiento-por-lotes-trabajos-independientes-reintentos-e-idempotencia"
       }
     ],
     "17": [
@@ -882,6 +958,10 @@
       {
         "title": "Stub vs mock, y qué probar localmente",
         "fragment": "tema-3-stub-vs-mock-y-que-probar-localmente"
+      },
+      {
+        "title": "Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar",
+        "fragment": "tema-4-gobierno-de-ia-y-ml-fichas-de-modelo-umbrales-por-grupo-y-una-puerta-antes-de-publicar"
       }
     ],
     "21": [
@@ -930,6 +1010,10 @@
       {
         "title": "Cómo se integran los cuatro servicios en una arquitectura de borde real",
         "fragment": "tema-5-como-se-integran-los-cuatro-servicios-en-una-arquitectura-de-borde-real"
+      },
+      {
+        "title": "WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde",
+        "fragment": "tema-6-waf-y-proteccion-ddos-limitar-peticiones-y-bloquear-ataques-comunes-en-el-borde"
       }
     ],
     "23": [
@@ -1050,6 +1134,10 @@
       {
         "title": "Eligiendo entre Neptune, OpenSearch y DynamoDB",
         "fragment": "tema-4-eligiendo-entre-neptune-opensearch-y-dynamodb"
+      },
+      {
+        "title": "Datos de series temporales: escritura por tiempo, reducción de resolución y retención",
+        "fragment": "tema-5-datos-de-series-temporales-escritura-por-tiempo-reduccion-de-resolucion-y-retencion"
       }
     ],
     "29": [
@@ -1126,6 +1214,14 @@
       {
         "title": "Testcontainers — pruebas de integración automatizadas",
         "fragment": "tema-4-testcontainers-pruebas-de-integracion-automatizadas"
+      },
+      {
+        "title": "Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación",
+        "fragment": "tema-5-migrar-a-la-nube-las-7-r-para-decidir-que-hacer-con-cada-aplicacion"
+      },
+      {
+        "title": "Nube híbrida: conectar el centro de datos con la nube de forma segura y medible",
+        "fragment": "tema-6-nube-hibrida-conectar-el-centro-de-datos-con-la-nube-de-forma-segura-y-medible"
       }
     ],
     "32": [
@@ -1144,6 +1240,14 @@
       {
         "title": "Un backup solo existe operativamente después de restaurarlo",
         "fragment": "tema-4-un-backup-solo-existe-operativamente-despues-de-restaurarlo"
+      },
+      {
+        "title": "Well-Architected: revisar una arquitectura con los seis pilares",
+        "fragment": "tema-5-well-architected-revisar-una-arquitectura-con-los-seis-pilares"
+      },
+      {
+        "title": "Residencia y soberanía de datos: que los datos personales vivan donde la ley permite",
+        "fragment": "tema-6-residencia-y-soberania-de-datos-que-los-datos-personales-vivan-donde-la-ley-permite"
       }
     ],
     "33": [
@@ -1170,6 +1274,10 @@
       {
         "title": "Microservicios, Big Data, AI/ML y multi-cloud",
         "fragment": "tema-6-microservicios-big-data-ai-ml-y-multi-cloud"
+      },
+      {
+        "title": "Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso",
+        "fragment": "tema-7-deteccion-de-amenazas-leer-registros-de-auditoria-y-alertar-sobre-comportamiento-sospechoso"
       }
     ],
     "34": [
@@ -1268,6 +1376,10 @@
       {
         "title": "Integración con S3, DynamoDB Streams y API Gateway",
         "fragment": "tema-6-integracion-con-s3-dynamodb-streams-y-api-gateway"
+      },
+      {
+        "title": "Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte",
+        "fragment": "tema-7-deprecaciones-en-la-nube-encontrar-a-tiempo-runtimes-y-versiones-que-dejan-de-tener-soporte"
       }
     ],
     "6": [
@@ -1364,8 +1476,8 @@
         "fragment": "tema-1-que-es-un-numero-complejo"
       },
       {
-        "title": "Operaciones",
-        "fragment": "tema-2-operaciones"
+        "title": "Operaciones con números complejos: suma, producto y división",
+        "fragment": "tema-2-operaciones-con-numeros-complejos-suma-producto-y-division"
       },
       {
         "title": "Raíces de s²+bs+c",
@@ -1378,8 +1490,8 @@
     ],
     "10": [
       {
-        "title": "La forma de estado",
-        "fragment": "tema-1-la-forma-de-estado"
+        "title": "La forma de espacio de estados",
+        "fragment": "tema-1-la-forma-de-espacio-de-estados"
       },
       {
         "title": "De estados a función de transferencia",
@@ -1388,12 +1500,12 @@
     ],
     "11": [
       {
-        "title": "Forma estándar",
-        "fragment": "tema-1-forma-estandar"
+        "title": "Forma estándar de primer orden: K y τ",
+        "fragment": "tema-1-forma-estandar-de-primer-orden-k-y"
       },
       {
-        "title": "Respuestas",
-        "fragment": "tema-2-respuestas"
+        "title": "Respuestas de primer orden al escalón, la rampa y el impulso",
+        "fragment": "tema-2-respuestas-de-primer-orden-al-escalon-la-rampa-y-el-impulso"
       },
       {
         "title": "Retardo o tiempo muerto",
@@ -1406,8 +1518,8 @@
     ],
     "12": [
       {
-        "title": "Forma estándar",
-        "fragment": "tema-1-forma-estandar"
+        "title": "Forma estándar de segundo orden: K, ωn y ζ",
+        "fragment": "tema-1-forma-estandar-de-segundo-orden-k-n-y"
       },
       {
         "title": "Simulador: mueve ζ y ωn",
@@ -1442,8 +1554,8 @@
     ],
     "14": [
       {
-        "title": "Fórmula general",
-        "fragment": "tema-1-formula-general"
+        "title": "Fórmula general del error en estado estacionario",
+        "fragment": "tema-1-formula-general-del-error-en-estado-estacionario"
       },
       {
         "title": "Tipo de sistema y constantes",
@@ -1460,8 +1572,8 @@
         "fragment": "tema-2-el-arreglo-de-routh"
       },
       {
-        "title": "Casos especiales",
-        "fragment": "tema-3-casos-especiales"
+        "title": "Casos especiales del arreglo de Routh",
+        "fragment": "tema-3-casos-especiales-del-arreglo-de-routh"
       },
       {
         "title": "Rango de K para estabilidad",
@@ -1470,12 +1582,12 @@
     ],
     "16": [
       {
-        "title": "Geometría de un polo",
-        "fragment": "tema-1-geometria-de-un-polo"
+        "title": "Geometría de un polo en el plano s",
+        "fragment": "tema-1-geometria-de-un-polo-en-el-plano-s"
       },
       {
-        "title": "Estabilidad",
-        "fragment": "tema-2-estabilidad"
+        "title": "Estabilidad según la posición de los polos",
+        "fragment": "tema-2-estabilidad-segun-la-posicion-de-los-polos"
       },
       {
         "title": "La zona de diseño",
@@ -1484,8 +1596,8 @@
     ],
     "17": [
       {
-        "title": "Las dos condiciones",
-        "fragment": "tema-1-las-dos-condiciones"
+        "title": "Las dos condiciones del lugar de las raíces",
+        "fragment": "tema-1-las-dos-condiciones-del-lugar-de-las-raices"
       },
       {
         "title": "Reglas de construcción (con su porqué)",
@@ -1498,8 +1610,8 @@
     ],
     "18": [
       {
-        "title": "La idea",
-        "fragment": "tema-1-la-idea"
+        "title": "La idea de las acciones P, I y D: presente, pasado y tendencia",
+        "fragment": "tema-1-la-idea-de-las-acciones-p-i-y-d-presente-pasado-y-tendencia"
       },
       {
         "title": "Error en estado estacionario",
@@ -1534,16 +1646,16 @@
     ],
     "2": [
       {
-        "title": "La idea",
-        "fragment": "tema-1-la-idea"
+        "title": "La idea de la transformada de Laplace: del tiempo al dominio s",
+        "fragment": "tema-1-la-idea-de-la-transformada-de-laplace-del-tiempo-al-dominio-s"
       },
       {
-        "title": "La tabla",
-        "fragment": "tema-2-la-tabla"
+        "title": "La tabla de transformadas de Laplace",
+        "fragment": "tema-2-la-tabla-de-transformadas-de-laplace"
       },
       {
-        "title": "Propiedades",
-        "fragment": "tema-3-propiedades"
+        "title": "Propiedades de la transformada de Laplace",
+        "fragment": "tema-3-propiedades-de-la-transformada-de-laplace"
       },
       {
         "title": "Valor final y valor inicial",
@@ -1560,8 +1672,8 @@
         "fragment": "tema-2-decibeles-y-la-escala-logaritmica"
       },
       {
-        "title": "Los bloques básicos",
-        "fragment": "tema-3-los-bloques-basicos"
+        "title": "Los bloques básicos del diagrama de Bode",
+        "fragment": "tema-3-los-bloques-basicos-del-diagrama-de-bode"
       },
       {
         "title": "Márgenes de estabilidad",
@@ -1570,8 +1682,8 @@
     ],
     "21": [
       {
-        "title": "Parcial 1",
-        "fragment": "tema-1-parcial-1"
+        "title": "Parcial 1 resuelto paso a paso",
+        "fragment": "tema-1-parcial-1-resuelto-paso-a-paso"
       }
     ],
     "22": [
@@ -1610,8 +1722,8 @@
         "fragment": "tema-1-que-es-un-sistema-de-control"
       },
       {
-        "title": "Los elementos",
-        "fragment": "tema-2-los-elementos"
+        "title": "Los elementos de un lazo de control",
+        "fragment": "tema-2-los-elementos-de-un-lazo-de-control"
       },
       {
         "title": "Álgebra de bloques",
@@ -1620,8 +1732,8 @@
     ],
     "6": [
       {
-        "title": "Reglas para mover bloques",
-        "fragment": "tema-1-reglas-para-mover-bloques"
+        "title": "Reglas para mover bloques en un diagrama",
+        "fragment": "tema-1-reglas-para-mover-bloques-en-un-diagrama"
       },
       {
         "title": "Grafos de flujo de señal",
@@ -1638,8 +1750,8 @@
     ],
     "7": [
       {
-        "title": "Impedancias",
-        "fragment": "tema-1-impedancias"
+        "title": "Impedancias de resistencia, bobina y condensador en s",
+        "fragment": "tema-1-impedancias-de-resistencia-bobina-y-condensador-en-s"
       },
       {
         "title": "Circuitos pasivos: divisor de voltaje",
@@ -1668,14 +1780,14 @@
         "fragment": "tema-4-sistemas-termicos-e-hidraulicos"
       },
       {
-        "title": "Analogías",
-        "fragment": "tema-5-analogias"
+        "title": "Analogías entre sistemas eléctricos, mecánicos y térmicos",
+        "fragment": "tema-5-analogias-entre-sistemas-electricos-mecanicos-y-termicos"
       }
     ],
     "9": [
       {
-        "title": "La idea",
-        "fragment": "tema-1-la-idea"
+        "title": "La idea de la linealización: aproximar con la recta tangente",
+        "fragment": "tema-1-la-idea-de-la-linealizacion-aproximar-con-la-recta-tangente"
       }
     ]
   },
@@ -1828,6 +1940,10 @@
       {
         "title": "Platform Engineering — Internal Developer Platforms (IDPs)",
         "fragment": "tema-6-platform-engineering-internal-developer-platforms-idps"
+      },
+      {
+        "title": "FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas",
+        "fragment": "tema-7-finops-costos-visibles-por-servicio-etiquetas-obligatorias-y-presupuestos-con-alertas"
       }
     ],
     "13": [
@@ -1911,7 +2027,7 @@
       },
       {
         "title": "Bruno y Postman, evaluar con el mismo contrato",
-        "fragment": "tema-complementario-bruno-y-postman-evaluar-con-el-mismo-contrato"
+        "fragment": "tema-6-bruno-y-postman-evaluar-con-el-mismo-contrato"
       }
     ],
     "17": [
@@ -1996,6 +2112,10 @@
       {
         "title": "Operación diaria: inspect, stats, events y respaldo de volúmenes",
         "fragment": "tema-7-operacion-diaria-inspect-stats-events-y-respaldo-de-volumenes"
+      },
+      {
+        "title": "Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas",
+        "fragment": "tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
       }
     ],
     "20": [
@@ -2086,6 +2206,10 @@
       {
         "title": "Pipelines como código (GitHub Actions/GitLab CI)",
         "fragment": "tema-4-pipelines-como-codigo-github-actions-gitlab-ci"
+      },
+      {
+        "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción",
+        "fragment": "tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
       }
     ],
     "5": [
@@ -2150,6 +2274,14 @@
       {
         "title": "Clúster local con Minikube: perfiles, addons e Ingress",
         "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
+      },
+      {
+        "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación",
+        "fragment": "tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
+      },
+      {
+        "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations",
+        "fragment": "tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
       }
     ],
     "7": [
@@ -2180,6 +2312,10 @@
       {
         "title": "Estrategias de despliegue — Recreate vs RollingUpdate",
         "fragment": "tema-7-estrategias-de-despliegue-recreate-vs-rollingupdate"
+      },
+      {
+        "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission",
+        "fragment": "tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
       }
     ],
     "8": [
@@ -2213,7 +2349,11 @@
       },
       {
         "title": "OpenTofu, plan y estado sin recursos cloud",
-        "fragment": "tema-complementario-opentofu-plan-y-estado-sin-recursos-cloud"
+        "fragment": "tema-8-opentofu-plan-y-estado-sin-recursos-cloud"
+      },
+      {
+        "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas",
+        "fragment": "tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
       }
     ],
     "9": [
@@ -2244,6 +2384,10 @@
       {
         "title": "Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate",
         "fragment": "tema-7-metricas-dora-lead-time-deployment-frequency-mttr-change-failure-rate"
+      },
+      {
+        "title": "Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos",
+        "fragment": "tema-8-chaos-engineering-experimentos-controlados-para-comprobar-que-el-sistema-resiste-fallos"
       }
     ]
   },
@@ -2264,6 +2408,18 @@
       {
         "title": "Lints y estilo con analysis_options.yaml",
         "fragment": "tema-4-lints-y-estilo-con-analysis-options-yaml"
+      },
+      {
+        "title": "Streams en Dart: secuencias de eventos asíncronos con await for y StreamController",
+        "fragment": "tema-5-streams-en-dart-secuencias-de-eventos-asincronos-con-await-for-y-streamcontroller"
+      },
+      {
+        "title": "Records y patterns en Dart: varios valores sin clases y switch exhaustivo",
+        "fragment": "tema-6-records-y-patterns-en-dart-varios-valores-sin-clases-y-switch-exhaustivo"
+      },
+      {
+        "title": "Extension methods y extension types: agregar comportamiento sin heredar",
+        "fragment": "tema-7-extension-methods-y-extension-types-agregar-comportamiento-sin-heredar"
       }
     ],
     "1": [
@@ -2278,6 +2434,14 @@
       {
         "title": "Keys",
         "fragment": "tema-3-keys"
+      },
+      {
+        "title": "Los tres árboles de Flutter: Widget, Element y RenderObject",
+        "fragment": "tema-4-los-tres-arboles-de-flutter-widget-element-y-renderobject"
+      },
+      {
+        "title": "Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos",
+        "fragment": "tema-5-gestos-en-flutter-gesturedetector-dismissible-y-la-arena-de-gestos"
       }
     ],
     "10": [
@@ -2310,6 +2474,10 @@
       {
         "title": "Entornos y flavors con --dart-define-from-file",
         "fragment": "tema-4-entornos-y-flavors-con-dart-define-from-file"
+      },
+      {
+        "title": "Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador",
+        "fragment": "tema-5-flutter-para-web-y-escritorio-compilar-adaptar-la-interfaz-y-elegir-el-renderizador"
       }
     ],
     "12": [
@@ -2324,6 +2492,10 @@
       {
         "title": "Cierre del track",
         "fragment": "tema-3-cierre-del-track"
+      },
+      {
+        "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services",
+        "fragment": "tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
       }
     ],
     "13": [
@@ -2674,6 +2846,10 @@
       {
         "title": "Restauración de formularios con RestorationMixin y una prueba de recreación",
         "fragment": "tema-4-restauracion-de-formularios-con-restorationmixin-y-una-prueba-de-recreacion"
+      },
+      {
+        "title": "Archivos en Flutter: path_provider, carpetas correctas y escritura segura",
+        "fragment": "tema-5-archivos-en-flutter-path-provider-carpetas-correctas-y-escritura-segura"
       }
     ],
     "7": [
@@ -2692,6 +2868,14 @@
       {
         "title": "Cámara, galería y carga multipart de una evidencia",
         "fragment": "tema-4-camara-galeria-y-carga-multipart-de-una-evidencia"
+      },
+      {
+        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
+        "fragment": "tema-5-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+      },
+      {
+        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
+        "fragment": "tema-6-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
       }
     ],
     "8": [
@@ -2755,7 +2939,7 @@
       },
       {
         "title": "VS Code, comandos y atajos comprobables",
-        "fragment": "tema-complementario-vs-code-comandos-y-atajos-comprobables"
+        "fragment": "tema-6-vs-code-comandos-y-atajos-comprobables"
       }
     ],
     "1": [
@@ -3190,6 +3374,10 @@
       {
         "title": "Closures, colecciones y genéricos con propósito",
         "fragment": "tema-4-closures-colecciones-y-genericos-con-proposito"
+      },
+      {
+        "title": "Ownership en Swift: borrowing, consuming y tipos ~Copyable",
+        "fragment": "tema-5-ownership-en-swift-borrowing-consuming-y-tipos-copyable"
       }
     ],
     "1": [
@@ -3222,6 +3410,10 @@
       {
         "title": "UIKit desde cero para mantener aplicaciones reales",
         "fragment": "tema-4-uikit-desde-cero-para-mantener-aplicaciones-reales"
+      },
+      {
+        "title": "Localización con String Catalogs: textos, plurales y formatos por idioma",
+        "fragment": "tema-5-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
       }
     ],
     "11": [
@@ -3250,6 +3442,10 @@
       {
         "title": "Cierre del track",
         "fragment": "tema-3-cierre-del-track"
+      },
+      {
+        "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
+        "fragment": "tema-4-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
       }
     ],
     "13": [
@@ -3280,6 +3476,18 @@
       {
         "title": "Notificaciones push con APNs",
         "fragment": "tema-7-notificaciones-push-con-apns"
+      },
+      {
+        "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
+        "fragment": "tema-8-core-location-moderno-cllocationupdate-permisos-y-precision"
+      },
+      {
+        "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
+        "fragment": "tema-9-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
+      },
+      {
+        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
+        "fragment": "tema-10-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
       }
     ],
     "14": [
@@ -3310,6 +3518,18 @@
       {
         "title": "Core ML y Vision — inferencia en el dispositivo",
         "fragment": "tema-7-core-ml-y-vision-inferencia-en-el-dispositivo"
+      },
+      {
+        "title": "Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos",
+        "fragment": "tema-8-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+      },
+      {
+        "title": "WidgetKit: un widget con las entregas pendientes del día",
+        "fragment": "tema-9-widgetkit-un-widget-con-las-entregas-pendientes-del-dia"
+      },
+      {
+        "title": "App Intents: acciones de la app en Siri, Atajos y Spotlight",
+        "fragment": "tema-10-app-intents-acciones-de-la-app-en-siri-atajos-y-spotlight"
       }
     ],
     "2": [
@@ -3356,6 +3576,14 @@
       {
         "title": "Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
         "fragment": "tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red"
+      },
+      {
+        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
+        "fragment": "tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+      },
+      {
+        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
+        "fragment": "tema-6-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
       }
     ],
     "5": [
@@ -3384,6 +3612,14 @@
       {
         "title": "Migraciones y SwiftData vs Core Data",
         "fragment": "tema-3-migraciones-y-swiftdata-vs-core-data"
+      },
+      {
+        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
+        "fragment": "tema-4-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+      },
+      {
+        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
+        "fragment": "tema-5-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
       }
     ],
     "7": [
@@ -3570,6 +3806,14 @@
       {
         "title": "El runtime es parte del artefacto y necesita ciclo de vida",
         "fragment": "tema-4-el-runtime-es-parte-del-artefacto-y-necesita-ciclo-de-vida"
+      },
+      {
+        "title": "Arranque más rápido: archivos CDS y la caché AOT",
+        "fragment": "tema-5-arranque-mas-rapido-archivos-cds-y-la-cache-aot"
+      },
+      {
+        "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
+        "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
       }
     ],
     "15": [
@@ -3650,6 +3894,10 @@
       {
         "title": "Tokens, validación y límites de seguridad",
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
+      },
+      {
+        "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
+        "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
       }
     ],
     "19": [
@@ -3680,6 +3928,14 @@
       {
         "title": "Internacionalización: números, monedas, fechas y orden de texto",
         "fragment": "tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+      },
+      {
+        "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader",
+        "fragment": "tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
+      },
+      {
+        "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
+        "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
       }
     ],
     "2": [
@@ -3918,6 +4174,10 @@
       {
         "title": "Tests parametrizados y cobertura",
         "fragment": "tema-3-tests-parametrizados-y-cobertura"
+      },
+      {
+        "title": "Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
+        "fragment": "tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
       }
     ]
   },
@@ -4110,6 +4370,10 @@
       {
         "title": "ECMAScript moderno, Temporal e iterator helpers",
         "fragment": "tema-14-ecmascript-moderno-temporal-e-iterator-helpers"
+      },
+      {
+        "title": "Gestión explícita de recursos: using, await using y DisposableStack",
+        "fragment": "tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
       }
     ],
     "2": [
@@ -4228,6 +4492,10 @@
       {
         "title": "Proxies y Reflect",
         "fragment": "tema-6-proxies-y-reflect"
+      },
+      {
+        "title": "Streams web: leer una respuesta de fetch por partes",
+        "fragment": "tema-7-streams-web-leer-una-respuesta-de-fetch-por-partes"
       }
     ],
     "7": [
@@ -4254,6 +4522,14 @@
       {
         "title": "Webpack, Rollup y Babel/SWC",
         "fragment": "tema-6-webpack-rollup-y-babel-swc"
+      },
+      {
+        "title": "Módulos ES a fondo: top-level await, ciclos de importación e import maps",
+        "fragment": "tema-7-modulos-es-a-fondo-top-level-await-ciclos-de-importacion-e-import-maps"
+      },
+      {
+        "title": "Cadena de suministro npm: lockfile, integridad y paquetes alterados",
+        "fragment": "tema-8-cadena-de-suministro-npm-lockfile-integridad-y-paquetes-alterados"
       }
     ],
     "8": [
@@ -4340,6 +4616,10 @@
       {
         "title": "Lambdas con receptor y builders tipo DSL",
         "fragment": "tema-4-lambdas-con-receptor-y-builders-tipo-dsl"
+      },
+      {
+        "title": "Genéricos en Kotlin: varianza con in y out, restricciones y reified",
+        "fragment": "tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"
       }
     ],
     "10": [
@@ -4448,6 +4728,14 @@
       {
         "title": "Jerarquía de source sets intermedios",
         "fragment": "tema-4-jerarquia-de-source-sets-intermedios"
+      },
+      {
+        "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle",
+        "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+      },
+      {
+        "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común",
+        "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
       }
     ],
     "4": [
@@ -4510,6 +4798,10 @@
       {
         "title": "Transacciones: atomicidad en operaciones multi-tabla",
         "fragment": "tema-4-transacciones-atomicidad-en-operaciones-multi-tabla"
+      },
+      {
+        "title": "Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común",
+        "fragment": "tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"
       }
     ],
     "7": [
@@ -4528,6 +4820,22 @@
       {
         "title": "Limitaciones en iOS y otros targets",
         "fragment": "tema-4-limitaciones-en-ios-y-otros-targets"
+      },
+      {
+        "title": "Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes",
+        "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
+      },
+      {
+        "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
+        "fragment": "tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
+      },
+      {
+        "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver",
+        "fragment": "tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+      },
+      {
+        "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app",
+        "fragment": "tema-8-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
       }
     ],
     "8": [
@@ -4542,6 +4850,10 @@
       {
         "title": "Coroutines desde Swift, y distribución del framework",
         "fragment": "tema-3-coroutines-desde-swift-y-distribucion-del-framework"
+      },
+      {
+        "title": "Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose",
+        "fragment": "tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"
       }
     ],
     "9": [
@@ -4556,38 +4868,42 @@
       {
         "title": "runTest para coroutines",
         "fragment": "tema-3-runtest-para-coroutines"
+      },
+      {
+        "title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target",
+        "fragment": "tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"
       }
     ]
   },
   "microservices": {
     "0": [
       {
-        "title": "Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
-        "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http-fundamentos-45-min"
+        "title": "Ejecutar dos procesos Java y comprobar su socket HTTP",
+        "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http"
       },
       {
-        "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
-        "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
+        "title": "Imponer un presupuesto temporal a una solicitud HTTP",
+        "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http"
       },
       {
-        "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
-        "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http-aplicacion-45-min"
+        "title": "Propagar un deadline absoluto entre servicios HTTP",
+        "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http"
       },
       {
-        "title": "Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
-        "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar-integracion-45-min"
+        "title": "Clasificar un resultado desconocido antes de reintentar",
+        "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar"
       },
       {
-        "title": "Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
-        "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente-integracion-45-min"
+        "title": "Evitar efectos duplicados con una clave idempotente",
+        "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente"
       },
       {
-        "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
-        "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal-integracion-40-min"
+        "title": "Seleccionar un reloj según la evidencia temporal",
+        "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal"
       },
       {
-        "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
-        "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
+        "title": "Preservar el orden de eventos por versión del agregado",
+        "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado"
       },
       {
         "title": "Evolucionar un contrato JSON sin romper consumidores",
@@ -4604,48 +4920,48 @@
     ],
     "1": [
       {
-        "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
-        "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue-fundamentos-40-min"
+        "title": "Distinguir estructura lógica de unidad de despliegue",
+        "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue"
       },
       {
-        "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
-        "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
+        "title": "Evaluar autonomía antes de extraer un proceso",
+        "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso"
       },
       {
-        "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
-        "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio-aplicacion-40-min"
+        "title": "Agrupar código por capacidad de negocio",
+        "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio"
       },
       {
-        "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
-        "fragment": "tema-4-proteger-la-api-publica-de-un-modulo-aplicacion-45-min"
+        "title": "Proteger la API pública de un módulo",
+        "fragment": "tema-4-proteger-la-api-publica-de-un-modulo"
       },
       {
-        "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
-        "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks-aplicacion-40-min"
+        "title": "Mantener reglas de dominio libres de frameworks",
+        "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks"
       },
       {
-        "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
-        "fragment": "tema-6-sustituir-adaptadores-mediante-puertos-aplicacion-45-min"
+        "title": "Sustituir adaptadores mediante puertos",
+        "fragment": "tema-6-sustituir-adaptadores-mediante-puertos"
       },
       {
-        "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
-        "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo-integracion-35-min"
+        "title": "Representar dependencias de módulos como un grafo",
+        "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo"
       },
       {
-        "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
-        "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento-integracion-45-min"
+        "title": "Romper ciclos según el tipo de acoplamiento",
+        "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento"
       },
       {
-        "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
-        "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit-integracion-40-min"
+        "title": "Bloquear accesos a internals con ArchUnit",
+        "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit"
       },
       {
-        "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
-        "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit-integracion-35-min"
+        "title": "Detectar ciclos de paquetes con ArchUnit",
+        "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit"
       },
       {
-        "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
-        "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions-integracion-35-min"
+        "title": "Evitar falsos verdes en fitness functions",
+        "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions"
       },
       {
         "title": "Medir señales que justifican una extracción",
@@ -4656,8 +4972,8 @@
         "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
       },
       {
-        "title": "Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
-        "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design-integracion-40-min"
+        "title": "Separar mitos y verdades de Domain-Driven Design",
+        "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
       }
     ]
   },
@@ -4726,6 +5042,10 @@
       {
         "title": "CVE, CWE y npm audit en el pipeline",
         "fragment": "tema-5-cve-cwe-y-npm-audit-en-el-pipeline"
+      },
+      {
+        "title": "Modelo de permisos de Node: limitar archivos, procesos y workers",
+        "fragment": "tema-6-modelo-de-permisos-de-node-limitar-archivos-procesos-y-workers"
       }
     ],
     "11": [
@@ -4862,6 +5182,14 @@
       {
         "title": "pipeline() para componer streams de forma segura",
         "fragment": "tema-4-pipeline-para-componer-streams-de-forma-segura"
+      },
+      {
+        "title": "Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador",
+        "fragment": "tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      },
+      {
+        "title": "Compresión con zlib: gzip y Brotli por streams",
+        "fragment": "tema-6-compresion-con-zlib-gzip-y-brotli-por-streams"
       }
     ],
     "3": [
@@ -4884,6 +5212,14 @@
       {
         "title": "Paginación por cursor y límites de entrada comprobables",
         "fragment": "tema-5-paginacion-por-cursor-y-limites-de-entrada-comprobables"
+      },
+      {
+        "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
+        "fragment": "tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+      },
+      {
+        "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
+        "fragment": "tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
       }
     ],
     "4": [
@@ -4980,6 +5316,10 @@
       {
         "title": "TDD práctico: rojo, verde y refactor con node:test",
         "fragment": "tema-6-tdd-practico-rojo-verde-y-refactor-con-node-test"
+      },
+      {
+        "title": "Cobertura de pruebas con node:test: líneas, ramas y umbrales",
+        "fragment": "tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
       }
     ],
     "8": [
@@ -5024,6 +5364,10 @@
       {
         "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
         "fragment": "tema-5-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
+      },
+      {
+        "title": "Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel",
+        "fragment": "tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
       }
     ]
   },
@@ -5062,6 +5406,10 @@
       {
         "title": "Componentes controlados",
         "fragment": "tema-4-componentes-controlados"
+      },
+      {
+        "title": "Componentes puros y el estado como instantánea",
+        "fragment": "tema-5-componentes-puros-y-el-estado-como-instantanea"
       }
     ],
     "10": [
@@ -5126,6 +5474,10 @@
       {
         "title": "Hidratación determinista, idioma y releases medibles",
         "fragment": "tema-4-hidratacion-determinista-idioma-y-releases-medibles"
+      },
+      {
+        "title": "Migrar a React 19: codemods, cambios que rompen y verificación",
+        "fragment": "tema-5-migrar-a-react-19-codemods-cambios-que-rompen-y-verificacion"
       }
     ],
     "14": [
@@ -5178,6 +5530,10 @@
       {
         "title": "Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
         "fragment": "tema-6-efectos-cancelables-impedir-que-una-respuesta-antigua-sobrescriba-la-seleccion-actual"
+      },
+      {
+        "title": "useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar",
+        "fragment": "tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
       }
     ],
     "3": [
@@ -5192,6 +5548,10 @@
       {
         "title": "Eventos sintéticos",
         "fragment": "tema-3-eventos-sinteticos"
+      },
+      {
+        "title": "Formularios con Actions: useActionState y useOptimistic",
+        "fragment": "tema-4-formularios-con-actions-useactionstate-y-useoptimistic"
       }
     ],
     "4": [
@@ -5288,6 +5648,14 @@
       {
         "title": "Suspense y React.lazy — carga diferida del lado cliente",
         "fragment": "tema-5-suspense-y-react-lazy-carga-diferida-del-lado-cliente"
+      },
+      {
+        "title": "El hook use: leer una promesa con Suspense y un contexto de forma condicional",
+        "fragment": "tema-6-el-hook-use-leer-una-promesa-con-suspense-y-un-contexto-de-forma-condicional"
+      },
+      {
+        "title": "React Compiler y las reglas de React: memoización automática",
+        "fragment": "tema-7-react-compiler-y-las-reglas-de-react-memoizacion-automatica"
       }
     ]
   },
@@ -5438,6 +5806,10 @@
       {
         "title": "Estereotipos, autoconfiguración y scopes",
         "fragment": "tema-3-estereotipos-autoconfiguracion-y-scopes"
+      },
+      {
+        "title": "Ciclo de vida de los beans y apagado ordenado",
+        "fragment": "tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
       }
     ],
     "1": [
@@ -5516,6 +5888,10 @@
       {
         "title": "Health checks para Kubernetes",
         "fragment": "tema-3-health-checks-para-kubernetes"
+      },
+      {
+        "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
+        "fragment": "tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
       }
     ],
     "12": [
@@ -5638,6 +6014,10 @@
       {
         "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP",
         "fragment": "tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+      },
+      {
+        "title": "SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa",
+        "fragment": "tema-3-saml-2-0-con-spring-security-iniciar-sesion-con-el-proveedor-de-identidad-de-una-empresa"
       }
     ],
     "19": [
@@ -5818,6 +6198,10 @@
       {
         "title": "Migraciones con Flyway",
         "fragment": "tema-3-migraciones-con-flyway"
+      },
+      {
+        "title": "Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos",
+        "fragment": "tema-4-spring-data-mongodb-documentos-consultas-derivadas-y-cuando-elegir-un-modelo-de-documentos"
       }
     ],
     "4": [
@@ -5854,6 +6238,10 @@
       {
         "title": "Manejo global de excepciones consistente entre entornos",
         "fragment": "tema-3-manejo-global-de-excepciones-consistente-entre-entornos"
+      },
+      {
+        "title": "FailureAnalyzer: errores de arranque que explican la causa y la solución",
+        "fragment": "tema-4-failureanalyzer-errores-de-arranque-que-explican-la-causa-y-la-solucion"
       }
     ],
     "6": [
@@ -5882,6 +6270,10 @@
       {
         "title": "Liveness y readiness sin reinicios en cadena",
         "fragment": "tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
+      },
+      {
+        "title": "Logging en Spring Boot: niveles, grupos y logs estructurados en JSON",
+        "fragment": "tema-4-logging-en-spring-boot-niveles-grupos-y-logs-estructurados-en-json"
       }
     ],
     "8": [
@@ -5920,6 +6312,10 @@
       {
         "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
         "fragment": "tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
+      },
+      {
+        "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones",
+        "fragment": "tema-10-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
       }
     ],
     "9": [

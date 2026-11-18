@@ -229,6 +229,11 @@ Al terminar podrás reconocer qué hace Floci y comprobar si está respondiendo 
 Antes de usar servicios de nube de una empresa, puedes ensayar en una copia local. Así practicas comandos sin crear recursos en una cuenta real.
 #### Paso 3 · Teoría, modelo mental y analogía
 Piensa en Floci como un simulador: recibe algunas solicitudes parecidas a las de AWS y responde desde tu computador. No es AWS y no reproduce todos sus detalles.
+
+**Conceptos clave:** Floci, simulador local, contenedor, puerto.
+**¿Por qué es importante?** Practicar localmente te deja equivocarte y corregir el comando antes de trabajar con recursos de una cuenta real.
+El puerto `4566` es una entrada de tu computador conectada al servicio dentro del contenedor. Cuando el contenedor está detenido, esa entrada deja de responder. Al iniciar el curso usaremos AWS CLI y programas pequeños para crear recursos de práctica; por ahora basta con confirmar que Floci puede encenderse y apagarse. Si ya tienes otro programa usando el puerto, Docker avisará que no puede enlazarlo. Detén el programa que lo ocupa o revisa su configuración antes de seguir.
+
 #### Paso 4 · Demostración guiada
 Desde la carpeta principal del proyecto, inicia solo el servicio AWS que ya está definido en `docker-compose.yml`:
 ```bash
@@ -255,13 +260,11 @@ La consulta debería fallar porque ya no hay un servicio escuchando. Vuelve a in
 Fíjate en la diferencia: “no se pudo conectar” indica que el servicio está apagado o que el puerto no coincide; `404` indica que el servicio sí contestó, pero no encontró esa ruta. Esta diferencia sirve para ubicar el problema antes de cambiar código. Si aparece otro mensaje, guárdalo tal como salió y consulta los registros con `docker compose logs --tail=20 aws-local`.
 #### Paso 6 · Práctica independiente
 En `ejemplo-floci.md`, anota qué comando lo inició, qué puerto usaste y qué cambió al detenerlo. No pongas claves personales: el ejercicio funciona sin una cuenta de nube.
-#### Paso 7 · Cierre y evidencia
-En `ejemplo-floci.md` incluye la salida de `revisar.mjs`, la consulta con puerto incorrecto y explica por qué falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
-**Conceptos clave:** Floci, simulador local, contenedor, puerto.
-**¿Por qué es importante?** Practicar localmente te deja equivocarte y corregir el comando antes de trabajar con recursos de una cuenta real.
-El puerto `4566` es una entrada de tu computador conectada al servicio dentro del contenedor. Cuando el contenedor está detenido, esa entrada deja de responder. Al iniciar el curso usaremos AWS CLI y programas pequeños para crear recursos de práctica; por ahora basta con confirmar que Floci puede encenderse y apagarse. Si ya tienes otro programa usando el puerto, Docker avisará que no puede enlazarlo. Detén el programa que lo ocupa o revisa su configuración antes de seguir.
 
 **Para el proyecto integrador:** registra el puerto y la respuesta de salud antes de probar almacenamiento. Esa respuesta solo indica que el emulador está activo.
+
+#### Paso 7 · Cierre y evidencia
+En `ejemplo-floci.md` incluye la salida de `revisar.mjs`, la consulta con puerto incorrecto y explica por qué falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
 
 ### Tema 5: Servicios que emula Floci — AWS, Azure y GCP
 
@@ -271,6 +274,10 @@ Al terminar podrás ubicar qué proveedor responde en cada puerto. No necesitas 
 Si una aplicación habla con el puerto equivocado, pregunta al proveedor equivocado o no recibe respuesta. Los puertos son como números de puerta.
 #### Paso 3 · Teoría, modelo mental y analogía
 AWS, Azure y Google Cloud ofrecen cosas parecidas con nombres distintos. Por ejemplo, todos permiten guardar archivos; cada uno tiene su propia puerta local y sus propias reglas.
+
+**Conceptos clave:** proveedor, servicio, puerto, endpoint.
+**¿Por qué es importante?** Leer el proveedor y su puerto antes de ejecutar un comando evita enviarlo al emulador equivocado y ayuda a entender mejor los ejemplos multi-nube posteriores.
+
 #### Paso 4 · Demostración guiada
 Desde la carpeta principal del proyecto ejecuta:
 ```bash
@@ -296,12 +303,11 @@ Azure: Blob Storage — puerto 4577
 Google Cloud: Cloud Storage — puerto 4588
 ```
 Después busca cada número en la sección `ports:`. No confundas el puerto publicado, que es visible en tu computador, con el número interno del contenedor: Compose muestra ambos juntos, separados por dos puntos.
-#### Paso 7 · Cierre y evidencia
-Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
-**Conceptos clave:** proveedor, servicio, puerto, endpoint.
-**¿Por qué es importante?** Leer el proveedor y su puerto antes de ejecutar un comando evita enviarlo al emulador equivocado y ayuda a entender mejor los ejemplos multi-nube posteriores.
 
 **Para el proyecto integrador:** al cambiar de proveedor tendrás que cambiar tanto el nombre del servicio como la dirección a la que tu programa envía la solicitud. **Límite:** usa AWS (`4566`) mientras el curso no indique lo contrario; cambia a Azure o GCP solo cuando el tema lo pida explícitamente, para no confundir un error de proveedor con un error de código.
+
+#### Paso 7 · Cierre y evidencia
+Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
 
 ### Tema 6: Ventajas y limitaciones de practicar con un emulador local
 
@@ -311,6 +317,10 @@ Al terminar podrás distinguir qué confirma una prueba local y qué todavía no
 Una prueba puede salir bien en tu computador y fallar en la nube real por diferencias de permisos, velocidad o funciones disponibles. Decir qué se probó evita prometer de más.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un simulador de manejo sirve para practicar giros y señales, pero no demuestra cómo se siente conducir en una autopista real. Un emulador local también es útil, con límites.
+
+**Conceptos clave:** prueba local, escala, permisos, límite.
+**¿Por qué es importante?** Explicar el alcance de una prueba protege al equipo de concluir que un sistema está listo solo porque pasó una comprobación pequeña en local.
+
 #### Paso 4 · Demostración guiada
 Abre `docker-compose.yml` y comprueba que AWS publica el puerto local `4566`. Si Docker está disponible, ejecuta `docker compose up -d aws-local` y después:
 ```bash
@@ -323,12 +333,11 @@ Prueba por error el puerto `4567`: `curl -i http://localhost:4567/_floci/health`
 #### Paso 6 · Práctica independiente
 En `limites.md`, escribe dos listas cortas: “Esto sí comprobé” y “Esto aún no comprobé”. Añade como mínimo que no verificaste el uso con una cuenta real, ni la carga de muchos usuarios a la vez.
 Puedes usar estas preguntas para completar el archivo: ¿qué URL consultaste?, ¿qué número de respuesta viste?, ¿qué mensaje salió con el puerto equivocado?, ¿qué cambiarías para repetir la prueba? Añade también el nombre del archivo que revisaste (`docker-compose.yml`). Así la evidencia incluye una acción, un resultado y el límite de lo que ese resultado permite afirmar.
-#### Paso 7 · Cierre y evidencia
-Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado en el incorrecto y una frase sobre lo que cada prueba no demuestra. El siguiente tema organiza la forma de estudiar. **Fuente:** [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
-**Conceptos clave:** prueba local, escala, permisos, límite.
-**¿Por qué es importante?** Explicar el alcance de una prueba protege al equipo de concluir que un sistema está listo solo porque pasó una comprobación pequeña en local.
 
 **Para el proyecto integrador:** informa con precisión: “la salud local respondió” es evidencia útil; no equivale a “la aplicación está lista para producción”.
+
+#### Paso 7 · Cierre y evidencia
+Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado en el incorrecto y una frase sobre lo que cada prueba no demuestra. El siguiente tema organiza la forma de estudiar. **Fuente:** [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
 
 ### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
 
@@ -370,6 +379,115 @@ Entrega la bitácora con su historial de commits, el fallo deliberado y su corre
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Versiona una evidencia por práctica del entorno cloud: comando, salida, fallo y corrección. Otra persona debe repetir la creación de una cola desde ese registro y obtener el mismo recurso lógico.
+
+### Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min
+
+**Prerrequisito:** temas «Fundamentos absolutos» y «Fundamentos de redes» de este módulo.
+
+**Al finalizar podrás:** clasificar servicios en IaaS, PaaS y SaaS según qué administras tú, explicar qué es una región y una zona de disponibilidad, y elegir dónde desplegar con criterios de latencia, servicios disponibles, costo y ley.
+
+**¿Por qué es importante?** Cada modelo cambia quién parchea, quién escala y quién responde a las 3 a. m. Y la región decide la latencia de tus usuarios, el precio y si cumples la ley de datos. Son las dos primeras decisiones de cualquier proyecto en la nube.
+
+#### Paso 1 · Objetivo y preparación
+
+Ten a mano la AWS CLI configurada contra el emulador local del curso (`eval "$(floci env)"`) o una cuenta real en modo solo lectura. Crea `academia-labs/cloud/fundamentos/decision-region.md`.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow opera en Colombia. Su primera versión corría en una sola máquina virtual en una región lejana: cada pantalla tardaba medio segundo extra y, cuando esa zona tuvo una falla, el servicio se cayó por completo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** IaaS, PaaS, SaaS, modelo de responsabilidad, región, zona de disponibilidad (AZ), latencia, alta disponibilidad multi-AZ.
+
+**Modelos de servicio** (de más a menos trabajo tuyo):
+
+| Modelo | Tú administras | El proveedor administra | Ejemplo |
+|---|---|---|---|
+| IaaS | sistema operativo, parches, runtime, app | hardware, red, virtualización | EC2, máquinas virtuales |
+| PaaS | tu código y su configuración | todo lo de abajo, incluido escalar | Lambda, App Service, Cloud Run |
+| SaaS | tus datos y usuarios | toda la aplicación | correo, CRM |
+
+**Geografía:**
+
+- Una **región** es un área geográfica (por ejemplo, `us-east-1`, `sa-east-1`) con su propio precio y catálogo de servicios.
+- Cada región tiene varias **zonas de disponibilidad**: centros de datos separados, con energía y red independientes, unidos por enlaces de baja latencia.
+- Desplegar en **varias AZ** protege de la falla de un centro de datos; desplegar en **varias regiones** protege de la falla de una región, con más costo y complejidad.
+
+Para elegir región: **latencia** a los usuarios, **servicios** disponibles, **costo** y **requisitos legales** de residencia de datos.
+
+**Analogía:** IaaS es alquilar un local vacío; PaaS, un local amoblado con mantenimiento incluido; SaaS, contratar el servicio terminado. Las zonas son sucursales en barrios distintos de la misma ciudad (región). La analogía falla en que las sucursales en la nube se sincronizan en milisegundos.
+
+**Límite de uso:** no todo servicio existe en todas las regiones, y no todos los servicios son multi-AZ por defecto (una base de datos de una sola instancia vive en una sola zona). Multi-región es una decisión cara: no la tomes sin un objetivo de recuperación que la justifique.
+
+```mermaid
+flowchart TB
+    R["Región sa-east-1"] --> A["AZ a: app + base primaria"]
+    R --> B["AZ b: app + réplica"]
+    R --> C["AZ c: app"]
+    U["usuarios en Colombia"] -->|"latencia baja"| R
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/fundamentos/decision-region.md`:
+
+```markdown
+# Decisión de región para RutaFlow
+| Criterio | us-east-1 | sa-east-1 |
+|---|---|---|
+| Latencia medida desde Bogotá (ms) | (medir) | (medir) |
+| ¿Tiene todos los servicios que usamos? | sí | revisar |
+| Costo relativo de cómputo | menor | mayor |
+| Requisito legal de residencia | revisar con legal | revisar con legal |
+Decisión: ... · Zonas: al menos 2 AZ para la API y la base.
+```
+
+Ejecútalo:
+
+```bash
+eval "$(floci env)"   # o tu perfil de AWS en modo lectura
+aws ec2 describe-regions --query "Regions[].RegionName" --output text
+aws ec2 describe-availability-zones --region us-east-1 --query "AvailabilityZones[].ZoneName" --output text
+```
+
+**Explicación por bloques:** La plantilla `decision-region.md` obliga a decidir con cuatro criterios medibles en lugar de elegir la región por defecto. Los comandos listan las regiones disponibles y las zonas de una región. Con el emulador, la lista es la que simula Floci; con una cuenta real, verás las regiones habilitadas para tu cuenta y las zonas con sus nombres (`us-east-1a`, `us-east-1b`…).
+
+**Resultado esperado:**
+
+```text
+describe-regions devuelve una lista como: us-east-1 us-east-2 us-west-2 sa-east-1 eu-west-1 ...
+describe-availability-zones devuelve varias zonas: us-east-1a us-east-1b us-east-1c ...
+```
+
+**Fallo deliberado:** despliega en la plantilla la API y la base en una sola AZ y simula su caída deteniendo esa instancia. **Error esperado:** todo el servicio queda fuera de línea aunque la región funcione. **Diagnóstico:** una sola zona es un punto único de falla. Distribuye la API en al menos dos zonas y usa una base con réplica en otra zona.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** clasifica en IaaS, PaaS o SaaS diez servicios que usa RutaFlow (por ejemplo, EC2, Lambda, el correo, la base administrada).
+2. **Variación:** mide la latencia a dos regiones con un endpoint de prueba (`curl -w "%{time_connect}"`) y llena la tabla.
+3. **Diagnóstico:** reproduce el fallo deliberado con una sola AZ.
+4. **Integración:** busca un servicio que no esté disponible en una región y anota cómo lo comprobaste.
+5. **Diseño:** escribe la decisión de región de RutaFlow con los cuatro criterios.
+
+**Pista:** pregunta siempre «¿quién parchea esto?»: la respuesta dice el modelo de servicio.
+
+#### Paso 6 · Práctica independiente
+
+Para un proyecto propio, decide entre IaaS y PaaS para el backend y justifica con costo de operación (horas al mes de mantenimiento), no solo con el precio por hora.
+
+#### Paso 7 · Cierre
+
+- [ ] Clasificas servicios por quién los administra.
+- [ ] Explicas región y zona de disponibilidad.
+- [ ] Reconoces el punto único de falla de una sola AZ.
+- [ ] Decides la región con cuatro criterios.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** elegir la región por defecto, desplegar todo en una sola AZ y confundir multi-AZ con multi-región. **Siguiente paso:** el tema «Qué vas a aprender y cómo está estructurado» presenta los servicios que usarás en cada modelo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** documenta la región y las zonas de RutaFlow con la plantilla y despliega la API en al menos dos zonas.
+
+**Fuente oficial:** [AWS — Regions and Availability Zones](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/) y [NIST SP 800-145 — The NIST Definition of Cloud Computing](https://csrc.nist.gov/pubs/sp/800/145/final).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

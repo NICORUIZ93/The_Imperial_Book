@@ -1595,6 +1595,146 @@ Adoptar novedades es una decisión verificable. Con esto el track incorpora las 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla las APIs modernas usadas para tiempo o iteración y comprueba disponibilidad en los navegadores objetivo. Prueba la alternativa configurada sin modificar el orden ni las fechas del historial.
 
+### Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
+
+**Prerrequisito:** temas «try/catch en flujos asíncronos» (módulo 6) y «ECMAScript moderno, Temporal e iterator helpers» de este módulo.
+
+**Al finalizar podrás:** liberar conexiones y archivos automáticamente al salir de un bloque con `using` y `await using`, y agrupar varias limpiezas con `DisposableStack`.
+
+**¿Por qué es importante?** Olvidar cerrar una conexión o un archivo agota recursos y produce fallos lentos y difíciles de reproducir. `using` hace que la limpieza ocurra siempre, incluso si hay un `return` o una excepción.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior. Comprueba tu versión con `node --version`. Crea la carpeta `academia-labs/javascript/recursos`.
+
+#### Paso 2 · Contexto y caso real
+
+El exportador de reportes de RutaFlow abre una conexión a la base de rutas y un archivo CSV. Antes usaba `try/finally` en cada función. Cuando alguien agregó un `return` temprano olvidó el `finally`, y el archivo quedó abierto hasta que el proceso se reinició.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** recurso, `Symbol.dispose`, `Symbol.asyncDispose`, `using`, `await using`, `DisposableStack`, orden inverso de liberación.
+
+Un objeto es **desechable** si tiene un método `[Symbol.dispose]()`. Si lo declaras con `using`, el motor llama ese método al salir del bloque, pase lo que pase. `await using` hace lo mismo con `[Symbol.asyncDispose]()`, que devuelve una promesa, y espera a que termine.
+
+Si declaras varios recursos en el mismo bloque, se liberan en **orden inverso**: el último en abrirse es el primero en cerrarse. Así una conexión se cierra antes que el archivo que la usaba.
+
+`DisposableStack` agrupa limpiezas: `use(recurso)` registra un desechable y `defer(fn)` registra una función cualquiera. Al liberar la pila, ejecuta todo en orden inverso.
+
+**Analogía:** `using` es la regla de una cocina: quien saca una olla la lava antes de salir, aunque lo llamen de urgencia. La analogía falla en que el motor no olvida nunca: la limpieza ocurre también si hay una excepción.
+
+**Límite de uso:** `using` solo sirve para recursos cuyo tiempo de vida termina con el bloque. Si el recurso debe vivir más (un pool de conexiones de toda la aplicación), no lo declares con `using`. En motores antiguos la sintaxis no existe: verifica la versión antes de usarla en una librería.
+
+```mermaid
+sequenceDiagram
+    participant F as exportar()
+    participant A as archivo (await using)
+    participant P as pila (DisposableStack)
+    F->>A: abre reporte.csv
+    F->>P: use(cache) y defer(borrar temporales)
+    Note over F: termina el bloque
+    F->>P: libera en orden inverso: cierra cache, borra temporales
+    F->>A: await cierra reporte.csv
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/javascript/recursos/recursos.mjs`:
+
+```js
+class Conexion {
+  constructor(nombre) {
+    this.nombre = nombre;
+    console.log(`abre ${nombre}`);
+  }
+  consultar() {
+    return `datos de ${this.nombre}`;
+  }
+  [Symbol.dispose]() {
+    console.log(`cierra ${this.nombre}`);
+  }
+}
+
+class Archivo {
+  constructor(ruta) {
+    this.ruta = ruta;
+    console.log(`abre ${ruta}`);
+  }
+  async [Symbol.asyncDispose]() {
+    await new Promise((listo) => setTimeout(listo, 10)); // simula vaciar el búfer a disco
+    console.log(`cierra ${this.ruta}`);
+  }
+}
+
+function leerRuta() {
+  using db = new Conexion('rutas-db');
+  return db.consultar(); // db se cierra después de calcular el valor de retorno
+}
+
+async function exportar() {
+  await using archivo = new Archivo('reporte.csv');
+  using pila = new DisposableStack();
+  pila.defer(() => console.log('borra temporales'));
+  const cache = pila.use(new Conexion('cache'));
+  console.log(cache.consultar());
+}
+
+console.log(leerRuta());
+await exportar();
+```
+
+Ejecútalo con Node.js 24 o superior:
+
+```bash
+cd academia-labs/javascript/recursos
+node recursos.mjs
+```
+
+**Explicación por bloques:** `Conexion` es desechable porque implementa `[Symbol.dispose]`; `Archivo` es desechable de forma asíncrona con `[Symbol.asyncDispose]`. En `leerRuta`, `using db` garantiza el cierre después de calcular el `return`, por eso «cierra rutas-db» sale antes que «datos de rutas-db». En `exportar`, la pila se declara después del archivo, así que se libera primero: dentro de ella, `cache` se registró después del `defer`, por eso se cierra antes de borrar temporales. Por último, `await using` espera a que el archivo termine de cerrarse.
+
+**Resultado esperado:**
+
+```text
+abre rutas-db
+cierra rutas-db
+datos de rutas-db
+abre reporte.csv
+abre cache
+datos de cache
+cierra cache
+borra temporales
+cierra reporte.csv
+```
+
+**Fallo deliberado:** en `exportar`, cambia `await using archivo` por `using archivo`. **Error esperado:** `TypeError` porque `Archivo` no tiene `[Symbol.dispose]`, solo la versión asíncrona. **Diagnóstico:** un recurso que se cierra con una promesa necesita `await using`. Vuelve a escribir `await using`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el archivo y relaciona cada línea con la instrucción que la produce.
+2. **Variación:** lanza un `throw new Error("falla")` dentro de `exportar` después del `console.log` y comprueba que los tres recursos igual se cierran.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica la diferencia entre `Symbol.dispose` y `Symbol.asyncDispose`.
+4. **Integración:** agrega a la pila un segundo `defer` que imprima «registra métrica» y predice en qué lugar aparece.
+5. **Diseño:** escribe la misma función `exportar` con `try/finally` y compara cuántas líneas necesitas.
+
+**Pista:** para predecir el orden de cierre, lee las declaraciones de abajo hacia arriba.
+
+#### Paso 6 · Práctica independiente
+
+Crea un `Temporizador` desechable que en el constructor guarde `performance.now()` y en `[Symbol.dispose]` imprima cuántos milisegundos duró el bloque. Úsalo con `using` para medir `leerRuta()`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué método llama `using` y cuál `await using`.
+- [ ] Predices el orden de las nueve líneas antes de ejecutar.
+- [ ] Reprodujiste el `TypeError` del fallo deliberado.
+- [ ] Sabes cuándo no usar `using` (recursos que viven toda la aplicación).
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un recurso que solo tiene `asyncDispose`, declarar con `using` un pool global y olvidar que el orden de cierre es inverso. **Siguiente paso:** el tema «Typed Arrays, ArrayBuffer y DataView» trabaja con búferes que también conviene liberar a tiempo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
+
+**Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
+
 ## Trazabilidad de la auditoría original
 
 - **TypeScript**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

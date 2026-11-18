@@ -640,6 +640,134 @@ Entregá el despliegue con `Recreate` y la ventana de cero pods del Paso 4, la i
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Elige una estrategia según compatibilidad entre revisiones y acceso al volumen. Reproduce la actualización y documenta indisponibilidad observada, sin prometer continuidad si ambas versiones no pueden coexistir.
 
+### Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min
+
+**Prerrequisito:** temas «RBAC en Kubernetes» de este módulo y «Contenedores sin privilegios» (módulo 2).
+
+**Al finalizar podrás:** aislar por red la base de datos para que solo la API pueda llegar a ella con una `NetworkPolicy`, y obligar a que los pods de un namespace cumplan el nivel `restricted` de Pod Security.
+
+**¿Por qué es importante?** Por defecto, en Kubernetes cualquier pod puede hablar con cualquier otro y puede pedir privilegios. Si un pod se compromete, llega a la base de datos. Las políticas reducen ese alcance.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas un clúster con un plugin de red que aplique NetworkPolicy: kind no lo hace por defecto. Usa `minikube start --cni=calico` o kind con Calico.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, un pod de pruebas olvidado en el namespace de producción podía conectarse a PostgreSQL. Nadie lo había pensado porque «está en la red interna». Con políticas, solo la API llega a la base.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** NetworkPolicy, `podSelector`, `ingress`, denegar por defecto, plugin de red (CNI), Pod Security Standards (`privileged`, `baseline`, `restricted`), etiqueta `pod-security.kubernetes.io/enforce`.
+
+**NetworkPolicy:** reglas de tráfico entre pods. En cuanto una política selecciona un pod, ese pod solo acepta el tráfico que alguna política permite. El patrón es: **denegar todo** en el namespace y luego **permitir** lo necesario (la API hacia la base en el puerto 5432). Requiere un plugin de red que las aplique (Calico, Cilium); si no, se ignoran en silencio.
+
+**Pod Security Admission:** el apiserver revisa los pods contra tres niveles:
+
+| Nivel | Permite |
+|---|---|
+| `privileged` | todo |
+| `baseline` | evita los privilegios más peligrosos |
+| `restricted` | exige no root, sin escalar privilegios, capacidades eliminadas, seccomp |
+
+Se activa con una etiqueta en el namespace, por ejemplo `pod-security.kubernetes.io/enforce: restricted`.
+
+**Analogía:** NetworkPolicy son las puertas con tarjeta entre áreas de un edificio; Pod Security es el control de entrada que no deja pasar a nadie con herramientas peligrosas. La analogía falla en que, sin el sistema de tarjetas instalado (CNI), las puertas existen en el plano pero no se cierran.
+
+**Límite de uso:** NetworkPolicy no cifra el tráfico ni autentica servicios: para eso está mTLS (service mesh). Pod Security no reemplaza políticas más detalladas como Kyverno u OPA Gatekeeper.
+
+```mermaid
+flowchart LR
+    A["pod api"] -->|"5432 permitido"| D["pod postgres"]
+    X["pod de pruebas"] -. "bloqueado" .-> D
+    N["namespace produccion<br/>enforce: restricted"] --> R["rechaza pods con privilegios"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/politicas/namespace.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: produccion
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+```
+
+Archivo `academia-labs/devops/politicas/red.yaml`:
+
+```yaml
+# 1) Denegar todo el tráfico de entrada en el namespace.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: denegar-todo, namespace: produccion }
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+---
+# 2) Permitir solo api -> postgres en 5432.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: api-a-postgres, namespace: produccion }
+spec:
+  podSelector: { matchLabels: { app: postgres } }
+  policyTypes: [Ingress]
+  ingress:
+    - from: [ { podSelector: { matchLabels: { app: api } } } ]
+      ports: [ { protocol: TCP, port: 5432 } ]
+```
+
+Ejecútalo:
+
+```bash
+minikube start --cni=calico
+kubectl apply -f academia-labs/devops/politicas/namespace.yaml -f academia-labs/devops/politicas/red.yaml
+kubectl -n produccion run postgres --image=postgres:16 --labels=app=postgres --env=POSTGRES_PASSWORD=demo \
+  --overrides='{"spec":{"securityContext":{"runAsNonRoot":true,"runAsUser":999,"seccompProfile":{"type":"RuntimeDefault"}},"containers":[{"name":"postgres","image":"postgres:16","env":[{"name":"POSTGRES_PASSWORD","value":"demo"}],"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]}}}]}}'
+kubectl -n produccion run privilegiado --image=busybox:1.36 --privileged -- sleep 3600
+```
+
+**Explicación por bloques:** El namespace `produccion` aplica el nivel `restricted`: el apiserver rechaza pods que no cumplan. La primera NetworkPolicy selecciona todos los pods y no permite entradas, así que todo queda bloqueado. La segunda permite solo a los pods `app=api` llegar a `app=postgres` en el puerto 5432. El pod de PostgreSQL se crea con un `securityContext` que cumple el nivel restringido. El último comando intenta crear un pod privilegiado.
+
+**Resultado esperado:**
+
+```text
+El pod postgres se crea.
+El pod privilegiado se rechaza: Error from server (Forbidden): pods "privilegiado" is forbidden: violates PodSecurity "restricted:latest": privileged (container "privilegiado" must not set securityContext.privileged=true) ...
+Desde un pod sin la etiqueta app=api, `nc -zv postgres-ip 5432` no conecta; desde uno con app=api, sí.
+```
+
+**Fallo deliberado:** crea el clúster con `minikube start` sin `--cni=calico` y aplica las mismas políticas. **Error esperado:** las políticas se crean sin error, pero cualquier pod sigue conectándose a la base. **Diagnóstico:** el plugin de red por defecto no aplica NetworkPolicy. Comprueba siempre con una conexión real que la política funciona.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** aplica los archivos y comprueba el rechazo del pod privilegiado.
+2. **Variación:** crea un pod `api` y otro `curioso` y prueba la conexión a la base desde cada uno.
+3. **Diagnóstico:** reproduce el fallo deliberado sin Calico.
+4. **Integración:** agrega una política de salida (`Egress`) que permita a la API solo DNS y la base.
+5. **Diseño:** cambia el namespace a `warn` en lugar de `enforce` y explica para qué sirve en una migración.
+
+**Pista:** prueba cada política con una conexión real: una política que existe pero no se aplica es peor que ninguna, porque da falsa seguridad.
+
+#### Paso 6 · Práctica independiente
+
+Instala Kyverno y escribe una política que rechace imágenes con la etiqueta `latest` en el namespace `produccion`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas el patrón denegar todo y permitir lo necesario.
+- [ ] Solo la API llega a la base.
+- [ ] El namespace rechaza pods privilegiados.
+- [ ] Sabes comprobar que el CNI aplica las políticas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confiar en políticas sin comprobarlas, olvidar el DNS al restringir salidas y usar `privileged` en namespaces de producción. **Siguiente paso:** el tema «Service Mesh» agrega cifrado e identidad al tráfico permitido.
+
+**Transferencia al proyecto integrador «RutaFlow»:** aplica en el namespace de producción de RutaFlow el nivel `restricted` y políticas de red que dejen a la base accesible solo desde la API.
+
+**Fuente oficial:** [Kubernetes — Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) y [Kubernetes — Pod Security Admission](https://kubernetes.io/docs/concepts/security/pod-security-admission/).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** convertir los manifiestos del Módulo 6 en un Helm chart parametrizable, instalar un Ingress Controller y exponer la aplicación por dominio, configurar autoscaling, y añadir probes de liveness y readiness.

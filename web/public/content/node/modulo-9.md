@@ -786,6 +786,144 @@ curl -s http://127.0.0.1:3000/metrics
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** instrumenta confirmaciones con conteos y duración, propaga contexto al consumidor y correlaciona por fuera de las etiquetas. Una carga de prueba debe producir métricas agregadas y spans cerrados sin una serie por guía.
 
+### Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min
+
+**Prerrequisito:** tema «Correlation ID por request» de este módulo.
+
+**Al finalizar podrás:** guardar el id de cada petición en un contexto que sobrevive a los `await` sin pasarlo por parámetro, y publicar eventos de diagnóstico que otra parte del código puede escuchar.
+
+**¿Por qué es importante?** Cuando dos peticiones se atienden a la vez, sus logs se mezclan. Pasar el id de función en función ensucia todo el código. `AsyncLocalStorage` resuelve eso, y `diagnostics_channel` permite medir sin acoplar la lógica de negocio a la observabilidad.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 18 o superior. Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
+
+**Contexto y caso real.**
+
+En RutaFlow, las peticiones `req-A` y `req-B` llegan casi al mismo tiempo. La segunda termina primero porque su consulta es más rápida. Sin contexto, el log «fin de la ruta» no dice de qué petición es, y diagnosticar un error lento se vuelve adivinanza.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** contexto asíncrono, `AsyncLocalStorage`, `run`, `getStore`, canal de diagnóstico, publicador y suscriptor.
+
+`AsyncLocalStorage` guarda un valor (el **store**) que acompaña a todo el trabajo asíncrono que empieza dentro de `contexto.run(store, fn)`. Aunque haya `await`, temporizadores o promesas en el medio, `contexto.getStore()` devuelve el store correcto. Fuera de `run`, devuelve `undefined`.
+
+`diagnostics_channel` es un sistema de eventos con nombre. La capa de datos **publica** (`canal.publish(datos)`) sin saber quién escucha; la observabilidad se **suscribe** desde otro módulo. Si nadie está suscrito, `hasSubscribers` es `false` y publicar no cuesta casi nada. Muchas librerías (por ejemplo `undici`, el cliente de `fetch`) ya publican en canales propios.
+
+**Analogía:** AsyncLocalStorage es la pulsera de un paciente en un hospital: va con él a cada sala, sin que cada médico tenga que preguntar su nombre. diagnostics_channel es la cartelera de avisos: quien quiera enterarse la mira. La analogía falla en que la pulsera no se pierde aunque el paciente salga y vuelva: eso lo garantiza el motor, no el hospital.
+
+**Límite de uso:** no guardes en el store objetos enormes ni datos que deban sobrevivir a la petición. El contexto se puede perder con librerías que usan colas propias de callbacks; en ese caso, envuélvelas con `AsyncResource.bind`.
+
+```mermaid
+sequenceDiagram
+    participant A as req-A
+    participant B as req-B
+    participant D as consultarRuta()
+    participant O as Observabilidad
+    A->>D: run(req-A): consulta ENV-1 (lenta)
+    B->>D: run(req-B): consulta ENV-2 (rápida)
+    D-->>O: publish(ENV-2) con contexto req-B
+    D-->>O: publish(ENV-1) con contexto req-A
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/contexto/contexto.mjs`:
+
+```js
+import { AsyncLocalStorage } from 'node:async_hooks';
+import diagnostics_channel from 'node:diagnostics_channel';
+
+const contexto = new AsyncLocalStorage();
+const canalConsultas = diagnostics_channel.channel('rutaflow:consulta');
+
+// Logger: no recibe el id por parámetro; lo lee del contexto actual.
+function log(mensaje) {
+  const id = contexto.getStore()?.requestId ?? 'sin-contexto';
+  console.log(`[${id}] ${mensaje}`);
+}
+
+// Capa de datos: publica un evento de diagnóstico sin saber quién escucha.
+async function consultarRuta(codigo, demoraMs) {
+  await new Promise((listo) => setTimeout(listo, demoraMs));
+  if (canalConsultas.hasSubscribers) canalConsultas.publish({ codigo, demoraMs });
+  return `ruta de ${codigo}`;
+}
+
+// Observabilidad: se suscribe desde afuera y hereda el contexto de la petición.
+diagnostics_channel.subscribe('rutaflow:consulta', ({ codigo }) => log(`métrica: consulta de ${codigo}`));
+
+// Cada "petición" corre dentro de su propio contexto.
+function atender(codigo, requestId, demoraMs) {
+  return contexto.run({ requestId }, async () => {
+    log(`inicio ${codigo}`);
+    const ruta = await consultarRuta(codigo, demoraMs);
+    log(`fin: ${ruta}`);
+  });
+}
+
+await Promise.all([atender('ENV-1', 'req-A', 40), atender('ENV-2', 'req-B', 5)]);
+log('fuera de cualquier petición');
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/contexto
+node contexto.mjs
+```
+
+**Explicación por bloques:** `atender` abre un contexto con `run` y todo lo que ocurre adentro, incluido el `await` y el temporizador, ve el mismo `requestId`. `req-B` termina primero porque su consulta tarda 5 ms, pero sus líneas conservan su id. La capa de datos publica en el canal `rutaflow:consulta`; el suscriptor llama `log` y también ve el contexto correcto, porque el evento se publica dentro de la petición. La última línea corre fuera de `run`, por eso dice `sin-contexto`.
+
+![Captura de terminal: los logs de req-A y req-B se intercalan pero cada uno conserva su id, y el log final aparece sin contexto](content/figures/node/asynclocalstorage-diagnostics.svg)
+
+**Resultado esperado:**
+
+```text
+[req-A] inicio ENV-1
+[req-B] inicio ENV-2
+[req-B] métrica: consulta de ENV-2
+[req-B] fin: ruta de ENV-2
+[req-A] métrica: consulta de ENV-1
+[req-A] fin: ruta de ENV-1
+[sin-contexto] fuera de cualquier petición
+```
+
+**Fallo deliberado:** reemplaza `contexto.run({ requestId }, async () => { ... })` por `contexto.enterWith({ requestId })` seguido del mismo código, sin `run`. **Error esperado:** ids cruzados o la última línea con `req-B` en lugar de `sin-contexto`. **Diagnóstico:** `enterWith` cambia el contexto de todo lo que sigue en esa ejecución, no solo de la petición. Usa `run` para delimitarlo.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el ejemplo y explica por qué `req-B` termina antes.
+2. **Variación:** agrega una tercera petición `req-C` con demora de 20 ms y predice el orden de las líneas.
+3. **Diagnóstico:** reproduce el fallo deliberado con `enterWith` y describe qué id quedó mal.
+4. **Integración:** en un servidor Express, crea un middleware que abra el contexto con el header `x-request-id` y úsalo desde el logger.
+5. **Diseño:** suscríbete al canal `undici:request:create` y registra cada `fetch` que haga la aplicación.
+
+**Pista:** todo lo que empieza dentro de `run` hereda el store; lo que empieza afuera, no.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Agrega al store un campo `inicio` con `performance.now()` y haz que `log` imprima los milisegundos transcurridos desde el inicio de la petición. Comprueba que cada petición mide su propio tiempo.
+
+**Checklist de salida.**
+
+- [ ] Explicas qué devuelve `getStore()` dentro y fuera de `run`.
+- [ ] El script imprime las siete líneas esperadas.
+- [ ] Reprodujiste el problema de `enterWith`.
+- [ ] Explicas por qué publicar en un canal no acopla la lógica a la observabilidad.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** pasar el id por parámetro en todas las funciones, usar `enterWith` sin entender su alcance y guardar objetos grandes en el store. **Siguiente paso:** el tema «Métricas Prometheus y trazas distribuidas con OpenTelemetry» usa este mismo mecanismo para propagar el contexto de trazas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la API de RutaFlow, agrega un middleware que abra un contexto por petición con el correlation id y haz que el logger lo lea de `AsyncLocalStorage` en lugar de recibirlo por parámetro.
+
+**Fuente oficial:** [Node.js — Asynchronous context tracking](https://nodejs.org/api/async_context.html) y [Node.js — Diagnostics Channel](https://nodejs.org/api/diagnostics_channel.html).
+
 ## Laboratorio práctico independiente: API local de entregas observable
 
 **Objetivo:** construir desde cero una API local que consulte entregas en memoria y reúna logging seguro, correlation ID, contratos, métricas, spans y apagado ordenado. No uses ni copies archivos de los cinco proyectos anteriores.

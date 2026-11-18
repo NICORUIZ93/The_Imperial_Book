@@ -38,6 +38,26 @@ graph TD
     style E fill:#e8f5e9
 ```
 
+**¿Por qué es importante?** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable.
+**Conceptos clave:** `getByRole`, `getByText`, resiliencia a refactors.
+
+React Testing Library promueve deliberadamente consultar el DOM renderizado de la misma forma en que un usuario real (o una tecnología asistiva como un lector de pantalla) identificaría un elemento: por su rol semántico de accesibilidad (`screen.getByRole('button', { name: /enviar/i })`) o por el texto visible que muestra (`screen.getByText(/enviado con éxito/i)`), evitando deliberadamente consultas basadas en detalles internos de implementación como nombres de clases CSS o la estructura exacta del árbol DOM interno (`getByClassName`, deliberadamente no ofrecido como API principal por la librería), un principio de diseño idéntico al estudiado para Angular Testing Library en el Módulo 10 del track de Angular.
+
+Esta elección deliberada produce pruebas que sobreviven a refactors internos del componente que no cambian su comportamiento observable: si se reorganiza el HTML interno de un componente, o se renombra una clase CSS puramente por razones cosméticas, una prueba que consulta por rol/texto sigue pasando sin cambios, mientras que una prueba que dependiera de un selector CSS interno específico se rompería inmediatamente ante ese mismo cambio cosmético, aunque el comportamiento real del componente permanezca completamente intacto.
+
+**Analogía:** consultar por rol/texto es como identificar a alguien por su función visible en una obra de teatro (el actor que hace de rey) en vez de por el número de camerino que ocupa detrás del escenario: si cambia de camerino (un detalle interno irrelevante), sigue siendo identificable de la misma forma por su rol visible en la obra.
+
+**Implicación práctica:** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable del componente.
+
+**Código del ejemplo:**
+
+```jsx
+render(<Formulario />);
+const boton = screen.getByRole('button', { name: /enviar/i }); // como lo "vería" un usuario/lector de pantalla
+await userEvent.click(boton);
+expect(screen.getByText(/enviado con éxito/i)).toBeInTheDocument();
+```
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 render(<DetalleEnvio envio={envioDePrueba} />);
@@ -64,26 +84,6 @@ Confirmá que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún
 
 #### Paso 7 · Cierre
 Entregá el test resiliente del Paso 4, la comparación con el selector de clase roto del Paso 5, y la confirmación del Paso 6; explicá qué detalle de implementación cambió y por qué no debería haber roto ningún test de comportamiento. Siguiente paso: estudia cómo interceptar la llamada de red real con MSW. Errores comunes: consultar por clase CSS o estructura del DOM en vez de por rol/texto, usar `getByText` con un texto que cambia seguido por copywriting en vez de un rol estable, y usar `container.querySelector` como escape hatch habitual en vez de ocasional. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/intro/ y https://testing-library.com/docs/queries/byrole/.
-**¿Por qué es importante?** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable.
-**Conceptos clave:** `getByRole`, `getByText`, resiliencia a refactors.
-
-React Testing Library promueve deliberadamente consultar el DOM renderizado de la misma forma en que un usuario real (o una tecnología asistiva como un lector de pantalla) identificaría un elemento: por su rol semántico de accesibilidad (`screen.getByRole('button', { name: /enviar/i })`) o por el texto visible que muestra (`screen.getByText(/enviado con éxito/i)`), evitando deliberadamente consultas basadas en detalles internos de implementación como nombres de clases CSS o la estructura exacta del árbol DOM interno (`getByClassName`, deliberadamente no ofrecido como API principal por la librería), un principio de diseño idéntico al estudiado para Angular Testing Library en el Módulo 10 del track de Angular.
-
-Esta elección deliberada produce pruebas que sobreviven a refactors internos del componente que no cambian su comportamiento observable: si se reorganiza el HTML interno de un componente, o se renombra una clase CSS puramente por razones cosméticas, una prueba que consulta por rol/texto sigue pasando sin cambios, mientras que una prueba que dependiera de un selector CSS interno específico se rompería inmediatamente ante ese mismo cambio cosmético, aunque el comportamiento real del componente permanezca completamente intacto.
-
-**Analogía:** consultar por rol/texto es como identificar a alguien por su función visible en una obra de teatro (el actor que hace de rey) en vez de por el número de camerino que ocupa detrás del escenario: si cambia de camerino (un detalle interno irrelevante), sigue siendo identificable de la misma forma por su rol visible en la obra.
-
-**Implicación práctica:** Consultar por rol/texto en vez de por selectores de implementación hace que las pruebas sobrevivan a refactors internos cosméticos que no afectan el comportamiento real observable del componente.
-
-**Código del ejemplo:**
-
-```jsx
-render(<Formulario />);
-const boton = screen.getByRole('button', { name: /enviar/i }); // como lo "vería" un usuario/lector de pantalla
-await userEvent.click(boton);
-expect(screen.getByText(/enviado con éxito/i)).toBeInTheDocument();
-```
-
 
 ### Tema 2: Mock Service Worker (MSW)
 
@@ -118,6 +118,8 @@ afterAll(() => server.close());
 
 **Límites y decisión de uso:** MSW controla la red de la prueba, pero no demuestra que el backend real cumpla el contrato. Mantén pruebas contractuales o de integración y configura handlers que rechacen solicitudes no previstas para no ocultar rutas equivocadas.
 
+**¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const server = setupServer(
@@ -146,7 +148,6 @@ Corregí el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agre
 
 #### Paso 7 · Cierre
 Entregá el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explicá por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
-**¿Por qué es importante?** MSW intercepta a nivel de red, permitiendo probar el código de producción exactamente como se ejecutaría en producción real, sin mockear `fetch` de forma frágil.
 
 ### Tema 3: Testing de hooks personalizados
 
@@ -197,6 +198,8 @@ Resultado esperado: la suite pasa en milisegundos porque no monta ningún árbol
 
 ---
 
+**¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const { result } = renderHook(() => useFiltroZona());
@@ -222,11 +225,10 @@ Pista: quitá `act(...)` y llamá directamente `result.current.setZona('NORTE')`
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando `act`, y agregá una segunda prueba que confirme que llamar `setZona('')` (cadena vacía) hace que `useFiltroZona` vuelva al valor por defecto `'todas'`, en vez de guardar una cadena vacía inválida.
 
+**Proyecto integrador:** prueba el hook `useFiltroZona` de RutaFlow con `renderHook`, incluidos normalización, valor vacío y cambio de zona, sin montar la pantalla completa.
+
 #### Paso 7 · Cierre
 Entregá el test aislado del Paso 4, la advertencia de React por falta de `act` del Paso 5, y la segunda prueba del Paso 6; explicá por qué testear este hook con `renderHook` en vez de envolverlo en un componente visual mantiene la prueba enfocada específicamente en su lógica de estado. Siguiente paso: cerrá el módulo integrando los tres enfoques en la suite completa de RutaFlow. Errores comunes: envolver un hook en un componente visual completo solo para poder testearlo, no envolver actualizaciones de estado en `act`, y testear un hook personalizado únicamente a través de pruebas end-to-end de componentes, sin ninguna prueba aislada de su lógica. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/api/#renderhook y https://react.dev/reference/react/act.
-**¿Por qué es importante?** `renderHook` aísla la prueba de un hook personalizado de cualquier componente visual innecesario, manteniendo la prueba enfocada específicamente en la lógica de estado y efectos del hook.
-
-**Proyecto integrador:** prueba el hook `useFiltroZona` de RutaFlow con `renderHook`, incluidos normalización, valor vacío y cambio de zona, sin montar la pantalla completa.
 
 ## Laboratorio práctico
 

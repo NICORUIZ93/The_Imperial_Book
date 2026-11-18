@@ -11,7 +11,7 @@ Es el tema más preguntado de los dos parciales. Un RLC, una masa con resorte o 
 
 ## Aprende construyendo
 
-### Tema 1: Forma estándar
+### Tema 1: Forma estándar de segundo orden: K, ωn y ζ
 
 **¿Por qué es importante?** Leer \(K\), \(\omega_n\) y \(\zeta\) de una \(G(s)\) es el primer paso de casi todas las preguntas del Parcial 2.
 

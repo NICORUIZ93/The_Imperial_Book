@@ -626,6 +626,15 @@ flowchart LR
     A --> T[(auditoria)]
 ```
 
+**¿Por qué es importante?** porque reportes, auditorías y reglas de integridad son trabajo diario de backend, y las funciones de ventana aparecen en casi toda entrevista de SQL.
+**Fuente oficial:** [SQLite: CREATE TRIGGER](https://www.sqlite.org/lang_createtrigger.html), [SQLite: Window Functions](https://www.sqlite.org/windowfunctions.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
+**Conceptos clave:** subconsulta, subconsulta correlacionada, vista, trigger BEFORE y AFTER, RAISE, función de ventana, procedimiento almacenado.
+**Cuándo no usarlo:** no metas toda la lógica de negocio en triggers: son invisibles para quien lee el código de la aplicación y difíciles de probar. Úsalos para auditoría e invariantes que deben cumplirse siempre.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una tabla de auditoría de tareas alimentada por un trigger y una vista con las tareas vencidas por responsable.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** crear un trigger `BEFORE UPDATE` sin una condición `WHEN`, lo que lo aplica a todas las filas en vez de solo a las que debían rechazarse (el fallo deliberado al borrar `WHEN OLD.estado = 'entregada'`); y meter en triggers lógica de negocio tan compleja que nadie que lea el código de la aplicación puede saber que existe.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -742,14 +751,7 @@ Crea la vista `entregas_fallidas` con el nombre del mensajero y consúltala. **P
 Escribe la misma consulta de efectividad por zona sin subconsulta (solo con `JOIN` y `GROUP BY`) y compara el plan con `EXPLAIN QUERY PLAN`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque reportes, auditorías y reglas de integridad son trabajo diario de backend, y las funciones de ventana aparecen en casi toda entrevista de SQL.
-**Fuente oficial:** [SQLite: CREATE TRIGGER](https://www.sqlite.org/lang_createtrigger.html), [SQLite: Window Functions](https://www.sqlite.org/windowfunctions.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
-**Conceptos clave:** subconsulta, subconsulta correlacionada, vista, trigger BEFORE y AFTER, RAISE, función de ventana, procedimiento almacenado.
-**Cuándo no usarlo:** no metas toda la lógica de negocio en triggers: son invisibles para quien lee el código de la aplicación y difíciles de probar. Úsalos para auditoría e invariantes que deben cumplirse siempre.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una tabla de auditoría de tareas alimentada por un trigger y una vista con las tareas vencidas por responsable.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear un trigger `BEFORE UPDATE` sin una condición `WHEN`, lo que lo aplica a todas las filas en vez de solo a las que debían rechazarse (el fallo deliberado al borrar `WHEN OLD.estado = 'entregada'`); y meter en triggers lógica de negocio tan compleja que nadie que lea el código de la aplicación puede saber que existe.
 
 ### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL
 
@@ -773,6 +775,15 @@ flowchart LR
     P --> K[cursor por mensajero]
     K --> I[INSERT en cierre_diario]
 ```
+
+**¿Por qué es importante?** porque muchos sistemas empresariales (bancos, ERP, Oracle) concentran su lógica en procedimientos, y vas a mantenerlos o migrarlos.
+**Fuente oficial:** [PostgreSQL: PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
+**Conceptos clave:** PL/pgSQL, PL/SQL, función, procedimiento, `CALL`, cursor, `RAISE`, `EXCEPTION WHEN`, paquete de Oracle.
+**Cuándo no usarlo:** no pongas reglas de negocio complejas que cambian a menudo en la base de datos: son difíciles de versionar, probar y desplegar. Úsalos para procesos cercanos a los datos y por lotes.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** calcula el cierre diario de tareas por responsable con un procedimiento y compáralo con la versión en Python.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** invocar un procedimiento con `SELECT cerrar_dia()` en vez de `CALL cerrar_dia()` (el fallo deliberado), confundiendo procedimientos con funciones; y usar un cursor y un bucle `FOR` para algo que un solo `INSERT ... SELECT` resolvería con menos código y mejor rendimiento.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -881,14 +892,8 @@ Crea la función `efectividad(p_mensajero text) RETURNS numeric` que devuelva el
 Reescribe `cerrar_dia` sin cursor, con un solo `INSERT ... SELECT`, y compara legibilidad y rendimiento con `EXPLAIN ANALYZE` sobre 100 000 filas generadas con `generate_series`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque muchos sistemas empresariales (bancos, ERP, Oracle) concentran su lógica en procedimientos, y vas a mantenerlos o migrarlos.
-**Fuente oficial:** [PostgreSQL: PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html), [PostgreSQL: CREATE PROCEDURE](https://www.postgresql.org/docs/current/sql-createprocedure.html).
-**Conceptos clave:** PL/pgSQL, PL/SQL, función, procedimiento, `CALL`, cursor, `RAISE`, `EXCEPTION WHEN`, paquete de Oracle.
-**Cuándo no usarlo:** no pongas reglas de negocio complejas que cambian a menudo en la base de datos: son difíciles de versionar, probar y desplegar. Úsalos para procesos cercanos a los datos y por lotes.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** calcula el cierre diario de tareas por responsable con un procedimiento y compáralo con la versión en Python.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** invocar un procedimiento con `SELECT cerrar_dia()` en vez de `CALL cerrar_dia()` (el fallo deliberado), confundiendo procedimientos con funciones; y usar un cursor y un bucle `FOR` para algo que un solo `INSERT ... SELECT` resolvería con menos código y mejor rendimiento.
+
 ### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas
 
 #### Paso 1 · Objetivo y preparación
@@ -911,6 +916,15 @@ flowchart LR
     W --> X[reporte-entregas.xlsx]
     X --> F[fórmulas y filtros en Excel]
 ```
+
+**¿Por qué es importante?** porque conectar datos con las herramientas que usa el negocio ahorra horas de trabajo manual y elimina errores de copiado.
+**Fuente oficial:** [openpyxl documentation](https://openpyxl.readthedocs.io/en/stable/), [openpyxl: Worksheet Tables](https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html).
+**Conceptos clave:** agregar en SQL y presentar en Excel, `openpyxl`, fórmula, tabla de Excel, `number_format`, `data_only`.
+**Cuándo no usarlo:** si el reporte necesita actualizarse solo cada hora o lo usan muchas personas, un tablero conectado a la base de datos es mejor que archivos que se envían por correo.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** exporta cada semana las tareas por responsable a un Excel con filtros y porcentaje de cumplimiento.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** nombrar una tabla de Excel con espacios (como `displayName="Resumen Zonas"`), lo que falla con `ValueError: Table names cannot have spaces` porque sigue reglas de identificador; y asumir que `openpyxl` calculó las fórmulas al leer el archivo, cuando en realidad devuelve el texto de la fórmula (o `None` con `data_only=True`) hasta que alguien lo abrió en Excel.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -997,14 +1011,7 @@ Agrega una segunda hoja `Detalle` con todas las entregas, una fila por guía, y 
 Haz el camino inverso: lee un Excel de pedidos con columnas `guia`, `zona` y `kilos`, valida cada fila e insértala en SQLite, reportando las filas rechazadas.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque conectar datos con las herramientas que usa el negocio ahorra horas de trabajo manual y elimina errores de copiado.
-**Fuente oficial:** [openpyxl documentation](https://openpyxl.readthedocs.io/en/stable/), [openpyxl: Worksheet Tables](https://openpyxl.readthedocs.io/en/stable/worksheet_tables.html).
-**Conceptos clave:** agregar en SQL y presentar en Excel, `openpyxl`, fórmula, tabla de Excel, `number_format`, `data_only`.
-**Cuándo no usarlo:** si el reporte necesita actualizarse solo cada hora o lo usan muchas personas, un tablero conectado a la base de datos es mejor que archivos que se envían por correo.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** exporta cada semana las tareas por responsable a un Excel con filtros y porcentaje de cumplimiento.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** nombrar una tabla de Excel con espacios (como `displayName="Resumen Zonas"`), lo que falla con `ValueError: Table names cannot have spaces` porque sigue reglas de identificador; y asumir que `openpyxl` calculó las fórmulas al leer el archivo, cuando en realidad devuelve el texto de la fórmula (o `None` con `data_only=True`) hasta que alguien lo abrió en Excel.
 
 ## Construcción guiada del capítulo
 

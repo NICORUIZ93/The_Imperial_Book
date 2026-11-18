@@ -26,6 +26,14 @@ flowchart LR
     A -- sí --> V[campo.get y validar]
 ```
 
+**Fuente oficial:** [Reflection API (dev.java)](https://dev.java/learn/reflection/), [java.lang.reflect (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/package-summary.html).
+**Conceptos clave:** `Class`, `Field`, `Method`, anotación, `RetentionPolicy.RUNTIME`, `setAccessible`, `opens` en JPMS.
+**Cuándo no usarlo:** en código de negocio normal: pierdes la verificación del compilador, el rendimiento y la claridad. Resérvala para frameworks, herramientas y validadores genéricos.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** valida con anotaciones los campos obligatorios de las solicitudes de asignación antes de procesarlas.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** crear una anotación propia sin `@Retention(RetentionPolicy.RUNTIME)` y no entender por qué `isAnnotationPresent` siempre devuelve `false` en tiempo de ejecución (la retención por defecto es `CLASS`), y llamar `setAccessible(true)` sobre un campo de un paquete no abierto (`opens`) esperando que siempre funcione.
+
 #### Paso 4 · Demostración guiada desde cero
 
 #### Subtema 1.1: Encontrar campos marcados en tiempo de ejecución · 10 min
@@ -201,13 +209,6 @@ Guarda la salida válida, el caso que falló y una frase que explique por qué o
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender la reflexión quita la magia a los frameworks y te ayuda a diagnosticar errores como `InaccessibleObjectException` o anotaciones que "no hacen nada".
-**Fuente oficial:** [Reflection API (dev.java)](https://dev.java/learn/reflection/), [java.lang.reflect (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/package-summary.html).
-**Conceptos clave:** `Class`, `Field`, `Method`, anotación, `RetentionPolicy.RUNTIME`, `setAccessible`, `opens` en JPMS.
-**Cuándo no usarlo:** en código de negocio normal: pierdes la verificación del compilador, el rendimiento y la claridad. Resérvala para frameworks, herramientas y validadores genéricos.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** valida con anotaciones los campos obligatorios de las solicitudes de asignación antes de procesarlas.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear una anotación propia sin `@Retention(RetentionPolicy.RUNTIME)` y no entender por qué `isAnnotationPresent` siempre devuelve `false` en tiempo de ejecución (la retención por defecto es `CLASS`), y llamar `setAccessible(true)` sobre un campo de un paquete no abierto (`opens`) esperando que siempre funcione.
 
 ### Tema 2: Expresiones regulares con Pattern y Matcher
 
@@ -232,6 +233,14 @@ flowchart LR
     M --> X[matches: todo el texto]
     F --> G[group ciudad y numero]
 ```
+
+**Fuente oficial:** [Regular Expressions (dev.java)](https://dev.java/learn/regex/), [java.util.regex.Pattern (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html).
+**Conceptos clave:** `Pattern`, `Matcher`, `find` frente a `matches`, cuantificador, límite de palabra, grupo con nombre, ReDoS.
+**Cuándo no usarlo:** para formatos estructurados (JSON, XML, URL, fechas) usa un parser o la API específica (`URI`, `LocalDate.parse`). Una regex enorme es difícil de mantener.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** extrae y valida los códigos de guía de las solicitudes de asignación antes de procesarlas.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** escribir `\d{6}` con una sola barra en un literal de Java en vez de `\\d{6}` (Java lo interpreta como escape de string y falla con `illegal escape character`), y confundir `find()` con `matches()`, validando solo un fragmento del texto cuando se necesitaba que coincidiera entero, o al revés.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -385,13 +394,6 @@ Guarda una entrada aceptada, una rechazada y la razón por la que el patrón dis
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las regex aparecen en validaciones, logs, rutas y búsquedas, y un patrón mal escrito es una vulnerabilidad de denegación de servicio.
-**Fuente oficial:** [Regular Expressions (dev.java)](https://dev.java/learn/regex/), [java.util.regex.Pattern (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html).
-**Conceptos clave:** `Pattern`, `Matcher`, `find` frente a `matches`, cuantificador, límite de palabra, grupo con nombre, ReDoS.
-**Cuándo no usarlo:** para formatos estructurados (JSON, XML, URL, fechas) usa un parser o la API específica (`URI`, `LocalDate.parse`). Una regex enorme es difícil de mantener.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** extrae y valida los códigos de guía de las solicitudes de asignación antes de procesarlas.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** escribir `\d{6}` con una sola barra en un literal de Java en vez de `\\d{6}` (Java lo interpreta como escape de string y falla con `illegal escape character`), y confundir `find()` con `matches()`, validando solo un fragmento del texto cuando se necesitaba que coincidiera entero, o al revés.
 
 ### Tema 3: Dinero exacto con BigDecimal
 
@@ -415,6 +417,14 @@ flowchart LR
     B --> R["setScale con RoundingMode"]
     R --> C["compareTo para comparar"]
 ```
+
+**Fuente oficial:** [BigDecimal (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html), [Numbers and Strings (dev.java)](https://dev.java/learn/numbers-strings/).
+**Conceptos clave:** punto flotante binario, `BigDecimal`, escala, `RoundingMode`, `HALF_UP`, `HALF_EVEN`, `compareTo` frente a `equals`.
+**Cuándo no usarlo:** para cálculos científicos o gráficos, donde el rendimiento importa y un error relativo minúsculo es aceptable, `double` es lo correcto.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** calcula con `BigDecimal` la tarifa y el IVA de cada asignación y verifica que el total del día cuadre al peso.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** crear un `BigDecimal` desde un `double` (`new BigDecimal(0.1)`) en vez de desde `String`, arrastrando la imprecisión binaria original, y usar `equals` para comparar montos en vez de `compareTo` (`2.0` y `2.00` no son `equals` aunque representen la misma cantidad).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -568,13 +578,6 @@ Anota el total esperado, el total obtenido y qué política de escala o residuo 
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de redondeo en dinero son bugs reales, difíciles de detectar y con consecuencias legales.
-**Fuente oficial:** [BigDecimal (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html), [Numbers and Strings (dev.java)](https://dev.java/learn/numbers-strings/).
-**Conceptos clave:** punto flotante binario, `BigDecimal`, escala, `RoundingMode`, `HALF_UP`, `HALF_EVEN`, `compareTo` frente a `equals`.
-**Cuándo no usarlo:** para cálculos científicos o gráficos, donde el rendimiento importa y un error relativo minúsculo es aceptable, `double` es lo correcto.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** calcula con `BigDecimal` la tarifa y el IVA de cada asignación y verifica que el total del día cuadre al peso.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear un `BigDecimal` desde un `double` (`new BigDecimal(0.1)`) en vez de desde `String`, arrastrando la imprecisión binaria original, y usar `equals` para comparar montos en vez de `compareTo` (`2.0` y `2.00` no son `equals` aunque representen la misma cantidad).
 
 ### Tema 4: Assertions y diseño por contrato
 
@@ -599,6 +602,14 @@ flowchart LR
     M --> I{assert invariante}
     I -- con -ea y falla --> A[AssertionError]
 ```
+
+**Fuente oficial:** [Programming With Assertions (docs.oracle.com)](https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html), [Exceptions (dev.java)](https://dev.java/learn/exceptions/).
+**Conceptos clave:** precondición, postcondición, invariante, `assert`, `-ea`, `AssertionError`, excepción de argumento.
+**Cuándo no usarlo:** nunca uses `assert` para validar datos del usuario o de otra API ni con efectos secundarios necesarios: en producción suelen estar desactivadas.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** protege con una invariante que un mensajero nunca tenga más entregas asignadas que su capacidad.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** validar una precondición pública (datos de quien llama) con `assert` en vez de una excepción, confiando en que siempre esté activa; en producción las assertions vienen desactivadas por defecto y ese control desaparece sin avisar. También: ejecutar la suite de pruebas sin `-ea`, dejando que una invariante rota pase en silencio.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -775,13 +786,6 @@ Guarda la salida con y sin `-ea` y apunta qué condición debe cumplirse siempre
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque separar validación de entrada y verificación interna hace el código más honesto y encuentra bugs cerca de su causa.
-**Fuente oficial:** [Programming With Assertions (docs.oracle.com)](https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html), [Exceptions (dev.java)](https://dev.java/learn/exceptions/).
-**Conceptos clave:** precondición, postcondición, invariante, `assert`, `-ea`, `AssertionError`, excepción de argumento.
-**Cuándo no usarlo:** nunca uses `assert` para validar datos del usuario o de otra API ni con efectos secundarios necesarios: en producción suelen estar desactivadas.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** protege con una invariante que un mensajero nunca tenga más entregas asignadas que su capacidad.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** validar una precondición pública (datos de quien llama) con `assert` en vez de una excepción, confiando en que siempre esté activa; en producción las assertions vienen desactivadas por defecto y ese control desaparece sin avisar. También: ejecutar la suite de pruebas sin `-ea`, dejando que una invariante rota pase en silencio.
 
 ### Tema 5: ServiceLoader: plugins sin acoplar implementaciones
 
@@ -805,6 +809,14 @@ flowchart LR
     F --> M[Moto]
     F --> K[Camion]
 ```
+
+**Fuente oficial:** [ServiceLoader (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html), [Modules (dev.java)](https://dev.java/learn/modules/).
+**Conceptos clave:** servicio, proveedor, `META-INF/services`, `ServiceLoader`, carga perezosa, `uses` y `provides`.
+**Cuándo no usarlo:** dentro de una aplicación Spring, la inyección de dependencias ya resuelve el descubrimiento; usa `ServiceLoader` en librerías o aplicaciones sin contenedor.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** carga las estrategias de asignación (por cercanía, por carga) como proveedores intercambiables.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar copiar la carpeta `META-INF/services` al mismo classpath que las clases compiladas (el proveedor existe pero `ServiceLoader` reporta cero implementaciones sin lanzar ningún error), y escribir mal el nombre completo de la interfaz en el archivo de servicios en vez del nombre calificado con su paquete.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -985,13 +997,6 @@ Guarda cuántos proveedores se descubrieron y qué archivos permitieron cargarlo
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es el mecanismo estándar de extensión de Java y explica por qué un driver aparece o no aparece en tiempo de ejecución.
-**Fuente oficial:** [ServiceLoader (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ServiceLoader.html), [Modules (dev.java)](https://dev.java/learn/modules/).
-**Conceptos clave:** servicio, proveedor, `META-INF/services`, `ServiceLoader`, carga perezosa, `uses` y `provides`.
-**Cuándo no usarlo:** dentro de una aplicación Spring, la inyección de dependencias ya resuelve el descubrimiento; usa `ServiceLoader` en librerías o aplicaciones sin contenedor.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** carga las estrategias de asignación (por cercanía, por carga) como proveedores intercambiables.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar copiar la carpeta `META-INF/services` al mismo classpath que las clases compiladas (el proveedor existe pero `ServiceLoader` reporta cero implementaciones sin lanzar ningún error), y escribir mal el nombre completo de la interfaz en el archivo de servicios en vez del nombre calificado con su paquete.
 
 ### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks
 
@@ -1020,6 +1025,14 @@ sequenceDiagram
     R-->>H: 7400
     H-->>C: 7400
 ```
+
+**Fuente oficial:** [java.lang.reflect.Proxy (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Proxy.html), [Spring: Understanding AOP Proxies](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html).
+**Conceptos clave:** proxy dinámico, `InvocationHandler`, `Method.invoke`, `InvocationTargetException`, `UndeclaredThrowableException`, auto-invocación.
+**Cuándo no usarlo:** si solo necesitas envolver una clase concreta, el patrón Decorator escrito a mano es más claro y lo verifica el compilador.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** registra con un proxy cada decisión del motor de asignación sin modificar sus clases.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** relanzar `e` en vez de `e.getCause()` dentro del `catch (InvocationTargetException e)`, dejando que el llamador reciba un `UndeclaredThrowableException` en vez de la excepción original, y suponer que una llamada de un método a otro método propio de la misma clase pasa por el proxy (la auto-invocación nunca lo atraviesa).
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -1217,13 +1230,6 @@ Registra el orden de interceptación y el resultado o error que observó el llam
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque explica el comportamiento de frameworks que usas a diario y errores clásicos de entrevistas como la auto-invocación.
-**Fuente oficial:** [java.lang.reflect.Proxy (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Proxy.html), [Spring: Understanding AOP Proxies](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html).
-**Conceptos clave:** proxy dinámico, `InvocationHandler`, `Method.invoke`, `InvocationTargetException`, `UndeclaredThrowableException`, auto-invocación.
-**Cuándo no usarlo:** si solo necesitas envolver una clase concreta, el patrón Decorator escrito a mano es más claro y lo verifica el compilador.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** registra con un proxy cada decisión del motor de asignación sin modificar sus clases.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** relanzar `e` en vez de `e.getCause()` dentro del `catch (InvocationTargetException e)`, dejando que el llamador reciba un `UndeclaredThrowableException` en vez de la excepción original, y suponer que una llamada de un método a otro método propio de la misma clase pasa por el proxy (la auto-invocación nunca lo atraviesa).
 
 ### Tema 7: Internacionalización: números, monedas, fechas y orden de texto
 
@@ -1247,6 +1253,14 @@ flowchart LR
     L --> US["en-US 1,234,567.891"]
     L --> DE["de-DE 1.234.567,891 €"]
 ```
+
+**Fuente oficial:** [Internationalization (docs.oracle.com)](https://docs.oracle.com/javase/tutorial/i18n/), [Locale (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html).
+**Conceptos clave:** `Locale`, `NumberFormat`, `DateTimeFormatter`, CLDR, `Collator`, `MessageFormat`, `ResourceBundle`.
+**Cuándo no usarlo:** para datos que viajan entre sistemas (JSON, CSV, bases de datos) no uses formatos localizados: usa ISO 8601 y punto decimal. El `Locale` es solo para mostrar al usuario.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** muestra el resumen de asignaciones en el idioma y la moneda del cliente sin cambiar los datos internos.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** usar `new Locale("es-CO")` (constructor obsoleto) en vez de `Locale.forLanguageTag("es-CO")`, lo que produce un `Locale` indefinido (`und`) y formatos genéricos sin más aviso que un `warning: [deprecation]`, y ordenar texto en español con `String.compareTo`/`Collections.sort` en vez de `Collator`, dejando "Álamos" y "Ñuñoa" fuera de su posición alfabética real.
 
 #### Paso 4 · Demostración guiada desde cero
 
@@ -1410,13 +1424,279 @@ Guarda una salida para cada locale probado y anota qué convención cambió.
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque cualquier producto que crece cruza fronteras, y los errores de formato de dinero o fecha generan cobros y entregas equivocados.
-**Fuente oficial:** [Internationalization (docs.oracle.com)](https://docs.oracle.com/javase/tutorial/i18n/), [Locale (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html).
-**Conceptos clave:** `Locale`, `NumberFormat`, `DateTimeFormatter`, CLDR, `Collator`, `MessageFormat`, `ResourceBundle`.
-**Cuándo no usarlo:** para datos que viajan entre sistemas (JSON, CSV, bases de datos) no uses formatos localizados: usa ISO 8601 y punto decimal. El `Locale` es solo para mostrar al usuario.
 
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** muestra el resumen de asignaciones en el idioma y la moneda del cliente sin cambiar los datos internos.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** usar `new Locale("es-CO")` (constructor obsoleto) en vez de `Locale.forLanguageTag("es-CO")`, lo que produce un `Locale` indefinido (`und`) y formatos genéricos sin más aviso que un `warning: [deprecation]`, y ordenar texto en español con `String.compareTo`/`Collections.sort` en vez de `Collator`, dejando "Álamos" y "Ñuñoa" fuera de su posición alfabética real.
+### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
+
+**Prerrequisito:** temas «Reflexión y anotaciones en tiempo de ejecución» y «ServiceLoader: plugins sin acoplar implementaciones» de este módulo.
+
+**Al finalizar podrás:** identificar qué cargador cargó cada clase, cargar un plugin compilado aparte con un `URLClassLoader` propio y explicar por qué la delegación evita duplicar las clases del JDK.
+
+**¿Por qué es importante?** Los errores `ClassNotFoundException`, `NoClassDefFoundError` y «`X cannot be cast to X`» vienen de la carga de clases. Los servidores de aplicaciones, los frameworks y los sistemas de plugins dependen de ella. Entenderla convierte esos errores en diagnósticos de dos minutos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa JDK 17 o superior. Crea la carpeta `academia-labs/java/cargadores` con una subcarpeta `plugins/`. Compilarás un plugin aparte para que la aplicación no lo conozca al compilar.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow quiere que cada ciudad pueda agregar su propia regla de tarifa sin recompilar la aplicación. La solución es cargar, en tiempo de ejecución, clases que viven en una carpeta `plugins/`. Para hacerlo sin romper nada hay que entender cómo la JVM encuentra y carga clases.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** cargador de clases (*ClassLoader*), bootstrap, platform, application, delegación al padre, classpath, `URLClassLoader`, identidad de una clase.
+
+La JVM no carga todas las clases al arrancar: las carga **cuando se usan por primera vez**. Lo hacen los **cargadores**, organizados en una jerarquía:
+
+| Cargador | Carga | `getClassLoader()` devuelve |
+|---|---|---|
+| bootstrap | el núcleo: `java.lang`, `java.util` | `null` |
+| platform | otros módulos del JDK: `java.sql` | el cargador `platform` |
+| application | tu classpath o module path | el cargador `app` |
+
+**Delegación:** antes de buscar por su cuenta, cada cargador pregunta a su padre. Por eso `String` siempre lo carga bootstrap, aunque se lo pidas a tu cargador, y nadie puede reemplazar `java.lang.String` con una copia propia.
+
+**Identidad:** una clase se identifica por su nombre **y** su cargador. La misma clase cargada por dos cargadores son dos tipos distintos: de ahí el error «`X cannot be cast to X`».
+
+**Analogía:** los cargadores son una cadena de bibliotecas: antes de comprar un libro, cada bibliotecaria pregunta si la biblioteca central ya lo tiene. La analogía falla en que dos copias del mismo libro en bibliotecas distintas, para la JVM, son libros diferentes.
+
+**Límite de uso:** no crees cargadores propios para resolver problemas de classpath: casi siempre el arreglo es corregir dependencias. Cada cargador retiene en memoria sus clases mientras exista una referencia a él; ciérralo cuando ya no lo uses.
+
+```mermaid
+flowchart BT
+    U["URLClassLoader propio<br/>plugins/"] -->|"delega al padre"| A["application<br/>classpath"]
+    A -->|"delega"| P["platform<br/>java.sql"]
+    P -->|"delega"| B["bootstrap<br/>java.lang"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/cargadores/plugins/TarifaPlugin.java`:
+
+```java
+public class TarifaPlugin {
+    @Override
+    public String toString() {
+        return "tarifa plana de 5000";
+    }
+}
+```
+
+Archivo `academia-labs/java/cargadores/Cargadores.java`:
+
+```java
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
+
+public class Cargadores {
+    public static void main(String[] args) throws Exception {
+        // 1) Cada clase recuerda qué cargador la cargó.
+        System.out.println("String: " + nombre(String.class.getClassLoader()));
+        System.out.println("java.sql.Date: " + nombre(java.sql.Date.class.getClassLoader()));
+        System.out.println("Cargadores: " + nombre(Cargadores.class.getClassLoader()));
+
+        // 2) Un cargador propio que lee clases de la carpeta plugins/.
+        Path plugins = Path.of("plugins");
+        try (var cargador = new URLClassLoader(new URL[]{plugins.toUri().toURL()}, Cargadores.class.getClassLoader())) {
+            Class<?> tarifa = cargador.loadClass("TarifaPlugin");
+            Object instancia = tarifa.getDeclaredConstructor().newInstance();
+            System.out.println("Plugin cargado por: " + (tarifa.getClassLoader() == cargador ? "URLClassLoader propio" : "otro"));
+            System.out.println("Resultado del plugin: " + instancia);
+
+            // 3) Delegación: pedir java.lang.String al cargador propio devuelve la MISMA clase.
+            System.out.println("String es la misma clase: " + (cargador.loadClass("java.lang.String") == String.class));
+        }
+    }
+
+    static String nombre(ClassLoader cl) {
+        return cl == null ? "bootstrap (null)" : cl.getName();
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/cargadores
+javac -d plugins plugins/TarifaPlugin.java
+javac Cargadores.java
+java -cp . Cargadores
+```
+
+**Explicación por bloques:** El plugin se compila en `plugins/` y **no** está en el classpath de la aplicación, así que `Cargadores` no lo conoce al compilar. El primer bloque imprime el cargador de tres clases: `null` significa bootstrap. El segundo crea un `URLClassLoader` cuyo padre es el cargador de la aplicación, carga `TarifaPlugin` por nombre y crea una instancia con reflexión. El tercero pide `java.lang.String` a ese cargador y obtiene exactamente la misma clase, porque la delegación la resolvió en bootstrap. El `try` cierra el cargador al terminar.
+
+![Captura de terminal: String lo carga bootstrap, java.sql.Date platform, Cargadores app, y el plugin lo carga el URLClassLoader propio](content/figures/java/class-loading.svg)
+
+**Resultado esperado:**
+
+```text
+String: bootstrap (null)
+java.sql.Date: platform
+Cargadores: app
+Plugin cargado por: URLClassLoader propio
+Resultado del plugin: tarifa plana de 5000
+String es la misma clase: true
+```
+
+**Fallo deliberado:** compila el plugin también en la carpeta actual (`javac -d . plugins/TarifaPlugin.java`) y vuelve a ejecutar. **Error esperado:** «Plugin cargado por: otro». **Diagnóstico:** la delegación preguntó primero al cargador de la aplicación, que encontró `TarifaPlugin.class` en el classpath. El plugin ya no está aislado. Borra el `.class` de la carpeta actual.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el ejemplo y explica la palabra `null` de la primera línea.
+2. **Variación:** cambia el texto del plugin, recompila solo el plugin y ejecuta sin recompilar `Cargadores`.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica qué cargador encontró la clase.
+4. **Integración:** crea un segundo `URLClassLoader` con la misma carpeta y comprueba que las dos clases `TarifaPlugin` no son iguales (`==` da `false`).
+5. **Diseño:** define una interfaz `Tarifa` en la aplicación, haz que el plugin la implemente y explica por qué la interfaz debe cargarla el padre.
+
+**Pista:** ante un `ClassCastException` entre clases con el mismo nombre, imprime `getClassLoader()` de las dos.
+
+#### Paso 6 · Práctica independiente
+
+Haz que `Cargadores` lea todos los `.class` de `plugins/`, cargue cada uno que implemente `Tarifa` y calcule la tarifa de un envío de 3 kilos con cada plugin.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras los tres cargadores del JDK y qué carga cada uno.
+- [ ] El programa imprime las seis líneas esperadas.
+- [ ] Reprodujiste el plugin cargado por el cargador equivocado.
+- [ ] Explicas por qué dos cargadores producen dos tipos distintos.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** poner los plugins en el classpath de la aplicación, no cerrar los cargadores y comparar clases solo por su nombre. **Siguiente paso:** el tema siguiente, MethodHandles, invoca métodos de clases cargadas así de forma más rápida y tipada que la reflexión clásica.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, carga las reglas de tarifa por ciudad desde `plugins/` con un `URLClassLoader` y una interfaz `Tarifa` definida en la aplicación.
+
+**Fuente oficial:** [Java SE — ClassLoader](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ClassLoader.html) y [JVM Specification — Loading, Linking, and Initializing](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html).
+
+### Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min
+
+**Prerrequisito:** tema «Reflexión y anotaciones en tiempo de ejecución» de este módulo y «Condiciones de carrera y sincronización» (módulo 5).
+
+**Al finalizar podrás:** obtener un `MethodHandle` a un método, adaptarlo fijando un argumento, y usar un `VarHandle` para incrementar un campo de forma atómica desde varios hilos.
+
+**¿Por qué es importante?** La reflexión clásica (`Method.invoke`) revisa permisos y empaqueta argumentos en cada llamada. Los `MethodHandle` se resuelven una vez y la JVM los puede optimizar como una llamada normal. Los `VarHandle` son la base de las clases atómicas del JDK.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa JDK 21 o superior (el ejemplo usa `try` con un `ExecutorService`). Crea la carpeta `academia-labs/java/manejadores`.
+
+#### Paso 2 · Contexto y caso real
+
+El motor de reglas de RutaFlow llama miles de veces por segundo a métodos elegidos por configuración. Con `Method.invoke` era el punto más lento del perfil. Cambiarlo a `MethodHandle` y guardar el manejador en un campo final eliminó ese costo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `MethodHandles.Lookup`, `MethodType`, `MethodHandle`, `invokeExact`, adaptación (`insertArguments`), `VarHandle`, operación atómica, CAS (*compare-and-set*).
+
+Un **`MethodHandle`** es una referencia tipada a un método, constructor o campo. Se obtiene con un `Lookup`, que respeta las reglas de acceso del lugar donde lo creas, y un `MethodType` (tipo de retorno y de parámetros).
+
+- `invokeExact` exige que los tipos coincidan exactamente, incluido el cast del resultado: así la JVM no convierte nada.
+- Los manejadores se pueden **adaptar**: `insertArguments` fija argumentos, `filterReturnValue` transforma el resultado, etc.
+
+Un **`VarHandle`** da acceso a un campo con distintos modos de memoria: normal, `volatile`, o atómico (`getAndAdd`, `compareAndSet`). `AtomicInteger` está construido con esta misma idea.
+
+**Analogía:** la reflexión es preguntar por la dirección de una persona cada vez que le llevas un paquete; un `MethodHandle` es guardar la dirección exacta una vez y usarla siempre. La analogía falla en que, si los tipos no coinciden exactamente, el `MethodHandle` rechaza el paquete en lugar de adaptarlo.
+
+**Límite de uso:** no los uses para llamadas ocasionales ni en código de negocio común: un método normal o una interfaz funcional son más claros. `invokeExact` falla con `WrongMethodTypeException` si olvidas el cast exacto.
+
+```mermaid
+flowchart LR
+    L["Lookup"] -->|"findVirtual + MethodType"| M["MethodHandle describir"]
+    M -->|"insertArguments(envio)"| P["MethodHandle paraEnv42"]
+    L -->|"findVarHandle"| V["VarHandle intentos"]
+    V -->|"getAndAdd desde 4 hilos"| C["campo intentos = 1000"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/java/manejadores/Manejadores.java`:
+
+```java
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
+import java.util.concurrent.Executors;
+
+public class Manejadores {
+    static class Envio {
+        volatile int intentos; // lo modificará un VarHandle de forma atómica
+        final String codigo;
+        Envio(String codigo) { this.codigo = codigo; }
+        String describir(String prefijo) { return prefijo + " " + codigo; }
+    }
+
+    public static void main(String[] args) throws Throwable {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+        // 1) MethodHandle: una referencia tipada a un método, resuelta una sola vez.
+        MethodHandle describir = lookup.findVirtual(Envio.class, "describir",
+                MethodType.methodType(String.class, String.class));
+        Envio envio = new Envio("ENV-42");
+        System.out.println((String) describir.invokeExact(envio, "Envío"));
+
+        // 2) Adaptar el manejador: fijar el primer argumento (como una función parcial).
+        MethodHandle paraEnv42 = MethodHandles.insertArguments(describir, 0, envio);
+        System.out.println((String) paraEnv42.invokeExact("Seguimiento de"));
+
+        // 3) VarHandle: acceso atómico a un campo sin AtomicInteger.
+        VarHandle intentos = lookup.findVarHandle(Envio.class, "intentos", int.class);
+        try (var hilos = Executors.newFixedThreadPool(4)) {
+            for (int i = 0; i < 1000; i++) hilos.submit(() -> intentos.getAndAdd(envio, 1));
+        }
+        System.out.println("Intentos registrados: " + envio.intentos);
+        System.out.println("CAS 1000 -> 0: " + intentos.compareAndSet(envio, 1000, 0) + ", ahora " + envio.intentos);
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/java/manejadores
+java Manejadores.java
+```
+
+**Explicación por bloques:** `findVirtual` busca el método de instancia `describir` con el tipo `(String)String`; el primer argumento de `invokeExact` es el objeto receptor y el cast `(String)` es obligatorio. `insertArguments` crea un manejador nuevo con el envío ya fijado. `findVarHandle` da acceso al campo `intentos`; cuatro hilos llaman `getAndAdd` mil veces y ninguna suma se pierde. Por último, `compareAndSet` cambia el valor de 1000 a 0 solo si sigue siendo 1000.
+
+![Captura de terminal: el MethodHandle describe ENV-42, el manejador adaptado imprime Seguimiento de ENV-42 y el VarHandle registra 1000 intentos](content/figures/java/method-var-handles.svg)
+
+**Resultado esperado:**
+
+```text
+Envío ENV-42
+Seguimiento de ENV-42
+Intentos registrados: 1000
+CAS 1000 -> 0: true, ahora 0
+```
+
+**Fallo deliberado:** quita el cast `(String)` de la primera llamada y escribe `Object r = describir.invokeExact(envio, "Envío");`. **Error esperado:** `WrongMethodTypeException: handle's method type (Envio,String)String but found (Envio,String)Object`. **Diagnóstico:** `invokeExact` compara el tipo de la llamada con el del manejador, incluido el retorno. Usa el cast exacto o `invoke`, que sí adapta tipos.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el ejemplo y explica qué recibe `invokeExact` como primer argumento.
+2. **Variación:** reemplaza `getAndAdd` por `intentos.set(envio, (int) intentos.get(envio) + 1)` y ejecuta varias veces: ¿llega a 1000?
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el tipo que esperaba el manejador.
+4. **Integración:** mide con un bucle de un millón de llamadas `Method.invoke` contra `invokeExact` guardado en un `static final`.
+5. **Diseño:** decide si el motor de reglas de RutaFlow debería usar `MethodHandle` o una interfaz funcional, y justifica.
+
+**Pista:** en `invokeExact`, los tipos de la llamada se leen tal como los escribiste en el código, incluido el cast.
+
+#### Paso 6 · Práctica independiente
+
+Crea un pequeño «despachador» que reciba el nombre de un método de `Envio` como texto, lo resuelva una vez con `Lookup` y lo guarde en un `Map<String, MethodHandle>` para llamarlo después sin volver a buscarlo.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre `invokeExact` e `invoke`.
+- [ ] El programa imprime las cuatro líneas esperadas.
+- [ ] Reprodujiste `WrongMethodTypeException`.
+- [ ] Explicas por qué `getAndAdd` no pierde sumas y `get` + `set` sí.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `invokeExact` sin el cast exacto, crear el manejador en cada llamada y usar `get` y `set` separados creyendo que son atómicos. **Siguiente paso:** el tema «Proxies dinámicos» muestra cómo los frameworks interceptan llamadas a métodos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el motor de reglas de RutaFlow, resuelve una vez los métodos configurados como `MethodHandle` y guárdalos en un mapa inmutable.
+
+**Fuente oficial:** [Java SE — MethodHandle](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/MethodHandle.html) y [Java SE — VarHandle](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/VarHandle.html).
 
 ## Construcción guiada del capítulo
 

@@ -26,47 +26,6 @@ flowchart LR
 
 Parte de una carpeta vacía y crea `RutaFlowApp` con tests incluidos. En el target de la app crea `Dominio/Envio.swift` con una versión local mínima de `Envio` y `Dominio/EsEnvioAtrasado.swift` con la regla usada por ambas pruebas; no importes archivos de otro tema. En el target `RutaFlowAppTests`, crea `EsEnvioAtrasadoXCTest.swift` para la primera variante y `EsEnvioAtrasadoTesting.swift` para la segunda, cada uno con su import correspondiente.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-// XCTest clásico
-import XCTest
-final class EsEnvioAtrasadoTests: XCTestCase {
-    func testEnvioVencidoEstaAtrasado() {
-        let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
-        XCTAssertTrue(EsEnvioAtrasado().ejecutar(envio))
-    }
-}
-
-// Swift Testing
-import Testing
-struct EsEnvioAtrasadoTests {
-    @Test func envioVencidoEstaAtrasado() {
-        let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
-        #expect(EsEnvioAtrasado().ejecutar(envio))
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: ambos tests verifican exactamente la misma regla de `EsEnvioAtrasado` (Módulo 8) sobre un envío con fecha estimada una hora en el pasado; el de Swift Testing es más corto porque `#expect` reemplaza la elección entre `XCTAssertTrue`, `XCTAssertEqual` y el resto de variantes.
-
-#### Paso 5 · Práctica guiada
-Pista: en el test de Swift Testing, cambiá `addingTimeInterval(-3600)` por `addingTimeInterval(3600)` (una hora en el futuro) sin cambiar el nombre del test — ese es el fallo deliberado: el test se sigue llamando "envioVencidoEstaAtrasado" pero ahora verifica justo lo contrario, y falla con un mensaje que no deja claro por qué.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `-3600`, y agregá un segundo test (en Swift Testing) que confirme que un envío con fecha estimada en el futuro NO está atrasado, usando `#expect(!EsEnvioAtrasado().ejecutar(envio))`.
-
-* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
-
-#### Paso 7 · Cierre
-Entregá los dos tests equivalentes del Paso 4, el fallo por fecha invertida del Paso 5, y el test del caso contrario del Paso 6; explicá con tus propias palabras qué gana Swift Testing frente a XCTest clásico en este caso, y qué NO cambia entre ambos (la regla de negocio verificada es idéntica). Siguiente paso: estudia cómo testear código async. Errores comunes: nombre de test que no coincide con lo que realmente verifica, elegir el `XCTAssert` incorrecto, y mezclar XCTest y Swift Testing sin un criterio claro de cuándo usar cada uno. Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/xctest.
 **¿Por qué es importante?** Porque Swift Testing simplifica la sintaxis de verificación sin cambiar qué se verifica, y elegir mal entre ambos frameworks es un error de ergonomía, no de lógica.
 **Conceptos clave:** sintaxis más concisa de Swift Testing, misma capacidad fundamental de verificación que XCTest.
 
@@ -108,6 +67,48 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 #expect(Calculadora().sumar(2, 3) == 5)
 ```
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+// XCTest clásico
+import XCTest
+final class EsEnvioAtrasadoTests: XCTestCase {
+    func testEnvioVencidoEstaAtrasado() {
+        let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
+        XCTAssertTrue(EsEnvioAtrasado().ejecutar(envio))
+    }
+}
+
+// Swift Testing
+import Testing
+struct EsEnvioAtrasadoTests {
+    @Test func envioVencidoEstaAtrasado() {
+        let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
+        #expect(EsEnvioAtrasado().ejecutar(envio))
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
+```
+O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
+
+Resultado esperado: ambos tests verifican exactamente la misma regla de `EsEnvioAtrasado` (Módulo 8) sobre un envío con fecha estimada una hora en el pasado; el de Swift Testing es más corto porque `#expect` reemplaza la elección entre `XCTAssertTrue`, `XCTAssertEqual` y el resto de variantes.
+
+#### Paso 5 · Práctica guiada
+Pista: en el test de Swift Testing, cambiá `addingTimeInterval(-3600)` por `addingTimeInterval(3600)` (una hora en el futuro) sin cambiar el nombre del test — ese es el fallo deliberado: el test se sigue llamando "envioVencidoEstaAtrasado" pero ahora verifica justo lo contrario, y falla con un mensaje que no deja claro por qué.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `-3600`, y agregá un segundo test (en Swift Testing) que confirme que un envío con fecha estimada en el futuro NO está atrasado, usando `#expect(!EsEnvioAtrasado().ejecutar(envio))`.
+
+* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, escribe pruebas de la lógica de entregas con XCTest y Swift Testing.
+
+#### Paso 7 · Cierre
+Entregá los dos tests equivalentes del Paso 4, el fallo por fecha invertida del Paso 5, y el test del caso contrario del Paso 6; explicá con tus propias palabras qué gana Swift Testing frente a XCTest clásico en este caso, y qué NO cambia entre ambos (la regla de negocio verificada es idéntica). Siguiente paso: estudia cómo testear código async. Errores comunes: nombre de test que no coincide con lo que realmente verifica, elegir el `XCTAssert` incorrecto, y mezclar XCTest y Swift Testing sin un criterio claro de cuándo usar cada uno. Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/xctest.
+
 ### Tema 2: Testing de código async
 
 #### Paso 1 · Objetivo y preparación
@@ -131,31 +132,6 @@ sequenceDiagram
 
 Crea otro proyecto `RutaFlowApp` desde una carpeta vacía, con target de unit tests. En el target de la app escribe `ServicioConfirmacion.swift` con el modelo de respuesta, el error y una función `confirmarEntrega` inyectable; en el target de tests crea `ServicioConfirmacionFalso.swift`, que devuelve resultados controlados sin red, y `ConfirmacionEntregaAsyncTests.swift`, donde van las pruebas `async` de éxito y PIN incorrecto. Estos archivos son completos para esta práctica: no reutilices el cliente de ningún tema anterior.
 
-#### Paso 4 · Demostración guiada desde cero
-```swift
-@Test func confirmarEntregaDelConductorAsignado() async throws {
-    let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
-    #expect(resultado.estado == .entregado)
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: el test completa cuando `confirmarEntrega` efectivamente retorna, sin ningún `XCTestExpectation` ni timeout configurado a mano — `await` dentro de un test `async` espera exactamente como en código de producción.
-
-#### Paso 5 · Práctica guiada
-Pista: quitá `async` de la firma del test pero dejá el `await` adentro — ese es el fallo deliberado: el proyecto deja de compilar, porque `await` solo es válido dentro de un contexto asíncrono, y un test sin `async` no lo es.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `async`, y agregá un segundo test que llame a `confirmarEntrega` con un PIN incorrecto y confirme (con `#expect(throws:)` o un `do/catch`) que lanza el error esperado, en vez de retornar un resultado "entregado" falso.
-
-#### Paso 7 · Cierre
-Entregá el test async del Paso 4, el error de compilación del Paso 5, y el test del PIN incorrecto del Paso 6; explicá por qué testear una función `async throws` con `await` directo en el test es más simple que el modelo de callbacks + `XCTestExpectation`. Siguiente paso: estudia UI Tests con XCUITest. Errores comunes: olvidar `async` en la firma del test, testear solo el camino feliz sin el camino de error, y usar timeouts arbitrariamente largos "por si acaso". Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/swift/concurrency.
 **¿Por qué es importante?** Porque marcar el test como `async` permite usar `await` directo, sin expectativas manuales, simplificando el testing de funciones `async throws` como `confirmarEntrega`.
 **Conceptos clave:** el test mismo puede ser una función suspendible, sin expectativas manuales.
 
@@ -174,17 +150,34 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 
 **Implicación práctica:** Marcar el test mismo como `async` permite usar `await` directamente, sin necesidad de expectativas manuales (`XCTestExpectation`) como en el modelo basado en callbacks previo, simplificando considerablemente el testing de código asíncrono.
 
-**Código del ejemplo:**
+* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
 
+#### Paso 4 · Demostración guiada desde cero
 ```swift
-@Test func obtieneUsuario() async throws {
-    let usuario = try await servicio.obtenerUsuario(id: "1")
-    #expect(usuario.nombre == "Ana")
+@Test func confirmarEntregaDelConductorAsignado() async throws {
+    let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
+    #expect(resultado.estado == .entregado)
 }
 ```
 
-* Código: escribe la práctica en los archivos de vista y tests de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, prueba la carga asíncrona de envíos con expectativas controladas.
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
+```
+O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
+
+Resultado esperado: el test completa cuando `confirmarEntrega` efectivamente retorna, sin ningún `XCTestExpectation` ni timeout configurado a mano — `await` dentro de un test `async` espera exactamente como en código de producción.
+
+#### Paso 5 · Práctica guiada
+Pista: quitá `async` de la firma del test pero dejá el `await` adentro — ese es el fallo deliberado: el proyecto deja de compilar, porque `await` solo es válido dentro de un contexto asíncrono, y un test sin `async` no lo es.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `async`, y agregá un segundo test que llame a `confirmarEntrega` con un PIN incorrecto y confirme (con `#expect(throws:)` o un `do/catch`) que lanza el error esperado, en vez de retornar un resultado "entregado" falso.
+
+#### Paso 7 · Cierre
+Entregá el test async del Paso 4, el error de compilación del Paso 5, y el test del PIN incorrecto del Paso 6; explicá por qué testear una función `async throws` con `await` directo en el test es más simple que el modelo de callbacks + `XCTestExpectation`. Siguiente paso: estudia UI Tests con XCUITest. Errores comunes: olvidar `async` en la firma del test, testear solo el camino feliz sin el camino de error, y usar timeouts arbitrariamente largos "por si acaso". Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/swift/concurrency.
 
 ### Tema 3: UI Tests con XCUITest
 
@@ -260,9 +253,9 @@ func testConfirmarEntregaDesdeLaUI() {
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+O ejecuta las pruebas en Xcode con ⌘U. Si `iPhone 17` no está instalado, usa un nombre de `xcrun simctl list devices available`.
 
 Resultado esperado: el test lanza la app real, escribe guía y PIN como lo haría un conductor, y confirma que "Entrega confirmada" aparece en pantalla dentro de 5 segundos — valida el flujo completo, no solo la función `confirmarEntrega` en memoria.
 

@@ -38,37 +38,6 @@ graph TD
     style E fill:#e8f5e9
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-```tsx
-interface EnvioCardProps {
-  guia: string;
-  direccion: string;
-  children?: React.ReactNode;
-}
-
-function EnvioCard({ guia, direccion, children }: EnvioCardProps) {
-  return <div><h3>{guia}</h3><p>{direccion}</p>{children}</div>;
-}
-```
-
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
-
-```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
-npm run dev
-```
-
-Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción. Ejecuta `npm test` para comprobar las pruebas del tema.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá `guia: string` a `guia: any` "para que compile rápido mientras terminás otra cosa" — ese es el fallo deliberado: ahora `<EnvioCard guia={123} direccion="Calle 10" />` (pasando un número) compila sin ningún error, aunque el resto del código de `EnvioCard` asuma que `guia` siempre es un string.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcional `destacado?: boolean`, confirmando que usar `EnvioCard` sin esa prop sigue compilando (por ser opcional) pero pasar un valor del tipo incorrecto sigue siendo rechazado. Tipa las props de `EnvioCard` en el proyecto integrador RutaFlow y verifica que una prop opcional omitida siga compilando.
-
-#### Paso 7 · Cierre
-Entregá `EnvioCard` tipada del Paso 4, el `any` que oculta el error del Paso 5, y la prop opcional del Paso 6; explicá por qué `any` no es "un tipo más flexible" sino la desactivación completa de la verificación de tipos para ese valor. Siguiente paso: estudia hooks genéricos. Errores comunes: usar `any` para evitar pensar el tipo correcto, tipar `children` como `React.ReactElement` cuando el componente acepta contenido arbitrario, y marcar como opcional una prop que en realidad siempre debería proporcionarse. Fuentes oficiales: https://react.dev/learn/typescript y https://www.typescriptlang.org/docs/handbook/2/objects.html.
 **¿Por qué es importante?** Tipar las props detecta en tiempo de compilación errores de uso del componente que de otro modo solo se manifestarían en tiempo de ejecución, potencialmente en producción.
 **Conceptos clave:** `interface`, `React.ReactNode`, props opcionales.
 
@@ -102,6 +71,38 @@ function Tarjeta({ titulo, children, onSeleccionar }: TarjetaProps) {
 
 
 **Límites y decisión de uso:** Tipar props detecta errores de desarrollo, pero no valida JSON remoto ni asegura semántica accesible de children. Valida datos externos y usa contratos más precisos cuando un componente necesita acciones o estructura determinadas.
+
+#### Paso 4 · Demostración guiada desde cero
+```tsx
+interface EnvioCardProps {
+  guia: string;
+  direccion: string;
+  children?: React.ReactNode;
+}
+
+function EnvioCard({ guia, direccion, children }: EnvioCardProps) {
+  return <div><h3>{guia}</h3><p>{direccion}</p>{children}</div>;
+}
+```
+
+**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+
+```bash
+npm create vite@latest demo-react -- --template react
+cd demo-react && npm install
+npm run dev
+```
+
+Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción. Ejecuta `npm test` para comprobar las pruebas del tema.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá `guia: string` a `guia: any` "para que compile rápido mientras terminás otra cosa" — ese es el fallo deliberado: ahora `<EnvioCard guia={123} direccion="Calle 10" />` (pasando un número) compila sin ningún error, aunque el resto del código de `EnvioCard` asuma que `guia` siempre es un string.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcional `destacado?: boolean`, confirmando que usar `EnvioCard` sin esa prop sigue compilando (por ser opcional) pero pasar un valor del tipo incorrecto sigue siendo rechazado. Tipa las props de `EnvioCard` en el proyecto integrador RutaFlow y verifica que una prop opcional omitida siga compilando.
+
+#### Paso 7 · Cierre
+Entregá `EnvioCard` tipada del Paso 4, el `any` que oculta el error del Paso 5, y la prop opcional del Paso 6; explicá por qué `any` no es "un tipo más flexible" sino la desactivación completa de la verificación de tipos para ese valor. Siguiente paso: estudia hooks genéricos. Errores comunes: usar `any` para evitar pensar el tipo correcto, tipar `children` como `React.ReactElement` cuando el componente acepta contenido arbitrario, y marcar como opcional una prop que en realidad siempre debería proporcionarse. Fuentes oficiales: https://react.dev/learn/typescript y https://www.typescriptlang.org/docs/handbook/2/objects.html.
 
 ### Tema 2: Hooks genéricos
 

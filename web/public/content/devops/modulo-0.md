@@ -824,6 +824,15 @@ flowchart LR
     A --> S[sudo: solo systemctl restart despacho]
 ```
 
+**¿Por qué es importante?** porque usuarios compartidos y `sudo` sin límites son de los hallazgos más comunes en auditorías de seguridad, y el principio de mínimo privilegio empieza en el sistema operativo.
+**Fuente oficial:** [Ubuntu Server: User management](https://documentation.ubuntu.com/server/how-to/security/user-management/), [sudoers(5)](https://man7.org/linux/man-pages/man5/sudoers.5.html).
+**Conceptos clave:** uid y gid, grupo primario y secundario, `chown`, `chmod`, bit setgid, `usermod -aG`, `sudoers.d`, `visudo -c`, mínimo privilegio.
+**Cuándo no usarlo:** en contenedores y plataformas gestionadas no crees usuarios interactivos: define un usuario no root en la imagen (`USER` en el Dockerfile) y gestiona el acceso con la identidad de la plataforma (IAM, RBAC).
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** define el usuario no root con el que corre el agente de despliegue y el comando exacto que puede ejecutar con sudo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** usar `usermod -G despacho caro` en vez de `-aG` — sin la `-a`, `-G` reemplaza TODOS los grupos secundarios de `caro`, sacándolo de cualquier otro grupo al que ya perteneciera en vez de solo sumarle `despacho`.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -909,14 +918,7 @@ Agrega a `caro` al grupo `despacho` sin quitarle sus otros grupos y comprueba qu
 Escribe una regla de sudo que permita a todo el grupo `despacho` (`%despacho`) ver el journal del servicio, pero no reiniciarlo. Valídala con `visudo -cf` y `sudo -l -U`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque usuarios compartidos y `sudo` sin límites son de los hallazgos más comunes en auditorías de seguridad, y el principio de mínimo privilegio empieza en el sistema operativo.
-**Fuente oficial:** [Ubuntu Server: User management](https://documentation.ubuntu.com/server/how-to/security/user-management/), [sudoers(5)](https://man7.org/linux/man-pages/man5/sudoers.5.html).
-**Conceptos clave:** uid y gid, grupo primario y secundario, `chown`, `chmod`, bit setgid, `usermod -aG`, `sudoers.d`, `visudo -c`, mínimo privilegio.
-**Cuándo no usarlo:** en contenedores y plataformas gestionadas no crees usuarios interactivos: define un usuario no root en la imagen (`USER` en el Dockerfile) y gestiona el acceso con la identidad de la plataforma (IAM, RBAC).
 
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** define el usuario no root con el que corre el agente de despliegue y el comando exacto que puede ejecutar con sudo.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** usar `usermod -G despacho caro` en vez de `-aG` — sin la `-a`, `-G` reemplaza TODOS los grupos secundarios de `caro`, sacándolo de cualquier otro grupo al que ya perteneciera en vez de solo sumarle `despacho`.
 
 ### Tema 11: systemd: servicios, timers y logs con journalctl
 
@@ -940,6 +942,15 @@ flowchart LR
     P -- stdout --> J[(journal)]
     J --> Q[journalctl -u reporte-despacho]
 ```
+
+**¿Por qué es importante?** porque systemd gestiona los servicios de casi todos los servidores Linux, y saber leer el journal es lo primero en un incidente.
+**Fuente oficial:** [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html), [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html), [journalctl(1)](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html).
+**Conceptos clave:** unidad, `.service`, `.timer`, `OnCalendar`, `Persistent`, `Type=oneshot`, journal, `journalctl -u`, `systemd-analyze verify`, endurecimiento con `ProtectHome` y `NoNewPrivileges`.
+**Cuándo no usarlo:** dentro de contenedores no uses systemd: el orquestador (Docker, Kubernetes) cumple ese papel con políticas de reinicio, CronJobs y logs del contenedor.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** ejecuta el agente de despliegue como servicio de systemd con usuario propio y revisa sus logs con journalctl.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** copiar un `.service` o `.timer` editado a `/etc/systemd/system/` y pasar directo a `systemctl enable --now` sin `daemon-reload` — systemd sigue usando su caché interna de la unidad vieja hasta que recargás, así que el cambio recién editado no se aplica aunque el archivo en disco ya esté actualizado.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -1034,14 +1045,7 @@ Agrega al servicio `Restart=on-failure` no aplica a `oneshot`; en su lugar agreg
 En una máquina virtual con systemd real, habilita el timer, fuerza una ejecución, provoca un error (borra `pendientes.csv`) y encuentra el mensaje con `journalctl -u reporte-despacho.service -p err`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque systemd gestiona los servicios de casi todos los servidores Linux, y saber leer el journal es lo primero en un incidente.
-**Fuente oficial:** [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html), [systemd.service(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html), [journalctl(1)](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html).
-**Conceptos clave:** unidad, `.service`, `.timer`, `OnCalendar`, `Persistent`, `Type=oneshot`, journal, `journalctl -u`, `systemd-analyze verify`, endurecimiento con `ProtectHome` y `NoNewPrivileges`.
-**Cuándo no usarlo:** dentro de contenedores no uses systemd: el orquestador (Docker, Kubernetes) cumple ese papel con políticas de reinicio, CronJobs y logs del contenedor.
 
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** ejecuta el agente de despliegue como servicio de systemd con usuario propio y revisa sus logs con journalctl.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** copiar un `.service` o `.timer` editado a `/etc/systemd/system/` y pasar directo a `systemctl enable --now` sin `daemon-reload` — systemd sigue usando su caché interna de la unidad vieja hasta que recargás, así que el cambio recién editado no se aplica aunque el archivo en disco ya esté actualizado.
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

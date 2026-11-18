@@ -14,6 +14,25 @@ El pipeline local de RutaFlow arranca con `docker compose up`, y la API falla la
 #### Paso 3 · Teoría, modelo mental y analogía
 `depends_on` sin condición ordena el arranque de contenedores, pero no garantiza disponibilidad del servicio interno; un `healthcheck` define una prueba repetible de "listo", y `condition: service_healthy` hace que Compose espere ese estado antes de arrancar el dependiente. La analogía es esperar a que el semáforo esté en verde, no solo a que el poste exista.
 
+**¿Por qué es importante?** Un arranque local que "funciona la mayoría de las veces" por orden de contenedores esconde una condición de carrera que reaparece en CI o en un despliegue real bajo más carga.
+**Conceptos clave:** healthcheck, depends_on, service_healthy, BuildKit, multi-stage build, cache mount, profile y readiness.
+
+* Código: `docker-compose.yml`
+* Proyecto: en el proyecto integrador RutaFlow, aplica límites, healthchecks y perfiles al compose.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant C as docker compose up
+  participant D as db
+  participant A as api
+  C->>D: start
+  D-->>D: healthcheck pg_isready (reintentos)
+  D-->>C: healthy
+  C->>A: start (solo tras healthy)
+```
+
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea manualmente todos los archivos del proyecto:
 
@@ -125,24 +144,7 @@ Detén solo `db` después de arrancar y comprueba que la API devuelve 503; vuelv
 
 #### Paso 7 · Cierre
 Entregá el compose con healthcheck del Paso 4, el bloqueo por dependencia unhealthy del Paso 5, y el ajuste de reintentos del Paso 6; explicá la diferencia entre "el contenedor existe" y "el servicio está listo". Siguiente paso: aplica el mismo principio de disponibilidad verificada a Kubernetes con probes. Errores comunes: confiar en `depends_on` sin condición para servicios con arranque lento, healthchecks que prueban el proceso en vez del servicio real, y timeouts de healthcheck más cortos que el arranque real del servicio. Fuentes oficiales: https://docs.docker.com/compose/compose-file/05-services/#healthcheck y https://docs.docker.com/compose/compose-file/05-services/#depends_on.
-**¿Por qué es importante?** Un arranque local que "funciona la mayoría de las veces" por orden de contenedores esconde una condición de carrera que reaparece en CI o en un despliegue real bajo más carga.
-**Conceptos clave:** healthcheck, depends_on, service_healthy, BuildKit, multi-stage build, cache mount, profile y readiness.
 
-* Código: `docker-compose.yml`
-* Proyecto: en el proyecto integrador RutaFlow, aplica límites, healthchecks y perfiles al compose.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant C as docker compose up
-  participant D as db
-  participant A as api
-  C->>D: start
-  D-->>D: healthcheck pg_isready (reintentos)
-  D-->>C: healthy
-  C->>A: start (solo tras healthy)
-```
 ### Tema 2: Kubernetes extensible y Helm avanzado
 
 #### Paso 1 · Objetivo y preparación
@@ -153,6 +155,24 @@ Un `helm upgrade` de RutaFlow despliega la nueva versión de la API al mismo tie
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Los hooks de Helm (`pre-upgrade`, `post-upgrade`) ejecutan recursos en una fase separada del ciclo de release, y `helm.sh/hook-weight` ordena múltiples hooks dentro de la misma fase; sin un hook que bloquee, Helm continúa el upgrade del Deployment sin esperar a que el Job termine. La analogía es repavimentar una calle mientras los autos siguen circulando, en vez de cerrarla hasta terminar.
+
+**¿Por qué es importante?** Un chart de Helm sin hooks ordenados puede pasar todas las pruebas manuales y aun así causar una ventana real de errores en cada despliegue a producción.
+**Conceptos clave:** Helm hook, hook-weight, hook-delete-policy, Job, release, CRD, values override y upgrade.
+
+* Código: `chart/templates/hooks/migrate.yaml`
+* Proyecto: en el proyecto integrador RutaFlow, empaqueta el despliegue en un chart con values por entorno.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant H as helm upgrade
+  participant J as Job (pre-upgrade)
+  participant D as Deployment
+  H->>J: ejecutar migración
+  J-->>H: completado (o falla y detiene)
+  H->>D: reemplazar pods (solo si J OK)
+```
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea la estructura mínima de tu propio chart:
@@ -216,23 +236,7 @@ Corregí el Paso 5 restaurando la annotation `pre-upgrade`, y agregá un segundo
 
 #### Paso 7 · Cierre
 Entregá el hook `pre-upgrade` del Paso 4, la carrera de tiempos del Paso 5, y la verificación `post-upgrade` del Paso 6; explicá por qué un recurso "normal" del chart no tiene garantía de orden frente a un hook explícito. Siguiente paso: estudia cómo un service mesh añade control de tráfico entre versiones. Errores comunes: Jobs de migración sin `hook-delete-policy` que acumulan ejecuciones viejas, hooks sin `hook-weight` cuando el orden entre varios hooks importa, y no verificar el resultado del hook antes de continuar. Fuentes oficiales: https://helm.sh/docs/topics/charts_hooks/ y https://helm.sh/docs/chart_template_guide/.
-**¿Por qué es importante?** Un chart de Helm sin hooks ordenados puede pasar todas las pruebas manuales y aun así causar una ventana real de errores en cada despliegue a producción.
-**Conceptos clave:** Helm hook, hook-weight, hook-delete-policy, Job, release, CRD, values override y upgrade.
 
-* Código: `chart/templates/hooks/migrate.yaml`
-* Proyecto: en el proyecto integrador RutaFlow, empaqueta el despliegue en un chart con values por entorno.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant H as helm upgrade
-  participant J as Job (pre-upgrade)
-  participant D as Deployment
-  H->>J: ejecutar migración
-  J-->>H: completado (o falla y detiene)
-  H->>D: reemplazar pods (solo si J OK)
-```
 ### Tema 3: Service Mesh con Istio o Linkerd
 
 #### Paso 1 · Objetivo y preparación
@@ -243,6 +247,34 @@ El equipo de RutaFlow quiere probar una nueva versión de la API con solo el 10%
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un service mesh inyecta un sidecar que intercepta todo el tráfico del pod; un `DestinationRule` define subconjuntos (subsets) de un servicio por etiqueta, y un `VirtualService` distribuye pesos de tráfico entre esos subsets, en la capa de red, sin tocar el código de la aplicación. La analogía es dirigir un porcentaje de camiones a un carril de prueba en una ruta, sin que el conductor note la diferencia.
+
+**¿Por qué es importante?** Un split de tráfico mal configurado no se nota en pruebas del 100%, pero convierte un canary de bajo riesgo en una fracción real de usuarios recibiendo errores.
+**Conceptos clave:** sidecar, mTLS, VirtualService, DestinationRule, subset, traffic shifting, canary, circuit breaking, retry y observability.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  U[Cliente] --> VS[VirtualService 90/10]
+  VS -->|90%| V1[Subset v1]
+  VS -->|10%| V2[Subset v2]
+  V2 -.->|sin pods etiquetados| E[503 UH]
+```
+
+Guardá el `DestinationRule`/`VirtualService` de arriba como
+`deploy/virtualservice.yaml`, junto al `deploy/deployment.yaml` que escribiste para tu proyecto
+integrador RutaFlow, y confirmá que el Deployment base referenciado por el mesh es el mismo que
+declaraste en el Módulo 7:
+
+```bash
+kubectl get deployment rutaflow-delivery-api -o jsonpath='{.metadata.labels.version}'
+```
+
+Resultado esperado: la etiqueta `version` del Deployment real coincide con el subset que
+`DestinationRule` espera — si no coincide, es exactamente el fallo del Paso 5, no un problema
+del mesh en sí.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Prueba identidad y política de comunicación entre API y consumidor con la malla elegida. Documenta el coste operativo y conserva una prueba de rechazo entre servicios no autorizados.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea `virtualservice.yaml` con ambos recursos:
@@ -293,33 +325,6 @@ Corregí el Paso 5 ajustando la etiqueta del Deployment del canary a `version: v
 
 #### Paso 7 · Cierre
 Entregá el split 90/10 del Paso 4, los 503 del subset vacío del Paso 5, y la verificación de endpoints del Paso 6; explicá por qué un subset sin pods que cumplan su selector no "reparte menos tráfico" sino que falla ese porcentaje por completo. Siguiente paso: estudia cómo GitOps aplica estos mismos manifiestos de forma declarativa y auditable. Errores comunes: subsets cuyo selector de etiquetas no coincide con los pods reales, mTLS en modo STRICT que bloquea un servicio sin sidecar inyectado, y aumentar el peso del canary sin verificar antes que tiene endpoints sanos. Fuentes oficiales: https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/ y https://istio.io/latest/docs/concepts/traffic-management/.
-**¿Por qué es importante?** Un split de tráfico mal configurado no se nota en pruebas del 100%, pero convierte un canary de bajo riesgo en una fracción real de usuarios recibiendo errores.
-**Conceptos clave:** sidecar, mTLS, VirtualService, DestinationRule, subset, traffic shifting, canary, circuit breaking, retry y observability.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  U[Cliente] --> VS[VirtualService 90/10]
-  VS -->|90%| V1[Subset v1]
-  VS -->|10%| V2[Subset v2]
-  V2 -.->|sin pods etiquetados| E[503 UH]
-```
-
-Guardá el `DestinationRule`/`VirtualService` de arriba como
-`deploy/virtualservice.yaml`, junto al `deploy/deployment.yaml` que escribiste para tu proyecto
-integrador RutaFlow, y confirmá que el Deployment base referenciado por el mesh es el mismo que
-declaraste en el Módulo 7:
-
-```bash
-kubectl get deployment rutaflow-delivery-api -o jsonpath='{.metadata.labels.version}'
-```
-
-Resultado esperado: la etiqueta `version` del Deployment real coincide con el subset que
-`DestinationRule` espera — si no coincide, es exactamente el fallo del Paso 5, no un problema
-del mesh en sí.
-
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** Prueba identidad y política de comunicación entre API y consumidor con la malla elegida. Documenta el coste operativo y conserva una prueba de rechazo entre servicios no autorizados.
 
 ### Tema 4: GitOps con Argo CD y Flux
 
@@ -331,6 +336,28 @@ Durante un pico de tráfico, una persona de guardia de RutaFlow escala manualmen
 
 #### Paso 3 · Teoría, modelo mental y analogía
 GitOps trata el repositorio como la única fuente de verdad; un operador en modo "pull" reconcilia continuamente el clúster contra ese estado declarado, y con `selfHeal: true` revierte automáticamente cualquier cambio manual que no coincida. La analogía es un termostato que vuelve a la temperatura programada apenas alguien toca la perilla a mano.
+
+**¿Por qué es importante?** La ventaja de GitOps (nunca diverger silenciosamente) se convierte en una trampa operativa si el equipo de guardia no sabe que cualquier cambio fuera de Git será revertido.
+**Conceptos clave:** declarative state, reconciliation loop, drift, selfHeal, prune, pull model, Application, sync wave, rollback y auditability.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant G as Git (infra)
+  participant A as Argo CD
+  participant K as Clúster
+  Note over K: kubectl scale --replicas=10 (manual)
+  A->>K: reconciliar contra Git
+  K-->>A: diverge (10 != 3)
+  A->>K: revertir a 3 (selfHeal)
+```
+
+En el proyecto integrador RutaFlow, esta Application de Argo CD apuntaría exactamente al
+manifiesto `deploy/deployment.yaml` del repositorio `infra` — no conviene
+activar `selfHeal: true` sin que el equipo de guardia sepa que cualquier `kubectl scale`
+manual se revierte solo; la diferencia frente a un CD tradicional es justamente esa: no hay
+forma de "parchear rápido y arreglar Git después" sin que el reconciler lo deshaga primero.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea `application.yaml`:
@@ -367,27 +394,6 @@ Corregí el Paso 5 de la forma correcta para GitOps: actualizá `replicas: 10` d
 
 #### Paso 7 · Cierre
 Entregá la Application con self-heal del Paso 4, la mitigación revertida silenciosamente del Paso 5, y el cambio correcto vía Git del Paso 6; explicá por qué un `kubectl edit` manual en un clúster gestionado por GitOps es una mitigación temporal engañosa, no una solución. Siguiente paso: estudia cómo Ansible gestiona configuración fuera del clúster con la misma disciplina declarativa. Errores comunes: mitigar incidentes con cambios manuales en clústeres con self-heal activo, no tener un procedimiento documentado de "cambio de emergencia vía Git", y dejar `automated.prune` activo sin revisar qué recursos elimina. Fuentes oficiales: https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/ y https://opengitops.dev/.
-**¿Por qué es importante?** La ventaja de GitOps (nunca diverger silenciosamente) se convierte en una trampa operativa si el equipo de guardia no sabe que cualquier cambio fuera de Git será revertido.
-**Conceptos clave:** declarative state, reconciliation loop, drift, selfHeal, prune, pull model, Application, sync wave, rollback y auditability.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-  participant G as Git (infra)
-  participant A as Argo CD
-  participant K as Clúster
-  Note over K: kubectl scale --replicas=10 (manual)
-  A->>K: reconciliar contra Git
-  K-->>A: diverge (10 != 3)
-  A->>K: revertir a 3 (selfHeal)
-```
-
-En el proyecto integrador RutaFlow, esta Application de Argo CD apuntaría exactamente al
-manifiesto `deploy/deployment.yaml` del repositorio `infra` — no conviene
-activar `selfHeal: true` sin que el equipo de guardia sepa que cualquier `kubectl scale`
-manual se revierte solo; la diferencia frente a un CD tradicional es justamente esa: no hay
-forma de "parchear rápido y arreglar Git después" sin que el reconciler lo deshaga primero.
 
 ### Tema 5: Ansible, inventarios, roles y Vault
 
@@ -399,6 +405,28 @@ El playbook de aprovisionamiento de RutaFlow se corre cada vez que se agrega un 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 La idempotencia garantiza que aplicar un playbook N veces produce el mismo estado que aplicarlo una vez; módulos como `lineinfile` verifican el estado actual antes de modificar, mientras que comandos de shell genéricos (`echo >>`) solo ejecutan una acción sin verificar nada. La analogía es la diferencia entre "asegurate de que la puerta esté cerrada" y "cerrá la puerta" repetido sin mirar si ya estaba cerrada.
+
+**¿Por qué es importante?** Un playbook no idempotente se comporta distinto la primera y la décima vez que corre, lo que vuelve impredecible cualquier servidor que reciba más de un cambio a lo largo del tiempo.
+**Conceptos clave:** inventory, role, Vault, idempotency, módulo vs shell, handler, fact, playbook, tag y changed.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  P1[Ejecucion 1: changed] --> P2[Ejecucion 2: lineinfile changed=0]
+  P1b[Ejecucion 1: shell echo] --> P2b[Ejecucion 2: shell echo linea duplicada]
+```
+
+En el proyecto integrador RutaFlow, este mismo playbook correría dentro de un contenedor
+reproducible en vez de depender de qué versión de Ansible tenga instalada cada máquina:
+
+```bash
+docker run --rm -it -v "$PWD":/playbooks ansible/ansible-runner ansible-playbook -i /playbooks/inventory.ini --ask-vault-pass /playbooks/site.yml
+```
+
+Resultado esperado: el `changed=0` de la segunda ejecución se repite igual dentro del
+contenedor, confirmando que la idempotencia de la tarea `lineinfile` no depende del entorno
+donde corre Ansible.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía y crea tu propio playbook y archivo de secretos:
@@ -451,27 +479,6 @@ Corregí el Paso 5 restaurando la tarea `lineinfile` con `regexp` y `state: pres
 
 #### Paso 7 · Cierre
 Entregá el secreto cifrado y la tarea idempotente del Paso 4, la duplicación de línea del Paso 5, y la verificación de `changed=0` del Paso 6; explicá por qué `shell`/`command` nunca son idempotentes por sí mismos, a diferencia de los módulos declarativos de Ansible. Siguiente paso: cerrá el módulo conectando estas prácticas con las métricas DORA que miden el impacto real de todo el pipeline. Errores comunes: guardar secretos sin `ansible-vault`, usar `shell`/`command` para tareas que ya tienen un módulo idempotente equivalente, y no verificar `changed=0` en una segunda ejecución antes de confiar en un playbook. Fuentes oficiales: https://docs.ansible.com/ansible/latest/vault_guide/index.html y https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html.
-**¿Por qué es importante?** Un playbook no idempotente se comporta distinto la primera y la décima vez que corre, lo que vuelve impredecible cualquier servidor que reciba más de un cambio a lo largo del tiempo.
-**Conceptos clave:** inventory, role, Vault, idempotency, módulo vs shell, handler, fact, playbook, tag y changed.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  P1[Ejecucion 1: changed] --> P2[Ejecucion 2: lineinfile changed=0]
-  P1b[Ejecucion 1: shell echo] --> P2b[Ejecucion 2: shell echo linea duplicada]
-```
-
-En el proyecto integrador RutaFlow, este mismo playbook correría dentro de un contenedor
-reproducible en vez de depender de qué versión de Ansible tenga instalada cada máquina:
-
-```bash
-docker run --rm -it -v "$PWD":/playbooks ansible/ansible-runner ansible-playbook -i /playbooks/inventory.ini --ask-vault-pass /playbooks/site.yml
-```
-
-Resultado esperado: el `changed=0` de la segunda ejecución se repite igual dentro del
-contenedor, confirmando que la idempotencia de la tarea `lineinfile` no depende del entorno
-donde corre Ansible.
 
 ### Tema 6: DevSecOps y métricas DORA
 
@@ -483,6 +490,32 @@ El equipo de RutaFlow quiere saber si su proceso de DevSecOps realmente mejoró 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Las métricas DORA miden el desempeño real de entrega de software con cuatro números: con qué frecuencia se despliega a producción, cuánto tarda un commit en llegar a producción, qué porcentaje de despliegues causa un incidente, y cuánto se tarda en recuperarse. La analogía es un chequeo médico: no mide cómo te sentís, mide signos vitales concretos y comparables en el tiempo.
+
+**¿Por qué es importante?** Las métricas DORA solo sirven como señal real de mejora si miden entrega efectiva a producción; contar actividad del pipeline en su lugar produce un número que sube sin que el equipo entregue más valor.
+**Conceptos clave:** deployment frequency, lead time for changes, change failure rate, MTTR, Four Keys, DevSecOps, shift left, security gate, elite performer y Accelerate.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A[Commits] --> B[Pipeline CI/CD]
+  B -->|exito + gate seguridad| C[Despliegue real a produccion]
+  B -->|fallo/reintento| B
+  C --> D[4 metricas DORA]
+```
+
+Calculá estas métricas sobre el historial real del repositorio del proyecto integrador
+RutaFlow, no sobre una hoja de cálculo separada:
+
+```bash
+kubectl get events --field-selector reason=Started -n rutaflow --sort-by='.lastTimestamp'
+```
+
+Resultado esperado: cada evento de inicio de Pod en el namespace `rutaflow` (el mismo que
+despliega `deploy/deployment.yaml`) te da una marca de tiempo real para
+cruzar contra el historial de Git y calcular el lead time real, no estimado. El límite de este
+cálculo manual frente a un dashboard de Four Keys dedicado es que no escala: no conviene
+mantenerlo así una vez que el equipo crece más allá de un solo pipeline.
 
 #### Paso 4 · Demostración guiada desde cero
 Parte de una carpeta vacía para crear tu propia herramienta de medición:
@@ -524,32 +557,6 @@ Corregí el Paso 5 filtrando únicamente los despliegues que llegaron a producci
 
 #### Paso 7 · Cierre
 Entregá el cálculo correcto de las 4 métricas DORA del Paso 4, la frecuencia inflada del Paso 5, y la frecuencia real corregida del Paso 6; explicá por qué contar ejecuciones de pipeline en vez de despliegues exitosos a producción invalida la métrica como señal de mejora real. Siguiente paso: usá estas cuatro métricas para decidir en qué parte del pipeline de RutaFlow invertir el próximo esfuerzo de mejora. Errores comunes: medir actividad del pipeline en vez de entregas reales a producción, calcular MTTR solo desde la detección y no desde el inicio real del incidente, y no definir qué cuenta como "cambio que falla" de forma consistente entre equipos. Fuentes oficiales: https://dora.dev/guides/dora-metrics-four-keys/ y https://cloud.google.com/blog/products/devops-sre/the-2019-accelerate-state-of-devops-report.
-**¿Por qué es importante?** Las métricas DORA solo sirven como señal real de mejora si miden entrega efectiva a producción; contar actividad del pipeline en su lugar produce un número que sube sin que el equipo entregue más valor.
-**Conceptos clave:** deployment frequency, lead time for changes, change failure rate, MTTR, Four Keys, DevSecOps, shift left, security gate, elite performer y Accelerate.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  A[Commits] --> B[Pipeline CI/CD]
-  B -->|exito + gate seguridad| C[Despliegue real a produccion]
-  B -->|fallo/reintento| B
-  C --> D[4 metricas DORA]
-```
-
-Calculá estas métricas sobre el historial real del repositorio del proyecto integrador
-RutaFlow, no sobre una hoja de cálculo separada:
-
-```bash
-kubectl get events --field-selector reason=Started -n rutaflow --sort-by='.lastTimestamp'
-```
-
-Resultado esperado: cada evento de inicio de Pod en el namespace `rutaflow` (el mismo que
-despliega `deploy/deployment.yaml`) te da una marca de tiempo real para
-cruzar contra el historial de Git y calcular el lead time real, no estimado. El límite de este
-cálculo manual frente a un dashboard de Four Keys dedicado es que no escala: no conviene
-mantenerlo así una vez que el equipo crece más allá de un solo pipeline.
-
 
 ## Trazabilidad de la auditoría original
 

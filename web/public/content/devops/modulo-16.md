@@ -539,7 +539,7 @@ Ya creaste un job de Jenkins real a partir de un `Jenkinsfile`, lo ejecutaste, y
 
 ## Ampliación de la página 41 del PDF
 
-### Tema complementario: Bruno y Postman, evaluar con el mismo contrato
+### Tema 6: Bruno y Postman, evaluar con el mismo contrato
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comparar dos clientes de API por resultados verificables. **Prerrequisitos:** colección Postman, aserciones y servidor local del Tema 1; Bruno instalado desde su sitio oficial. No se asume que todas las funciones o licencias de una captura sigan vigentes.

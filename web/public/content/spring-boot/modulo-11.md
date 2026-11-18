@@ -457,6 +457,116 @@ Entrega la salida de `./scripts/verify-probes.sh`, el manifiesto y la decisión 
 
 Fuentes oficiales: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes), [propiedad probes en Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/), [pruebas MockMvc de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html), [diferencias entre probes en Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/). El manifiesto de ejemplo no se aplicó a un clúster en esta revisión.
 
+### Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min
+
+**Prerrequisito:** tema «Fat JAR vs capas de Docker» de este módulo.
+
+**Al finalizar podrás:** crear una imagen de contenedor de tu aplicación con `./mvnw spring-boot:build-image`, inspeccionar sus capas y su usuario, y configurar la versión de Java y la memoria sin escribir un Dockerfile.
+
+**¿Por qué es importante?** Mantener un Dockerfile por servicio significa repetir las mismas decisiones (imagen base, usuario sin privilegios, capas, memoria) y olvidar actualizarlas. Los Buildpacks las toman por ti y se actualizan en un solo lugar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x y Docker en ejecución. La primera vez se descargan las imágenes del builder de Paketo, así que necesitas red.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía doce servicios con doce Dockerfiles distintos. Tres corrían como `root` y uno usaba una imagen base con vulnerabilidades de hace un año. Al pasar a Buildpacks, todos comparten la misma base y se actualizan al reconstruir.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Cloud Native Buildpacks, builder, Paketo, imagen OCI, capas, rebase, `BP_JVM_VERSION`, calculadora de memoria.
+
+Un **buildpack** detecta qué es tu proyecto (una app de Spring Boot con Java 21) y aporta lo necesario para ejecutarlo: el JRE, la configuración de memoria y el comando de arranque. Un **builder** agrupa varios buildpacks; Spring Boot usa por defecto los de **Paketo**.
+
+`spring-boot:build-image` (Maven) o `bootBuildImage` (Gradle) generan una **imagen OCI** que:
+
+- separa en **capas** las dependencias, que cambian poco, de tu código, que cambia mucho;
+- corre con un usuario sin privilegios;
+- calcula al arrancar cuánta memoria dar al heap según el límite del contenedor.
+
+La configuración va en el `pom.xml` o con variables `BP_*`, por ejemplo `BP_JVM_VERSION=21`.
+
+**Analogía:** un Dockerfile es cocinar desde cero cada vez; un buildpack es una receta estándar del restaurante que todos los cocineros siguen igual. La analogía falla en que, si necesitas un ingrediente muy especial (una librería nativa), la receta estándar puede no tenerlo.
+
+**Límite de uso:** la primera construcción es lenta y necesita red. Si tu servicio necesita paquetes del sistema poco comunes, un Dockerfile propio puede ser más simple. Revisa el tamaño final: incluye un JRE completo.
+
+```mermaid
+flowchart LR
+    S["código + pom.xml"] -->|"spring-boot:build-image"| B["builder Paketo"]
+    B --> J["capa: JRE 21"]
+    B --> D["capa: dependencias"]
+    B --> A["capa: aplicación"]
+    J & D & A --> I["imagen OCI<br/>usuario sin privilegios"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/pom.xml`:
+
+```xml
+<!-- Dentro de <build><plugins> -->
+<plugin>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-maven-plugin</artifactId>
+  <configuration>
+    <image>
+      <name>rutaflow/asignacion:${project.version}</name>
+      <env>
+        <BP_JVM_VERSION>21</BP_JVM_VERSION>
+      </env>
+    </image>
+  </configuration>
+</plugin>
+```
+
+Ejecútalo:
+
+```bash
+./mvnw spring-boot:build-image
+docker run --rm -p 8080:8080 -m 512m rutaflow/asignacion:0.0.1-SNAPSHOT
+docker inspect rutaflow/asignacion:0.0.1-SNAPSHOT --format '{{.Config.User}}'
+```
+
+**Explicación por bloques:** En el `pom.xml`, `<name>` fija el nombre y la etiqueta de la imagen, y `BP_JVM_VERSION` pide un JRE 21. `spring-boot:build-image` construye la aplicación, ejecuta el builder de Paketo y deja la imagen en tu Docker local. Al correrla con `-m 512m`, la calculadora de memoria lee el límite y ajusta el heap. `docker inspect` muestra que el usuario no es `root`.
+
+**Resultado esperado:**
+
+```text
+[INFO] Successfully built image 'docker.io/rutaflow/asignacion:0.0.1-SNAPSHOT'
+Al arrancar: «Calculating JVM memory based on ... available memory» seguido del banner de Spring Boot.
+docker inspect imprime un usuario no root (por ejemplo, 1002:1000 o cnb).
+```
+
+**Fallo deliberado:** detén Docker y ejecuta `./mvnw spring-boot:build-image`. **Error esperado:** `Connection to the Docker daemon at 'localhost' failed`. **Diagnóstico:** los Buildpacks construyen dentro de contenedores; necesitan el demonio de Docker (o Podman) disponible. Arráncalo y repite.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** construye la imagen y anota su tamaño con `docker images`.
+2. **Variación:** cambia una línea de código, reconstruye y observa en la salida que solo cambia la capa de la aplicación.
+3. **Diagnóstico:** reproduce el fallo deliberado con Docker detenido.
+4. **Integración:** arranca con `-m 256m` y con `-m 1g` y compara el heap calculado en el registro.
+5. **Diseño:** compara la imagen de Buildpacks con la del Dockerfile de capas del tema anterior: tamaño, usuario y quién mantiene la base.
+
+**Pista:** si la imagen no arranca con poca memoria, mira la línea de la calculadora: dice cuánta memoria necesita.
+
+#### Paso 6 · Práctica independiente
+
+Configura el pipeline de CI para construir la imagen con Buildpacks, etiquetarla con el hash del commit y publicarla en el registro del proyecto.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué aporta un buildpack y qué es un builder.
+- [ ] Construiste y ejecutaste la imagen sin Dockerfile.
+- [ ] Reprodujiste el error sin Docker.
+- [ ] Comprobaste que la imagen no corre como root.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** construir sin fijar la versión de Java, correr con límites de memoria muy bajos sin mirar la calculadora y mantener Dockerfiles distintos por costumbre. **Siguiente paso:** el tema «GraalVM native image» construye imágenes nativas con el mismo comando y otra configuración.
+
+**Transferencia al proyecto integrador «RutaFlow»:** reemplaza los Dockerfiles de los servicios Java de RutaFlow por Buildpacks con Java 21 y publica las imágenes desde el CI.
+
+**Fuente oficial:** [Spring Boot — Packaging OCI Images (Maven)](https://docs.spring.io/spring-boot/maven-plugin/build-image.html) y [Paketo Buildpacks — Java](https://paketo.io/docs/howto/java/).
+
 ## Laboratorio práctico
 
 **Objetivo:** empaquetar RutaFlow, ejecutar el modo AOT disponible y dejar probes configurados para un despliegue. Los tres ejemplos están en `examples/spring-boot-layered-jar-rutaflow/`, `examples/spring-boot-native-rutaflow/` y `examples/spring-boot-probes-rutaflow/`.

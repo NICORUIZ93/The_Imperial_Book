@@ -650,7 +650,7 @@ Ya conoces el compromiso explícito entre HCL declarativo y un lenguaje de progr
 
 ## Ampliación de la página 17 del PDF
 
-### Tema complementario: OpenTofu, plan y estado sin recursos cloud
+### Tema 8: OpenTofu, plan y estado sin recursos cloud
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás observar un cambio declarativo en un estado local antes de usar un proveedor cloud. **Prerrequisitos:** conceptos HCL y estado de este módulo; OpenTofu instalado desde su documentación oficial y `tofu version` funcionando. Este laboratorio no fue ejecutado en la revisión porque el binario no estaba disponible; se publica con comandos y comportamiento esperado contrastados con la documentación.
@@ -706,3 +706,136 @@ Añade una validación de variable para exigir periodo positivo y documenta el e
 
 #### Paso 7 · Cierre
 Entrega configuración, salida, plan inicial y plan modificado. **Errores comunes:** usar el estado equivocado, versionar estado con secretos, aplicar un plan no revisado. Antes del siguiente tema responde: ¿qué administra este recurso?, ¿qué comprueba validate?, ¿qué falta antes de migrar un backend? **Fuente oficial:** [OpenTofu terraform_data](https://opentofu.org/docs/language/resources/tf-data/).
+
+### Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min
+
+**Prerrequisito:** temas «terraform plan vs apply» y «State remoto y locking» de este módulo.
+
+**Al finalizar podrás:** traer a Terraform un recurso creado a mano con un bloque `import`, generar su configuración y bloquear en CI los planes que violan reglas (por ejemplo, un bucket público) con Conftest y OPA.
+
+**¿Por qué es importante?** Casi ningún equipo empieza con todo en código: hay recursos creados desde la consola. Importarlos evita recrearlos. Y una vez en código, las reglas de seguridad se pueden revisar automáticamente antes de aplicar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Terraform 1.5 o superior y Conftest. Para no depender de la nube, trabaja con el proveedor AWS apuntando a un emulador local (LocalStack o Floci en el puerto 4566), como en el track de cloud.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía el bucket de fotos de entrega creado a mano. Un día alguien lo hizo público por error desde la consola y nadie lo notó en una semana. Al importarlo a Terraform y revisar los planes con políticas, ese cambio habría fallado en el pull request.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** bloque `import`, `-generate-config-out`, estado, policy as code, OPA, Rego, Conftest, `terraform show -json`.
+
+**Importar:** un bloque `import { to = aws_s3_bucket.fotos  id = "rutaflow-fotos" }` le dice a Terraform que el recurso ya existe. Con `terraform plan -generate-config-out=generado.tf`, Terraform escribe la configuración a partir del recurso real. Revisas, ajustas y aplicas: el recurso pasa al estado **sin recrearse**.
+
+**Policy as code:** las reglas se escriben en un lenguaje (Rego, de OPA) y se evalúan contra el plan en formato JSON (`terraform show -json plan.out`). **Conftest** ejecuta esas reglas: si alguna devuelve un mensaje `deny`, termina con error y el CI se detiene.
+
+Las reglas viven en el repositorio, se revisan como código y se aplican igual para todos.
+
+**Analogía:** importar es registrar en el catastro una casa que ya estaba construida; las políticas son el inspector que revisa cada plano nuevo antes de construir. La analogía falla en que el inspector aquí es un programa que no se cansa ni hace excepciones.
+
+**Límite de uso:** la configuración generada puede traer atributos innecesarios: límpiala antes de fusionar. Las políticas revisan el plan, no lo que alguien cambie después desde la consola; combina con detección de deriva.
+
+```mermaid
+flowchart LR
+    M["bucket creado a mano"] -->|"bloque import"| P["terraform plan -generate-config-out"]
+    P --> S["estado: recurso adoptado"]
+    C["cambio en PR"] --> J["terraform show -json plan"]
+    J --> R["conftest + reglas Rego"]
+    R -->|deny| X["CI falla"]
+    R -->|ok| A["apply"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `infra/importar.tf`:
+
+```hcl
+import {
+  to = aws_s3_bucket.fotos
+  id = "rutaflow-fotos"
+}
+```
+
+Archivo `infra/proveedor.tf`:
+
+```hcl
+provider "aws" {
+  region                      = "us-east-1"
+  access_key                  = "test"
+  secret_key                  = "test"
+  skip_credentials_validation = true
+  skip_requesting_account_id  = true
+  s3_use_path_style           = true
+  endpoints { s3 = "http://localhost:4566" } # emulador local
+}
+```
+
+Archivo `infra/politicas/s3.rego`:
+
+```rego
+package main
+
+import rego.v1
+
+# Ningún bucket puede desactivar el bloqueo de acceso público.
+deny contains mensaje if {
+  some cambio in input.resource_changes
+  cambio.type == "aws_s3_bucket_public_access_block"
+  cambio.change.after.block_public_acls == false
+  mensaje := sprintf("%s permite ACL públicas", [cambio.address])
+}
+```
+
+Ejecútalo:
+
+```bash
+aws --endpoint-url http://localhost:4566 s3 mb s3://rutaflow-fotos   # el recurso «creado a mano»
+cd infra
+terraform init
+terraform plan -generate-config-out=generado.tf
+terraform apply -auto-approve
+terraform plan -out plan.out && terraform show -json plan.out > plan.json
+conftest test plan.json --policy politicas
+```
+
+**Explicación por bloques:** El bucket se crea primero con la CLI para simular un recurso manual. `importar.tf` declara la importación y `proveedor.tf` apunta al emulador con credenciales de prueba. `terraform plan -generate-config-out` escribe `generado.tf` con el recurso real y el `apply` lo adopta en el estado sin recrearlo. La regla Rego recorre los cambios del plan en JSON y emite un mensaje `deny` si un bloqueo de acceso público se desactiva. `conftest test` evalúa el plan contra esa carpeta de reglas.
+
+**Resultado esperado:**
+
+```text
+terraform plan: «Plan: 1 to import, 0 to add, 0 to change, 0 to destroy.» y se crea generado.tf con resource "aws_s3_bucket" "fotos".
+terraform apply: «Apply complete! Resources: 1 imported, 0 added, 0 changed, 0 destroyed.»
+conftest test plan.json: «1 test, 1 passed, 0 warnings, 0 failures, 0 exceptions» mientras nadie desactive el bloqueo.
+```
+
+**Fallo deliberado:** agrega un recurso `aws_s3_bucket_public_access_block` para el bucket con `block_public_acls = false`, genera de nuevo `plan.json` y ejecuta Conftest. **Error esperado:** `FAIL - plan.json - main - aws_s3_bucket_public_access_block.fotos permite ACL públicas` y código de salida 1. **Diagnóstico:** la regla detectó el cambio antes de aplicarlo. En CI, ese código de salida detiene el pipeline.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** importa el bucket y revisa `generado.tf`.
+2. **Variación:** quita de `generado.tf` los atributos que no quieres gestionar y vuelve a planear sin cambios.
+3. **Diagnóstico:** reproduce el fallo deliberado con el bloqueo desactivado.
+4. **Integración:** agrega una regla que exija la etiqueta `proyecto = "rutaflow"` en todos los buckets.
+5. **Diseño:** agrega `conftest test` al pipeline de infraestructura después de `terraform plan`.
+
+**Pista:** para escribir reglas, mira primero `plan.json` con `jq ".resource_changes[] | {type, address}"`: la regla debe navegar esa estructura.
+
+#### Paso 6 · Práctica independiente
+
+Importa con un segundo bloque `import` una cola SQS creada a mano y escribe una regla que obligue a que tenga una cola de mensajes muertos.
+
+#### Paso 7 · Cierre
+
+- [ ] Importaste un recurso sin recrearlo.
+- [ ] Explicas cómo Conftest evalúa un plan.
+- [ ] Reprodujiste el bloqueo de un bucket público.
+- [ ] Las reglas corren en CI.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** fusionar la configuración generada sin limpiarla, escribir reglas sin probarlas con un caso que falle y revisar solo el código pero no el plan. **Siguiente paso:** el tema «Workspaces para múltiples entornos» aplica las mismas reglas en cada entorno.
+
+**Transferencia al proyecto integrador «RutaFlow»:** importa a Terraform los buckets y colas de RutaFlow creados a mano y bloquea en CI cualquier plan que los haga públicos.
+
+**Fuente oficial:** [HashiCorp — Import](https://developer.hashicorp.com/terraform/language/import) y [Conftest](https://www.conftest.dev/) y [Open Policy Agent — Terraform](https://www.openpolicyagent.org/docs/latest/terraform/).
+

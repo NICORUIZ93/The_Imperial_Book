@@ -273,6 +273,13 @@ Una prueba **E2E de sistema** levanta el backend real (con su base de datos real
 
 **Analogía:** las pruebas unitarias comprueban que cada pieza del coche funciona en el banco; la prueba E2E es la vuelta de prueba con el coche armado en la pista. Solo ahí descubres que el pedal encaja con el motor.
 
+**Conceptos clave:** prueba de sistema, contrato HTTP real, Testcontainers, frontera app↔backend, cúspide de la pirámide de pruebas.
+**Cuándo no usarlo:** no uses E2E para lo que una prueba unitaria o de componente cubre mejor (lógica interna): son lentas y frágiles. Resérvalas para los flujos de negocio críticos que cruzan el sistema completo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
+**Errores comunes:** renombrar un campo del payload en la prueba (como `guia` por `tracking`) y, al ver que el backend responde `400`, asumir que el test en sí está mal escrito en vez de leer el cuerpo de la respuesta — ese `400` es la prueba E2E funcionando correctamente: detectó un desajuste de contrato que ninguna prueba de un solo lado vería.
+**Fuente oficial:** [documentación de RutaFlow](https://docs.flutter.dev/).
+
 #### Paso 4 · Demostración guiada desde cero
 **Crea** el archivo `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` con la clase que ves más abajo, y guárdalo antes de ejecutarlo con `./mvnw test -Dtest=FlujoEntregaE2ETest`.
 
@@ -326,12 +333,7 @@ Desde el lado Flutter, escribe una prueba de integración (`integration_test`) q
 
 #### Paso 7 · Cierre
 Entrega la prueba E2E en verde, el fallo por contrato roto y la prueba desde Flutter. **¿Por qué es importante?** En un sistema de dos partes (app + backend) desarrolladas a menudo por equipos distintos, los bugs más caros viven en la frontera: un campo renombrado, un token mal propagado, un código de estado inesperado. La prueba E2E de sistema es la red de seguridad que atrapa esos fallos antes de producción. Fuentes: [Testcontainers](https://testcontainers.com/) y [Flutter integration testing](https://docs.flutter.dev/testing/integration-tests).
-**Conceptos clave:** prueba de sistema, contrato HTTP real, Testcontainers, frontera app↔backend, cúspide de la pirámide de pruebas.
-**Cuándo no usarlo:** no uses E2E para lo que una prueba unitaria o de componente cubre mejor (lógica interna): son lentas y frágiles. Resérvalas para los flujos de negocio críticos que cruzan el sistema completo.
 
-**Transferencia al proyecto integrador «RutaFlow»:** automatiza la prueba E2E del flujo "entrega asignada y confirmada" en el pipeline de CI, levantando backend y base de datos con Docker antes de ejecutarla.
-**Errores comunes:** renombrar un campo del payload en la prueba (como `guia` por `tracking`) y, al ver que el backend responde `400`, asumir que el test en sí está mal escrito en vez de leer el cuerpo de la respuesta — ese `400` es la prueba E2E funcionando correctamente: detectó un desajuste de contrato que ninguna prueba de un solo lado vería.
-**Fuente oficial:** [documentación de RutaFlow](https://docs.flutter.dev/).
 ### Tema 4: Continuidad, costes y proyecto final
 
 **Conceptos clave:** backup, restore, RPO, RTO, game day, DR y coste por entrega.

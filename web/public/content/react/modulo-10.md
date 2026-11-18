@@ -165,6 +165,25 @@ La consulta que reconstruye el historial completo de ubicaciones de un envío (d
 #### Paso 3 · Teoría, modelo mental y analogía
 El streaming con `Suspense` del lado del servidor envía el HTML de las partes ya listas sin esperar a la sección más lenta — servir primero los platos que ya están listos, en vez de hacer esperar a todos hasta que el más lento esté terminado.
 
+**¿Por qué es importante?** El streaming con Suspense evita que una sección particularmente lenta retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
+**Conceptos clave:** enviar el HTML disponible primero, no bloquear toda la página por una sección lenta.
+
+El streaming del lado del servidor permite que Next.js envíe al navegador el HTML de las partes de una página que ya están listas, sin esperar a que absolutamente todas las secciones de esa página (incluyendo alguna sección particularmente lenta, como una consulta a una base de datos que tarda varios segundos) completen su renderizado: `<Suspense fallback={<Spinner />}><SeccionLenta /></Suspense>` permite que el resto de la página se envíe y se muestre inmediatamente, mientras `SeccionLenta` continúa renderizándose en el servidor, enviándose y reemplazando el `fallback` correspondiente en cuanto efectivamente completa, sin bloquear el resto de la página mientras tanto.
+
+Este mismo `Suspense` que en el Módulo 5 se usaba para mostrar un `fallback` mientras un chunk de JavaScript se descargaba en el cliente, aquí se aplica del lado del servidor para el mismo propósito conceptual: permitir que partes de la interfaz que sí están listas se muestren de inmediato, sin esperar a la parte más lenta, evitando que una única sección costosa de calcular retrase la percepción de toda la página como lenta para el usuario.
+
+**Analogía:** el streaming con Suspense es como servir primero los platos de una comida que ya están listos en la mesa, en vez de hacer esperar a todos los comensales hasta que el plato más lento de preparar esté terminado antes de servir absolutamente nada.
+
+**Implicación práctica:** El streaming con Suspense evita que una sección particularmente lenta de una página retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
+
+**Código del ejemplo:**
+
+```jsx
+<Suspense fallback={<Spinner />}>
+  <SeccionLenta /> {/* el resto de la página se muestra mientras esto carga */}
+</Suspense>
+```
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 <DatosBasicosEnvio envio={envio} /> {/* se muestra de inmediato */}
@@ -191,25 +210,6 @@ Corregí el Paso 5 restaurando el `Suspense`, y agregá un segundo `Suspense` in
 
 #### Paso 7 · Cierre
 Entregá el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explicá por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
-**¿Por qué es importante?** El streaming con Suspense evita que una sección particularmente lenta retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
-**Conceptos clave:** enviar el HTML disponible primero, no bloquear toda la página por una sección lenta.
-
-El streaming del lado del servidor permite que Next.js envíe al navegador el HTML de las partes de una página que ya están listas, sin esperar a que absolutamente todas las secciones de esa página (incluyendo alguna sección particularmente lenta, como una consulta a una base de datos que tarda varios segundos) completen su renderizado: `<Suspense fallback={<Spinner />}><SeccionLenta /></Suspense>` permite que el resto de la página se envíe y se muestre inmediatamente, mientras `SeccionLenta` continúa renderizándose en el servidor, enviándose y reemplazando el `fallback` correspondiente en cuanto efectivamente completa, sin bloquear el resto de la página mientras tanto.
-
-Este mismo `Suspense` que en el Módulo 5 se usaba para mostrar un `fallback` mientras un chunk de JavaScript se descargaba en el cliente, aquí se aplica del lado del servidor para el mismo propósito conceptual: permitir que partes de la interfaz que sí están listas se muestren de inmediato, sin esperar a la parte más lenta, evitando que una única sección costosa de calcular retrase la percepción de toda la página como lenta para el usuario.
-
-**Analogía:** el streaming con Suspense es como servir primero los platos de una comida que ya están listos en la mesa, en vez de hacer esperar a todos los comensales hasta que el plato más lento de preparar esté terminado antes de servir absolutamente nada.
-
-**Implicación práctica:** El streaming con Suspense evita que una sección particularmente lenta de una página retrase la percepción de toda la página, mostrando de inmediato el contenido que ya está listo.
-
-**Código del ejemplo:**
-
-```jsx
-<Suspense fallback={<Spinner />}>
-  <SeccionLenta /> {/* el resto de la página se muestra mientras esto carga */}
-</Suspense>
-```
-
 
 ### Tema 4: Server Actions
 
@@ -221,6 +221,27 @@ Confirmar una entrega hoy exigiría definir una ruta API separada, un manejador 
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una Server Action es una función marcada con `"use server"` invocable directamente desde un `<form action={...}>`, sin endpoint API dedicado — entregar el formulario directamente a quien lo procesa, sin pasar por una oficina de recepción separada.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    A["Cliente:<br/>Formulario"] -->|action=<br/>confirmarEntrega| B["Server Action<br/>sin endpoint API"]
+    B -->|Valida PIN| C{PIN<br/>correcto?}
+    C -->|Sí| D["Actualiza DB<br/>estado: entregado"]
+    C -->|No| E["Lanza error<br/>PIN incorrecto"]
+    D --> F["Respuesta cliente"]
+    E --> F
+    
+    style B fill:#e3f2fd
+    style D fill:#e8f5e9
+    style E fill:#ffebee
+```
+
+* Ejecutar: `npm test -- --testNamePattern="server.action|form"`
+* Cuándo: usar Server Actions para formularios simples donde la lógica es directa; no conviene si la validación es muy compleja (mantén un endpoint API explícito) o si necesitas más control sobre headers y serialización.
+
+**¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -257,26 +278,6 @@ Corregí el Paso 5 agregando la verificación del PIN dentro de la Server Action
 #### Paso 7 · Cierre
 Entregá la Server Action funcionando del Paso 4, la confirmación sin validar PIN provocada en el Paso 5, y la verificación agregada del Paso 6; explicá por qué una Server Action, al eliminar el endpoint API explícito, puede hacer más fácil olvidar que esa función sigue necesitando las mismas validaciones de autorización que cualquier otro código de servidor. Siguiente paso: cerrá el módulo integrando Server Components, Suspense y Server Actions en una página completa de seguimiento. Errores comunes: omitir validación de autorización dentro de una Server Action asumiendo que "ya no hay API expuesta", no manejar el estado pending del formulario mientras la acción procesa, y ejecutar lógica sensible a secretos sin confirmar que la Server Action nunca se ejecuta en el cliente. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 
-**Diagrama:**
-
-```mermaid
-graph LR
-    A["Cliente:<br/>Formulario"] -->|action=<br/>confirmarEntrega| B["Server Action<br/>sin endpoint API"]
-    B -->|Valida PIN| C{PIN<br/>correcto?}
-    C -->|Sí| D["Actualiza DB<br/>estado: entregado"]
-    C -->|No| E["Lanza error<br/>PIN incorrecto"]
-    D --> F["Respuesta cliente"]
-    E --> F
-    
-    style B fill:#e3f2fd
-    style D fill:#e8f5e9
-    style E fill:#ffebee
-```
-
-* Ejecutar: `npm test -- --testNamePattern="server.action|form"`
-* Cuándo: usar Server Actions para formularios simples donde la lógica es directa; no conviene si la validación es muy compleja (mantén un endpoint API explícito) o si necesitas más control sobre headers y serialización.
-
-**¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una aplicación Next.js con App Router, Server Components y una Server Action.

@@ -641,6 +641,168 @@ Ejecuta:
 
 **Cierra:** conserva una ejecución verde tras quitar el duplicado y explica por qué el próximo cambio debe ser V3. Este backend acumulativo ya combina DTO/API, JPA, medición N+1 y esquema versionado para el proyecto integrador.
 
+### Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min
+
+**Prerrequisito:** tema «Entidades y repositorios derivados» de este módulo.
+
+**Al finalizar podrás:** guardar un envío con sus paradas como un solo documento, consultarlo con métodos derivados y una agregación simple, y decidir cuándo un modelo de documentos encaja mejor que uno relacional.
+
+**¿Por qué es importante?** Algunos datos se leen siempre juntos: un envío con su historial de posiciones. En una base relacional eso son varias tablas y uniones; en MongoDB es un documento. Elegir bien el modelo simplifica el código y las consultas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x con `spring-boot-starter-data-mongodb` y Docker para levantar MongoDB: `docker run -d --name mongo -p 27017:27017 mongo:8`.
+
+#### Paso 2 · Contexto y caso real
+
+El historial de eventos de cada envío de RutaFlow (creado, en bodega, en ruta, entregado) crecía en una tabla de millones de filas unida al envío. La pantalla de seguimiento hacía tres consultas. Con un documento por envío que contiene su historial, basta una lectura.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** documento, colección, `@Document`, `@Id`, documento embebido, `MongoRepository`, consulta derivada, agregación.
+
+MongoDB guarda **documentos** (parecidos a JSON) en **colecciones**. Un documento puede contener listas y objetos **embebidos**, así que un envío y sus eventos viajan juntos.
+
+Spring Data MongoDB funciona como Spring Data JPA: anotas la clase con `@Document`, creas una interfaz que extiende `MongoRepository` y los **métodos derivados** (`findByEstado`) se convierten en consultas.
+
+| Encaja con documentos | Encaja con relacional |
+|---|---|
+| datos que se leen juntos (envío + historial) | datos compartidos entre muchas entidades |
+| estructura que cambia entre registros | transacciones entre muchas tablas |
+| lectura rápida por clave | reportes con muchas uniones |
+
+**Analogía:** un documento es una carpeta física con todo el expediente del envío adentro; una base relacional es un archivador donde cada tipo de papel va en su cajón y se juntan al consultar. La analogía falla en que, si muchos expedientes comparten el mismo papel, copiarlo en cada carpeta vuelve difícil mantenerlo al día.
+
+**Límite de uso:** un documento tiene un límite de 16 MB: no embebas listas que crecen sin fin (todas las posiciones GPS de un año). No uses MongoDB para datos con muchas relaciones y reportes complejos solo porque «no tiene esquema».
+
+```mermaid
+flowchart LR
+    subgraph D["documento envios: ENV-42"]
+      C["codigo, estado, ciudad"]
+      H["eventos: [creado, en_bodega, en_ruta]"]
+    end
+    R["EnvioRepository.findByEstado"] --> D
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/java/com/rutaflow/envios/Envio.java`:
+
+```java
+package com.rutaflow.envios;
+
+import java.time.Instant;
+import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("envios")
+public record Envio(@Id String codigo, String estado, String ciudad, List<Evento> eventos) {
+    public record Evento(String tipo, Instant cuando) {} // embebido: viaja con el envío
+}
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/envios/EnvioRepository.java`:
+
+```java
+package com.rutaflow.envios;
+
+import java.util.List;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+public interface EnvioRepository extends MongoRepository<Envio, String> {
+    List<Envio> findByEstadoAndCiudad(String estado, String ciudad); // consulta derivada
+
+    @Aggregation(pipeline = { "{ $group: { _id: '$estado', total: { $sum: 1 } } }", "{ $sort: { _id: 1 } }" })
+    List<ConteoPorEstado> contarPorEstado();
+
+    record ConteoPorEstado(String id, long total) {}
+}
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/envios/CargaInicial.java`:
+
+```java
+package com.rutaflow.envios;
+
+import java.time.Instant;
+import java.util.List;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+@Component
+class CargaInicial implements CommandLineRunner {
+    private final EnvioRepository repositorio;
+    CargaInicial(EnvioRepository repositorio) { this.repositorio = repositorio; }
+
+    @Override
+    public void run(String... args) {
+        repositorio.deleteAll();
+        repositorio.saveAll(List.of(
+            new Envio("ENV-42", "EN_RUTA", "bogota", List.of(new Envio.Evento("CREADO", Instant.now()))),
+            new Envio("ENV-43", "EN_RUTA", "medellin", List.of()),
+            new Envio("ENV-44", "ENTREGADO", "bogota", List.of())));
+        System.out.println("En ruta en Bogotá: " + repositorio.findByEstadoAndCiudad("EN_RUTA", "bogota").size());
+        repositorio.contarPorEstado().forEach(c -> System.out.println(c.id() + ": " + c.total()));
+    }
+}
+```
+
+Archivo `academia-spring/src/main/resources/application.properties`:
+
+```properties
+spring.data.mongodb.uri=mongodb://localhost:27017/rutaflow
+```
+
+Ejecútalo:
+
+```bash
+docker run -d --name mongo -p 27017:27017 mongo:8
+./mvnw spring-boot:run
+docker exec mongo mongosh rutaflow --quiet --eval 'db.envios.findOne({_id: "ENV-42"})'
+```
+
+**Explicación por bloques:** `Envio` es un record con `@Document`: el código es el `_id` y la lista de eventos se guarda dentro del mismo documento. `EnvioRepository` declara una consulta derivada por estado y ciudad y una agregación que agrupa por estado y cuenta. `CargaInicial` limpia la colección, guarda tres envíos e imprime los resultados. Con `mongosh` ves el documento tal como quedó, con los eventos adentro.
+
+**Resultado esperado:**
+
+```text
+En ruta en Bogotá: 1
+ENTREGADO: 1
+EN_RUTA: 2
+mongosh muestra { _id: 'ENV-42', estado: 'EN_RUTA', ciudad: 'bogota', eventos: [ { tipo: 'CREADO', ... } ], _class: ... }
+```
+
+**Fallo deliberado:** detén el contenedor con `docker stop mongo` y arranca la aplicación. **Error esperado:** después de unos 30 segundos, `MongoTimeoutException: Timed out after 30000 ms while waiting to connect`. **Diagnóstico:** el driver espera a que el servidor esté disponible antes de fallar. Levanta MongoDB o baja `serverSelectionTimeoutMS` en la URI para fallar más rápido en desarrollo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la carga y comprueba el documento en `mongosh`.
+2. **Variación:** agrega `findByEventosTipo(String tipo)` y busca envíos con evento `CREADO`.
+3. **Diagnóstico:** reproduce el fallo deliberado y ajusta el tiempo de espera.
+4. **Integración:** crea un índice en `estado` y `ciudad` con `@CompoundIndex` y revisa `explain()` en `mongosh`.
+5. **Diseño:** decide qué datos de RutaFlow pondrías en MongoDB y cuáles en PostgreSQL, con la tabla de criterios.
+
+**Pista:** si una lista dentro del documento crece sin límite, sácala a otra colección.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una prueba con Testcontainers (`MongoDBContainer`) que guarde un envío con dos eventos y compruebe la consulta derivada y la agregación.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un documento embebido y cuándo conviene.
+- [ ] La carga imprime los conteos esperados.
+- [ ] Reprodujiste el tiempo de espera de conexión.
+- [ ] Decides entre documentos y relacional con criterios.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** embeber listas que crecen sin fin, usar documentos para datos muy relacionados y no crear índices para las consultas frecuentes. **Siguiente paso:** el tema «El problema N+1 y su corrección» muestra el costo equivalente en el mundo relacional.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda el historial de eventos de cada envío de RutaFlow como documento en MongoDB y mantén las tarifas y clientes en PostgreSQL.
+
+**Fuente oficial:** [Spring Data MongoDB — Reference](https://docs.spring.io/spring-data/mongodb/reference/) y [MongoDB — Data Modeling](https://www.mongodb.com/docs/manual/data-modeling/).
+
 ## Laboratorio práctico
 
 **Objetivo:** llevar el backend acumulativo desde la entidad hasta un esquema reproducible y medir un acceso relacionado.

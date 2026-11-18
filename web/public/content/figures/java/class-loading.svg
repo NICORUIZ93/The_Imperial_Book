@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 383 237" width="383" height="237" role="img" aria-label="Captura de terminal: java -cp . Cargadores">
+<title>Captura de terminal: java -cp . Cargadores</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos en orden: javac -d plugins plugins/TarifaPlugin.java ; javac Cargadores.java ; java -cp . Cargadores. Código de salida final: 0.</desc>
+<rect width="383" height="237" rx="8" fill="#1e1f24"/>
+<rect width="383" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="383" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="191.5" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">java -cp . Cargadores</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">javac -d plugins plugins/TarifaPlugin.java</tspan></text>
+<text x="18" y="80" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">javac Cargadores.java</tspan></text>
+<text x="18" y="99" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">java -cp . Cargadores</tspan></text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">String: bootstrap (null)</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">java.sql.Date: platform</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">Cargadores: app</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">Plugin cargado por: URLClassLoader propio</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">Resultado del plugin: tarifa plana de 5000</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">String es la misma clase: true</text>
+</g>
+</svg>

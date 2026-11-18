@@ -161,6 +161,131 @@ Armá una tabla de dos columnas ("se prueba localmente con el stub" / "necesita 
 #### Paso 7 · Cierre
 Entregá la validación de contrato del Paso 4, la afirmación incorrecta corregida del Paso 5, y la tabla de límites del Paso 6; explicá por qué pasar todas las pruebas contra el stub nunca es suficiente para decir "esto ya está probado" sin matices. Siguiente paso: seguridad. Errores comunes: confundir mock con modelo y no medir coste. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html.
 
+### Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min
+
+**Prerrequisito:** tema «Bedrock Runtime y respuestas stub» de este módulo.
+
+**Al finalizar podrás:** exigir una ficha de modelo completa, comprobar que el error no es peor para un grupo (por ejemplo, zonas rurales) y bloquear la publicación si el prompt de sistema contiene datos personales.
+
+**¿Por qué es importante?** Un modelo con buen promedio puede fallar sistemáticamente con un grupo de usuarios. Y un prompt con datos de ejemplo reales filtra información. Sin una puerta antes de publicar, esos problemas llegan a producción.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea `academia-labs/cloud/gobierno-ia`. En un proyecto real, la ficha viene del registro de modelos (SageMaker Model Registry, MLflow) y las métricas de la evaluación.
+
+#### Paso 2 · Contexto y caso real
+
+El estimador de tiempos de RutaFlow tenía un error medio de 6 minutos y se aprobó. Los clientes rurales recibían estimaciones 15 minutos equivocadas porque había pocos datos de esas zonas. Medir por grupo lo habría mostrado antes de publicar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** gobierno de IA, ficha de modelo (*model card*), responsable, métrica por grupo, umbral, datos personales en prompts, registro de modelos, aprobación.
+
+Una **puerta de publicación** revisa cada versión de modelo antes de usarla:
+
+1. **Ficha completa:** propósito, datos de entrenamiento, responsable y limitaciones conocidas. Sin ficha no hay publicación.
+2. **Métricas por grupo:** el promedio general no basta. Se mide para cada grupo relevante (zona, tipo de cliente) y cada uno debe cumplir su umbral.
+3. **Datos personales:** prompts de sistema, ejemplos y registros no deben contener datos reales de personas.
+4. **Registro y aprobación:** la versión, sus métricas y quién la aprobó quedan guardadas para auditar después.
+
+Los servicios de la nube ayudan: registros de modelos con estados de aprobación, guardrails que filtran datos personales en Bedrock, y monitoreo de la calidad en producción.
+
+**Analogía:** es el control de calidad de un medicamento: no basta con que funcione en promedio, debe funcionar para cada grupo de pacientes, con su prospecto (la ficha) y su lote registrado. La analogía falla en que un modelo puede empeorar con el tiempo sin que nadie lo cambie, por eso también se monitorea después.
+
+**Límite de uso:** la puerta revisa lo que mides: si un grupo no está en los datos de evaluación, no aparece. Las reglas de datos personales con expresiones regulares son una primera barrera, no una garantía.
+
+```mermaid
+flowchart LR
+    M["versión del modelo"] --> F{"¿ficha completa?"}
+    F -->|no| X["BLOQUEADO"]
+    F -->|sí| G{"¿cada grupo cumple su umbral?"}
+    G -->|no| X
+    G -->|sí| P{"¿prompt sin datos personales?"}
+    P -->|no| X
+    P -->|sí| A["APROBADO + registro"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/gobierno-ia/puerta_modelo.py`:
+
+```python
+import json
+import re
+
+# Ficha del modelo que el equipo quiere publicar (en la vida real viene del registro de modelos).
+ficha = json.loads("""{
+  "nombre": "estimador-tiempo-entrega", "version": "3",
+  "proposito": "estimar minutos de entrega por parada",
+  "datos_entrenamiento": "entregas 2025 anonimizadas",
+  "responsable": "equipo-datos",
+  "metricas": {"error_medio_min": 6.2, "error_medio_min_zona_rural": 14.8},
+  "prompt_sistema": "Responde con minutos. Ejemplo: cliente Ana Pérez, cédula 1020304050."
+}""")
+
+REQUISITOS = ["proposito", "datos_entrenamiento", "responsable"]
+UMBRALES = {"error_medio_min": 8.0, "error_medio_min_zona_rural": 12.0}  # el rural no puede quedar atrás
+PII = re.compile(r"\b\d{8,10}\b")  # números que parecen documentos de identidad
+
+problemas = []
+problemas += [f"falta '{c}' en la ficha" for c in REQUISITOS if not ficha.get(c)]
+problemas += [f"{m} = {ficha['metricas'][m]} supera {u}" for m, u in UMBRALES.items() if ficha["metricas"][m] > u]
+if PII.search(ficha["prompt_sistema"]):
+    problemas.append("el prompt de sistema contiene datos personales")
+
+print(f"{ficha['nombre']} v{ficha['version']}: {'BLOQUEADO' if problemas else 'APROBADO'}")
+for p in problemas:
+    print(" -", p)
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/gobierno-ia
+python3 puerta_modelo.py
+```
+
+**Explicación por bloques:** La ficha incluye propósito, datos, responsable, métricas y el prompt de sistema. `REQUISITOS` revisa que la ficha esté completa. `UMBRALES` tiene un límite por métrica, incluida la de zona rural, para que ese grupo no quede atrás. `PII` busca números de 8 a 10 dígitos, que en Colombia suelen ser cédulas. El modelo cumple el promedio general (6,2 < 8) pero falla el rural (14,8 > 12) y su prompt incluye un nombre y una cédula de ejemplo: queda bloqueado con los dos motivos.
+
+![Captura de terminal: el modelo queda bloqueado porque el error en zona rural supera el umbral y el prompt contiene datos personales](content/figures/cloud/gobierno-ia-ml.svg)
+
+**Resultado esperado:**
+
+```text
+estimador-tiempo-entrega v3: BLOQUEADO
+ - error_medio_min_zona_rural = 14.8 supera 12.0
+ - el prompt de sistema contiene datos personales
+```
+
+**Fallo deliberado:** borra la métrica `error_medio_min_zona_rural` de `UMBRALES` y de la ficha. **Error esperado:** la puerta muestra solo el problema del prompt y, una vez corregido, aprueba el modelo aunque falle en zonas rurales. **Diagnóstico:** lo que no se mide por grupo no se ve. Define con el negocio qué grupos importan y exige su métrica.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la puerta y explica los dos motivos del bloqueo.
+2. **Variación:** corrige el prompt con un ejemplo ficticio y vuelve a ejecutar.
+3. **Diagnóstico:** reproduce el fallo deliberado sin la métrica rural.
+4. **Integración:** agrega un campo `limitaciones` obligatorio y un umbral para clientes empresariales.
+5. **Diseño:** escribe quién aprueba los modelos en RutaFlow y qué se guarda en el registro de cada aprobación.
+
+**Pista:** si una métrica general se ve bien, pregunta para qué grupo podría estar mal.
+
+#### Paso 6 · Práctica independiente
+
+Registra la versión en MLflow o en SageMaker Model Registry con estado «pendiente», y cambia el estado a «aprobado» solo si la puerta pasa, desde el mismo script.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras los cuatro controles de la puerta.
+- [ ] La puerta bloquea con los dos motivos esperados.
+- [ ] Reprodujiste el riesgo de no medir por grupo.
+- [ ] Hay un registro de aprobaciones.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** aprobar por el promedio, usar datos reales en prompts de ejemplo y no registrar quién aprobó cada versión. **Siguiente paso:** el tema «Stub vs mock, y qué probar localmente» prueba estos modelos sin llamar al servicio real.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega la puerta de publicación al pipeline de modelos de RutaFlow con métricas por zona y revisión de datos personales.
+
+**Fuente oficial:** [NIST — AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) y [Amazon SageMaker — Model Registry](https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry.html).
+
 ## Laboratorio práctico
 
 > Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.

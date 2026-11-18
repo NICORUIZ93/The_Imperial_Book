@@ -2,26 +2,26 @@
 
 Mide únicamente contenido dentro de cada tema. Las guías transversales no cuentan como código editorial ni como fuente oficial del tema.
 
-Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-18 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 503 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
+Las fuentes se reconocen por host exacto en la prosa visible, no dentro del código. El reconocimiento no comprueba acceso, vigencia ni pertinencia. La revisión parcial del 2026-11-18 conserva los 366 temas originalmente sin reconocimiento y los resultados HTTP de 501 citas registradas en [el registro de fuentes por tema](./topic-source-review.json); todos mantienen revisión manual pendiente de pertinencia.
 
 | Track | Temas | Código | Código comentado | Mermaid | Archify HTML | ASCII pendiente | Etiqueta engañosa | Ruta | Ejecución | Dominio oficial detectado |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | foundations | 102 | 102 | 96 | 73 | 6 | 0 | 0 | 101 | 102 | 102 |
-| cloud | 156 | 156 | 119 | 74 | 4 | 18 | 0 | 150 | 156 | 154 |
-| devops | 130 | 130 | 84 | 83 | 2 | 40 | 0 | 130 | 129 | 130 |
-| javascript | 88 | 88 | 76 | 58 | 0 | 0 | 0 | 88 | 88 | 88 |
-| node | 83 | 83 | 30 | 32 | 0 | 0 | 0 | 83 | 83 | 80 |
-| angular | 71 | 71 | 69 | 30 | 0 | 20 | 0 | 71 | 70 | 71 |
-| react | 58 | 58 | 42 | 37 | 0 | 9 | 0 | 58 | 58 | 58 |
-| java | 111 | 111 | 55 | 18 | 1 | 0 | 0 | 111 | 111 | 106 |
-| spring-boot | 114 | 114 | 41 | 37 | 1 | 0 | 0 | 114 | 114 | 113 |
+| cloud | 168 | 168 | 144 | 86 | 4 | 18 | 0 | 161 | 168 | 166 |
+| devops | 138 | 138 | 97 | 91 | 2 | 40 | 0 | 138 | 137 | 137 |
+| javascript | 92 | 92 | 80 | 62 | 0 | 0 | 0 | 92 | 92 | 92 |
+| node | 90 | 90 | 41 | 39 | 0 | 0 | 0 | 90 | 90 | 87 |
+| angular | 78 | 78 | 76 | 37 | 0 | 20 | 0 | 78 | 74 | 78 |
+| react | 64 | 64 | 53 | 43 | 0 | 9 | 0 | 64 | 64 | 64 |
+| java | 117 | 117 | 61 | 24 | 1 | 0 | 0 | 117 | 117 | 112 |
+| spring-boot | 121 | 121 | 48 | 44 | 1 | 0 | 0 | 121 | 121 | 120 |
 | microservices | 24 | 24 | 6 | 1 | 0 | 0 | 0 | 24 | 23 | 24 |
-| kotlin-multiplatform | 56 | 56 | 45 | 32 | 0 | 22 | 0 | 56 | 56 | 56 |
-| android | 74 | 74 | 65 | 27 | 0 | 40 | 0 | 72 | 71 | 73 |
-| ios | 56 | 56 | 40 | 34 | 0 | 16 | 0 | 55 | 56 | 56 |
-| flutter | 109 | 109 | 64 | 85 | 0 | 14 | 0 | 106 | 106 | 102 |
+| kotlin-multiplatform | 66 | 66 | 59 | 42 | 0 | 22 | 0 | 66 | 64 | 65 |
+| android | 83 | 83 | 74 | 36 | 0 | 40 | 0 | 81 | 80 | 81 |
+| ios | 69 | 69 | 55 | 47 | 0 | 16 | 0 | 68 | 69 | 68 |
+| flutter | 119 | 119 | 80 | 95 | 0 | 14 | 0 | 116 | 114 | 112 |
 | rutaflow | 29 | 29 | 27 | 26 | 0 | 0 | 0 | 28 | 27 | 29 |
-| **Total** | **1261** | **1261** | **859** | **647** | **14** | **179** | **0** | **1247** | **1250** | **1242** |
+| **Total** | **1360** | **1360** | **997** | **746** | **14** | **179** | **0** | **1345** | **1342** | **1337** |
 
 ## Regla editorial
 

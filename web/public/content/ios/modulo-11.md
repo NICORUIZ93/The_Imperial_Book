@@ -26,35 +26,6 @@ flowchart LR
 
 En el `RutaFlowApp` que creas desde una carpeta vacía para esta práctica, escribe una pantalla mínima en `RutaFlowApp/ContentView.swift` y deja que Xcode genere `RutaFlowApp/RutaFlowApp.entitlements` al activar Push Notifications. Crea también `Distribucion/RegistroFirma.md` y anota allí Team, Bundle Identifier, capability y resultado del Archive; no guardes certificados ni perfiles en esa carpeta.
 
-#### Paso 4 · Demostración guiada desde cero
-```text
-1. En Xcode, Signing & Capabilities -> activá "Automatically manage signing"
-2. Bundle Identifier: com.rutaflow.conductor
-3. Elegí tu Team (cuenta de Apple Developer)
-4. Product > Archive
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: Xcode genera y descarga automáticamente un certificado de distribución y un provisioning profile que vinculan tu Team, `com.rutaflow.conductor` y las capacidades habilitadas (por ejemplo, Push Notifications); el Archive se completa sin errores de firma.
-
-#### Paso 5 · Práctica guiada
-Pista: cambiá el Bundle Identifier a `com.rutaflow.conductor.test` sin crear un nuevo App ID en tu cuenta de desarrollador — ese es el fallo deliberado: Xcode no encuentra ningún provisioning profile válido para ese identificador nuevo, y el Archive falla con un error de firma que señala exactamente el identificador que no coincide con ningún perfil existente.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el Bundle Identifier a `com.rutaflow.conductor`, y agregá la capability de Push Notifications en Signing & Capabilities — confirmá que Xcode regenera automáticamente el provisioning profile para incluir esa nueva capacidad, sin que tengas que crearlo manualmente.
-
-* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build`.
-* Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, firma la app con un perfil de desarrollo y documenta el equipo.
-
-#### Paso 7 · Cierre
-Entregá el Archive válido del Paso 4, el error de firma del Paso 5, y la capability agregada del Paso 6; explicá con tus propias palabras qué vincula exactamente un provisioning profile (certificado + App ID + capacidades, y en desarrollo, dispositivos). Siguiente paso: estudia cómo archivar y subir a TestFlight. Errores comunes: compartir certificados entre proyectos sin necesidad, cambiar el Bundle Identifier sin crear el App ID correspondiente, y versionar certificados o perfiles en el repositorio. Fuentes oficiales: https://developer.apple.com/help/account/ y https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases.
 **¿Por qué es importante?** Porque un provisioning profile inválido o faltante es la causa más común de que un Archive no se pueda firmar ni subir, y entender qué vincula exactamente evita adivinar la solución.
 **Conceptos clave:** distinción entre desarrollo y distribución, vínculo entre identidad, app y dispositivos autorizados.
 
@@ -73,6 +44,36 @@ Certificado de desarrollo   → builds para dispositivos registrados manualmente
 Certificado de distribución → builds para TestFlight y App Store
 Provisioning profile        → vincula certificado + App ID + dispositivos autorizados
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+```text
+1. En Xcode, Signing & Capabilities -> activá "Automatically manage signing"
+2. Bundle Identifier: com.rutaflow.conductor
+3. Elegí tu Team (cuenta de Apple Developer)
+4. Product > Archive
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: Xcode genera y descarga automáticamente un certificado de distribución y un provisioning profile que vinculan tu Team, `com.rutaflow.conductor` y las capacidades habilitadas (por ejemplo, Push Notifications); el Archive se completa sin errores de firma.
+
+#### Paso 5 · Práctica guiada
+Pista: cambiá el Bundle Identifier a `com.rutaflow.conductor.test` sin crear un nuevo App ID en tu cuenta de desarrollador — ese es el fallo deliberado: Xcode no encuentra ningún provisioning profile válido para ese identificador nuevo, y el Archive falla con un error de firma que señala exactamente el identificador que no coincide con ningún perfil existente.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 devolviendo el Bundle Identifier a `com.rutaflow.conductor`, y agregá la capability de Push Notifications en Signing & Capabilities — confirmá que Xcode regenera automáticamente el provisioning profile para incluir esa nueva capacidad, sin que tengas que crearlo manualmente.
+
+* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build`.
+* Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, firma la app con un perfil de desarrollo y documenta el equipo.
+
+#### Paso 7 · Cierre
+Entregá el Archive válido del Paso 4, el error de firma del Paso 5, y la capability agregada del Paso 6; explicá con tus propias palabras qué vincula exactamente un provisioning profile (certificado + App ID + capacidades, y en desarrollo, dispositivos). Siguiente paso: estudia cómo archivar y subir a TestFlight. Errores comunes: compartir certificados entre proyectos sin necesidad, cambiar el Bundle Identifier sin crear el App ID correspondiente, y versionar certificados o perfiles en el repositorio. Fuentes oficiales: https://developer.apple.com/help/account/ y https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases.
 
 ### Tema 2: Archivar, subir y TestFlight
 
@@ -96,37 +97,6 @@ flowchart LR
 
 Además del proyecto nuevo y su Archive, crea `Distribucion/NotasTestFlight.md` desde el navegador de archivos de tu carpeta de trabajo. Registra allí versión, `CFBundleVersion`, fecha de subida, estado de procesamiento y una prueba concreta realizada por cada tester; ese archivo es tu evidencia learner-owned y no sustituye la metadata de App Store Connect.
 
-#### Paso 4 · Demostración guiada desde cero
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices el proyecto ni el Archive del Tema 1. Configura tu propio Team y Bundle Identifier en **Signing & Capabilities** y genera un Archive nuevo con **Product ▸ Archive**. Después sigue este flujo:
-
-```text
-1. Window > Organizer -> seleccioná el Archive que acabas de crear
-2. Distribute App > App Store Connect > Upload
-3. En App Store Connect, esperá a que el build termine de procesarse
-4. TestFlight > Internal Testing -> agregate como tester
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: tras unos minutos de procesamiento, el build aparece disponible en la pestaña de TestFlight de App Store Connect, y podés instalarlo en tu propio iPhone a través de la app TestFlight sin pasar por ninguna revisión de Apple, por ser testing interno.
-
-#### Paso 5 · Práctica guiada
-Pista: intentá subir el mismo Archive una segunda vez sin incrementar `CFBundleVersion` — ese es el fallo deliberado: App Store Connect rechaza la subida, porque ya existe un build previo con ese mismo número de versión y Apple exige que cada subida sea estrictamente incremental.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 incrementando `CFBundleVersion`, generando un nuevo Archive y subiéndolo; una vez procesado, agregá un segundo tester interno (otro miembro del equipo) y confirmá que recibe la invitación para instalar el build desde TestFlight.
-
-* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build`.
-* Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, archiva la app y súbela a TestFlight con una nota de prueba.
-
-#### Paso 7 · Cierre
-Entregá el build disponible en TestFlight del Paso 4, el rechazo por versión duplicada del Paso 5, y el segundo tester agregado del Paso 6; explicá por qué probar con TestFlight antes de enviar a revisión de la App Store reduce el riesgo de que un conductor real sea el primero en encontrar un bug grave. Siguiente paso: estudia qué metadata necesita completarse antes de la revisión. Errores comunes: subir sin incrementar el número de build, no probar el build subido antes de promoverlo a revisión, y agregar testers externos sin completar antes la revisión beta que Apple exige para ese grupo. Fuentes oficiales: https://developer.apple.com/testflight/ y https://developer.apple.com/help/app-store-connect/.
 **¿Por qué es importante?** Porque probar con TestFlight antes de la revisión de la App Store detecta problemas con un grupo controlado de impacto limitado, en vez de descubrirlos directamente en producción.
 **Conceptos clave:** proceso formal de empaquetado, validación beta con impacto limitado antes de producción.
 
@@ -147,6 +117,38 @@ Tras subir el build, este se procesa automáticamente en App Store Connect y que
 ```
 Xcode Archive → App Store Connect → TestFlight (testers internos/externos) → revisión de Apple → App Store pública
 ```
+
+#### Paso 4 · Demostración guiada desde cero
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`; no reutilices el proyecto ni el Archive del Tema 1. Configura tu propio Team y Bundle Identifier en **Signing & Capabilities** y genera un Archive nuevo con **Product ▸ Archive**. Después sigue este flujo:
+
+```text
+1. Window > Organizer -> seleccioná el Archive que acabas de crear
+2. Distribute App > App Store Connect > Upload
+3. En App Store Connect, esperá a que el build termine de procesarse
+4. TestFlight > Internal Testing -> agregate como tester
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: tras unos minutos de procesamiento, el build aparece disponible en la pestaña de TestFlight de App Store Connect, y podés instalarlo en tu propio iPhone a través de la app TestFlight sin pasar por ninguna revisión de Apple, por ser testing interno.
+
+#### Paso 5 · Práctica guiada
+Pista: intentá subir el mismo Archive una segunda vez sin incrementar `CFBundleVersion` — ese es el fallo deliberado: App Store Connect rechaza la subida, porque ya existe un build previo con ese mismo número de versión y Apple exige que cada subida sea estrictamente incremental.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 incrementando `CFBundleVersion`, generando un nuevo Archive y subiéndolo; una vez procesado, agregá un segundo tester interno (otro miembro del equipo) y confirmá que recibe la invitación para instalar el build desde TestFlight.
+
+* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build`.
+* Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, archiva la app y súbela a TestFlight con una nota de prueba.
+
+#### Paso 7 · Cierre
+Entregá el build disponible en TestFlight del Paso 4, el rechazo por versión duplicada del Paso 5, y el segundo tester agregado del Paso 6; explicá por qué probar con TestFlight antes de enviar a revisión de la App Store reduce el riesgo de que un conductor real sea el primero en encontrar un bug grave. Siguiente paso: estudia qué metadata necesita completarse antes de la revisión. Errores comunes: subir sin incrementar el número de build, no probar el build subido antes de promoverlo a revisión, y agregar testers externos sin completar antes la revisión beta que Apple exige para ese grupo. Fuentes oficiales: https://developer.apple.com/testflight/ y https://developer.apple.com/help/app-store-connect/.
 
 ### Tema 3: Metadata y versionado
 
@@ -207,7 +209,7 @@ CFBundleVersion: 42                  ← número de build, SIEMPRE incremental
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -249,6 +251,6 @@ Entregá la metadata completa del Paso 4, la confusión de versión detectada en
 
 ---
 
-* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build`.
+* Verificación: compila tu propio proyecto con `xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build`.
 * Código: usa los archivos y la configuración del target de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, define versión y build y registra qué cambia en cada entrega.

@@ -10,7 +10,7 @@ Después de que pasa el transitorio, ¿la salida llega exactamente a la referenc
 
 ## Aprende construyendo
 
-### Tema 1: Fórmula general
+### Tema 1: Fórmula general del error en estado estacionario
 
 **¿Por qué es importante?** El error final dice si el sistema llega exactamente a la referencia, que es lo que más le importa a quien usa el sistema.
 

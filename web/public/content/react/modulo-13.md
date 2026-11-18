@@ -92,6 +92,8 @@ reset -> nuevo recurso/precondición, no repetir objeto rechazado
 
 **Límites y decisión de uso:** Un spinner indefinido no resuelve una operación cuyo resultado se desconoce. Define plazos, cancelación y reconciliación; un timeout de confirmación no autoriza a repetir un efecto sin identidad estable.
 
+**¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
+
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
 <ErrorBoundary
@@ -128,7 +130,6 @@ Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese en
 
 #### Paso 7 · Cierre
 Entregá el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explicá por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
-**¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
 
 ### Tema 2: La composición visual debe conservar semántica y foco
 
@@ -186,6 +187,8 @@ teclado + lector -> flujo completo comprensible
 
 **Límites y decisión de uso:** Un componente visual reutilizable puede romper la semántica si genera controles anidados o pierde referencias de foco. Prueba el árbol accesible y teclado en la composición final, no solo en su ejemplo aislado.
 
+**¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
+
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
 function CampoPin({ id, label, error, ...props }: CampoPinProps) {
@@ -218,7 +221,6 @@ Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras u
 
 #### Paso 7 · Cierre
 Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
-**¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
 
 ### Tema 3: Cliente y servidor forman una sola frontera de seguridad
 
@@ -274,6 +276,8 @@ CSP/Trusted Types cubren DOM completo
 
 **Límites y decisión de uso:** Renderizar en servidor no vuelve confiables entradas ni oculta automáticamente secretos. Revalida sesión y autorización en cada operación y limita los datos enviados al cliente; un control de navegación no sustituye ese límite.
 
+**¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
+
 #### Paso 4 · Demostración guiada desde cero
 ```ts
 export async function confirmarEntregaAction(formData: FormData) {
@@ -303,7 +307,6 @@ Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoqu
 
 #### Paso 7 · Cierre
 Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
-**¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
 
 ### Tema 4: Hidratación determinista, idioma y releases medibles
 
@@ -397,6 +400,137 @@ Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá 
 #### Paso 7 · Cierre
 Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
 **Implicación práctica:** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
+
+### Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min
+
+**Prerrequisito:** tema «Hidratación determinista, idioma y releases medibles» de este módulo.
+
+**Al finalizar podrás:** actualizar un proyecto de React 18 a 19 por pasos: preparar con 18.3, aplicar los codemods oficiales, corregir lo que no se automatiza y verificar con pruebas.
+
+**¿Por qué es importante?** Una actualización mayor mezcla cambios automáticos y manuales. Hacerla de una vez, sin plan, deja errores que aparecen semanas después en pantallas poco usadas. Un proceso por pasos los encuentra antes.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas un proyecto con React 18, Git limpio y pruebas que pasen. Crea una rama `migracion-react-19`. Los codemods se ejecutan con `npx codemod`.
+
+#### Paso 2 · Contexto y caso real
+
+El portal de clientes de RutaFlow seguía en React 18 y usaba `ReactDOM.render`, `defaultProps` en componentes de función y `forwardRef` por todas partes. La actualización se dividió en commits pequeños, uno por tipo de cambio, para poder revertir cualquiera.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** versión mayor, aviso de obsolescencia, codemod, `createRoot`, `ref` como prop, `defaultProps`, `propTypes`.
+
+**Plan en cinco pasos:**
+
+1. Actualiza a **React 18.3**: es igual a 18.2, pero avisa en consola de todo lo que 19 elimina.
+2. Corrige esos avisos con las pruebas en verde.
+3. Ejecuta el **codemod** oficial: cambia automáticamente patrones como `ReactDOM.render` por `createRoot` y los `act` de pruebas.
+4. Instala React 19 y corrige a mano lo que el codemod no cubre.
+5. Verifica: pruebas, build de producción y un recorrido manual de las pantallas críticas.
+
+| Eliminado o cambiado en 19 | Reemplazo |
+|---|---|
+| `ReactDOM.render` / `hydrate` | `createRoot` / `hydrateRoot` |
+| `defaultProps` en funciones | valores por defecto en la desestructuración |
+| `propTypes` | TypeScript o validación propia |
+| `forwardRef` necesario | `ref` llega como una prop normal (`forwardRef` sigue funcionando) |
+| `<Context.Provider>` | `<Context value>` (el anterior sigue funcionando) |
+
+**Analogía:** migrar es mudarse de casa por cajas etiquetadas: una caja por habitación, para saber dónde buscar si algo se rompe. La analogía falla en que aquí puedes devolver una caja a la casa vieja con `git revert`.
+
+**Límite de uso:** los codemods no entienden librerías de terceros: revisa que cada dependencia declare soporte para React 19 antes de actualizar. No mezcles la migración con funciones nuevas en el mismo pull request.
+
+```mermaid
+flowchart LR
+    A["React 18.2"] --> B["18.3: ver avisos"]
+    B --> C["corregir avisos"]
+    C --> D["codemod react/19"]
+    D --> E["React 19 + ajustes manuales"]
+    E --> F["pruebas + build + recorrido"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `portal/src/main.jsx`:
+
+```jsx
+// ANTES (React 18 y anteriores):
+// import ReactDOM from 'react-dom';
+// ReactDOM.render(<App />, document.getElementById('root'));
+
+// DESPUÉS (lo que deja el codemod):
+import { createRoot } from 'react-dom/client';
+import App from './App';
+
+createRoot(document.getElementById('root')).render(<App />);
+```
+
+Archivo `portal/src/Campo.jsx`:
+
+```jsx
+// ANTES: forwardRef y defaultProps.
+// const Campo = forwardRef(function Campo({ etiqueta }, ref) { ... });
+// Campo.defaultProps = { etiqueta: 'Código' };
+
+// DESPUÉS: ref es una prop y el valor por defecto va en la firma.
+export default function Campo({ etiqueta = 'Código', ref }) {
+  return (
+    <label>
+      {etiqueta}
+      <input ref={ref} />
+    </label>
+  );
+}
+```
+
+Ejecútalo:
+
+```bash
+git switch -c migracion-react-19
+npm install react@18.3 react-dom@18.3 && npm test
+npx codemod@latest react/19/migration-recipe
+npm install react@19 react-dom@19
+npm test && npm run build
+```
+
+**Explicación por bloques:** En `main.jsx`, el codemod reemplaza `ReactDOM.render` por `createRoot` desde `react-dom/client`. En `Campo.jsx`, el ajuste es manual: `defaultProps` en componentes de función ya no tiene efecto en React 19, así que el valor por defecto pasa a la desestructuración, y `ref` llega como una prop más sin `forwardRef`. Los comandos siguen el plan: primero 18.3 con pruebas, luego el codemod, luego la versión 19 con pruebas y build.
+
+**Resultado esperado:**
+
+```text
+Con React 18.3, la consola muestra avisos «will be removed in React 19» para cada patrón obsoleto.
+Después del codemod y de React 19: npm test pasa y npm run build termina sin errores.
+```
+
+**Fallo deliberado:** instala React 19 sin quitar `Campo.defaultProps`. **Error esperado:** no hay error en consola, pero la etiqueta del campo aparece vacía. **Diagnóstico:** React 19 ignora `defaultProps` en componentes de función; el fallo es silencioso. Por eso el paso de 18.3, que sí avisa, va antes.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** actualiza a 18.3 y cuenta los avisos de la consola.
+2. **Variación:** corrige un aviso por commit y ejecuta las pruebas después de cada uno.
+3. **Diagnóstico:** reproduce el fallo deliberado de `defaultProps` y busca todos los casos con `grep -rn "defaultProps" src`.
+4. **Integración:** revisa en `npm ls react` qué dependencias aún piden React 18 y busca sus versiones compatibles.
+5. **Diseño:** escribe la lista de pantallas críticas del portal que recorrerás a mano antes de desplegar.
+
+**Pista:** un commit por tipo de cambio: si algo se rompe, `git bisect` te dice cuál fue.
+
+#### Paso 6 · Práctica independiente
+
+Migra un proyecto pequeño tuyo a React 19 siguiendo los cinco pasos y escribe en el README qué cambió de forma automática y qué a mano.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué conviene pasar por 18.3.
+- [ ] Aplicaste el codemod y revisaste su diff.
+- [ ] Reprodujiste el fallo silencioso de `defaultProps`.
+- [ ] Pruebas y build pasan con React 19.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** saltarse 18.3, mezclar la migración con funciones nuevas y no revisar la compatibilidad de las dependencias. **Siguiente paso:** el módulo 14 aprovecha lo nuevo de React 19 en el servidor.
+
+**Transferencia al proyecto integrador «RutaFlow»:** migra el portal de clientes de RutaFlow a React 19 en commits por tipo de cambio y documenta el recorrido manual de las pantallas críticas.
+
+**Fuente oficial:** [React — React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide).
 
 ## Revisión oficial de plataforma — julio de 2026
 

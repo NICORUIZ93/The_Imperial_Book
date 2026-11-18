@@ -11,7 +11,7 @@ Dónde están los polos te dice cómo se comporta el sistema sin hacer cuentas. 
 
 ## Aprende construyendo
 
-### Tema 1: Geometría de un polo
+### Tema 1: Geometría de un polo en el plano s
 
 **¿Por qué es importante?** Leer la geometría de un polo te da \(\zeta\), \(\omega_n\) y las especificaciones mirando un dibujo.
 
@@ -145,7 +145,7 @@ cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx
 
 **Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (capítulo 13), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
 
-### Tema 2: Estabilidad
+### Tema 2: Estabilidad según la posición de los polos
 
 **¿Por qué es importante?** Decidir estabilidad mirando el plano s es la forma más rápida de revisar un resultado.
 

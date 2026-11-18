@@ -498,6 +498,279 @@ Lleva el cursor al **[Proyecto integrador: listado acotado](#proyecto-3-api-http
 
 **Fuente oficial:** [Node test runner](https://nodejs.org/api/test.html).
 
+### Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min
+
+**Prerrequisito:** tema «El modelo request/response» de este módulo.
+
+**Al finalizar podrás:** levantar un servidor HTTP/2 sobre TLS con un certificado propio, conectarte con un cliente que confía en él y comprobar que dos peticiones comparten la misma conexión.
+
+**¿Por qué es importante?** Sin TLS, cualquiera en la red puede leer o cambiar lo que viaja, incluidos tokens. HTTP/2 reduce la latencia al enviar muchas peticiones por una sola conexión. Saber configurar ambos evita desactivar la verificación de certificados «para que funcione».
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 18 o superior y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
+
+**Contexto y caso real.**
+
+La app móvil de RutaFlow pide la ruta, las paradas y el estado del mensajero al mismo tiempo. Con HTTP/1.1 abría varias conexiones TLS, y cada una pagaba su propio saludo inicial. Con HTTP/2, las tres peticiones viajan por una conexión.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** TLS, certificado, autoridad de confianza (`ca`), ALPN, HTTP/2, stream, multiplexación.
+
+**TLS** cifra la conexión y demuestra la identidad del servidor con un **certificado**. El cliente solo acepta el certificado si lo firmó alguien en quien confía. En desarrollo creas un certificado propio y se lo das al cliente con la opción `ca`; nunca desactives la verificación.
+
+Al conectarse, cliente y servidor acuerdan el protocolo con **ALPN**: `h2` es HTTP/2 y `http/1.1` es el anterior.
+
+En **HTTP/2** cada petición es un **stream** con un número (los del cliente son impares: 1, 3, 5…). Muchos streams comparten una conexión: eso es la **multiplexación**.
+
+**Analogía:** HTTP/1.1 es abrir una ventanilla nueva del banco por cada trámite; HTTP/2 es una sola ventanilla que atiende varios trámites intercalados. TLS es el vidrio blindado de la ventanilla. La analogía falla en que, si un paquete TCP se pierde, todos los streams de la conexión esperan (eso lo resuelve HTTP/3).
+
+**Límite de uso:** los navegadores solo usan HTTP/2 con TLS. Detrás de un proxy (Nginx, un balanceador) muchas veces el TLS termina en el proxy y Node recibe HTTP/1.1. El certificado autofirmado es solo para desarrollo.
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant S as Servidor Node
+    C->>S: saludo TLS, ALPN: h2, http/1.1
+    S-->>C: certificado + ALPN elegido: h2
+    C->>S: stream 1: GET /rutas
+    C->>S: stream 3: GET /paradas
+    S-->>C: stream 1: 200
+    S-->>C: stream 3: 200
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/http2-tls/servidor-h2.mjs`:
+
+```js
+import { readFileSync } from 'node:fs';
+import { createSecureServer, connect } from 'node:http2';
+
+const cert = readFileSync('cert.pem');
+const key = readFileSync('clave.pem');
+
+// Servidor HTTP/2 sobre TLS. allowHTTP1 deja entrar clientes HTTP/1.1.
+const servidor = createSecureServer({ key, cert, allowHTTP1: true }, (req, res) => {
+  res.setHeader('content-type', 'application/json');
+  res.end(JSON.stringify({ protocolo: req.httpVersion, tls: req.socket.getProtocol() }));
+});
+await new Promise((listo) => servidor.listen(0, 'localhost', listo));
+const { port } = servidor.address();
+
+// Cliente HTTP/2 que confía solo en nuestro certificado de prueba.
+const sesion = connect(`https://localhost:${port}`, { ca: cert });
+sesion.on('connect', () => console.log(`ALPN negociado: ${sesion.alpnProtocol}`));
+
+// Dos peticiones viajan por la MISMA conexión, cada una en su stream.
+const pedir = (ruta) => new Promise((resolver, rechazar) => {
+  const stream = sesion.request({ ':path': ruta });
+  let cuerpo = '';
+  stream.setEncoding('utf8');
+  stream.on('response', (cabeceras) => console.log(`${ruta} -> ${cabeceras[':status']} en el stream ${stream.id}`));
+  stream.on('data', (trozo) => { cuerpo += trozo; });
+  stream.on('end', () => resolver(JSON.parse(cuerpo)));
+  stream.on('error', rechazar);
+});
+
+const [a] = await Promise.all([pedir('/rutas'), pedir('/paradas')]);
+console.log(`respuesta: HTTP/${a.protocolo} sobre ${a.tls}`);
+sesion.close();
+servidor.close();
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/http2-tls
+openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
+  -keyout clave.pem -out cert.pem -days 30 -subj "/CN=localhost" \
+  -addext "subjectAltName=DNS:localhost"
+node servidor-h2.mjs
+```
+
+**Explicación por bloques:** `openssl` crea una clave y un certificado autofirmado para `localhost`, válido 30 días. El servidor usa los dos con `createSecureServer`. El cliente pasa `ca: cert`, así confía solo en ese certificado sin desactivar la verificación. `alpnProtocol` muestra que se eligió `h2`. Las dos peticiones salen en paralelo por la misma sesión y reciben los streams 1 y 3. El orden de las dos líneas de respuesta puede variar, porque viajan intercaladas. La respuesta confirma HTTP/2 sobre TLS 1.3.
+
+![Captura de terminal: el cliente negocia h2 por ALPN, recibe 200 en los streams 1 y 3 y la respuesta indica HTTP/2.0 sobre TLSv1.3](content/figures/node/https-http2-tls.svg)
+
+**Resultado esperado:**
+
+```text
+ALPN negociado: h2
+/rutas -> 200 en el stream 1
+/paradas -> 200 en el stream 3
+respuesta: HTTP/2.0 sobre TLSv1.3
+```
+
+**Fallo deliberado:** quita `{ ca: cert }` del `connect`. **Error esperado:** `Error: self-signed certificate` (código `DEPTH_ZERO_SELF_SIGNED_CERT`). **Diagnóstico:** el cliente no confía en un certificado que nadie conocido firmó. La solución es darle el certificado con `ca`, no poner `rejectUnauthorized: false` ni `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el ejemplo y anota los números de stream.
+2. **Variación:** agrega una tercera petición `/estado` y predice qué número de stream recibe.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica por qué desactivar la verificación sería peligroso.
+4. **Integración:** prueba el servidor con `curl --cacert cert.pem --http2 -v https://localhost:<puerto>/rutas` y busca `ALPN: server accepted h2` en la salida.
+5. **Diseño:** dibuja qué cambia si un balanceador termina TLS antes de llegar a Node.
+
+**Pista:** si ves un error de certificado, pregúntate quién lo firmó y si el cliente conoce a ese firmante.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Convierte el servidor para que, además, acepte HTTP/1.1. Conéctate con `curl --http1.1 --cacert cert.pem` y comprueba que `protocolo` cambia a `1.1` mientras `tls` sigue siendo TLS 1.3.
+
+**Checklist de salida.**
+
+- [ ] Explicas para qué sirve ALPN.
+- [ ] El ejemplo imprime las cuatro líneas esperadas.
+- [ ] Reprodujiste el error de certificado y lo corregiste con `ca`.
+- [ ] Explicas qué es un stream en HTTP/2.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** desactivar la verificación TLS en desarrollo y olvidarlo en producción, usar el certificado autofirmado fuera de desarrollo y esperar HTTP/2 en el navegador sin TLS. **Siguiente paso:** el tema siguiente baja a los protocolos debajo de HTTP: TCP, UDP y DNS.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el entorno local de RutaFlow, sirve la API con HTTP/2 y un certificado de desarrollo, y documenta en el README cómo confiar en él sin desactivar la verificación.
+
+**Fuente oficial:** [Node.js — HTTP/2](https://nodejs.org/api/http2.html) y [Node.js — TLS (SSL)](https://nodejs.org/api/tls.html).
+
+### Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min
+
+**Prerrequisito:** tema «El modelo request/response» de este módulo.
+
+**Al finalizar podrás:** resolver un nombre con `dns`, intercambiar un mensaje por TCP con `net` y enviar un datagrama UDP con `dgram`, y explicar cuándo conviene cada protocolo.
+
+**¿Por qué es importante?** HTTP corre sobre TCP, y TCP necesita DNS para encontrar al servidor. Cuando una conexión falla con `ENOTFOUND`, `ECONNREFUSED` o `ETIMEDOUT`, entender estas capas te dice dónde buscar.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 18 o superior. Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
+
+**Contexto y caso real.**
+
+Los mensajeros de RutaFlow envían su posición cada pocos segundos. Si una posición se pierde no pasa nada, porque llega otra. En cambio, la confirmación de entrega no puede perderse. La primera encaja con UDP; la segunda con TCP.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** DNS, dirección IP, puerto, TCP (conexión, orden, entrega garantizada), UDP (datagrama, sin conexión), `ENOTFOUND`, `ECONNREFUSED`.
+
+- **DNS** traduce un nombre (`api.rutaflow.co`) a una dirección IP. `dns.lookup` usa el resolvedor del sistema operativo, el mismo que usa `fetch`. Si el nombre no existe, el error es `ENOTFOUND`.
+- **TCP** abre una conexión, entrega los bytes en orden y reenvía lo que se pierde. Si nadie escucha en el puerto, el error es `ECONNREFUSED`. HTTP/1.1 y HTTP/2 viajan sobre TCP.
+- **UDP** envía **datagramas** sueltos: sin conexión, sin orden y sin garantía de entrega. Es más ligero y sirve cuando un dato viejo ya no importa (posiciones, video en vivo, DNS mismo).
+
+| Necesitas | Usa |
+|---|---|
+| que todo llegue y en orden | TCP |
+| lo más reciente, rápido, y tolerar pérdidas | UDP |
+
+**Analogía:** TCP es una llamada telefónica: marcas, la otra persona contesta y conversan en orden. UDP es lanzar postales: cada una va sola y alguna puede perderse. DNS es la guía telefónica. La analogía falla en que TCP no «escucha» palabras, sino bytes: tu programa debe saber dónde termina cada mensaje.
+
+**Límite de uso:** no construyas tu propio protocolo sobre TCP o UDP si HTTP, WebSocket o un broker de mensajes resuelven el problema: tendrías que diseñar reintentos, formatos y seguridad. Los datagramas UDP grandes pueden fragmentarse y perderse.
+
+```mermaid
+flowchart LR
+    N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
+    IP --> T["TCP: conexión<br/>orden y entrega"]
+    IP --> U["UDP: datagrama<br/>sin garantía"]
+    T --> H["HTTP, WebSocket, bases de datos"]
+    U --> P["posiciones, video, DNS"]
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/redes/redes.mjs`:
+
+```js
+import { createServer, connect } from 'node:net';
+import { createSocket } from 'node:dgram';
+import { lookup } from 'node:dns/promises';
+
+// DNS: el sistema traduce un nombre a una dirección IP.
+const { address, family } = await lookup('localhost', { family: 4 });
+console.log(`DNS: localhost -> ${address} (IPv${family})`);
+
+// TCP: conexión con orden y entrega garantizados.
+const servidorTcp = createServer((socket) => {
+  socket.on('data', (datos) => socket.end(`recibido ${datos.toString().trim()}`));
+});
+await new Promise((listo) => servidorTcp.listen(0, address, listo));
+const respuestaTcp = await new Promise((resolver) => {
+  const cliente = connect(servidorTcp.address().port, address, () => cliente.write('ENV-42\n'));
+  cliente.on('data', (datos) => resolver(datos.toString()));
+});
+console.log(`TCP: ${respuestaTcp}`);
+servidorTcp.close();
+
+// UDP: datagramas sueltos, sin conexión ni garantía de entrega.
+const servidorUdp = createSocket('udp4');
+const llegada = new Promise((resolver) =>
+  servidorUdp.once('message', (mensaje) => resolver(mensaje.toString())));
+await new Promise((listo) => servidorUdp.bind(0, address, listo));
+const clienteUdp = createSocket('udp4');
+clienteUdp.send('posicion 4.65,-74.05', servidorUdp.address().port, address);
+console.log(`UDP: ${await llegada}`);
+clienteUdp.close();
+servidorUdp.close();
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/redes
+node redes.mjs
+```
+
+**Explicación por bloques:** `lookup` pide al sistema la IP de `localhost`. El servidor TCP responde a cada mensaje y cierra con `socket.end`; el cliente se conecta, escribe y espera la respuesta. El servidor UDP no acepta conexiones: solo recibe datagramas con el evento `message`. El cliente UDP envía uno sin saber si alguien lo recibe. Ambos servidores usan el puerto `0` para que el sistema elija uno libre.
+
+![Captura de terminal: node redes.mjs resuelve localhost a 127.0.0.1, recibe la respuesta TCP de ENV-42 y el datagrama UDP de posición](content/figures/node/net-dgram-dns.svg)
+
+**Resultado esperado:**
+
+```text
+DNS: localhost -> 127.0.0.1 (IPv4)
+TCP: recibido ENV-42
+UDP: posicion 4.65,-74.05
+```
+
+**Fallo deliberado:** cambia `lookup('localhost', ...)` por `lookup('api.rutaflow.invalid', ...)`. **Error esperado:** `Error: getaddrinfo ENOTFOUND api.rutaflow.invalid`. **Diagnóstico:** el fallo ocurre antes de abrir cualquier conexión: el nombre no existe. Revisa DNS antes de culpar al servidor o al firewall.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el ejemplo y explica qué línea usa cada protocolo.
+2. **Variación:** conecta el cliente TCP a un puerto donde nadie escucha y anota el error (`ECONNREFUSED`).
+3. **Diagnóstico:** reproduce el fallo deliberado de DNS y compáralo con el de la variación.
+4. **Integración:** envía diez datagramas UDP seguidos y cuenta cuántos llegan; repite enviando 60 000 bytes en uno solo.
+5. **Diseño:** decide si las confirmaciones de entrega de RutaFlow pueden ir por UDP y justifica.
+
+**Pista:** lee el código de error: `ENOTFOUND` es DNS, `ECONNREFUSED` es que nadie escucha y `ETIMEDOUT` es que nadie responde.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Escribe un servidor TCP de eco que responda en mayúsculas, línea por línea, aunque el cliente envíe varias líneas en un solo `write`. Pruébalo con `nc localhost <puerto>`.
+
+**Checklist de salida.**
+
+- [ ] Explicas qué hace DNS antes de una petición HTTP.
+- [ ] El script imprime las tres líneas esperadas.
+- [ ] Distingues `ENOTFOUND`, `ECONNREFUSED` y `ETIMEDOUT`.
+- [ ] Eliges TCP o UDP con un criterio, no por costumbre.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** suponer que cada `data` de TCP es un mensaje completo, usar UDP para datos que no pueden perderse y diagnosticar un `ENOTFOUND` como problema del servidor. **Siguiente paso:** el tema «Códigos de estado y content negotiation» vuelve a HTTP, ahora sabiendo qué hay debajo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, documenta en un diagrama qué viaja por TCP (API, base de datos) y qué podría viajar por UDP (posiciones), y agrega a la guía de soporte la tabla de errores de red.
+
+**Fuente oficial:** [Node.js — net](https://nodejs.org/api/net.html) y [Node.js — dgram](https://nodejs.org/api/dgram.html) y [Node.js — dns](https://nodejs.org/api/dns.html).
+
 ## Laboratorio práctico
 
 ### Proyecto 3: API HTTP nativa de tareas

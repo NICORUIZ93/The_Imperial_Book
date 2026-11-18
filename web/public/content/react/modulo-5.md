@@ -40,6 +40,33 @@ graph TD
     style G fill:#e8f5e9
 ```
 
+**¿Por qué es importante?** Anidar rutas bajo un layout compartido centraliza ese layout en un único lugar y preserva su estado entre navegaciones, algo que rutas independientes duplicadas no logran.
+**Conceptos clave:** `children`, layout compartido, composición de rutas.
+
+React Router permite definir rutas anidadas mediante la propiedad `children` de una configuración de ruta: una ruta padre (`/tareas`) puede definir un `element` que actúa como layout compartido (por ejemplo, una barra de navegación común a todas las sub-rutas), dentro del cual se renderizan sus rutas hijas (`{ index: true, element: <ListaTareas /> }` para la ruta exacta `/tareas`, y `{ path: ':id', element: <DetalleTarea /> }` para `/tareas/:id`), evitando la necesidad de repetir manualmente ese layout compartido (la navbar, por ejemplo) en cada componente de vista individual.
+
+Esta estructura anidada refleja directamente la jerarquía visual real de la aplicación: si todas las vistas bajo `/tareas/*` comparten la misma barra de navegación circundante, expresar esa relación mediante anidamiento de rutas evita duplicar ese layout en cada componente de vista, centralizándolo en un único lugar (el componente de la ruta padre), de forma conceptual similar al routing anidado con layouts compartidos estudiado en el Módulo 4 del track de Angular, aunque expresado con la API específica de React Router en vez de la de Angular Router.
+
+**Analogía:** un layout compartido en rutas anidadas es como un marco de fotos común que envuelve distintas fotos intercambiables: el marco (la navbar) permanece igual, mientras que el contenido específico dentro de él (la vista actual) cambia según la ruta activa.
+
+**Código del ejemplo:**
+
+```jsx
+const router = createBrowserRouter([
+  {
+    path: '/tareas',
+    element: <LayoutTareas />, // navbar compartida
+    children: [
+      { index: true, element: <ListaTareas /> },
+      { path: ':id', element: <DetalleTarea /> },
+    ],
+  },
+]);
+```
+
+
+**Límites y decisión de uso:** Un layout compartido conserva componentes y posiblemente estado entre rutas. Define qué debe reiniciarse al cambiar de guía o identidad, y prueba entrada directa y regreso para evitar mostrar datos de un recurso anterior.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const router = createBrowserRouter([
@@ -72,32 +99,6 @@ Corregí el Paso 5 volviendo a anidar ambas rutas bajo `LayoutEnvios`, y agregá
 
 #### Paso 7 · Cierre
 Entregá la estructura anidada del Paso 4, la pérdida de estado provocada en el Paso 5, y la tercera ruta hija del Paso 6; explicá por qué anidar rutas (en vez de duplicar el layout en rutas independientes) preserva el estado del layout compartido entre navegaciones. Siguiente paso: estudia loaders para evitar el parpadeo de carga. Errores comunes: duplicar el layout en rutas independientes en vez de anidarlas, olvidar el `<Outlet />` dentro del layout (las rutas hijas nunca se renderizarían), y anidar rutas que en realidad no comparten ningún layout real. Fuentes oficiales: https://reactrouter.com/start/data/route-object y https://reactrouter.com/start/framework/routing.
-**¿Por qué es importante?** Anidar rutas bajo un layout compartido centraliza ese layout en un único lugar y preserva su estado entre navegaciones, algo que rutas independientes duplicadas no logran.
-**Conceptos clave:** `children`, layout compartido, composición de rutas.
-
-React Router permite definir rutas anidadas mediante la propiedad `children` de una configuración de ruta: una ruta padre (`/tareas`) puede definir un `element` que actúa como layout compartido (por ejemplo, una barra de navegación común a todas las sub-rutas), dentro del cual se renderizan sus rutas hijas (`{ index: true, element: <ListaTareas /> }` para la ruta exacta `/tareas`, y `{ path: ':id', element: <DetalleTarea /> }` para `/tareas/:id`), evitando la necesidad de repetir manualmente ese layout compartido (la navbar, por ejemplo) en cada componente de vista individual.
-
-Esta estructura anidada refleja directamente la jerarquía visual real de la aplicación: si todas las vistas bajo `/tareas/*` comparten la misma barra de navegación circundante, expresar esa relación mediante anidamiento de rutas evita duplicar ese layout en cada componente de vista, centralizándolo en un único lugar (el componente de la ruta padre), de forma conceptual similar al routing anidado con layouts compartidos estudiado en el Módulo 4 del track de Angular, aunque expresado con la API específica de React Router en vez de la de Angular Router.
-
-**Analogía:** un layout compartido en rutas anidadas es como un marco de fotos común que envuelve distintas fotos intercambiables: el marco (la navbar) permanece igual, mientras que el contenido específico dentro de él (la vista actual) cambia según la ruta activa.
-
-**Código del ejemplo:**
-
-```jsx
-const router = createBrowserRouter([
-  {
-    path: '/tareas',
-    element: <LayoutTareas />, // navbar compartida
-    children: [
-      { index: true, element: <ListaTareas /> },
-      { path: ':id', element: <DetalleTarea /> },
-    ],
-  },
-]);
-```
-
-
-**Límites y decisión de uso:** Un layout compartido conserva componentes y posiblemente estado entre rutas. Define qué debe reiniciarse al cambiar de guía o identidad, y prueba entrada directa y regreso para evitar mostrar datos de un recurso anterior.
 
 ### Tema 2: Loaders — datos antes de renderizar
 
@@ -109,6 +110,27 @@ Hoy, `DetalleEnvio` se monta vacío, muestra "Cargando..." por un instante, y lu
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Un loader es una función asociada a una ruta que React Router ejecuta y espera antes de renderizar el componente — esperar a que el plato esté listo en la cocina antes de servirlo, en vez de servir la mesa vacía primero.
+
+**¿Por qué es importante?** Un loader evita el parpadeo de un estado intermedio "cargando" al asegurar que los datos ya están disponibles antes de que el componente de la ruta se renderice por primera vez.
+**Conceptos clave:** carga de datos previa a la vista, `useLoaderData`, evitar el parpadeo de carga.
+
+Un loader es una función asociada a una ruta específica que React Router ejecuta y espera a que complete antes de renderizar el componente de esa ruta: `loader: ({ params }) => fetch(`/api/tareas/${params.id}`)`, con el componente accediendo al resultado de esa carga mediante `useLoaderData()`, en vez de disparar la carga de datos dentro de un `useEffect` una vez que el componente ya se montó (el patrón tradicional de fetching dentro del propio componente).
+
+Esta diferencia de timing es la ventaja concreta de un loader: con fetching dentro de un `useEffect`, el componente se monta primero (típicamente mostrando algún estado de "cargando..." mientras la petición está en curso), y solo después de que la petición completa se actualiza el estado con los datos reales, produciendo un parpadeo visual perceptible entre el estado vacío/cargando inicial y el contenido final; con un loader, React Router espera a que la carga de datos complete antes de montar el componente en absoluto, evitando ese parpadeo intermedio por completo, dado que el componente nunca se renderiza en un estado sin datos.
+
+**Analogía:** un loader es como esperar a que el plato completo esté listo en la cocina antes de servirlo en la mesa; fetching dentro de un `useEffect` es como servir la mesa vacía primero y traer el plato después, dejando al comensal esperando frente a un plato vacío durante un momento perceptible antes de que llegue el contenido real.
+
+**Código del ejemplo:**
+
+```jsx
+{
+  path: '/tareas/:id',
+  loader: ({ params }) => fetch(`/api/tareas/${params.id}`),
+  element: <DetalleTarea />,
+}
+// dentro del componente:
+const tarea = useLoaderData();
+```
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -148,27 +170,6 @@ Corregí el Paso 5 devolviendo la URL correcta, y agregá un `errorElement` espe
 
 #### Paso 7 · Cierre
 Entregá el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explicá por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas y code-splitting. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
-**¿Por qué es importante?** Un loader evita el parpadeo de un estado intermedio "cargando" al asegurar que los datos ya están disponibles antes de que el componente de la ruta se renderice por primera vez.
-**Conceptos clave:** carga de datos previa a la vista, `useLoaderData`, evitar el parpadeo de carga.
-
-Un loader es una función asociada a una ruta específica que React Router ejecuta y espera a que complete antes de renderizar el componente de esa ruta: `loader: ({ params }) => fetch(`/api/tareas/${params.id}`)`, con el componente accediendo al resultado de esa carga mediante `useLoaderData()`, en vez de disparar la carga de datos dentro de un `useEffect` una vez que el componente ya se montó (el patrón tradicional de fetching dentro del propio componente).
-
-Esta diferencia de timing es la ventaja concreta de un loader: con fetching dentro de un `useEffect`, el componente se monta primero (típicamente mostrando algún estado de "cargando..." mientras la petición está en curso), y solo después de que la petición completa se actualiza el estado con los datos reales, produciendo un parpadeo visual perceptible entre el estado vacío/cargando inicial y el contenido final; con un loader, React Router espera a que la carga de datos complete antes de montar el componente en absoluto, evitando ese parpadeo intermedio por completo, dado que el componente nunca se renderiza en un estado sin datos.
-
-**Analogía:** un loader es como esperar a que el plato completo esté listo en la cocina antes de servirlo en la mesa; fetching dentro de un `useEffect` es como servir la mesa vacía primero y traer el plato después, dejando al comensal esperando frente a un plato vacío durante un momento perceptible antes de que llegue el contenido real.
-
-**Código del ejemplo:**
-
-```jsx
-{
-  path: '/tareas/:id',
-  loader: ({ params }) => fetch(`/api/tareas/${params.id}`),
-  element: <DetalleTarea />,
-}
-// dentro del componente:
-const tarea = useLoaderData();
-```
-
 
 ### Tema 3: Rutas protegidas y code-splitting por ruta
 
@@ -180,6 +181,33 @@ La pantalla de administración de RutaFlow (gestión de conductores, reportes) l
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Una ruta protegida verifica una condición de acceso antes de mostrar su contenido real; `React.lazy` + `Suspense` descarga el código de un componente solo cuando efectivamente se necesita — un guardia que verifica credencial, y no llevar el manual completo de todas las salas, solo el de la sala a la que efectivamente entrás.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    A["Usuario navega<br/>a /admin"]
+    B["RutaProtegida<br/>verifica rol"]
+    C{Es supervisor?}
+    D["Renderiza Admin<br/>descarga chunk"]
+    E["Redirige a /"]
+    F["Suspense muestra Spinner<br/>mientras carga"]
+    
+    A --> B
+    B --> C
+    C -->|Sí| F
+    F --> D
+    C -->|No| E
+    
+    style D fill:#e8f5e9
+    style E fill:#ffebee
+```
+
+* Ejecutar: `npm test -- --testNamePattern="protected|lazy"`
+* Código: `src/routes/ProtectedRoute.tsx`
+* Cuándo: usar rutas protegidas para mejorar UX al redirigir sin sesión; usar lazy loading en rutas pesadas (>50KB) para reducir bundle inicial; no conviene si el overhead de un chunk adicional superaría el beneficio.
+
+**¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación y el code-splitting reduce el bundle inicial, pero ninguna de las dos sustituye la autorización real que debe vivir en el servidor.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
@@ -215,32 +243,6 @@ Corregí el Paso 5 restaurando `RutaProtegida`, y agregá un comentario explíci
 #### Paso 7 · Cierre
 Entregá la ruta protegida con lazy loading del Paso 4, el acceso indebido provocado en el Paso 5, y el recordatorio de autorización en servidor del Paso 6; explicá por qué una ruta protegida en el cliente mejora la experiencia pero nunca sustituye la verificación de permisos en el servidor. Siguiente paso: cerrá el módulo integrando rutas, loaders y protección en el proyecto completo. Errores comunes: confiar en una ruta protegida del cliente como única barrera de seguridad, olvidar `Suspense` alrededor de un componente `lazy`, y cargar con `lazy` una ruta tan pequeña que el overhead de un chunk adicional no se justifica. Fuentes oficiales: https://react.dev/reference/react/lazy y https://reactrouter.com/start/framework/navigating.
 
-**Diagrama:**
-
-```mermaid
-graph LR
-    A["Usuario navega<br/>a /admin"]
-    B["RutaProtegida<br/>verifica rol"]
-    C{Es supervisor?}
-    D["Renderiza Admin<br/>descarga chunk"]
-    E["Redirige a /"]
-    F["Suspense muestra Spinner<br/>mientras carga"]
-    
-    A --> B
-    B --> C
-    C -->|Sí| F
-    F --> D
-    C -->|No| E
-    
-    style D fill:#e8f5e9
-    style E fill:#ffebee
-```
-
-* Ejecutar: `npm test -- --testNamePattern="protected|lazy"`
-* Código: `src/routes/ProtectedRoute.tsx`
-* Cuándo: usar rutas protegidas para mejorar UX al redirigir sin sesión; usar lazy loading en rutas pesadas (>50KB) para reducir bundle inicial; no conviene si el overhead de un chunk adicional superaría el beneficio.
-
-**¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación y el code-splitting reduce el bundle inicial, pero ninguna de las dos sustituye la autorización real que debe vivir en el servidor.
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir una aplicación con rutas anidadas, un loader, una ruta protegida y carga perezosa.

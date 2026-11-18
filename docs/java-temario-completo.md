@@ -5,7 +5,7 @@
 **Proyecto continuo:** Motor de asignación de entregas.
 **Prerrequisito de entrada:** Fundamentos de programación; el módulo 0 comienza con JDK y terminal..
 **Duración objetivo:** temas de 20–45 minutos; cada tema se divide en 3–6 acciones de 5–15 minutos.
-**Estado estructural:** 101/111 temas migrados; auditoría estructural actualizada el 2026-11-03.
+**Estado estructural:** 101/117 temas migrados; auditoría estructural actualizada el 2026-11-03.
 
 ## Índice de módulos y temas
 
@@ -240,6 +240,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 3.1: Comprueba varios casos con CSV · 10 min
   - ✓ Subtema 3.2: Encuentra una rama no probada · 10 min
   - ✓ Subtema 3.3: Lee una métrica sin perseguir el porcentaje · 10 min
+- [pendiente de migrar] Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
 ### Módulo 10: Módulos (JPMS) y proyectos grandes
 
@@ -345,6 +346,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 4.1: Averigua qué módulos necesita el programa · 10 min
   - ✓ Subtema 4.2: Construye un runtime mínimo con jlink · 10 min
   - ✓ Subtema 4.3: Actualiza y valida el runtime como artefacto · 10 min
+- [pendiente de migrar] Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
+- [pendiente de migrar] Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
 
 ### Módulo 15: Java Master — builds, pruebas y observabilidad
 
@@ -439,6 +442,7 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 2.2: Rechazar destinos fuera de una lista permitida · 10 min
   - ✓ Subtema 2.3: Comprobar quién puede leer cada envío · 10 min
   - ✓ Subtema 2.4: Rechazar identificadores con formato inválido · 10 min
+- [pendiente de migrar] Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
 
 ### Módulo 19: Java del día a día — reflexión, regex, dinero, contratos, plugins e i18n
 
@@ -472,6 +476,8 @@ Los enlaces abren el Markdown de lección que la aplicación publica. La etiquet
   - ✓ Subtema 7.1: Mostrar importes y fechas según Locale · 10 min
   - ✓ Subtema 7.2: Mostrar el mismo instante en dos ciudades · 10 min
   - ✓ Subtema 7.3: Cargar mensajes en dos idiomas · 10 min
+- [pendiente de migrar] Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
+- [pendiente de migrar] Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min
 
 ### Módulo 20: Java funcional — interfaces que componen comportamiento
 
@@ -572,7 +578,7 @@ La tabla registra presencia de áreas en el inventario del track, no profundidad
 
 ### Huecos y límites reportados
 
-- El repositorio contiene 111 temas en 23 módulos; 101 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
+- El repositorio contiene 117 temas en 23 módulos; 101 cumplen hoy los marcadores estructurales de 3–6 subtemas y cuatro pasos.
 - No hay base para afirmar que el track esté completo: la comparación con la fuente de referencia está pendiente de revisión humana módulo por módulo.
 - Los elementos de la fuente que todavía deben verificarse de forma explícita están enumerados en la tabla anterior; cualquier técnica crítica que no tenga tema propio debe añadirse conservando el currículo base.
 - La ejecución de ejemplos, el comportamiento con brokers/plataformas reales y la calidad pedagógica humana se registran por separado.

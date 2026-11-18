@@ -671,3 +671,159 @@ Añade un botón «Descartar cambios» que restaure `text` desde `saved`. Compru
 El siguiente paso es persistir borradores y gestionar errores del guardado real. **Errores comunes:** llamar «guardado» a texto no confirmado por el servidor, usar el guard como autorización y suponer que cubre cierre de pestaña. **Límites y decisión de uso:** este diálogo nativo es una demostración mínima; una UI personalizada necesita foco, teclado y semántica correctos.
 
 **Fuente oficial:** [Angular route guards](https://angular.dev/guide/routing/route-guards).
+
+### Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min
+
+**Prerrequisito:** temas «Guards funcionales» y «Parámetros de ruta, query params y capacidades» de este módulo.
+
+**Al finalizar podrás:** cargar los datos de una ruta con un `ResolveFn` antes de activar el componente, recibirlos como `input()` y redirigir con `RedirectCommand` si no existen.
+
+**¿Por qué es importante?** Si el componente carga sus datos después de mostrarse, el usuario ve un parpadeo de pantalla vacía y cada componente repite la lógica de «no encontrado». Un resolver centraliza esa carga en la ruta.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa un proyecto Angular 18 o superior (`ng new academia-ng --routing`). Crea la carpeta `src/app/envios`. El ejemplo usa un servicio en memoria para no depender de un backend.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, la pantalla «Detalle de envío» se abre desde un enlace con el código del envío. Si el código no existe, antes se mostraba una tarjeta vacía con errores en consola. Ahora la ruta resuelve el envío primero y, si no existe, lleva a «No encontrado».
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `ResolveFn`, `resolve` en la ruta, `withComponentInputBinding`, `RedirectCommand`, navegación cancelada.
+
+Un **resolver** es una función que el router ejecuta **antes** de activar la ruta. Puede devolver un valor, una promesa o un observable. Cuando termina, el router guarda el resultado en los datos de la ruta con la clave que elegiste.
+
+Con `withComponentInputBinding()`, ese dato llega al componente como un `input()` con el mismo nombre. Si el resolver devuelve un `RedirectCommand`, el router cancela la navegación y va a otra URL.
+
+| Usa resolver cuando | Evítalo cuando |
+|---|---|
+| la pantalla no tiene sentido sin el dato | la carga es lenta y conviene mostrar algo parcial |
+| quieres un único lugar para «no encontrado» | el dato cambia en vivo mientras miras la pantalla |
+
+**Analogía:** el resolver es el mesero que trae los cubiertos antes de servir el plato: no te sientas a una mesa vacía. La analogía falla en que, si la cocina tarda, el resolver también te deja esperando en la puerta.
+
+**Límite de uso:** la navegación espera al resolver: una petición lenta deja al usuario sin respuesta visible. Para cargas largas, prefiere `resource()` o `httpResource` dentro del componente con un estado de carga.
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant R as Router
+    participant F as envioResolver
+    participant C as DetalleEnvio
+    U->>R: navega a /envios/ENV-42
+    R->>F: ejecuta el resolver
+    F-->>R: Envio o RedirectCommand
+    R->>C: activa con input envio
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/app/envios/envios.service.ts`:
+
+```ts
+import { Injectable } from '@angular/core';
+import { of, delay } from 'rxjs';
+
+export interface Envio { codigo: string; destino: string; estado: string; }
+
+@Injectable({ providedIn: 'root' })
+export class EnviosService {
+  private readonly datos: Envio[] = [{ codigo: 'ENV-42', destino: 'Calle 26', estado: 'EN_RUTA' }];
+  obtener(codigo: string) {
+    return of(this.datos.find((e) => e.codigo === codigo) ?? null).pipe(delay(300));
+  }
+}
+```
+
+Archivo `src/app/envios/envio.resolver.ts`:
+
+```ts
+import { inject } from '@angular/core';
+import { RedirectCommand, ResolveFn, Router } from '@angular/router';
+import { map } from 'rxjs';
+import { Envio, EnviosService } from './envios.service';
+
+export const envioResolver: ResolveFn<Envio> = (route) => {
+  const router = inject(Router);
+  const codigo = route.paramMap.get('codigo')!;
+  return inject(EnviosService).obtener(codigo).pipe(
+    map((envio) => envio ?? new RedirectCommand(router.parseUrl('/no-encontrado'))),
+  );
+};
+```
+
+Archivo `src/app/envios/detalle-envio.ts`:
+
+```ts
+import { Component, input } from '@angular/core';
+import { Envio } from './envios.service';
+
+@Component({
+  selector: 'app-detalle-envio',
+  template: `<h2>{{ envio().codigo }}</h2><p>{{ envio().destino }} · {{ envio().estado }}</p>`,
+})
+export class DetalleEnvio {
+  readonly envio = input.required<Envio>(); // llega desde el resolver
+}
+```
+
+Archivo `src/app/app.routes.ts`:
+
+```ts
+import { Routes } from '@angular/router';
+import { DetalleEnvio } from './envios/detalle-envio';
+import { envioResolver } from './envios/envio.resolver';
+
+export const routes: Routes = [
+  { path: 'envios/:codigo', component: DetalleEnvio, resolve: { envio: envioResolver } },
+  { path: 'no-encontrado', loadComponent: () => import('./no-encontrado').then((m) => m.NoEncontrado) },
+];
+// En app.config.ts: provideRouter(routes, withComponentInputBinding())
+```
+
+Ejecútalo:
+
+```bash
+ng serve
+# abre http://localhost:4200/envios/ENV-42 y luego /envios/ENV-99
+```
+
+**Explicación por bloques:** `EnviosService` simula una API con 300 ms de demora y devuelve `null` si no encuentra el código. `envioResolver` lee el parámetro `codigo`, pide el envío y, si es `null`, devuelve un `RedirectCommand` hacia `/no-encontrado`. En la ruta, `resolve: { envio: envioResolver }` guarda el resultado con la clave `envio`. Gracias a `withComponentInputBinding()`, esa clave llega al `input.required` del componente, que ya nunca recibe un valor vacío.
+
+**Resultado esperado:**
+
+```text
+/envios/ENV-42 -> la página muestra «ENV-42» y «Calle 26 · EN_RUTA» después de unos 300 ms, sin parpadeo vacío.
+/envios/ENV-99 -> la URL cambia a /no-encontrado y no aparece el detalle.
+```
+
+**Fallo deliberado:** quita `withComponentInputBinding()` de `provideRouter`. **Error esperado:** en consola, `NG0950: Input "envio" is required but no value is available yet`. **Diagnóstico:** el router guardó el dato, pero no lo conecta con los inputs del componente. Vuelve a agregar la función o lee el dato con `inject(ActivatedRoute).data`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** navega a `ENV-42` y a `ENV-99` y describe qué pasa en cada caso.
+2. **Variación:** cambia la demora a 3000 ms y observa que la navegación espera; agrega un indicador global con `router.events` y `NavigationStart`/`NavigationEnd`.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje `NG0950`.
+4. **Integración:** agrega una prueba con `RouterTestingHarness` que navegue a `/envios/ENV-99` y compruebe la URL final.
+5. **Diseño:** decide si la lista de envíos en vivo debería usar resolver o `httpResource`, y justifica.
+
+**Pista:** si el componente recibe `undefined`, revisa la clave en `resolve` y el nombre del `input`: deben coincidir.
+
+#### Paso 6 · Práctica independiente
+
+Crea un resolver `conductorResolver` para `/conductores/:id` que devuelva el conductor o redirija a `/conductores` con un query param `aviso=no-existe`, y muestra ese aviso en la lista.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas en qué momento corre un resolver.
+- [ ] ENV-42 muestra el detalle y ENV-99 redirige.
+- [ ] Reprodujiste `NG0950` y lo corregiste.
+- [ ] Sabes cuándo no conviene un resolver.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar resolvers para cargas lentas sin indicador, olvidar `withComponentInputBinding` y lanzar errores en el resolver en lugar de redirigir. **Siguiente paso:** el tema «CanDeactivate» protege la salida de una pantalla, el lado opuesto de la navegación.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, resuelve el envío de `/envios/:codigo` con un resolver y centraliza el «no encontrado» en una sola ruta.
+
+**Fuente oficial:** [Angular — Data resolvers](https://angular.dev/guide/routing/data-resolvers) y [Angular — ResolveFn](https://angular.dev/api/router/ResolveFn).
+

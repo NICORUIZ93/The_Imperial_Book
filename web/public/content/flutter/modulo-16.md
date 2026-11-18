@@ -25,6 +25,8 @@ FFI conecta una función de Dart con una función exportada por una biblioteca n
 
 La plantilla genera `src/native_add.c`, `src/native_add.h`, `hook/build.dart`, `ffigen.yaml` y bindings Dart. Los build hooks compilan y empaquetan el código nativo. Así evitamos copiar una receta vieja de CMake/Gradle como si fuera el flujo recomendado actual.
 
+**¿Por qué es importante?** Elegir la frontera correcta evita cargar código nativo cuando un paquete existente ya resuelve la necesidad.
+
 #### Paso 4 · Demostración guiada
 Inspecciona `src/native_add.h` y `src/native_add.c`, y comprueba que `lib/native_add.dart` expone el binding generado. Guarda este test en `test/native_add_test.dart`:
 
@@ -54,14 +56,13 @@ dart test
 #### Paso 6 · Práctica independiente
 Crea `src/route_cost.h` con `double route_cost(double km, double rate);` y `src/route_cost.c` con `double route_cost(double km, double rate) { return km * rate; }`. Enlázalos con `hook/build.dart` y expón `costForRoute` en Dart. Prueba 12.5 km a 2.0 por kilómetro. Escribe también un caso para distancia cero y define cómo se rechazan valores negativos.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: elegir FFI solo por velocidad, confundir una llamada C con un plugin y suponer que funciona en Web.
-Entrega la estructura del paquete, el test que obtiene `42`, el error por símbolo incorrecto y tu función de tarifa. Explica cuándo preferirías un plugin o un canal de plataforma. **Proyecto integrador RutaFlow:** la biblioteca solo calcula; Dart valida los datos y muestra el precio en `lib/native_add.dart`. Siguiente tema: generar bindings tipados desde el header. Fuentes oficiales: [Flutter: enlazar código nativo](https://docs.flutter.dev/platform-integration/bind-native-code) y [desarrollo de paquetes FFI](https://docs.flutter.dev/packages-and-plugins/developing-packages#developing-ffi-packages).
-
-**¿Por qué es importante?** Elegir la frontera correcta evita cargar código nativo cuando un paquete existente ya resuelve la necesidad.
 **Evidencia:** paquete creado, test verde, símbolo roto reproducido y comparación razonada entre plugin, canal y FFI.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: elegir FFI solo por velocidad, confundir una llamada C con un plugin y suponer que funciona en Web.
+Entrega la estructura del paquete, el test que obtiene `42`, el error por símbolo incorrecto y tu función de tarifa. Explica cuándo preferirías un plugin o un canal de plataforma. **Proyecto integrador RutaFlow:** la biblioteca solo calcula; Dart valida los datos y muestra el precio en `lib/native_add.dart`. Siguiente tema: generar bindings tipados desde el header. Fuentes oficiales: [Flutter: enlazar código nativo](https://docs.flutter.dev/platform-integration/bind-native-code) y [desarrollo de paquetes FFI](https://docs.flutter.dev/packages-and-plugins/developing-packages#developing-ffi-packages).
 
 ### Tema 2: generar bindings C seguros para Dart
 
@@ -81,6 +82,8 @@ int32_t route_zone(int32_t kilometers);
 ```
 
 El binding equivalente usa una firma nativa `Int32 Function(Int32)` y una firma Dart `int Function(int)`. En el facade público valida el argumento antes de llamar la función generada.
+
+**¿Por qué es importante?** Los bindings generan una traducción consistente y revisable entre las firmas del header y los tipos de Dart.
 
 #### Paso 4 · Demostración guiada
 Crea `src/route_cost.h` con `int32_t route_zone(int32_t kilometers);` y `src/route_cost.c` con esta implementación:
@@ -109,14 +112,13 @@ dart test
 #### Paso 6 · Práctica independiente
 Agrega `double route_total(double km, double price_per_km)` al header, implementación, configuración de generación y fachada Dart. Añade pruebas para un valor normal, cero y una entrada inválida. Ejecuta el generador después de cambiar el header y revisa el diff para asegurarte de que no editaste a mano el archivo generado.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: editar el archivo generado a mano, desalinear signed/unsigned o cambiar el header sin regenerar.
-Entrega header, implementación, configuración, binding regenerado y pruebas de los límites. Explica con tus palabras por qué se mantienen separadas la firma C, la firma Dart y la API pública. **Proyecto integrador RutaFlow:** llama `route_zone` desde la fachada `lib/native_add.dart` y valida el parámetro antes de cruzar la frontera. Siguiente tema: usar una implementación escrita en Rust detrás de la misma ABI C. Fuentes oficiales: [Dart: interoperabilidad C](https://dart.dev/interop/c-interop) y [Flutter: generar bindings FFI](https://docs.flutter.dev/platform-integration/bind-native-code).
-
-**¿Por qué es importante?** Los bindings generan una traducción consistente y revisable entre las firmas del header y los tipos de Dart.
 **Evidencia:** generación repetible y pruebas de frontera en las que Dart rechaza entradas inválidas antes de la llamada nativa.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: editar el archivo generado a mano, desalinear signed/unsigned o cambiar el header sin regenerar.
+Entrega header, implementación, configuración, binding regenerado y pruebas de los límites. Explica con tus palabras por qué se mantienen separadas la firma C, la firma Dart y la API pública. **Proyecto integrador RutaFlow:** llama `route_zone` desde la fachada `lib/native_add.dart` y valida el parámetro antes de cruzar la frontera. Siguiente tema: usar una implementación escrita en Rust detrás de la misma ABI C. Fuentes oficiales: [Dart: interoperabilidad C](https://dart.dev/interop/c-interop) y [Flutter: generar bindings FFI](https://docs.flutter.dev/platform-integration/bind-native-code).
 
 ### Tema 3: conectar una biblioteca Rust mediante una ABI C
 
@@ -128,6 +130,8 @@ Un equipo tiene un algoritmo de ruteo en Rust que desea reutilizar desde la app 
 
 #### Paso 3 · Teoría, modelo mental y analogía: una frontera pequeña
 `extern "C"` expone una firma con convención compatible con C. `#[no_mangle]` conserva el símbolo esperado en los toolchains que lo requieren. No devuelvas `String`, `Vec` ni estructuras Rust directamente como si fueran tipos C: usa buffers y funciones de creación/liberación acordadas. El build hook de Dart puede compilar code assets; cada plataforma todavía requiere toolchain, target y empaquetado compatibles.
+
+**¿Por qué es importante?** La ABI C permite reutilizar código Rust sin exponer detalles internos del lenguaje al runtime Dart.
 
 #### Paso 4 · Demostración guiada
 Crea un crate de biblioteca con `crate-type = ["cdylib"]` y añade en `src/lib.rs` una función mínima:
@@ -154,14 +158,13 @@ cargo build --release
 #### Paso 6 · Práctica independiente
 Elige una operación del algoritmo de rutas que solo use enteros y flotantes. Expón la versión Rust con ABI C, escribe el header, genera bindings y documenta cómo se compila en Android, iOS y desktop del proyecto. Para cada target marca “compilado”, “empaquetado” y “ejecutado” por separado; no extrapoles el resultado de Linux a iOS.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: exportar tipos propios de Rust, olvidar la ABI C o declarar que todas las plataformas funcionan tras un solo build.
-Entrega la función Rust, header, configuración de crate, test de Rust y matriz de targets con evidencia disponible. Explica qué parte es Rust y qué parte es contrato C. **Proyecto integrador RutaFlow:** conecta la operación con `lib/route_core.dart`, manteniendo tipos C simples y el dueño de memoria documentado. Siguiente tema: compilar y distribuir bibliotecas nativas según el target. Fuentes oficiales: [Dart: build hooks y code assets](https://dart.dev/tools/hooks), [Flutter: FFI y build hooks](https://docs.flutter.dev/platform-integration/bind-native-code) y [Rust: referencia del lenguaje](https://doc.rust-lang.org/reference/).
-
-**¿Por qué es importante?** La ABI C permite reutilizar código Rust sin exponer detalles internos del lenguaje al runtime Dart.
 **Evidencia:** función exportada, header coincidente y estados de build/runtime separados por plataforma.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: exportar tipos propios de Rust, olvidar la ABI C o declarar que todas las plataformas funcionan tras un solo build.
+Entrega la función Rust, header, configuración de crate, test de Rust y matriz de targets con evidencia disponible. Explica qué parte es Rust y qué parte es contrato C. **Proyecto integrador RutaFlow:** conecta la operación con `lib/route_core.dart`, manteniendo tipos C simples y el dueño de memoria documentado. Siguiente tema: compilar y distribuir bibliotecas nativas según el target. Fuentes oficiales: [Dart: build hooks y code assets](https://dart.dev/tools/hooks), [Flutter: FFI y build hooks](https://docs.flutter.dev/platform-integration/bind-native-code) y [Rust: referencia del lenguaje](https://doc.rust-lang.org/reference/).
 
 ### Tema 4: compilar y empaquetar bibliotecas por plataforma
 
@@ -177,6 +180,8 @@ Un build hook describe cómo construir y declarar assets de código; el toolchai
 ```text
 src/ + header -> build hook/toolchain -> biblioteca del target -> asset del paquete -> binding Dart
 ```
+
+**¿Por qué es importante?** Cada sistema operativo y arquitectura necesita un artefacto compatible que termine incluido en la app distribuida.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/ffi_target_probe.dart` para llamar a la función del paquete y, en la máquina del laboratorio, ejecuta el test y un build para un target instalado. Inspecciona `hook/build.dart` y conserva salida del hook y del compilador:
@@ -195,14 +200,13 @@ La plantilla crea una app consumidora en `example/`; si ese target no aparece en
 #### Paso 6 · Práctica independiente
 Prepara una tabla con Android ARM64, iOS dispositivo, simulador iOS y desktop que sí use el producto. Para cada uno anota compilador, arquitectura, formato de biblioteca, dónde queda empaquetada y un comando verificable. Construye al menos el target disponible y deja los demás como pendientes con razón concreta.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: tomar el artefacto del host como si fuera el de Android/iOS y contar una compilación como runtime probado.
-Entrega la salida de un target compilado y la matriz de targets restantes. Explica por qué `DynamicLibrary.open` manual no siempre es necesario con los code assets actuales. **Límite:** compilar un target solo acredita ese target; registra cada ABI en `docs/ffi-targets.md`. **Proyecto integrador RutaFlow:** incluye el dispositivo Android objetivo y deja como pendiente cualquier sistema que no hayas compilado. Siguiente tema: medir el costo de cruzar la frontera nativa y agrupar trabajo. Fuentes oficiales: [Flutter: bind native code](https://docs.flutter.dev/platform-integration/bind-native-code), [legacy FFI plugin y sus usos](https://docs.flutter.dev/platform-integration/legacy-ffi-plugin) y [Dart hooks](https://dart.dev/tools/hooks).
-
-**¿Por qué es importante?** Cada sistema operativo y arquitectura necesita un artefacto compatible que termine incluido en la app distribuida.
 **Evidencia:** build observado en un target y matriz explícita de cobertura pendiente por ABI.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: tomar el artefacto del host como si fuera el de Android/iOS y contar una compilación como runtime probado.
+Entrega la salida de un target compilado y la matriz de targets restantes. Explica por qué `DynamicLibrary.open` manual no siempre es necesario con los code assets actuales. **Límite:** compilar un target solo acredita ese target; registra cada ABI en `docs/ffi-targets.md`. **Proyecto integrador RutaFlow:** incluye el dispositivo Android objetivo y deja como pendiente cualquier sistema que no hayas compilado. Siguiente tema: medir el costo de cruzar la frontera nativa y agrupar trabajo. Fuentes oficiales: [Flutter: bind native code](https://docs.flutter.dev/platform-integration/bind-native-code), [legacy FFI plugin y sus usos](https://docs.flutter.dev/platform-integration/legacy-ffi-plugin) y [Dart hooks](https://dart.dev/tools/hooks).
 
 ### Tema 5: medir rendimiento y evitar bloquear la interfaz
 
@@ -227,6 +231,8 @@ flowchart LR
   V -->|ganancia pequeña o bloqueo| S[Preferir Dart o isolate]
 ```
 
+**¿Por qué es importante?** La frontera nativa aporta valor solo si el costo medido mejora un problema real sin dañar la fluidez.
+
 #### Paso 4 · Demostración guiada
 Crea `lib/benchmark/route_cost_benchmark.dart` con dos funciones equivalentes que calculen el costo de 100 000 segmentos: una en Dart y otra en C. Usa el mismo conjunto de entradas, calienta las funciones, cronometra varias iteraciones y muestra mediana, no solo el mejor resultado. Ejecuta en modo profile en un dispositivo compatible:
 
@@ -242,14 +248,13 @@ flutter run --profile
 #### Paso 6 · Práctica independiente
 Genera una entrada más grande y perfílala. Si el trabajo bloquea la interfaz, prueba una estrategia con isolate y registra cómo compartes o copias buffers. Si la versión Dart queda dentro del presupuesto de frame y es más sencilla, justifica mantenerla. Incluye tamaño de muestra, dispositivo, modo build y variación entre mediciones.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: medir debug, usar entradas distintas y confundir una llamada síncrona con trabajo en segundo plano. **Límite:** si el algoritmo es pequeño o la llamada bloquea el isolate de UI, conserva Dart o mueve el trabajo a un isolate en vez de asumir que FFI siempre acelera la pantalla.
-Entrega el benchmark reproducible, resultados Dart/FFI por llamada y lote, captura del perfil y una decisión basada en datos. **Resultado esperado:** las dos implementaciones producen el mismo resultado numérico; reportas si el lote reduce tiempo sin exceder el presupuesto de frame. **Proyecto integrador RutaFlow:** conserva el perfil en `docs/ffi-benchmark.md` y decide si el cálculo del precio debe permanecer en Dart o pasar a nativo. Siguiente tema: hacer explícita la propiedad de memoria y evitar fugas. Fuentes oficiales: [Flutter DevTools: performance](https://docs.flutter.dev/tools/devtools/performance) y [Dart FFI](https://dart.dev/interop/c-interop).
-
-**¿Por qué es importante?** La frontera nativa aporta valor solo si el costo medido mejora un problema real sin dañar la fluidez.
 **Evidencia:** benchmarks equivalentes y decisión documentada sobre lote, isolate o implementación Dart.
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: medir debug, usar entradas distintas y confundir una llamada síncrona con trabajo en segundo plano. **Límite:** si el algoritmo es pequeño o la llamada bloquea el isolate de UI, conserva Dart o mueve el trabajo a un isolate en vez de asumir que FFI siempre acelera la pantalla.
+Entrega el benchmark reproducible, resultados Dart/FFI por llamada y lote, captura del perfil y una decisión basada en datos. **Resultado esperado:** las dos implementaciones producen el mismo resultado numérico; reportas si el lote reduce tiempo sin exceder el presupuesto de frame. **Proyecto integrador RutaFlow:** conserva el perfil en `docs/ffi-benchmark.md` y decide si el cálculo del precio debe permanecer en Dart o pasar a nativo. Siguiente tema: hacer explícita la propiedad de memoria y evitar fugas. Fuentes oficiales: [Flutter DevTools: performance](https://docs.flutter.dev/tools/devtools/performance) y [Dart FFI](https://dart.dev/interop/c-interop).
 
 ### Tema 6: propiedad de memoria, liberación y errores
 
@@ -261,6 +266,8 @@ El cálculo funciona, pero la app llama `calloc` al recibir cada ruta y nunca li
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada `allocate` requiere un `free` por la misma convención y una sola vez. Es como pedir prestada una caja con un depósito: dejar de usarla no la devuelve al almacén. Encapsula el puntero en un objeto que implemente `close`, evita exponer punteros sin necesidad y usa `try/finally` para liberar aunque falle la operación. `NativeFinalizer` puede ayudar a cerrar recursos abandonados, pero no reemplaza el cierre determinista ni es un lugar para reentrar en Dart.
+
+**¿Por qué es importante?** Un error de propiedad nativa puede producir fugas, corrupción o cierres inesperados fuera de las garantías normales de Dart.
 
 #### Paso 4 · Demostración guiada
 Crea `lib/native_int_buffer.dart` con una clase pequeña que reserve tres enteros con el allocator disponible en tu plantilla. Escribe valores, llama a `route_costs`, y libera en `finally`:
@@ -294,14 +301,13 @@ dart test
 #### Paso 6 · Práctica independiente
 Diseña una API de buffer con constructor, acceso acotado y `close`; impide leer después de cerrar. Añade un test para el ciclo correcto y otro para el acceso después de cierre. Documenta si el buffer pertenece a Dart o a C y quién lo libera. Si agregas `NativeFinalizer`, prueba también la ruta de cierre explícito y explica sus límites.
 
-#### Paso 7 · Cierre y evidencia
-Errores comunes: liberar con un allocator distinto, usar el puntero después de close y creer que el GC libera memoria C.
-Entrega wrapper, prueba de liberación en éxito y error, y el contrato de propiedad del puntero. Explica por qué no basta con confiar en el garbage collector de Dart. Siguiente módulo: generación avanzada de código Dart, macros y diseño de paquetes. **Proyecto integrador RutaFlow:** en `lib/native_int_buffer.dart` conserva buffers solo durante el cálculo de la matriz de costos y devuelve a Dart resultados simples. Fuentes oficiales: [Dart FFI](https://dart.dev/interop/c-interop), [NativeFinalizer API](https://api.dart.dev/dart-ffi/NativeFinalizer/NativeFinalizer.html) y [finalizers en Dart](https://dart.dev/language/concurrency#finalizers).
-
-**¿Por qué es importante?** Un error de propiedad nativa puede producir fugas, corrupción o cierres inesperados fuera de las garantías normales de Dart.
 **Evidencia:** prueba del wrapper, liberación en todas las rutas y explicación de quién es dueño de cada buffer. Consulta también la [API de Finalizer de Dart](https://api.dart.dev/dart-core/Finalizer-class.html).
 
 ---
+
+#### Paso 7 · Cierre y evidencia
+Errores comunes: liberar con un allocator distinto, usar el puntero después de close y creer que el GC libera memoria C.
+Entrega wrapper, prueba de liberación en éxito y error, y el contrato de propiedad del puntero. Explica por qué no basta con confiar en el garbage collector de Dart. Siguiente módulo: generación avanzada de código Dart, macros y diseño de paquetes. **Proyecto integrador RutaFlow:** en `lib/native_int_buffer.dart` conserva buffers solo durante el cálculo de la matriz de costos y devuelve a Dart resultados simples. Fuentes oficiales: [Dart FFI](https://dart.dev/interop/c-interop), [NativeFinalizer API](https://api.dart.dev/dart-ffi/NativeFinalizer/NativeFinalizer.html) y [finalizers en Dart](https://dart.dev/language/concurrency#finalizers).
 
 ## Proyecto integrador del módulo
 

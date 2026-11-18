@@ -1,11 +1,11 @@
 {
   "summary": {
-    "currentTopics": 1331,
+    "currentTopics": 1430,
     "currentTopicsWithExactBookEvidence": 3,
     "additionalUniqueBookTopics": 73027,
     "additionalCourseTopics": 54,
     "courses": 7,
-    "unifiedTopics": 74412,
+    "unifiedTopics": 74511,
     "booksRequiringOcr": 109,
     "rule": "Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack."
   },
@@ -77,7 +77,7 @@
               "current": {
                 "module": "0",
                 "order": 6,
-                "fragment": "tema-complementario-vs-code-comandos-y-atajos-comprobables"
+                "fragment": "tema-6-vs-code-comandos-y-atajos-comprobables"
               },
               "bookSources": [],
               "courseSources": []
@@ -34674,6 +34674,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Streams web: leer una respuesta de fetch por partes",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 7,
+                "fragment": "tema-7-streams-web-leer-una-respuesta-de-fetch-por-partes"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -34743,6 +34754,28 @@
                 "module": "7",
                 "order": 6,
                 "fragment": "tema-6-webpack-rollup-y-babel-swc"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Módulos ES a fondo: top-level await, ciclos de importación e import maps",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 7,
+                "fragment": "tema-7-modulos-es-a-fondo-top-level-await-ciclos-de-importacion-e-import-maps"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Cadena de suministro npm: lockfile, integridad y paquetes alterados",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 8,
+                "fragment": "tema-8-cadena-de-suministro-npm-lockfile-integridad-y-paquetes-alterados"
               },
               "bookSources": [],
               "courseSources": []
@@ -35269,6 +35302,17 @@
                 "module": "14",
                 "order": 14,
                 "fragment": "tema-14-ecmascript-moderno-temporal-e-iterator-helpers"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Gestión explícita de recursos: using, await using y DisposableStack",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 15,
+                "fragment": "tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
               },
               "bookSources": [],
               "courseSources": []
@@ -73700,6 +73744,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 5,
+                "fragment": "tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Compresión con zlib: gzip y Brotli por streams",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 6,
+                "fragment": "tema-6-compresion-con-zlib-gzip-y-brotli-por-streams"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -73758,6 +73824,28 @@
                 "module": "3",
                 "order": 5,
                 "fragment": "tema-5-paginacion-por-cursor-y-limites-de-entrada-comprobables"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 6,
+                "fragment": "tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 7,
+                "fragment": "tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
               },
               "bookSources": [],
               "courseSources": []
@@ -74027,6 +74115,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Cobertura de pruebas con node:test: líneas, ramas y umbrales",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 7,
+                "fragment": "tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -74149,6 +74248,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 6,
+                "fragment": "tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -74207,6 +74317,17 @@
                 "module": "10",
                 "order": 5,
                 "fragment": "tema-5-cve-cwe-y-npm-audit-en-el-pipeline"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Modelo de permisos de Node: limitar archivos, procesos y workers",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 6,
+                "fragment": "tema-6-modelo-de-permisos-de-node-limitar-archivos-procesos-y-workers"
               },
               "bookSources": [],
               "courseSources": []
@@ -81809,6 +81930,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Resolvers funcionales: datos listos antes de mostrar la ruta",
+              "status": "actual",
+              "current": {
+                "module": "4",
+                "order": 6,
+                "fragment": "tema-6-resolvers-funcionales-datos-listos-antes-de-mostrar-la-ruta"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -81987,6 +82119,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 4,
+                "fragment": "tema-4-librerias-y-monorepos-con-angular-cli-un-workspace-varias-aplicaciones-y-codigo-compartido"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Microfrontends con criterio: Native Federation y cuándo no usarlos",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 5,
+                "fragment": "tema-5-microfrontends-con-criterio-native-federation-y-cuando-no-usarlos"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -82126,6 +82280,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 5,
+                "fragment": "tema-5-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 6,
+                "fragment": "tema-6-hidratacion-incremental-defer-con-hydrate-on-para-despertar-solo-lo-que-se-usa"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -82251,6 +82427,28 @@
                 "module": "14",
                 "order": 4,
                 "fragment": "tema-4-rendimiento-y-actualizacion-son-contratos-de-experiencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "CSP con nonce y Trusted Types en Angular",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 5,
+                "fragment": "tema-5-csp-con-nonce-y-trusted-types-en-angular"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 6,
+                "fragment": "tema-6-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
               },
               "bookSources": [],
               "courseSources": []
@@ -82999,6 +83197,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Componentes puros y el estado como instantánea",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 5,
+                "fragment": "tema-5-componentes-puros-y-el-estado-como-instantanea"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -83071,6 +83280,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 7,
+                "fragment": "tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -83107,6 +83327,17 @@
                 "module": "3",
                 "order": 3,
                 "fragment": "tema-3-eventos-sinteticos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Formularios con Actions: useActionState y useOptimistic",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 4,
+                "fragment": "tema-4-formularios-con-actions-useactionstate-y-useoptimistic"
               },
               "bookSources": [],
               "courseSources": []
@@ -83377,6 +83608,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "El hook use: leer una promesa con Suspense y un contexto de forma condicional",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 6,
+                "fragment": "tema-6-el-hook-use-leer-una-promesa-con-suspense-y-un-contexto-de-forma-condicional"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "React Compiler y las reglas de React: memoización automática",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 7,
+                "fragment": "tema-7-react-compiler-y-las-reglas-de-react-memoizacion-automatica"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -83552,6 +83805,17 @@
                 "module": "13",
                 "order": 4,
                 "fragment": "tema-4-hidratacion-determinista-idioma-y-releases-medibles"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Migrar a React 19: codemods, cambios que rompen y verificación",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 5,
+                "fragment": "tema-5-migrar-a-react-19-codemods-cambios-que-rompen-y-verificacion"
               },
               "bookSources": [],
               "courseSources": []
@@ -99030,6 +99294,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 4,
+                "fragment": "tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -99280,6 +99555,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Arranque más rápido: archivos CDS y la caché AOT",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 5,
+                "fragment": "tema-5-arranque-mas-rapido-archivos-cds-y-la-cache-aot"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 6,
+                "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -99502,6 +99799,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 3,
+                "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -99582,6 +99890,28 @@
                 "module": "19",
                 "order": 7,
                 "fragment": "tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 8,
+                "fragment": "tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 9,
+                "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
               },
               "bookSources": [],
               "courseSources": []
@@ -146508,6 +146838,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Ciclo de vida de los beans y apagado ordenado",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 4,
+                "fragment": "tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -146658,6 +146999,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 4,
+                "fragment": "tema-4-spring-data-mongodb-documentos-consultas-derivadas-y-cuando-elegir-un-modelo-de-documentos"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -146758,6 +147110,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "FailureAnalyzer: errores de arranque que explican la causa y la solución",
+              "status": "actual",
+              "current": {
+                "module": "5",
+                "order": 4,
+                "fragment": "tema-4-failureanalyzer-errores-de-arranque-que-explican-la-causa-y-la-solucion"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -146833,6 +147196,17 @@
                 "module": "7",
                 "order": 3,
                 "fragment": "tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Logging en Spring Boot: niveles, grupos y logs estructurados en JSON",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 4,
+                "fragment": "tema-4-logging-en-spring-boot-niveles-grupos-y-logs-estructurados-en-json"
               },
               "bookSources": [],
               "courseSources": []
@@ -146938,6 +147312,17 @@
                 "module": "8",
                 "order": 9,
                 "fragment": "tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 10,
+                "fragment": "tema-10-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
               },
               "bookSources": [],
               "courseSources": []
@@ -147154,6 +147539,17 @@
                 "module": "11",
                 "order": 3,
                 "fragment": "tema-3-health-checks-para-kubernetes"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 4,
+                "fragment": "tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
               },
               "bookSources": [],
               "courseSources": []
@@ -147493,6 +147889,17 @@
                 "module": "18",
                 "order": 2,
                 "fragment": "tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 3,
+                "fragment": "tema-3-saml-2-0-con-spring-security-iniciar-sesion-con-el-proveedor-de-identidad-de-una-empresa"
               },
               "bookSources": [],
               "courseSources": []
@@ -148328,78 +148735,78 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+              "title": "Ejecutar dos procesos Java y comprobar su socket HTTP",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 1,
-                "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http-fundamentos-45-min"
+                "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+              "title": "Imponer un presupuesto temporal a una solicitud HTTP",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 2,
-                "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
+                "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+              "title": "Propagar un deadline absoluto entre servicios HTTP",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 3,
-                "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http-aplicacion-45-min"
+                "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+              "title": "Clasificar un resultado desconocido antes de reintentar",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 4,
-                "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar-integracion-45-min"
+                "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+              "title": "Evitar efectos duplicados con una clave idempotente",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 5,
-                "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente-integracion-45-min"
+                "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+              "title": "Seleccionar un reloj según la evidencia temporal",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 6,
-                "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal-integracion-40-min"
+                "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+              "title": "Preservar el orden de eventos por versión del agregado",
               "status": "actual",
               "current": {
                 "module": "0",
                 "order": 7,
-                "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
+                "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado"
               },
               "bookSources": [],
               "courseSources": []
@@ -148444,122 +148851,122 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+              "title": "Distinguir estructura lógica de unidad de despliegue",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 1,
-                "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue-fundamentos-40-min"
+                "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+              "title": "Evaluar autonomía antes de extraer un proceso",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 2,
-                "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
+                "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
+              "title": "Agrupar código por capacidad de negocio",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 3,
-                "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio-aplicacion-40-min"
+                "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
+              "title": "Proteger la API pública de un módulo",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 4,
-                "fragment": "tema-4-proteger-la-api-publica-de-un-modulo-aplicacion-45-min"
+                "fragment": "tema-4-proteger-la-api-publica-de-un-modulo"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+              "title": "Mantener reglas de dominio libres de frameworks",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 5,
-                "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks-aplicacion-40-min"
+                "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+              "title": "Sustituir adaptadores mediante puertos",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 6,
-                "fragment": "tema-6-sustituir-adaptadores-mediante-puertos-aplicacion-45-min"
+                "fragment": "tema-6-sustituir-adaptadores-mediante-puertos"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
+              "title": "Representar dependencias de módulos como un grafo",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 7,
-                "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo-integracion-35-min"
+                "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+              "title": "Romper ciclos según el tipo de acoplamiento",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 8,
-                "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento-integracion-45-min"
+                "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+              "title": "Bloquear accesos a internals con ArchUnit",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 9,
-                "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit-integracion-40-min"
+                "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+              "title": "Detectar ciclos de paquetes con ArchUnit",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 10,
-                "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit-integracion-35-min"
+                "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+              "title": "Evitar falsos verdes en fitness functions",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 11,
-                "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions-integracion-35-min"
+                "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions"
               },
               "bookSources": [],
               "courseSources": []
@@ -148587,12 +148994,12 @@
               "courseSources": []
             },
             {
-              "title": "Separar mitos y verdades de Domain-Driven Design · Integración · 40 min",
+              "title": "Separar mitos y verdades de Domain-Driven Design",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 14,
-                "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design-integracion-40-min"
+                "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
               },
               "bookSources": [],
               "courseSources": []
@@ -148702,6 +149109,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Genéricos en Kotlin: varianza con in y out, restricciones y reified",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 5,
+                "fragment": "tema-5-genericos-en-kotlin-varianza-con-in-y-out-restricciones-y-reified"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -148799,6 +149217,28 @@
                 "module": "3",
                 "order": 4,
                 "fragment": "tema-4-jerarquia-de-source-sets-intermedios"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 5,
+                "fragment": "tema-5-version-catalogs-y-convention-plugins-una-sola-fuente-de-versiones-y-configuracion-de-gradle"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 6,
+                "fragment": "tema-6-mas-alla-del-movil-targets-jvm-js-y-wasm-desde-el-mismo-codigo-comun"
               },
               "bookSources": [],
               "courseSources": []
@@ -148974,6 +149414,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 5,
+                "fragment": "tema-5-seguridad-multiplataforma-guardar-secretos-con-keystore-y-keychain-detras-de-una-interfaz-comun"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -149024,6 +149475,50 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 5,
+                "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 6,
+                "fragment": "tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 7,
+                "fragment": "tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 8,
+                "fragment": "tema-8-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -149063,6 +149558,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 4,
+                "fragment": "tema-4-compose-multiplatform-dentro-de-swiftui-y-vistas-uikit-dentro-de-compose"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -149099,6 +149605,17 @@
                 "module": "9",
                 "order": 3,
                 "fragment": "tema-3-runtest-para-coroutines"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 4,
+                "fragment": "tema-4-benchmarks-multiplataforma-con-kotlinx-benchmark-medir-el-mismo-codigo-en-cada-target"
               },
               "bookSources": [],
               "courseSources": []
@@ -186165,6 +186682,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Material 3 en Compose: tema, color dinámico y componentes",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 4,
+                "fragment": "tema-4-material-3-en-compose-tema-color-dinamico-y-componentes"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -186577,6 +187105,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 4,
+                "fragment": "tema-4-capa-de-dominio-y-casos-de-uso-reglas-de-negocio-fuera-del-viewmodel"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -186760,6 +187299,61 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Mapas con Maps Compose: marcadores, cámara y ruta",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 5,
+                "fragment": "tema-5-mapas-con-maps-compose-marcadores-camara-y-ruta"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Geofencing: avisar al entrar en la zona de una parada",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 6,
+                "fragment": "tema-6-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "CameraX y ML Kit: foto de entrega y escaneo de códigos de barras",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 7,
+                "fragment": "tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 8,
+                "fragment": "tema-8-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Bluetooth LE: buscar y leer una báscula del vehículo",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 9,
+                "fragment": "tema-9-bluetooth-le-buscar-y-leer-una-bascula-del-vehiculo"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -186829,6 +187423,17 @@
                 "module": "16",
                 "order": 6,
                 "fragment": "tema-6-credential-manager-passkeys-y-verificacion-en-servidor"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Play Integrity API: comprobar en el servidor que la petición viene de tu app real",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 7,
+                "fragment": "tema-7-play-integrity-api-comprobar-en-el-servidor-que-la-peticion-viene-de-tu-app-real"
               },
               "bookSources": [],
               "courseSources": []
@@ -186940,6 +187545,17 @@
                 "module": "18",
                 "order": 4,
                 "fragment": "tema-4-r8-recursos-baseline-profiles-y-pipeline-reproducible"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Macrobenchmark: medir el arranque y el scroll como lo vive el usuario",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 5,
+                "fragment": "tema-5-macrobenchmark-medir-el-arranque-y-el-scroll-como-lo-vive-el-usuario"
               },
               "bookSources": [],
               "courseSources": []
@@ -212631,6 +213247,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Ownership en Swift: borrowing, consuming y tipos ~Copyable",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 5,
+                "fragment": "tema-5-ownership-en-swift-borrowing-consuming-y-tipos-copyable"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -212798,6 +213425,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
+              "status": "actual",
+              "current": {
+                "module": "4",
+                "order": 5,
+                "fragment": "tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
+              "status": "actual",
+              "current": {
+                "module": "4",
+                "order": 6,
+                "fragment": "tema-6-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -212873,6 +213522,28 @@
                 "module": "6",
                 "order": 3,
                 "fragment": "tema-3-migraciones-y-swiftdata-vs-core-data"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 4,
+                "fragment": "tema-4-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 5,
+                "fragment": "tema-5-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
               },
               "bookSources": [],
               "courseSources": []
@@ -213050,6 +213721,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Localización con String Catalogs: textos, plurales y formatos por idioma",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 5,
+                "fragment": "tema-5-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -213125,6 +213807,17 @@
                 "module": "12",
                 "order": 3,
                 "fragment": "tema-3-cierre-del-track"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 4,
+                "fragment": "tema-4-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
               },
               "bookSources": [],
               "courseSources": []
@@ -213211,6 +213904,39 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 8,
+                "fragment": "tema-8-core-location-moderno-cllocationupdate-permisos-y-precision"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 9,
+                "fragment": "tema-9-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 10,
+                "fragment": "tema-10-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -213291,6 +214017,39 @@
                 "module": "14",
                 "order": 7,
                 "fragment": "tema-7-core-ml-y-vision-inferencia-en-el-dispositivo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 8,
+                "fragment": "tema-8-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "WidgetKit: un widget con las entregas pendientes del día",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 9,
+                "fragment": "tema-9-widgetkit-un-widget-con-las-entregas-pendientes-del-dia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "App Intents: acciones de la app en Siri, Atajos y Spotlight",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 10,
+                "fragment": "tema-10-app-intents-acciones-de-la-app-en-siri-atajos-y-spotlight"
               },
               "bookSources": [],
               "courseSources": []
@@ -289619,6 +290378,39 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Streams en Dart: secuencias de eventos asíncronos con await for y StreamController",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 5,
+                "fragment": "tema-5-streams-en-dart-secuencias-de-eventos-asincronos-con-await-for-y-streamcontroller"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Records y patterns en Dart: varios valores sin clases y switch exhaustivo",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 6,
+                "fragment": "tema-6-records-y-patterns-en-dart-varios-valores-sin-clases-y-switch-exhaustivo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Extension methods y extension types: agregar comportamiento sin heredar",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 7,
+                "fragment": "tema-7-extension-methods-y-extension-types-agregar-comportamiento-sin-heredar"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -289655,6 +290447,28 @@
                 "module": "1",
                 "order": 3,
                 "fragment": "tema-3-keys"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Los tres árboles de Flutter: Widget, Element y RenderObject",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 4,
+                "fragment": "tema-4-los-tres-arboles-de-flutter-widget-element-y-renderobject"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 5,
+                "fragment": "tema-5-gestos-en-flutter-gesturedetector-dismissible-y-la-arena-de-gestos"
               },
               "bookSources": [],
               "courseSources": []
@@ -289897,6 +290711,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Archivos en Flutter: path_provider, carpetas correctas y escritura segura",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 5,
+                "fragment": "tema-5-archivos-en-flutter-path-provider-carpetas-correctas-y-escritura-segura"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -289951,6 +290776,28 @@
                 "module": "7",
                 "order": 4,
                 "fragment": "tema-4-camara-galeria-y-carga-multipart-de-una-evidencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 5,
+                "fragment": "tema-5-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 6,
+                "fragment": "tema-6-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
               },
               "bookSources": [],
               "courseSources": []
@@ -290143,6 +290990,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 5,
+                "fragment": "tema-5-flutter-para-web-y-escritorio-compilar-adaptar-la-interfaz-y-elegir-el-renderizador"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -290179,6 +291037,17 @@
                 "module": "12",
                 "order": 3,
                 "fragment": "tema-3-cierre-del-track"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 4,
+                "fragment": "tema-4-arquitectura-recomendada-de-flutter-views-view-models-repositories-y-services"
               },
               "bookSources": [],
               "courseSources": []
@@ -334447,6 +335316,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 8,
+                "fragment": "tema-8-contenedores-sin-privilegios-usuario-no-root-sistema-de-archivos-de-solo-lectura-y-capacidades-minimas"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -334544,6 +335424,17 @@
                 "module": "4",
                 "order": 4,
                 "fragment": "tema-4-pipelines-como-codigo-github-actions-gitlab-ci"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción",
+              "status": "actual",
+              "current": {
+                "module": "4",
+                "order": 5,
+                "fragment": "tema-5-promocion-entre-entornos-con-quality-gates-el-mismo-artefacto-de-pruebas-a-produccion"
               },
               "bookSources": [],
               "courseSources": []
@@ -334724,6 +335615,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 9,
+                "fragment": "tema-9-arquitectura-de-kubernetes-plano-de-control-nodos-y-el-ciclo-de-reconciliacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 10,
+                "fragment": "tema-10-scheduling-en-kubernetes-requests-limits-afinidad-taints-y-tolerations"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -334804,6 +335717,17 @@
                 "module": "7",
                 "order": 7,
                 "fragment": "tema-7-estrategias-de-despliegue-recreate-vs-rollingupdate"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Políticas en Kubernetes: NetworkPolicy y Pod Security Admission",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 8,
+                "fragment": "tema-8-politicas-en-kubernetes-networkpolicy-y-pod-security-admission"
               },
               "bookSources": [],
               "courseSources": []
@@ -334897,7 +335821,18 @@
               "current": {
                 "module": "8",
                 "order": 8,
-                "fragment": "tema-complementario-opentofu-plan-y-estado-sin-recursos-cloud"
+                "fragment": "tema-8-opentofu-plan-y-estado-sin-recursos-cloud"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 9,
+                "fragment": "tema-9-terraform-import-y-policy-as-code-adoptar-recursos-existentes-y-revisar-planes-con-reglas"
               },
               "bookSources": [],
               "courseSources": []
@@ -334981,6 +335916,17 @@
                 "module": "9",
                 "order": 7,
                 "fragment": "tema-7-metricas-dora-lead-time-deployment-frequency-mttr-change-failure-rate"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 8,
+                "fragment": "tema-8-chaos-engineering-experimentos-controlados-para-comprobar-que-el-sistema-resiste-fallos"
               },
               "bookSources": [],
               "courseSources": []
@@ -335186,6 +336132,17 @@
                 "module": "12",
                 "order": 6,
                 "fragment": "tema-6-platform-engineering-internal-developer-platforms-idps"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 7,
+                "fragment": "tema-7-finops-costos-visibles-por-servicio-etiquetas-obligatorias-y-presupuestos-con-alertas"
               },
               "bookSources": [],
               "courseSources": []
@@ -335418,7 +336375,7 @@
               "current": {
                 "module": "16",
                 "order": 6,
-                "fragment": "tema-complementario-bruno-y-postman-evaluar-con-el-mismo-contrato"
+                "fragment": "tema-6-bruno-y-postman-evaluar-con-el-mismo-contrato"
               },
               "bookSources": [],
               "courseSources": []
@@ -338888,6 +339845,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 8,
+                "fragment": "tema-8-modelos-de-servicio-iaas-paas-saas-regiones-y-zonas-de-disponibilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -339201,6 +340169,17 @@
                 "module": "5",
                 "order": 6,
                 "fragment": "tema-6-integracion-con-s3-dynamodb-streams-y-api-gateway"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte",
+              "status": "actual",
+              "current": {
+                "module": "5",
+                "order": 7,
+                "fragment": "tema-7-deprecaciones-en-la-nube-encontrar-a-tiempo-runtimes-y-versiones-que-dejan-de-tener-soporte"
               },
               "bookSources": [],
               "courseSources": []
@@ -339621,6 +340600,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 4,
+                "fragment": "tema-4-cadena-de-suministro-en-la-nube-escaneo-firma-y-verificacion-de-imagenes-en-ecr"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -339696,6 +340686,17 @@
                 "module": "16",
                 "order": 3,
                 "fragment": "tema-3-express-vs-standard-y-cuando-eventbridge-pipes-es-suficiente"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Procesamiento por lotes: trabajos independientes, reintentos e idempotencia",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 4,
+                "fragment": "tema-4-procesamiento-por-lotes-trabajos-independientes-reintentos-e-idempotencia"
               },
               "bookSources": [],
               "courseSources": []
@@ -339855,6 +340856,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 4,
+                "fragment": "tema-4-gobierno-de-ia-y-ml-fichas-de-modelo-umbrales-por-grupo-y-una-puerta-antes-de-publicar"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -339985,6 +340997,17 @@
                 "module": "22",
                 "order": 5,
                 "fragment": "tema-5-como-se-integran-los-cuatro-servicios-en-una-arquitectura-de-borde-real"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 6,
+                "fragment": "tema-6-waf-y-proteccion-ddos-limitar-peticiones-y-bloquear-ataques-comunes-en-el-borde"
               },
               "bookSources": [],
               "courseSources": []
@@ -340321,6 +341344,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Datos de series temporales: escritura por tiempo, reducción de resolución y retención",
+              "status": "actual",
+              "current": {
+                "module": "28",
+                "order": 5,
+                "fragment": "tema-5-datos-de-series-temporales-escritura-por-tiempo-reduccion-de-resolucion-y-retencion"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -340482,6 +341516,28 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación",
+              "status": "actual",
+              "current": {
+                "module": "31",
+                "order": 5,
+                "fragment": "tema-5-migrar-a-la-nube-las-7-r-para-decidir-que-hacer-con-cada-aplicacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Nube híbrida: conectar el centro de datos con la nube de forma segura y medible",
+              "status": "actual",
+              "current": {
+                "module": "31",
+                "order": 6,
+                "fragment": "tema-6-nube-hibrida-conectar-el-centro-de-datos-con-la-nube-de-forma-segura-y-medible"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -340529,6 +341585,28 @@
                 "module": "32",
                 "order": 4,
                 "fragment": "tema-4-un-backup-solo-existe-operativamente-despues-de-restaurarlo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Well-Architected: revisar una arquitectura con los seis pilares",
+              "status": "actual",
+              "current": {
+                "module": "32",
+                "order": 5,
+                "fragment": "tema-5-well-architected-revisar-una-arquitectura-con-los-seis-pilares"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Residencia y soberanía de datos: que los datos personales vivan donde la ley permite",
+              "status": "actual",
+              "current": {
+                "module": "32",
+                "order": 6,
+                "fragment": "tema-6-residencia-y-soberania-de-datos-que-los-datos-personales-vivan-donde-la-ley-permite"
               },
               "bookSources": [],
               "courseSources": []
@@ -340601,6 +341679,17 @@
                 "module": "33",
                 "order": 6,
                 "fragment": "tema-6-microservicios-big-data-ai-ml-y-multi-cloud"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso",
+              "status": "actual",
+              "current": {
+                "module": "33",
+                "order": 7,
+                "fragment": "tema-7-deteccion-de-amenazas-leer-registros-de-auditoria-y-alertar-sobre-comportamiento-sospechoso"
               },
               "bookSources": [],
               "courseSources": []
@@ -341146,12 +342235,12 @@
               "courseSources": []
             },
             {
-              "title": "Operaciones",
+              "title": "Operaciones con números complejos: suma, producto y división",
               "status": "actual",
               "current": {
                 "module": "1",
                 "order": 2,
-                "fragment": "tema-2-operaciones"
+                "fragment": "tema-2-operaciones-con-numeros-complejos-suma-producto-y-division"
               },
               "bookSources": [],
               "courseSources": []
@@ -341185,34 +342274,34 @@
           "kind": "current",
           "topics": [
             {
-              "title": "La idea",
+              "title": "La idea de la transformada de Laplace: del tiempo al dominio s",
               "status": "actual",
               "current": {
                 "module": "2",
                 "order": 1,
-                "fragment": "tema-1-la-idea"
+                "fragment": "tema-1-la-idea-de-la-transformada-de-laplace-del-tiempo-al-dominio-s"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "La tabla",
+              "title": "La tabla de transformadas de Laplace",
               "status": "actual",
               "current": {
                 "module": "2",
                 "order": 2,
-                "fragment": "tema-2-la-tabla"
+                "fragment": "tema-2-la-tabla-de-transformadas-de-laplace"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Propiedades",
+              "title": "Propiedades de la transformada de Laplace",
               "status": "actual",
               "current": {
                 "module": "2",
                 "order": 3,
-                "fragment": "tema-3-propiedades"
+                "fragment": "tema-3-propiedades-de-la-transformada-de-laplace"
               },
               "bookSources": [],
               "courseSources": []
@@ -341313,12 +342402,12 @@
               "courseSources": []
             },
             {
-              "title": "Los elementos",
+              "title": "Los elementos de un lazo de control",
               "status": "actual",
               "current": {
                 "module": "5",
                 "order": 2,
-                "fragment": "tema-2-los-elementos"
+                "fragment": "tema-2-los-elementos-de-un-lazo-de-control"
               },
               "bookSources": [],
               "courseSources": []
@@ -341341,12 +342430,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Reglas para mover bloques",
+              "title": "Reglas para mover bloques en un diagrama",
               "status": "actual",
               "current": {
                 "module": "6",
                 "order": 1,
-                "fragment": "tema-1-reglas-para-mover-bloques"
+                "fragment": "tema-1-reglas-para-mover-bloques-en-un-diagrama"
               },
               "bookSources": [],
               "courseSources": []
@@ -341391,12 +342480,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Impedancias",
+              "title": "Impedancias de resistencia, bobina y condensador en s",
               "status": "actual",
               "current": {
                 "module": "7",
                 "order": 1,
-                "fragment": "tema-1-impedancias"
+                "fragment": "tema-1-impedancias-de-resistencia-bobina-y-condensador-en-s"
               },
               "bookSources": [],
               "courseSources": []
@@ -341474,12 +342563,12 @@
               "courseSources": []
             },
             {
-              "title": "Analogías",
+              "title": "Analogías entre sistemas eléctricos, mecánicos y térmicos",
               "status": "actual",
               "current": {
                 "module": "8",
                 "order": 5,
-                "fragment": "tema-5-analogias"
+                "fragment": "tema-5-analogias-entre-sistemas-electricos-mecanicos-y-termicos"
               },
               "bookSources": [],
               "courseSources": []
@@ -341491,12 +342580,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "La idea",
+              "title": "La idea de la linealización: aproximar con la recta tangente",
               "status": "actual",
               "current": {
                 "module": "9",
                 "order": 1,
-                "fragment": "tema-1-la-idea"
+                "fragment": "tema-1-la-idea-de-la-linealizacion-aproximar-con-la-recta-tangente"
               },
               "bookSources": [],
               "courseSources": []
@@ -341508,12 +342597,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "La forma de estado",
+              "title": "La forma de espacio de estados",
               "status": "actual",
               "current": {
                 "module": "10",
                 "order": 1,
-                "fragment": "tema-1-la-forma-de-estado"
+                "fragment": "tema-1-la-forma-de-espacio-de-estados"
               },
               "bookSources": [],
               "courseSources": []
@@ -341536,23 +342625,23 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Forma estándar",
+              "title": "Forma estándar de primer orden: K y τ",
               "status": "actual",
               "current": {
                 "module": "11",
                 "order": 1,
-                "fragment": "tema-1-forma-estandar"
+                "fragment": "tema-1-forma-estandar-de-primer-orden-k-y"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Respuestas",
+              "title": "Respuestas de primer orden al escalón, la rampa y el impulso",
               "status": "actual",
               "current": {
                 "module": "11",
                 "order": 2,
-                "fragment": "tema-2-respuestas"
+                "fragment": "tema-2-respuestas-de-primer-orden-al-escalon-la-rampa-y-el-impulso"
               },
               "bookSources": [],
               "courseSources": []
@@ -341586,12 +342675,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Forma estándar",
+              "title": "Forma estándar de segundo orden: K, ωn y ζ",
               "status": "actual",
               "current": {
                 "module": "12",
                 "order": 1,
-                "fragment": "tema-1-forma-estandar"
+                "fragment": "tema-1-forma-estandar-de-segundo-orden-k-n-y"
               },
               "bookSources": [],
               "courseSources": []
@@ -341686,12 +342775,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Fórmula general",
+              "title": "Fórmula general del error en estado estacionario",
               "status": "actual",
               "current": {
                 "module": "14",
                 "order": 1,
-                "fragment": "tema-1-formula-general"
+                "fragment": "tema-1-formula-general-del-error-en-estado-estacionario"
               },
               "bookSources": [],
               "courseSources": []
@@ -341736,12 +342825,12 @@
               "courseSources": []
             },
             {
-              "title": "Casos especiales",
+              "title": "Casos especiales del arreglo de Routh",
               "status": "actual",
               "current": {
                 "module": "15",
                 "order": 3,
-                "fragment": "tema-3-casos-especiales"
+                "fragment": "tema-3-casos-especiales-del-arreglo-de-routh"
               },
               "bookSources": [],
               "courseSources": []
@@ -341764,23 +342853,23 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Geometría de un polo",
+              "title": "Geometría de un polo en el plano s",
               "status": "actual",
               "current": {
                 "module": "16",
                 "order": 1,
-                "fragment": "tema-1-geometria-de-un-polo"
+                "fragment": "tema-1-geometria-de-un-polo-en-el-plano-s"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Estabilidad",
+              "title": "Estabilidad según la posición de los polos",
               "status": "actual",
               "current": {
                 "module": "16",
                 "order": 2,
-                "fragment": "tema-2-estabilidad"
+                "fragment": "tema-2-estabilidad-segun-la-posicion-de-los-polos"
               },
               "bookSources": [],
               "courseSources": []
@@ -341803,12 +342892,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Las dos condiciones",
+              "title": "Las dos condiciones del lugar de las raíces",
               "status": "actual",
               "current": {
                 "module": "17",
                 "order": 1,
-                "fragment": "tema-1-las-dos-condiciones"
+                "fragment": "tema-1-las-dos-condiciones-del-lugar-de-las-raices"
               },
               "bookSources": [],
               "courseSources": []
@@ -341842,12 +342931,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "La idea",
+              "title": "La idea de las acciones P, I y D: presente, pasado y tendencia",
               "status": "actual",
               "current": {
                 "module": "18",
                 "order": 1,
-                "fragment": "tema-1-la-idea"
+                "fragment": "tema-1-la-idea-de-las-acciones-p-i-y-d-presente-pasado-y-tendencia"
               },
               "bookSources": [],
               "courseSources": []
@@ -341964,12 +343053,12 @@
               "courseSources": []
             },
             {
-              "title": "Los bloques básicos",
+              "title": "Los bloques básicos del diagrama de Bode",
               "status": "actual",
               "current": {
                 "module": "20",
                 "order": 3,
-                "fragment": "tema-3-los-bloques-basicos"
+                "fragment": "tema-3-los-bloques-basicos-del-diagrama-de-bode"
               },
               "bookSources": [],
               "courseSources": []
@@ -341992,12 +343081,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Parcial 1",
+              "title": "Parcial 1 resuelto paso a paso",
               "status": "actual",
               "current": {
                 "module": "21",
                 "order": 1,
-                "fragment": "tema-1-parcial-1"
+                "fragment": "tema-1-parcial-1-resuelto-paso-a-paso"
               },
               "bookSources": [],
               "courseSources": []

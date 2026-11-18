@@ -24,6 +24,23 @@ Al finalizar instalarás el entorno desde cero. Prerrequisitos: Docker y termina
 El mismo laboratorio debe funcionar en los tres sistemas.
 #### Paso 3 · Teoría, modelo mental y analogía
 Instalar es preparar herramientas y luego comprobar el diagnóstico, como revisar una estación antes de operar.
+
+**¿Por qué es importante?** Un entorno diagnosticable evita que diferencias del sistema operativo se confundan con fallos del servicio cloud.
+
+##### macOS
+
+Con Homebrew, ejecuta `brew install floci-io/floci/floci`. Si prefieres el instalador oficial, usa `curl -fsSL https://floci.io/install.sh | sh`. Comprueba el resultado con `floci --version` y `floci doctor`; instalar no basta: el diagnóstico demuestra que Docker, la CLI y la conectividad local funcionan juntos.
+
+##### Instalación en Linux
+
+Usa el mismo instalador oficial con `curl -fsSL https://floci.io/install.sh | sh`. Si el comando no aparece después, revisa la carpeta indicada por el instalador y tu variable `PATH`. Ejecuta `docker ps` antes de culpar a Floci: un daemon de Docker detenido es el fallo inicial más común.
+
+##### Instalación en Windows
+
+En PowerShell puedes ejecutar `iwr https://floci.io/install.ps1 | iex`. La alternativa administrada es Scoop: `scoop bucket add floci https://github.com/floci-io/scoop-floci` y luego `scoop install floci`. Comprueba con `floci doctor`; si Docker Desktop usa WSL 2, verifica que la integración esté activa para tu distribución.
+
+**Cuándo no usarlo:** no saltes `floci doctor` asumiendo que "instalar" es sinónimo de "funciona"; diferencias sutiles de PATH o de integración WSL2 solo las detecta el diagnóstico, no la instalación en sí.
+
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `install.md` para tu bitácora y escribe `tema-1-diagnostico.sh` con los tres comandos de la sección **Practícalo tú**.
 ```bash
@@ -36,22 +53,6 @@ Resultado esperado: Docker disponible.
 Pista: detén Docker para provocar un fallo deliberado, registra el mensaje y corrígelo.
 #### Paso 6 · Práctica independiente
 Repite en tu sistema y conserva captura y salida.
-#### Paso 7 · Cierre
-Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: modelo mental. Errores comunes: PATH, daemon detenido y credenciales reales. Fuente oficial: https://floci.io/.
-
-**¿Por qué es importante?** Un entorno diagnosticable evita que diferencias del sistema operativo se confundan con fallos del servicio cloud.
-
-#### macOS
-
-Con Homebrew, ejecuta `brew install floci-io/floci/floci`. Si prefieres el instalador oficial, usa `curl -fsSL https://floci.io/install.sh | sh`. Comprueba el resultado con `floci --version` y `floci doctor`; instalar no basta: el diagnóstico demuestra que Docker, la CLI y la conectividad local funcionan juntos.
-
-#### Instalación en Linux
-
-Usa el mismo instalador oficial con `curl -fsSL https://floci.io/install.sh | sh`. Si el comando no aparece después, revisa la carpeta indicada por el instalador y tu variable `PATH`. Ejecuta `docker ps` antes de culpar a Floci: un daemon de Docker detenido es el fallo inicial más común.
-
-#### Instalación en Windows
-
-En PowerShell puedes ejecutar `iwr https://floci.io/install.ps1 | iex`. La alternativa administrada es Scoop: `scoop bucket add floci https://github.com/floci-io/scoop-floci` y luego `scoop install floci`. Comprueba con `floci doctor`; si Docker Desktop usa WSL 2, verifica que la integración esté activa para tu distribución.
 
 **Practícalo tú:**
 
@@ -68,11 +69,12 @@ floci doctor
 
 **Modifica esto:** detén Docker Desktop deliberadamente y vuelve a correr `floci doctor`; confirma que el diagnóstico señala explícitamente el problema (Docker no disponible) en vez de fallar con un error genérico.
 
-**Cuándo no usarlo:** no saltes `floci doctor` asumiendo que "instalar" es sinónimo de "funciona"; diferencias sutiles de PATH o de integración WSL2 solo las detecta el diagnóstico, no la instalación en sí.
-
 **Cómo crece tu proyecto:** este diagnóstico es el primer paso reproducible que cualquier persona nueva en el equipo ejecuta antes de tocar código.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Registra una instalación reproducible del entorno de entregas para tu sistema operativo. Comprueba herramientas, puertos y arranque; un segundo arranque debe reutilizar la configuración sin modificar rutas personales.
+
+#### Paso 7 · Cierre
+Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: modelo mental. Errores comunes: PATH, daemon detenido y credenciales reales. Fuente oficial: https://floci.io/.
 
 ### Tema 2: Modelo mental de la plataforma
 
@@ -158,6 +160,15 @@ Al finalizar vas a confirmar, en una sola sesión, que las tres CLI oficiales (A
 RutaFlow usa las tres nubes a la vez (Módulo 8) — antes de automatizar nada, el equipo necesita el hábito de verificar que cada CLI está apuntando al endpoint local correcto, no a una cuenta real por accidente.
 #### Paso 3 · Teoría, modelo mental y analogía
 La CLI es una conversación interactiva con el proveedor; el SDK es esa misma conversación integrada en tu código — ambos hablan contra el mismo endpoint, real o local, según qué variables de entorno estén activas.
+
+**¿Por qué es importante?** Usar clientes oficiales contra endpoints locales permite transferir el aprendizaje sin inventar una API educativa paralela.
+
+AWS usa `AWS_ENDPOINT_URL=http://localhost:4566` y credenciales desechables. Azure exporta una cadena compatible con Azurite y endpoints específicos para Blob, App Configuration y Key Vault. GCP exporta hosts de emulador como `STORAGE_EMULATOR_HOST`, `PUBSUB_EMULATOR_HOST` y `FIRESTORE_EMULATOR_HOST` con un proyecto local.
+
+Una variable mal aplicada suele producir dos errores opuestos: conexión rechazada si apunta al puerto equivocado, o una petición accidental a la nube real si el override no existe. Antes de ejecutar una operación destructiva, imprime el endpoint y confirma que contiene `localhost`.
+
+**Cuándo no usarlo:** no ejecutes un comando destructivo (`delete-bucket`, `rm`) sin haber impreso y confirmado el endpoint primero; es el hábito de seguridad más simple de este módulo.
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
@@ -186,14 +197,6 @@ Resultado esperado: los tres `echo` muestran endpoints con `localhost` en los pu
 Pista: comentá la línea `eval "$(floci env)"` y repetí el primer `echo` — ese es el fallo deliberado: `AWS_ENDPOINT_URL` queda vacío o apunta al endpoint real de AWS, el síntoma exacto de un override que nunca se aplicó, y la razón por la que nunca deberías ejecutar un comando destructivo sin haber impreso el endpoint primero.
 #### Paso 6 · Práctica independiente
 Ejecutá una misma operación conceptual (crear un contenedor de almacenamiento) en los tres proveedores y compará cómo cada CLI expresa el mismo concepto con su propia sintaxis — el mismo patrón "principios portables, sintaxis específica" del Módulo 31.
-#### Paso 7 · Cierre
-Entregá los tres endpoints confirmados del Paso 4, el override ausente del Paso 5, y la comparación de sintaxis del Paso 6; explicá por qué "imprimir el endpoint antes de destruir nada" es el hábito de seguridad más simple de este módulo. Siguiente paso: ciclo de vida. Errores comunes: endpoint equivocado y perfiles mezclados. Fuente oficial: https://floci.io/aws/.
-
-**¿Por qué es importante?** Usar clientes oficiales contra endpoints locales permite transferir el aprendizaje sin inventar una API educativa paralela.
-
-AWS usa `AWS_ENDPOINT_URL=http://localhost:4566` y credenciales desechables. Azure exporta una cadena compatible con Azurite y endpoints específicos para Blob, App Configuration y Key Vault. GCP exporta hosts de emulador como `STORAGE_EMULATOR_HOST`, `PUBSUB_EMULATOR_HOST` y `FIRESTORE_EMULATOR_HOST` con un proyecto local.
-
-Una variable mal aplicada suele producir dos errores opuestos: conexión rechazada si apunta al puerto equivocado, o una petición accidental a la nube real si el override no existe. Antes de ejecutar una operación destructiva, imprime el endpoint y confirma que contiene `localhost`.
 
 **Practícalo tú:**
 
@@ -211,11 +214,12 @@ echo "GCP storage -> $STORAGE_EMULATOR_HOST"
 
 **Modifica esto:** comenta la línea `eval "$(floci env)"` y repite el primer `echo`; confirma que `AWS_ENDPOINT_URL` queda vacío o apunta a un endpoint real — así reconoces el síntoma exacto de un override no aplicado.
 
-**Cuándo no usarlo:** no ejecutes un comando destructivo (`delete-bucket`, `rm`) sin haber impreso y confirmado el endpoint primero; es el hábito de seguridad más simple de este módulo.
-
 **Cómo crece tu proyecto:** este patrón de "imprime el endpoint antes de destruir nada" es el que protege los tres entornos cloud del proyecto (AWS, Azure, GCP) de una operación accidental contra una cuenta real.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Ejecuta una escritura y lectura de prueba mediante CLI y SDK del proveedor elegido. Compara endpoint, identidad y resultado, y centraliza la configuración que evita llamadas accidentales al entorno real.
+
+#### Paso 7 · Cierre
+Entregá los tres endpoints confirmados del Paso 4, el override ausente del Paso 5, y la comparación de sintaxis del Paso 6; explicá por qué "imprimir el endpoint antes de destruir nada" es el hábito de seguridad más simple de este módulo. Siguiente paso: ciclo de vida. Errores comunes: endpoint equivocado y perfiles mezclados. Fuente oficial: https://floci.io/aws/.
 
 ### Tema 4: Configuración avanzada y ciclo de vida
 
@@ -601,24 +605,6 @@ Al finalizar vas a conectar `floci-ui` (el panel oficial, un repositorio separad
 El equipo de RutaFlow necesita revisar rápidamente qué secretos, tablas y colas existen en el entorno local sin memorizar quince comandos `describe` distintos; a la vez, no quiere que la UI se convierta en la única fuente de verdad del proyecto, un rol que le corresponde al código y los scripts versionados.
 #### Paso 3 · Teoría, modelo mental y analogía
 `floci-ui` es un proyecto aparte del propio Floci: se clona y corre con su propio `docker compose`, apuntando al mismo endpoint (`4566`) que ya expone el Floci de este track; no mantiene ningún estado propio, simplemente visualiza lo que CLI, SDK o IaC ya crearon. La analogía: el tablero de instrumentos de un auto no fabrica combustible ni mueve las ruedas, solo muestra en tiempo real lo que el motor (Floci) ya está haciendo.
-#### Paso 4 · Demostración guiada
-```bash
-# en una carpeta aparte, fuera de este repo
-git clone https://github.com/floci-io/floci-ui
-cd floci-ui
-docker compose up
-```
-Mientras `floci-ui` corre, crea un secreto real desde CLI en otra terminal:
-```bash
-aws secretsmanager create-secret --name rutaflow/api-key --secret-string '{"key":"valor-inicial"}'
-```
-Resultado esperado: el secreto `rutaflow/api-key` aparece inmediatamente en la sección Secrets de `floci-ui`, mostrando el mismo JSON creado por CLI, sin recrearlo desde la UI — ambas interfaces leen el mismo estado real del Floci corriendo en el puerto 4566.
-#### Paso 5 · Práctica guiada
-Pista: abrí el editor JSON clave-valor de `floci-ui` sobre ese secreto, cambiá `valor-inicial` a `valor-editado` desde la UI, y confirmá desde CLI con `aws secretsmanager get-secret-value --secret-id rutaflow/api-key` — ese es el fallo deliberado si asumís que la UI es solo de lectura: también escribe contra el mismo backend real, así que un cambio hecho ahí (por error, o por otra persona del equipo) modifica el estado real que tus scripts y tests después leerán, sin quedar registrado en ningún control de versiones.
-#### Paso 6 · Práctica independiente
-Corregí esa asunción documentando en `floci-ui-reglas.md` qué cambios son aceptables hacer desde la UI (exploración, verificación visual) y cuáles deben hacerse siempre desde código versionado; después, recreá el secreto desde CLI con el valor correcto para dejar el estado consistente con lo que el código espera.
-#### Paso 7 · Cierre
-Entregá el secreto creado por CLI y visible en la UI del Paso 4, la edición cruzada desde la UI del Paso 5, y la corrección documentada del Paso 6; explicá por qué una herramienta visual que también permite escribir necesita una regla explícita de "qué se edita ahí y qué se edita en código", igual que cualquier consola de administración de un proveedor real. Siguiente paso: laboratorios oficiales reconstruidos en español. Errores comunes: asumir que una consola visual es solo de lectura cuando también permite escribir; tratar un cambio hecho desde la UI como si estuviera versionado o fuera reproducible por otra persona del equipo. Fuentes oficiales: https://floci.io/ y https://github.com/floci-io/floci-ui.
 
 **¿Por qué es importante?** `floci-ui` opera sobre el mismo estado real que CLI/SDK/IaC, no sobre datos de muestra separados; un cambio hecho ahí es tan real (y tan poco versionado) como uno hecho a mano en la consola de un proveedor real.
 
@@ -637,7 +623,27 @@ flowchart LR
 
 **Cuándo no usarlo:** para un pipeline de CI efímero (Tema 5 de este módulo) sin ninguna persona observando, levantar `floci-ui` agrega un servicio más sin ningún beneficio — es una herramienta de exploración humana, no parte del contrato que las pruebas automatizadas verifican.
 
+#### Paso 4 · Demostración guiada
+```bash
+# en una carpeta aparte, fuera de este repo
+git clone https://github.com/floci-io/floci-ui
+cd floci-ui
+docker compose up
+```
+Mientras `floci-ui` corre, crea un secreto real desde CLI en otra terminal:
+```bash
+aws secretsmanager create-secret --name rutaflow/api-key --secret-string '{"key":"valor-inicial"}'
+```
+Resultado esperado: el secreto `rutaflow/api-key` aparece inmediatamente en la sección Secrets de `floci-ui`, mostrando el mismo JSON creado por CLI, sin recrearlo desde la UI — ambas interfaces leen el mismo estado real del Floci corriendo en el puerto 4566.
+#### Paso 5 · Práctica guiada
+Pista: abrí el editor JSON clave-valor de `floci-ui` sobre ese secreto, cambiá `valor-inicial` a `valor-editado` desde la UI, y confirmá desde CLI con `aws secretsmanager get-secret-value --secret-id rutaflow/api-key` — ese es el fallo deliberado si asumís que la UI es solo de lectura: también escribe contra el mismo backend real, así que un cambio hecho ahí (por error, o por otra persona del equipo) modifica el estado real que tus scripts y tests después leerán, sin quedar registrado en ningún control de versiones.
+#### Paso 6 · Práctica independiente
+Corregí esa asunción documentando en `floci-ui-reglas.md` qué cambios son aceptables hacer desde la UI (exploración, verificación visual) y cuáles deben hacerse siempre desde código versionado; después, recreá el secreto desde CLI con el valor correcto para dejar el estado consistente con lo que el código espera.
+
 **Cómo crece tu proyecto:** cada recurso nuevo que el proyecto integrador de RutaFlow cree (una tabla, una cola, un secreto) queda automáticamente visible en `floci-ui` sin trabajo adicional; útil para depurar visualmente, pero el código y los tests siguen siendo la fuente de verdad versionada.
+
+#### Paso 7 · Cierre
+Entregá el secreto creado por CLI y visible en la UI del Paso 4, la edición cruzada desde la UI del Paso 5, y la corrección documentada del Paso 6; explicá por qué una herramienta visual que también permite escribir necesita una regla explícita de "qué se edita ahí y qué se edita en código", igual que cualquier consola de administración de un proveedor real. Siguiente paso: laboratorios oficiales reconstruidos en español. Errores comunes: asumir que una consola visual es solo de lectura cuando también permite escribir; tratar un cambio hecho desde la UI como si estuviera versionado o fuera reproducible por otra persona del equipo. Fuentes oficiales: https://floci.io/ y https://github.com/floci-io/floci-ui.
 
 ### Tema 10: Laboratorios oficiales reconstruidos en español
 
@@ -647,6 +653,27 @@ Al finalizar completarás un laboratorio desde cero. Prerrequisitos: Docker y te
 Un laboratorio debe producir evidencia, no solo una pantalla verde.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada laboratorio es experimento con hipótesis, pasos y resultado.
+
+**¿Por qué es importante?** Un laboratorio guiado convierte documentación de referencia en predicción, ejecución, fallo y evidencia verificable.
+
+##### AWS S3 Buckets 101
+
+Crea un bucket, sube y descarga un objeto, configura una política y genera una URL prefirmada. Predice qué operación debe fallar antes de aplicar la política. Evidencia: comandos, respuesta, objeto recuperado y explicación de por qué una URL expirada deja de funcionar.
+
+##### Athena y S3 101
+
+Guarda datos en S3, registra catálogo y tabla en Glue y consulta con Athena. La ejecución local usa un motor real basado en DuckDB. Evidencia: archivo fuente, definición de tabla, consulta agregada y resultado verificable; provoca además un error de esquema y diagnostícalo.
+
+##### Azure Blob Storage 101
+
+Crea un contenedor, carga y descarga un blob y genera un SAS con permisos y vencimiento mínimos. Evidencia: hash del archivo original y recuperado, intento sin autorización y explicación de alcance temporal del SAS.
+
+##### EC2 Ports In-Flight 101
+
+Inicia una instancia local, abre y cierra puertos mientras corre y observa los sidecars `socat` que aparecen y desaparecen. Evidencia: `docker ps`, petición exitosa con el puerto abierto, fallo esperado al cerrarlo y explicación de la diferencia frente a publicar puertos solo al crear un contenedor.
+
+**Cuándo no usarlo:** no reutilices una URL prefirmada de corta duración para un flujo que tarda más que su vigencia; genera una nueva o usa una vigencia acorde al caso de uso real.
+
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `lab.md` para hipótesis, evidencia y limpieza, y escribe `tema-10-s3-101.sh` con el laboratorio completo de la sección **Practícalo tú**.
 ```bash
@@ -659,26 +686,6 @@ Resultado esperado: Docker disponible.
 Pista: omite un prerrequisito para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Repite el laboratorio y documenta diferencias.
-#### Paso 7 · Cierre
-Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: copiar comandos sin observar y no guardar logs. Fuente oficial: https://floci.io/labs/.
-
-**¿Por qué es importante?** Un laboratorio guiado convierte documentación de referencia en predicción, ejecución, fallo y evidencia verificable.
-
-#### AWS S3 Buckets 101
-
-Crea un bucket, sube y descarga un objeto, configura una política y genera una URL prefirmada. Predice qué operación debe fallar antes de aplicar la política. Evidencia: comandos, respuesta, objeto recuperado y explicación de por qué una URL expirada deja de funcionar.
-
-#### Athena y S3 101
-
-Guarda datos en S3, registra catálogo y tabla en Glue y consulta con Athena. La ejecución local usa un motor real basado en DuckDB. Evidencia: archivo fuente, definición de tabla, consulta agregada y resultado verificable; provoca además un error de esquema y diagnostícalo.
-
-#### Azure Blob Storage 101
-
-Crea un contenedor, carga y descarga un blob y genera un SAS con permisos y vencimiento mínimos. Evidencia: hash del archivo original y recuperado, intento sin autorización y explicación de alcance temporal del SAS.
-
-#### EC2 Ports In-Flight 101
-
-Inicia una instancia local, abre y cierra puertos mientras corre y observa los sidecars `socat` que aparecen y desaparecen. Evidencia: `docker ps`, petición exitosa con el puerto abierto, fallo esperado al cerrarlo y explicación de la diferencia frente a publicar puertos solo al crear un contenedor.
 
 **Practícalo tú:**
 
@@ -699,11 +706,12 @@ curl -s -o /dev/null -w "%{http_code}\n" "$URL"
 
 **Modifica esto:** repite el ejercicio con `--expires-in 300` y confirma que la segunda petición, hecha antes de los 5 minutos, sigue devolviendo `200`.
 
-**Cuándo no usarlo:** no reutilices una URL prefirmada de corta duración para un flujo que tarda más que su vigencia; genera una nueva o usa una vigencia acorde al caso de uso real.
-
 **Cómo crece tu proyecto:** este es exactamente el mecanismo que El proyecto usa para compartir temporalmente un comprobante de entrega con un cliente sin exponer el bucket completo.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Reconstruye un laboratorio oficial usando recursos con prefijo propio. Guarda comandos, resultados y limpieza; la evidencia debe permitir repetirlo sin usar identificadores de la sesión anterior.
+
+#### Paso 7 · Cierre
+Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: copiar comandos sin observar y no guardar logs. Fuente oficial: https://floci.io/labs/.
 
 ### Tema 11: Límites y transferencia a producción
 
@@ -713,6 +721,13 @@ Al finalizar podrás decidir qué validar en producción desde cero. Prerrequisi
 Un emulador acelera desarrollo, pero no prueba cuotas, latencia ni facturación reales.
 #### Paso 3 · Teoría, modelo mental y analogía
 El emulador es simulador; producción es carretera con tráfico y coste.
+
+**¿Por qué es importante?** Reconocer qué no reproduce el entorno local evita trasladar conclusiones falsas sobre seguridad, escala, coste o disponibilidad.
+
+Compatibilidad de API significa que clientes y formatos se comportan como espera el SDK; no significa que latencia regional, cuotas, IAM organizacional, facturación, hardware administrado, disponibilidad multi-zona y fallos del proveedor estén reproducidos completamente. Antes de producción ejecuta un conjunto pequeño de pruebas contractuales en la nube real, revisa seguridad y costes, y documenta cualquier diferencia.
+
+**Cuándo no usarlo:** no publiques esta matriz una sola vez y la abandones; actualízala cada vez que agregues un servicio nuevo al proyecto, o dejará de reflejar el riesgo real.
+
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `production-boundaries.md` con los criterios de promoción y escribe `tema-11-matriz-de-limites.sh` con el contenido de la sección **Practícalo tú**; ese script generará `matriz-limites.md`.
 ```bash
@@ -734,12 +749,6 @@ Resultado esperado: Node disponible.
 Pista: afirma paridad total para provocar un fallo deliberado de diseño y corrígelo.
 #### Paso 6 · Práctica independiente
 Construye matriz local/real y criterios de promoción.
-#### Paso 7 · Cierre
-Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: validación real. Errores comunes: usar datos reales en local y no probar IAM, cuotas o recuperación. Fuente oficial: https://floci.io/.
-
-**¿Por qué es importante?** Reconocer qué no reproduce el entorno local evita trasladar conclusiones falsas sobre seguridad, escala, coste o disponibilidad.
-
-Compatibilidad de API significa que clientes y formatos se comportan como espera el SDK; no significa que latencia regional, cuotas, IAM organizacional, facturación, hardware administrado, disponibilidad multi-zona y fallos del proveedor estén reproducidos completamente. Antes de producción ejecuta un conjunto pequeño de pruebas contractuales en la nube real, revisa seguridad y costes, y documenta cualquier diferencia.
 
 **Practícalo tú:**
 
@@ -760,11 +769,12 @@ cat matriz-limites.md
 
 **Modifica esto:** añade una fila por cada servicio que hayas usado en los módulos 21-30 de este track, clasificando honestamente qué validaste en Floci y qué te falta confirmar contra AWS, Azure o GCP real.
 
-**Cuándo no usarlo:** no publiques esta matriz una sola vez y la abandones; actualízala cada vez que agregues un servicio nuevo al proyecto, o dejará de reflejar el riesgo real.
-
 **Cómo crece tu proyecto:** esta matriz es exactamente el documento que el equipo revisaría antes de decidir qué probar contra una cuenta real antes de un primer despliegue a producción.
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara una matriz de pruebas locales y pruebas pendientes en producción para evidencias y eventos. Asigna responsable y resultado esperado a IAM, límites, latencia y recuperación antes de autorizar una puesta en servicio.
+
+#### Paso 7 · Cierre
+Entrega matriz, salida, fallo y corrección; explica el resultado. Siguiente paso: validación real. Errores comunes: usar datos reales en local y no probar IAM, cuotas o recuperación. Fuente oficial: https://floci.io/.
 
 ## Construcción final multi-nube
 

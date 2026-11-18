@@ -105,14 +105,6 @@ Preferir fakes sobre mocks en el contexto específico de `commonTest` tiene una 
 - Un `FakeApiClient` que simula respuestas de red exitosas y de error, sin levantar un servidor real ni Floci.
 - Fakes compartidos entre el equipo Android y el equipo iOS, ya que ambos ejecutan exactamente los mismos tests de `commonTest`.
 
-**Código del ejemplo:**
-
-```kotlin
-class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
-    override suspend fun obtenerTodas() = datos
-}
-```
-
 El fake vive en `shared/src/commonTest/kotlin/com/academia/kmp/TareaRepositoryFake.kt`, junto a la prueba que lo usa. El siguiente diagrama contrasta por qué ese archivo compila igual en ambos targets mientras un mock dinámico de JVM no:
 
 ```mermaid
@@ -230,6 +222,144 @@ Corregí el Paso 5 restaurando `runTest`, medí el tiempo real de ejecución de 
 #### Paso 7 · Cierre
 Entregá el test con `runTest` del Paso 4, la suite lenta con `runBlocking` del Paso 5, y la medición de tiempo del Paso 6; explicá por qué un builder de coroutines "que también compila" no es intercambiable con uno diseñado específicamente para testing. Siguiente paso: automatizá esta suite completa en el pipeline de CI del próximo módulo. Errores comunes: usar un builder de coroutines genérico en vez de `runTest` para funciones con `delay()`, no medir el tiempo real de la suite antes de confiar en que "es rápida", y mezclar tiempo virtual con llamadas de red reales dentro del mismo test. Fuentes oficiales: https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/ y https://kotlinlang.org/docs/multiplatform-run-tests.html.
 **Implicación práctica:** `runTest` permite que los tests de código con delays simulados corran instantáneamente en tiempo real, manteniendo la suite de pruebas rápida y ágil en CI incluso con lógica que internamente simula esperas prolongadas.
+
+### Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min
+
+**Prerrequisito:** tema «runTest para coroutines» de este módulo.
+
+**Al finalizar podrás:** escribir un benchmark en `commonMain` con kotlinx-benchmark, ejecutarlo en JVM y en Native, y leer el resultado en operaciones por segundo para comparar dos implementaciones.
+
+**¿Por qué es importante?** Un algoritmo rápido en la JVM puede ser lento en Kotlin/Native (iOS) por diferencias de memoria y compilación. Medir con el mismo benchmark en cada target evita optimizar a ciegas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa un proyecto KMP con el plugin `org.jetbrains.kotlinx.benchmark` y la librería `kotlinx-benchmark-runtime`. El plugin `allopen` es necesario para la JVM. Crea el source set de benchmarks en `commonMain` o en un módulo `benchmarks`.
+
+#### Paso 2 · Contexto y caso real
+
+El cálculo de rutas de RutaFlow ordenaba las paradas con una lista que se recorría muchas veces. En Android iba bien, pero en iPhone tardaba el triple. El benchmark en los dos targets mostró dónde estaba la diferencia.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** benchmark, calentamiento (*warmup*), iteración, `@State`, `@Benchmark`, `Blackhole`, operaciones por segundo, target JVM y Native.
+
+kotlinx-benchmark ejecuta el mismo código en varios targets (en la JVM usa JMH por debajo):
+
+- `@State(Scope.Benchmark)` en una clase con los datos de entrada, preparados en `@Setup`.
+- `@Benchmark` en cada función a medir.
+- **Calentamiento:** iteraciones descartadas mientras el compilador optimiza.
+- **Medición:** iteraciones que cuentan; el resultado es la media de operaciones por segundo (más es mejor) con su margen de error.
+
+Devuelve el resultado o pásalo a un `Blackhole`, para que el compilador no elimine el cálculo por considerarlo inútil. Compara implementaciones dentro del mismo target; entre targets, compara proporciones, no números absolutos.
+
+**Analogía:** es cronometrar dos rutas de reparto en el mismo vehículo y luego en otro: comparas qué ruta es mejor en cada vehículo, no la velocidad de los vehículos entre sí. La analogía falla en que el «vehículo» JVM se vuelve más rápido después de calentar.
+
+**Límite de uso:** no corras benchmarks en modo depuración ni con la computadora ocupada. El margen de error importa: si dos resultados se solapan, no hay diferencia demostrada.
+
+```mermaid
+flowchart LR
+    B["@Benchmark en commonMain"] --> J["jvmBenchmark (JMH)"]
+    B --> N["macosArm64Benchmark (Native)"]
+    J & N --> R["ops/s ± error"]
+    R --> D["comparar implementaciones por target"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `shared/build.gradle.kts`:
+
+```kotlin
+plugins {
+    id("rutaflow.kmp.library")
+    id("org.jetbrains.kotlinx.benchmark") version "0.4.14"
+    kotlin("plugin.allopen") version "2.2.20"
+}
+
+allOpen { annotation("org.openjdk.jmh.annotations.State") }
+
+kotlin {
+    macosArm64()
+    sourceSets.commonMain.dependencies { implementation("org.jetbrains.kotlinx:kotlinx-benchmark-runtime:0.4.14") }
+}
+
+benchmark {
+    targets { register("jvm"); register("macosArm64") }
+    configurations.named("main") { warmups = 3; iterations = 5; iterationTime = 1; iterationTimeUnit = "s" }
+}
+```
+
+Archivo `shared/src/commonMain/kotlin/co/rutaflow/bench/ParadasBenchmark.kt`:
+
+```kotlin
+package co.rutaflow.bench
+
+import kotlinx.benchmark.*
+
+@State(Scope.Benchmark)
+class ParadasBenchmark {
+    private lateinit var codigos: List<String>
+    private lateinit var buscados: List<String>
+
+    @Setup fun preparar() {
+        codigos = List(5_000) { "ENV-$it" }
+        buscados = List(500) { "ENV-${it * 7}" }
+    }
+
+    @Benchmark fun buscarEnLista(): Int = buscados.count { it in codigos }  // O(n) por búsqueda
+
+    @Benchmark fun buscarEnSet(): Int {
+        val conjunto = codigos.toHashSet()                                  // O(1) por búsqueda
+        return buscados.count { it in conjunto }
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :shared:jvmBenchmark
+./gradlew :shared:macosArm64Benchmark   # en una Mac con chip Apple
+```
+
+**Explicación por bloques:** El plugin registra los targets `jvm` y `macosArm64` y una configuración con 3 calentamientos y 5 iteraciones de un segundo. `allopen` abre las clases `@State` porque JMH genera subclases. `ParadasBenchmark` prepara 5 000 códigos y 500 búsquedas en `@Setup`. `buscarEnLista` busca recorriendo la lista cada vez; `buscarEnSet` convierte una vez a `HashSet`. Las funciones devuelven el conteo para que el compilador no elimine el trabajo.
+
+**Resultado esperado:**
+
+```text
+Benchmark                            Mode  Cnt      Score     Error  Units
+ParadasBenchmark.buscarEnLista      thrpt    5     ~260   ±   10  ops/s
+ParadasBenchmark.buscarEnSet        thrpt    5   ~3 900   ±  120  ops/s
+(las cifras dependen de la máquina; buscarEnSet debe ganar por un orden de magnitud en los dos targets)
+```
+
+**Fallo deliberado:** cambia `buscarEnSet` para que no devuelva nada (`buscados.count { ... }` sin `return` y la función con tipo `Unit`). **Error esperado:** el resultado se vuelve sospechosamente alto en la JVM porque el compilador puede eliminar trabajo cuyo resultado no se usa. **Diagnóstico:** devuelve el resultado o usa `Blackhole.consume`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el benchmark de la JVM y anota los dos resultados con su error.
+2. **Variación:** ejecuta en Native y compara la proporción entre las dos funciones.
+3. **Diagnóstico:** reproduce el fallo deliberado sin devolver el resultado.
+4. **Integración:** mueve `toHashSet()` a `@Setup` y explica qué cambia en lo que mides.
+5. **Diseño:** elige una función del módulo compartido de RutaFlow que sospeches lenta y mídela en los dos targets.
+
+**Pista:** si dos resultados tienen errores que se solapan, no concluyas que uno es mejor.
+
+#### Paso 6 · Práctica independiente
+
+Agrega un benchmark para serializar 1 000 envíos con kotlinx.serialization y compáralo entre JVM y Native.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas calentamiento, iteración y margen de error.
+- [ ] Ejecutaste el benchmark en al menos dos targets.
+- [ ] Reprodujiste el resultado engañoso sin consumir el valor.
+- [ ] Comparas proporciones, no números entre targets.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no consumir el resultado, comparar números absolutos entre targets y medir con la máquina ocupada. **Siguiente paso:** el módulo 10 ejecuta estas mediciones en el pipeline de CI multiplataforma.
+
+**Transferencia al proyecto integrador «RutaFlow»:** mide en JVM y Native la búsqueda de paradas del módulo compartido de RutaFlow y cambia a la versión con `HashSet` si el benchmark lo confirma.
+
+**Fuente oficial:** [GitHub — Kotlin/kotlinx-benchmark](https://github.com/Kotlin/kotlinx-benchmark) y [OpenJDK — JMH](https://github.com/openjdk/jmh).
 
 ## Laboratorio práctico
 

@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 07:29 UTC
+Generated: 2026-11-18 18:49 UTC
 Root: `the_imperial_book`
-Indexed files: 1692
+Indexed files: 1688
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -16,19 +16,19 @@ For automated lookups, use `docs/repo-graph.json`.
 ## Project Shape
 
 - `angular-app`: 71 files
-- `automation-script`: 59 files
-- `course-content`: 333 files
-- `documentation`: 176 files
+- `automation-script`: 61 files
+- `course-content`: 320 files
+- `documentation`: 180 files
 - `example`: 962 files
 - `local-infra`: 1 files
-- `project-file`: 90 files
+- `project-file`: 93 files
 
 ## File Types
 
-- `.md`: 540
+- `.md`: 544
 - `.java`: 417
-- `.py`: 188
-- `.json`: 130
+- `.py`: 190
+- `.json`: 120
 - `.ts`: 74
 - `.js`: 54
 - `.html`: 50
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (229 lines, automation-script)
+- `scripts/validate.sh` (231 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -175,10 +175,10 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/catalog/course-catalog.html` (35 lines) - symbols: main-content, catalog-title, first-session-title, continue-title, tracks-title, beginner-title, backup-title
 - `web/src/app/catalog/course-catalog.scss` (243 lines)
 - `web/src/app/catalog/course-catalog.ts` (158 lines) - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks; imports: @angular/common, @angular/core, @angular/router, lucide-angular, ../course-data, ../track-guides, ../command-palette.service, ../icon-registry
-- `web/src/app/catalog/curriculum-library.html` (97 lines) - symbols: curriculum-title, stack-browser-title, implementation-title
+- `web/src/app/catalog/curriculum-library.html` (68 lines) - symbols: curriculum-title, stack-browser-title
 - `web/src/app/catalog/curriculum-library.scss` (152 lines)
 - `web/src/app/catalog/curriculum-library.ts` (219 lines) - symbols: CurriculumLibraryComponent, CurriculumStackComponent, query, scope, filteredStacks, topicScope, selectedModule, visibleCount; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../curriculum-library.service
-- `web/src/app/catalog/curriculum-stack.html` (155 lines) - symbols: stack-title, ocr-title, course-source-title, topic-browser-title
+- `web/src/app/catalog/curriculum-stack.html` (133 lines) - symbols: stack-title, course-source-title, topic-browser-title
 - `web/src/app/command-palette.html` (29 lines) - symbols: palette-title, palette-results
 - `web/src/app/command-palette.scss` (38 lines)
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
@@ -197,6 +197,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_subtopic_depth.py` (164 lines) - symbols: semantic_headings, broad_title, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
+- `scripts/audit_topic_integrity.py` (196 lines) - symbols: load, modules, masked, topic_bodies, tracks, check_i1, check_i2, norm; imports: __future__, argparse, json, re, sys, collections, pathlib
 - `scripts/audit_topic_learning_quality.py` (268 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
 - `scripts/audit_track_master_prompt.py` (200 lines) - symbols: norm, load, topic_blocks, mean_sentence_words, measure, markdown, main; imports: __future__, argparse, json, re, sys, unicodedata, pathlib
 - `scripts/audit_visual_aids.py` (106 lines) - symbols: topic_text, code_blocks_without_filename, audit, main; imports: __future__, json, re, sys, pathlib
@@ -206,8 +207,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
 - `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
-- `scripts/build_total_book_topics.py` (129 lines) - symbols: normalized, main, render_item; imports: __future__, json, re, unicodedata, collections, pathlib
-- ... 41 more files
+- ... 43 more files
 
 ### course-content
 
@@ -218,18 +218,18 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/public/content/android/modulo-1.md` (343 lines) - headings: # Módulo 1: Ciclo de vida: Activities y ViewModel, ## Aprende construyendo, ### Tema 1: Ciclo de vida de una Activity, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-10.md` (408 lines) - headings: # Módulo 10: Performance, Material 3 y accesibilidad, ## Aprende construyendo, ### Tema 1: Detectar y corregir recomposición innecesaria, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-11.md` (343 lines) - headings: # Módulo 11: Publicación en Google Play, ## Aprende construyendo, ### Tema 1: Firma de la app, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-12.md` (336 lines) - headings: # Módulo 12: Proyecto integrador: app Android completa, ## Aprende construyendo, ### Tema 1: Arquitectura MVVM completa con UDF, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-12.md` (475 lines) - headings: # Módulo 12: Proyecto integrador: app Android completa, ## Aprende construyendo, ### Tema 1: Arquitectura MVVM completa con UDF, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-13.md` (628 lines) - headings: # Módulo 13: Android en producción — seguridad, sincronización y calidad, ## Aprende construyendo, ### Tema 1: El sistema operativo conecta tu app con entradas externas, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-14.md` (808 lines) - headings: # Módulo 14: Compose Master — pruebas, accesibilidad y animación, ## Aprende construyendo, ### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible, #### Por qué una captura visual no basta
-- `web/public/content/android/modulo-15.md` (556 lines) - headings: # Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers, ## Aprende construyendo, ### Tema 1: Intents implícitos y Activity Result API, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-16.md` (537 lines) - headings: # Módulo 16: Android profesional — privacidad, datos, escala e identidad, ## Aprende construyendo, ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-15.md` (1263 lines) - headings: # Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers, ## Aprende construyendo, ### Tema 1: Intents implícitos y Activity Result API, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-16.md` (687 lines) - headings: # Módulo 16: Android profesional — privacidad, datos, escala e identidad, ## Aprende construyendo, ### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-17.md` (444 lines) - headings: # Módulo 17: Compose profesional — layouts, formularios, listas y efectos, ## Aprende construyendo, ### Tema 1: Constraints, Modifier y componentes con slots, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-18.md` (337 lines) - headings: # Módulo 18: Build profesional — variantes, módulos, optimización y CI, ## Aprende construyendo, ### Tema 1: Gradle, version catalogs y resolución de dependencias, #### Paso 1 · Objetivo y preparación
-- `web/public/content/android/modulo-2.md` (366 lines) - headings: # Módulo 2: Jetpack Compose: UI declarativa, ## Aprende construyendo, ### Tema 1: Composables y recomposición, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-18.md` (474 lines) - headings: # Módulo 18: Build profesional — variantes, módulos, optimización y CI, ## Aprende construyendo, ### Tema 1: Gradle, version catalogs y resolución de dependencias, #### Paso 1 · Objetivo y preparación
+- `web/public/content/android/modulo-2.md` (519 lines) - headings: # Módulo 2: Jetpack Compose: UI declarativa, ## Aprende construyendo, ### Tema 1: Composables y recomposición, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-3.md` (461 lines) - headings: # Módulo 3: Navegación con Navigation Compose, ## Aprende construyendo, ### Tema 1: NavHost y NavController, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-4.md` (438 lines) - headings: # Módulo 4: Estado con StateFlow y Compose, ## Aprende construyendo, ### Tema 1: StateFlow en el ViewModel, #### Paso 1 · Objetivo y preparación
 - `web/public/content/android/modulo-5.md` (365 lines) - headings: # Módulo 5: Networking con Retrofit/Ktor, ## Aprende construyendo, ### Tema 1: Retrofit con coroutines, #### Paso 1 · Objetivo y preparación
-- ... 315 more files
+- ... 302 more files
 
 ### documentation
 
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 158 more files
+- ... 162 more files
 
 ### example
 
@@ -295,8 +295,8 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/archivo/main-2026-11-03/examples/java/patrones-rutaflow/PrototypeDemo.java` (51 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/main/resources/application.yml` (42 lines)
 - `docs/archivo/main-2026-11-03/examples/spring-kafka-rutaflow/src/test/resources/application-test.yml` (15 lines)
-- `docs/atomic-subtopics.json` (19693 lines)
+- `docs/atomic-subtopics.json` (20386 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 72 more files
+- ... 75 more files

@@ -48,6 +48,8 @@ struct BotonContador: View {
 
 **Límites y decisión de uso:** State conserva estado ligado a la identidad de la vista, no almacenamiento durable. Usa Binding para editar la fuente existente y persistencia para datos que deben sobrevivir al cierre; copiar valores en otra fuente puede desincronizarlos.
 
+**¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Parte de una carpeta vacía llamada `EstadoDemo`. En Xcode elige **File ▸ New ▸ Project ▸ App**, guarda el proyecto dentro de esa carpeta, nómbralo `EstadoDemo`, selecciona interfaz SwiftUI y lenguaje Swift, y ábrelo. Reemplaza manualmente el contenido de `ContentView.swift` con:
@@ -80,7 +82,7 @@ struct ConfirmarEntregaBoton: View {
 Ejecútalo y obsérvalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema de la app):
 
 ```bash
-xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** al tocar "Confirmar entrega" dentro de `ConfirmarEntregaBoton`, el texto de `DetalleEnvio` cambia a "Estado: Entregado". Hay un solo valor `entregado` con dos puntos de acceso (el padre lo posee, el hijo lo modifica vía `$`), no dos copias sincronizándose. **Fallo deliberado:** mira el Paso 5 — al darle al hijo su propio `@State`, el texto del padre deja de cambiar.
@@ -91,7 +93,6 @@ Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`Resumen
 
 #### Paso 7 · Cierre
 Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
-**¿Por qué es importante?** Porque copiar un valor compartido en un `@State` propio "para tenerlo a mano" crea dos fuentes de verdad que pueden divergir, exactamente el bug que `@Binding` existe para evitar al referenciar el estado del padre en vez de copiarlo.
 
 ### Tema 2: @Observable
 
@@ -101,48 +102,7 @@ Al finalizar vas a crear un `EnviosViewModel` con `@Observable` y a confirmar qu
 Si la pantalla de RutaFlow muestra tanto la lista de envíos como un contador de "envíos pendientes" separados, actualizar la lista no debería forzar un redibujado del contador si el contador no cambió.
 #### Paso 3 · Teoría, modelo mental y analogía
 `@Observable` redibuja solo las vistas que efectivamente leyeron la propiedad específica que cambió — un sistema de notificaciones que avisa solo a quien se suscribió a ese tema exacto, no a todo el canal.
-#### Paso 4 · Demostración guiada desde cero
 
-Parte de otra carpeta vacía y crea en Xcode un proyecto independiente llamado `EstadoDemo` con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y lenguaje Swift. No reutilices el proyecto del Tema 1. Reemplaza el `ContentView.swift` generado con este contenido escrito manualmente:
-
-```swift
-import SwiftUI
-import Observation
-
-@Observable
-class EnviosViewModel {
-    var envios: [String] = ["RF-4471", "RF-5002"]
-    var conductorActivo: String = "c-891"
-}
-
-struct ListaEnvios: View {
-    @State private var vm = EnviosViewModel()
-    var body: some View {
-        VStack {
-            List(vm.envios, id: \.self) { Text($0) }
-            Button("Cambiar conductor") { vm.conductorActivo = "c-999" }
-        }
-    }
-}
-
-#Preview {
-    ListaEnvios()
-}
-```
-
-Ejecútalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema con `xcodebuild`):
-
-```bash
-xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-
-**Resultado esperado:** `ListaEnvios` solo lee `vm.envios` en su `body`. Al tocar "Cambiar conductor" (que modifica `vm.conductorActivo`), la lista NO se redibuja, porque nunca leyó esa propiedad. Para comprobarlo, añade temporalmente `let _ = Self._printChanges()` al inicio del `body` y observa en la consola de Xcode que no se imprime un recálculo al cambiar el conductor. **Fallo deliberado:** mira el Paso 5 — al leer `conductorActivo` en el `body` "para tenerlo a mano", la lista empieza a redibujarse de más.
-#### Paso 5 · Práctica guiada
-Pista: agregá `Text(vm.conductorActivo)` dentro del `body` de `ListaEnvios` "solo para tenerlo a mano", sin usarlo realmente en la lógica visible — ese es el fallo deliberado: ahora `ListaEnvios` SÍ se redibuja cada vez que `conductorActivo` cambia, aunque la lista de envíos en sí no haya cambiado, porque `@Observable` rastrea exactamente qué leíste, no qué "parece que vas a necesitar".
-#### Paso 6 · Práctica independiente
-Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segunda vista `ContadorPendientes` que lea solo `vm.envios.count` — confirmá que ninguna de las dos vistas se redibuja de más cuando cambia una propiedad que la otra no lee.
-#### Paso 7 · Cierre
-Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 **¿Por qué es importante?** Porque `@Observable` redibuja únicamente las vistas que efectivamente leyeron la propiedad que cambió, evitando la sobre-notificación del viejo `ObservableObject`+`@Published`, que redibujaba a cualquier observador del objeto completo.
 **Conceptos clave:** redibujado granular basado en la propiedad específica leída, no en el objeto completo.
 
@@ -177,6 +137,49 @@ class TareasViewModel {
 * Proyecto: en el proyecto integrador RutaFlow, mueve el estado de la jornada a un modelo @Observable.
 
 **Límites y decisión de uso:** Observar cambios no establece una política de persistencia ni de concurrencia. Define quién posee el modelo y dónde puede mutarlo; una propiedad observable compartida sin esas reglas puede seguir produciendo estados incoherentes.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Parte de otra carpeta vacía y crea en Xcode un proyecto independiente llamado `EstadoDemo` con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y lenguaje Swift. No reutilices el proyecto del Tema 1. Reemplaza el `ContentView.swift` generado con este contenido escrito manualmente:
+
+```swift
+import SwiftUI
+import Observation
+
+@Observable
+class EnviosViewModel {
+    var envios: [String] = ["RF-4471", "RF-5002"]
+    var conductorActivo: String = "c-891"
+}
+
+struct ListaEnvios: View {
+    @State private var vm = EnviosViewModel()
+    var body: some View {
+        VStack {
+            List(vm.envios, id: \.self) { Text($0) }
+            Button("Cambiar conductor") { vm.conductorActivo = "c-999" }
+        }
+    }
+}
+
+#Preview {
+    ListaEnvios()
+}
+```
+
+Ejecútalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema con `xcodebuild`):
+
+```bash
+xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
+```
+
+**Resultado esperado:** `ListaEnvios` solo lee `vm.envios` en su `body`. Al tocar "Cambiar conductor" (que modifica `vm.conductorActivo`), la lista NO se redibuja, porque nunca leyó esa propiedad. Para comprobarlo, añade temporalmente `let _ = Self._printChanges()` al inicio del `body` y observa en la consola de Xcode que no se imprime un recálculo al cambiar el conductor. **Fallo deliberado:** mira el Paso 5 — al leer `conductorActivo` en el `body` "para tenerlo a mano", la lista empieza a redibujarse de más.
+#### Paso 5 · Práctica guiada
+Pista: agregá `Text(vm.conductorActivo)` dentro del `body` de `ListaEnvios` "solo para tenerlo a mano", sin usarlo realmente en la lógica visible — ese es el fallo deliberado: ahora `ListaEnvios` SÍ se redibuja cada vez que `conductorActivo` cambia, aunque la lista de envíos en sí no haya cambiado, porque `@Observable` rastrea exactamente qué leíste, no qué "parece que vas a necesitar".
+#### Paso 6 · Práctica independiente
+Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segunda vista `ContadorPendientes` que lea solo `vm.envios.count` — confirmá que ninguna de las dos vistas se redibuja de más cuando cambia una propiedad que la otra no lee.
+#### Paso 7 · Cierre
+Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 
 ### Tema 3: @Environment y identidad vs valor
 
@@ -261,7 +264,7 @@ struct DetalleEnvio: View {
 Ejecútalo (en Xcode: ⌘R para el simulador; por terminal, compila el esquema):
 
 ```bash
-xcodebuild -scheme EstadoDemo -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme EstadoDemo -destination 'generic/platform=iOS Simulator' build
 ```
 
 **Resultado esperado:** la pantalla muestra "Conectado a: https://api.rutaflow.dev". `DetalleEnvio` leyó `ServicioAPI` directamente del ambiente aunque `ListaEnvios` (la vista intermedia) nunca lo recibió ni lo reenvió. **Fallo deliberado:** mira el Paso 5 — al quitar `.environment(ServicioAPI())` del `WindowGroup`, la app compila pero crashea al arrancar, porque no hay ningún `ServicioAPI` en el ambiente que leer.

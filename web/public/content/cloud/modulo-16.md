@@ -87,6 +87,30 @@ Al finalizar vas a agregarle a `ConfirmarEntregaFlow` (Tema 1) manejo explícito
 
 **Diagrama interactivo:** [Qué ocurre si falla GuardarEvento](/visuals/temas/cloud/modulo-16-tema-2-retry-catch.html)
 
+**Conceptos clave:** lógica condicional y manejo de errores declarados, no anidados en código imperativo.
+
+Un Choice state enruta la ejecución hacia distintos estados siguientes según una condición evaluada sobre el input actual (por ejemplo, distinguir entre una tarea "urgente" y una "normal", dirigiendo cada una hacia una rama distinta del flujo con distinto tratamiento), expresando lógica condicional de forma declarativa dentro de la definición de la state machine misma, en vez de anidar esa lógica condicional dentro del código imperativo de una función coordinadora.
+
+```json
+"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}]
+"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
+```
+
+`Retry` declara reintentos automáticos ante un tipo específico de error, con backoff exponencial configurable (esperando progresivamente más tiempo entre reintentos sucesivos, el mismo patrón de resiliencia estudiado en Swift, Módulo 5 del track de iOS), sin que el desarrollador escriba manualmente ningún bucle de reintento imperativo; `Catch` declara hacia qué estado transicionar si un error específico (o cualquier error, con `States.ALL`) ocurre durante un Task state, permitiendo manejar fallos de forma explícita y visible directamente en la definición del flujo, en vez de depender de manejo de excepciones disperso e implícito dentro del código de cada función individual invocada por el flujo.
+
+**Analogía:** un Choice state es como una bifurcación claramente señalizada en un mapa de proceso que indica exactamente qué condición dirige hacia cada camino posible; `Retry`/`Catch` declarados en la state machine son como protocolos de contingencia predefinidos y visibles en el manual de operaciones de un proceso, en vez de reglas de manejo de excepciones dispersas e implícitas que cada operador individual debe recordar aplicar por su cuenta.
+
+**¿Por qué es importante?** `Choice` expresa lógica condicional de forma declarativa y visible en la definición del flujo; `Retry`/`Catch` declaran manejo de errores explícito (con backoff automático) sin código imperativo disperso, haciendo el comportamiento ante fallos parte visible de la definición del flujo mismo.
+
+**Configuración del ejemplo:**
+
+```json
+"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}],
+"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
+```
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Añade decisiones y recuperación al flujo de asignación. Simula un fallo temporal y uno permanente; solo el primero debe reintentarse y ambos deben terminar en estados explicables.
+
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
@@ -120,29 +144,6 @@ Pista: corré una ejecución con un `shipmentId` que provoque un error no cubier
 Agregá una rama de compensación real: que `RegistrarFalloEntrega` publique también en una cola SQS de reintentos manuales (`sqs:sendMessage` como integración directa) en vez de solo devolver un `Pass` con un motivo fijo, para que alguien pueda reprocesar esa entrega más tarde.
 #### Paso 7 · Cierre
 Entregá el `Retry`/`Catch` agregados, el fallo sin cobertura del Paso 5, y la compensación real del Paso 6; explicá por qué `Catch: States.ALL` sin pensar qué hacer después solo oculta el error, no lo resuelve. Siguiente paso: elección de servicio. Errores comunes: Catch demasiado amplio y reintentos infinitos. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html.
-**Conceptos clave:** lógica condicional y manejo de errores declarados, no anidados en código imperativo.
-
-Un Choice state enruta la ejecución hacia distintos estados siguientes según una condición evaluada sobre el input actual (por ejemplo, distinguir entre una tarea "urgente" y una "normal", dirigiendo cada una hacia una rama distinta del flujo con distinto tratamiento), expresando lógica condicional de forma declarativa dentro de la definición de la state machine misma, en vez de anidar esa lógica condicional dentro del código imperativo de una función coordinadora.
-
-```json
-"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}]
-"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
-```
-
-`Retry` declara reintentos automáticos ante un tipo específico de error, con backoff exponencial configurable (esperando progresivamente más tiempo entre reintentos sucesivos, el mismo patrón de resiliencia estudiado en Swift, Módulo 5 del track de iOS), sin que el desarrollador escriba manualmente ningún bucle de reintento imperativo; `Catch` declara hacia qué estado transicionar si un error específico (o cualquier error, con `States.ALL`) ocurre durante un Task state, permitiendo manejar fallos de forma explícita y visible directamente en la definición del flujo, en vez de depender de manejo de excepciones disperso e implícito dentro del código de cada función individual invocada por el flujo.
-
-**Analogía:** un Choice state es como una bifurcación claramente señalizada en un mapa de proceso que indica exactamente qué condición dirige hacia cada camino posible; `Retry`/`Catch` declarados en la state machine son como protocolos de contingencia predefinidos y visibles en el manual de operaciones de un proceso, en vez de reglas de manejo de excepciones dispersas e implícitas que cada operador individual debe recordar aplicar por su cuenta.
-
-**¿Por qué es importante?** `Choice` expresa lógica condicional de forma declarativa y visible en la definición del flujo; `Retry`/`Catch` declaran manejo de errores explícito (con backoff automático) sin código imperativo disperso, haciendo el comportamiento ante fallos parte visible de la definición del flujo mismo.
-
-**Configuración del ejemplo:**
-
-```json
-"Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 2, "MaxAttempts": 3, "BackoffRate": 2}],
-"Catch": [{"ErrorEquals": ["States.ALL"], "Next": "EstadoDeError"}]
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Añade decisiones y recuperación al flujo de asignación. Simula un fallo temporal y uno permanente; solo el primero debe reintentarse y ambos deben terminar en estados explicables.
 
 ### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente
 
@@ -152,18 +153,7 @@ Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` deber
 `ConfirmarEntregaFlow` corre miles de veces al día, dura menos de un segundo, y cada ejecución es casi idéntica; el planificador de rutas corre pocas veces al día, dura 20-30 minutos, y cada fallo necesita trazabilidad completa para auditoría. No son el mismo caso de uso.
 #### Paso 3 · Teoría, modelo mental y analogía
 Elegir Standard vs Express es comparar un expediente administrativo completo (Standard) con un proceso ágil de alto volumen (Express); EventBridge Pipes es un cable directo cuando ni siquiera hace falta un panel de control.
-#### Paso 4 · Demostración guiada
-```bash
-aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --type EXPRESS \
-  --definition file://maquina-confirmar-v2.json --role-arn arn:aws:iam::000000000000:role/sfn-role
-```
-Resultado esperado: se crea sin error — `ConfirmarEntregaFlow` encaja perfecto en Express (dura segundos, corre miles de veces), mucho más barato por ejecución que Standard para este volumen.
-#### Paso 5 · Práctica guiada
-Pista: ese es justo el fallo deliberado de coste que advierte este Tema — si hubieras creado `ConfirmarEntregaFlow` como `--type STANDARD` (el tipo por defecto si no especificás `--type`), pagarías por transición de estado en un flujo de altísima frecuencia y corta duración, el peor caso de uso para Standard. Corregilo siempre especificando `--type EXPRESS` para este flujo específico.
-#### Paso 6 · Práctica independiente
-Para el planificador de rutas del Módulo 14 (larga duración, baja frecuencia, necesita auditoría completa si falla a mitad de camino), razoná por qué Standard es la elección correcta ahí, exactamente al revés que para `ConfirmarEntregaFlow` — y por qué, si el planificador fuera solo "leer de una cola y mandar a una Lambda sin ninguna condición", ni siquiera necesitaría Step Functions: EventBridge Pipes alcanzaría.
-#### Paso 7 · Cierre
-Entregá `ConfirmarEntregaFlow` creado como Express, el riesgo de coste de usar Standard por defecto del Paso 5, y la justificación opuesta para el planificador del Paso 6; explicá qué pregunta (duración y frecuencia) decide entre los tres. Siguiente paso: eventos. Errores comunes: orquestar todo y no medir latencia. Fuente oficial: https://aws.amazon.com/step-functions/.
+
 **Conceptos clave:** elegir según duración y frecuencia de ejecución, o simplificar si no se necesita orquestación compleja.
 
 Standard workflows están diseñados para flujos de larga duración (hasta un año) con garantía de ejecución exactamente una vez y un historial de ejecución detallado y persistente, apropiado para procesos de negocio críticos donde la trazabilidad completa importa; Express workflows están optimizados para flujos de alto volumen y corta duración (hasta cinco minutos), con un modelo de ejecución "al menos una vez" (potencialmente duplicada en casos raros) y un costo considerablemente menor por ejecución, apropiado para procesar eventos de alta frecuencia donde la trazabilidad exhaustiva de Standard no es tan crítica como el costo y el throughput.
@@ -186,6 +176,157 @@ flowchart LR
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Compara un flujo de entrega con auditoría por ejecución y una transferencia simple de eventos. Documenta qué garantías necesita cada caso y prueba la opción elegida sin asumir equivalencia entre motores.
+
+#### Paso 4 · Demostración guiada
+```bash
+aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --type EXPRESS \
+  --definition file://maquina-confirmar-v2.json --role-arn arn:aws:iam::000000000000:role/sfn-role
+```
+Resultado esperado: se crea sin error — `ConfirmarEntregaFlow` encaja perfecto en Express (dura segundos, corre miles de veces), mucho más barato por ejecución que Standard para este volumen.
+#### Paso 5 · Práctica guiada
+Pista: ese es justo el fallo deliberado de coste que advierte este Tema — si hubieras creado `ConfirmarEntregaFlow` como `--type STANDARD` (el tipo por defecto si no especificás `--type`), pagarías por transición de estado en un flujo de altísima frecuencia y corta duración, el peor caso de uso para Standard. Corregilo siempre especificando `--type EXPRESS` para este flujo específico.
+#### Paso 6 · Práctica independiente
+Para el planificador de rutas del Módulo 14 (larga duración, baja frecuencia, necesita auditoría completa si falla a mitad de camino), razoná por qué Standard es la elección correcta ahí, exactamente al revés que para `ConfirmarEntregaFlow` — y por qué, si el planificador fuera solo "leer de una cola y mandar a una Lambda sin ninguna condición", ni siquiera necesitaría Step Functions: EventBridge Pipes alcanzaría.
+#### Paso 7 · Cierre
+Entregá `ConfirmarEntregaFlow` creado como Express, el riesgo de coste de usar Standard por defecto del Paso 5, y la justificación opuesta para el planificador del Paso 6; explicá qué pregunta (duración y frecuencia) decide entre los tres. Siguiente paso: eventos. Errores comunes: orquestar todo y no medir latencia. Fuente oficial: https://aws.amazon.com/step-functions/.
+
+### Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min
+
+**Prerrequisito:** temas «Choice state, Retry y Catch» de este módulo y «Dead Letter Queues» (módulo 3).
+
+**Al finalizar podrás:** dividir un trabajo grande en lotes independientes, reintentar solo el lote que falla, hacer que repetir un lote no duplique resultados y relacionarlo con AWS Batch y el estado Map distribuido de Step Functions.
+
+**¿Por qué es importante?** Procesar el cierre del mes (miles de archivos) en un solo programa significa que una falla al 90 % obliga a empezar de nuevo. Con lotes independientes, idempotentes y con reintentos, solo se repite lo que falló.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea la carpeta `academia-labs/cloud/lotes`. La demostración corre en tu máquina; la misma estructura se lleva a AWS Batch o a Step Functions.
+
+#### Paso 2 · Contexto y caso real
+
+El cierre mensual de guías de RutaFlow procesaba diez archivos grandes en un solo script. Un timeout de red en el sexto archivo hacía repetir todo, y a veces duplicaba filas en el reporte. Dividirlo en lotes resolvió ambos problemas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** trabajo por lotes (*batch*), lote, array job, reintento, idempotencia, cola de revisión, AWS Batch, estado Map distribuido.
+
+Un buen trabajo por lotes cumple tres reglas:
+
+1. **Lotes independientes:** cada lote se puede procesar sin los demás, en cualquier orden y en paralelo.
+2. **Reintentos acotados:** si un lote falla por algo transitorio (timeout), se reintenta unas pocas veces; si sigue fallando, va a una **cola de revisión** y el resto continúa.
+3. **Idempotencia:** repetir un lote no duplica nada; por ejemplo, se salta lo que ya tiene su marca de terminado.
+
+En la nube:
+
+| Servicio | Para |
+|---|---|
+| AWS Batch (array jobs) | contenedores de larga duración, uno por índice del array |
+| Step Functions, Map distribuido | miles de elementos en paralelo con reintentos declarados |
+| SQS + Lambda | lotes pequeños y rápidos con DLQ |
+
+**Analogía:** es empacar mil pedidos en cajas de cuatro: si una caja se rompe, se rearma esa caja, no las mil. La idempotencia es la etiqueta «empacado» que evita empacar dos veces el mismo pedido.
+
+**Límite de uso:** no todos los trabajos se pueden dividir (un cálculo que necesita todos los datos juntos). Los reintentos no arreglan errores de datos: esos van a revisión, no a reintentos infinitos.
+
+```mermaid
+flowchart LR
+    E["10 archivos"] --> L1["lote 1"] & L2["lote 2"] & L3["lote 3"]
+    L2 -->|"timeout"| R["reintento (máx. 3)"]
+    R --> L2
+    L1 & L2 & L3 --> S["procesados/*.ok<br/>idempotente"]
+    R -->|"3 fallos"| Q["cola de revisión"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/lotes/lote.py`:
+
+```python
+import json
+from pathlib import Path
+
+ENTRADA = [f"guias-{dia:02d}.csv" for dia in range(1, 11)]  # 10 archivos del mes
+TAMANO_LOTE = 4
+INTENTOS = 3
+salida = Path("procesados"); salida.mkdir(exist_ok=True)
+fallos_simulados = {"guias-06.csv": 1}  # falla una vez (por ejemplo, un timeout de red)
+
+def procesar(archivo: str) -> None:
+    destino = salida / (archivo + ".ok")
+    if destino.exists():            # idempotente: si ya se hizo, no se repite
+        return
+    if fallos_simulados.get(archivo, 0) > 0:
+        fallos_simulados[archivo] -= 1
+        raise TimeoutError(f"{archivo}: tiempo agotado")
+    destino.write_text(json.dumps({"archivo": archivo, "filas": 1000}))
+
+# Cada lote es como un trabajo de un array job: independiente y reintentable.
+for n, inicio in enumerate(range(0, len(ENTRADA), TAMANO_LOTE), start=1):
+    lote = ENTRADA[inicio:inicio + TAMANO_LOTE]
+    for intento in range(1, INTENTOS + 1):
+        try:
+            for archivo in lote:
+                procesar(archivo)
+            print(f"lote {n} ({len(lote)} archivos): ok en el intento {intento}")
+            break
+        except TimeoutError as error:
+            print(f"lote {n}: {error}, reintentando")
+    else:
+        print(f"lote {n}: falló {INTENTOS} veces, va a la cola de revisión")
+
+print(f"procesados: {len(list(salida.glob('*.ok')))} de {len(ENTRADA)}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/lotes
+python3 lote.py
+python3 lote.py   # segunda vez: idempotente
+```
+
+**Explicación por bloques:** `ENTRADA` simula los diez archivos del mes, divididos en lotes de cuatro. `procesar` es idempotente: si ya existe la marca `.ok`, no hace nada. `fallos_simulados` hace que `guias-06.csv` falle una vez, como un timeout real. Cada lote se intenta hasta tres veces; el `else` del `for` solo corre si nunca hubo `break`, es decir, si los tres intentos fallaron. En el reintento del lote 2, los archivos 5 y 6… que ya estaban hechos se saltan gracias a la marca.
+
+![Captura de terminal: el lote 2 falla por tiempo agotado, se reintenta y al final se procesan los 10 archivos](content/figures/cloud/procesamiento-batch.svg)
+
+**Resultado esperado:**
+
+```text
+lote 1 (4 archivos): ok en el intento 1
+lote 2: guias-06.csv: tiempo agotado, reintentando
+lote 2 (4 archivos): ok en el intento 2
+lote 3 (2 archivos): ok en el intento 1
+procesados: 10 de 10
+```
+
+**Fallo deliberado:** quita el bloque `if destino.exists(): return` y cambia la escritura para que agregue una línea a un único `reporte.csv` en lugar de crear un archivo por entrada. **Error esperado:** después del reintento del lote 2, el reporte tiene filas duplicadas de `guias-05.csv`. **Diagnóstico:** sin idempotencia, cada reintento repite efectos. Usa una marca por elemento o una clave única en el destino.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta dos veces y explica por qué la segunda no repite trabajo.
+2. **Variación:** cambia `fallos_simulados` para que `guias-06.csv` falle 5 veces y mira dónde termina.
+3. **Diagnóstico:** reproduce el fallo deliberado de duplicación.
+4. **Integración:** procesa los lotes en paralelo con `concurrent.futures.ThreadPoolExecutor` y compara el tiempo.
+5. **Diseño:** dibuja cómo quedaría este trabajo en Step Functions con un estado Map distribuido y un `Retry`.
+
+**Pista:** si un reintento cambia el resultado final, el proceso no es idempotente.
+
+#### Paso 6 · Práctica independiente
+
+Convierte el script en una definición de AWS Batch array job (`arrayProperties.size = 3`) donde cada índice (`AWS_BATCH_JOB_ARRAY_INDEX`) procesa un lote, y explica qué hace Batch cuando un índice falla.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas las tres reglas de un buen trabajo por lotes.
+- [ ] El script procesa 10 de 10 con un reintento.
+- [ ] Reprodujiste la duplicación sin idempotencia.
+- [ ] Sabes qué servicio de la nube usar según el tamaño del trabajo.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reintentar errores de datos, procesar todo en un solo bloque y no marcar lo que ya se hizo. **Siguiente paso:** el tema «Express vs Standard, y cuándo EventBridge» elige el tipo de flujo para orquestar estos lotes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** divide el cierre mensual de RutaFlow en lotes idempotentes con reintentos y una cola de revisión para los que fallen.
+
+**Fuente oficial:** [AWS Batch — Array jobs](https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html) y [AWS Step Functions — Distributed Map state](https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html).
 
 ## Laboratorio práctico
 

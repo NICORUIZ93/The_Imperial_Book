@@ -170,28 +170,7 @@ Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Do
 Una prueba de integración debe detectar diferencias que un mock oculta.
 #### Paso 3 · Teoría, modelo mental y analogía
 Testcontainers levanta una instalación temporal, como un laboratorio desechable.
-#### Paso 4 · Demostración guiada
-Crea `tests/container.test.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-testcontainers
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
-#### Paso 6 · Práctica independiente
-Arranca, prueba y destruye un contenedor.
-#### Paso 7 · Cierre
-Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/.
 **Conceptos clave:** motores reales, no simulaciones aproximadas; sin costo para pruebas de integración repetidas.
 
 cloud local se distingue de simulaciones más superficiales de servicios cloud por su filosofía de "real engines, not mocks": cuando se crea una instancia RDS, corre PostgreSQL real (Módulo 13); cuando se crea un cluster ECS, corren contenedores Docker reales (Módulo 14); cuando se invoca Lambda, ejecuta el runtime real correspondiente en un contenedor Docker real, no una simulación aproximada de su comportamiento con lógica propia potencialmente divergente del comportamiento real de AWS; esta fidelidad de emulación, construida internamente sobre GraalVM (una máquina virtual que permite arranque considerablemente más rápido, en el orden de ~24 milisegundos, comparado con el arranque de una JVM tradicional) hace que cloud local sea considerablemente más confiable como entorno de pruebas que emuladores que reimplementan la lógica de cada servicio de forma aproximada y potencialmente divergente del comportamiento real.
@@ -214,6 +193,29 @@ flowchart LR
 Los tres casos siguen el mismo principio: "real engines, not mocks".
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Arranca el entorno de entregas como dependencia temporal del job de CI. Espera disponibilidad, ejecuta una prueba y destruye recursos al terminar, incluidos los casos de fallo.
+
+#### Paso 4 · Demostración guiada
+Crea `tests/container.test.js` desde una carpeta vacía.
+```bash
+mkdir ejemplo-testcontainers
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
+#### Paso 6 · Práctica independiente
+Arranca, prueba y destruye un contenedor.
+#### Paso 7 · Cierre
+Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/.
 
 ### Tema 3: Migración desde otros emuladores, y límites de un emulador
 
@@ -431,6 +433,275 @@ Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
 Ejecuta suites en paralelo y verifica limpieza.
 #### Paso 7 · Cierre
 Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
+
+### Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min
+
+**Prerrequisito:** tema «Migración desde otros emuladores…» de este módulo.
+
+**Al finalizar podrás:** clasificar cada aplicación de un inventario en una de las estrategias de migración (retirar, retener, recomprar, rehospedar, replataformar, refactorizar, reubicar) con preguntas en orden de costo.
+
+**¿Por qué es importante?** Migrar todo «tal cual» parece rápido, pero lleva a la nube los mismos problemas a un precio mayor. Rediseñar todo tarda años. Decidir aplicación por aplicación con un método evita los dos extremos.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea la carpeta `academia-labs/cloud/migracion`. Prepara una lista de las aplicaciones de tu organización (o usa la del ejemplo).
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía seis sistemas en un centro de datos propio cuyo contrato vencía en un año. El primer plan era rediseñarlos todos para la nube. El análisis mostró que uno ni se usaba, otro tenía un SaaS equivalente y solo uno justificaba refactorizar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** inventario, estrategias de migración (7 R): retirar, retener, recomprar, rehospedar, reubicar, replataformar, refactorizar; ola de migración.
+
+| Estrategia | Qué haces | Cuándo |
+|---|---|---|
+| **Retirar** (retire) | apagarla | nadie la usa |
+| **Retener** (retain) | dejarla donde está, por ahora | depende de algo local o no es momento |
+| **Recomprar** (repurchase) | cambiarla por un SaaS | hay un producto que hace lo mismo |
+| **Rehospedar** (rehost) | moverla tal cual a máquinas virtuales | quieres salir rápido y el sistema funciona |
+| **Reubicar** (relocate) | mover la plataforma de virtualización completa | tienes VMware y quieres moverlo sin cambiar nada |
+| **Replataformar** (replatform) | cambiar una pieza (la base a un servicio administrado) | ganas operación sin reescribir |
+| **Refactorizar** (refactor) | rediseñar para la nube | cambia seguido y la nube da una ventaja clara |
+
+Se pregunta **en orden de costo**: primero si se puede apagar, después si se puede comprar, y solo al final si vale la pena rediseñar. Las aplicaciones se agrupan en **olas** para migrar de a poco.
+
+**Analogía:** es mudarse de casa: algunas cosas se botan, otras se regalan y se compran nuevas, la mayoría se empaca tal cual, y pocas se rediseñan para la casa nueva. La analogía falla en que en la mudanza todo se mueve el mismo día; aquí se migra por olas.
+
+**Límite de uso:** la decisión depende de datos: uso real, costo de operación y riesgo; el script es un punto de partida para una conversación con los dueños de cada aplicación, no una decisión automática.
+
+```mermaid
+flowchart TB
+    A["¿Se usa?"] -->|no| R1["Retirar"]
+    A -->|sí| B["¿Depende de algo local?"]
+    B -->|sí| R2["Retener"]
+    B -->|no| C["¿Hay SaaS equivalente?"]
+    C -->|sí| R3["Recomprar"]
+    C -->|no| D["¿Cambia seguido?"]
+    D -->|sí| R4["Refactorizar"]
+    D -->|no| E["¿SO soportado?"]
+    E -->|no| R5["Replataformar"]
+    E -->|sí| R6["Rehospedar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/migracion/siete_r.py`:
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Aplicacion:
+    nombre: str
+    se_usa: bool
+    tiene_saas_equivalente: bool
+    cambia_seguido: bool
+    depende_de_hardware_local: bool
+    sistema_operativo_soportado: bool
+
+def decidir(app: Aplicacion) -> str:
+    # Orden de las preguntas: de la más barata a la más cara.
+    if not app.se_usa:
+        return "Retirar (retire)"
+    if app.depende_de_hardware_local:
+        return "Retener (retain): revisar en 12 meses"
+    if app.tiene_saas_equivalente:
+        return "Recomprar (repurchase): reemplazar por SaaS"
+    if app.cambia_seguido:
+        return "Refactorizar (refactor): rediseñar para la nube"
+    if not app.sistema_operativo_soportado:
+        return "Replataformar (replatform): cambiar la base, no el código"
+    return "Rehospedar (rehost): mover tal cual"
+
+inventario = [
+    Aplicacion("reportes-2015", False, False, False, False, True),
+    Aplicacion("impresora-etiquetas", True, False, False, True, True),
+    Aplicacion("correo-interno", True, True, False, False, True),
+    Aplicacion("api-rutas", True, False, True, False, True),
+    Aplicacion("facturacion", True, False, False, False, False),
+    Aplicacion("intranet", True, False, False, False, True),
+]
+
+for app in inventario:
+    print(f"{app.nombre:<20} -> {decidir(app)}")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/migracion
+python3 siete_r.py
+```
+
+**Explicación por bloques:** `Aplicacion` guarda los datos que deciden la estrategia. `decidir` pregunta en orden de costo: si no se usa, se retira; si depende de hardware local, se retiene; si hay un SaaS, se recompra; si cambia seguido, se refactoriza; si su sistema operativo ya no tiene soporte, se replataforma; si no, se rehospeda. El inventario de ejemplo produce una aplicación por estrategia. La séptima R, reubicar, aplica cuando se mueve una plataforma de virtualización completa y queda fuera de este árbol simple.
+
+![Captura de terminal: seis aplicaciones clasificadas en retirar, retener, recomprar, refactorizar, replataformar y rehospedar](content/figures/cloud/migracion-7r.svg)
+
+**Resultado esperado:**
+
+```text
+reportes-2015        -> Retirar (retire)
+impresora-etiquetas  -> Retener (retain): revisar en 12 meses
+correo-interno       -> Recomprar (repurchase): reemplazar por SaaS
+api-rutas            -> Refactorizar (refactor): rediseñar para la nube
+facturacion          -> Replataformar (replatform): cambiar la base, no el código
+intranet             -> Rehospedar (rehost): mover tal cual
+```
+
+**Fallo deliberado:** mueve la pregunta «¿cambia seguido?» al principio de `decidir`. **Error esperado:** `reportes-2015`, que nadie usa, podría terminar marcada para refactorizar si alguien marcó que cambia seguido. **Diagnóstico:** el orden de las preguntas importa: primero se descarta lo que no vale la pena migrar. Vuelve a poner primero «¿se usa?».
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el script y explica la decisión de cada aplicación.
+2. **Variación:** agrega una aplicación propia y predice su estrategia antes de ejecutar.
+3. **Diagnóstico:** reproduce el fallo deliberado cambiando el orden de las preguntas.
+4. **Integración:** agrega la pregunta de reubicar (corre en VMware) en el lugar correcto del árbol.
+5. **Diseño:** agrupa las seis aplicaciones en tres olas de migración y justifica el orden.
+
+**Pista:** si dudas entre rehospedar y refactorizar, pregunta cuántas veces al año cambia esa aplicación.
+
+#### Paso 6 · Práctica independiente
+
+Haz el inventario de cinco sistemas de una organización que conozcas, decide su estrategia con el árbol y estima el esfuerzo de cada uno en semanas.
+
+#### Paso 7 · Cierre
+
+- [ ] Nombras las 7 R y cuándo usar cada una.
+- [ ] El script clasifica las seis aplicaciones.
+- [ ] Reprodujiste el error de orden de preguntas.
+- [ ] Agrupaste las aplicaciones en olas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** refactorizar todo, rehospedar sin revisar costos y no retirar lo que nadie usa. **Siguiente paso:** el tema siguiente trata los sistemas que se quedan en el centro de datos: la nube híbrida.
+
+**Transferencia al proyecto integrador «RutaFlow»:** clasifica los sistemas de RutaFlow con las 7 R y define las olas de migración con su responsable.
+
+**Fuente oficial:** [AWS Prescriptive Guidance — Migration strategies (7 Rs)](https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html).
+
+### Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min
+
+**Prerrequisito:** tema «Migrar a la nube: las 7 R» de este módulo.
+
+**Al finalizar podrás:** conectar una red local con una VPC mediante una VPN sitio a sitio, enrutar solo los rangos necesarios y decidir cuándo una conexión dedicada (Direct Connect) o servicios en el sitio (Outposts) justifican su costo.
+
+**¿Por qué es importante?** Las aplicaciones que se retienen en el centro de datos siguen hablando con las que ya están en la nube. Una conexión mal diseñada expone redes enteras o se vuelve el cuello de botella de todo el sistema.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Terraform con el proveedor AWS. La VPN real necesita un equipo o software VPN del lado local (por ejemplo, strongSwan); puedes practicar el plan y el diseño de rutas sin él.
+
+#### Paso 2 · Contexto y caso real
+
+La impresora de etiquetas de RutaFlow se quedó en la bodega (estrategia «retener»), pero la API ya está en la nube. La primera conexión abría toda la red de la bodega a la VPC. Al limitar las rutas al servidor de la impresora, el riesgo bajó sin perder la integración.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** nube híbrida, VPN sitio a sitio, puerta de enlace del cliente (CGW), puerta de enlace privada virtual (VGW), túneles redundantes, BGP, Direct Connect, Outposts, solapamiento de rangos IP.
+
+| Opción | Qué es | Úsala cuando |
+|---|---|---|
+| VPN sitio a sitio | túneles cifrados sobre internet | tráfico moderado, inicio rápido, bajo costo |
+| Direct Connect | enlace privado dedicado | mucho tráfico, latencia estable, requisitos de red privada |
+| Outposts / Local Zones | infraestructura del proveedor en tu sitio o cerca | latencia muy baja o datos que no pueden salir del sitio |
+
+Reglas de diseño:
+
+- Los rangos IP de la red local y de la VPC **no pueden solaparse**.
+- Rutea **solo** las subredes que necesitan hablar entre sí.
+- La VPN de AWS crea **dos túneles**: configura los dos para tener redundancia.
+- Mide la latencia y el ancho de banda: una aplicación que hace cien llamadas por pantalla sufre con cualquier enlace.
+
+**Analogía:** la VPN es un túnel privado bajo una autopista pública: tus camiones van protegidos, pero comparten el tráfico de la ciudad. Direct Connect es una carretera propia. La analogía falla en que el túnel tiene dos carriles independientes (los dos túneles) y conviene usar ambos.
+
+**Límite de uso:** la nube híbrida suma complejidad operativa: dos redes, dos equipos, dos formas de monitorear. Úsala como etapa o por una razón concreta (latencia, datos que no pueden salir), no como destino por defecto.
+
+```mermaid
+flowchart LR
+    B["Bodega 192.168.10.0/24<br/>servidor de impresión"] -->|"túnel 1 y túnel 2 (IPsec)"| V["VGW"]
+    V --> P["VPC 10.20.0.0/16<br/>API RutaFlow"]
+    P -. "solo 192.168.10.50/32" .-> B
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `infra/vpn.tf`:
+
+```hcl
+resource "aws_vpn_gateway" "vgw" {
+  vpc_id = aws_vpc.principal.id # VPC 10.20.0.0/16
+}
+
+resource "aws_customer_gateway" "bodega" {
+  bgp_asn    = 65010
+  ip_address = "203.0.113.20" # IP pública del equipo VPN de la bodega
+  type       = "ipsec.1"
+}
+
+resource "aws_vpn_connection" "bodega" {
+  vpn_gateway_id      = aws_vpn_gateway.vgw.id
+  customer_gateway_id = aws_customer_gateway.bodega.id
+  type                = "ipsec.1"
+  static_routes_only  = true
+}
+
+# Solo el servidor de impresión, no toda la red de la bodega.
+resource "aws_vpn_connection_route" "impresion" {
+  vpn_connection_id      = aws_vpn_connection.bodega.id
+  destination_cidr_block = "192.168.10.50/32"
+}
+
+resource "aws_route" "hacia_impresion" {
+  route_table_id         = aws_route_table.privada.id
+  destination_cidr_block = "192.168.10.50/32"
+  gateway_id             = aws_vpn_gateway.vgw.id
+}
+```
+
+Ejecútalo:
+
+```bash
+terraform -chdir=infra plan
+# después del apply, descarga la configuración de los dos túneles para el equipo local:
+aws ec2 describe-vpn-connections --query "VpnConnections[0].VgwTelemetry[].[OutsideIpAddress,Status]" --output table
+```
+
+**Explicación por bloques:** `aws_vpn_gateway` es el extremo de la VPC; `aws_customer_gateway` describe el equipo de la bodega por su IP pública. `aws_vpn_connection` crea la conexión con dos túneles IPsec y rutas estáticas. En lugar de enrutar toda la red `192.168.10.0/24`, la ruta de la VPN y la de la tabla privada apuntan solo al servidor de impresión (`/32`). El comando final muestra los dos túneles y su estado.
+
+**Resultado esperado:**
+
+```text
+terraform plan: «Plan: 5 to add» (VGW, CGW, conexión VPN, ruta de la VPN y ruta de la tabla).
+describe-vpn-connections muestra dos filas, una por túnel, con estado UP cuando el equipo local está configurado.
+```
+
+**Fallo deliberado:** crea la VPC con el rango `192.168.0.0/16`, que se solapa con la bodega. **Error esperado:** las rutas no funcionan como esperas: el tráfico hacia `192.168.10.50` se queda dentro de la VPC (ruta local más específica) y nunca llega a la bodega. **Diagnóstico:** los rangos no pueden solaparse. Planea el direccionamiento de todas las redes antes de conectar.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** planea la VPN y explica cada recurso.
+2. **Variación:** dibuja la tabla de rutas de la VPC y la del equipo local.
+3. **Diagnóstico:** reproduce el fallo deliberado con rangos solapados en el plan.
+4. **Integración:** configura en el equipo local solo un túnel, apaga ese túnel y explica qué pasa con el servicio.
+5. **Diseño:** calcula con el tráfico esperado si la VPN alcanza o si conviene Direct Connect.
+
+**Pista:** antes de conectar dos redes, escribe en una tabla todos sus rangos IP y busca solapamientos.
+
+#### Paso 6 · Práctica independiente
+
+Agrega un grupo de seguridad que permita desde la VPC hacia la impresora solo el puerto de impresión (por ejemplo, 9100) y documenta por qué no se abre todo el tráfico.
+
+#### Paso 7 · Cierre
+
+- [ ] Comparas VPN, Direct Connect y Outposts.
+- [ ] Las rutas permiten solo el servidor necesario.
+- [ ] Reprodujiste el problema de rangos solapados.
+- [ ] Configuras los dos túneles.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** rangos IP solapados, enrutar redes enteras y usar un solo túnel. **Siguiente paso:** el tema «Testcontainers — pruebas de integración» prueba estas integraciones sin depender del enlace real.
+
+**Transferencia al proyecto integrador «RutaFlow»:** conecta la impresora de etiquetas de la bodega de RutaFlow con la API en la nube por VPN, enrutando solo el servidor de impresión.
+
+**Fuente oficial:** [AWS Site-to-Site VPN — How it works](https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html) y [AWS — Hybrid connectivity](https://docs.aws.amazon.com/whitepapers/latest/hybrid-connectivity/hybrid-connectivity.html).
 
 ## Laboratorio práctico
 

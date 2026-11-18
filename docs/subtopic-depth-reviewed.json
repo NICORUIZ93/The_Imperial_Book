@@ -7,218 +7,454 @@
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: calcular(3)/calcular(2.5) dieron 3600/3000.0 y dos sobrecargas que solo cambian el tipo de retorno reprodujeron 'method calcular(int) is already defined' (4.1). calculador.calcular(3) despachó dinámicamente a 'express=3' y el cast a CalculadorExpress.calcular(2.5) resolvió estáticamente a 'decimal=2.5'; sin @Override, calcularr dejó la llamada en 'base=3' por herencia simple (4.2). El caso más delicado se confirmó exacto: Bicicleta.resumen() (this.estado, protected por herencia) imprimió 'RF-302 estado=lista', pero 'new Guia(\"RF-303\").estado' desde Bicicleta (instancia arbitraria de la clase base, no this) reprodujo 'estado has protected access in Guia' — exactamente la regla JLS 6.6.2 que el tema explica. Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["sobrecarga por parámetros, no por retorno", "sobrecarga (estática) vs sobreescritura (dinámica)", "private/package-private/protected/public", "protected en subclase de otro paquete: solo a través de this, no de una instancia arbitraria de la base"],
-      "sources": ["https://docs.oracle.com/javase/tutorial/java/IandI/override.html", "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6.2"]
+      "criticalSubtopics": [
+        "sobrecarga por parámetros, no por retorno",
+        "sobrecarga (estática) vs sobreescritura (dinámica)",
+        "private/package-private/protected/public",
+        "protected en subclase de otro paquete: solo a través de this, no de una instancia arbitraria de la base"
+      ],
+      "sources": [
+        "https://docs.oracle.com/javase/tutorial/java/IandI/override.html",
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6.2"
+      ]
     },
     "java/modulo-1::Tema 3: Interfaces, clases abstractas y cuándo usar cada una": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: 'class X extends InterfazY' reprodujo 'no interface expected here' (3.1); instanciar una clase abstracta con método abstracto pendiente reprodujo 'is abstract; cannot be instantiated' (3.2); una subclase concreta sin implementar el método abstracto heredado reprodujo 'is not abstract and does not override abstract method' (3.3). Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["implements vs extends para interfaces", "clase abstracta no instanciable con método pendiente", "subclase concreta debe completar todos los métodos abstractos", "interfaz + clase abstracta combinadas (contrato + estado compartido)"],
-      "sources": ["https://dev.java/learn/interfaces/", "https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html"]
+      "criticalSubtopics": [
+        "implements vs extends para interfaces",
+        "clase abstracta no instanciable con método pendiente",
+        "subclase concreta debe completar todos los métodos abstractos",
+        "interfaz + clase abstracta combinadas (contrato + estado compartido)"
+      ],
+      "sources": [
+        "https://dev.java/learn/interfaces/",
+        "https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html"
+      ]
     },
     "java/modulo-1::Tema 2: Herencia y sobreescritura": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: super() sin argumento reprodujo 'constructor cannot be applied... required: String' (2.1); @Override con nombre mal escrito reprodujo 'method does not override or implement a method from a supertype' (2.2); sin @Override, Furgoneta con entregarr() despachó el comportamiento base 'FU-2 entrega paquete' en vez de sobrescribir (2.3); sin @Retention(RUNTIME), marca.accion() reprodujo NullPointerException exacto (2.4). Las cuatro afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["extends y super() con constructor propio", "@Override detecta error de escritura en compilación", "despacho dinámico por tipo concreto, no por tipo declarado", "RetentionPolicy.RUNTIME requerido para leer anotaciones por reflexión"],
-      "sources": ["https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html"]
+      "criticalSubtopics": [
+        "extends y super() con constructor propio",
+        "@Override detecta error de escritura en compilación",
+        "despacho dinámico por tipo concreto, no por tipo declarado",
+        "RetentionPolicy.RUNTIME requerido para leer anotaciones por reflexión"
+      ],
+      "sources": [
+        "https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/annotation/Retention.html"
+      ]
     },
     "java/modulo-1::Tema 1: Clases, objetos, constructores y encapsulación": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: Guia.java con dos objetos imprimió 'RF-101 -> Medellin'/'RF-102 -> Envigado' (1.1). Se encontró un bug real en el 1.2: con main dentro de la propia clase Guia, 'guia.numero = \"RF-999\"' no da 'numero has private access' (private no bloquea acceso desde dentro de la misma clase) sino 'cannot assign a value to final variable numero'. Se corrigió moviendo main a una clase Principal separada: con esa clase, 'guia.destino = \"Otro\"' sí reprodujo exactamente 'destino has private access in Guia', verificado real. El 1.3 (validación en el constructor, 'Rechazada: El numero es obligatorio') se confirmó correcto sin cambios.",
-      "criticalSubtopics": ["clase vs objeto/instancia", "private solo bloquea entre clases distintas, no dentro de la misma clase", "final bloquea reasignación con mensaje distinto a private", "invariante validado en el constructor"],
-      "sources": ["https://dev.java/learn/classes-objects/", "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6"]
+      "criticalSubtopics": [
+        "clase vs objeto/instancia",
+        "private solo bloquea entre clases distintas, no dentro de la misma clase",
+        "final bloquea reasignación con mensaje distinto a private",
+        "invariante validado en el constructor"
+      ],
+      "sources": [
+        "https://dev.java/learn/classes-objects/",
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.6"
+      ]
     },
     "java/modulo-0::Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: Scanner con entrada '3' imprimió 'Recibidos: 3'; con 'tres' e hasNextInt() en false imprimió 'Escribe un número entero'. LocalDate.parse('2026-11-03').plusDays(1) dio 2026-11-04; LocalDate.parse('03/11/2026') lanzó DateTimeParseException (formato no ISO). ZoneId.of('America/Desconocida') lanzó ZoneRulesException: Unknown time-zone ID. Las cuatro afirmaciones del tema se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["validar antes de convertir (hasNextInt)", "LocalDate.parse exige ISO yyyy-MM-dd", "Instant vs ZonedDateTime (momento global vs. hora local)", "ZoneId rechaza identificadores de zona inválidos"],
-      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html"]
+      "criticalSubtopics": [
+        "validar antes de convertir (hasNextInt)",
+        "LocalDate.parse exige ISO yyyy-MM-dd",
+        "Instant vs ZonedDateTime (momento global vs. hora local)",
+        "ZoneId rechaza identificadores de zona inválidos"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Scanner.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html"
+      ]
     },
     "java/modulo-0::Tema 7: Arreglos, wrappers y paso de argumentos": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: guias[2] sobre un arreglo de longitud 2 reprodujo ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2; Integer.valueOf(\"cuatro\") reprodujo NumberFormatException: For input string: \"cuatro\"; PasoValor.cambiar mutó el StringBuilder compartido ('pedido listo') pero la reasignación local del parámetro no afectó la variable del llamador, confirmando paso por valor de la referencia. Las tres afirmaciones se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["longitud fija e índice 0-based", "autoboxing/unboxing y NullPointerException con Integer null", "paso por valor de una referencia (mutar vs. reasignar)"],
-      "sources": ["https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html"]
+      "criticalSubtopics": [
+        "longitud fija e índice 0-based",
+        "autoboxing/unboxing y NullPointerException con Integer null",
+        "paso por valor de una referencia (mutar vs. reasignar)"
+      ],
+      "sources": [
+        "https://docs.oracle.com/javase/tutorial/java/data/numberclasses.html"
+      ]
     },
     "java/modulo-0::Tema 6: Operadores, precedencia y control de flujo": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: 'paquete != null & paquete.pesoKg() > 0' con & (sin cortocircuito) reprodujo NullPointerException en pesoValido(null); el switch expression sin 'CANCELADO' falló en compilación con 'the switch expression does not cover all possible input values'; el bucle con i <= guias.length reprodujo ArrayIndexOutOfBoundsException: Index 3 out of bounds for length 3. Se detectó un hueco real: el título promete 'precedencia' pero ningún subtema la demostraba. Se agregó y verificó el Subtema 6.4: con esUrgente=true, pesoExcedido=false, clienteVip=false, 'esUrgente || pesoExcedido && clienteVip' dio true mientras '(esUrgente || pesoExcedido) && clienteVip' dio false con los mismos argumentos, confirmando que && agrupa antes que || sin paréntesis.",
-      "criticalSubtopics": ["cortocircuito && vs & sin cortocircuito", "switch expression exhaustivo sobre enum", "límite de arreglo (length no es índice válido)", "precedencia && antes que || sin paréntesis"],
-      "sources": ["https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html", "https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.22"]
+      "criticalSubtopics": [
+        "cortocircuito && vs & sin cortocircuito",
+        "switch expression exhaustivo sobre enum",
+        "límite de arreglo (length no es índice válido)",
+        "precedencia && antes que || sin paréntesis"
+      ],
+      "sources": [
+        "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html",
+        "https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.22"
+      ]
     },
     "java/modulo-0::Tema 5: Variables, conversiones y `String`": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: Conversion.java confirmó que (int) 2.75 trunca a 2 sin redondear (2.75 / 2); LeerPeso.java procesó '2.75' como 'Peso: 2.75 kg' y 'pesado' cayó al catch con 'Uso: java LeerPeso <número>' por NumberFormatException. Las tres afirmaciones del tema (final solo bloquea reasignación, no vuelve inmutable el objeto; cast estrecho trunca sin redondear; parseDouble exige formato numérico) se confirmaron correctas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["declaración vs reasignación", "final en la variable, no en el objeto", "conversión estrecha trunca (no redondea)", "parseDouble y NumberFormatException"],
-      "sources": ["https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html"]
+      "criticalSubtopics": [
+        "declaración vs reasignación",
+        "final en la variable, no en el objeto",
+        "conversión estrecha trunca (no redondea)",
+        "parseDouble y NumberFormatException"
+      ],
+      "sources": [
+        "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html"
+      ]
     },
     "java/modulo-0::Tema 4: Tipos primitivos vs referencias": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: Tipos.java imprimió '3 entregas, 12.5 km' (4.1), 'RT-8 -> Cali' vía record (4.2) y, con new String(...) en ambos lados, equals=true/==false (4.3). Se detectó un hueco real: el 4.3 solo usaba new String() en los dos lados, sin mostrar el caso real que confunde a principiantes. Se agregó y verificó el Subtema 4.4: dos literales '\"RT-8\"' dieron ==true (pool de strings) mientras literal==new String dio false y nuevaA.intern()==literal volvió a dar true, confirmando que el pool —no la igualdad de contenido— explica por qué == 'a veces funciona' con literales y nunca es confiable con texto construido en runtime.",
-      "criticalSubtopics": ["primitivo vs referencia", "null solo en referencias", "equals vs == en objetos", "pool de strings e intern()", "por qué == con literales no valida == para texto en general"],
-      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html#intern()", "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html"]
+      "criticalSubtopics": [
+        "primitivo vs referencia",
+        "null solo en referencias",
+        "equals vs == en objetos",
+        "pool de strings e intern()",
+        "por qué == con literales no valida == para texto en general"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html#intern()",
+        "https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html"
+      ]
     },
     "java/modulo-0::Tema 3: JDK, JRE y JVM": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: 'java --version'/'javac --version' coinciden en versión mayor (25.0.2 ambos); 'javacc --version' falla con 'command not found' (nombre de comando inexistente, confirma el fallo deliberado 3.1); Entorno.java imprimió 'OpenJDK 64-Bit Server VM' y '25.0.2' vía System.getProperty; 'java -cp src Entorno' reprodujo el mismo patrón Could not find or load main class / ClassNotFoundException ya verificado en el Tema 1. No se encontraron afirmaciones imprecisas; el tema no necesitó contenido nuevo.",
-      "criticalSubtopics": ["javac compila / java ejecuta", "versión mayor coincidente", "java.vm.name y java.version en runtime", "JRE ya no es paquete separado desde Java 9 (JEP 220)"],
-      "sources": ["https://docs.oracle.com/en/java/javase/25/"]
+      "criticalSubtopics": [
+        "javac compila / java ejecuta",
+        "versión mayor coincidente",
+        "java.vm.name y java.version en runtime",
+        "JRE ya no es paquete separado desde Java 9 (JEP 220)"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/25/"
+      ]
     },
     "java/modulo-0::Tema 2: public static void main — qué significa cada palabra": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: PuntoEntrada.java mostró 'Motor de entregas listo'/'Argumentos recibidos: 0' y, con dos argumentos, 'Ruta solicitada: Medellin -> Envigado'; Hola25.java corrió directo con 'java Hola25.java' y compiló sin banderas de preview con 'javac -d out Hola25.java' en JDK 25 (JEP 512 finalizado). Se agregó y verificó el Subtema 2.4: una clase final sin 'public' en un archivo motor.java (nombre distinto a la clase) compiló y ejecutó igual que una clase pública, confirmando que la regla de nombre de archivo del Subtema 1.1 aplica solo a clases 'public', mientras que 'public' en main es obligatorio sin importar la visibilidad de la clase.",
-      "criticalSubtopics": ["modificadores public/static/void", "String[] args y su orden", "método main ausente o mal nombrado", "forma compacta de Java 25 (JEP 512)", "visibilidad de la clase vs. visibilidad de main"],
-      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html", "https://openjdk.org/jeps/512"]
+      "criticalSubtopics": [
+        "modificadores public/static/void",
+        "String[] args y su orden",
+        "método main ausente o mal nombrado",
+        "forma compacta de Java 25 (JEP 512)",
+        "visibilidad de la clase vs. visibilidad de main"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
+        "https://openjdk.org/jeps/512"
+      ]
     },
     "java/modulo-0::Tema 1: Del código fuente a la JVM": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 25.0.2: javac/java sobre Saludo.java reprodujo 'Hola desde la JVM' y el classpath incorrecto produjo 'Error: no se ha encontrado o cargado la clase principal Saludo / Causado por: java.lang.ClassNotFoundException'. Se agregó y verificó el Subtema 1.4: compilando Principal+Ayudante y borrando solo Ayudante.class se reprodujo 'Exception in thread \"main\" java.lang.NoClassDefFoundError: Ayudante' con 'at Principal.main' y 'Caused by: java.lang.ClassNotFoundException', confirmando que ambos errores comparten causa pero ocurren en momentos distintos del ciclo de vida (antes vs. después de iniciar main).",
-      "criticalSubtopics": ["compilación fuente→bytecode", "classpath (-cp)", "inspección de bytecode con javap", "clase principal ausente (Could not find or load main class)", "dependencia ausente en runtime (NoClassDefFoundError)"],
-      "sources": ["https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html", "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html", "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NoClassDefFoundError.html"]
+      "criticalSubtopics": [
+        "compilación fuente→bytecode",
+        "classpath (-cp)",
+        "inspección de bytecode con javap",
+        "clase principal ausente (Could not find or load main class)",
+        "dependencia ausente en runtime (NoClassDefFoundError)"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html",
+        "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/NoClassDefFoundError.html"
+      ]
     },
-    "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min": {
+    "microservices/modulo-1::Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1: evidencia parcial sin datos/despliegue/operación/beneficio produjo MANTENER_MODULAR; cinco señales completas produjeron CANDIDATO_A_EXTRAER.",
-      "criticalSubtopics": ["contrato compatible", "propiedad de datos", "despliegue independiente", "operación y on-call", "beneficio medido", "costo distribuido", "decisión reversible"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "contrato compatible",
+        "propiedad de datos",
+        "despliegue independiente",
+        "operación y on-call",
+        "beneficio medido",
+        "costo distribuido",
+        "decisión reversible"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
-    "microservices/modulo-1::Tema 3: Agrupar código por capacidad de negocio · Aplicación · 40 min": {
+    "microservices/modulo-1::Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: MedirCohesion.agruparPorMotivo agrupó tres cambios por motivo de negocio y produjo regla-envio=2, regla-factura=1 (orden de iteración del Map puede variar, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/MedirCohesion.java).",
-      "criticalSubtopics": ["motivo de cambio", "cohesión funcional", "invariante", "vocabulario", "acoplamiento aferente/eferente", "cohesión accidental"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "motivo de cambio",
+        "cohesión funcional",
+        "invariante",
+        "vocabulario",
+        "acoplamiento aferente/eferente",
+        "cohesión accidental"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
-    "microservices/modulo-1::Tema 4: Proteger la API pública de un módulo · Aplicación · 45 min": {
+    "microservices/modulo-1::Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: ProtegerApiModulo produjo Resultado[id=env-001, estado=REGISTRADO] y contrato=RegistrarEnvio, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/ProtegerApiModulo.java.",
-      "criticalSubtopics": ["API proporcionada", "implementación interna", "DTO de contrato", "modelo compartido", "dependencia no Java"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis", "https://docs.spring.io/spring-modulith/reference/fundamentals.html"]
+      "criticalSubtopics": [
+        "API proporcionada",
+        "implementación interna",
+        "DTO de contrato",
+        "modelo compartido",
+        "dependencia no Java"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis",
+        "https://docs.spring.io/spring-modulith/reference/fundamentals.html"
+      ]
     },
-    "microservices/modulo-1::Tema 5: Mantener reglas de dominio libres de frameworks · Aplicación · 40 min": {
+    "microservices/modulo-1::Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: CalcularTarifaPura produjo 2040 para una tarifa con distancia/peso válidos y el mensaje 'distancia/peso inválidos' al rechazar un peso cero, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/CalcularTarifaPura.java sin Spring ni JPA en el classpath.",
-      "criticalSubtopics": ["política y mecanismo", "invariante", "tipo de dominio", "error de dominio", "dependencia hacia dentro", "pureza pragmática"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "política y mecanismo",
+        "invariante",
+        "tipo de dominio",
+        "error de dominio",
+        "dependencia hacia dentro",
+        "pureza pragmática"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
-    "microservices/modulo-1::Tema 6: Sustituir adaptadores mediante puertos · Aplicación · 45 min": {
+    "microservices/modulo-1::Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: SustituirAdaptador produjo Envio[id=env-7, estado=REGISTRADO] y guardados=1 con un adaptador en memoria inyectado por composición al caso de uso, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/SustituirAdaptador.java.",
-      "criticalSubtopics": ["puerto de entrada", "puerto de salida", "adaptador de entrada", "adaptador de salida", "inversión de dependencias", "abstracción accidental"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "puerto de entrada",
+        "puerto de salida",
+        "adaptador de entrada",
+        "adaptador de salida",
+        "inversión de dependencias",
+        "abstracción accidental"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
-    "microservices/modulo-1::Tema 7: Representar dependencias de módulos como un grafo · Integración · 35 min": {
+    "microservices/modulo-1::Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: DetectarCiclo produjo ciclo=true sobre el grafo Envíos->Facturación->Notificaciones->Envíos, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/DetectarCiclo.java.",
-      "criticalSubtopics": ["grafo dirigido", "dependencia estable", "ciclo directo/transitivo", "acoplamiento temporal", "acoplamiento de datos", "ruptura de ciclo"],
-      "sources": ["https://docs.spring.io/spring-modulith/reference/verification.html"]
+      "criticalSubtopics": [
+        "grafo dirigido",
+        "dependencia estable",
+        "ciclo directo/transitivo",
+        "acoplamiento temporal",
+        "acoplamiento de datos",
+        "ruptura de ciclo"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-modulith/reference/verification.html"
+      ]
     },
-    "microservices/modulo-1::Tema 8: Romper ciclos según el tipo de acoplamiento · Integración · 45 min": {
+    "microservices/modulo-1::Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: RomperCiclo produjo eventos=1 tras sustituir la llamada síncrona de retorno por un evento pasado desacoplado, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/RomperCiclo.java.",
-      "criticalSubtopics": ["mover responsabilidad", "invertir dependencia", "evento pasado", "acoplamiento temporal", "acoplamiento de datos", "consistencia eventual", "costo de coordinación"],
-      "sources": ["https://docs.spring.io/spring-modulith/reference/verification.html"]
+      "criticalSubtopics": [
+        "mover responsabilidad",
+        "invertir dependencia",
+        "evento pasado",
+        "acoplamiento temporal",
+        "acoplamiento de datos",
+        "consistencia eventual",
+        "costo de coordinación"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-modulith/reference/verification.html"
+      ]
     },
-    "microservices/modulo-1::Tema 9: Bloquear accesos a internals con ArchUnit · Integración · 40 min": {
+    "microservices/modulo-1::Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "CORRECCIÓN REAL: el borrador original citaba un paquete/clase (rutaflow.*, ArquitecturaTest) que no existe en examples/archunit-hexagonal-rutaflow -- ese proyecto solo tenía HexagonalArchitectureTest sobre academia.rutaflow.hexagonal.domain/application/infrastructure, sin módulos envios/facturacion/notificaciones ni regla de internals/slices. Verificado ejecutando mvn test contra el proyecto real antes de escribir la lección. Se añadieron, de forma aditiva (sin tocar HexagonalArchitectureTest, usado también por spring-boot/modulo-15 Tema 3), los paquetes academia.rutaflow.modules.{envios,facturacion,notificaciones}.{api,internal} y la clase RutaflowModulesArchitectureTest. mvn test -Dtest=RutaflowModulesArchitectureTest -> BUILD SUCCESS (3/3). Fallo deliberado verificado realmente: una clase en facturacion.internal con ServicioEnvios por constructor produce 'Architecture Violation' nombrando el constructor, la clase origen y el tipo destino exactos; revertido tras confirmar. mvn test en el proyecto completo -> 6/6 (3 hexagonal + 3 modules), sin romper el ejemplo que usa Spring Boot.",
-      "criticalSubtopics": ["importación de bytecode", "regla de internals real y ejecutada", "mensaje de violación con origen y destino", "proyecto compartido con spring-boot/modulo-15 no modificado"],
-      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+      "criticalSubtopics": [
+        "importación de bytecode",
+        "regla de internals real y ejecutada",
+        "mensaje de violación con origen y destino",
+        "proyecto compartido con spring-boot/modulo-15 no modificado"
+      ],
+      "sources": [
+        "https://www.archunit.org/userguide/html/000_Index.html"
+      ]
     },
-    "microservices/modulo-1::Tema 10: Detectar ciclos de paquetes con ArchUnit · Integración · 35 min": {
+    "microservices/modulo-1::Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Import corregido de 'com.tngtech.archunit.lang.syntax.ArchRuleDefinition.slices' (no existe) a 'com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices', confirmado por javap sobre archunit-1.5.1.jar en ~/.m2. slices().matching(\"academia.rutaflow.modules.(*)..\").should().beFreeOfCycles() verificado verde (mvn test -> BUILD SUCCESS) sobre los tres módulos reales del Tema 9. Fallo deliberado verificado realmente: una clase en envios.internal con notificaciones.api.NotificarEntrega por constructor produce 'Cycle detected: Slice envios -> Slice notificaciones -> Slice envios' con el constructor/campo/método exactos del camino; revertido tras confirmar.",
-      "criticalSubtopics": ["slices().matching(...) con el import real de SlicesRuleDefinition", "ciclo directo vs transitivo", "camino circular completo en el reporte", "falso verde por patrón que no captura módulos"],
-      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+      "criticalSubtopics": [
+        "slices().matching(...) con el import real de SlicesRuleDefinition",
+        "ciclo directo vs transitivo",
+        "camino circular completo en el reporte",
+        "falso verde por patrón que no captura módulos"
+      ],
+      "sources": [
+        "https://www.archunit.org/userguide/html/000_Index.html"
+      ]
     },
-    "microservices/modulo-1::Tema 11: Evitar falsos verdes en fitness functions · Integración · 35 min": {
+    "microservices/modulo-1::Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "CORRECCIÓN REAL: el borrador original afirmaba que un import vacío 'pasa sin analizar el sistema'. Verificado empíricamente contra ArchUnit 1.5.1 real: apuntar ClassFileImporter a un paquete inexistente hace que las TRES pruebas fallen explícitamente ('failed to check any classes'), porque failOnEmptyShould=true es el valor por defecto en esta versión -- la lección se corrigió para reflejar esto y enseñar en cambio que esa protección por defecto puede deshabilitarse (allowEmptyShould(true) / archRule.failOnEmptyShould=false) y que una aserción propia documenta la intención sin depender silenciosamente de la configuración por defecto. mvn test confirmó ambos estados (vacío -> 3 fallos explícitos; paquete real -> 3/3 verde).",
-      "criticalSubtopics": ["failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1", "aserción explícita de alcance no vacío como documentación de intención", "exclusiones con dueño y vencimiento", "controles complementarios fuera de bytecode"],
-      "sources": ["https://www.archunit.org/userguide/html/000_Index.html"]
+      "criticalSubtopics": [
+        "failOnEmptyShould=true es el comportamiento real por defecto en ArchUnit 1.5.1",
+        "aserción explícita de alcance no vacío como documentación de intención",
+        "exclusiones con dueño y vencimiento",
+        "controles complementarios fuera de bytecode"
+      ],
+      "sources": [
+        "https://www.archunit.org/userguide/html/000_Index.html"
+      ]
     },
     "microservices/modulo-1::Tema 12: Medir señales que justifican una extracción · Experto · 40 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1.0.2: EvaluarExtraccion produjo MANTENER_MODULAR para evidencia parcial y REVISAR_EXTRACCION para la combinación completa de señales, confirmado real tras compilar y ejecutar examples/professional-bridges/microservices/EvaluarExtraccion.java.",
-      "criticalSubtopics": ["cadencia de cambio", "perfil de capacidad atribuido", "aislamiento de fallo", "ownership completo", "acoplamiento de datos", "costo distribuido", "umbral de revisión"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "cadencia de cambio",
+        "perfil de capacidad atribuido",
+        "aislamiento de fallo",
+        "ownership completo",
+        "acoplamiento de datos",
+        "costo distribuido",
+        "umbral de revisión"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
     "microservices/modulo-1::Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Claude Sonnet 5 — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Verificados los cuatro comandos (test -s, tres grep -q sobre Opciones/Revisar cuando/Reversión) contra el ADR de ejemplo mostrado en la lección: los cuatro terminan en código 0 porque el markdown incluye las cuatro secciones exigidas.",
-      "criticalSubtopics": ["opción de mantener como alternativa real", "disparador de revisión cuantificable", "consecuencias negativas explícitas", "reversión verificable"],
-      "sources": ["https://docs.spring.io/spring-modulith/reference/fundamentals.html", "https://www.archunit.org/userguide/html/000_Index.html", "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"]
+      "criticalSubtopics": [
+        "opción de mantener como alternativa real",
+        "disparador de revisión cuantificable",
+        "consecuencias negativas explícitas",
+        "reversión verificable"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-modulith/reference/fundamentals.html",
+        "https://www.archunit.org/userguide/html/000_Index.html",
+        "https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis"
+      ]
     },
     "microservices/modulo-0::Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1: ENVIO-1 produjo FRAME_OK bytes=7; 33 bytes fueron rechazados antes de leer el cuerpo con IllegalArgumentException: PAYLOAD_EXCESIVO y exit 1.",
-      "criticalSubtopics": ["serialización a bytes", "framing por longitud", "límite antes de reservar", "frame truncado", "bytes UTF-8 frente a caracteres", "tamaño descomprimido", "streaming frente a memoria"],
-      "sources": ["https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html", "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload"]
+      "criticalSubtopics": [
+        "serialización a bytes",
+        "framing por longitud",
+        "límite antes de reservar",
+        "frame truncado",
+        "bytes UTF-8 frente a caracteres",
+        "tamaño descomprimido",
+        "streaming frente a memoria"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html",
+        "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload"
+      ]
     },
     "microservices/modulo-0::Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1: seis líneas REFUTADA conectaron confiabilidad, latencia, ancho, seguridad, topología y homogeneidad con evidencia/mitigación del módulo.",
-      "criticalSubtopics": ["hipótesis comprobable", "perturbación reproducible", "señal observable", "impacto", "mitigación específica", "límites del laboratorio", "prueba operativa y responsable"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/patterns/", "https://aws.amazon.com/builders-library/"]
+      "criticalSubtopics": [
+        "hipótesis comprobable",
+        "perturbación reproducible",
+        "señal observable",
+        "impacto",
+        "mitigación específica",
+        "límites del laboratorio",
+        "prueba operativa y responsable"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/",
+        "https://aws.amazon.com/builders-library/"
+      ]
     },
-    "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Integración · 45 min": {
+    "microservices/modulo-0::Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
       "execution": "Temurin 27.0.1: ProyeccionOrden clasificó v1 como APLICADO, v3 como HUECO_ESPERABA_v2, v2 como APLICADO, la repetición v2 como OBSOLETO_O_DUPLICADO y ENV-2:v1 como APLICADO.",
-      "criticalSubtopics": ["agregado como unidad de orden", "versión de dominio", "duplicado exacto", "evento obsoleto", "hueco de secuencia", "concurrencia de escritores", "compare-and-set", "buffer acotado", "cuarentena y reconciliación"],
-      "sources": ["https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy", "https://opentelemetry.io/docs/specs/otel/context/"]
+      "criticalSubtopics": [
+        "agregado como unidad de orden",
+        "versión de dominio",
+        "duplicado exacto",
+        "evento obsoleto",
+        "hueco de secuencia",
+        "concurrencia de escritores",
+        "compare-and-set",
+        "buffer acotado",
+        "cuarentena y reconciliación"
+      ],
+      "sources": [
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy",
+        "https://opentelemetry.io/docs/specs/otel/context/"
+      ]
     },
-    "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Integración · 45 min": {
+    "microservices/modulo-0::Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual y ejecución; no equivale a prueba con estudiantes",
@@ -239,7 +475,7 @@
         "https://learn.microsoft.com/en-us/azure/architecture/patterns/retry"
       ]
     },
-    "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min": {
+    "microservices/modulo-0::Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min": {
       "status": "reviewed",
       "reviewDate": "2026-11-13",
       "reviewer": "Codex — revisión semántica manual del contenido y ejecución; no equivale a prueba con estudiantes",
@@ -2060,6 +2296,1219 @@
       ],
       "sources": [
         "https://docs.flutter.dev/testing"
+      ]
+    },
+    "android/modulo-2::Tema 4: Material 3 en Compose: tema, color dinámico y componentes · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Material 3"
+      ],
+      "sources": [
+        "https://developer.android.com/develop/ui/compose/designsystems/material3",
+        "https://m3.material.io/styles/color/roles"
+      ]
+    },
+    "android/modulo-12::Tema 4: Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "dominio"
+      ],
+      "sources": [
+        "https://developer.android.com/topic/architecture/domain-layer"
+      ]
+    },
+    "android/modulo-15::Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "maps"
+      ],
+      "sources": [
+        "https://developers.google.com/maps/documentation/android-sdk/maps-compose",
+        "https://developers.google.com/maps/documentation/android-sdk/get-api-key"
+      ]
+    },
+    "android/modulo-15::Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "geofencing"
+      ],
+      "sources": [
+        "https://developer.android.com/develop/sensors-and-location/location/geofencing"
+      ]
+    },
+    "android/modulo-15::Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "camera",
+        "scanning"
+      ],
+      "sources": [
+        "https://developer.android.com/media/camera/camerax",
+        "https://developers.google.com/ml-kit/vision/barcode-scanning/android"
+      ]
+    },
+    "android/modulo-15::Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "sensors"
+      ],
+      "sources": [
+        "https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview",
+        "https://developer.android.com/develop/sensors-and-location/sensors/sensors_motion"
+      ]
+    },
+    "android/modulo-15::Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un dispositivo Android real con Bluetooth y un periférico BLE (por ejemplo, nRF Connect en otro teléfono); capturar Logcat en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Bluetooth"
+      ],
+      "sources": [
+        "https://developer.android.com/develop/connectivity/bluetooth/ble/ble-overview",
+        "https://developer.android.com/develop/connectivity/bluetooth/bt-permissions"
+      ]
+    },
+    "android/modulo-18::Tema 5: Macrobenchmark: medir el arranque y el scroll como lo vive el usuario · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Android Studio y un dispositivo o emulador conectado; capturar la tabla de resultados de Macrobenchmark en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Macrobenchmark"
+      ],
+      "sources": [
+        "https://developer.android.com/topic/performance/benchmarking/macrobenchmark-overview"
+      ]
+    },
+    "android/modulo-16::Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita una app publicada en una pista de prueba de Google Play, un proyecto de Google Cloud con la API habilitada y un dispositivo real; capturar la respuesta decodificada en el servidor.",
+      "criticalSubtopics": [
+        "Play Integrity"
+      ],
+      "sources": [
+        "https://developer.android.com/google/play/integrity/overview",
+        "https://developer.android.com/google/play/integrity/standard"
+      ]
+    },
+    "angular/modulo-4::Tema 6: Resolvers funcionales: datos listos antes de mostrar la ruta · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "resolvers"
+      ],
+      "sources": [
+        "https://angular.dev/guide/routing/data-resolvers",
+        "https://angular.dev/api/router/ResolveFn"
+      ]
+    },
+    "angular/modulo-11::Tema 5: Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "SSG",
+        "streaming"
+      ],
+      "sources": [
+        "https://angular.dev/guide/ssr",
+        "https://angular.dev/guide/prerendering"
+      ]
+    },
+    "angular/modulo-11::Tema 6: Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "incremental hydration"
+      ],
+      "sources": [
+        "https://angular.dev/guide/incremental-hydration",
+        "https://angular.dev/guide/templates/defer"
+      ]
+    },
+    "angular/modulo-8::Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "librerías",
+        "monorepos"
+      ],
+      "sources": [
+        "https://angular.dev/tools/libraries/creating-libraries",
+        "https://angular.dev/reference/configs/file-structure"
+      ]
+    },
+    "angular/modulo-8::Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "microfrontends con criterio"
+      ],
+      "sources": [
+        "https://www.npmjs.com/package/@angular-architects/native-federation",
+        "https://martinfowler.com/articles/micro-frontends.html"
+      ]
+    },
+    "angular/modulo-14::Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "CSP y Trusted Types"
+      ],
+      "sources": [
+        "https://angular.dev/best-practices/security#content-security-policy",
+        "https://developer.mozilla.org/es/docs/Web/HTTP/CSP"
+      ]
+    },
+    "angular/modulo-14::Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un navegador con la extensión Angular DevTools y un proyecto Angular en ejecución; capturar el flame graph antes y después del cambio a computed.",
+      "criticalSubtopics": [
+        "profiling"
+      ],
+      "sources": [
+        "https://angular.dev/tools/devtools/profiler",
+        "https://angular.dev/api/core/enableProfiling"
+      ]
+    },
+    "cloud/modulo-0::Tema 8: Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad · Básico · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker con el emulador local (Floci) o una cuenta de nube; el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "IaaS PaaS SaaS",
+        "regions and zones"
+      ],
+      "sources": [
+        "https://aws.amazon.com/about-aws/global-infrastructure/regions_az/",
+        "https://csrc.nist.gov/pubs/sp/800/145/final"
+      ]
+    },
+    "cloud/modulo-32::Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/well-architected.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "Well-Architected",
+        "sustainability",
+        "performance"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html",
+        "https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/sustainability-pillar.html"
+      ]
+    },
+    "cloud/modulo-16::Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/procesamiento-batch.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "batch"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/batch/latest/userguide/array_jobs.html",
+        "https://docs.aws.amazon.com/step-functions/latest/dg/state-map-distributed.html"
+      ]
+    },
+    "cloud/modulo-28::Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/series-temporales.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "time-series"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/timestream/latest/developerguide/concepts.html",
+        "https://docs.influxdata.com/influxdb/v2/process-data/common-tasks/downsample-data/"
+      ]
+    },
+    "cloud/modulo-32::Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/residencia-datos.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "residency"
+      ],
+      "sources": [
+        "https://aws.amazon.com/compliance/data-residency/",
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples_general.html"
+      ]
+    },
+    "cloud/modulo-22::Tema 6: WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS con un balanceador o una distribución y WAF; el emulador local no aplica reglas de WAF. Capturar el plan de Terraform y el resultado de la prueba de carga.",
+      "criticalSubtopics": [
+        "WAF and DDoS"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/waf/latest/developerguide/how-aws-waf-works.html",
+        "https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html"
+      ]
+    },
+    "cloud/modulo-33::Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/deteccion-amenazas.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "threat detection"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html",
+        "https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html"
+      ]
+    },
+    "cloud/modulo-14::Tema 4: Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS con ECR, KMS y cosign; capturar el escaneo, la firma, la verificación y el rechazo de la etiqueta repetida.",
+      "criticalSubtopics": [
+        "supply chain"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html",
+        "https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html",
+        "https://docs.sigstore.dev/cosign/signing/overview/"
+      ]
+    },
+    "cloud/modulo-31::Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/migracion-7r.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "migration"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html"
+      ]
+    },
+    "cloud/modulo-31::Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita una cuenta de AWS y un equipo VPN del lado local; capturar el plan y el estado de los dos túneles en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "hybrid"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/vpn/latest/s2svpn/how_it_works.html",
+        "https://docs.aws.amazon.com/whitepapers/latest/hybrid-connectivity/hybrid-connectivity.html"
+      ]
+    },
+    "cloud/modulo-20::Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/gobierno-ia-ml.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "AI ML governance"
+      ],
+      "sources": [
+        "https://www.nist.gov/itl/ai-risk-management-framework",
+        "https://docs.aws.amazon.com/sagemaker/latest/dg/model-registry.html"
+      ]
+    },
+    "cloud/modulo-5::Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/cloud/deprecaciones-runtimes.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "deprecations"
+      ],
+      "sources": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy",
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBEngineVersions.html"
+      ]
+    },
+    "devops/modulo-2::Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "rootless",
+        "runtime security"
+      ],
+      "sources": [
+        "https://docs.docker.com/engine/security/rootless/",
+        "https://docs.docker.com/engine/security/",
+        "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/"
+      ]
+    },
+    "devops/modulo-4::Tema 5: Promoción entre entornos con quality gates: el mismo artefacto de pruebas a producción · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un repositorio de GitHub con Actions, entornos y el registro ghcr.io; capturar la vista del pipeline con la aprobación pendiente.",
+      "criticalSubtopics": [
+        "quality gates",
+        "promotion"
+      ],
+      "sources": [
+        "https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment",
+        "https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/passing-information-between-jobs"
+      ]
+    },
+    "devops/modulo-6::Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "architecture"
+      ],
+      "sources": [
+        "https://kubernetes.io/docs/concepts/architecture/",
+        "https://kubernetes.io/docs/concepts/architecture/controller/"
+      ]
+    },
+    "devops/modulo-6::Tema 10: Scheduling en Kubernetes: requests, limits, afinidad, taints y tolerations · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "scheduling"
+      ],
+      "sources": [
+        "https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/",
+        "https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/",
+        "https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/"
+      ]
+    },
+    "devops/modulo-7::Tema 8: Políticas en Kubernetes: NetworkPolicy y Pod Security Admission · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "policies"
+      ],
+      "sources": [
+        "https://kubernetes.io/docs/concepts/services-networking/network-policies/",
+        "https://kubernetes.io/docs/concepts/security/pod-security-admission/"
+      ]
+    },
+    "devops/modulo-8::Tema 9: terraform import y policy as code: adoptar recursos existentes y revisar planes con reglas · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Terraform, Conftest y un emulador S3 (LocalStack o Floci) con Docker; capturar la salida del import y de conftest en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "import",
+        "policy as code"
+      ],
+      "sources": [
+        "https://developer.hashicorp.com/terraform/language/import",
+        "https://www.conftest.dev/",
+        "https://www.openpolicyagent.org/docs/latest/terraform/"
+      ]
+    },
+    "devops/modulo-9::Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Docker y un clúster local (Minikube o kind); el entorno de generación no tiene el demonio de Docker. Capturar los comandos con render_terminal_capture.py en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "chaos"
+      ],
+      "sources": [
+        "https://principlesofchaos.org/",
+        "https://chaos-mesh.org/docs/simulate-pod-chaos-on-kubernetes/"
+      ]
+    },
+    "devops/modulo-12::Tema 7: FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Terraform y una cuenta de AWS o el emulador con Cost Explorer simulado; capturar el plan y la consulta de costos agrupados en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "FinOps"
+      ],
+      "sources": [
+        "https://www.finops.org/framework/",
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html",
+        "https://registry.terraform.io/providers/hashicorp/aws/latest/docs#default_tags-configuration-block"
+      ]
+    },
+    "flutter/modulo-0::Tema 5: Streams en Dart: secuencias de eventos asíncronos con await for y StreamController · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "streams"
+      ],
+      "sources": [
+        "https://dart.dev/libraries/async/using-streams",
+        "https://dart.dev/libraries/async/creating-streams"
+      ]
+    },
+    "flutter/modulo-0::Tema 6: Records y patterns en Dart: varios valores sin clases y switch exhaustivo · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "records",
+        "patterns"
+      ],
+      "sources": [
+        "https://dart.dev/language/records",
+        "https://dart.dev/language/patterns"
+      ]
+    },
+    "flutter/modulo-0::Tema 7: Extension methods y extension types: agregar comportamiento sin heredar · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "extensions"
+      ],
+      "sources": [
+        "https://dart.dev/language/extension-methods",
+        "https://dart.dev/language/extension-types"
+      ]
+    },
+    "flutter/modulo-1::Tema 4: Los tres árboles de Flutter: Widget, Element y RenderObject · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "widget-element-render object"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/resources/architectural-overview",
+        "https://api.flutter.dev/flutter/widgets/Widget/canUpdate.html"
+      ]
+    },
+    "flutter/modulo-1::Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "gestures"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/ui/interactivity/gestures",
+        "https://docs.flutter.dev/cookbook/gestures/dismissible"
+      ]
+    },
+    "flutter/modulo-12::Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "views y view models",
+        "repositories",
+        "services"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/app-architecture/guide",
+        "https://docs.flutter.dev/app-architecture/recommendations"
+      ]
+    },
+    "flutter/modulo-6::Tema 5: Archivos en Flutter: path_provider, carpetas correctas y escritura segura · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "files"
+      ],
+      "sources": [
+        "https://pub.dev/packages/path_provider",
+        "https://docs.flutter.dev/cookbook/persistence/reading-writing-files"
+      ]
+    },
+    "flutter/modulo-7::Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "add-to-app"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/add-to-app",
+        "https://docs.flutter.dev/add-to-app/android/add-flutter-screen"
+      ]
+    },
+    "flutter/modulo-7::Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "background"
+      ],
+      "sources": [
+        "https://pub.dev/packages/workmanager",
+        "https://docs.flutter.dev/packages-and-plugins/background-processes"
+      ]
+    },
+    "flutter/modulo-11::Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "web y desktop"
+      ],
+      "sources": [
+        "https://docs.flutter.dev/platform-integration/web",
+        "https://docs.flutter.dev/platform-integration/desktop",
+        "https://docs.flutter.dev/ui/adaptive-responsive"
+      ]
+    },
+    "ios/modulo-0::Tema 5: Ownership en Swift: borrowing, consuming y tipos ~Copyable · Experto · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "ownership"
+      ],
+      "sources": [
+        "https://github.com/swiftlang/swift-evolution/blob/main/proposals/0390-noncopyable-structs-and-enums.md",
+        "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/memorysafety/"
+      ]
+    },
+    "ios/modulo-12::Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Swift packages"
+      ],
+      "sources": [
+        "https://www.swift.org/documentation/package-manager/",
+        "https://developer.apple.com/documentation/xcode/swift-packages"
+      ]
+    },
+    "ios/modulo-14::Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "gestures"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/swiftui/adding-interactivity-with-gestures",
+        "https://developer.apple.com/documentation/swiftui/composing-swiftui-gestures"
+      ]
+    },
+    "ios/modulo-10::Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "localization"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog"
+      ]
+    },
+    "ios/modulo-4::Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Sendable",
+        "Swift 6 isolation"
+      ],
+      "sources": [
+        "https://www.swift.org/migration/documentation/migrationguide/",
+        "https://developer.apple.com/documentation/swift/sendable"
+      ]
+    },
+    "ios/modulo-4::Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "AsyncSequence"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/swift/asyncstream",
+        "https://developer.apple.com/documentation/swift/asyncsequence"
+      ]
+    },
+    "ios/modulo-6::Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "CloudKit"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices"
+      ]
+    },
+    "ios/modulo-6::Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "files"
+      ],
+      "sources": [
+        "https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html",
+        "https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:allowsmultipleselection:oncompletion:)"
+      ]
+    },
+    "ios/modulo-13::Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Core Location"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/corelocation/cllocationupdate",
+        "https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services"
+      ]
+    },
+    "ios/modulo-13::Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "background tasks"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/backgroundtasks",
+        "https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development"
+      ]
+    },
+    "ios/modulo-13::Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "biometrics"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id"
+      ]
+    },
+    "ios/modulo-14::Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "widgets"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/widgetkit",
+        "https://developer.apple.com/documentation/widgetkit/keeping-a-widget-up-to-date"
+      ]
+    },
+    "ios/modulo-14::Tema 10: App Intents: acciones de la app en Siri, Atajos y Spotlight · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "App Intents"
+      ],
+      "sources": [
+        "https://developer.apple.com/documentation/appintents",
+        "https://developer.apple.com/documentation/appintents/app-shortcuts"
+      ]
+    },
+    "java/modulo-19::Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/class-loading.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "class loading"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ClassLoader.html",
+        "https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html"
+      ]
+    },
+    "java/modulo-19::Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/method-var-handles.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "method handles"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/MethodHandle.html",
+        "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/VarHandle.html"
+      ]
+    },
+    "java/modulo-14::Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/cds-aot.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "CDS y AOT"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/21/vm/class-data-sharing.html",
+        "https://openjdk.org/jeps/483"
+      ]
+    },
+    "java/modulo-14::Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/migracion-lts.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "migración LTS"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdeprscan.html",
+        "https://docs.oracle.com/en/java/javase/21/migrate/getting-started.html"
+      ]
+    },
+    "java/modulo-9::Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/pruebas-propiedades.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "property testing"
+      ],
+      "sources": [
+        "https://jqwik.net/docs/current/user-guide.html",
+        "https://junit.org/junit5/docs/current/user-guide/"
+      ]
+    },
+    "java/modulo-18::Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/java/criptografia-jca.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "criptografía"
+      ],
+      "sources": [
+        "https://docs.oracle.com/en/java/javase/21/security/java-cryptography-architecture-jca-reference-guide.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html"
+      ]
+    },
+    "javascript/modulo-7::Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/esm-a-fondo.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "top-level await",
+        "ciclos",
+        "import maps"
+      ],
+      "sources": [
+        "https://developer.mozilla.org/es/docs/Web/JavaScript/Guide/Modules",
+        "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap"
+      ]
+    },
+    "javascript/modulo-14::Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Node.js 24 o Chrome 134 (gestión explícita de recursos); el entorno de generación tiene Node 22. Capturar `node recursos.mjs` con Node 24.",
+      "criticalSubtopics": [
+        "using y await using",
+        "DisposableStack"
+      ],
+      "sources": [
+        "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using",
+        "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack"
+      ]
+    },
+    "javascript/modulo-6::Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/streams-web-fetch.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "Fetch y streams"
+      ],
+      "sources": [
+        "https://developer.mozilla.org/es/docs/Web/API/Streams_API",
+        "https://developer.mozilla.org/en-US/docs/Web/API/TransformStream"
+      ]
+    },
+    "javascript/modulo-7::Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/javascript/cadena-suministro-npm.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "supply chain"
+      ],
+      "sources": [
+        "https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json",
+        "https://docs.npmjs.com/cli/v11/commands/npm-audit"
+      ]
+    },
+    "kotlin-multiplatform/modulo-1::Tema 5: Genéricos en Kotlin: varianza con in y out, restricciones y reified · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "genéricos"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/generics.html",
+        "https://kotlinlang.org/docs/inline-functions.html#reified-type-parameters"
+      ]
+    },
+    "kotlin-multiplatform/modulo-3::Tema 5: Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "version catalogs",
+        "convention plugins"
+      ],
+      "sources": [
+        "https://docs.gradle.org/current/userguide/version_catalogs.html",
+        "https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html"
+      ]
+    },
+    "kotlin-multiplatform/modulo-3::Tema 6: Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "JVM",
+        "JS y Wasm"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform-dsl-reference.html#targets",
+        "https://kotlinlang.org/docs/js-to-kotlin-interop.html#jsexport-annotation",
+        "https://kotlinlang.org/docs/wasm-overview.html"
+      ]
+    },
+    "kotlin-multiplatform/modulo-7::Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "recursos",
+        "localización"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources.html"
+      ]
+    },
+    "kotlin-multiplatform/modulo-7::Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "deep links"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform/compose-navigation-routing.html",
+        "https://kotlinlang.org/docs/multiplatform/compose-navigation-deep-links.html"
+      ]
+    },
+    "kotlin-multiplatform/modulo-7::Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "accesibilidad"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform/compose-accessibility.html",
+        "https://developer.android.com/develop/ui/compose/accessibility/semantics"
+      ]
+    },
+    "kotlin-multiplatform/modulo-8::Tema 4: Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "UIKit y SwiftUI"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform/compose-swiftui-integration.html",
+        "https://kotlinlang.org/docs/multiplatform/compose-uikit-integration.html"
+      ]
+    },
+    "kotlin-multiplatform/modulo-7::Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Hot Reload"
+      ],
+      "sources": [
+        "https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html",
+        "https://github.com/JetBrains/compose-hot-reload"
+      ]
+    },
+    "kotlin-multiplatform/modulo-9::Tema 4: Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "benchmarks"
+      ],
+      "sources": [
+        "https://github.com/Kotlin/kotlinx-benchmark",
+        "https://github.com/openjdk/jmh"
+      ]
+    },
+    "kotlin-multiplatform/modulo-6::Tema 5: Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "seguridad"
+      ],
+      "sources": [
+        "https://developer.android.com/privacy-and-security/security-tips",
+        "https://developer.apple.com/documentation/security/keychain-services"
+      ]
+    },
+    "node/modulo-2::Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/buffer-blob-web-apis.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "buffers",
+        "blobs",
+        "Web APIs compatibles"
+      ],
+      "sources": [
+        "https://nodejs.org/api/buffer.html",
+        "https://nodejs.org/api/globals.html"
+      ]
+    },
+    "node/modulo-2::Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/zlib-compresion.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "compresión"
+      ],
+      "sources": [
+        "https://nodejs.org/api/zlib.html",
+        "https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options"
+      ]
+    },
+    "node/modulo-10::Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/modelo-de-permisos.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "permission model"
+      ],
+      "sources": [
+        "https://nodejs.org/api/permissions.html"
+      ]
+    },
+    "node/modulo-3::Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/https-http2-tls.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "HTTP/2",
+        "TLS"
+      ],
+      "sources": [
+        "https://nodejs.org/api/http2.html",
+        "https://nodejs.org/api/tls.html"
+      ]
+    },
+    "node/modulo-3::Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/net-dgram-dns.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "DNS",
+        "TCP/UDP"
+      ],
+      "sources": [
+        "https://nodejs.org/api/net.html",
+        "https://nodejs.org/api/dgram.html",
+        "https://nodejs.org/api/dns.html"
+      ]
+    },
+    "node/modulo-7::Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/cobertura-node-test.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "coverage"
+      ],
+      "sources": [
+        "https://nodejs.org/api/test.html#collecting-code-coverage"
+      ]
+    },
+    "node/modulo-9::Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Ejecutado al generar el tema; salida real en web/public/content/figures/node/asynclocalstorage-diagnostics.svg y comparada con «Resultado esperado».",
+      "criticalSubtopics": [
+        "AsyncLocalStorage",
+        "diagnostics_channel"
+      ],
+      "sources": [
+        "https://nodejs.org/api/async_context.html",
+        "https://nodejs.org/api/diagnostics_channel.html"
+      ]
+    },
+    "react/modulo-1::Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "pureza",
+        "estado como snapshot"
+      ],
+      "sources": [
+        "https://react.dev/learn/keeping-components-pure",
+        "https://react.dev/learn/state-as-a-snapshot"
+      ]
+    },
+    "react/modulo-2::Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "useLayoutEffect",
+        "useEffectEvent"
+      ],
+      "sources": [
+        "https://react.dev/reference/react/useLayoutEffect",
+        "https://react.dev/reference/react/useEffectEvent"
+      ]
+    },
+    "react/modulo-3::Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "useActionState",
+        "useOptimistic"
+      ],
+      "sources": [
+        "https://react.dev/reference/react/useActionState",
+        "https://react.dev/reference/react/useOptimistic"
+      ]
+    },
+    "react/modulo-9::Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "use"
+      ],
+      "sources": [
+        "https://react.dev/reference/react/use",
+        "https://react.dev/reference/react/Suspense"
+      ]
+    },
+    "react/modulo-9::Tema 7: React Compiler y las reglas de React: memoización automática · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "React Compiler",
+        "reglas del compilador"
+      ],
+      "sources": [
+        "https://react.dev/learn/react-compiler",
+        "https://react.dev/reference/rules"
+      ]
+    },
+    "react/modulo-13::Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita un proyecto React 18 real con dependencias de npm y su suite de pruebas; capturar la salida del codemod y de `npm test` en la máquina del proyecto.",
+      "criticalSubtopics": [
+        "migración"
+      ],
+      "sources": [
+        "https://react.dev/blog/2024/04/25/react-19-upgrade-guide"
+      ]
+    },
+    "spring-boot/modulo-0::Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "lifecycle",
+        "graceful shutdown"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html",
+        "https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html"
+      ]
+    },
+    "spring-boot/modulo-7::Tema 4: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "logging"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/features/logging.html",
+        "https://docs.spring.io/spring-boot/api/rest/actuator/loggers.html"
+      ]
+    },
+    "spring-boot/modulo-5::Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "failure analyzers"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/how-to/application.html#howto.application.failure-analyzer"
+      ]
+    },
+    "spring-boot/modulo-3::Tema 4: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central (bloqueado en el entorno de generación) para descargar Spring Boot. Capturar `./mvnw spring-boot:run` y los comandos del tema en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "MongoDB"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-data/mongodb/reference/",
+        "https://www.mongodb.com/docs/manual/data-modeling/"
+      ]
+    },
+    "spring-boot/modulo-18::Tema 3: SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa · Experto · 50 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central y un Keycloak con un cliente SAML configurado; capturar el flujo de inicio de sesión en el navegador y la respuesta de /yo en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "SAML"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-security/reference/servlet/saml2/login/overview.html",
+        "https://www.keycloak.org/docs/latest/server_admin/#_client-saml-configuration"
+      ]
+    },
+    "spring-boot/modulo-8::Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central y Docker con ActiveMQ Artemis; capturar `./mvnw spring-boot:run` y la consola web de Artemis (puerto 8161) en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "JMS"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/reference/messaging/jms.html",
+        "https://activemq.apache.org/components/artemis/documentation/"
+      ]
+    },
+    "spring-boot/modulo-11::Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min": {
+      "status": "reviewed",
+      "reviewDate": "2026-11-18",
+      "execution": "Código revisado; captura real pendiente: Necesita Maven Central y Docker con acceso a las imágenes de Paketo; capturar la salida de `spring-boot:build-image` y de `docker inspect` en la Mac del proyecto.",
+      "criticalSubtopics": [
+        "Buildpacks"
+      ],
+      "sources": [
+        "https://docs.spring.io/spring-boot/maven-plugin/build-image.html",
+        "https://paketo.io/docs/howto/java/"
       ]
     }
   }

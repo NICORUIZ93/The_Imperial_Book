@@ -388,6 +388,266 @@ Ya aplicas el esquema oficial de migración y confirmas, con un error real y esp
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Migra una pantalla heredada de seguimiento a standalone manteniendo su prueba de usuario. Compara rutas, providers y carga diferida antes y después para detectar cambios de alcance involuntarios.
 
+### Tema 4: Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido · Avanzado · 45 min
+
+**Prerrequisito:** tema «Organización por feature» de este módulo.
+
+**Al finalizar podrás:** crear un workspace con dos aplicaciones y una librería compartida, exponer su API pública con `public-api.ts` y compilarla de forma independiente.
+
+**¿Por qué es importante?** Cuando el panel interno y el portal de clientes copian el mismo componente de tarjeta de envío, cada arreglo hay que hacerlo dos veces. Una librería en el mismo workspace mantiene una sola versión y deja claro qué es público.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Angular CLI 18 o superior. Trabajarás en una carpeta nueva `rutaflow-ws`. El workspace se crea sin aplicación inicial para agregar las piezas una por una.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tiene un panel de operación y un portal de clientes. Los dos muestran la «tarjeta de envío». Cuando cambió el formato del código de envío, solo se actualizó el panel, y el portal mostró códigos mal formateados durante una semana.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** workspace, proyecto, aplicación, librería, `public-api.ts`, `ng-packagr`, ruta de importación (`paths`), monorepo.
+
+Un **workspace** de Angular puede tener varios **proyectos**, definidos en `angular.json`. Hay dos tipos:
+
+- **Aplicación:** se compila y se despliega (`ng build panel`).
+- **Librería:** se compila con `ng-packagr` para que otros proyectos la usen (`ng build rutas-ui`).
+
+La librería expone solo lo que exporta `public-api.ts`. Al generarla, el CLI agrega a `tsconfig.json` una ruta de importación (`"rutas-ui": ["./dist/rutas-ui"]`), así las aplicaciones importan con `import { TarjetaEnvio } from 'rutas-ui'` igual que un paquete de npm.
+
+Un **monorepo** es tener varios proyectos en un solo repositorio. El CLI cubre lo básico; herramientas como Nx agregan caché de builds y la regla «solo compila lo afectado por el cambio» cuando el repositorio crece mucho.
+
+**Analogía:** la librería es la cocina central de una cadena de restaurantes: cada local (aplicación) recibe la misma salsa y no la inventa por su cuenta. `public-api.ts` es la ventanilla: solo sale lo que se entrega por ahí. La analogía falla en que, si cambias la salsa, todos los locales la reciben en el siguiente build, para bien o para mal.
+
+**Límite de uso:** no conviertas en librería algo que usa una sola aplicación: agregas compilación y versiones sin beneficio. Si las aplicaciones tienen ritmos de despliegue muy distintos, compartir código fuerza a coordinar cambios.
+
+```mermaid
+flowchart TB
+    subgraph WS["workspace rutaflow-ws"]
+      L["projects/rutas-ui<br/>librería"]
+      P["projects/panel<br/>aplicación"]
+      C["projects/portal<br/>aplicación"]
+    end
+    L -->|"public-api.ts"| P
+    L -->|"public-api.ts"| C
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `rutaflow-ws/projects/rutas-ui/src/lib/tarjeta-envio.ts`:
+
+```ts
+import { Component, computed, input } from '@angular/core';
+
+@Component({
+  selector: 'rf-tarjeta-envio',
+  template: `<article><strong>{{ codigoFormateado() }}</strong> · {{ estado() }}</article>`,
+})
+export class TarjetaEnvio {
+  readonly codigo = input.required<string>();
+  readonly estado = input('CREADO');
+  // Regla compartida: un solo lugar para el formato del código.
+  readonly codigoFormateado = computed(() => this.codigo().toUpperCase().replace(/^ENV(\d+)$/, 'ENV-$1'));
+}
+```
+
+Archivo `rutaflow-ws/projects/rutas-ui/src/public-api.ts`:
+
+```ts
+// Solo lo exportado aquí es parte de la API pública de la librería.
+export * from './lib/tarjeta-envio';
+```
+
+Archivo `rutaflow-ws/projects/panel/src/app/app.ts`:
+
+```ts
+import { Component } from '@angular/core';
+import { TarjetaEnvio } from 'rutas-ui'; // se importa como un paquete
+
+@Component({
+  selector: 'app-root',
+  imports: [TarjetaEnvio],
+  template: `<rf-tarjeta-envio codigo="env42" estado="EN_RUTA" />`,
+})
+export class App {}
+```
+
+Ejecútalo:
+
+```bash
+ng new rutaflow-ws --no-create-application
+cd rutaflow-ws
+ng generate library rutas-ui --prefix rf
+ng generate application panel
+ng generate application portal
+ng build rutas-ui
+ng serve panel
+```
+
+**Explicación por bloques:** `--no-create-application` crea el workspace vacío. `ng generate library` crea `projects/rutas-ui` y agrega la ruta `rutas-ui` en `tsconfig.json`. La tarjeta concentra la regla de formato del código en un `computed`. `public-api.ts` exporta solo la tarjeta. La aplicación `panel` la importa como si fuera un paquete. Hay que compilar la librería (`ng build rutas-ui`) antes de servir la aplicación, porque la ruta apunta a `dist/rutas-ui`.
+
+**Resultado esperado:**
+
+```text
+ng build rutas-ui termina con «Built rutas-ui» y crea dist/rutas-ui.
+ng serve panel muestra «ENV-42 · EN_RUTA» en http://localhost:4200.
+```
+
+**Fallo deliberado:** borra la línea de `public-api.ts` y vuelve a compilar la librería. **Error esperado:** al servir el panel, `Module '"rutas-ui"' has no exported member 'TarjetaEnvio'`. **Diagnóstico:** el componente existe, pero no es público. Todo lo que otra aplicación use debe salir por `public-api.ts`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** crea el workspace y lista los proyectos en `angular.json`.
+2. **Variación:** usa la tarjeta también en `portal` y cambia el formato del código una sola vez.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de TypeScript.
+4. **Integración:** agrega `ng build rutas-ui --watch` en una terminal y `ng serve panel` en otra, y comprueba que un cambio en la librería llega al panel.
+5. **Diseño:** escribe qué partes de RutaFlow merecen librería y cuáles deberían seguir dentro de cada aplicación.
+
+**Pista:** si una importación de la librería falla, revisa primero si está en `public-api.ts` y si compilaste la librería.
+
+#### Paso 6 · Práctica independiente
+
+Agrega a la librería un pipe `estadoLegible` (por ejemplo, `EN_RUTA` -> «En ruta») con su prueba unitaria, expórtalo y úsalo en las dos aplicaciones.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre aplicación y librería en un workspace.
+- [ ] El panel muestra la tarjeta importada desde `rutas-ui`.
+- [ ] Reprodujiste el error de un miembro no exportado.
+- [ ] Sabes cuándo no vale la pena crear una librería.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** exportar todo desde `public-api.ts`, olvidar compilar la librería antes de servir y crear librerías para código de una sola aplicación. **Siguiente paso:** el tema siguiente evalúa cuándo separar aplicaciones en microfrontends desplegados por separado.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, mueve la tarjeta de envío y el pipe de estados a la librería `rutas-ui` y úsala desde el panel y el portal.
+
+**Fuente oficial:** [Angular — Creating libraries](https://angular.dev/tools/libraries/creating-libraries) y [Angular — Workspace and project file structure](https://angular.dev/reference/configs/file-structure).
+
+### Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min
+
+**Prerrequisito:** tema «Librerías y monorepos con Angular CLI» de este módulo.
+
+**Al finalizar podrás:** cargar en tiempo de ejecución una pantalla que otro equipo despliega por separado, con Native Federation, y decidir con una lista de criterios si tu caso lo justifica.
+
+**¿Por qué es importante?** Los microfrontends permiten que equipos distintos desplieguen partes de la interfaz sin coordinarse. También agregan versiones duplicadas, más infraestructura y errores en tiempo de ejecución. Elegirlos sin criterio empeora el producto.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas dos proyectos Angular 18 o superior: un **host** (el panel) y un **remoto** (la pantalla de envíos). Usarás el paquete `@angular-architects/native-federation`.
+
+#### Paso 2 · Contexto y caso real
+
+En RutaFlow, el equipo de facturación despliega dos veces al día y el equipo de operación una vez por semana. Los dos editan el mismo panel y cada despliegue espera al otro. Separar la pantalla de facturación como remoto permite desplegarla sola.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** microfrontend, host, remoto, `remoteEntry.json`, dependencias compartidas, carga en tiempo de ejecución, contrato entre equipos.
+
+Un **microfrontend** es una parte de la interfaz que se construye y despliega por separado. El **host** decide dónde mostrarla y la descarga **en tiempo de ejecución** desde la URL del **remoto**.
+
+Native Federation usa módulos ES estándar: el remoto publica un archivo `remoteEntry.json` con lo que expone, y el host lo carga con `loadRemoteModule`. Las dependencias marcadas como **compartidas** (Angular, RxJS) se descargan una sola vez si las versiones son compatibles.
+
+| Criterio | Señal a favor | Señal en contra |
+|---|---|---|
+| Equipos | varios equipos con ritmos distintos | un solo equipo |
+| Despliegue | necesitan desplegar sin coordinarse | despliegan juntos |
+| Dominio | fronteras claras (facturación, operación) | pantallas que comparten mucho estado |
+| Costo | pueden mantener la infraestructura extra | no hay quién la mantenga |
+
+Si la mayoría de las respuestas están en la columna «en contra», una librería en un monorepo es mejor.
+
+**Analogía:** los microfrontends son locales independientes dentro de un centro comercial: cada uno abre y remodela sin cerrar el centro. La analogía falla en que el cliente espera que todos se vean y se comporten igual: eso exige acuerdos de diseño entre equipos.
+
+**Límite de uso:** no los uses para un equipo pequeño ni para «organizar mejor el código»: para eso están las librerías. Las versiones distintas de Angular entre host y remoto causan errores difíciles; mantén un acuerdo de versiones.
+
+```mermaid
+flowchart LR
+    H["Host: panel<br/>localhost:4200"] -->|"loadRemoteModule"| E["remoteEntry.json<br/>facturación :4201"]
+    E --> F["FacturasPagina"]
+    H -. "Angular y RxJS compartidos" .- F
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `facturacion/federation.config.js`:
+
+```js
+const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
+
+module.exports = withNativeFederation({
+  name: 'facturacion',
+  exposes: {
+    './Pagina': './src/app/facturas-pagina.ts', // lo único que ve el host
+  },
+  shared: {
+    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+  },
+});
+```
+
+Archivo `panel/src/app/app.routes.ts`:
+
+```ts
+import { Routes } from '@angular/router';
+import { loadRemoteModule } from '@angular-architects/native-federation';
+
+export const routes: Routes = [
+  {
+    path: 'facturas',
+    // Se descarga en tiempo de ejecución desde el despliegue de facturación.
+    loadComponent: () => loadRemoteModule('facturacion', './Pagina').then((m) => m.FacturasPagina),
+  },
+];
+```
+
+Ejecútalo:
+
+```bash
+ng add @angular-architects/native-federation --project facturacion --port 4201 --type remote
+ng add @angular-architects/native-federation --project panel --port 4200 --type dynamic-host
+# registra el remoto en panel/public/federation.manifest.json:
+#   { "facturacion": "http://localhost:4201/remoteEntry.json" }
+ng serve facturacion   # terminal 1
+ng serve panel         # terminal 2
+```
+
+**Explicación por bloques:** En el remoto, `exposes` publica solo `./Pagina` y `shared` pide compartir Angular y RxJS como una sola copia. El comando `ng add` con `--type dynamic-host` hace que el panel lea la URL de cada remoto desde `federation.manifest.json`, así puedes cambiarla sin recompilar. La ruta `facturas` usa `loadRemoteModule` dentro de `loadComponent`: el código de facturación no está en el build del panel, se descarga al navegar.
+
+**Resultado esperado:**
+
+```text
+Al abrir http://localhost:4200/facturas, la pestaña Network muestra la descarga de remoteEntry.json desde el puerto 4201 y luego la página de facturas.
+Si cambias el texto de la página en el remoto y recargas, el panel muestra el cambio sin recompilar el panel.
+```
+
+**Fallo deliberado:** detén `ng serve facturacion` y navega a `/facturas`. **Error esperado:** la navegación falla con un error de carga de `remoteEntry.json` y la pantalla queda en blanco. **Diagnóstico:** el remoto es una dependencia en tiempo de ejecución. Agrega un `catch` en `loadComponent` que devuelva una página «Facturación no disponible» para degradar con elegancia.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** levanta los dos proyectos y comprueba en Network de dónde viene cada archivo.
+2. **Variación:** cambia la página del remoto y verifica que el panel la ve sin recompilar.
+3. **Diagnóstico:** reproduce el fallo deliberado y agrega la página de respaldo.
+4. **Integración:** actualiza solo en el remoto una versión menor de una dependencia compartida y observa qué avisa la consola con `strictVersion`.
+5. **Diseño:** completa la tabla de criterios para RutaFlow y decide si facturación debe ser remoto o librería.
+
+**Pista:** si algo falla solo en producción, revisa la URL del manifiesto y que las versiones compartidas coincidan.
+
+#### Paso 6 · Práctica independiente
+
+Escribe un ADR (registro de decisión) de una página que diga si RutaFlow adopta microfrontends, con la tabla de criterios llena, los costos y qué pasa si se revierte la decisión.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es host, remoto y dependencia compartida.
+- [ ] El panel carga la página de facturación desde el puerto 4201.
+- [ ] Tu panel degrada con elegancia si el remoto está caído.
+- [ ] Decides con criterios, no por moda.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** adoptar microfrontends con un solo equipo, no planear qué pasa si un remoto falla y permitir versiones distintas de Angular sin control. **Siguiente paso:** el tema «Migración desde NgModules» deja el código listo para cualquiera de las dos arquitecturas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, escribe el ADR de microfrontends y, si la decisión es positiva, separa facturación como remoto con página de respaldo.
+
+**Fuente oficial:** [Angular Architects — Native Federation](https://www.npmjs.com/package/@angular-architects/native-federation) y [Martin Fowler — Micro Frontends](https://martinfowler.com/articles/micro-frontends.html).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** migrar un componente NgModule a standalone y reorganizar el proyecto por feature.

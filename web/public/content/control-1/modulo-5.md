@@ -147,7 +147,7 @@ cambia `C` a 1 y a 100 y observa cómo cambia `y_cerrado`. ¿Qué pasa con la pe
 
 **Conexión con el proyecto integrador:** el control de nivel de un tanque (Ejemplo 1 de este tema) es exactamente el proyecto integrador del curso. Ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` desde la raíz del repositorio y anota en tu bitácora cuál es la referencia (1,5 m), la perturbación (el caudal de salida, que depende de la altura) y por qué este es un sistema de lazo cerrado real, no solo un ejemplo de pizarrón.
 
-### Tema 2: Los elementos
+### Tema 2: Los elementos de un lazo de control
 
 **¿Por qué es importante?** Nombrar y definir cada elemento es exactamente lo que pedía el punto 1 del Parcial 1.
 

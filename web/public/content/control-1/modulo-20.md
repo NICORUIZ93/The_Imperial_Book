@@ -252,7 +252,7 @@ cambia `log(10, 10)` a `log(50, 10)` y confirma `dB: 33.98` (Ejemplo 6). Confír
 
 **Límite:** esta conversión es exacta pero solo para la **magnitud**; los ángulos no se convierten a dB, se suman directamente en grados (o radianes) al combinar bloques en serie.
 
-### Tema 3: Los bloques básicos
+### Tema 3: Los bloques básicos del diagrama de Bode
 
 **¿Por qué es importante?** Con los bloques básicos trazas el Bode asintótico de cualquier función de transferencia.
 

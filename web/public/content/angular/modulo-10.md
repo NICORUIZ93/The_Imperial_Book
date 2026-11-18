@@ -478,6 +478,15 @@ flowchart LR
     H --> MB
 ```
 
+**¿Por qué es importante?** porque usar bien una librería de componentes ahorra semanas de trabajo, mejora la accesibilidad y hace que las pruebas sobrevivan a los cambios visuales.
+**Fuente oficial:** [Angular Material: Table](https://material.angular.dev/components/table/overview), [Angular CDK: Component Harnesses](https://material.angular.dev/cdk/test-harnesses/overview).
+**Conceptos clave:** Angular Material, CDK, `LiveAnnouncer`, `mat-table`, component harness, `TestbedHarnessEnvironment`, accesibilidad.
+**Cuándo no usarlo:** si el producto tiene un sistema de diseño propio muy distinto de Material, usa solo el CDK y tus estilos, en lugar de pelear con los estilos de Material.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** reemplaza la tabla de envíos del centro de control por `mat-table` y cubre sus acciones con harnesses.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** probar un `mat-table` consultando clases CSS internas de Material en vez de un harness (`MatTableHarness`), lo que rompe la prueba en cada actualización de versión; omitir `LiveAnnouncer` al anunciar un cambio de estado y asumir que el rol ARIA del componente ya lo cubre.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -607,14 +616,7 @@ Agrega ordenamiento por barrio con `MatSortModule` y una prueba con `MatSortHarn
 Activa un lector de pantalla (VoiceOver o NVDA), pulsa el botón y verifica que se lee el anuncio. Documenta qué pasaría sin `LiveAnnouncer`.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque usar bien una librería de componentes ahorra semanas de trabajo, mejora la accesibilidad y hace que las pruebas sobrevivan a los cambios visuales.
-**Fuente oficial:** [Angular Material: Table](https://material.angular.dev/components/table/overview), [Angular CDK: Component Harnesses](https://material.angular.dev/cdk/test-harnesses/overview).
-**Conceptos clave:** Angular Material, CDK, `LiveAnnouncer`, `mat-table`, component harness, `TestbedHarnessEnvironment`, accesibilidad.
-**Cuándo no usarlo:** si el producto tiene un sistema de diseño propio muy distinto de Material, usa solo el CDK y tus estilos, en lugar de pelear con los estilos de Material.
 
-**Transferencia al proyecto integrador «Centro de control logístico»:** reemplaza la tabla de envíos del centro de control por `mat-table` y cubre sus acciones con harnesses.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** probar un `mat-table` consultando clases CSS internas de Material en vez de un harness (`MatTableHarness`), lo que rompe la prueba en cada actualización de versión; omitir `LiveAnnouncer` al anunciar un cambio de estado y asumir que el rol ARIA del componente ya lo cubre.
 
 ## Laboratorio práctico
 

@@ -27,6 +27,15 @@ flowchart LR
     R --> D[con_descuento_frecuente]
 ```
 
+**¿Por qué es importante?** porque el código se lee muchas más veces de las que se escribe, y la mayor parte del costo de un sistema está en mantenerlo.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** nombres que revelan intención, una sola responsabilidad, nivel de abstracción, número mágico, argumento bandera, refactor con red de seguridad.
+**Cuándo no usarlo:** no renombres de forma masiva código que no entiendes ni tienes cubierto con pruebas: primero agrega la verificación, luego refactoriza en pasos pequeños.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** renombra y divide la función que calcula el progreso de las tareas hasta que cada función quepa en la pantalla.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** repetir una regla de negocio como número suelto en más de un lugar (como la tarifa `5000` de Bogotá dentro de `calc`) en vez de una sola constante con nombre, lo que lleva a actualizarla en un sitio y olvidarla en otro; y mantener un argumento bandera (como `f=True`) que hace que la misma función calcule dos cosas distintas según su valor.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -99,14 +108,7 @@ Renombra y divide esta función: `def p(d): return [x for x in d if x[1] > 30 an
 Toma una función larga de uno de tus proyectos anteriores, escribe primero una verificación de su salida actual y luego refactorízala con estas reglas. Documenta cada paso en un commit separado.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque el código se lee muchas más veces de las que se escribe, y la mayor parte del costo de un sistema está en mantenerlo.
-**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
-**Conceptos clave:** nombres que revelan intención, una sola responsabilidad, nivel de abstracción, número mágico, argumento bandera, refactor con red de seguridad.
-**Cuándo no usarlo:** no renombres de forma masiva código que no entiendes ni tienes cubierto con pruebas: primero agrega la verificación, luego refactoriza en pasos pequeños.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** renombra y divide la función que calcula el progreso de las tareas hasta que cada función quepa en la pantalla.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** repetir una regla de negocio como número suelto en más de un lugar (como la tarifa `5000` de Bogotá dentro de `calc`) en vez de una sola constante con nombre, lo que lleva a actualizarla en un sitio y olvidarla en otro; y mantener un argumento bandera (como `f=True`) que hace que la misma función calcule dos cosas distintas según su valor.
 
 ### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error
 
@@ -131,6 +133,15 @@ flowchart LR
     B -- no --> N[EnvioNoEncontrado]
     B -- sí --> E[estado]
 ```
+
+**¿Por qué es importante?** porque los errores silenciosos son de los más caros, y los comentarios desactualizados engañan más que la ausencia de comentarios.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** código de error, excepción con nombre, camino feliz, `raise from`, comentario de intención, comentario redundante, comentario desactualizado.
+**Cuándo no usarlo:** no uses excepciones para el flujo normal (por ejemplo, para salir de un bucle). En sistemas donde el error es un resultado esperado y frecuente, un tipo resultado explícito también es válido.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reemplaza los valores especiales que devuelven las funciones de tareas por excepciones con nombre.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** devolver un código de error (como `-2`) que el llamador olvida revisar y trata como si fuera el valor real, provocando un `AttributeError` lejos de la causa (como en el fallo deliberado); y mantener comentarios que explican *qué* hace la línea en vez de *por qué*, que quedan desactualizados en cuanto el código cambia.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -201,14 +212,7 @@ Agrega la excepción `EnvioCancelado` para las guías canceladas y manéjala en 
 Busca en un proyecto tuyo tres comentarios que expliquen *qué* hace el código y reemplázalos por mejores nombres o funciones; conserva solo los que expliquen *por qué*.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque los errores silenciosos son de los más caros, y los comentarios desactualizados engañan más que la ausencia de comentarios.
-**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
-**Conceptos clave:** código de error, excepción con nombre, camino feliz, `raise from`, comentario de intención, comentario redundante, comentario desactualizado.
-**Cuándo no usarlo:** no uses excepciones para el flujo normal (por ejemplo, para salir de un bucle). En sistemas donde el error es un resultado esperado y frecuente, un tipo resultado explícito también es válido.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reemplaza los valores especiales que devuelven las funciones de tareas por excepciones con nombre.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** devolver un código de error (como `-2`) que el llamador olvida revisar y trata como si fuera el valor real, provocando un `AttributeError` lejos de la causa (como en el fallo deliberado); y mantener comentarios que explican *qué* hace la línea en vez de *por qué*, que quedan desactualizados en cuanto el código cambia.
 
 ### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter
 
@@ -232,6 +236,15 @@ flowchart LR
     C --> D[Direccion]
     L -. "evitar: pedido.cliente.direccion.ciudad" .-> D
 ```
+
+**¿Por qué es importante?** porque el acoplamiento a la estructura interna es lo que hace que un cambio pequeño en el modelo rompa medio sistema.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** objeto, estructura de datos, encapsulamiento, ley de Demeter, "dile, no le preguntes", choque de trenes, acoplamiento.
+**Cuándo no usarlo:** en DTOs, JSON o resultados de consultas, que son estructuras de datos puras, navegar campos anidados es normal: Demeter aplica a objetos con comportamiento.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** mueve dentro de la clase `Tarea` las decisiones sobre su responsable y su fecha límite en lugar de consultarlas desde fuera.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** navegar directamente la cadena interna de otro objeto (como `pedido._cliente.direccion.ciudad`) en vez de pedirle al objeto que decida (`pedido.ciudad_destino()`), lo que rompe con `AttributeError` apenas un eslabón intermedio es `None`; y duplicar en cada llamador la lógica de qué hacer cuando falta la dirección, en vez de resolverla una sola vez dentro de `Pedido`.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -303,14 +316,7 @@ Agrega a `Pedido` el método `etiqueta()` que devuelva `"BOG-Chapinero"` (o `"SI
 Revisa un proyecto tuyo con `grep -rE "\.\w+\.\w+\.\w+"` y clasifica cada cadena encontrada: ¿es navegación por una estructura de datos (aceptable) o por objetos con comportamiento (a corregir)?
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque el acoplamiento a la estructura interna es lo que hace que un cambio pequeño en el modelo rompa medio sistema.
-**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
-**Conceptos clave:** objeto, estructura de datos, encapsulamiento, ley de Demeter, "dile, no le preguntes", choque de trenes, acoplamiento.
-**Cuándo no usarlo:** en DTOs, JSON o resultados de consultas, que son estructuras de datos puras, navegar campos anidados es normal: Demeter aplica a objetos con comportamiento.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** mueve dentro de la clase `Tarea` las decisiones sobre su responsable y su fecha límite en lugar de consultarlas desde fuera.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** navegar directamente la cadena interna de otro objeto (como `pedido._cliente.direccion.ciudad`) en vez de pedirle al objeto que decida (`pedido.ciudad_destino()`), lo que rompe con `AttributeError` apenas un eslabón intermedio es `None`; y duplicar en cada llamador la lógica de qué hacer cuando falta la dirección, en vez de resolverla una sola vez dentro de `Pedido`.
 
 ### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba
 
@@ -335,6 +341,15 @@ flowchart LR
     V[Self-validating] --> S
     T[Timely] --> S
 ```
+
+**¿Por qué es importante?** porque solo una suite confiable permite refactorizar sin miedo, que es la base de todo lo visto en este módulo.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** F.I.R.S.T., un concepto por prueba, nombre descriptivo, prueba no determinista, independencia, `unittest`.
+**Cuándo no usarlo:** las pruebas de integración y extremo a extremo no pueden ser tan rápidas: sepáralas de las unitarias y ejecútalas en otra etapa del pipeline.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reescribe las pruebas del gestor de tareas para que cumplan F.I.R.S.T. y ejecútalas en orden aleatorio.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** escribir una prueba que depende de datos aleatorios o de la hora sin fijar una semilla, lo que rompe la `R` de Repeatable (pasa o falla según la ejecución, como en el fallo deliberado); y dejar que una prueba dependa del estado que dejó otra o del orden en que corren, lo que rompe la `I` de Independent.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -401,14 +416,7 @@ Agrega la regla "más de 30 kg no se aceptan" escribiendo primero una prueba con
 Ejecuta tus pruebas en orden aleatorio (por ejemplo, con `pytest -p random_order`) y corrige cualquier prueba que dependa de otra.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque solo una suite confiable permite refactorizar sin miedo, que es la base de todo lo visto en este módulo.
-**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
-**Conceptos clave:** F.I.R.S.T., un concepto por prueba, nombre descriptivo, prueba no determinista, independencia, `unittest`.
-**Cuándo no usarlo:** las pruebas de integración y extremo a extremo no pueden ser tan rápidas: sepáralas de las unitarias y ejecútalas en otra etapa del pipeline.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reescribe las pruebas del gestor de tareas para que cumplan F.I.R.S.T. y ejecútalas en orden aleatorio.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** escribir una prueba que depende de datos aleatorios o de la hora sin fijar una semilla, lo que rompe la `R` de Repeatable (pasa o falla según la ejecución, como en el fallo deliberado); y dejar que una prueba dependa del estado que dejó otra o del orden en que corren, lo que rompe la `I` de Independent.
 
 ## Construcción guiada del capítulo
 

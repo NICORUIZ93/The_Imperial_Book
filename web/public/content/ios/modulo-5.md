@@ -13,39 +13,7 @@ Al finalizar vas a llamar al `POST /entregas` real de RutaFlow (Módulo 6 del tr
 La app del conductor necesita confirmar una entrega llamando exactamente al mismo endpoint que ya probaste por `curl` en el Cloud — ahora desde código Swift real, no desde la terminal.
 #### Paso 3 · Teoría, modelo mental y analogía
 `URLSession.shared.data(from:)` ejecuta la petición como una función suspendible; `Codable` traduce el JSON de respuesta a un `struct` tipado — un mensajero que confirma recepción, no solo "la envié y ya".
-#### Paso 4 · Demostración guiada desde cero
-```swift
-struct ConfirmacionEntrega: Codable {
-    let shipmentId: String
-    let status: String
-}
 
-func confirmarEntrega(guia: String, pin: String) async throws -> ConfirmacionEntrega {
-    var request = URLRequest(url: URL(string: "https://api.rutaflow.example.com/entregas")!)
-    request.httpMethod = "POST"
-    request.httpBody = try JSONEncoder().encode(["shipmentId": guia, "recipientPin": pin])
-    let (datos, respuesta) = try await URLSession.shared.data(for: request)
-    guard let http = respuesta as? HTTPURLResponse, http.statusCode == 200 else {
-        throw ErrorRed.servidor
-    }
-    return try JSONDecoder().decode(ConfirmacionEntrega.self, from: datos)
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: llamar `confirmarEntrega(guia: "RF-4471", pin: "837201")` devuelve un `ConfirmacionEntrega` con `status: "delivered"` — el mismo contrato que `confirmar-entrega` (Módulo 5 del track Cloud) ya devuelve por `curl`.
-#### Paso 5 · Práctica guiada
-Pista: no verifiques `http.statusCode` y pasá directo a decodificar `datos` aunque la respuesta sea un 400 (recipientPin inválido, Módulo 6 del Cloud) — ese es el fallo deliberado: `JSONDecoder` va a fallar al intentar decodificar un cuerpo de error como si fuera `ConfirmacionEntrega`, o peor, va a "tener éxito" decodificando campos que no significan lo que creés, porque nunca confirmaste que la petición realmente tuvo éxito.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la verificación de `statusCode`, y agregá un segundo `struct` `ErrorEntrega: Codable` para decodificar el cuerpo de error cuando el status no sea 200, en vez de descartarlo.
-#### Paso 7 · Cierre
-Entregá la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `ErrorEntrega` agregado del Paso 6; explicá por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 **¿Por qué es importante?** Porque una petición HTTP puede completar sin excepción de red y seguir representando un fallo; verificar el `statusCode` antes de decodificar evita tratar un cuerpo de error como si fuera una respuesta exitosa.
 **Conceptos clave:** petición de red como función suspendible, parsing generado automáticamente.
 
@@ -71,17 +39,44 @@ El compilador de Swift genera automáticamente la conformidad completa a `Codabl
 
 **Analogía:** `Codable` es como un traductor automático certificado que convierte fielmente un documento en un formato genérico (JSON) hacia una estructura tipada específica en el idioma de destino, sin que el receptor tenga que traducir manualmente palabra por palabra cada campo del documento original.
 
-**Código del ejemplo:**
-
-```swift
-let (datos, respuesta) = try await URLSession.shared.data(from: url)
-let tareas = try JSONDecoder().decode([Tarea].self, from: datos)
-```
-
 * Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, consume el endpoint de envíos con URLSession y Codable.
 
 **Límites y decisión de uso:** Decodificar correctamente no significa que la respuesta HTTP represente éxito. Comprueba status, tamaño y campos de dominio antes de usar el modelo y distingue cancelación de un fallo que merece mostrarse al usuario.
+
+#### Paso 4 · Demostración guiada desde cero
+```swift
+struct ConfirmacionEntrega: Codable {
+    let shipmentId: String
+    let status: String
+}
+
+func confirmarEntrega(guia: String, pin: String) async throws -> ConfirmacionEntrega {
+    var request = URLRequest(url: URL(string: "https://api.rutaflow.example.com/entregas")!)
+    request.httpMethod = "POST"
+    request.httpBody = try JSONEncoder().encode(["shipmentId": guia, "recipientPin": pin])
+    let (datos, respuesta) = try await URLSession.shared.data(for: request)
+    guard let http = respuesta as? HTTPURLResponse, http.statusCode == 200 else {
+        throw ErrorRed.servidor
+    }
+    return try JSONDecoder().decode(ConfirmacionEntrega.self, from: datos)
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: llamar `confirmarEntrega(guia: "RF-4471", pin: "837201")` devuelve un `ConfirmacionEntrega` con `status: "delivered"` — el mismo contrato que `confirmar-entrega` (Módulo 5 del track Cloud) ya devuelve por `curl`.
+#### Paso 5 · Práctica guiada
+Pista: no verifiques `http.statusCode` y pasá directo a decodificar `datos` aunque la respuesta sea un 400 (recipientPin inválido, Módulo 6 del Cloud) — ese es el fallo deliberado: `JSONDecoder` va a fallar al intentar decodificar un cuerpo de error como si fuera `ConfirmacionEntrega`, o peor, va a "tener éxito" decodificando campos que no significan lo que creés, porque nunca confirmaste que la petición realmente tuvo éxito.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando la verificación de `statusCode`, y agregá un segundo `struct` `ErrorEntrega: Codable` para decodificar el cuerpo de error cuando el status no sea 200, en vez de descartarlo.
+#### Paso 7 · Cierre
+Entregá la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `ErrorEntrega` agregado del Paso 6; explicá por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 
 ### Tema 2: Errores tipados
 
@@ -91,6 +86,29 @@ Al finalizar vas a distinguir con un enum propio los tres fallos reales de `conf
 Si `confirmarEntrega` falla, la app del conductor necesita mostrar un mensaje distinto según la causa: "revisá tu conexión" no es lo mismo que "el PIN tiene que tener 6 dígitos" (el 400 real del Módulo 6 del Cloud).
 #### Paso 3 · Teoría, modelo mental y analogía
 Un enum de error propio comunica exactamente qué categoría de fallo ocurrió, verificable exhaustivamente por el compilador — un formulario de reporte con categorías predefinidas, no una casilla genérica de "algo salió mal".
+
+**¿Por qué es importante?** Porque un enum de error propio verificado exhaustivamente por el compilador permite mostrar un mensaje específico por categoría de fallo, algo que un `NSError` genérico no puede garantizar.
+**Conceptos clave:** categorías explícitas de fallo, mensajes específicos por caso.
+
+```swift
+enum ErrorRed: Error {
+    case sinConexion
+    case servidor
+    case decodificacion
+}
+```
+
+Modelar los errores de red con un enum propio que conforma al protocolo `Error` (en vez de propagar un `NSError` genérico, el mecanismo de error más antiguo y menos expresivo de Objective-C) permite comunicar exactamente qué categoría de fallo ocurrió mediante el sistema de tipos, y el `switch` sobre ese enum en el punto de manejo del error puede ser verificado exhaustivamente por el compilador (Módulo 0), obligando a considerar cada categoría de fallo posible de forma explícita, en vez de tratar todo error genéricamente con un mensaje único y poco informativo para el usuario o para el desarrollador que depura el problema.
+
+Esta distinción de categorías de error (`sinConexion` frente a `servidor` frente a `decodificacion`) es directamente análoga a distinguir `IOException` de `HttpException` en Android (Módulo 5 del track de Android): ambos casos separan explícitamente "la petición nunca llegó a completarse" de "la petición completó pero con un resultado de error", permitiendo mensajes y estrategias de recuperación específicas para cada categoría.
+
+**Analogía:** un enum de error propio es como un formulario de reporte de incidencias con categorías predefinidas específicas (falla de conexión, error del servidor, dato corrupto), en vez de una única casilla genérica de "algo salió mal" que no ayuda a decidir la acción de seguimiento apropiada para cada tipo distinto de problema.
+
+**Implicación práctica:** Modelar errores con un enum propio frente a propagar `NSError` genérico permite un manejo específico y verificado exhaustivamente por el compilador para cada categoría de fallo, comunicando mensajes más útiles y precisos que un error genérico indiferenciado.
+
+* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, modela los errores de red con un enum y muestra el mensaje correcto.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 enum ErrorEntrega: Error {
@@ -113,7 +131,7 @@ func confirmarEntrega(guia: String, pin: String) async throws -> ConfirmacionEnt
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -124,37 +142,6 @@ Pista: reemplazá las tres categorías por un único `throw NSError(domain: "red
 Corregí el Paso 5 restaurando `ErrorEntrega`, y agregá un cuarto caso `decodificacion` para cuando `JSONDecoder` falla aunque el `statusCode` fuera 200 (una respuesta exitosa pero con un formato inesperado).
 #### Paso 7 · Cierre
 Entregá el `switch` exhaustivo sobre `ErrorEntrega` del Paso 4, el error genérico indiferenciado del Paso 5, y el cuarto caso agregado del Paso 6; explicá por qué el compilador puede obligarte a manejar cada caso de un enum propio, pero no de un `NSError` genérico. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
-**¿Por qué es importante?** Porque un enum de error propio verificado exhaustivamente por el compilador permite mostrar un mensaje específico por categoría de fallo, algo que un `NSError` genérico no puede garantizar.
-**Conceptos clave:** categorías explícitas de fallo, mensajes específicos por caso.
-
-```swift
-enum ErrorRed: Error {
-    case sinConexion
-    case servidor
-    case decodificacion
-}
-```
-
-Modelar los errores de red con un enum propio que conforma al protocolo `Error` (en vez de propagar un `NSError` genérico, el mecanismo de error más antiguo y menos expresivo de Objective-C) permite comunicar exactamente qué categoría de fallo ocurrió mediante el sistema de tipos, y el `switch` sobre ese enum en el punto de manejo del error puede ser verificado exhaustivamente por el compilador (Módulo 0), obligando a considerar cada categoría de fallo posible de forma explícita, en vez de tratar todo error genéricamente con un mensaje único y poco informativo para el usuario o para el desarrollador que depura el problema.
-
-Esta distinción de categorías de error (`sinConexion` frente a `servidor` frente a `decodificacion`) es directamente análoga a distinguir `IOException` de `HttpException` en Android (Módulo 5 del track de Android): ambos casos separan explícitamente "la petición nunca llegó a completarse" de "la petición completó pero con un resultado de error", permitiendo mensajes y estrategias de recuperación específicas para cada categoría.
-
-**Analogía:** un enum de error propio es como un formulario de reporte de incidencias con categorías predefinidas específicas (falla de conexión, error del servidor, dato corrupto), en vez de una única casilla genérica de "algo salió mal" que no ayuda a decidir la acción de seguimiento apropiada para cada tipo distinto de problema.
-
-**Implicación práctica:** Modelar errores con un enum propio frente a propagar `NSError` genérico permite un manejo específico y verificado exhaustivamente por el compilador para cada categoría de fallo, comunicando mensajes más útiles y precisos que un error genérico indiferenciado.
-
-**Código del ejemplo:**
-
-```swift
-enum ErrorRed: Error {
-    case sinConexion
-    case servidor
-    case decodificacion
-}
-```
-
-* Código: escribe la práctica en `ContentView.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, modela los errores de red con un enum y muestra el mensaje correcto.
 
 ### Tema 3: Reintentos y cancelación
 
@@ -231,7 +218,7 @@ func confirmarConReintentos(guia: String, pin: String, intentos: Int = 3) async 
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 

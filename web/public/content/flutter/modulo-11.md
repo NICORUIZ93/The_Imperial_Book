@@ -334,6 +334,15 @@ flowchart LR
     B --> E[Entorno.apiUrl]
 ```
 
+**¿Por qué es importante?** porque publicar con la configuración equivocada es un error real y costoso, y los flavors son requisito en cualquier equipo con QA.
+**Fuente oficial:** [Flutter: Set up flavors for Android](https://docs.flutter.dev/deployment/flavors), [Dart: String.fromEnvironment](https://api.dart.dev/stable/dart-core/String/String.fromEnvironment.html).
+**Conceptos clave:** `--dart-define`, `--dart-define-from-file`, `String.fromEnvironment`, constante de compilación, flavor, `applicationIdSuffix`, scheme de iOS.
+**Cuándo no usarlo:** no pongas claves privadas ni tokens en `dart-define`: cualquiera puede extraerlos del binario. Los secretos se quedan en el backend (ver Módulo 13, Tema 2).
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** compila la app del repartidor contra la API de QA o de producción sin cambiar código, y muestra el entorno en la pantalla de ajustes.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** correr `flutter build --release` sin `--dart-define-from-file=config/prod.json`, confiando en que el build "ya sabe" a qué entorno apunta — las constantes de `String.fromEnvironment` caen en su valor por defecto (`ENTORNO` queda en `desconocido`, `API_URL` queda vacío), y el binario compila sin ningún error aunque no tenga a dónde conectarse.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -423,14 +432,152 @@ Crea `config/qa.json` y una prueba que verifique que en QA los logs detallados e
 Configura `productFlavors` dev y prod en `android/app/build.gradle.kts` con `applicationIdSuffix = ".dev"` y un nombre visible distinto, e instala ambas versiones en el mismo emulador.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque publicar con la configuración equivocada es un error real y costoso, y los flavors son requisito en cualquier equipo con QA.
-**Fuente oficial:** [Flutter: Set up flavors for Android](https://docs.flutter.dev/deployment/flavors), [Dart: String.fromEnvironment](https://api.dart.dev/stable/dart-core/String/String.fromEnvironment.html).
-**Conceptos clave:** `--dart-define`, `--dart-define-from-file`, `String.fromEnvironment`, constante de compilación, flavor, `applicationIdSuffix`, scheme de iOS.
-**Cuándo no usarlo:** no pongas claves privadas ni tokens en `dart-define`: cualquiera puede extraerlos del binario. Los secretos se quedan en el backend (ver Módulo 13, Tema 2).
 
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** compila la app del repartidor contra la API de QA o de producción sin cambiar código, y muestra el entorno en la pantalla de ajustes.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** correr `flutter build --release` sin `--dart-define-from-file=config/prod.json`, confiando en que el build "ya sabe" a qué entorno apunta — las constantes de `String.fromEnvironment` caen en su valor por defecto (`ENTORNO` queda en `desconocido`, `API_URL` queda vacío), y el binario compila sin ningún error aunque no tenga a dónde conectarse.
+### Tema 5: Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador · Avanzado · 45 min
+
+**Prerrequisito:** temas «Builds de release para cada plataforma» de este módulo y «MediaQuery vs LayoutBuilder» (módulo 2).
+
+**Al finalizar podrás:** compilar la misma app para web (con WebAssembly) y para escritorio, adaptar la interfaz a mouse, teclado y pantallas anchas, y detectar el código que no funciona fuera del móvil.
+
+**¿Por qué es importante?** El panel de operación de RutaFlow puede ser la misma base de código que la app del conductor, servida en el navegador o como app de escritorio. Pero un teléfono, un navegador y un computador se usan distinto.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Flutter 3.24 o superior. Habilita las plataformas: `flutter config --enable-web --enable-macos-desktop` (o `--enable-windows-desktop` / `--enable-linux-desktop`) y agrega las carpetas al proyecto con `flutter create --platforms=web,macos .`.
+
+#### Paso 2 · Contexto y caso real
+
+Los operadores de RutaFlow pedían ver el tablero en un monitor grande. La app móvil abierta en el navegador mostraba una sola columna enorme, sin atajos de teclado y con un menú que solo se abría deslizando.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `kIsWeb`, `defaultTargetPlatform`, WebAssembly (`--wasm`), renderizador, `LayoutBuilder`, hover, atajos (`Shortcuts`, `Actions`), plugin no disponible por plataforma.
+
+- **Web:** `flutter build web` genera archivos estáticos. Con `--wasm` usa WebAssembly y el renderizador skwasm (más rápido) en navegadores que lo soportan, con respaldo automático a JavaScript.
+- **Escritorio:** `flutter build macos`, `windows` o `linux` genera una app nativa. Debes compilar en ese sistema operativo.
+
+Para adaptar la interfaz:
+
+1. **Diseño:** `LayoutBuilder` elige una o varias columnas según el ancho, no según la plataforma.
+2. **Entrada:** `MouseRegion` para hover, `Shortcuts` y `Actions` para atajos de teclado.
+3. **Capacidades:** algunos plugins no existen en web (por ejemplo, `dart:io`, cámara nativa). Usa `kIsWeb` o importaciones condicionales para esas partes.
+
+**Analogía:** la misma receta se sirve en un restaurante (escritorio), en un local de comida rápida (web) y para llevar (móvil): el plato es el mismo, pero cambian el empaque y los cubiertos. La analogía falla en que algunos ingredientes (plugins) solo existen en una de las cocinas.
+
+**Límite de uso:** Flutter web no es la mejor opción para sitios de contenido que necesitan SEO; úsalo para aplicaciones. El primer arranque web descarga el motor: mide el tamaño y la carga.
+
+```mermaid
+flowchart TB
+    C["Código Dart común"] --> M["Android / iOS"]
+    C --> W["web: build web --wasm"]
+    C --> D["escritorio: build macos / windows / linux"]
+    L["LayoutBuilder: ancho"] --> U1["1 columna < 700 px"]
+    L --> U2["lista + detalle >= 700 px"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `lib/panel/tablero.dart`:
+
+```dart
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class RefrescarIntent extends Intent { const RefrescarIntent(); }
+
+class Tablero extends StatelessWidget {
+  const Tablero({super.key, required this.alRefrescar});
+  final VoidCallback alRefrescar;
+
+  @override
+  Widget build(BuildContext context) {
+    return Shortcuts( // Ctrl+R / Cmd+R refresca en escritorio y web
+      shortcuts: {
+        const SingleActivator(LogicalKeyboardKey.keyR, control: true): const RefrescarIntent(),
+        const SingleActivator(LogicalKeyboardKey.keyR, meta: true): const RefrescarIntent(),
+      },
+      child: Actions(
+        actions: {RefrescarIntent: CallbackAction<RefrescarIntent>(onInvoke: (_) { alRefrescar(); return null; })},
+        child: Focus(
+          autofocus: true,
+          child: LayoutBuilder(builder: (context, limites) {
+            final ancho = limites.maxWidth >= 700; // por ancho, no por plataforma
+            return Scaffold(
+              appBar: AppBar(title: Text(kIsWeb ? 'Panel (web)' : 'Panel')),
+              body: ancho
+                  ? const Row(children: [Expanded(child: _Lista()), VerticalDivider(), Expanded(flex: 2, child: _Detalle())])
+                  : const _Lista(),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+}
+
+class _Lista extends StatelessWidget {
+  const _Lista();
+  @override
+  Widget build(BuildContext context) => ListView(children: [
+        for (final c in ['ENV-41', 'ENV-42'])
+          MouseRegion(cursor: SystemMouseCursors.click, child: ListTile(title: Text(c), onTap: () {})),
+      ]);
+}
+
+class _Detalle extends StatelessWidget {
+  const _Detalle();
+  @override
+  Widget build(BuildContext context) => const Center(child: Text('Selecciona un envío'));
+}
+```
+
+Ejecútalo:
+
+```bash
+flutter run -d chrome
+flutter build web --wasm
+flutter build macos   # en una Mac
+```
+
+**Explicación por bloques:** `Shortcuts` asocia Ctrl+R y Cmd+R a un `Intent`, y `Actions` lo convierte en la llamada `alRefrescar`; `Focus` con `autofocus` hace que el tablero reciba el teclado. `LayoutBuilder` decide el diseño por el ancho disponible: con 700 píxeles o más muestra lista y detalle lado a lado. `MouseRegion` cambia el cursor a una mano sobre las filas. `kIsWeb` solo se usa para un detalle de texto; las decisiones de diseño no dependen de la plataforma.
+
+**Resultado esperado:**
+
+```text
+flutter build web --wasm termina con «✓ Built build/web».
+En Chrome a pantalla completa: lista a la izquierda y detalle a la derecha; al estrechar la ventana por debajo de 700 px, una sola columna.
+Ctrl+R (o Cmd+R en macOS) llama alRefrescar.
+```
+
+**Fallo deliberado:** importa `dart:io` en `tablero.dart` y usa `Platform.isAndroid`. **Error esperado:** en web, la app falla con «Unsupported operation: Platform._operatingSystem». **Diagnóstico:** `dart:io` no existe en web. Usa `kIsWeb` y `defaultTargetPlatform` de `flutter/foundation`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta en Chrome y cambia el ancho de la ventana.
+2. **Variación:** agrega un atajo Escape que limpie la selección.
+3. **Diagnóstico:** reproduce el fallo deliberado con `dart:io`.
+4. **Integración:** compila con y sin `--wasm` y compara el tamaño de `build/web`.
+5. **Diseño:** lista qué partes de la app del conductor no tienen sentido en el panel web.
+
+**Pista:** decide el diseño por el espacio disponible; decide las capacidades (cámara, archivos) por la plataforma.
+
+#### Paso 6 · Práctica independiente
+
+Usa una importación condicional (`import 'almacen_io.dart' if (dart.library.js_interop) 'almacen_web.dart';`) para guardar un reporte en disco en escritorio y descargarlo en web.
+
+#### Paso 7 · Cierre
+
+- [ ] Compilaste para web y para escritorio.
+- [ ] El tablero cambia de diseño por ancho.
+- [ ] Reprodujiste el error de `dart:io` en web.
+- [ ] Hay atajos de teclado y cursor para mouse.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** decidir el diseño por plataforma en lugar de por ancho, usar `dart:io` en código común y olvidar el teclado. **Siguiente paso:** el tema «CI/CD con Codemagic o Fastlane» agrega estos builds al pipeline.
+
+**Transferencia al proyecto integrador «RutaFlow»:** publica el tablero de operación de RutaFlow como app web con WebAssembly y como app de escritorio para la central.
+
+**Fuente oficial:** [Flutter — Web support](https://docs.flutter.dev/platform-integration/web) y [Flutter — Desktop support](https://docs.flutter.dev/platform-integration/desktop) y [Flutter — Adaptive and responsive design](https://docs.flutter.dev/ui/adaptive-responsive).
 
 ## Laboratorio práctico
 

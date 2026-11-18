@@ -234,40 +234,12 @@ Al finalizar vas a agregar tiempos de entrega de RutaFlow por zona, y a confirma
 RutaFlow necesita saber el tiempo promedio de entrega por zona para decidir dónde reforzar reparto — una pregunta analítica distinta de "guardar esta entrega puntual", aunque use los mismos datos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Una base de datos es un archivo con reglas de acceso y consistencia; la base operacional es la libreta de trabajo del día, el almacén analítico es el archivo histórico que se consulta para comparar periodos.
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `delivery_data.py` con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo
-```
-
-Ejecutá el `delivery_data.py` de más abajo y confirmá que agrupa minutos de entrega por zona (`norte`/`sur`).
-#### Paso 5 · Práctica guiada
-Pista: intentá insertar una entrega con `minutes = 0` — ese es el fallo deliberado: la restricción `CHECK(minutes > 0)` rechaza el dato con un error real de SQLite, no en silencio; si quitaras esa restricción, el promedio seguiría calculándose, pero sobre un dato que no debería existir.
-#### Paso 6 · Práctica independiente
-Agregá columnas `fecha` y `estado`, calculá entregas completadas por día, y documentá qué índice crearías para que esa consulta no tenga que recorrer la tabla completa cada vez (pista: el mismo problema de Query vs Scan del Módulo 4 del track Cloud).
-#### Paso 7 · Cierre
-Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: inteligencia artificial. Errores comunes: ignorar cardinalidad. Fuente oficial: https://www.postgresql.org/docs/.
 
 **Cuándo NO usar:** No cachés consultas analíticas sin timestamp; son históricas. No confundas correlación con causalidad.
 
-#### Profundización · Predicciones de rendimiento vs realidad
+##### Profundización · Predicciones de rendimiento vs realidad
 
 **Escenario real:** Calculaste: 100 tareas=1ms, 10k=100ms (lineal). Mides: 100=0.5ms, 10k=5000ms (cuadrático).
-
-**Tu tarea (sin mirar solución):**
-
-1. ¿Por qué tu predicción falló?
-2. ¿O(n) u O(n²)?
-3. ¿Caché, GC, otros factores?
-4. ¿Cómo medir complejidad en producción?
-
-<details>
-<summary>SOLUCIÓN — Lee solo después de intentar</summary>
-
-> **Respuesta esperada:**
-> Predicción: basada en análisis teórico. Realidad: incluye overhead (GC, syscalls, cache miss). Mide con profiler real. Identifica cuello: sorting, JOINs no indexados, loops anidados.
-
-</details>
 
 **¿Por qué es importante?** Ayuda a separar decisiones operativas de análisis histórico y evita extraer conclusiones que los datos no respaldan.
 
@@ -302,6 +274,36 @@ Ejecuta `python3 src/delivery_data.py`. **Resultado esperado:** `norte 2 28.0` y
 **Modifica y comprueba:** añade fecha y estado, calcula entregas completadas por día y explica qué índice usarías. Este experimento alimenta un tablero operativo real, no un modelo predictivo todavía.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Separa operaciones de tareas del resumen analítico de actividad. Prueba que un reporte agregado no modifica registros originales y documenta qué consultas requieren datos actuales o históricos.
+
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `delivery_data.py` con el contenido de este tema.
+```bash
+mkdir ejemplo && cd ejemplo
+```
+
+Ejecutá el `delivery_data.py` de más abajo y confirmá que agrupa minutos de entrega por zona (`norte`/`sur`).
+#### Paso 5 · Práctica guiada
+Pista: intentá insertar una entrega con `minutes = 0` — ese es el fallo deliberado: la restricción `CHECK(minutes > 0)` rechaza el dato con un error real de SQLite, no en silencio; si quitaras esa restricción, el promedio seguiría calculándose, pero sobre un dato que no debería existir.
+#### Paso 6 · Práctica independiente
+Agregá columnas `fecha` y `estado`, calculá entregas completadas por día, y documentá qué índice crearías para que esa consulta no tenga que recorrer la tabla completa cada vez (pista: el mismo problema de Query vs Scan del Módulo 4 del track Cloud).
+
+**Tu tarea (sin mirar solución):**
+
+1. ¿Por qué tu predicción falló?
+2. ¿O(n) u O(n²)?
+3. ¿Caché, GC, otros factores?
+4. ¿Cómo medir complejidad en producción?
+
+<details>
+<summary>SOLUCIÓN — Lee solo después de intentar</summary>
+
+> **Respuesta esperada:**
+> Predicción: basada en análisis teórico. Realidad: incluye overhead (GC, syscalls, cache miss). Mide con profiler real. Identifica cuello: sorting, JOINs no indexados, loops anidados.
+
+</details>
+
+#### Paso 7 · Cierre
+Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: inteligencia artificial. Errores comunes: ignorar cardinalidad. Fuente oficial: https://www.postgresql.org/docs/.
 
 ### Tema 4: Inteligencia artificial, aprendizaje automático y visión
 

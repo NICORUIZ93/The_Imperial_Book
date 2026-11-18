@@ -70,6 +70,8 @@ En el proyecto integrador RutaFlow, practicá este patrón creando tu propio can
 
 **Límites y decisión de uso:** Un canal transmite valores compatibles con su codec y requiere una implementación nativa por plataforma. Maneja método ausente y error explícitamente; no lo uses para reglas de negocio que pueden permanecer en Dart y probarse sin dispositivo.
 
+**¿Por qué es importante?** El `MethodChannel` es el puente explícito necesario porque Dart no tiene acceso directo a las APIs nativas de cada sistema operativo, requiriendo implementación por separado en cada plataforma.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 const canal = MethodChannel('com.rutaflow/bateria');
@@ -101,7 +103,6 @@ Corregí el Paso 5 implementando también el `FlutterMethodChannel` del lado de 
 
 #### Paso 7 · Cierre
 Entregá el MethodChannel funcionando en ambas plataformas del Paso 4, el `MissingPluginException` provocado en el Paso 5, y el manejo de método desconocido del Paso 6; explicá por qué un `MethodChannel` requiere implementación explícita en cada plataforma, sin que implementarlo en una sea suficiente para la otra. Siguiente paso: estudia plugins federados. Errores comunes: implementar el lado nativo en una sola plataforma y asumir que funciona en ambas, no manejar el caso de un método invocado que no existe del lado nativo, y usar `MethodChannel` para algo que ya resuelve un plugin publicado en pub.dev. Fuentes oficiales: https://docs.flutter.dev/platform-integration/platform-channels y https://api.flutter.dev/flutter/services/MethodChannel-class.html.
-**¿Por qué es importante?** El `MethodChannel` es el puente explícito necesario porque Dart no tiene acceso directo a las APIs nativas de cada sistema operativo, requiriendo implementación por separado en cada plataforma.
 
 ### Tema 2: Plugins federados
 
@@ -389,6 +390,8 @@ sequenceDiagram
 
 **Límites y decisión de uso:** Capturar una foto no acredita que el servidor la recibió ni que el usuario estaba autorizado. Conserva referencia local, controla tamaño y tipo en el backend y ofrece recuperación si permiso, almacenamiento o red fallan.
 
+**¿Por qué es importante?** Una foto visible en pantalla todavía no es una evidencia persistida; separar selección, validación y carga permite probar reglas sin cámara real y reintentar con seguridad.
+
 #### Paso 4 · Demostración guiada desde cero
 ```dart
 final class DeliveryProof {
@@ -422,7 +425,304 @@ Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` 
 
 #### Paso 7 · Cierre
 Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.
-**¿Por qué es importante?** Una foto visible en pantalla todavía no es una evidencia persistida; separar selección, validación y carga permite probar reglas sin cámara real y reintentar con seguridad.
+
+### Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min
+
+**Prerrequisito:** temas «MethodChannel» y «Plugins federados» de este módulo.
+
+**Al finalizar podrás:** crear un módulo Flutter, mostrarlo desde una app Android nativa con un `FlutterEngine` precalentado y pasarle datos con un `MethodChannel`.
+
+**¿Por qué es importante?** Muchas empresas no reescriben su app de una vez. Con add-to-app agregan pantallas nuevas en Flutter dentro de la app nativa y migran por partes.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas Flutter y Android Studio con una app Android existente (Kotlin). Crea el módulo junto a ella: `flutter create --template module modulo_seguimiento`.
+
+#### Paso 2 · Contexto y caso real
+
+La app nativa de clientes de RutaFlow (Android, Kotlin) necesitaba una pantalla de seguimiento nueva. El equipo de Flutter ya la tenía hecha para la app del conductor. Con add-to-app la reutilizaron sin reescribir la app de clientes.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** módulo Flutter, `FlutterEngine`, `FlutterEngineCache`, precalentamiento, `FlutterActivity`, punto de entrada, `MethodChannel`.
+
+Un **módulo Flutter** es un proyecto que no es una app completa: se incluye dentro de una app nativa.
+
+- El **`FlutterEngine`** ejecuta el código Dart. Crearlo tarda; por eso se **precalienta** al iniciar la app nativa y se guarda en `FlutterEngineCache`.
+- `FlutterActivity.withCachedEngine(id)` muestra la pantalla Flutter usando ese motor.
+- Un **`MethodChannel`** con el mismo nombre en los dos lados pasa datos (el código del envío) y devuelve resultados.
+- La ruta inicial (`setInitialRoute`) elige qué pantalla mostrar.
+
+En Android, el módulo se incluye en `settings.gradle` del proyecto nativo; en iOS, con CocoaPods o como frameworks precompilados.
+
+**Analogía:** add-to-app es instalar una cocina nueva dentro de un restaurante que ya funciona: la cocina tiene sus propios fogones (el motor) y una ventanilla (el canal) para recibir pedidos. La analogía falla en que encender los fogones tarda: por eso se encienden antes de abrir.
+
+**Límite de uso:** cada motor consume memoria; no crees uno por pantalla (usa `FlutterEngineGroup` si necesitas varios). El tamaño de la app nativa crece con el motor de Flutter.
+
+```mermaid
+sequenceDiagram
+    participant N as App nativa (Kotlin)
+    participant E as FlutterEngine (precalentado)
+    participant F as Pantalla Flutter
+    N->>E: al iniciar: crea motor y lo cachea
+    N->>F: FlutterActivity.withCachedEngine("seguimiento")
+    N->>E: MethodChannel: mostrar(ENV-42)
+    F-->>N: resultado: cerrar
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `app-clientes/settings.gradle.kts`:
+
+```kotlin
+// Incluye el módulo Flutter que vive junto al proyecto nativo.
+val filePath = settingsDir.parentFile.toString() + "/modulo_seguimiento/.android/include_flutter.groovy"
+apply(from = File(filePath))
+```
+
+Archivo `app-clientes/app/src/main/java/co/rutaflow/clientes/ClientesApp.kt`:
+
+```kotlin
+package co.rutaflow.clientes
+
+import android.app.Application
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
+
+class ClientesApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // Precalienta el motor para que la pantalla abra sin demora.
+        val motor = FlutterEngine(this)
+        motor.navigationChannel.setInitialRoute("/seguimiento")
+        motor.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
+        FlutterEngineCache.getInstance().put("seguimiento", motor)
+    }
+}
+```
+
+Archivo `app-clientes/app/src/main/java/co/rutaflow/clientes/DetalleActivity.kt`:
+
+```kotlin
+package co.rutaflow.clientes
+
+import androidx.appcompat.app.AppCompatActivity
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.plugin.common.MethodChannel
+
+class DetalleActivity : AppCompatActivity() {
+    fun abrirSeguimiento(codigo: String) {
+        val motor = FlutterEngineCache.getInstance().get("seguimiento")!!
+        MethodChannel(motor.dartExecutor.binaryMessenger, "rutaflow/seguimiento").invokeMethod("mostrar", codigo)
+        startActivity(FlutterActivity.withCachedEngine("seguimiento").build(this))
+    }
+}
+```
+
+Archivo `modulo_seguimiento/lib/main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+const canal = MethodChannel('rutaflow/seguimiento');
+final codigo = ValueNotifier<String>('sin envío');
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  canal.setMethodCallHandler((llamada) async {
+    if (llamada.method == 'mostrar') codigo.value = llamada.arguments as String;
+  });
+  runApp(MaterialApp(
+    routes: {'/seguimiento': (_) => Scaffold(
+      appBar: AppBar(title: const Text('Seguimiento')),
+      body: Center(child: ValueListenableBuilder(valueListenable: codigo, builder: (_, c, __) => Text('Envío $c'))),
+    )},
+    initialRoute: '/seguimiento',
+  ));
+}
+```
+
+Ejecútalo:
+
+```bash
+cd modulo_seguimiento && flutter pub get && cd ..
+cd app-clientes && ./gradlew installDebug
+```
+
+**Explicación por bloques:** `settings.gradle.kts` incluye el módulo Flutter en el build de Gradle de la app nativa. `ClientesApp` crea el motor al iniciar, fija la ruta `/seguimiento`, ejecuta `main` de Dart y lo guarda en la caché con el id `seguimiento`. `DetalleActivity` envía el código por el `MethodChannel` y abre la pantalla Flutter con el motor ya listo. En Dart, el manejador del canal actualiza un `ValueNotifier` y la pantalla lo muestra.
+
+**Resultado esperado:**
+
+```text
+Al tocar «Ver seguimiento» de ENV-42 en la app nativa, se abre sin pantalla en blanco una pantalla Flutter con el título «Seguimiento» y el texto «Envío ENV-42».
+Al volver atrás, se regresa a la actividad nativa.
+```
+
+**Fallo deliberado:** quita el precalentamiento y usa `FlutterActivity.createDefaultIntent(this)`. **Error esperado:** la primera vez se ve una pantalla en blanco por uno o dos segundos y el canal no recibe el código, porque el motor aún no existía al llamar `invokeMethod`. **Diagnóstico:** precalienta y cachea el motor, y envía datos después de crearlo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** abre la pantalla y mide el tiempo con y sin motor precalentado.
+2. **Variación:** devuelve un resultado de Flutter a Kotlin («calificó 5 estrellas») con `canal.invokeMethod` desde Dart.
+3. **Diagnóstico:** reproduce el fallo deliberado sin precalentar.
+4. **Integración:** integra el mismo módulo en una app iOS con CocoaPods (`flutter_application_path` en el Podfile).
+5. **Diseño:** escribe un plan de migración por pantallas de la app de clientes y el criterio para pasar cada una a Flutter.
+
+**Pista:** si el canal «no recibe nada», revisa que el nombre sea idéntico en Kotlin y Dart y que el motor exista antes de enviar.
+
+#### Paso 6 · Práctica independiente
+
+Muestra la pantalla Flutter dentro de un `FlutterFragment` en una pestaña de la app nativa en lugar de una actividad completa.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un `FlutterEngine` y por qué se precalienta.
+- [ ] La pantalla Flutter abre desde la app nativa con el código correcto.
+- [ ] Reprodujiste la pantalla en blanco sin precalentar.
+- [ ] Tienes un plan de migración por partes.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear un motor por pantalla, enviar datos antes de crear el motor y usar nombres de canal distintos. **Siguiente paso:** el tema siguiente ejecuta trabajo en segundo plano desde Flutter.
+
+**Transferencia al proyecto integrador «RutaFlow»:** integra la pantalla de seguimiento de Flutter en la app nativa de clientes de RutaFlow con un motor precalentado.
+
+**Fuente oficial:** [Flutter — Add Flutter to an existing app](https://docs.flutter.dev/add-to-app) y [Flutter — Add a Flutter screen to an Android app](https://docs.flutter.dev/add-to-app/android/add-flutter-screen).
+
+### Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min
+
+**Prerrequisito:** temas «Permisos de plataforma y cuándo escribir un plugin propio» de este módulo y «Offline-first y Firebase» (módulo 6).
+
+**Al finalizar podrás:** programar una tarea periódica con el paquete `workmanager` que suba entregas pendientes con restricciones de red, y entender qué permite cada sistema operativo.
+
+**¿Por qué es importante?** El conductor no vuelve a abrir la app para sincronizar. Con trabajo en segundo plano, las entregas pendientes se suben cuando hay red. Pero Android e iOS limitan mucho este trabajo, y hay que diseñar con esos límites.
+
+#### Paso 1 · Objetivo y preparación
+
+Agrega `workmanager` con `flutter pub add workmanager`. En iOS, sigue la configuración del paquete (Background Modes y `BGTaskSchedulerPermittedIdentifiers`). Prueba primero en Android, donde es más predecible.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía conductores que terminaban la jornada con entregas sin subir, porque confirmaban sin señal y no volvían a abrir la app. La tarea periódica las sube cuando el teléfono recupera red.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** isolate en segundo plano, `callbackDispatcher`, `@pragma('vm:entry-point')`, tarea periódica, restricciones, WorkManager (Android), BGTaskScheduler (iOS).
+
+El paquete `workmanager` usa **WorkManager** en Android y **BGTaskScheduler** en iOS.
+
+- La tarea corre en un **isolate nuevo**, sin la UI ni el estado de la app: debe abrir de nuevo lo que necesite (base, cliente HTTP).
+- El punto de entrada es una función de nivel superior marcada con `@pragma('vm:entry-point')`, para que el compilador no la elimine.
+- Las **restricciones** (red conectada, batería no baja) le dicen al sistema cuándo conviene correr.
+
+| | Android | iOS |
+|---|---|---|
+| Periodo mínimo | 15 minutos | el sistema decide, sin garantía |
+| Fiabilidad | alta, sobrevive reinicios | depende del uso de la app |
+
+Diseña la sincronización para que sea **idempotente**: si la tarea corre dos veces, no debe duplicar nada.
+
+**Analogía:** la tarea en segundo plano es un mensajero que pasa a recoger paquetes cuando el sistema lo deja salir: en Android pasa con horario aproximado; en iOS, cuando el portero quiere. La analogía falla en que el mensajero no recuerda nada de la visita anterior: cada vez arranca de cero.
+
+**Límite de uso:** no prometas horarios exactos. No hagas trabajo pesado: Android da unos 10 minutos e iOS unos 30 segundos para una actualización. Para avisos inmediatos usa notificaciones push desde el servidor.
+
+```mermaid
+flowchart LR
+    A["main: Workmanager.initialize"] --> R["registerPeriodicTask<br/>15 min, red conectada"]
+    R --> S{"Sistema: hay red y es buen momento"}
+    S --> I["isolate nuevo: callbackDispatcher"]
+    I --> U["sube pendientes (idempotente)"]
+    U -->|"true / false"| S
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `lib/main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
+
+const tareaSincronizar = 'co.rutaflow.sincronizar';
+
+@pragma('vm:entry-point') // evita que el compilador quite esta función
+void callbackDispatcher() {
+  Workmanager().executeTask((tarea, datos) async {
+    if (tarea != tareaSincronizar) return true;
+    try {
+      // Isolate nuevo: abre de nuevo la base y el cliente HTTP aquí.
+      final pendientes = ['ENV-42', 'ENV-43'];
+      for (final codigo in pendientes) {
+        debugPrint('subiendo $codigo'); // el servidor ignora repetidos por código
+      }
+      return true; // éxito
+    } catch (_) {
+      return false; // el sistema reintenta más tarde
+    }
+  });
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Workmanager().initialize(callbackDispatcher);
+  await Workmanager().registerPeriodicTask(
+    'sincronizacion-entregas', tareaSincronizar,
+    frequency: const Duration(minutes: 15),
+    constraints: Constraints(networkType: NetworkType.connected),
+    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep, // no duplicar al reabrir la app
+  );
+  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
+}
+```
+
+Ejecútalo:
+
+```bash
+flutter run
+# Android: fuerza la tarea sin esperar 15 minutos
+adb shell cmd jobscheduler run -f co.rutaflow.app 1
+adb logcat -s flutter
+```
+
+**Explicación por bloques:** `callbackDispatcher` es el punto de entrada del isolate en segundo plano: la anotación `@pragma` impide que el árbol de compilación la elimine. Dentro, `executeTask` recibe el nombre de la tarea y devuelve `true` si salió bien o `false` para que el sistema reintente. En `main`, `initialize` registra el despachador y `registerPeriodicTask` programa la tarea cada 15 minutos (el mínimo de Android) solo con red, sin duplicarla si ya existe. El comando de `adb` fuerza la ejecución para probar.
+
+**Resultado esperado:**
+
+```text
+Tras forzar el trabajo en Android, Logcat muestra:
+I flutter : subiendo ENV-42
+I flutter : subiendo ENV-43
+```
+
+**Fallo deliberado:** quita `@pragma('vm:entry-point')` y compila en modo release (`flutter run --release`). **Error esperado:** la tarea no corre y Logcat muestra un error de que no se encontró el punto de entrada del callback. **Diagnóstico:** en release, el compilador elimina funciones que no ve usadas. La anotación las conserva.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** fuerza la tarea con `adb` y lee Logcat.
+2. **Variación:** apaga la red del emulador, fuerza la tarea y explica por qué no corre.
+3. **Diagnóstico:** reproduce el fallo deliberado en release.
+4. **Integración:** registra una tarea de una sola vez (`registerOneOffTask`) al confirmar una entrega sin señal.
+5. **Diseño:** escribe qué diría la app al conductor sobre cuándo se suben sus entregas en iOS.
+
+**Pista:** si en iOS «nunca corre», recuerda que el sistema decide; prueba con el depurador de Xcode como en el track de iOS.
+
+#### Paso 6 · Práctica independiente
+
+Guarda en `SharedPreferences` (desde el isolate de fondo) la hora de la última sincronización exitosa y muéstrala en la app.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué la tarea corre en un isolate nuevo.
+- [ ] Forzaste la tarea y viste la subida.
+- [ ] Reprodujiste el fallo sin `@pragma` en release.
+- [ ] Tu sincronización es idempotente.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, usar estado de la UI dentro de la tarea y no hacer idempotente la subida. **Siguiente paso:** el módulo 11 prepara los builds de release donde este comportamiento importa.
+
+**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow, con restricción de red y subida idempotente.
+
+**Fuente oficial:** [pub.dev — workmanager](https://pub.dev/packages/workmanager) y [Flutter — Background processes](https://docs.flutter.dev/packages-and-plugins/background-processes).
 
 ## Laboratorio práctico
 

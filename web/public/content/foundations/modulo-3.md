@@ -243,6 +243,8 @@ Header decisivo: _________ (Request-Line: VERBO ...)
 
 **Límites y decisión de uso:** Un 200 confirma el contrato HTTP definido, no necesariamente que todo proceso posterior terminó. Para trabajo asíncrono documenta estado y consulta de seguimiento; un timeout tampoco prueba que el servidor no aplicó el cambio.
 
+**¿Por qué es importante?** Porque los frameworks ocultan el intercambio real, pero cualquier bug de caché, CORS o autenticación se diagnostica leyendo la petición y la respuesta HTTP reales, no adivinando.
+
 #### Paso 4 · Demostración guiada desde cero
 Desde un editor de texto, crea `index.html` dentro de la carpeta de práctica y guarda el contenido indicado.
 
@@ -285,7 +287,6 @@ Repite el experimento pidiendo el método `HEAD` en vez de `GET` (`curl -v -I ht
 
 #### Paso 7 · Cierre
 Entrega las respuestas `200` y `404` del Paso 4 con su línea de estado, y la comparación de métodos del Paso 6; explica qué garantiza el código y qué información todavía puede requerir el cuerpo. Como siguiente paso, en el Tema 3 vas a construir el HTML real que un servidor como este sirve, con formularios que un lector de pantalla pueda interpretar. Errores comunes: asumir que una respuesta con cuerpo siempre significa éxito; ignorar el código de estado y confiar solo en que "algo se mostró en pantalla"; no revisar las cabeceras de respuesta al depurar una API. Fuentes oficiales: [semántica HTTP (RFC 9110)](https://www.rfc-editor.org/rfc/rfc9110.html), [MDN Learn](https://developer.mozilla.org/es/docs/Learn) y [WAI](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
-**¿Por qué es importante?** Porque los frameworks ocultan el intercambio real, pero cualquier bug de caché, CORS o autenticación se diagnostica leyendo la petición y la respuesta HTTP reales, no adivinando.
 
 ### Tema 3: HTML semántico, formularios y el DOM
 
@@ -591,6 +592,8 @@ Herramienta: contrast-ratio.com, comprobación: _________
 
 **Límites y decisión de uso:** Superar una medida de contraste no garantiza accesibilidad completa. Comprueba teclado, semántica, ampliación y mensajes de error; evita corregir colores sin revisar si el contenido puede leerse y operarse en distintas condiciones.
 
+**¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
+
 #### Paso 4 · Demostración guiada desde cero
 
 Guarda el HTML en `ejemplo-contraste/index.html` y el CSS en `ejemplo-contraste/styles.css`. Inicia el servidor desde `ejemplo-contraste` y abre `/index.html`; comprueba en Network que `styles.css` responde con 200 antes de medir el contraste.
@@ -627,7 +630,6 @@ Elegí otras dos combinaciones de color de texto/fondo (por ejemplo las que ya u
 
 #### Paso 7 · Cierre
 Entrega el ratio reprobado (~1.6:1) del Paso 4, la corrección verificada por encima de 4.5:1 y las combinaciones adicionales del Paso 6; explica por qué "se ve mal" no alcanza como diagnóstico de accesibilidad — necesitas un número verificable. Con esto cierras el Módulo 3; como siguiente paso, en el Módulo 4 vas a modelar los datos de este mismo proyecto integrador en una base de datos relacional con SQL. Errores comunes: evaluar contraste "a ojo" sin calcular ni verificar con herramienta; depender solo del color para indicar un estado de error o éxito; eliminar el `outline` de foco sin reemplazo visible. Fuentes oficiales: [MDN Learn](https://developer.mozilla.org/es/docs/Learn), [WAI, contraste mínimo WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) y [WAI, introducción a accesibilidad](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
-**¿Por qué es importante?** Porque la accesibilidad verificable exige un número que cualquiera pueda recalcular — "4.5:1 o no cumple" — en vez de una impresión subjetiva de legibilidad.
 
 ## Construcción guiada del capítulo
 

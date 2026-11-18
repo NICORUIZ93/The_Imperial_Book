@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 557 142" width="557" height="142" role="img" aria-label="Captura de terminal: python3 residencia.py plan.json">
+<title>Captura de terminal: python3 residencia.py plan.json</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos en orden: python3 residencia.py plan.json; echo "salida: $?". Código de salida final: 0.</desc>
+<rect width="557" height="142" rx="8" fill="#1e1f24"/>
+<rect width="557" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="557" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="278.5" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">python3 residencia.py plan.json</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">python3 residencia.py plan.json; echo "salida: $?"</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">BLOQUEADO aws_s3_bucket.respaldo_eu: datos personales en eu-west-1</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">1 problema(s) de residencia</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">salida: 1</text>
+</g>
+</svg>

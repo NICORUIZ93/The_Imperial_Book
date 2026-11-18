@@ -1358,3 +1358,139 @@ Entrega una captura o registro de prefetch y mensajes sin ack para los valores 1
 
 **Aplicación y decisión:** En el proyecto integrador, confirma después de persistir el efecto y guarda una clave idempotente para la redelivery. El laboratorio AMQP no prueba deduplicación durable; una confirmación de publicación no acredita procesamiento del consumidor.
 
+### Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min
+
+**Prerrequisito:** temas «RabbitMQ con Spring AMQP» y «Kafka frente a RabbitMQ» de este módulo.
+
+**Al finalizar podrás:** enviar y recibir mensajes por una cola JMS con `JmsTemplate` y `@JmsListener` sobre ActiveMQ Artemis, y comprobar que un mensaje que falla vuelve a la cola gracias a la sesión transaccional.
+
+**¿Por qué es importante?** JMS es el estándar de mensajería de Java empresarial. Muchos sistemas bancarios y logísticos existentes lo usan. Integrarse con ellos exige conocer su modelo, que no es igual al de Kafka ni al de AMQP.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 3.x con `spring-boot-starter-artemis` y Docker: `docker run -d --name artemis -p 61616:61616 -p 8161:8161 -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis`.
+
+#### Paso 2 · Contexto y caso real
+
+El sistema de facturación de un cliente de RutaFlow solo acepta pedidos por una cola JMS. Cada envío entregado debe generar exactamente un mensaje de facturación, incluso si el consumidor falla a la mitad.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** JMS, cola (punto a punto), tópico (publicar/suscribir), `JmsTemplate`, `@JmsListener`, sesión transaccional, reentrega, cola de mensajes muertos (DLQ).
+
+JMS define dos modelos:
+
+- **Cola:** cada mensaje lo procesa **un solo** consumidor. Para trabajo que se reparte (facturar un envío).
+- **Tópico:** cada suscriptor recibe una copia. Para avisar a varios sistemas.
+
+Spring Boot configura la conexión a **Artemis** con `spring.artemis.*`. `JmsTemplate.convertAndSend` envía y `@JmsListener` recibe.
+
+Con `spring.jms.listener.session.transacted=true`, si el método del listener lanza una excepción, la sesión **revierte** y el broker **reentrega** el mensaje. Después de varios intentos, Artemis lo mueve a la cola `DLQ` para que no bloquee a los demás.
+
+**Analogía:** una cola JMS es la ventanilla de un banco con un turnero: cada turno lo atiende un solo cajero, y si el cajero se levanta sin terminar, el turno vuelve a la fila. La analogía falla en que, tras varios intentos fallidos, el turno se aparta a otra fila (DLQ) para revisión.
+
+**Límite de uso:** JMS no es un log de eventos: un mensaje consumido desaparece y no se puede releer como en Kafka. La reentrega implica que el consumidor puede ver un mensaje dos veces: hazlo idempotente.
+
+```mermaid
+flowchart LR
+    P["EntregaService<br/>JmsTemplate"] -->|"facturacion.pedidos"| Q[("Cola Artemis")]
+    Q --> L["@JmsListener<br/>sesión transaccional"]
+    L -->|"excepción: rollback"| Q
+    Q -->|"tras N intentos"| D[("DLQ")]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/resources/application.properties`:
+
+```properties
+spring.artemis.mode=native
+spring.artemis.broker-url=tcp://localhost:61616
+spring.artemis.user=admin
+spring.artemis.password=admin
+spring.jms.listener.session.transacted=true
+```
+
+Archivo `academia-spring/src/main/java/com/rutaflow/facturacion/Facturacion.java`:
+
+```java
+package com.rutaflow.facturacion;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+class Facturacion implements CommandLineRunner {
+    private final JmsTemplate jms;
+    private final AtomicInteger intentos = new AtomicInteger();
+
+    Facturacion(JmsTemplate jms) { this.jms = jms; }
+
+    @Override
+    public void run(String... args) {
+        jms.convertAndSend("facturacion.pedidos", "ENV-42;5000");
+        System.out.println("enviado ENV-42");
+    }
+
+    @JmsListener(destination = "facturacion.pedidos")
+    void facturar(String pedido) {
+        int intento = intentos.incrementAndGet();
+        System.out.println("intento " + intento + " para " + pedido);
+        if (intento == 1) throw new IllegalStateException("el sistema de facturación no respondió");
+        System.out.println("facturado " + pedido);
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+docker run -d --name artemis -p 61616:61616 -p 8161:8161 \
+  -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis
+./mvnw spring-boot:run
+```
+
+**Explicación por bloques:** Las propiedades apuntan al broker en modo `native` y activan sesiones transaccionales para los listeners. Al arrancar, `run` envía un pedido a la cola. El listener simula una caída en el primer intento lanzando una excepción: la sesión revierte y Artemis vuelve a entregar el mismo mensaje. En el segundo intento, el pedido se factura. Si fallara siempre, después de los intentos configurados en el broker el mensaje terminaría en `DLQ`.
+
+**Resultado esperado:**
+
+```text
+enviado ENV-42
+intento 1 para ENV-42;5000
+... Execution of JMS message listener failed ... el sistema de facturación no respondió
+intento 2 para ENV-42;5000
+facturado ENV-42;5000
+```
+
+**Fallo deliberado:** cambia `spring.jms.listener.session.transacted` a `false`. **Error esperado:** solo aparece «intento 1» y el pedido nunca se factura. **Diagnóstico:** sin transacción, el mensaje se confirmó al entregarse y la excepción no lo devuelve a la cola. Usa sesiones transaccionales y un consumidor idempotente.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el ejemplo y busca la cola `facturacion.pedidos` en la consola web de Artemis (http://localhost:8161).
+2. **Variación:** haz que el listener falle siempre y encuentra el mensaje en la cola `DLQ`.
+3. **Diagnóstico:** reproduce el fallo deliberado sin transacciones.
+4. **Integración:** publica en un tópico con `jms.setPubSubDomain(true)` y crea dos listeners que reciban el mismo mensaje.
+5. **Diseño:** escribe cómo harías idempotente la facturación para que una reentrega no cobre dos veces.
+
+**Pista:** si un mensaje «desaparece» después de un error, revisa si la sesión del listener es transaccional.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una prueba con Testcontainers (`ArtemisContainer`) que envíe un pedido, haga fallar el primer intento y compruebe que el segundo lo factura.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre cola y tópico.
+- [ ] El registro muestra el primer intento fallido y el segundo exitoso.
+- [ ] Reprodujiste la pérdida del mensaje sin transacción.
+- [ ] Sabes dónde termina un mensaje que siempre falla.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confirmar mensajes antes de procesarlos, suponer que cada mensaje llega una sola vez y usar JMS como si fuera un log de eventos. **Siguiente paso:** el tema «Spring Cloud Stream y binders» abstrae el broker para cambiar entre RabbitMQ y Kafka sin tocar el código.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, envía cada entrega confirmada a la cola JMS del cliente con sesiones transaccionales y una tabla de idempotencia por código de envío.
+
+**Fuente oficial:** [Spring Boot — JMS](https://docs.spring.io/spring-boot/reference/messaging/jms.html) y [Apache ActiveMQ Artemis — Documentation](https://activemq.apache.org/components/artemis/documentation/).
+

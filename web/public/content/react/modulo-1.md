@@ -265,6 +265,8 @@ function manejarClick() {
 
 **Límites y decisión de uso:** El batching agrupa trabajo, pero no convierte el estado leído en un valor actualizado inmediatamente. Si una actualización depende de la anterior, usa su forma funcional y comprueba la secuencia, como explica [React sobre actualizaciones de estado](https://react.dev/learn/queueing-a-series-of-state-updates).
 
+**¿Por qué es importante?** El batching evita ciclos de render y commit redundantes cuando múltiples actualizaciones de estado ocurren en el mismo manejador, aplicando únicamente el estado final combinado en un único ciclo.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 function confirmar() {
@@ -293,7 +295,6 @@ Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta 
 
 #### Paso 7 · Cierre
 Entregá la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explicá por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
-**¿Por qué es importante?** El batching evita ciclos de render y commit redundantes cuando múltiples actualizaciones de estado ocurren en el mismo manejador, aplicando únicamente el estado final combinado en un único ciclo.
 
 ### Tema 4: Componentes controlados
 
@@ -332,6 +333,8 @@ graph TD
     style F fill:#e8f5e9
 ```
 
+**¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio.
+
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
 const [pin, setPin] = useState('');
@@ -367,7 +370,133 @@ Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización d
 * Código: `src/components/ControlledInput.tsx`
 * Cuándo: usar componentes controlados para validación y transformación en tiempo real; no conviene en formularios con miles de campos donde el costo de re-render por tecla se vuelve relevante (usa React Hook Form en ese caso).
 
-**¿Por qué es importante?** Los componentes controlados hacen del estado de React la única fuente de verdad del valor de un input, permitiendo validación y transformación centralizada en cada cambio.
+### Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min
+
+**Prerrequisito:** tema «useState y actualizaciones funcionales» de este módulo.
+
+**Al finalizar podrás:** escribir componentes puros que devuelven el mismo JSX para las mismas entradas, y predecir qué valor del estado ve cada evento sabiendo que el estado es una instantánea de cada render.
+
+**¿Por qué es importante?** Casi todos los errores «raros» de React vienen de dos ideas mal entendidas: componentes que cambian cosas mientras se renderizan y la creencia de que `setState` cambia la variable al instante. Con estas dos ideas claras, el comportamiento deja de parecer mágico.
+
+#### Paso 1 · Objetivo y preparación
+
+Crea un proyecto con `npm create vite@latest academia-react -- --template react` y entra a la carpeta. Trabajarás en `src/Contador.jsx`. Deja activo `<StrictMode>` en `src/main.jsx` (Vite lo trae así).
+
+#### Paso 2 · Contexto y caso real
+
+En el panel de RutaFlow, un botón «Sumar 3 paradas» llamaba tres veces `setParadas(paradas + 1)` y solo sumaba una. En otra pantalla, un componente agregaba elementos a una lista global durante el render, y en desarrollo los envíos aparecían duplicados.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** función pura, render, efecto secundario, `StrictMode`, instantánea (*snapshot*) del estado, función de actualización.
+
+**Pureza.** Un componente es una función: recibe props y estado y devuelve JSX. Debe ser **pura**: con las mismas entradas, el mismo resultado, y sin cambiar nada que existía antes de llamarla (variables externas, el DOM, el servidor). Los cambios van en manejadores de eventos o en efectos. En desarrollo, `StrictMode` renderiza dos veces cada componente para que notes si no es puro.
+
+**Instantánea.** Cada render tiene su propia copia del estado. Dentro de un render, `paradas` es una constante: `setParadas` no la cambia, sino que **pide un render nuevo** con otro valor. Por eso tres llamadas a `setParadas(paradas + 1)` piden tres veces «0 + 1».
+
+Para encadenar actualizaciones usa la **función de actualización**: `setParadas(p => p + 1)`. React la llama con el valor más reciente de la cola.
+
+**Analogía:** cada render es una foto: puedes pedir que tomen otra foto distinta, pero la que tienes en la mano no cambia. La analogía falla en que React puede tomar la foto nueva un poco después, cuando termina de atender el evento.
+
+**Límite de uso:** la pureza aplica al render, no a todo el componente: los manejadores de eventos y los efectos sí pueden cambiar cosas. No desactives `StrictMode` para «arreglar» duplicados: oculta el error en vez de corregirlo.
+
+```mermaid
+sequenceDiagram
+    participant E as clic
+    participant R as Render con paradas = 0
+    participant C as Cola de React
+    E->>R: setParadas(paradas + 1) x3
+    R->>C: pide 0+1, 0+1, 0+1
+    C-->>R: nuevo render: paradas = 1
+    E->>R: setParadas(p => p + 1) x3
+    R->>C: pide p+1 tres veces
+    C-->>R: nuevo render: paradas = 4
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-react/src/Contador.jsx`:
+
+```jsx
+import { useState } from 'react';
+
+const registro = []; // variable de fuera del componente
+
+export default function Contador() {
+  const [paradas, setParadas] = useState(0);
+  // registro.push(paradas); // ❌ impuro: cambia algo externo durante el render
+
+  function sumarMal() {
+    setParadas(paradas + 1);
+    setParadas(paradas + 1);
+    setParadas(paradas + 1);
+    console.log('dentro del evento, paradas sigue siendo', paradas);
+  }
+
+  function sumarBien() {
+    setParadas((p) => p + 1);
+    setParadas((p) => p + 1);
+    setParadas((p) => p + 1);
+  }
+
+  return (
+    <section>
+      <p>Paradas: {paradas}</p>
+      <button onClick={sumarMal}>Sumar 3 (mal)</button>
+      <button onClick={sumarBien}>Sumar 3 (bien)</button>
+      <button onClick={() => registro.push(paradas)}>Registrar</button> {/* ✅ en un evento sí */}
+    </section>
+  );
+}
+```
+
+Ejecútalo:
+
+```bash
+cd academia-react
+npm install
+npm run dev
+# usa <Contador /> en src/App.jsx y abre http://localhost:5173
+```
+
+**Explicación por bloques:** `sumarMal` llama tres veces a `setParadas` con el mismo valor de la instantánea, así que pide tres veces el mismo número; el `console.log` confirma que `paradas` no cambió dentro del evento. `sumarBien` pasa funciones: React las aplica en orden sobre el valor más reciente. El `registro.push` está comentado dentro del render porque lo volvería impuro; dentro del botón «Registrar» es correcto, porque un evento sí puede cambiar cosas.
+
+**Resultado esperado:**
+
+```text
+Clic en «Sumar 3 (mal)» desde 0: la pantalla muestra «Paradas: 1» y la consola imprime «dentro del evento, paradas sigue siendo 0».
+Clic en «Sumar 3 (bien)» después: la pantalla muestra «Paradas: 4».
+```
+
+**Fallo deliberado:** descomenta `registro.push(paradas)` dentro del render y agrega `console.log(registro.length)` debajo. **Error esperado:** en desarrollo el número crece de a dos por cada render. **Diagnóstico:** `StrictMode` renderiza dos veces para revelar que el componente cambia algo externo. Saca el `push` del render y llévalo a un evento o a un efecto.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** predice el número tras «Sumar 3 (mal)» y compruébalo.
+2. **Variación:** mezcla en un evento `setParadas(paradas + 5)` y luego `setParadas(p => p + 1)`; predice el resultado (6 desde 0).
+3. **Diagnóstico:** reproduce el fallo deliberado y explica por qué el número sube de a dos.
+4. **Integración:** agrega un `setTimeout(() => alert(paradas), 3000)` en un botón, cambia el número antes de que salte la alerta y explica qué valor muestra.
+5. **Diseño:** revisa un componente tuyo y marca cada línea que cambia algo externo durante el render.
+
+**Pista:** dentro de un evento, lee `paradas` como una constante: su valor es el del render en el que se creó el evento.
+
+#### Paso 6 · Práctica independiente
+
+Crea `ListaParadas`, con un estado de array, y botones «Agregar» y «Quitar la primera». Usa solo copias (`[...lista, nueva]`, `lista.slice(1)`), nunca `push` ni `splice` sobre el estado, y explica por qué.
+
+#### Paso 7 · Cierre
+
+- [ ] Defines un componente puro con tus palabras.
+- [ ] Explicas por qué «Sumar 3 (mal)» suma uno.
+- [ ] Reprodujiste el doble render de `StrictMode`.
+- [ ] Usas funciones de actualización cuando encadenas cambios.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mutar arrays u objetos del estado, leer el estado «nuevo» justo después de `setState` y desactivar `StrictMode` para esconder impurezas. **Siguiente paso:** el tema «Render frente a commit» explica cuándo React pinta en pantalla la instantánea nueva.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, revisa los contadores de paradas y entregas y cambia cada actualización encadenada a funciones de actualización.
+
+**Fuente oficial:** [React — Keeping components pure](https://react.dev/learn/keeping-components-pure) y [React — State as a snapshot](https://react.dev/learn/state-as-a-snapshot).
+
 ## Laboratorio práctico
 
 **Objetivo del laboratorio:** construir un formulario controlado con validación en tiempo real, demostrando actualizaciones funcionales y batching.

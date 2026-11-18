@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 446" width="660" height="446" role="img" aria-label="Captura de terminal: node --test --experimental-test-coverage">
+<title>Captura de terminal: node --test --experimental-test-coverage</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos en orden: node --test --experimental-test-coverage --test-reporter=spec tarifa.test.mjs. Código de salida final: 0.</desc>
+<rect width="660" height="446" rx="8" fill="#1e1f24"/>
+<rect width="660" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="660" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="330.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">node --test --experimental-test-coverage</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node --test --experimental-test-coverage --test-reporter=spec tarifa.test.mjs</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">✔ tarifa normal (0.789389ms)</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">ℹ tests 1</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">ℹ suites 0</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">ℹ pass 1</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">ℹ fail 0</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">ℹ cancelled 0</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">ℹ skipped 0</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">ℹ todo 0</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">ℹ duration_ms 71.675309</text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">ℹ start of coverage report</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">ℹ ----------------------------------------------------------------</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">ℹ file            | line % | branch % | funcs % | uncovered lines</text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">ℹ ----------------------------------------------------------------</text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">ℹ tarifa.mjs      | 100.00 |    50.00 |  100.00 | </text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">ℹ tarifa.test.mjs | 100.00 |   100.00 |  100.00 | </text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">ℹ ----------------------------------------------------------------</text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6">ℹ all files       | 100.00 |    66.67 |  100.00 | </text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6">ℹ ----------------------------------------------------------------</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">ℹ end of coverage report</text>
+</g>
+</svg>

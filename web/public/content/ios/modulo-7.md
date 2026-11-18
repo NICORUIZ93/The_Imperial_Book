@@ -13,34 +13,7 @@ Al finalizar vas a conectar el campo de búsqueda de guía de RutaFlow a un `Pub
 El panel del operador de RutaFlow necesita filtrar la lista de envíos mientras alguien escribe una guía parcial ("RF-44") — eso es un flujo continuo de valores en el tiempo, no una única operación con un resultado final.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un Publisher emite valores continuamente; un Subscriber reacciona a cada emisión — una emisora de radio que transmite mientras está encendida, distinta de una llamada puntual (`async`) que produce una única respuesta.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-class BuscadorEnviosViewModel: ObservableObject {
-    @Published var textoBusqueda = ""
-    private var cancelables = Set<AnyCancellable>()
 
-    init() {
-        $textoBusqueda
-            .sink { valor in print("buscando: \(valor)") }
-            .store(in: &cancelables)
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: cada letra que se escribe en `textoBusqueda` imprime una línea nueva — `$textoBusqueda` emite un valor por cada cambio, no una sola vez al final.
-#### Paso 5 · Práctica guiada
-Pista: quitá `.store(in: &cancelables)` de la suscripción — ese es el fallo deliberado: la suscripción se cancela inmediatamente al salir de ámbito del `init`, y el `sink` nunca vuelve a imprimir nada aunque `textoBusqueda` siga cambiando.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `.store(in:)`, y agregá un segundo `sink` sobre el mismo `$textoBusqueda` que cuente cuántas letras tiene el texto actual — confirmá que ambos `sink` reciben cada emisión de forma independiente.
-#### Paso 7 · Cierre
-Entregá el Publisher emitiendo por cada letra del Paso 4, la suscripción perdida del Paso 5, y los dos `sink` independientes del Paso 6; explicá por qué una búsqueda en tiempo de escritura necesita un flujo continuo, no una función `async` puntual. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 **¿Por qué es importante?** Porque un Publisher modela un flujo continuo de valores en el tiempo, no una única respuesta puntual, y sin `.store(in:)` la suscripción se cancela apenas sale de ámbito, dejando de reaccionar a cambios futuros.
 **Conceptos clave:** flujo continuo de valores en el tiempo, no una única respuesta puntual.
 
@@ -79,6 +52,35 @@ $texto
 * Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
 * Proyecto: en el proyecto integrador RutaFlow, publica la posición del conductor y verifica el subscriber.
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+class BuscadorEnviosViewModel: ObservableObject {
+    @Published var textoBusqueda = ""
+    private var cancelables = Set<AnyCancellable>()
+
+    init() {
+        $textoBusqueda
+            .sink { valor in print("buscando: \(valor)") }
+            .store(in: &cancelables)
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: cada letra que se escribe en `textoBusqueda` imprime una línea nueva — `$textoBusqueda` emite un valor por cada cambio, no una sola vez al final.
+#### Paso 5 · Práctica guiada
+Pista: quitá `.store(in: &cancelables)` de la suscripción — ese es el fallo deliberado: la suscripción se cancela inmediatamente al salir de ámbito del `init`, y el `sink` nunca vuelve a imprimir nada aunque `textoBusqueda` siga cambiando.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 restaurando `.store(in:)`, y agregá un segundo `sink` sobre el mismo `$textoBusqueda` que cuente cuántas letras tiene el texto actual — confirmá que ambos `sink` reciben cada emisión de forma independiente.
+#### Paso 7 · Cierre
+Entregá el Publisher emitiendo por cada letra del Paso 4, la suscripción perdida del Paso 5, y los dos `sink` independientes del Paso 6; explicá por qué una búsqueda en tiempo de escritura necesita un flujo continuo, no una función `async` puntual. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
+
 ### Tema 2: Operadores: debounce y combineLatest
 
 #### Paso 1 · Objetivo y preparación
@@ -87,6 +89,27 @@ Al finalizar vas a agregar `debounce` a la búsqueda de guía de RutaFlow (Tema 
 El panel del operador dispara una consulta real a `ShipmentEvents` por cada letra escrita hoy — eso sobrecarga el backend sin necesidad; además, el operador también puede filtrar por zona, y ambos filtros (texto + zona) deben combinarse en una sola búsqueda.
 #### Paso 3 · Teoría, modelo mental y analogía
 `debounce` espera un silencio antes de emitir, como esperar a que alguien termine de hablar antes de responder; `combineLatest` reacciona a cualquiera de dos fuentes, siempre con el último valor conocido de la otra.
+
+**¿Por qué es importante?** Porque `debounce` evita disparar una búsqueda costosa en cada tecla individual, y `combineLatest` reacciona a cualquiera de dos fuentes de estado independientes sin tener que coordinar manualmente cuál cambió más recientemente.
+**Conceptos clave:** transformación declarativa de un flujo, reacción a múltiples fuentes simultáneas.
+
+`debounce(for:scheduler:)` espera un intervalo de silencio (aquí, 300 milisegundos sin nuevos cambios) antes de emitir el valor más reciente, un patrón extremadamente común para buscadores en tiempo real: evita disparar una búsqueda en cada tecla presionada individualmente, esperando en cambio a que el usuario deje de escribir por un breve instante antes de ejecutar la búsqueda real, el mismo operador `debounceTime` estudiado en RxJS dentro de Angular (Módulo 1 del track de Angular), reflejando que este patrón de "esperar silencio antes de reaccionar" es universal en programación reactiva independientemente del ecosistema.
+
+```swift
+Publishers.CombineLatest($filtro, $orden)
+    .sink { filtro, orden in actualizarLista(filtro, orden) }
+    .store(in: &cancelables)
+```
+
+`combineLatest` combina dos (o más) Publishers, re-emitiendo un valor combinado cada vez que **cualquiera** de los Publishers de origen emite un nuevo valor, usando siempre el último valor conocido del otro Publisher que no cambió en ese instante; esto es apropiado cuando una acción depende de múltiples fuentes de estado independientes que pueden cambiar en momentos distintos (un filtro de búsqueda y un criterio de ordenamiento, cada uno modificable independientemente por el usuario), sin necesidad de coordinar manualmente cuál cambió más recientemente.
+
+**Analogía:** `debounce` es como esperar a que alguien termine completamente de hablar antes de responder, en vez de interrumpir después de cada palabra individual; `combineLatest` es como un tablero que se actualiza automáticamente cada vez que cualquiera de dos indicadores independientes cambia, mostrando siempre la combinación más reciente de ambos sin importar cuál se actualizó más recientemente.
+
+* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
+* Proyecto: en el proyecto integrador RutaFlow, aplica debounce a la búsqueda y combina posición y filtro.
+
+**Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
+
 #### Paso 4 · Demostración guiada desde cero
 ```swift
 $textoBusqueda
@@ -103,7 +126,7 @@ Publishers.CombineLatest($textoBusqueda, $zonaFiltro)
 **Ejecuta el ejemplo:**
 
 ```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
@@ -114,32 +137,6 @@ Pista: quitá `.debounce(...)` de la primera cadena — ese es el fallo delibera
 Corregí el Paso 5 restaurando `debounce`, y medí cuánto tiempo real pasa entre la última letra tecleada y la emisión del valor con `debounce` — confirmando que es consistente con los 300ms configurados.
 #### Paso 7 · Cierre
 Entregá el debounce funcionando del Paso 4, la sobrecarga sin debounce del Paso 5, y la medición de tiempo del Paso 6; explicá por qué `combineLatest` no necesita que ambas fuentes cambien al mismo tiempo para producir un valor combinado útil. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
-**¿Por qué es importante?** Porque `debounce` evita disparar una búsqueda costosa en cada tecla individual, y `combineLatest` reacciona a cualquiera de dos fuentes de estado independientes sin tener que coordinar manualmente cuál cambió más recientemente.
-**Conceptos clave:** transformación declarativa de un flujo, reacción a múltiples fuentes simultáneas.
-
-`debounce(for:scheduler:)` espera un intervalo de silencio (aquí, 300 milisegundos sin nuevos cambios) antes de emitir el valor más reciente, un patrón extremadamente común para buscadores en tiempo real: evita disparar una búsqueda en cada tecla presionada individualmente, esperando en cambio a que el usuario deje de escribir por un breve instante antes de ejecutar la búsqueda real, el mismo operador `debounceTime` estudiado en RxJS dentro de Angular (Módulo 1 del track de Angular), reflejando que este patrón de "esperar silencio antes de reaccionar" es universal en programación reactiva independientemente del ecosistema.
-
-```swift
-Publishers.CombineLatest($filtro, $orden)
-    .sink { filtro, orden in actualizarLista(filtro, orden) }
-    .store(in: &cancelables)
-```
-
-`combineLatest` combina dos (o más) Publishers, re-emitiendo un valor combinado cada vez que **cualquiera** de los Publishers de origen emite un nuevo valor, usando siempre el último valor conocido del otro Publisher que no cambió en ese instante; esto es apropiado cuando una acción depende de múltiples fuentes de estado independientes que pueden cambiar en momentos distintos (un filtro de búsqueda y un criterio de ordenamiento, cada uno modificable independientemente por el usuario), sin necesidad de coordinar manualmente cuál cambió más recientemente.
-
-**Analogía:** `debounce` es como esperar a que alguien termine completamente de hablar antes de responder, en vez de interrumpir después de cada palabra individual; `combineLatest` es como un tablero que se actualiza automáticamente cada vez que cualquiera de dos indicadores independientes cambia, mostrando siempre la combinación más reciente de ambos sin importar cuál se actualizó más recientemente.
-
-**Código del ejemplo:**
-
-```swift
-Publishers.CombineLatest($filtro, $orden)
-    .sink { filtro, orden in actualizarLista(filtro, orden) }
-```
-
-* Código: escribe la práctica en `ContentView.swift` y `BuscadorEnviosViewModel.swift` de tu propio proyecto `RutaFlowApp`.
-* Proyecto: en el proyecto integrador RutaFlow, aplica debounce a la búsqueda y combina posición y filtro.
-
-**Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
 
 ### Tema 3: Combine vs async/await
 
@@ -149,32 +146,7 @@ Al finalizar vas a decidir, para dos operaciones reales de RutaFlow, cuál neces
 Buscar envíos mientras el operador escribe (Temas 1-2) es un flujo continuo; confirmar una entrega (`confirmarEntrega`, Módulo 5) es una única operación con un resultado final — mezclar ambos modelos donde no corresponde complica el código sin necesidad.
 #### Paso 3 · Teoría, modelo mental y analogía
 `async`/`await` es un pedido puntual con una fecha de entrega esperada; Combine es un boletín periódico al que te suscribís — elegir mal entre los dos no rompe nada de inmediato, pero complica el código innecesariamente.
-#### Paso 4 · Demostración guiada desde cero
-```swift
-// Flujo continuo: correcto con Combine (Temas 1-2)
-$textoBusqueda.debounce(for: .milliseconds(300), scheduler: RunLoop.main).sink { ... }
 
-// Operación puntual: correcto con async/await (Módulo 5), NO con Combine
-let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'platform=iOS Simulator,name=iPhone 15' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: la búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
-#### Paso 5 · Práctica guiada
-Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.
-#### Paso 6 · Práctica independiente
-Identificá, en la app de RutaFlow, una tercera operación real que SÍ necesitaría Combine por ser un flujo continuo (pista: las actualizaciones de ubicación GPS del conductor, que llegan repetidamente mientras la app está abierta) y justificá por qué no encajaría bien como una única función `async`.
-
-**Proyecto integrador:** en el proyecto creado desde una carpeta vacía para este tema, construye `CentroOperacionesViewModel.swift` con dos operaciones independientes: búsqueda de guías mediante `$textoBusqueda.debounce` y confirmación de entrega mediante una función `async throws`. Crea un fake local en `ServicioOperacionesFalso.swift` que emita dos cambios de ubicación y devuelva una única confirmación. Desde `CentroOperacionesView.swift`, escribe dos guías, cambia el filtro y confirma una entrega: la búsqueda debe reaccionar a cada filtro usando la suscripción retenida, mientras la confirmación debe terminar con un solo resultado sin crear ningún `AnyCancellable` adicional.
-
-#### Paso 7 · Cierre
-Entregá la clasificación correcta del Paso 4, la complejidad innecesaria de forzar Combine del Paso 5, y la tercera operación identificada del Paso 6; explicá por qué algunas APIs de Apple (Core Location, NotificationCenter) siguen exponiendo Combine aunque tu propio código prefiera `async`/`await`. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 **¿Por qué es importante?** Porque forzar Combine sobre una operación puntual (como `confirmarEntrega`) agrega gestión de `AnyCancellable` que `async`/`await` nunca necesitó, mientras que un flujo continuo real sí requiere las herramientas de Combine.
 **Conceptos clave:** una operación puntual frente a un flujo continuo, cada uno con su herramienta apropiada.
 
@@ -205,6 +177,34 @@ En tu propio proyecto RutaFlow, escribe `confirmarEntrega` en `DetalleEntregaVie
 
 ---
 
+#### Paso 4 · Demostración guiada desde cero
+```swift
+// Flujo continuo: correcto con Combine (Temas 1-2)
+$textoBusqueda.debounce(for: .milliseconds(300), scheduler: RunLoop.main).sink { ... }
+
+// Operación puntual: correcto con async/await (Módulo 5), NO con Combine
+let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+swift package init --type executable --name Practica   # una sola vez, fuera de RutaFlowApp
+# pega el código en Practica/Sources/Practica/main.swift
+cd Practica && swift run
+```
+Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
+
+Resultado esperado: la búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
+#### Paso 5 · Práctica guiada
+Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.
+#### Paso 6 · Práctica independiente
+Identificá, en la app de RutaFlow, una tercera operación real que SÍ necesitaría Combine por ser un flujo continuo (pista: las actualizaciones de ubicación GPS del conductor, que llegan repetidamente mientras la app está abierta) y justificá por qué no encajaría bien como una única función `async`.
+
+**Proyecto integrador:** en el proyecto creado desde una carpeta vacía para este tema, construye `CentroOperacionesViewModel.swift` con dos operaciones independientes: búsqueda de guías mediante `$textoBusqueda.debounce` y confirmación de entrega mediante una función `async throws`. Crea un fake local en `ServicioOperacionesFalso.swift` que emita dos cambios de ubicación y devuelva una única confirmación. Desde `CentroOperacionesView.swift`, escribe dos guías, cambia el filtro y confirma una entrega: la búsqueda debe reaccionar a cada filtro usando la suscripción retenida, mientras la confirmación debe terminar con un solo resultado sin crear ningún `AnyCancellable` adicional.
+
+#### Paso 7 · Cierre
+Entregá la clasificación correcta del Paso 4, la complejidad innecesaria de forzar Combine del Paso 5, y la tercera operación identificada del Paso 6; explicá por qué algunas APIs de Apple (Core Location, NotificationCenter) siguen exponiendo Combine aunque tu propio código prefiera `async`/`await`. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 
 ## Laboratorio práctico
 

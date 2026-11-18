@@ -506,6 +506,15 @@ flowchart LR
     N --> P[postgres:17 restaurado]
 ```
 
+**¿Por qué es importante?** porque un respaldo que nunca se restauró no es un respaldo, y saber inspeccionar y auditar contenedores acorta cualquier incidente.
+**Fuente oficial:** [Docker Docs: Back up, restore, or migrate data volumes](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes), [docker events](https://docs.docker.com/reference/cli/docker/system/events/).
+**Conceptos clave:** `docker inspect --format`, `docker stats`, `docker events`, contenedor auxiliar, respaldo en frío, restauración verificada, `set -euo pipefail`.
+**Cuándo no usarlo:** en la nube, usa los respaldos administrados del proveedor (snapshots de volúmenes, RDS) en lugar de scripts propios; el script sirve para entornos locales y de pruebas.
+
+**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un respaldo verificado del volumen de la base de datos de pruebas antes de cada despliegue.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** correr `docker volume prune` confiando en que "no hay nada corriendo" sin revisar antes con `docker ps -a --filter volume=datos-rutaflow` qué contenedores, incluso detenidos, todavía referencian ese volumen — `prune` solo borra los que ningún contenedor usa, y un contenedor detenido sigue contando como uso.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -580,14 +589,137 @@ Agrega al script una verificación de que el archivo `.tgz` no está vacío ante
 Reemplaza el respaldo en frío por un `pg_dump` en caliente (`docker exec bd-rutaflow pg_dump -U postgres > respaldo.sql`) y compara tiempos, tamaño y en qué casos usarías cada uno.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque un respaldo que nunca se restauró no es un respaldo, y saber inspeccionar y auditar contenedores acorta cualquier incidente.
-**Fuente oficial:** [Docker Docs: Back up, restore, or migrate data volumes](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes), [docker events](https://docs.docker.com/reference/cli/docker/system/events/).
-**Conceptos clave:** `docker inspect --format`, `docker stats`, `docker events`, contenedor auxiliar, respaldo en frío, restauración verificada, `set -euo pipefail`.
-**Cuándo no usarlo:** en la nube, usa los respaldos administrados del proveedor (snapshots de volúmenes, RDS) en lugar de scripts propios; el script sirve para entornos locales y de pruebas.
 
-**Transferencia al proyecto integrador «Plataforma de entrega continua»:** agrega al pipeline un respaldo verificado del volumen de la base de datos de pruebas antes de cada despliegue.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** correr `docker volume prune` confiando en que "no hay nada corriendo" sin revisar antes con `docker ps -a --filter volume=datos-rutaflow` qué contenedores, incluso detenidos, todavía referencian ese volumen — `prune` solo borra los que ningún contenedor usa, y un contenedor detenido sigue contando como uso.
+### Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min
+
+**Prerrequisito:** temas «Imágenes base distroless/alpine» y «Volúmenes vs bind mounts» de este módulo.
+
+**Al finalizar podrás:** construir una imagen que corre como usuario sin privilegios, ejecutarla con el sistema de archivos de solo lectura, sin capacidades de Linux y sin escalar privilegios, y comprobar con comandos que cada restricción funciona.
+
+**¿Por qué es importante?** Si un atacante explota una vulnerabilidad de la aplicación, hereda los permisos del proceso. Un contenedor que corre como root con todas las capacidades le facilita escapar o modificar el sistema. Cada restricción reduce lo que puede hacer.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas Docker 24 o superior. Crea la carpeta `academia-labs/devops/sin-privilegios` con un servidor Node mínimo (`server.js`) y su `Dockerfile`.
+
+#### Paso 2 · Contexto y caso real
+
+Un análisis de seguridad de RutaFlow encontró que la API corría como root dentro del contenedor y podía escribir en `/usr`. Una librería vulnerable de subida de archivos habría permitido reemplazar binarios del sistema. Las restricciones de este tema cierran esos caminos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** usuario root en el contenedor, `USER`, modo rootless del demonio, `--read-only`, `tmpfs`, capacidades de Linux (`--cap-drop`), `no-new-privileges`, seccomp.
+
+Hay dos ideas distintas que suelen confundirse:
+
+- **Proceso sin privilegios dentro del contenedor:** la imagen usa `USER` para que la aplicación no corra como root (UID 0). Es lo mínimo y depende de ti.
+- **Docker o Podman en modo rootless:** el propio motor corre sin root en el host. Protege aunque el contenedor sea comprometido. Lo configura quien administra la máquina.
+
+En ejecución, agrega capas:
+
+| Opción | Qué impide |
+|---|---|
+| `--read-only` (+ `--tmpfs /tmp`) | escribir en el sistema de archivos de la imagen |
+| `--cap-drop ALL` | usar capacidades especiales del kernel (cambiar dueños, abrir puertos bajos…) |
+| `--security-opt no-new-privileges` | ganar privilegios con binarios setuid |
+| perfil **seccomp** (por defecto en Docker) | llamar al kernel con syscalls peligrosas |
+
+En Kubernetes, lo mismo se declara en el `securityContext` del pod.
+
+**Analogía:** es dar a un trabajador temporal una tarjeta que solo abre su oficina, sin llaves maestras y con los archivadores sellados. La analogía falla en que el «modo rootless» es otra cosa: es que el edificio entero no lo administre un superusuario.
+
+**Límite de uso:** algunas aplicaciones necesitan escribir (caché, subidas): dales un `tmpfs` o un volumen explícito, no quites `--read-only`. Si una imagen exige root para arrancar, corrige la imagen antes de relajar la política.
+
+```mermaid
+flowchart TB
+    I["Dockerfile: USER 10001"] --> C["docker run"]
+    C --> R["--read-only + tmpfs /tmp"]
+    C --> K["--cap-drop ALL"]
+    C --> N["no-new-privileges"]
+    R & K & N --> P["proceso con mínimo poder"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/devops/sin-privilegios/server.js`:
+
+```js
+const http = require('node:http');
+const fs = require('node:fs');
+
+http.createServer((req, res) => {
+  let escritura;
+  try { fs.writeFileSync('/app/prueba.txt', 'x'); escritura = 'pude escribir en /app'; }
+  catch (e) { escritura = `no puedo escribir en /app (${e.code})`; }
+  fs.writeFileSync('/tmp/cache.txt', 'ok'); // /tmp es un tmpfs permitido
+  res.end(`uid=${process.getuid()} · ${escritura} · /tmp ok\n`);
+}).listen(8080);
+```
+
+Archivo `academia-labs/devops/sin-privilegios/Dockerfile`:
+
+```dockerfile
+FROM node:22-alpine
+WORKDIR /app
+COPY server.js .
+# Usuario sin privilegios con UID fijo (las políticas de Kubernetes revisan el número).
+RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
+USER 10001:10001
+EXPOSE 8080
+CMD ["node", "server.js"]
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/devops/sin-privilegios
+docker build -t rutaflow/api-segura .
+docker run -d --name api --read-only --tmpfs /tmp \
+  --cap-drop ALL --security-opt no-new-privileges -p 8080:8080 rutaflow/api-segura
+curl -s localhost:8080
+docker exec api id
+docker exec api sh -c 'touch /etc/hackeado' ; echo "código de salida: $?"
+```
+
+**Explicación por bloques:** El `Dockerfile` crea un usuario con UID 10001 y lo usa con `USER`: el proceso no es root. `docker run` agrega las restricciones de ejecución: sistema de archivos de solo lectura con un `tmpfs` en `/tmp` para lo temporal, ninguna capacidad del kernel y sin posibilidad de ganar privilegios. La respuesta del servidor muestra su UID, que no puede escribir en `/app` y que `/tmp` sí funciona. Los dos últimos comandos comprueban el usuario y que tocar `/etc` falla.
+
+**Resultado esperado:**
+
+```text
+uid=10001 · no puedo escribir en /app (EROFS) · /tmp ok
+uid=10001(app) gid=10001(app) groups=10001(app)
+touch: /etc/hackeado: Read-only file system
+código de salida: 1
+```
+
+**Fallo deliberado:** quita `--tmpfs /tmp` y vuelve a ejecutar. **Error esperado:** la petición falla y `docker logs api` muestra `EROFS: read-only file system, open '/tmp/cache.txt'`. **Diagnóstico:** con `--read-only`, también `/tmp` es de solo lectura. Declara explícitamente dónde puede escribir la aplicación.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta los comandos y relaciona cada línea de salida con una restricción.
+2. **Variación:** quita `USER` del `Dockerfile`, reconstruye y compara la salida de `id`.
+3. **Diagnóstico:** reproduce el fallo deliberado sin `tmpfs`.
+4. **Integración:** traduce las cuatro restricciones a un `securityContext` de Kubernetes (`runAsNonRoot`, `readOnlyRootFilesystem`, `capabilities.drop`, `allowPrivilegeEscalation: false`).
+5. **Diseño:** revisa los contenedores de RutaFlow con `docker inspect --format "{{.Config.User}}"` y lista los que corren como root.
+
+**Pista:** si algo deja de funcionar con `--read-only`, el error dice qué ruta necesita escribir: dale un `tmpfs` o un volumen solo para esa ruta.
+
+#### Paso 6 · Práctica independiente
+
+Ejecuta un contenedor de prueba con Falco o con `docker events` y provoca una escritura en `/etc`; registra qué alerta o evento aparece y qué harías con él en producción.
+
+#### Paso 7 · Cierre
+
+- [ ] Distingues usuario no root en la imagen de Docker en modo rootless.
+- [ ] El contenedor corre con UID 10001 y solo escribe en `/tmp`.
+- [ ] Reprodujiste el fallo sin `tmpfs`.
+- [ ] Sabes declarar lo mismo en Kubernetes.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** correr como root «porque funciona», quitar `--read-only` en vez de agregar un `tmpfs` y confundir el usuario del contenedor con el modo rootless del motor. **Siguiente paso:** el tema «Registries» publica esta imagen ya endurecida.
+
+**Transferencia al proyecto integrador «RutaFlow»:** haz que todas las imágenes de RutaFlow corran con un UID fijo no root, sistema de archivos de solo lectura y sin capacidades.
+
+**Fuente oficial:** [Docker Docs — Rootless mode](https://docs.docker.com/engine/security/rootless/) y [Docker Docs — Docker security](https://docs.docker.com/engine/security/) y [Kubernetes — Configure a Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
 
 ## Laboratorio práctico
 

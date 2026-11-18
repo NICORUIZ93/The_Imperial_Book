@@ -45,6 +45,8 @@ lib/features/tareas/
 
 **Límites y decisión de uso:** Separar capas tiene coste de navegación y adaptación de modelos. Para una vista puramente local bastan responsabilidades claras; extrae casos de uso y repositorios cuando haya reglas o dependencias que necesites probar y sustituir por separado.
 
+**¿Por qué es importante?** Organizar por feature agrupa código relacionado por propósito de negocio; Clean Architecture con capas Domain/Data/Presentation mantiene la lógica de negocio central aislada y testeable.
+
 #### Paso 4 · Demostración guiada desde cero
 ```text
 lib/
@@ -78,7 +80,6 @@ Corregí el Paso 5 devolviendo esa llamada al repositorio correspondiente en `da
 
 #### Paso 7 · Cierre
 Entregá la estructura por feature del Paso 4, la violación de capas provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todo el track en un único proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: estudia cómo unir todos los módulos del track en el flujo completo. Errores comunes: organizar el proyecto por tipo de archivo en vez de por feature, permitir que `domain/` dependa de `data/` o `presentation/`, y que un widget acceda directamente a una librería de infraestructura sin pasar por el repositorio. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
-**¿Por qué es importante?** Organizar por feature agrupa código relacionado por propósito de negocio; Clean Architecture con capas Domain/Data/Presentation mantiene la lógica de negocio central aislada y testeable.
 
 ### Tema 2: Uniendo los módulos del track
 
@@ -258,6 +259,212 @@ Corregí el Paso 5 reescribiendo la afirmación para incluir ese costo explícit
 #### Paso 7 · Cierre
 Entregá la retrospectiva del Paso 4, la afirmación incompleta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en Flutter que repetirías igual en otra plataforma aunque el motor de renderizado cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: presentar una decisión de plataforma como ventaja incondicional sin mencionar su costo real, confundir una ventaja de consistencia visual con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://docs.flutter.dev/resources/architectural-overview y https://docs.flutter.dev/platform-integration.
 **Implicación práctica:** Flutter logra apariencia y rendimiento consistentes gracias a su motor gráfico propio, a costa de requerir un ecosistema de widgets propio y no heredar automáticamente actualizaciones visuales nativas.
+
+### Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min
+
+**Prerrequisito:** tema «Arquitectura por features y Clean Architecture» de este módulo y «Riverpod» (módulo 4).
+
+**Al finalizar podrás:** organizar una feature con las cuatro piezas de la guía oficial de Flutter: un service que habla con la API, un repository que es la fuente de verdad, un view model que expone estado y comandos, y una view que solo dibuja.
+
+**¿Por qué es importante?** Cuando el widget llama a la API, transforma datos y maneja errores, no se puede probar ni reutilizar. La guía de arquitectura de Flutter propone responsabilidades claras que se prueban por separado.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Flutter 3.24 o superior. Crea la carpeta `lib/features/envios/` con subcarpetas `data/services`, `data/repositories` y `ui/`. El ejemplo usa `ChangeNotifier` para no depender de paquetes.
+
+#### Paso 2 · Contexto y caso real
+
+La pantalla de envíos de RutaFlow tenía 600 líneas: llamaba a Dio, convertía JSON, guardaba en caché y mostraba errores. Un cambio en el formato de la API rompió tres pantallas. Al separar en capas, el cambio quedó en un solo archivo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** view, view model, comando, repository (fuente de verdad), service, flujo de datos unidireccional, inyección de dependencias.
+
+| Pieza | Responsabilidad | Sabe de |
+|---|---|---|
+| **Service** | habla con una sola fuente externa (API, plugin) y devuelve datos crudos | HTTP, JSON |
+| **Repository** | fuente de verdad de un tipo de dato: combina services, cachea, reintenta y devuelve modelos de dominio | services |
+| **View model** | prepara el estado de una pantalla y expone **comandos** (acciones) | repositories |
+| **View** | dibuja el estado y llama comandos | su view model |
+
+Los datos fluyen en una dirección: el repository entrega datos al view model, el view model notifica a la view, y la view envía eventos al view model. Cada pieza recibe sus dependencias por constructor, así que en las pruebas pasas versiones falsas.
+
+**Analogía:** es un restaurante: el service es el proveedor, el repository la despensa (sabe qué hay y qué falta), el view model el cocinero que arma el plato y la view el mesero que lo sirve. La analogía falla en que el mesero tampoco cocina nada: solo lleva y trae.
+
+**Límite de uso:** en una pantalla trivial, cuatro piezas son demasiadas: empieza con view y view model y agrega repository cuando haya caché o varias fuentes. No pongas lógica de pantalla en el repository.
+
+```mermaid
+flowchart LR
+    V["EnviosView"] -->|"comando cargar()"| VM["EnviosViewModel"]
+    VM -->|"notifyListeners"| V
+    VM --> R["EnviosRepository<br/>fuente de verdad"]
+    R --> S["EnviosApiService<br/>HTTP"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `lib/features/envios/data/services/envios_api_service.dart`:
+
+```dart
+class EnviosApiService {
+  // En la app real usa Dio; aquí simula la API.
+  Future<List<Map<String, dynamic>>> obtener() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return [
+      {'codigo': 'ENV-42', 'estado': 'EN_RUTA'},
+      {'codigo': 'ENV-43', 'estado': 'ENTREGADO'},
+    ];
+  }
+}
+```
+
+Archivo `lib/features/envios/data/repositories/envios_repository.dart`:
+
+```dart
+import '../services/envios_api_service.dart';
+
+class Envio {
+  const Envio(this.codigo, this.entregado);
+  final String codigo;
+  final bool entregado;
+}
+
+class EnviosRepository {
+  EnviosRepository(this._api);
+  final EnviosApiService _api;
+  List<Envio>? _cache;
+
+  Future<List<Envio>> pendientes({bool forzar = false}) async {
+    if (_cache == null || forzar) {
+      final crudos = await _api.obtener();
+      _cache = [for (final j in crudos) Envio(j['codigo'] as String, j['estado'] == 'ENTREGADO')];
+    }
+    return _cache!.where((e) => !e.entregado).toList();
+  }
+}
+```
+
+Archivo `lib/features/envios/ui/envios_view_model.dart`:
+
+```dart
+import 'package:flutter/foundation.dart';
+import '../data/repositories/envios_repository.dart';
+
+class EnviosViewModel extends ChangeNotifier {
+  EnviosViewModel(this._repositorio);
+  final EnviosRepository _repositorio;
+
+  List<Envio> envios = [];
+  bool cargando = false;
+  String? error;
+
+  Future<void> cargar() async { // comando
+    cargando = true;
+    error = null;
+    notifyListeners();
+    try {
+      envios = await _repositorio.pendientes(forzar: true);
+    } catch (e) {
+      error = 'No se pudieron cargar los envíos';
+    } finally {
+      cargando = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+Archivo `lib/features/envios/ui/envios_view.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'envios_view_model.dart';
+
+class EnviosView extends StatelessWidget {
+  const EnviosView({super.key, required this.viewModel});
+  final EnviosViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, _) {
+        if (viewModel.cargando) return const Center(child: CircularProgressIndicator());
+        if (viewModel.error != null) {
+          return Center(child: TextButton(onPressed: viewModel.cargar, child: Text('${viewModel.error}. Reintentar')));
+        }
+        return ListView(children: [for (final e in viewModel.envios) ListTile(title: Text(e.codigo))]);
+      },
+    );
+  }
+}
+```
+
+Archivo `test/envios_view_model_test.dart`:
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:rutaflow/features/envios/data/repositories/envios_repository.dart';
+import 'package:rutaflow/features/envios/data/services/envios_api_service.dart';
+import 'package:rutaflow/features/envios/ui/envios_view_model.dart';
+
+class ApiFalsa extends EnviosApiService {
+  @override
+  Future<List<Map<String, dynamic>>> obtener() async => [{'codigo': 'ENV-1', 'estado': 'EN_RUTA'}];
+}
+
+void main() {
+  test('cargar deja solo los pendientes', () async {
+    final vm = EnviosViewModel(EnviosRepository(ApiFalsa()));
+    await vm.cargar();
+    expect(vm.envios.map((e) => e.codigo), ['ENV-1']);
+    expect(vm.cargando, isFalse);
+  });
+}
+```
+
+Ejecútalo:
+
+```bash
+flutter test test/envios_view_model_test.dart
+```
+
+**Explicación por bloques:** El service solo devuelve JSON. El repository lo convierte en `Envio`, guarda una caché y filtra los pendientes: es el único que sabe de dónde vienen los datos. El view model expone el estado de la pantalla (lista, cargando, error) y el comando `cargar`. La view no tiene lógica: escucha al view model con `ListenableBuilder` y llama el comando para reintentar. La prueba arma la cadena con una API falsa, sin widgets ni red.
+
+**Resultado esperado:**
+
+```text
+00:01 +1: All tests passed!
+```
+
+**Fallo deliberado:** mueve la llamada `EnviosApiService().obtener()` directo al `build` de la view con un `FutureBuilder`. **Error esperado:** la prueba del view model ya no cubre la carga, y cada reconstrucción de la view vuelve a llamar a la API. **Diagnóstico:** la view tomó responsabilidades del repository. Devuelve la llamada al view model.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la prueba y luego la pantalla con el service simulado.
+2. **Variación:** haz que el service lance una excepción y comprueba que la view muestra «Reintentar».
+3. **Diagnóstico:** reproduce el fallo deliberado con `FutureBuilder` en la view.
+4. **Integración:** agrega un comando `marcarEntregado(codigo)` que pase por el repository e invalide la caché.
+5. **Diseño:** dibuja las cuatro piezas de la feature de rutas de RutaFlow y qué paquete usa cada una.
+
+**Pista:** si una prueba necesita widgets para probar una regla, esa regla está en la capa equivocada.
+
+#### Paso 6 · Práctica independiente
+
+Reemplaza `ChangeNotifier` por un `Notifier` de Riverpod en el view model y conserva el repository y el service sin cambios. Explica qué capas no se tocaron y por qué.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la responsabilidad de cada una de las cuatro piezas.
+- [ ] La prueba del view model pasa con una API falsa.
+- [ ] Reprodujiste la mezcla de capas con `FutureBuilder`.
+- [ ] Sabes cuándo cuatro piezas son demasiadas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** llamar a la API desde la view, poner lógica de pantalla en el repository y crear repositories vacíos que solo reenvían. **Siguiente paso:** el tema «Uniendo los módulos del track» aplica esta estructura a todas las features.
+
+**Transferencia al proyecto integrador «RutaFlow»:** reorganiza la feature de envíos de RutaFlow en service, repository, view model y view, con pruebas del view model.
+
+**Fuente oficial:** [Flutter — Guide to app architecture](https://docs.flutter.dev/app-architecture/guide) y [Flutter — Architecture recommendations](https://docs.flutter.dev/app-architecture/recommendations).
 
 ## Laboratorio práctico
 

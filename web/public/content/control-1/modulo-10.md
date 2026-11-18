@@ -10,7 +10,7 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
 
 ## Aprende construyendo
 
-### Tema 1: La forma de estado
+### Tema 1: La forma de espacio de estados
 
 **¿Por qué es importante?** El espacio de estados describe sistemas con varias entradas y salidas y es la base del control moderno.
 

@@ -11,6 +11,33 @@ Al finalizar vas a versionar como código `ShipmentEvents` (Módulo 4) y `confir
 Hasta ahora cada recurso de RutaFlow se creó a mano por CLI, módulo por módulo. Un equipo real necesita que esos mismos recursos queden declarados en Terraform, con `terraform plan` corriendo en cada PR antes de que nadie aplique nada a mano.
 #### Paso 3 · Teoría, modelo mental y analogía
 El estado remoto de Terraform es el plano maestro compartido de la obra; sin bloqueo, dos personas pueden dibujar cambios contradictorios sobre el mismo plano al mismo tiempo sin que ninguna se entere.
+
+**Conceptos clave:** estado remoto, bloqueo de estado, `terraform plan` en CI, `apply` solo en merge, importación de recursos existentes.
+
+Terraform avanzado no es aprender más sintaxis de HCL: es resolver los problemas que aparecen cuando más de una persona o más de un pipeline tocan la misma infraestructura. El estado remoto con bloqueo (`dynamodb_table` en el backend de S3) es exactamente ese problema resuelto para RutaFlow — sin él, dos cambios concurrentes a `ShipmentEvents` podrían perderse entre sí sin que nadie lo note hasta mucho después.
+
+Separar `terraform plan` (que corre en cada PR, sin aplicar nada, solo para que el equipo revise el diff de infraestructura antes de aprobarlo) de `terraform apply` (que solo corre tras el merge, en la rama principal) es el mismo principio de revisión antes de producción que ya aplicaste con los despliegues canary del Módulo 24: nadie cambia infraestructura real sin que alguien más haya visto el plan primero.
+
+**Analogía:** el estado remoto bloqueado es como el plano único y numerado de una obra en construcción: solo un capataz a la vez puede marcarlo con cambios, y todos los demás ven exactamente esa misma versión antes de proponer la siguiente.
+
+**¿Por qué es importante?** La mayoría de los incidentes de infraestructura como código no vienen de HCL mal escrito, sino de estado compartido mal gestionado: dos personas aplicando cambios a la vez, o un `apply` manual que nadie revisó. Resolver eso con bloqueo de estado y una fase de `plan` obligatoria en CI es lo que separa un uso amateur de Terraform de uno de equipo.
+
+**Casos de uso reales:** dos `apply` concurrentes sin lock, un `plan` que nadie revisó antes del merge, estado remoto perdido por borrar el bucket por error, y una importación de recursos ya existentes que evita recrearlos desde cero.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  PR["Pull Request"] --> Plan["terraform plan (CI, solo lectura)"]
+  Plan --> Review["Revisión humana del diff"]
+  Review --> Merge["Merge a main"]
+  Merge --> Apply["terraform apply (CI, con lock de estado)"]
+```
+
+**Transferencia al proyecto integrador «Cloud local multi-nube»:** Guarda un plan de infraestructura del entorno de entregas y revisa sus cambios antes de aplicar. Verifica que el artefacto aplicado corresponde al commit revisado y que el estado tiene acceso restringido.
+
+**Límites y decisión de uso:** Un plan revisado puede quedar obsoleto si cambia el estado o la configuración antes de aplicarlo. Vincula plan, commit y entorno; el locking evita escrituras concurrentes del estado, pero no corrige decisiones destructivas incluidas en un plan.
+
 #### Paso 4 · Demostración guiada
 ```hcl
 terraform {
@@ -44,31 +71,6 @@ Pista: quitá temporalmente `dynamodb_table` del bloque `backend` y corré `terr
 Agregá una fase `terraform plan` al `buildspec` de `demo-build` (Módulo 24) que corra en cada build, y una fase separada `terraform apply -auto-approve` que solo se ejecute cuando el build corresponda a la rama principal — la misma separación plan-en-PR/apply-en-merge de cualquier pipeline real.
 #### Paso 7 · Cierre
 Entregá el estado remoto bloqueado del Paso 4, la corrupción evitable sin lock del Paso 5, y la fase de CI del Paso 6; explicá por qué declarar `ShipmentEvents` en Terraform no sustituye todo lo que ya aprendiste del servicio en el Módulo 4, solo cambia cómo se crea y se versiona. Siguiente paso: Kubernetes y Service Mesh. Errores comunes: secretos en Git y probar solo el camino feliz. Fuente oficial: https://developer.hashicorp.com/terraform/language/state/locking.
-**Conceptos clave:** estado remoto, bloqueo de estado, `terraform plan` en CI, `apply` solo en merge, importación de recursos existentes.
-
-Terraform avanzado no es aprender más sintaxis de HCL: es resolver los problemas que aparecen cuando más de una persona o más de un pipeline tocan la misma infraestructura. El estado remoto con bloqueo (`dynamodb_table` en el backend de S3) es exactamente ese problema resuelto para RutaFlow — sin él, dos cambios concurrentes a `ShipmentEvents` podrían perderse entre sí sin que nadie lo note hasta mucho después.
-
-Separar `terraform plan` (que corre en cada PR, sin aplicar nada, solo para que el equipo revise el diff de infraestructura antes de aprobarlo) de `terraform apply` (que solo corre tras el merge, en la rama principal) es el mismo principio de revisión antes de producción que ya aplicaste con los despliegues canary del Módulo 24: nadie cambia infraestructura real sin que alguien más haya visto el plan primero.
-
-**Analogía:** el estado remoto bloqueado es como el plano único y numerado de una obra en construcción: solo un capataz a la vez puede marcarlo con cambios, y todos los demás ven exactamente esa misma versión antes de proponer la siguiente.
-
-**¿Por qué es importante?** La mayoría de los incidentes de infraestructura como código no vienen de HCL mal escrito, sino de estado compartido mal gestionado: dos personas aplicando cambios a la vez, o un `apply` manual que nadie revisó. Resolver eso con bloqueo de estado y una fase de `plan` obligatoria en CI es lo que separa un uso amateur de Terraform de uno de equipo.
-
-**Casos de uso reales:** dos `apply` concurrentes sin lock, un `plan` que nadie revisó antes del merge, estado remoto perdido por borrar el bucket por error, y una importación de recursos ya existentes que evita recrearlos desde cero.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  PR["Pull Request"] --> Plan["terraform plan (CI, solo lectura)"]
-  Plan --> Review["Revisión humana del diff"]
-  Review --> Merge["Merge a main"]
-  Merge --> Apply["terraform apply (CI, con lock de estado)"]
-```
-
-**Transferencia al proyecto integrador «Cloud local multi-nube»:** Guarda un plan de infraestructura del entorno de entregas y revisa sus cambios antes de aplicar. Verifica que el artefacto aplicado corresponde al commit revisado y que el estado tiene acceso restringido.
-
-**Límites y decisión de uso:** Un plan revisado puede quedar obsoleto si cambia el estado o la configuración antes de aplicarlo. Vincula plan, commit y entorno; el locking evita escrituras concurrentes del estado, pero no corrige decisiones destructivas incluidas en un plan.
 
 ### Tema 2: Kubernetes administrado, ECS y Service Mesh
 
@@ -78,23 +80,7 @@ Al finalizar vas a decidir si el planificador de rutas (Módulo 14, ECS) necesit
 Si RutaFlow agregara un tercer servicio en contenedor (por ejemplo, un worker de reportes) que necesitara hablar con el planificador con mTLS y reintentos automáticos, la pregunta real es si ECS solo alcanza o si hace falta Kubernetes con un service mesh encima.
 #### Paso 3 · Teoría, modelo mental y analogía
 Un service mesh es una red de carteros privados entre tus propios servicios: cada uno habla con un sidecar local, y el sidecar se encarga de cifrar, reintentar y medir sin que el código de la aplicación sepa que existe.
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-mkdir ejemplo && cd ejemplo && floci start
-```
 
-```bash
-aws ecs describe-services --cluster rutaflow-cluster --services demo-planificador-service \
-  --query 'services[0].{Lanzamiento:launchType,Deployment:deploymentController}'
-```
-Resultado esperado: el servicio ECS del planificador (Módulo 14) muestra su `deploymentController` nativo — sin ningún sidecar de mesh instalado, porque con un solo servicio real hablando con una sola base de datos, ECS puro ya resuelve el problema sin esa capa adicional.
-#### Paso 5 · Práctica guiada
-Pista: instalar App Mesh o un sidecar Envoy sobre `demo-planificador-service` HOY, cuando solo existe un servicio consumiendo la tabla `ShipmentEvents` directamente — ese es el fallo deliberado de sobre-ingeniería: agregarías latencia, complejidad de configuración y un nuevo punto de fallo (el propio sidecar) sin ningún beneficio real, porque no hay todavía múltiples servicios que necesiten mTLS entre sí.
-#### Paso 6 · Práctica independiente
-Documentá la condición concreta que justificaría migrar: "si RutaFlow tuviera 3+ servicios en contenedores hablando entre sí con reintentos y cifrado propios, un service mesh (o EKS con Istio) empezaría a pagar su complejidad" — y compará esa condición contra el estado real de hoy (1 servicio, ECS puro).
-#### Paso 7 · Cierre
-Entregá el estado real de `demo-planificador-service` del Paso 4, el sidecar innecesario del Paso 5, y la condición de migración documentada del Paso 6; explicá por qué "está de moda" nunca es la razón correcta para adoptar Kubernetes o un service mesh. Siguiente paso: EC2, VPC, RDS, S3 y DynamoDB avanzados. Errores comunes: adoptar un mesh sin múltiples servicios y confundir ECS con Kubernetes. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 **Conceptos clave:** service mesh, sidecar, mTLS entre servicios, condición real de adopción, ECS vs EKS vs mesh.
 
 Un service mesh resuelve un problema específico: cuando tenés varios servicios propios hablando entre sí (no con el cliente final, sino servicio-a-servicio), necesitás cifrado, reintentos, circuit breakers y métricas de esas llamadas internas sin reescribir esa lógica en cada servicio. Un sidecar (normalmente Envoy) se inyecta junto a cada contenedor y intercepta ese tráfico interno de forma transparente.
@@ -125,6 +111,24 @@ escribas: `ConfirmarEntregaFn` no necesita ningún sidecar ni mesh declarado por
 instalarlo sin el problema real que resuelve (múltiples servicios internos con necesidades de mTLS
 y reintentos compartidas) — la diferencia frente a adoptarlo "porque está de moda" es justamente
 esa condición concreta de 3+ servicios del Paso 6.
+
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+```bash
+mkdir ejemplo && cd ejemplo && floci start
+```
+
+```bash
+aws ecs describe-services --cluster rutaflow-cluster --services demo-planificador-service \
+  --query 'services[0].{Lanzamiento:launchType,Deployment:deploymentController}'
+```
+Resultado esperado: el servicio ECS del planificador (Módulo 14) muestra su `deploymentController` nativo — sin ningún sidecar de mesh instalado, porque con un solo servicio real hablando con una sola base de datos, ECS puro ya resuelve el problema sin esa capa adicional.
+#### Paso 5 · Práctica guiada
+Pista: instalar App Mesh o un sidecar Envoy sobre `demo-planificador-service` HOY, cuando solo existe un servicio consumiendo la tabla `ShipmentEvents` directamente — ese es el fallo deliberado de sobre-ingeniería: agregarías latencia, complejidad de configuración y un nuevo punto de fallo (el propio sidecar) sin ningún beneficio real, porque no hay todavía múltiples servicios que necesiten mTLS entre sí.
+#### Paso 6 · Práctica independiente
+Documentá la condición concreta que justificaría migrar: "si RutaFlow tuviera 3+ servicios en contenedores hablando entre sí con reintentos y cifrado propios, un service mesh (o EKS con Istio) empezaría a pagar su complejidad" — y compará esa condición contra el estado real de hoy (1 servicio, ECS puro).
+#### Paso 7 · Cierre
+Entregá el estado real de `demo-planificador-service` del Paso 4, el sidecar innecesario del Paso 5, y la condición de migración documentada del Paso 6; explicá por qué "está de moda" nunca es la razón correcta para adoptar Kubernetes o un service mesh. Siguiente paso: EC2, VPC, RDS, S3 y DynamoDB avanzados. Errores comunes: adoptar un mesh sin múltiples servicios y confundir ECS con Kubernetes. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 
 ### Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados
 
@@ -368,6 +372,145 @@ Pista: intentá justificar agregar Kafka/MSK (Módulo 17) completo para un volum
 Dibujá (en papel o en un README) el mapa completo: qué parte de RutaFlow es multi-cloud de verdad (Módulo 8: AWS + Azure + GCP para el mismo caso de ubicaciones), qué parte es Big Data (Athena/Firehose/Kinesis), qué parte es IA (Bedrock/Textract), y qué parte sigue siendo, simplemente, un backend serverless bien diseñado sin ninguna etiqueta de moda encima.
 #### Paso 7 · Cierre
 Entregá las tres piezas reales confirmadas del Paso 4, el sobre-dimensionamiento evitado del Paso 5, y el mapa completo del Paso 6; explicá por qué "usar microservicios/Big Data/IA" nunca fue el objetivo de ningún módulo de este track — resolver un problema real con la herramienta correcta sí lo fue, y estas etiquetas son solo la forma en que la industria nombra el resultado. Siguiente paso: cerrar el track. Errores comunes: adoptar una pieza grande sin el volumen que la justifique y nombrar la arquitectura antes de construirla. Fuente oficial: https://aws.amazon.com/architecture/.
+
+### Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min
+
+**Prerrequisito:** tema «Seguridad, auditoría y FinOps» de este módulo.
+
+**Al finalizar podrás:** analizar eventos de auditoría (con la forma de CloudTrail) para detectar uso de la cuenta root, intentos de apagar la auditoría y ráfagas de accesos denegados, y relacionarlo con GuardDuty y Security Hub.
+
+**¿Por qué es importante?** Las credenciales robadas no avisan. Lo que sí deja rastro es su uso: llamadas raras, accesos denegados mientras alguien explora, intentos de borrar los registros. Si nadie mira esos eventos, el atacante tiene semanas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Python 3.10 o superior. Crea `academia-labs/cloud/amenazas`. Los eventos son un ejemplo con la estructura real de CloudTrail; en una cuenta, se exportan desde CloudTrail o se consultan con Athena.
+
+#### Paso 2 · Contexto y caso real
+
+Una clave de acceso de CI de RutaFlow quedó en un repositorio público. En minutos, alguien la usó para listar buckets y usuarios, recibió accesos denegados y luego intentó apagar CloudTrail. Una alerta sobre esos tres patrones habría avisado en el primer minuto.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** registro de auditoría, CloudTrail, `userIdentity`, `errorCode`, cuenta root, reconocimiento, regla de detección, GuardDuty, Security Hub, falso positivo.
+
+**CloudTrail** registra cada llamada a la API de AWS: quién (`userIdentity`), qué (`eventName`), desde dónde (`sourceIPAddress`) y si falló (`errorCode`).
+
+Patrones que casi siempre merecen alerta:
+
+| Patrón | Por qué es sospechoso |
+|---|---|
+| uso de la cuenta **root** | debería usarse solo para tareas excepcionales |
+| `StopLogging`, `DeleteTrail` | alguien quiere borrar su rastro |
+| muchos `AccessDenied` seguidos de una identidad | alguien explora con credenciales que no conoce bien |
+
+**GuardDuty** aplica reglas y modelos parecidos sobre CloudTrail, DNS y tráfico de red, y **Security Hub** reúne los hallazgos de varias fuentes. Escribir tus propias reglas te ayuda a entender qué detectan y a cubrir lo específico de tu negocio.
+
+**Analogía:** los registros son las cámaras del edificio; las reglas son el guardia que mira las grabaciones buscando a alguien que prueba puertas una tras otra. La analogía falla en que el guardia automático nunca se aburre, pero también puede dar falsas alarmas que hay que afinar.
+
+**Límite de uso:** las reglas simples generan falsos positivos (un despliegue con permisos mal configurados también produce `AccessDenied`). Detectar no es responder: cada alerta necesita un procedimiento (revocar la clave, investigar).
+
+```mermaid
+flowchart LR
+    CT["CloudTrail: eventos"] --> D["detectar.py / GuardDuty"]
+    D --> A1["ALTA: uso de root"]
+    D --> A2["ALTA: StopLogging"]
+    D --> A3["MEDIA: 3+ AccessDenied"]
+    A1 & A2 & A3 --> R["runbook: revocar, investigar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/cloud/amenazas/eventos.json`:
+
+```json
+[
+  {"eventName": "ConsoleLogin", "userIdentity": {"type": "Root"}, "sourceIPAddress": "203.0.113.7", "additionalEventData": {"MFAUsed": "No"}},
+  {"eventName": "GetObject", "userIdentity": {"type": "AssumedRole", "arn": "arn:aws:sts::111:assumed-role/api/ses"}, "sourceIPAddress": "10.0.1.5"},
+  {"eventName": "ListBuckets", "userIdentity": {"type": "IAMUser", "arn": "arn:aws:iam::111:user/ci"}, "sourceIPAddress": "198.51.100.9", "errorCode": "AccessDenied"},
+  {"eventName": "ListUsers", "userIdentity": {"type": "IAMUser", "arn": "arn:aws:iam::111:user/ci"}, "sourceIPAddress": "198.51.100.9", "errorCode": "AccessDenied"},
+  {"eventName": "GetSecretValue", "userIdentity": {"type": "IAMUser", "arn": "arn:aws:iam::111:user/ci"}, "sourceIPAddress": "198.51.100.9", "errorCode": "AccessDenied"},
+  {"eventName": "StopLogging", "userIdentity": {"type": "IAMUser", "arn": "arn:aws:iam::111:user/ci"}, "sourceIPAddress": "198.51.100.9"}
+]
+```
+
+Archivo `academia-labs/cloud/amenazas/detectar.py`:
+
+```python
+import json
+from collections import Counter
+
+eventos = json.load(open("eventos.json"))
+alertas = []
+
+for e in eventos:
+    quien = e["userIdentity"].get("arn", e["userIdentity"]["type"])
+    # 1) Uso de la cuenta root: casi nunca debería ocurrir.
+    if e["userIdentity"]["type"] == "Root":
+        mfa = e.get("additionalEventData", {}).get("MFAUsed", "?")
+        alertas.append(("ALTA", f"uso de root ({e['eventName']}) desde {e['sourceIPAddress']}, MFA={mfa}"))
+    # 2) Alguien intenta apagar la auditoría.
+    if e["eventName"] in {"StopLogging", "DeleteTrail"}:
+        alertas.append(("ALTA", f"{quien} intentó {e['eventName']}"))
+
+# 3) Muchos AccessDenied de la misma identidad: posible reconocimiento con credenciales robadas.
+denegados = Counter(e["userIdentity"].get("arn") for e in eventos if e.get("errorCode") == "AccessDenied")
+for identidad, total in denegados.items():
+    if total >= 3:
+        alertas.append(("MEDIA", f"{identidad}: {total} accesos denegados seguidos"))
+
+for nivel, texto in alertas:
+    print(f"[{nivel}] {texto}")
+print(f"{len(alertas)} alerta(s) de {len(eventos)} eventos")
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/cloud/amenazas
+python3 detectar.py
+```
+
+**Explicación por bloques:** `eventos.json` tiene seis eventos con la forma de CloudTrail: un inicio de sesión de root sin MFA, una lectura normal de un rol de la API y cuatro llamadas del usuario `ci`, tres denegadas y una que intenta apagar la auditoría. `detectar.py` aplica tres reglas: root siempre alerta, `StopLogging`/`DeleteTrail` siempre alertan, y tres o más denegaciones de la misma identidad generan una alerta media. La lectura normal del rol no produce nada.
+
+![Captura de terminal: alertas por uso de root sin MFA, intento de StopLogging y tres accesos denegados seguidos del usuario ci](content/figures/cloud/deteccion-amenazas.svg)
+
+**Resultado esperado:**
+
+```text
+[ALTA] uso de root (ConsoleLogin) desde 203.0.113.7, MFA=No
+[ALTA] arn:aws:iam::111:user/ci intentó StopLogging
+[MEDIA] arn:aws:iam::111:user/ci: 3 accesos denegados seguidos
+3 alerta(s) de 6 eventos
+```
+
+**Fallo deliberado:** sube el umbral de denegaciones a 10. **Error esperado:** desaparece la alerta media aunque el patrón de reconocimiento sigue ahí. **Diagnóstico:** el umbral decide entre ruido y ceguera. Ajústalo con datos de una semana normal y combina reglas (denegaciones + `StopLogging` de la misma identidad es más grave que cada una sola).
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el detector y explica cada alerta.
+2. **Variación:** agrega una regla que alerte si una identidad llama `CreateAccessKey` para otro usuario.
+3. **Diagnóstico:** reproduce el fallo deliberado con el umbral alto.
+4. **Integración:** escribe la consulta de Athena equivalente para contar `AccessDenied` por identidad en la última hora.
+5. **Diseño:** redacta el runbook de la alerta «uso de root»: quién responde, qué revisa y qué revoca.
+
+**Pista:** una buena regla de detección tiene un dueño y un runbook; si nadie sabe qué hacer con la alerta, no sirve.
+
+#### Paso 6 · Práctica independiente
+
+Activa GuardDuty en una cuenta de pruebas, genera hallazgos de ejemplo (`create-sample-findings`) y compara sus tipos con tus tres reglas.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué registra CloudTrail.
+- [ ] El detector produce las tres alertas esperadas.
+- [ ] Reprodujiste la alerta perdida por un umbral alto.
+- [ ] Cada alerta tiene un runbook.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no usar MFA en root, ignorar los `AccessDenied` y crear alertas sin procedimiento de respuesta. **Siguiente paso:** el tema «Microservicios, Big Data, AI/ML y multi-cloud» aplica estas reglas en varias cuentas y nubes.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega a RutaFlow alertas por uso de root, intentos de apagar CloudTrail y ráfagas de accesos denegados, cada una con su runbook.
+
+**Fuente oficial:** [AWS CloudTrail — Record contents](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html) y [Amazon GuardDuty — Finding types](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html).
 
 ## Trazabilidad de la auditoría original
 

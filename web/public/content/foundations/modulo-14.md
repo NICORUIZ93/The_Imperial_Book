@@ -25,6 +25,15 @@ flowchart LR
     M --> N[Notificador]
 ```
 
+**¿Por qué es importante?** porque reconocer el patrón te permite entender middlewares, interceptores y anotaciones como `@Transactional` sin magia.
+**Fuente oficial:** [Decorator (refactoring.guru)](https://refactoring.guru/es/design-patterns/decorator), [functools.wraps (docs.python.org)](https://docs.python.org/3/library/functools.html#functools.wraps).
+**Conceptos clave:** misma interfaz, composición, delegación, apilamiento, `functools.wraps`, decorador de función.
+**Cuándo no usarlo:** si solo hay una variante fija, una subclase o un parámetro es más claro. Muchas capas de decoradores dificultan depurar qué capa hizo qué.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -101,14 +110,7 @@ Crea un decorador `ConRegistro` que imprima `enviando G-101` antes de delegar, y
 Escribe un decorador de función `@reintentar(veces=3)` que repita la llamada si lanza `ConnectionError` y pruébalo con una función que falla dos veces y luego funciona.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque reconocer el patrón te permite entender middlewares, interceptores y anotaciones como `@Transactional` sin magia.
-**Fuente oficial:** [Decorator (refactoring.guru)](https://refactoring.guru/es/design-patterns/decorator), [functools.wraps (docs.python.org)](https://docs.python.org/3/library/functools.html#functools.wraps).
-**Conceptos clave:** misma interfaz, composición, delegación, apilamiento, `functools.wraps`, decorador de función.
-**Cuándo no usarlo:** si solo hay una variante fija, una subclase o un parámetro es más claro. Muchas capas de decoradores dificultan depurar qué capa hizo qué.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
 
 ### Tema 2: State: un objeto que cambia de comportamiento según su estado
 
@@ -132,6 +134,15 @@ stateDiagram-v2
     Registrado --> Cancelado: cancelar
     EnRuta --> Entregado: entregar
 ```
+
+**¿Por qué es importante?** porque los flujos de pedidos, pagos y aprobaciones son máquinas de estados, y modelarlas explícitamente elimina transiciones imposibles.
+**Fuente oficial:** [State (refactoring.guru)](https://refactoring.guru/es/design-patterns/state).
+**Conceptos clave:** contexto, objeto estado, delegación, transición válida, máquina de estados.
+**Cuándo no usarlo:** con dos o tres estados y casi sin comportamiento distinto, un `Enum` y un diccionario de transiciones permitidas es más simple.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -205,14 +216,7 @@ Agrega el estado `Devuelto`, al que solo se llega desde `EnRuta` con la acción 
 Guarda en el contexto un historial de transiciones con fecha y hora, e imprímelo al final.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque los flujos de pedidos, pagos y aprobaciones son máquinas de estados, y modelarlas explícitamente elimina transiciones imposibles.
-**Fuente oficial:** [State (refactoring.guru)](https://refactoring.guru/es/design-patterns/state).
-**Conceptos clave:** contexto, objeto estado, delegación, transición válida, máquina de estados.
-**Cuándo no usarlo:** con dos o tres estados y casi sin comportamiento distinto, un `Enum` y un diccionario de transiciones permitidas es más simple.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
 
 ### Tema 3: Template Method: un algoritmo fijo con pasos variables
 
@@ -241,6 +245,15 @@ classDiagram
       +pie()
     }
 ```
+
+**¿Por qué es importante?** porque explica cómo funcionan los ciclos de vida de los frameworks (pruebas, componentes, servlets) que te llaman a ti.
+**Fuente oficial:** [Template Method (refactoring.guru)](https://refactoring.guru/es/design-patterns/template-method), [abc (docs.python.org)](https://docs.python.org/3/library/abc.html).
+**Conceptos clave:** método plantilla, paso abstracto, gancho, principio de Hollywood, `abc.abstractmethod`.
+**Cuándo no usarlo:** si las variantes difieren en un solo paso, pasar una función o usar Strategy evita una jerarquía de clases.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -320,14 +333,7 @@ Crea `ReporteJSON` que devuelva las entregas como JSON usando `json.dumps`. **Pi
 Reescribe los dos reportes sin herencia, pasando funciones como parámetros (`generar(entregas, formatear, incluir)`), y compara cuál te parece más fácil de extender.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque explica cómo funcionan los ciclos de vida de los frameworks (pruebas, componentes, servlets) que te llaman a ti.
-**Fuente oficial:** [Template Method (refactoring.guru)](https://refactoring.guru/es/design-patterns/template-method), [abc (docs.python.org)](https://docs.python.org/3/library/abc.html).
-**Conceptos clave:** método plantilla, paso abstracto, gancho, principio de Hollywood, `abc.abstractmethod`.
-**Cuándo no usarlo:** si las variantes difieren en un solo paso, pasar una función o usar Strategy evita una jerarquía de clases.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
 
 ### Tema 4: Chain of Responsibility: una cadena de validadores
 
@@ -354,6 +360,15 @@ flowchart LR
     W -- error --> X
     C -- error --> X
 ```
+
+**¿Por qué es importante?** porque es la estructura interna de los pipelines de middlewares, filtros de seguridad y manejadores de eventos.
+**Fuente oficial:** [Chain Of Responsibility (refactoring.guru)](https://refactoring.guru/es/design-patterns/chain-of-responsibility).
+**Conceptos clave:** manejador, siguiente eslabón, corte de la cadena, orden de evaluación, falla silenciosa.
+**Cuándo no usarlo:** si todas las validaciones siempre se ejecutan y no importa el orden, una lista de funciones recorrida con un bucle es más simple.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -426,14 +441,7 @@ Agrega un eslabón `Horario` que rechace pedidos con `"hora"` fuera de 7 a 19. *
 Haz que la cadena devuelva **todos** los errores en lugar de cortar en el primero y discute cuándo es mejor cada comportamiento (formularios frente a seguridad).
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque es la estructura interna de los pipelines de middlewares, filtros de seguridad y manejadores de eventos.
-**Fuente oficial:** [Chain Of Responsibility (refactoring.guru)](https://refactoring.guru/es/design-patterns/chain-of-responsibility).
-**Conceptos clave:** manejador, siguiente eslabón, corte de la cadena, orden de evaluación, falla silenciosa.
-**Cuándo no usarlo:** si todas las validaciones siempre se ejecutan y no importa el orden, una lista de funciones recorrida con un bucle es más simple.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
 
 ### Tema 5: Mediator: coordinar objetos sin que se conozcan
 
@@ -457,6 +465,15 @@ flowchart TD
     K[Caro] --> C
     C --> B
 ```
+
+**¿Por qué es importante?** porque te da un lugar claro para reglas de coordinación, y te enseña a detectar el riesgo opuesto: un mediador que lo sabe todo y se convierte en una "clase dios".
+**Fuente oficial:** [Mediator (refactoring.guru)](https://refactoring.guru/es/design-patterns/mediator).
+**Conceptos clave:** mediador, participante, notificación de eventos, acoplamiento muchos a uno, clase dios.
+**Cuándo no usarlo:** si solo dos objetos se comunican, una referencia directa es más clara. Si la coordinación crece mucho, divide el mediador o usa eventos (Observer).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -529,14 +546,7 @@ Haz que la Central elija al mensajero libre con menos entregas asignadas en vez 
 Agrega el evento `"libre"`: cuando un mensajero termina, avisa a la Central y esta le asigna el primer paquete en espera.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque te da un lugar claro para reglas de coordinación, y te enseña a detectar el riesgo opuesto: un mediador que lo sabe todo y se convierte en una "clase dios".
-**Fuente oficial:** [Mediator (refactoring.guru)](https://refactoring.guru/es/design-patterns/mediator).
-**Conceptos clave:** mediador, participante, notificación de eventos, acoplamiento muchos a uno, clase dios.
-**Cuándo no usarlo:** si solo dos objetos se comunican, una referencia directa es más clara. Si la coordinación crece mucho, divide el mediador o usa eventos (Observer).
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
 
 ### Tema 6: Memento: guardar y restaurar estado para deshacer
 
@@ -562,6 +572,15 @@ sequenceDiagram
     H->>R: agregar(parada)
     H->>R: restaurar(Memento)
 ```
+
+**¿Por qué es importante?** porque deshacer, borradores y versiones son requisitos frecuentes, y el error de la copia superficial aparece también en Redux, NgRx y cualquier estado inmutable.
+**Fuente oficial:** [Memento (refactoring.guru)](https://refactoring.guru/es/design-patterns/memento), [dataclasses (docs.python.org)](https://docs.python.org/3/library/dataclasses.html).
+**Conceptos clave:** originador, memento, cuidador, instantánea inmutable, copia superficial frente a copia.
+**Cuándo no usarlo:** si el estado es enorme, guardar copias completas es caro: usa comandos reversibles (patrón Command) o diferencias.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -637,14 +656,7 @@ Agrega `rehacer`: al deshacer, guarda el estado actual en una segunda pila. **Pi
 Limita el historial a 20 instantáneas y mide cuánta memoria ahorras con `sys.getsizeof` en una ruta de 1 000 paradas.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque deshacer, borradores y versiones son requisitos frecuentes, y el error de la copia superficial aparece también en Redux, NgRx y cualquier estado inmutable.
-**Fuente oficial:** [Memento (refactoring.guru)](https://refactoring.guru/es/design-patterns/memento), [dataclasses (docs.python.org)](https://docs.python.org/3/library/dataclasses.html).
-**Conceptos clave:** originador, memento, cuidador, instantánea inmutable, copia superficial frente a copia.
-**Cuándo no usarlo:** si el estado es enorme, guardar copias completas es caro: usa comandos reversibles (patrón Command) o diferencias.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
 
 ### Tema 7: Visitor: operaciones nuevas sin tocar las clases
 
@@ -669,6 +681,15 @@ flowchart LR
     V --> T[CalculoTarifa]
     V --> E[EtiquetaBodega]
 ```
+
+**¿Por qué es importante?** porque explica cómo funcionan los linters, compiladores y serializadores, y entrena el análisis de qué cambia más: los tipos o las operaciones.
+**Fuente oficial:** [Visitor (refactoring.guru)](https://refactoring.guru/es/design-patterns/visitor), [ast.NodeVisitor (docs.python.org)](https://docs.python.org/3/library/ast.html#ast.NodeVisitor).
+**Conceptos clave:** doble despacho, visitante, elemento, jerarquía estable, `ast.NodeVisitor`.
+**Cuándo no usarlo:** si los tipos cambian a menudo, o si Python te permite resolverlo con `match` o `singledispatch` en pocas líneas.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -732,14 +753,7 @@ Crea el visitante `PesoTotal` que devuelva los kilos de cada paquete (un sobre p
 Reescribe `CalculoTarifa` con `functools.singledispatch` o `match` por tipo y compara las dos soluciones.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque explica cómo funcionan los linters, compiladores y serializadores, y entrena el análisis de qué cambia más: los tipos o las operaciones.
-**Fuente oficial:** [Visitor (refactoring.guru)](https://refactoring.guru/es/design-patterns/visitor), [ast.NodeVisitor (docs.python.org)](https://docs.python.org/3/library/ast.html#ast.NodeVisitor).
-**Conceptos clave:** doble despacho, visitante, elemento, jerarquía estable, `ast.NodeVisitor`.
-**Cuándo no usarlo:** si los tipos cambian a menudo, o si Python te permite resolverlo con `match` o `singledispatch` en pocas líneas.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
 
 ### Tema 8: Flyweight: compartir estado para ahorrar memoria
 
@@ -764,6 +778,15 @@ flowchart LR
     F[FabricaMarcadores] --> T1
     F --> T2
 ```
+
+**¿Por qué es importante?** porque te enseña a medir memoria y a separar datos compartidos de datos propios, algo clave en mapas, juegos y cachés.
+**Fuente oficial:** [Flyweight (refactoring.guru)](https://refactoring.guru/es/design-patterns/flyweight), [tracemalloc (docs.python.org)](https://docs.python.org/3/library/tracemalloc.html).
+**Conceptos clave:** estado intrínseco, estado extrínseco, fábrica con caché, inmutabilidad, `__slots__`, interning.
+**Cuándo no usarlo:** con pocos objetos o sin datos repetidos el ahorro no compensa la complejidad. Mide antes de optimizar.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -833,14 +856,7 @@ Haz inmutable `TipoMarcador` y comprueba que el fallo deliberado ahora lanza un 
 Mide con `tracemalloc` la memoria real de crear 10 000 marcadores con y sin la fábrica, y compárala con la estimación del ejemplo.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque te enseña a medir memoria y a separar datos compartidos de datos propios, algo clave en mapas, juegos y cachés.
-**Fuente oficial:** [Flyweight (refactoring.guru)](https://refactoring.guru/es/design-patterns/flyweight), [tracemalloc (docs.python.org)](https://docs.python.org/3/library/tracemalloc.html).
-**Conceptos clave:** estado intrínseco, estado extrínseco, fábrica con caché, inmutabilidad, `__slots__`, interning.
-**Cuándo no usarlo:** con pocos objetos o sin datos repetidos el ahorro no compensa la complejidad. Mide antes de optimizar.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
 
 ## Construcción guiada del capítulo
 

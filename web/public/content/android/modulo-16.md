@@ -527,6 +527,156 @@ un fallback seguro y medido.
 verifica y entrega sesión con autorización por envío. **Fuente oficial:**
 [Credential Manager y form factors](https://developer.android.com/identity/form-factors).
 
+### Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min
+
+**Prerrequisito:** tema «Credential Manager, passkeys y verificación en servidor» de este módulo.
+
+**Al finalizar podrás:** pedir un token de integridad desde la app al confirmar una entrega, verificarlo en el servidor y decidir qué hacer según el veredicto de app, dispositivo y cuenta.
+
+**¿Por qué es importante?** Cualquiera puede llamar a tu API con un script o con una app modificada que marca entregas falsas. Play Integrity da al servidor una señal firmada por Google de que la petición viene de tu app sin modificar, en un dispositivo real.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas la app publicada (aunque sea en una pista de prueba interna) en Google Play Console, la API habilitada en un proyecto de Google Cloud y `com.google.android.play:integrity` en el módulo `app`. El servidor descifra el token con la API de Google.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow detectó entregas marcadas desde lugares imposibles. Alguien usaba una versión modificada de la app con ubicación falsa. Exigir un veredicto de integridad para confirmar entregas cortó el fraude sin afectar a los conductores legítimos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** atestación, token de integridad, nonce o `requestHash`, veredicto de app (`appRecognitionVerdict`), de dispositivo (`deviceRecognitionVerdict`) y de cuenta, decodificación en servidor.
+
+Flujo de una **solicitud estándar**:
+
+1. La app prepara el proveedor con `prepareIntegrityToken` (una vez, al iniciar).
+2. Al confirmar la entrega, pide un token con un **`requestHash`**: el hash de los datos de la acción (envío, hora). Así el token solo sirve para esa acción.
+3. El servidor envía el token a la API `decodeIntegrityToken` de Google y recibe el **veredicto**.
+4. El servidor compara el `requestHash` y decide.
+
+| Veredicto | Valor esperado |
+|---|---|
+| app | `PLAY_RECOGNIZED`: la app es la tuya, sin modificar |
+| dispositivo | contiene `MEETS_DEVICE_INTEGRITY` |
+| cuenta | `LICENSED` si la cuenta obtuvo la app desde Play |
+
+La decisión **siempre** se toma en el servidor: la app nunca decide si es confiable.
+
+**Analogía:** es el sello de seguridad de un documento que el banco revisa en su oficina, no el cliente en su casa. La analogía falla en que un sello válido no dice que la persona sea honesta, solo que el documento es auténtico.
+
+**Límite de uso:** no bloquees todo ante un veredicto negativo: hay dispositivos legítimos sin la integridad más alta. Usa la señal para pedir verificación extra o revisar, no como única defensa. La API tiene cuotas diarias.
+
+```mermaid
+sequenceDiagram
+    participant A as App del conductor
+    participant P as Play Integrity
+    participant S as API RutaFlow
+    participant G as Google (decode)
+    A->>P: request(requestHash de la entrega)
+    P-->>A: token
+    A->>S: POST /entregas + token
+    S->>G: decodeIntegrityToken
+    G-->>S: veredicto
+    S->>S: compara requestHash y decide
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `app/src/main/java/co/rutaflow/conductor/integridad/Integridad.kt`:
+
+```kotlin
+package co.rutaflow.conductor.integridad
+
+import android.content.Context
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.StandardIntegrityManager.*
+import java.security.MessageDigest
+import kotlinx.coroutines.tasks.await
+
+class Integridad(contexto: Context, private val numeroProyecto: Long) {
+    private val gestor = IntegrityManagerFactory.createStandard(contexto)
+    private var proveedor: StandardIntegrityTokenProvider? = null
+
+    suspend fun preparar() { // una vez, al iniciar la app
+        proveedor = gestor.prepareIntegrityToken(
+            PrepareIntegrityTokenRequest.builder().setCloudProjectNumber(numeroProyecto).build()).await()
+    }
+
+    suspend fun tokenParaEntrega(codigo: String, epochSegundos: Long): String {
+        val hash = MessageDigest.getInstance("SHA-256")
+            .digest("$codigo|$epochSegundos".toByteArray())
+            .joinToString("") { "%02x".format(it) }
+        val token = requireNotNull(proveedor).request(
+            StandardIntegrityTokenRequest.builder().setRequestHash(hash).build()).await()
+        return token.token()
+    }
+}
+```
+
+Archivo `servidor/src/main/kotlin/co/rutaflow/api/VerificadorIntegridad.kt`:
+
+```kotlin
+package co.rutaflow.api
+
+// Respuesta ya decodificada por la API de Google (playintegrity.googleapis.com/v1/{paquete}:decodeIntegrityToken).
+data class Veredicto(val requestHash: String, val app: String, val dispositivo: List<String>)
+
+enum class Decision { ACEPTAR, VERIFICAR_EXTRA, RECHAZAR }
+
+fun decidir(veredicto: Veredicto, hashEsperado: String): Decision = when {
+    veredicto.requestHash != hashEsperado -> Decision.RECHAZAR       // token de otra acción
+    veredicto.app != "PLAY_RECOGNIZED" -> Decision.RECHAZAR          // app modificada o desconocida
+    "MEETS_DEVICE_INTEGRITY" !in veredicto.dispositivo -> Decision.VERIFICAR_EXTRA
+    else -> Decision.ACEPTAR
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew bundleRelease   # sube el .aab a la pista de prueba interna de Play Console
+# instala desde Play en un dispositivo de prueba y confirma una entrega
+```
+
+**Explicación por bloques:** En la app, `preparar` calienta el proveedor una sola vez. `tokenParaEntrega` calcula el SHA-256 del código del envío y la hora, y lo envía como `requestHash`; el token devuelto queda atado a esa acción. En el servidor, la respuesta de `decodeIntegrityToken` se resume en un `Veredicto`. `decidir` rechaza si el hash no coincide o si la app no es reconocida, pide verificación extra si el dispositivo no cumple la integridad básica y acepta en el resto de casos.
+
+**Resultado esperado:**
+
+```text
+App instalada desde Play en un dispositivo real: veredicto app PLAY_RECOGNIZED, dispositivo [MEETS_DEVICE_INTEGRITY] y decisión ACEPTAR.
+La misma app instalada con un APK modificado: app UNRECOGNIZED_VERSION y decisión RECHAZAR.
+Un token reutilizado para otra entrega: requestHash distinto y decisión RECHAZAR.
+```
+
+**Fallo deliberado:** instala la app con `./gradlew installDebug` en lugar de hacerlo desde Play. **Error esperado:** el veredicto de app es `UNRECOGNIZED_VERSION`. **Diagnóstico:** Play solo reconoce el binario que firmó y distribuyó. Prueba con la pista interna o usa las respuestas de prueba configurables en Play Console.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** instala desde la pista interna y confirma una entrega; revisa el veredicto en el servidor.
+2. **Variación:** configura en Play Console una respuesta de prueba con `MEETS_BASIC_INTEGRITY` y comprueba la decisión `VERIFICAR_EXTRA`.
+3. **Diagnóstico:** reproduce el fallo deliberado con `installDebug`.
+4. **Integración:** cambia la hora en el `requestHash` del servidor y comprueba que la decisión es `RECHAZAR`.
+5. **Diseño:** diseña qué pide la app cuando la decisión es `VERIFICAR_EXTRA` (por ejemplo, foto obligatoria o firma del cliente).
+
+**Pista:** si el hash no coincide, compara el texto exacto que hashean la app y el servidor, incluido el separador.
+
+#### Paso 6 · Práctica independiente
+
+Agrega pruebas unitarias a `decidir` para los cuatro casos (hash distinto, app no reconocida, dispositivo débil y todo correcto).
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué la decisión se toma en el servidor.
+- [ ] Ataste el token a la acción con `requestHash`.
+- [ ] Reprodujiste el veredicto de una app no instalada desde Play.
+- [ ] Tu política no bloquea a ciegas a dispositivos legítimos.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** decidir en la app, no atar el token a la acción y rechazar todo lo que no tenga la integridad máxima. **Siguiente paso:** el módulo 13 integra esta señal con el resto de la operación de seguridad de la app.
+
+**Transferencia al proyecto integrador «RutaFlow»:** exige un veredicto de Play Integrity para confirmar entregas en la API de RutaFlow, con verificación extra en dispositivos de integridad básica.
+
+**Fuente oficial:** [Android Developers — Play Integrity API overview](https://developer.android.com/google/play/integrity/overview) y [Android Developers — Make a standard API request](https://developer.android.com/google/play/integrity/standard).
+
 ## Proyecto del módulo
 
 Integra los seis temas en una rama `modulo-16`: adjunta foto sin permiso amplio,

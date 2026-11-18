@@ -28,6 +28,14 @@ flowchart TD
     E --> F
 ```
 
+**Fuente oficial:** [Sorting algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sorting_algorithm), [Sorting HOW TO (docs.python.org)](https://docs.python.org/3/howto/sorting.html); Baase y Van Gelder, cap. 4.
+**Conceptos clave:** divide y vencerás, pivote, mezcla, estabilidad, O(n log n) frente a O(n²), peor caso.
+**Cuándo no usarlo:** en código de producción usa `sorted()` o `list.sort()` (Timsort): está optimizado en C y es estable. Implementa tu propio ordenamiento solo para aprender o cuando tengas una restricción muy concreta (por ejemplo, datos que no caben en memoria).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** ordena las tareas por prioridad y fecha límite con una clave compuesta y explica por qué la estabilidad importa cuando dos tareas tienen la misma prioridad.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -111,13 +119,6 @@ Ordena una lista de paquetes `(peso, guia)` por peso con `merge_sort` adaptado y
 
 #### Paso 7 · Cierre
 Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
-**Fuente oficial:** [Sorting algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sorting_algorithm), [Sorting HOW TO (docs.python.org)](https://docs.python.org/3/howto/sorting.html); Baase y Van Gelder, cap. 4.
-**Conceptos clave:** divide y vencerás, pivote, mezcla, estabilidad, O(n log n) frente a O(n²), peor caso.
-**Cuándo no usarlo:** en código de producción usa `sorted()` o `list.sort()` (Timsort): está optimizado en C y es estable. Implementa tu propio ordenamiento solo para aprender o cuando tengas una restricción muy concreta (por ejemplo, datos que no caben en memoria).
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** ordena las tareas por prioridad y fecha límite con una clave compuesta y explica por qué la estabilidad importa cuando dos tareas tienen la misma prioridad.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 ### Tema 2: Algoritmos codiciosos y árbol de expansión mínima
 
@@ -142,6 +143,14 @@ graph LR
     N -. 7 descartada .- S
     S -. 9 descartada .- O
 ```
+
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), que incluyen dos clases de árboles de expansión mínima, y Baase y Van Gelder, cap. 8, pendiente de lectura completa en el disco externo. Wikipedia deja de ser la referencia principal del tema.
+**Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
+**Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** asigna tareas a franjas horarias con selección de actividades y documenta qué tareas quedan fuera.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -221,13 +230,6 @@ Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, f
 
 #### Paso 7 · Cierre
 Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
-**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), que incluyen dos clases de árboles de expansión mínima, y Baase y Van Gelder, cap. 8, pendiente de lectura completa en el disco externo. Wikipedia deja de ser la referencia principal del tema.
-**Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
-**Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** asigna tareas a franjas horarias con selección de actividades y documenta qué tareas quedan fuera.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 ### Tema 3: Caminos más cortos con Dijkstra
 
@@ -254,6 +256,14 @@ graph LR
     K -- 40 --> U
     U -- 30 --> B
 ```
+
+**Fuente oficial:** [Dijkstra's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), [heapq (docs.python.org)](https://docs.python.org/3/library/heapq.html); Baase y Van Gelder, caps. 8-9.
+**Conceptos clave:** grafo con pesos, relajación, cola de prioridad (heapq), camino reconstruido, pesos negativos, Bellman-Ford.
+**Cuándo no usarlo:** si todos los tramos cuestan lo mismo, BFS es más simple y rápido. Si hay pesos negativos, usa Bellman-Ford. Para mapas reales enormes se usan variantes como A* con heurística o jerarquías de contracción.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela el tiempo estimado entre tareas dependientes como pesos y calcula la cadena de tareas más larga o la más corta hasta una entrega.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -331,13 +341,6 @@ Implementa Bellman-Ford sobre el mismo mapa con la arista negativa y comprueba q
 
 #### Paso 7 · Cierre
 Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
-**Fuente oficial:** [Dijkstra's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), [heapq (docs.python.org)](https://docs.python.org/3/library/heapq.html); Baase y Van Gelder, caps. 8-9.
-**Conceptos clave:** grafo con pesos, relajación, cola de prioridad (heapq), camino reconstruido, pesos negativos, Bellman-Ford.
-**Cuándo no usarlo:** si todos los tramos cuestan lo mismo, BFS es más simple y rápido. Si hay pesos negativos, usa Bellman-Ford. Para mapas reales enormes se usan variantes como A* con heurística o jerarquías de contracción.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela el tiempo estimado entre tareas dependientes como pesos y calcula la cadena de tareas más larga o la más corta hasta una entrega.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 ### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP
 
@@ -360,6 +363,14 @@ flowchart TD
     F --> S["tabla de fallos de ABAB = 2"]
     S --> R["continúa comparando desde patrón[2]"]
 ```
+
+**Fuentes oficiales y primarias:** [artículo original *Fast Pattern Matching in Strings* alojado por Brown University](https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf), Knuth, Morris y Pratt (1977), y Baase y Van Gelder, cap. 11, pendiente de lectura completa en el disco externo. El artículo establece tiempo proporcional a la suma de las longitudes; esta lección conserva una implementación educativa propia.
+**Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
+**Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una búsqueda por texto en los títulos de las tareas y mide la diferencia entre tu KMP y `in`.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -442,13 +453,6 @@ Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios pa
 
 #### Paso 7 · Cierre
 Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
-**Fuentes oficiales y primarias:** [artículo original *Fast Pattern Matching in Strings* alojado por Brown University](https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf), Knuth, Morris y Pratt (1977), y Baase y Van Gelder, cap. 11, pendiente de lectura completa en el disco externo. El artículo establece tiempo proporcional a la suma de las longitudes; esta lección conserva una implementación educativa propia.
-**Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
-**Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una búsqueda por texto en los títulos de las tareas y mide la diferencia entre tu KMP y `in`.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 ### Tema 5: Problemas intratables: P, NP y heurísticas
 
@@ -470,6 +474,14 @@ flowchart LR
     P["P: se resuelve rápido"] --> NP["NP: se verifica rápido"]
     NPC["NP-completos: TSP, SAT, mochila"] --> NP
 ```
+
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), en particular la clase 17 de complejidad y NP-completitud y la clase 18 de aproximaciones; Baase y Van Gelder, cap. 13, queda pendiente de lectura completa en el disco externo. Las notas definen P, NP, reducciones y NP-hard; no prueban que toda heurística produzca una aproximación con cota.
+**Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
+**Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** planifica el orden de las tareas de un día con un tiempo máximo y justifica por qué aceptas una solución aproximada.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
@@ -543,13 +555,6 @@ Investiga y explica con tus palabras otro problema NP-completo que aparezca en l
 
 #### Paso 7 · Cierre
 Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
-**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), en particular la clase 17 de complejidad y NP-completitud y la clase 18 de aproximaciones; Baase y Van Gelder, cap. 13, queda pendiente de lectura completa en el disco externo. Las notas definen P, NP, reducciones y NP-hard; no prueban que toda heurística produzca una aproximación con cota.
-**Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
-**Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** planifica el orden de las tareas de un día con un tiempo máximo y justifica por qué aceptas una solución aproximada.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 ## Construcción guiada del capítulo
 

@@ -406,6 +406,15 @@ sequenceDiagram
     I-->>F: done true
 ```
 
+**¿Por qué es importante?** porque el protocolo de iteración es la base de `for...of`, `Array.from`, `Promise.all` con iterables y los iteradores asíncronos de streams.
+**Fuente oficial:** [MDN: Iteration protocols](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Iteration_protocols), [MDN: Symbol](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Symbol).
+**Conceptos clave:** `Symbol`, `Symbol.for`, símbolos bien conocidos, protocolo de iteración, iterador, `next()`, generador, `Symbol.toStringTag`.
+**Cuándo no usarlo:** si tu clase solo envuelve un array, devolver `this.#paradas[Symbol.iterator]()` o exponer una copia es más simple que escribir `next()` a mano.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** haz iterable el historial de eventos de un envío para mostrarlo en la línea de tiempo pública.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** nombrar el método `iterator()` en vez de usar la clave `[Symbol.iterator]`, lo que produce `TypeError: ... is not iterable` porque ningún texto parecido activa el protocolo; escribir `next()` a mano cuando un generador (`function*`) ya produce ese iterador sin ese código repetitivo.
+
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
@@ -491,14 +500,7 @@ Agrega a `Ruta` un generador `*conDistancia(km)` que entregue pares `[parada, km
 Crea un iterable infinito de números de guía (`BO-000001`, `BO-000002`, …) y toma solo los primeros 5 con desestructuración, explicando por qué no se cuelga.
 
 #### Paso 7 · Cierre
-**¿Por qué es importante?** porque el protocolo de iteración es la base de `for...of`, `Array.from`, `Promise.all` con iterables y los iteradores asíncronos de streams.
-**Fuente oficial:** [MDN: Iteration protocols](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Iteration_protocols), [MDN: Symbol](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Symbol).
-**Conceptos clave:** `Symbol`, `Symbol.for`, símbolos bien conocidos, protocolo de iteración, iterador, `next()`, generador, `Symbol.toStringTag`.
-**Cuándo no usarlo:** si tu clase solo envuelve un array, devolver `this.#paradas[Symbol.iterator]()` o exponer una copia es más simple que escribir `next()` a mano.
 
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** haz iterable el historial de eventos de un envío para mostrarlo en la línea de tiempo pública.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** nombrar el método `iterator()` en vez de usar la clave `[Symbol.iterator]`, lo que produce `TypeError: ... is not iterable` porque ningún texto parecido activa el protocolo; escribir `next()` a mano cuando un generador (`function*`) ya produce ese iterador sin ese código repetitivo.
 
 ## Construcción guiada del capítulo
 

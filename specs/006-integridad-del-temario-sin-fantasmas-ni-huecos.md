@@ -1,6 +1,6 @@
 # 006 · Integridad del temario: cero temas fantasma y cero huecos
 
-**Estado:** vigente
+**Estado:** hecho
 **Origen:** pedido del 2026-11-18: «todos los temas están mal, con spec driven revisa todos los temas y
 no dejes huecos ni temas fantasmas».
 
@@ -30,27 +30,27 @@ no dejes huecos ni temas fantasmas».
 
 ## Criterios
 
-- **I1** `pendiente` — El temario web solo publica temas reales. Cada entrada de
+- **I1** `hecho` — El temario web solo publica temas reales. Cada entrada de
   `web/public/content/curriculum-stacks/*.json` apunta a un fragmento existente de `topic-index.json`, y
   el catálogo solo lista áreas con ruta real.
   - Los candidatos de libros y cursos siguen en `docs/temario-maestro-unificado.json` como insumo
     editorial interno.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I1`
-- **I2** `pendiente` — Índice, Markdown y temario coinciden 1:1:
+- **I2** `hecho` — Índice, Markdown y temario coinciden 1:1:
   - mismos temas por ruta y módulo;
   - numeración `Tema 1..N` sin saltos;
   - ningún módulo sin temas.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I2`
-- **I3** `pendiente` — Ningún título de tema se repite dentro de una ruta.
+- **I3** `hecho` — Ningún título de tema se repite dentro de una ruta.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I3`
-- **I4** `pendiente` — En los temas de siete pasos, «Paso 7 · Cierre» es lo último del tema. El
+- **I4** `hecho` — En los temas de siete pasos, «Paso 7 · Cierre» es lo último del tema. El
   contenido heredado que estaba pegado después del cierre se integra en el Paso 3, donde va la teoría y
   el modelo mental, sin perder texto ni código.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I4`
-- **I5** `pendiente` — Todo comando de ejecución apunta a un proyecto que el curso enseña a crear. En
+- **I5** `hecho` — Todo comando de ejecución apunta a un proyecto que el curso enseña a crear. En
   iOS, el esquema `RutaFlowApp` que usan 46 temas se crea en el capítulo 0, paso a paso.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I5`
-- **I6** `pendiente` — Cada tema del atlas oficial tiene una decisión en
+- **I6** `hecho` — Cada tema del atlas oficial tiene una decisión en
   `docs/official-topic-coverage.json`, con fragmentos que existen en `topic-index.json`. No queda
   ningún tema con decisión `hueco`.
   Verificación: `python3 scripts/audit_topic_integrity.py --criterion I6`

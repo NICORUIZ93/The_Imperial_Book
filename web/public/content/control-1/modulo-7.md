@@ -11,7 +11,7 @@ Con impedancias en Laplace, un circuito se resuelve como si solo tuviera resiste
 
 ## Aprende construyendo
 
-### Tema 1: Impedancias
+### Tema 1: Impedancias de resistencia, bobina y condensador en s
 
 **¿Por qué es importante?** Con impedancias resuelves un circuito como si solo tuviera resistencias; es el atajo que faltó en el punto 2 del Parcial 1.
 

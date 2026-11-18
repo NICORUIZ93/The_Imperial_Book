@@ -129,28 +129,7 @@ Al finalizar podrás investigar incidentes desde cero. Prerrequisitos: Node.js y
 Una alerta debe llevar a una hipótesis verificable y una acción.
 #### Paso 3 · Teoría, modelo mental y analogía
 Diagnosticar es reconstruir una ruta con logs, métricas y tiempos.
-#### Paso 4 · Demostración guiada
-Crea `src/incident.md` desde una carpeta vacía.
-```bash
-mkdir ejemplo-incidente
-node --version
-```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
-#### Paso 5 · Práctica guiada
-Pista: oculta una señal para provocar un fallo deliberado de diagnóstico y corrígelo.
-#### Paso 6 · Práctica independiente
-Escribe timeline, hipótesis y prueba.
-#### Paso 7 · Cierre
-Entrega timeline, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad operacional. Errores comunes: culpar sin evidencia y no registrar decisiones. Fuente oficial: https://sre.google/sre-book/incident-response/.
 **Conceptos clave:** encontrar la causa raíz con evidencia, no adivinando.
 
 Encontrar la causa de un error sin adivinar requiere un proceso sistemático que combina las herramientas anteriores: filtrar logs por el patrón de error específico (`filter-log-events --filter-pattern "ERROR"`) para identificar cuándo y con qué frecuencia ocurre, extraer el correlation ID de las ocurrencias específicas para reconstruir el recorrido completo de las transacciones afectadas a través de todos los servicios involucrados, y consultar un dashboard con las métricas clave de la API (latencia, tasa de error, throughput) para entender el contexto general del sistema en el momento del incidente, en vez de depender de conjeturas basadas en la memoria de qué cambió recientemente sin evidencia concreta que lo respalde.
@@ -174,6 +153,29 @@ flowchart TD
 ---
 
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue una confirmación desde HTTP hasta su consumidor usando el mismo identificador. Introduce una dependencia lenta y conserva los eventos o spans que permiten localizarla sin registrar datos personales.
+
+#### Paso 4 · Demostración guiada
+Crea `src/incident.md` desde una carpeta vacía.
+```bash
+mkdir ejemplo-incidente
+node --version
+```
+
+**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
+
+```bash
+floci up
+aws --endpoint-url http://localhost:4566 sts get-caller-identity
+```
+Confirma la respuesta del servicio emulado.
+
+Resultado esperado: Node disponible.
+#### Paso 5 · Práctica guiada
+Pista: oculta una señal para provocar un fallo deliberado de diagnóstico y corrígelo.
+#### Paso 6 · Práctica independiente
+Escribe timeline, hipótesis y prueba.
+#### Paso 7 · Cierre
+Entrega timeline, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad operacional. Errores comunes: culpar sin evidencia y no registrar decisiones. Fuente oficial: https://sre.google/sre-book/incident-response/.
 
 ## Laboratorio práctico
 
