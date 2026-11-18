@@ -35,9 +35,11 @@ if the work is new, add a numbered criterion with its `Verificación:` command f
 New or rewritten topics must follow `specs/002-estandar-temas-con-capturas-y-ayudas.md` (visual aid,
 real terminal/app capture via `scripts/render_terminal_capture.py`, file-named code blocks with a
 block-by-block explanation) and be added to `specs/visual-aids-scope.json`.
-Batches of course work are driven by `MASTER-PROMPT.md` v2 (pautas 13–17: easy explanations, visual
-aids, real captures, code aids, zero-to-master coverage) and measured with `docs/zero-to-master.md`.
-Screenshots the owner saves are turned into topics via `docs/capture-intake.json` (see MASTER-PROMPT §3.1.1).
+Batches of course work are driven by `MASTER-PROMPT.md` v3 (specs/008): a constitution, the SDD flow,
+a research protocol, the 12-part topic standard with real captures and three levels of exercises, agent
+roles and an independent review loop; progress is measured with `docs/zero-to-master.md`. The phase plan
+and its order live in specs/008. Screenshots the owner saves are turned into topics via
+`docs/capture-intake.json` (see MASTER-PROMPT section 9).
 `scripts/validate.sh` runs `validate_specs.py`, `audit_lesson_assets.py`, `audit_visual_aids.py`,
 `validate_capture_intake.py`, `validate_master_prompt.py` and `build_zero_to_master_report.py --check`.
 

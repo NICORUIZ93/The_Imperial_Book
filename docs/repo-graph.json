@@ -52,7 +52,7 @@
     },
     {
       "path": "CLAUDE.md",
-      "lines": 133,
+      "lines": 135,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -93,23 +93,23 @@
     },
     {
       "path": "MASTER-PROMPT.md",
-      "lines": 224,
+      "lines": 141,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# MASTER PROMPT \u2014 THE IMPERIAL BOOK \u00b7 RECONSTRUCCI\u00d3N COMPLETA",
-        "## PARTE 0 \u00b7 C\u00d3MO TRABAJAR: ESPECIFICACI\u00d3N PRIMERO (SDD)",
-        "## PARTE 1 \u00b7 METODOLOG\u00cdA EDITORIAL",
-        "### 1.1 Las 12 pautas innegociables",
-        "### 1.2 Regla de preservaci\u00f3n",
-        "### 1.3 Formato de capstone",
-        "## PARTE 2 \u00b7 CURR\u00cdCULO COMPLETO \u2014 16 RUTAS PUBLICADAS + CURSOS APROBADOS",
-        "## PARTE 3 \u00b7 INSTRUCCIONES DE EJECUCI\u00d3N",
-        "### 3.1 Expandir cada tema al formato de 7 pasos",
-        "### 3.1.1 Convertir capturas de pantalla en temas",
-        "### 3.2 Orden de ejecuci\u00f3n por track",
-        "### 3.3 Puerta estricta antes de publicar un tema"
+        "# MASTER-PROMPT v3 \u00b7 The Imperial Book",
+        "## 0. Rol y misi\u00f3n",
+        "## 1. Constituci\u00f3n (reglas que no se negocian)",
+        "## 2. Flujo spec-driven por lote",
+        "## 3. Protocolo de investigaci\u00f3n",
+        "## 4. Est\u00e1ndar de tema (definici\u00f3n de terminado)",
+        "## 5. Agentes y responsabilidades",
+        "## 6. Bucle de retroalimentaci\u00f3n",
+        "## 7. Cat\u00e1logo de cursos y orden",
+        "## 8. Web acad\u00e9mica",
+        "## 9. Capturas que guarda el due\u00f1o",
+        "## 10. Entrega de cada lote"
       ]
     },
     {
@@ -12998,7 +12998,7 @@
     },
     {
       "path": "scripts/validate_master_prompt.py",
-      "lines": 73,
+      "lines": 77,
       "kind": "automation-script",
       "symbols": [
         "main"
@@ -13296,8 +13296,21 @@
       ]
     },
     {
+      "path": "specs/008-gobierno-prompt-maestro-v3.md",
+      "lines": 36,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 008 \u00b7 Gobierno: prompt maestro v3 y plan por fases",
+        "## Decisiones del due\u00f1o (2026-11-18)",
+        "## Criterios",
+        "## Fases (cada una con su propia spec)"
+      ]
+    },
+    {
       "path": "specs/README.md",
-      "lines": 48,
+      "lines": 49,
       "kind": "documentation",
       "symbols": [],
       "imports": [],

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Valida que el prompt maestro v2 conserve sus secciones obligatorias (specs/003, P3 y P4).
+"""Valida que el prompt maestro v3 conserve sus secciones obligatorias (specs/008; antes specs/003).
 
-Comprueba en MASTER-PROMPT.md: SDD, pautas 13–17 (explicación fácil, ayudas visuales, capturas
-reales, ayudas de código, de cero a master), ingreso de capturas y cifras iguales a topic-index.json.
+Comprueba en MASTER-PROMPT.md: constitución, flujo SDD, investigación, estándar de tema, agentes,
+bucle de revisión, ingreso de capturas, equivalencias con las pautas 13–17 de la v2 y cifras iguales
+a topic-index.json.
 Comprueba en docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md: nombre The Imperial Book, referencia a
 specs/002 y principios de enseñanza. También verifica que existan los archivos que ambos citan.
 """
@@ -19,13 +20,16 @@ METHOD = ROOT / "docs" / "PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md"
 INDEX = ROOT / "web" / "public" / "content" / "topic-index.json"
 
 MASTER_REQUIRED = (
-    "## PARTE 0 · CÓMO TRABAJAR: ESPECIFICACIÓN PRIMERO (SDD)",
-    "**PAUTA 13 — Explicación fácil.**",
-    "**PAUTA 14 — Ayudas visuales.**",
-    "**PAUTA 15 — Capturas reales.**",
-    "**PAUTA 16 — Ayudas de código.**",
-    "**PAUTA 17 — De cero a master.**",
-    "### 3.1.1 Convertir capturas de pantalla en temas",
+    "# MASTER-PROMPT v3 · The Imperial Book",
+    "## 1. Constitución (reglas que no se negocian)",
+    "## 2. Flujo spec-driven por lote",
+    "## 3. Protocolo de investigación",
+    "## 4. Estándar de tema (definición de terminado)",
+    "## 5. Agentes y responsabilidades",
+    "## 6. Bucle de retroalimentación",
+    "## 9. Capturas que guarda el dueño",
+    "PAUTA 13 — Explicación fácil",
+    "PAUTA 17 — De cero a master",
 )
 METHOD_REQUIRED = (
     "editor de The Imperial Book",

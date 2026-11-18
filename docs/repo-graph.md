@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 19:11 UTC
+Generated: 2026-11-18 19:35 UTC
 Root: `the_imperial_book`
-Indexed files: 1690
+Indexed files: 1691
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 71 files
 - `automation-script`: 62 files
 - `course-content`: 320 files
-- `documentation`: 181 files
+- `documentation`: 182 files
 - `example`: 962 files
 - `local-infra`: 1 files
 - `project-file`: 93 files
 
 ## File Types
 
-- `.md`: 545
+- `.md`: 546
 - `.java`: 417
 - `.py`: 191
 - `.json`: 120
@@ -235,10 +235,10 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `AGENTS.md` (92 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ### Profundidad obligatoria de temas y subtemas
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
-- `CLAUDE.md` (133 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
+- `CLAUDE.md` (135 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
-- `MASTER-PROMPT.md` (224 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 0 · CÓMO TRABAJAR: ESPECIFICACIÓN PRIMERO (SDD), ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables
+- `MASTER-PROMPT.md` (141 lines) - headings: # MASTER-PROMPT v3 · The Imperial Book, ## 0. Rol y misión, ## 1. Constitución (reglas que no se negocian), ## 2. Flujo spec-driven por lote
 - `README.md` (388 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 163 more files
+- ... 164 more files
 
 ### example
 

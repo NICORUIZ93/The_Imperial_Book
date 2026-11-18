@@ -1,7 +1,7 @@
 # Prompt maestro para transformar el temario en formación desde cero hasta nivel profesional master
 
-> **Versión 2 (2026-11-18, specs/003).** Se usa junto con `MASTER-PROMPT.md` (pautas 13–17) y la spec
-> `specs/002-estandar-temas-con-capturas-y-ayudas.md`. Cada lote empieza con una spec en `specs/`.
+> **Versión 2 (2026-11-18, specs/003).** Se usa junto con `MASTER-PROMPT.md` v3 (sección 4, que conserva las
+> pautas 13–17) y la spec `specs/002-estandar-temas-con-capturas-y-ayudas.md`. Cada lote empieza con una spec en `specs/`.
 
 Usa este prompt con un stack, módulo o conjunto de temas del `temario-maestro-unificado.json`. No publiques automáticamente la respuesta: trátala como borrador editorial que debe contrastarse con documentación primaria, ejecutarse y revisarse.
 

@@ -30,6 +30,6 @@ en el mismo commit; `validate_specs.py --run` comprobará desde entonces que no 
 ## Cómo ejecutar un lote
 
 1. Elige un módulo y los criterios pendientes que vas a cerrar; anótalos aquí como subtareas.
-2. Escribe o reescribe los temas con `MASTER-PROMPT.md` v2 (pautas 13–17) y specs/002.
+2. Escribe o reescribe los temas con `MASTER-PROMPT.md` v3 (sección 4) y specs/002.
 3. Agrega cada tema a `specs/visual-aids-scope.json` con su captura real.
 4. Corre `./scripts/validate.sh`; si un criterio pasa, márcalo `hecho` y corre `python3 scripts/validate_specs.py --run`.
