@@ -72,9 +72,9 @@ El lector agrupa el capítulo en temas y, al pie de cada uno, muestra el avance 
 
 ## Mantenimiento tecnológico
 
-Las rutas que dependen de tecnologías con versiones se revisan contra fuentes primarias. El registro [`official-sources.json`](official-sources.json) guarda la línea estable o LTS de referencia, las notas de versiones, la guía de migración, la fecha de revisión y los términos incorporados al contenido.
+Las rutas que dependen de tecnologías con versiones se revisan contra fuentes primarias. Cada curso registra en su spec la línea estable o LTS de referencia, las notas de versiones, la guía de migración y la fecha de revisión.
 
-La automatización mensual ejecuta la validación completa. Una revisión con más de 120 días falla deliberadamente para obligar a evaluar novedades, vulnerabilidades, retiros y cambios incompatibles. Una versión nueva no se incorpora por existir: primero se clasifica como estable, LTS, Current, preview o experimental y se añade una práctica de migración o compatibilidad verificable.
+Una versión nueva no se incorpora por existir: primero se clasifica como estable, LTS, Current, preview o experimental y se añade una práctica de migración o compatibilidad verificable.
 
 ## Calidad del código en toda la academia
 

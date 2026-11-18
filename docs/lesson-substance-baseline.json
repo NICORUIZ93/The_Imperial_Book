@@ -1,4 +1,0 @@
-{
-  "allowed": {},
-  "description": "Deuda histórica aceptada por scripts/audit_lesson_substance.py --strict. Cada entrada debe reducirse, nunca ampliarse."
-}

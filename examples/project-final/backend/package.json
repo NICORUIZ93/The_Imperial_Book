@@ -1,8 +1,0 @@
-{
-  "name": "project-final-backend",
-  "private": true,
-  "description": "Lambdas del Sistema de Gestión de Tareas (Módulo 9) — CRUD sobre DynamoDB con notificación vía SQS.",
-  "dependencies": {
-    "aws-sdk": "^2.1692.0"
-  }
-}
