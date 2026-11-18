@@ -3,7 +3,15 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** este módulo necesita un proyecto con TypeScript, porque las comprobaciones son errores de tipos. Créalo una vez, junto a `mi-react`:
+
+```bash
+npm create vite@latest mi-react-ts -- --template react-ts
+cd mi-react-ts
+npm install
+```
+
+Cada ejemplo reemplaza `src/App.tsx`. `npm run dev` lo sirve en `http://localhost:5173` (sin revisar tipos); `npm run build` ejecuta `tsc -b` y **es la prueba de este módulo**: falla si hay un error de tipos.
 
 ### Tema 1: Tipado de props y children
 
@@ -83,20 +91,27 @@ interface EnvioCardProps {
 function EnvioCard({ guia, direccion, children }: EnvioCardProps) {
   return <div><h3>{guia}</h3><p>{direccion}</p>{children}</div>;
 }
+
+export default function App() {
+  return (
+    <EnvioCard guia="RF-4471" direccion="Calle 10 # 5-20">
+      <p>Entrega antes de las 18:00</p>
+    </EnvioCard>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en `mi-react-ts`: reemplaza todo el contenido de `src/App.tsx` por el bloque anterior y comprueba los tipos y el resultado:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm run build
 npm run dev
 ```
 
-Resultado esperado: `<EnvioCard direccion="Calle 10" />` (sin `guia`) falla en tiempo de compilación con un error explícito señalando que falta la prop obligatoria `guia` — nunca llega a ejecutarse con un valor `undefined` en producción. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: `npm run build` termina sin errores. Si quitas `guia="RF-4471"`, la compilación falla con `error TS2741: Property 'guia' is missing in type ... but required in type 'EnvioCardProps'` — nunca llega a ejecutarse con un valor `undefined` en producción.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá `guia: string` a `guia: any` "para que compile rápido mientras terminás otra cosa" — ese es el fallo deliberado: ahora `<EnvioCard guia={123} direccion="Calle 10" />` (pasando un número) compila sin ningún error, aunque el resto del código de `EnvioCard` asuma que `guia` siempre es un string.
+Pista: cambia `guia: string` a `guia: any` "para que compile rápido mientras terminas otra cosa" — ese es el fallo deliberado: ahora `<EnvioCard guia={123} direccion="Calle 10" />` (pasando un número) compila sin ningún error, aunque el resto del código de `EnvioCard` asuma que `guia` siempre es un string.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcional `destacado?: boolean`, confirmando que usar `EnvioCard` sin esa prop sigue compilando (por ser opcional) pero pasar un valor del tipo incorrecto sigue siendo rechazado. Tipa las props de `EnvioCard` en el proyecto integrador RutaFlow y verifica que una prop opcional omitida siga compilando.
@@ -136,37 +151,53 @@ function useLocalStorage<T>(clave: string, valorInicial: T) {
   return [valor, setValor] as const;
 }
 
+// Dentro de un componente (nunca a nivel de módulo):
 const [tema, setTema] = useLocalStorage<'claro' | 'oscuro'>('tema', 'claro');
 ```
 
 
 #### Paso 4 · Demostración guiada desde cero
 ```tsx
+import { useEffect, useState } from 'react';
+
 function useLocalStorage<T>(clave: string, valorInicial: T) {
   const [valor, setValor] = useState<T>(() => {
     const guardado = localStorage.getItem(clave);
-    return guardado ? JSON.parse(guardado) : valorInicial;
+    if (guardado === null) return valorInicial;
+    try {
+      return JSON.parse(guardado) as T;
+    } catch {
+      return valorInicial; // JSON corrupto: se descarta en vez de romper el render
+    }
   });
   useEffect(() => localStorage.setItem(clave, JSON.stringify(valor)), [clave, valor]);
   return [valor, setValor] as const;
 }
 
-const [zona, setZona] = useLocalStorage<string>('zona', 'todas');
-const [columnas, setColumnas] = useLocalStorage<string[]>('columnas', ['guia', 'estado']);
+export default function App() {
+  // Los hooks se llaman dentro de un componente, nunca a nivel de módulo.
+  const [zona, setZona] = useLocalStorage<string>('zona', 'todas');
+  const [columnas, setColumnas] = useLocalStorage<string[]>('columnas', ['guia', 'estado']);
+  return (
+    <main>
+      <button onClick={() => setZona('norte')}>Zona: {zona}</button>
+      <button onClick={() => setColumnas([...columnas, 'direccion'])}>Columnas: {columnas.join(', ')}</button>
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en `mi-react-ts`: reemplaza todo el contenido de `src/App.tsx` por el bloque anterior y comprueba los tipos y el resultado:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm run build
 npm run dev
 ```
 
-Resultado esperado: el mismo `useLocalStorage` tipa correctamente `zona` como `string` y `columnas` como `string[]` en cada punto de uso, sin que la implementación del hook necesite conocer de antemano cuáles serían esos tipos concretos. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: el mismo `useLocalStorage` tipa correctamente `zona` como `string` y `columnas` como `string[]` en cada punto de uso, sin que la implementación del hook necesite conocer de antemano cuáles serían esos tipos concretos; `npm run build` termina sin errores. Si guardas a mano un valor que no es JSON (`localStorage.setItem('zona', '{roto')` en la consola), el hook vuelve al valor inicial en vez de romper el render.
 
 #### Paso 5 · Práctica guiada
-Pista: invocá el hook con un valor inicial ambiguo (`useLocalStorage('zona', null)`) en vez de especificar el tipo explícitamente — ese es el fallo deliberado: TypeScript infiere `T` como `null`, y `setZona('norte')` ahora es rechazado (porque `T` quedó fijado en `null`, no en `string`), perdiendo la utilidad real del tipo por depender de una inferencia ambigua.
+Pista: invoca el hook con un valor inicial ambiguo (`useLocalStorage('zona', null)`) en vez de especificar el tipo explícitamente — ese es el fallo deliberado: TypeScript infiere `T` como `null`, y `setZona('norte')` ahora es rechazado (`error TS2345: Argument of type '"norte"' is not assignable to parameter of type 'SetStateAction<null>'`) (porque `T` quedó fijado en `null`, no en `string`), perdiendo la utilidad real del tipo por depender de una inferencia ambigua.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLocalStorage<string>('zona', 'todas')`) en vez de depender de la inferencia en un caso ambiguo, y confirmá que `setZona(42)` ahora sí es rechazado en tiempo de compilación. Tipa el hook de almacenamiento del proyecto integrador RutaFlow y comprueba que un valor de tipo incorrecto falle al compilar.
@@ -224,11 +255,11 @@ flowchart TD
     D --> E
 ```
 
-Ejercicio: compilá el proyecto y confirmá que TypeScript rechaza la combinación inválida:
+Ejercicio: compila el proyecto y confirma que TypeScript rechaza la combinación inválida:
 ```bash
 npm run build
 ```
-Resultado esperado: la compilación falla si algún lugar del código pasa `href` a `<Boton>` sin `as="a"`, señalando el error de tipos exactamente en esa línea antes de llegar a producción. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: la compilación falla si algún lugar del código pasa `href` a `<Boton>` sin `as="a"`, señalando el error de tipos exactamente en esa línea antes de llegar a producción.
 
 ---
 
@@ -239,30 +270,37 @@ function manejarCambioBusqueda(e: React.ChangeEvent<HTMLInputElement>) {
 }
 
 type BotonProps<T extends React.ElementType> = { as?: T } & React.ComponentPropsWithoutRef<T>;
+
 function Boton<T extends React.ElementType = 'button'>({ as, ...props }: BotonProps<T>) {
   const Componente = as || 'button';
   return <Componente {...props} />;
 }
-// <Boton as="a" href="/envios/RF-4471">Ver detalle</Boton>
+
+export default function App() {
+  return (
+    <main>
+      <input aria-label="Buscar envío" onChange={manejarCambioBusqueda} />
+      <Boton as="a" href="/envios/RF-4471">Ver detalle</Boton>
+      <Boton onClick={() => console.log('acción')}>Marcar entregado</Boton>
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en `mi-react-ts`: reemplaza todo el contenido de `src/App.tsx` por el bloque anterior y comprueba los tipos y el resultado:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm run build
 npm run dev
 ```
 
-Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación, porque un `<button>` no tiene una prop `href` válida.
-
-Ejecuta `npm test` y confirma que las pruebas de eventos tipados pasan.
+Resultado esperado: `<Boton as="a" href="/envios/RF-4471">` compila correctamente (TypeScript sabe que `<a>` acepta `href`); `<Boton href="/envios/RF-4471">` sin `as="a"` (dejando el `button` por defecto) es rechazado en tiempo de compilación (`error TS2322`), porque un `<button>` no tiene una prop `href` válida. Compruébalo cambiando `<Boton onClick={...}>` por `<Boton href="/envios/RF-4471">` y ejecutando `npm run build`.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a `React.ChangeEvent<HTMLElement>` (el tipo base genérico) — ese es el fallo deliberado: TypeScript ya no reconoce que `.value` existe en `e.target`, y acceder a `e.target.value` ahora produce un error de compilación, perdiendo exactamente la seguridad de tipos que el tipo específico ofrecía.
+Pista: cambia el tipo del manejador de `React.ChangeEvent<HTMLInputElement>` a `React.ChangeEvent<HTMLElement>` (el tipo base genérico) — ese es el fallo deliberado: TypeScript ya no reconoce que `.value` existe en `e.target`, y acceder a `e.target.value` ahora produce un error de compilación, perdiendo exactamente la seguridad de tipos que el tipo específico ofrecía.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agregá un segundo caso polimórfico: `<Boton as="label" htmlFor="busqueda">`, confirmando que TypeScript acepta `htmlFor` solo cuando `as="label"`.
+Corrige el Paso 5 devolviendo el tipo específico `HTMLInputElement`, y agrega un segundo caso polimórfico: `<Boton as="label" htmlFor="busqueda">`, confirmando que TypeScript acepta `htmlFor` solo cuando `as="label"`.
 
 #### Paso 7 · Cierre
 Entregá el evento tipado y el componente polimórfico del Paso 4, la pérdida de tipo específico del Paso 5, y el segundo caso polimórfico del Paso 6; explicá por qué usar el tipo de elemento más específico posible preserva el acceso tipado a las propiedades reales de ese elemento. Siguiente paso: cerrá el módulo migrando un componente completo a TypeScript estricto sin ningún `any`. Errores comunes: tipar un evento con el tipo base genérico en vez del específico del elemento real, omitir la restricción `T extends React.ElementType` en un componente polimórfico, y aceptar props que no son válidas para el elemento efectivamente renderizado según `as`. Fuentes oficiales: https://react.dev/learn/typescript#typing-the-usestate-hook y https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html.

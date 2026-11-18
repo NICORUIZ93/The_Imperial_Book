@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: Medir antes de optimizar
 
@@ -62,23 +62,49 @@ Profiler graba una interacción → muestra QUÉ componentes se re-renderizaron 
 **Límites y decisión de uso:** Una medición aislada mezcla variabilidad, herramientas y trabajo de desarrollo. Repite el mismo recorrido con datos y build comparables; optimiza el cuello observado y verifica que la mejora no cambia el resultado funcional.
 
 #### Paso 4 · Demostración guiada desde cero
-```text
-1. Abrí React DevTools > pestaña Profiler
-2. Click en grabar (●)
-3. Escribí una letra en el campo de filtro de zona
-4. Detené la grabación
-5. Inspeccioná qué componentes aparecen resaltados y por qué
+```jsx
+import { useState } from 'react';
+
+function EncabezadoPanel({ titulo }) {
+  return <h1>{titulo}</h1>; // no lee el filtro
+}
+
+function ListaEnvios({ zona }) {
+  return <p>Envíos de la zona «{zona || 'todas'}»</p>;
+}
+
+export default function App() {
+  const [zona, setZona] = useState('');
+  return (
+    <main>
+      <EncabezadoPanel titulo="Panel de envíos" />
+      <label>
+        Filtro de zona{' '}
+        <input value={zona} onChange={e => setZona(e.target.value)} />
+      </label>
+      <ListaEnvios zona={zona} />
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+Con la aplicación abierta:
+
+```text
+1. Abre React DevTools > pestaña Profiler
+2. Haz click en grabar (●)
+3. Escribe una letra en el campo de filtro de zona
+4. Detén la grabación
+5. Inspecciona qué componentes aparecen resaltados y por qué
+```
+
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: el Profiler muestra que `EncabezadoPanel` (que ni siquiera lee el filtro) se re-renderizó igual, simplemente porque es hijo del mismo padre que cambió de estado — no porque `EncabezadoPanel` en sí sea lento, sino porque heredó un render de su padre. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: el Profiler muestra que `EncabezadoPanel` (que ni siquiera lee el filtro) se re-renderizó igual, simplemente porque es hijo del mismo padre que cambió de estado — no porque `EncabezadoPanel` en sí sea lento, sino porque heredó un render de su padre. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
 Pista: envolvé `EnvioCard` en `React.memo` basándote solo en la intuición inicial ("parece pesado"), sin confirmar con el Profiler que ese es el componente real del problema — ese es el fallo deliberado: volvé a grabar la interacción, y confirmá que `EnvioCard` nunca estuvo en la lista de componentes re-renderizados innecesariamente; el tiempo invertido en memoizarlo no resolvió nada, porque el problema real estaba en otro componente.
@@ -120,20 +146,38 @@ const Fila = React.memo(function Fila({ item }) {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-const EncabezadoPanel = React.memo(function EncabezadoPanel({ titulo }) {
-  return <h1>{titulo}</h1>;
+import { memo, useState } from 'react';
+
+const EncabezadoPanel = memo(function EncabezadoPanel({ titulo }) {
+  return <h1>{titulo}</h1>; // se salta el render si `titulo` no cambia
 });
+
+function ListaEnvios({ zona }) {
+  return <p>Envíos de la zona «{zona || 'todas'}»</p>;
+}
+
+export default function App() {
+  const [zona, setZona] = useState('');
+  return (
+    <main>
+      <EncabezadoPanel titulo="Panel de envíos" />
+      <label>
+        Filtro de zona{' '}
+        <input value={zona} onChange={e => setZona(e.target.value)} />
+      </label>
+      <ListaEnvios zona={zona} />
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: grabando de nuevo con el Profiler mientras se escribe en el filtro de zona, `EncabezadoPanel` ya no aparece en la lista de componentes re-renderizados — React detecta que `titulo` sigue siendo exactamente el mismo string y se salta la re-ejecución completamente. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: grabando de nuevo con el Profiler mientras se escribe en el filtro de zona, `EncabezadoPanel` ya no aparece en la lista de componentes re-renderizados — React detecta que `titulo` sigue siendo exactamente el mismo string y se salta la re-ejecución completamente. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con React DevTools Profiler:**
 1. Abre la app sin `React.memo` en `EncabezadoPanel`
@@ -179,10 +223,8 @@ Renderizar una lista de 10,000 elementos completos en el DOM, incluso si la mayo
 **Código del ejemplo:**
 
 ```jsx
-import { FixedSizeList } from 'react-window';
-<FixedSizeList height={600} itemCount={10000} itemSize={40}>
-  {({ index, style }) => <div style={style}>{datos[index].nombre}</div>}
-</FixedSizeList>
+import { List } from 'react-window'; // react-window 2: `List` reemplaza a `FixedSizeList`
+<List rowComponent={Fila} rowCount={10000} rowHeight={40} rowProps={{ datos }} style={{ height: 600 }} />
 
 const Reportes = lazy(() => import('./Reportes'));
 <Suspense fallback={<Spinner />}><Reportes /></Suspense>
@@ -191,27 +233,42 @@ const Reportes = lazy(() => import('./Reportes'));
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-import { FixedSizeList } from 'react-window';
-<FixedSizeList height={600} itemCount={envios.length} itemSize={48}>
-  {({ index, style }) => <div style={style}>{envios[index].guia}</div>}
-</FixedSizeList>
+import { List } from 'react-window';
+
+const envios = Array.from({ length: 10_000 }, (_, i) => ({ guia: `RF-${String(i).padStart(5, '0')}` }));
+
+function FilaEnvio({ index, style, envios }) {
+  // `style` posiciona la fila; react-window solo monta las filas visibles.
+  return <div style={style}>{envios[index].guia}</div>;
+}
+
+export default function App() {
+  return (
+    <List
+      rowComponent={FilaEnvio}
+      rowCount={envios.length}
+      rowHeight={48}
+      rowProps={{ envios }}
+      style={{ height: 600 }}
+    />
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes react-window; la versión 2 usa `List` y `rowComponent` en lugar del antiguo `FixedSizeList`) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-window
 npm run dev
 ```
 
-Resultado esperado: inspeccionando el DOM real en las herramientas de desarrollador mientras se hace scroll sobre los 10,000 envíos, nunca existen más de unas pocas decenas de nodos `<div>` simultáneamente — los mismos nodos se reciclan mostrando contenido distinto a medida que el scroll avanza. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: inspeccionando el DOM real en las herramientas de desarrollador mientras se hace scroll sobre los 10,000 envíos, nunca existen más de unas pocas decenas de nodos `<div>` simultáneamente — solo se montan las filas visibles y las que entran al hacer scroll reemplazan a las que salen. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: reemplazá `FixedSizeList` por un `.map()` directo sobre los 10,000 `envios` "para simplificar" — ese es el fallo deliberado: medí con el Profiler el tiempo de renderizado inicial antes y después de este cambio; sin virtualizar, el render inicial tarda notablemente más, y el scroll se siente perceptiblemente menos fluido, porque ahora existen 10,000 nodos DOM reales simultáneamente.
+Pista: reemplaza `List` por un `.map()` directo sobre los 10,000 `envios` "para simplificar" — ese es el fallo deliberado: medí con el Profiler el tiempo de renderizado inicial antes y después de este cambio; sin virtualizar, el render inicial tarda notablemente más, y el scroll se siente perceptiblemente menos fluido, porque ahora existen 10,000 nodos DOM reales simultáneamente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `FixedSizeList`, y agregá `React.lazy` para la pantalla de "Reportes" de RutaFlow (usada por pocos operadores), confirmando en la pestaña Network que su chunk se descarga solo al navegar ahí, no en la carga inicial. Carga diferida la pantalla de reportes del proyecto integrador RutaFlow y comprueba en Network que el chunk llega al navegar.
+Corrige el Paso 5 restaurando `List`, y agrega `React.lazy` para la pantalla de "Reportes" de RutaFlow (usada por pocos operadores), confirmando en la pestaña Network que su chunk se descarga solo al navegar ahí, no en la carga inicial. Carga diferida la pantalla de reportes del proyecto integrador RutaFlow y comprueba en Network que el chunk llega al navegar.
 
 #### Paso 7 · Cierre
 Entregá la lista virtualizada del Paso 4, la medición del render completo sin virtualizar del Paso 5, y el code-splitting de Reportes del Paso 6; explicá la diferencia entre lo que resuelve la virtualización (renderizado continuo de una lista ya cargada) y lo que resuelve el code-splitting (descarga inicial del bundle). Siguiente paso: estudia useTransition para mantener la interfaz responsiva durante cálculos costosos. Errores comunes: virtualizar una lista pequeña que no lo necesita, usar un índice de array en vez de un id estable como key dentro de la lista virtualizada, y confundir virtualización con code-splitting. Fuentes oficiales: https://github.com/bvaughn/react-window y https://react.dev/reference/react/lazy.
@@ -256,36 +313,55 @@ graph LR
     style F fill:#ff9800
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="transition|deferred"`
-* Código: `src/hooks/useTransitionFilter.tsx`
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-const [isPending, startTransition] = useTransition();
-function manejarCambioFiltro(texto) {
-  setTextoInput(texto); // urgente: el input responde de inmediato
-  startTransition(() => {
-    setEnviosFiltrados(filtrarEnvios(envios, texto)); // no urgente: puede esperar
-  });
+import { useState, useTransition } from 'react';
+
+const envios = Array.from({ length: 20_000 }, (_, i) => `RF-${String(i).padStart(5, '0')} zona-${i % 2 ? 'norte' : 'sur'}`);
+
+function filtrarEnvios(lista, texto) {
+  return lista.filter(envio => envio.includes(texto)).slice(0, 200);
+}
+
+export default function App() {
+  const [textoInput, setTextoInput] = useState('');
+  const [enviosFiltrados, setEnviosFiltrados] = useState(() => filtrarEnvios(envios, ''));
+  const [isPending, startTransition] = useTransition();
+
+  function manejarCambioFiltro(texto) {
+    setTextoInput(texto); // urgente: el input responde de inmediato
+    startTransition(() => {
+      setEnviosFiltrados(filtrarEnvios(envios, texto)); // no urgente: puede esperar
+    });
+  }
+
+  return (
+    <main>
+      <input value={textoInput} onChange={e => manejarCambioFiltro(e.target.value)} aria-label="Filtro" />
+      {isPending && <span> Actualizando…</span>}
+      <ul style={{ opacity: isPending ? 0.6 : 1 }}>
+        {enviosFiltrados.map(envio => <li key={envio}>{envio}</li>)}
+      </ul>
+    </main>
+  );
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
 Resultado esperado: el input de filtro muestra cada letra tecleada instantáneamente (porque `setTextoInput` no está dentro de la transición), mientras la lista filtrada se actualiza con una prioridad menor, sin bloquear la respuesta del input; `isPending` permite mostrar un indicador sutil mientras esa actualización no urgente está en curso.
 
-Ejecuta `npm test` y confirma que las pruebas de transiciones y deferred value pasan.
+Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `00042` en el filtro con `userEvent` y comprueba que el input muestra `00042` y que la lista contiene «RF-00042 zona-sur». Después ejecuta `npm test` (borra o adapta esta prueba cuando reemplaces `App.jsx` en otro tema).
 
 #### Paso 5 · Práctica guiada
-Pista: metés ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTransition` — ese es el fallo deliberado: ahora el propio texto visible del input también se trata como no urgente, y al escribir rápido, las letras tardan en aparecer en el campo.
+Pista: mete ambos `setTextoInput` y `setEnviosFiltrados` dentro de `startTransition` — ese es el fallo deliberado: ahora el propio texto visible del input también se trata como no urgente, y al escribir rápido, las letras tardan en aparecer en el campo.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) y dejando solo `setEnviosFiltrados` dentro de `startTransition` (no urgente), y agregá un indicador visual sutil basado en `isPending` mientras la lista filtrada todavía se está recalculando. Filtra una lista grande del proyecto integrador RutaFlow con `useDeferredValue` y mide si la entrada sigue respondiendo.
@@ -343,11 +419,9 @@ export default function App() {
 
 Crea también `src/PanelAnalitica.jsx` con `export default function PanelAnalitica() { return <div>Gráficos pesados aquí</div>; }`.
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite, pega el código y observa la red):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, crea `src/PanelAnalitica.jsx` como se indica arriba y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
@@ -497,7 +571,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear la promesa en
 
 #### Paso 1 · Objetivo y preparación
 
-Usa React 19 y un proyecto de Vite. Instalarás `babel-plugin-react-compiler` y `eslint-plugin-react-hooks` 6 o superior. Necesitas la extensión React DevTools en el navegador.
+Usa React 19 y un proyecto de Vite 8 (con `@vitejs/plugin-react` 6, el que instala hoy `npm create vite@latest`). Instalarás `babel-plugin-react-compiler`, `@rolldown/plugin-babel`, `@babel/core`, ESLint y `eslint-plugin-react-hooks` 7 o superior. Necesitas la extensión React DevTools en el navegador.
 
 #### Paso 2 · Contexto y caso real
 
@@ -534,15 +608,14 @@ flowchart LR
 Archivo `academia-react/vite.config.js`:
 
 ```js
+import babel from '@rolldown/plugin-babel';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [
-    react({
-      babel: { plugins: ['babel-plugin-react-compiler'] }, // debe ir primero
-    }),
-  ],
+  // Con @vitejs/plugin-react 6 la antigua opción `react({ babel: { plugins: [...] } })`
+  // se ignora sin aviso: el compilador se conecta con @rolldown/plugin-babel.
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
 });
 ```
 
@@ -552,7 +625,11 @@ Archivo `academia-react/eslint.config.js`:
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  reactHooks.configs.flat.recommended, // incluye las reglas que usa el compilador
+  {
+    files: ['src/**/*.{js,jsx}'],
+    ...reactHooks.configs.flat.recommended, // incluye las reglas que usa el compilador
+    languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } },
+  },
 ];
 ```
 
@@ -560,8 +637,8 @@ Archivo `academia-react/src/ListaEnvios.jsx`:
 
 ```jsx
 export default function ListaEnvios({ envios, filtro }) {
-  // ❌ Rompe la inmutabilidad: ordena el array que llegó por props.
-  // envios.sort((a, b) => a.codigo.localeCompare(b.codigo));
+  // ❌ Rompe la inmutabilidad: reemplaza un elemento del array que llegó por props.
+  // envios[0] = { ...envios[0], codigo: envios[0].codigo.toUpperCase() };
 
   // ✅ Crea una copia. El compilador memoiza este cálculo sin useMemo.
   const visibles = envios
@@ -576,12 +653,12 @@ Ejecútalo:
 
 ```bash
 cd academia-react
-npm install -D babel-plugin-react-compiler eslint-plugin-react-hooks@latest
+npm install -D @rolldown/plugin-babel @babel/core babel-plugin-react-compiler eslint eslint-plugin-react-hooks@latest
 npx eslint src
 npm run dev
 ```
 
-**Explicación por bloques:** En `vite.config.js`, el plugin del compilador se agrega a Babel a través del plugin de React de Vite; debe ser el primero de la lista. `eslint.config.js` activa las reglas recomendadas de hooks, que incluyen las validaciones del compilador. En `ListaEnvios`, la línea comentada ordena el array de props en su lugar y rompe la inmutabilidad; la versión correcta usa `filter` y `toSorted`, que crean copias. Sin escribir `useMemo`, el compilador memoiza `visibles` y el JSX mientras `envios` y `filtro` no cambien.
+**Explicación por bloques:** En `vite.config.js`, `reactCompilerPreset()` (exportado por `@vitejs/plugin-react`) ejecuta el compilador mediante `@rolldown/plugin-babel`, como indica la sección «React Compiler» del README del plugin. `eslint.config.js` activa las reglas recomendadas de hooks, que incluyen las validaciones del compilador, para los archivos `.js` y `.jsx` de `src`. En `ListaEnvios`, la línea comentada modifica el array de props y rompe la inmutabilidad; la versión correcta usa `filter` y `toSorted`, que crean copias. Sin escribir `useMemo`, el compilador memoiza `visibles` y el JSX mientras `envios` y `filtro` no cambien.
 
 **Resultado esperado:**
 
@@ -591,7 +668,7 @@ En React DevTools > Components, ListaEnvios muestra la insignia «Memo ✨».
 Al escribir en un campo que no afecta a la lista, el Profiler muestra que ListaEnvios no se volvió a renderizar.
 ```
 
-**Fallo deliberado:** descomenta `envios.sort(...)`. **Error esperado:** `npx eslint src` reporta que no se deben modificar valores que el componente recibe (props), y DevTools ya no muestra la insignia del compilador en ese componente. **Diagnóstico:** el compilador saltó el componente porque rompe la regla de inmutabilidad. Usa `toSorted` o una copia.
+**Fallo deliberado:** descomenta `envios[0] = ...`. **Error esperado:** `npx eslint src` reporta `Error: This value cannot be modified` con la explicación «Modifying component props or hook arguments is not allowed», y DevTools ya no muestra la insignia del compilador en ese componente. **Diagnóstico:** el compilador saltó el componente porque rompe la regla de inmutabilidad. Usa una copia. Ojo: el linter no detecta todas las mutaciones; por ejemplo, `envios.sort(...)` sobre una prop no se reporta en `eslint-plugin-react-hooks` 7.1, así que prefiere siempre `toSorted`.
 
 #### Paso 5 · Práctica guiada
 
@@ -605,7 +682,7 @@ Al escribir en un campo que no afecta a la lista, el Profiler muestra que ListaE
 
 #### Paso 6 · Práctica independiente
 
-Activa el compilador solo para la carpeta `src/envios` con la opción `sources` del plugin, corrige lo que marque el linter ahí y documenta el plan para el resto del proyecto.
+Activa el compilador solo para la carpeta `src/envios` ajustando el filtro del preset (`const preset = reactCompilerPreset();` y su propiedad `rolldown.filter`, como muestra el README de `@vitejs/plugin-react`), corrige lo que marque el linter ahí y documenta el plan para el resto del proyecto.
 
 #### Paso 7 · Cierre
 
@@ -639,6 +716,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** activar el compilad
 
 - **Optimizar sin medir primero con el Profiler.** Identifica el componente problemático real antes de aplicar cualquier optimización.
 - **Envolver todo con `React.memo` sin criterio.** Solo aplícalo donde el componente recibe las mismas props con frecuencia significativa.
-- **Renderizar listas largas sin virtualizar.** Usa `react-window` u otra librería de virtualización para listas de miles de elementos.
+- **Renderizar listas largas sin virtualizar.** Usa `react-window` (versión 2: `List`) u otra librería de virtualización para listas de miles de elementos.
 
 ---

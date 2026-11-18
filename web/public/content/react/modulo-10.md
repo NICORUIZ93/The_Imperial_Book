@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre el puerto que imprima la terminal (`http://localhost:3000` en Next.js, `5173` en Vite) y ejecuta `npm test` para las pruebas.
+**Servidor del módulo:** todo este módulo trabaja en el proyecto Next.js `app` que creas en el Tema 1 (Server Components, `"use client"`, streaming y Server Actions necesitan un framework con soporte de React Server Components; un proyecto Vite sin esa integración no los ejecuta). Arráncalo con `npm run dev` y abre `http://localhost:3000`; la comprobación se hace en el navegador y con `npm run build`.
 
 ### Tema 1: Server Components por defecto
 
@@ -82,7 +82,7 @@ npm run dev
 ```
 
 `npx` es el comando que ejecuta un paquete sin instalarlo globalmente (`create-next-app`, el andamiador oficial de Next.js). `--ts` es la bandera que usa TypeScript; `--eslint` activa el linter; `--app` usa el App Router; `--src-dir` mueve el código a una carpeta `src/`; `--no-tailwind` es la bandera que omite Tailwind CSS; `--use-npm` es la bandera que fija npm como gestor de paquetes en vez de preguntar.
-Crea src/app/deliveries/page.tsx como Server Component y src/app/deliveries/DeliveryButton.tsx con use client; explica la frontera y el resultado.
+Abre `http://localhost:3000`: la página inicial (`src/app/page.tsx`) ya es un Server Component, porque no declara `"use client"`. En los temas 2 a 4 escribirás, con el código completo, una página de servidor (`src/app/envios/[id]/page.tsx`) y su botón de cliente (`BotonConfirmarEntrega.tsx`); aquí basta con que expliques la frontera con la página generada.
 
 #### Paso 5 · Práctica guiada
 Pista: importa deliberadamente un hook en un componente servidor para provocar un fallo deliberado de compilación; lee el mensaje y mueve la frontera correcta. Resultado esperado: build estable.
@@ -126,32 +126,102 @@ Esta directiva establece un límite explícito y deliberado en el árbol de comp
 
 
 #### Paso 4 · Demostración guiada desde cero
-```tsx
-"use client";
-function BotonConfirmarEntrega({ envioId }) {
-  const [confirmando, setConfirmando] = useState(false);
-  return <button onClick={() => setConfirmando(true)}>{confirmando ? 'Confirmando...' : 'Confirmar entrega'}</button>;
+Crea los datos simulados del servidor en `src/lib/db.ts` (los usarán los temas 2 a 4):
+
+```ts
+// «Base de datos» simulada en memoria. Solo se importa desde código de servidor.
+type Envio = { id: string; destinatario: string; estado: string; pin: string };
+
+const envios = new Map<string, Envio>([
+  ['RF-4471', { id: 'RF-4471', destinatario: 'Ana Pérez', estado: 'en ruta', pin: '837201' }],
+]);
+
+const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function obtenerEnvio(id: string) {
+  return envios.get(id) ?? null;
+}
+
+export async function obtenerHistorial(id: string) {
+  await esperar(3000); // consulta lenta a propósito
+  return [`${id}: salió de bodega`, `${id}: en ruta por Calle 80`];
+}
+
+export async function marcarEntregado(id: string) {
+  const envio = envios.get(id);
+  if (envio) envio.estado = 'entregado';
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+Crea el componente de cliente en `src/app/envios/[id]/BotonConfirmarEntrega.tsx`:
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+
+export default function BotonConfirmarEntrega() {
+  const [confirmando, setConfirmando] = useState(false);
+  return (
+    <button type="submit" onClick={() => setConfirmando(true)}>
+      {confirmando ? 'Confirmando...' : 'Confirmar entrega'}
+    </button>
+  );
+}
+```
+
+Y la página, un Server Component, en `src/app/envios/[id]/page.tsx`:
+
+```tsx
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import { obtenerEnvio } from '@/lib/db';
+import BotonConfirmarEntrega from './BotonConfirmarEntrega';
+
+// Server Component: sin "use client", consulta los datos directamente en el servidor.
+async function DetalleEnvio({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const envio = await obtenerEnvio(id);
+  if (!envio) notFound();
+  return (
+    <>
+      <h1>Envío {envio.id}</h1>
+      <p>Destinatario: {envio.destinatario} · Estado: {envio.estado}</p>
+      <BotonConfirmarEntrega />
+    </>
+  );
+}
+
+export default function PaginaEnvio({ params }: { params: Promise<{ id: string }> }) {
+  // Next.js 16 (Cache Components) exige leer `params` dentro de un Suspense.
+  return (
+    <main>
+      <Suspense fallback={<p>Cargando envío…</p>}>
+        <DetalleEnvio params={params} />
+      </Suspense>
+    </main>
+  );
+}
+```
+
+**Ejecuta el ejemplo** en el proyecto Next.js `app` del Tema 1 (no en `mi-react`: Vite no ejecuta Server Components ni Server Actions):
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente. Ejecuta `npm test` para comprobar las pruebas del tema.
+Abre `http://localhost:3000/envios/RF-4471`.
+
+Resultado esperado: `PaginaEnvio` (sin `"use client"`) sigue siendo un Server Component que accede directamente a la base de datos; solo `BotonConfirmarEntrega` se compila también para el navegador — el resto de la página no agrega ningún JavaScript adicional al bundle del cliente. Ejecuta `npm run build` para comprobar que compila.
 
 #### Paso 5 · Práctica guiada
-Pista: agregá `"use client"` directamente en `PaginaEnvio` "para que todo funcione sin pensar en la frontera" — ese es el fallo deliberado: ahora toda la página (incluyendo la consulta a la base de datos) se convierte en Client Component, perdiendo el acceso directo a la base de datos y obligando a reemplazar esa consulta por un endpoint API adicional que antes no era necesario.
+Pista: agrega `"use client"` directamente en `page.tsx` "para que todo funcione sin pensar en la frontera" — ese es el fallo deliberado: ahora toda la página (incluyendo la consulta a la base de datos) se convierte en Client Component, perdiendo el acceso directo a la base de datos y obligando a reemplazar esa consulta por un endpoint API adicional que antes no era necesario.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y medí (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa. Marca como cliente solo el componente interactivo del proyecto integrador RutaFlow y comprueba qué parte sigue renderizándose en el servidor.
+Corrige el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntrega`, y mide (con las herramientas de build de Next.js) cuánto JavaScript de cliente se agrega marcando solo el botón, comparado con haber marcado la página completa. Marca como cliente solo el componente interactivo del proyecto integrador RutaFlow y comprueba qué parte sigue renderizándose en el servidor.
 
 #### Paso 7 · Cierre
-Entregá la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explicá por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
+Entrega la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explica por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
 **Implicación práctica:** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 
 ### Tema 3: Streaming con Suspense en el servidor
@@ -185,48 +255,58 @@ Este mismo `Suspense` que en el Módulo 5 se usaba para mostrar un `fallback` mi
 ```
 
 #### Paso 4 · Demostración guiada desde cero
-```jsx
-<DatosBasicosEnvio envio={envio} /> {/* se muestra de inmediato */}
-<Suspense fallback={<Spinner />}>
+En `src/app/envios/[id]/page.tsx`, importa también `obtenerHistorial` desde `@/lib/db`, agrega este componente encima de `DetalleEnvio`:
+
+```tsx
+async function HistorialUbicaciones({ envioId }: { envioId: string }) {
+  const historial = await obtenerHistorial(envioId); // tarda 3 segundos
+  return <ul>{historial.map((punto) => <li key={punto}>{punto}</li>)}</ul>;
+}
+```
+
+y, dentro de `DetalleEnvio`, después de `<BotonConfirmarEntrega />`, envuélvelo en su propio `Suspense`:
+
+```tsx
+<Suspense fallback={<p>Cargando historial…</p>}>
   <HistorialUbicaciones envioId={envio.id} /> {/* consulta lenta */}
 </Suspense>
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en el proyecto Next.js `app` del Tema 1 (no en `mi-react`: Vite no ejecuta Server Components ni Server Actions):
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: `DatosBasicosEnvio` (guía, destinatario, estado) aparece en pantalla de inmediato; el spinner de `HistorialUbicaciones` se reemplaza por el historial real varios segundos después, sin que el resto de la página haya esperado ese tiempo. Ejecuta `npm test` para comprobar las pruebas del tema.
+Abre `http://localhost:3000/envios/RF-4471`.
+
+Resultado esperado: los datos básicos (guía, destinatario, estado) aparecen de inmediato; «Cargando historial…» se reemplaza por el historial real unos 3 segundos después, sin que el resto de la página haya esperado ese tiempo. Ejecuta `npm run build`: la ruta `/envios/[id]` aparece como «Partial Prerender».
 
 #### Paso 5 · Práctica guiada
-Pista: quitá el `<Suspense>` que envuelve a `HistorialUbicaciones` — ese es el fallo deliberado: ahora toda `PaginaEnvio` (incluyendo `DatosBasicosEnvio`, que estaba listo instantáneamente) espera los mismos varios segundos que tarda la consulta lenta del historial, antes de mostrar absolutamente cualquier cosa en pantalla.
+Pista: quita el `<Suspense>` que envuelve a `HistorialUbicaciones` — ese es el fallo deliberado: ahora todo `DetalleEnvio` (incluidos los datos básicos, que estaban listos al instante) espera los mismos varios segundos que tarda la consulta lenta del historial, antes de mostrar absolutamente cualquier cosa en pantalla.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el `Suspense`, y agregá un segundo `Suspense` independiente alrededor de una sección de "envíos relacionados" (otra consulta lenta distinta), confirmando que ambas secciones lentas se completan y aparecen de forma independiente entre sí. Envuelve la lista de envíos del proyecto integrador RutaFlow en Suspense y observa el orden en que llegan los fragmentos.
+Corrige el Paso 5 restaurando el `Suspense`, y agrega un segundo `Suspense` independiente alrededor de una sección de "envíos relacionados" (otra consulta lenta distinta), confirmando que ambas secciones lentas se completan y aparecen de forma independiente entre sí. Envuelve la lista de envíos del proyecto integrador RutaFlow en Suspense y observa el orden en que llegan los fragmentos.
 
 #### Paso 7 · Cierre
-Entregá el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explicá por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
+Entrega el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 
 ### Tema 4: Server Actions
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a implementar `confirmarEntregaAction` como Server Action, invocada directamente desde un `<form>` sin ningún endpoint API intermedio. Prerrequisitos: Tema 3 de este módulo.
+Al finalizar vas a implementar `confirmarEntregaAction` como Server Action, invocada directamente desde un `<form>` sin que escribas una ruta API propia, y a tratarla como lo que es: un endpoint POST público que Next.js crea por ti. Prerrequisitos: Tema 3 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 Confirmar una entrega hoy exigiría definir una ruta API separada, un manejador de submit del cliente que prevenga el comportamiento por defecto, serialice el PIN y la guía, y haga un `fetch` manual hacia esa ruta — mucho código repetitivo para una operación simple.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una Server Action es una función marcada con `"use server"` invocable directamente desde un `<form action={...}>`, sin endpoint API dedicado — entregar el formulario directamente a quien lo procesa, sin pasar por una oficina de recepción separada.
+Una Server Action es una función marcada con `"use server"` invocable directamente desde un `<form action={...}>`, sin que escribas una ruta API — entregar el formulario directamente a quien lo procesa, sin pasar por una oficina de recepción separada. Ojo: el framework sí crea un endpoint POST que cualquiera puede invocar con los argumentos que quiera ([react.dev — 'use server'](https://react.dev/reference/rsc/use-server): «Arguments to Server Functions are fully client-controlled»), así que la validación y la autorización van dentro de la función. Necesita un framework con soporte de React Server Components (aquí Next.js): en un proyecto Vite sin esa integración, `"use server"` no hace nada y la función termina en el JavaScript del navegador (si haces `npm run build` en `mi-react` con una función así, su código aparece en `dist/assets/index-*.js`).
 
 **Diagrama:**
 
 ```mermaid
 graph LR
-    A["Cliente:<br/>Formulario"] -->|action=<br/>confirmarEntrega| B["Server Action<br/>sin endpoint API"]
+    A["Cliente:<br/>Formulario"] -->|POST generado<br/>por el framework| B["Server Action<br/>endpoint público"]
     B -->|Valida PIN| C{PIN<br/>correcto?}
     C -->|Sí| D["Actualiza DB<br/>estado: entregado"]
     C -->|No| E["Lanza error<br/>PIN incorrecto"]
@@ -238,45 +318,98 @@ graph LR
     style E fill:#ffebee
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="server.action|form"`
 * Cuándo: usar Server Actions para formularios simples donde la lógica es directa; no conviene si la validación es muy compleja (mantén un endpoint API explícito) o si necesitas más control sobre headers y serialización.
 
-**¿Por qué es importante?** Las Server Actions eliminan la necesidad de un endpoint API separado, pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
+**¿Por qué es importante?** Las Server Actions eliminan la necesidad de escribir un endpoint API separado (el framework lo genera), pero siguen necesitando las mismas validaciones de autorización que cualquier otro código de servidor.
 
 #### Paso 4 · Demostración guiada desde cero
-```jsx
-async function confirmarEntregaAction(formData) {
-  "use server";
-  const guia = formData.get('guia');
-  const pin = formData.get('pin');
-  await db.envio.update({ where: { guia }, data: { estado: 'entregado', pin } });
-}
+Crea `src/app/envios/[id]/actions.ts`; la autorización (el PIN) se comprueba desde la primera versión:
 
-<form action={confirmarEntregaAction}>
-  <input name="guia" /><input name="pin" /><button>Confirmar</button>
-</form>
+```ts
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { marcarEntregado, obtenerEnvio } from '@/lib/db';
+
+// Una Server Action es un endpoint POST público: cualquiera puede llamarla
+// con los argumentos que quiera, así que valida y autoriza aquí dentro.
+export async function confirmarEntregaAction(formData: FormData) {
+  const guia = String(formData.get('guia') ?? '');
+  const pin = String(formData.get('pin') ?? '');
+  const envioReal = await obtenerEnvio(guia);
+  if (!envioReal) throw new Error('Envío inexistente');
+  if (envioReal.pin !== pin) throw new Error('PIN incorrecto');
+  await marcarEntregado(guia);
+  revalidatePath(`/envios/${guia}`);
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+En `page.tsx`, importa `import { confirmarEntregaAction } from './actions';` y envuelve el botón en un formulario dentro de `DetalleEnvio`. El archivo completo queda así:
+
+```tsx
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import { obtenerEnvio, obtenerHistorial } from '@/lib/db';
+import { confirmarEntregaAction } from './actions';
+import BotonConfirmarEntrega from './BotonConfirmarEntrega';
+
+async function HistorialUbicaciones({ envioId }: { envioId: string }) {
+  const historial = await obtenerHistorial(envioId); // tarda 3 segundos
+  return <ul>{historial.map((punto) => <li key={punto}>{punto}</li>)}</ul>;
+}
+
+// Server Component: sin "use client", consulta los datos directamente en el servidor.
+async function DetalleEnvio({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const envio = await obtenerEnvio(id);
+  if (!envio) notFound();
+
+  return (
+    <>
+      <h1>Envío {envio.id}</h1>
+      <p>Destinatario: {envio.destinatario} · Estado: {envio.estado}</p>
+      <form action={confirmarEntregaAction}>
+        <input type="hidden" name="guia" value={envio.id} />
+        <label>PIN <input name="pin" inputMode="numeric" /></label>
+        <BotonConfirmarEntrega />
+      </form>
+      <Suspense fallback={<p>Cargando historial…</p>}>
+        <HistorialUbicaciones envioId={envio.id} />
+      </Suspense>
+    </>
+  );
+}
+
+export default function PaginaEnvio({ params }: { params: Promise<{ id: string }> }) {
+  // Next.js 16 (Cache Components) exige leer `params` dentro de un Suspense.
+  return (
+    <main>
+      <Suspense fallback={<p>Cargando envío…</p>}>
+        <DetalleEnvio params={params} />
+      </Suspense>
+    </main>
+  );
+}
+```
+
+**Ejecuta el ejemplo** en el proyecto Next.js `app` del Tema 1 (no en `mi-react`: Vite no ejecuta Server Components ni Server Actions):
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: enviar el formulario ejecuta `confirmarEntregaAction` directamente en el servidor con los datos del formulario, sin ninguna ruta API adicional definida ni ningún `fetch` manual escrito en el cliente.
+Abre `http://localhost:3000/envios/RF-4471`. El PIN de prueba es `837201`.
 
-Ejecuta `npm test` y confirma que las pruebas de Server Actions pasan.
+Resultado esperado: con el PIN `837201`, enviar el formulario ejecuta `confirmarEntregaAction` en el servidor y la página muestra «Estado: entregado», sin que hayas escrito una ruta API ni un `fetch` en el cliente; con otro PIN, la acción lanza «PIN incorrecto» y Next.js muestra su pantalla de error. Ejecuta `npm run build` y busca `837201` en `.next/static`: no aparece, porque `db.ts` y la acción solo existen en el servidor.
 
 #### Paso 5 · Práctica guiada
-Pista: dentro de `confirmarEntregaAction`, actualizá el envío usando directamente el PIN recibido sin verificar que coincide con el PIN real del envío en la base de datos — ese es el fallo deliberado: cualquiera que envíe el formulario con cualquier PIN (incluso uno incorrecto) confirma igual la entrega, porque la Server Action nunca valida la autorización, solo ejecuta la actualización ciegamente.
+Pista: dentro de `confirmarEntregaAction`, comenta la línea `if (envioReal.pin !== pin) ...` — ese es el fallo deliberado: cualquiera que envíe el formulario con cualquier PIN (incluso uno incorrecto) confirma igual la entrega, porque la Server Action nunca valida la autorización, solo ejecuta la actualización ciegamente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 agregando la verificación del PIN dentro de la Server Action antes de actualizar (`if (envioReal.pin !== pin) throw new Error('PIN incorrecto')`), confirmando que un PIN incorrecto ahora rechaza la confirmación en el servidor. Mueve la confirmación de entrega del proyecto integrador RutaFlow a una Server Action y valida el formulario también en el servidor.
+Corrige el Paso 5 restaurando la verificación del PIN, y reemplaza el `throw` por un mensaje de error en pantalla con `useActionState` (módulo 3, Tema 4), confirmando que un PIN incorrecto rechaza la confirmación en el servidor. Mueve la confirmación de entrega del proyecto integrador RutaFlow a una Server Action y valida el formulario también en el servidor.
 
 #### Paso 7 · Cierre
-Entregá la Server Action funcionando del Paso 4, la confirmación sin validar PIN provocada en el Paso 5, y la verificación agregada del Paso 6; explicá por qué una Server Action, al eliminar el endpoint API explícito, puede hacer más fácil olvidar que esa función sigue necesitando las mismas validaciones de autorización que cualquier otro código de servidor. Siguiente paso: cerrá el módulo integrando Server Components, Suspense y Server Actions en una página completa de seguimiento. Errores comunes: omitir validación de autorización dentro de una Server Action asumiendo que "ya no hay API expuesta", no manejar el estado pending del formulario mientras la acción procesa, y ejecutar lógica sensible a secretos sin confirmar que la Server Action nunca se ejecuta en el cliente. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
+Entrega la Server Action funcionando del Paso 4, la confirmación sin validar PIN provocada en el Paso 5, y el mensaje de error del Paso 6; explica por qué una Server Action, al ocultar el endpoint que el framework genera, puede hacer más fácil olvidar que esa función sigue necesitando las mismas validaciones de autorización que cualquier otro código de servidor. Siguiente paso: cierra el módulo integrando Server Components, Suspense y Server Actions en una página completa de seguimiento. Errores comunes: omitir validación de autorización dentro de una Server Action asumiendo que "ya no hay API expuesta", no manejar el estado pending del formulario mientras la acción procesa, y ejecutar lógica sensible a secretos sin confirmar que la Server Action nunca se ejecuta en el cliente. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 
 ## Laboratorio práctico
 
@@ -289,7 +422,7 @@ Entregá la Server Action funcionando del Paso 4, la confirmación sin validar P
 | 1 | Crear un proyecto Next.js con App Router | `npx create-next-app` | Observa Server Components por defecto |
 | 2 | Marcar un componente interactivo con `"use client"` | Ver Tema 2 | Explica por qué lo necesita |
 | 3 | Implementar streaming con Suspense | Ver Tema 3 | De una sección lenta simulada |
-| 4 | Implementar una Server Action | Ver Tema 4 | Sin un endpoint API separado |
+| 4 | Implementar una Server Action | Ver Tema 4 | Sin escribir una ruta API; valida y autoriza dentro de la acción |
 
 **Verificación:** el laboratorio se considera exitoso si el resto de la página se muestra antes que la sección lenta envuelta en Suspense, y si la Server Action procesa el formulario correctamente sin ninguna ruta API adicional definida.
 

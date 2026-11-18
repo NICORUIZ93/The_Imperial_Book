@@ -121,7 +121,7 @@ Un patrón común y recomendado es manejar el error lo más cerca posible del pu
 
 Combinar `try/catch` con un bloque `finally` es útil para ejecutar lógica de limpieza que debe ocurrir sin importar si la operación tuvo éxito o falló, como ocultar un indicador de carga que se mostró antes de iniciar la petición asíncrona, garantizando que ese indicador se oculte tanto en el camino de éxito como en el de error.
 
-Un bloque `catch (error)` no garantiza que `error` sea realmente una instancia de `Error`: código externo (una dependencia, un worker, una API del navegador) puede rechazar o lanzar cualquier valor. Además, `instanceof Error` puede fallar cuando el valor proviene de otro realm (otro iframe, otro contexto `vm` en Node), porque cada realm tiene su propio constructor `Error`. Desde ECMAScript 2026, `Error.isError(valor)` resuelve esto con una comprobación fiable que no depende de la cadena de prototipos del realm actual:
+Un bloque `catch (error)` no garantiza que `error` sea realmente una instancia de `Error`: código externo (una dependencia, un worker, una API del navegador) puede rechazar o lanzar cualquier valor. Además, `instanceof Error` puede fallar cuando el valor proviene de otro realm (otro iframe, otro contexto `vm` en Node), porque cada realm tiene su propio constructor `Error`. Desde ECMAScript 2026 (Node.js 24.3 o superior; en Node.js 22 no existe), `Error.isError(valor)` resuelve esto con una comprobación fiable que no depende de la cadena de prototipos del realm actual:
 
 ```javascript
 function normalizarRechazo(valor) {

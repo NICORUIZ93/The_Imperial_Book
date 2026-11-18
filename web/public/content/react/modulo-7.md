@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: Zustand — stores mínimos sin boilerplate
 
@@ -62,6 +62,8 @@ function Carrito() {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { create } from 'zustand';
+
 const useFiltroStore = create((set) => ({
   zona: 'todas',
   setZona: (zona) => set({ zona }),
@@ -70,28 +72,48 @@ const useFiltroStore = create((set) => ({
 function BarraFiltro() {
   const zona = useFiltroStore(state => state.zona); // solo re-renderiza si `zona` cambia
   const setZona = useFiltroStore(state => state.setZona);
-  return <select value={zona} onChange={e => setZona(e.target.value)}>...</select>;
+  return (
+    <select value={zona} onChange={e => setZona(e.target.value)} aria-label="Zona">
+      <option value="todas">Todas</option>
+      <option value="norte">Norte</option>
+      <option value="sur">Sur</option>
+    </select>
+  );
+}
+
+function PanelEnvios() {
+  const zona = useFiltroStore(state => state.zona);
+  return <p>Mostrando envíos de: {zona}</p>;
+}
+
+export default function App() {
+  // Sin Provider: los dos componentes leen el mismo store.
+  return (
+    <main>
+      <BarraFiltro />
+      <PanelEnvios />
+    </main>
+  );
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes Zustand) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install zustand
 npm run dev
 ```
 
-Resultado esperado: `PanelEnvios`, en cualquier otra parte del árbol, lee `useFiltroStore(state => state.zona)` y recibe el mismo valor actualizado sin que ningún Provider envuelva a ninguno de los dos componentes. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: `PanelEnvios`, en cualquier otra parte del árbol, lee `useFiltroStore(state => state.zona)` y recibe el mismo valor actualizado sin que ningún Provider envuelva a ninguno de los dos componentes. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: agregá un segundo `useState('todas')` local dentro de `PanelEnvios` "para la zona", en vez de leer del store — ese es el fallo deliberado: cambiar la zona en `BarraFiltro` actualiza el store, pero `PanelEnvios` sigue consultando su propio `useState` local desincronizado, mostrando envíos de una zona distinta a la que `BarraFiltro` muestra seleccionada.
+Pista: agrega un segundo `useState('todas')` local dentro de `PanelEnvios` "para la zona", en vez de leer del store — ese es el fallo deliberado: cambiar la zona en `BarraFiltro` actualiza el store, pero `PanelEnvios` sigue consultando su propio `useState` local desincronizado, mostrando envíos de una zona distinta a la que `BarraFiltro` muestra seleccionada.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agregá un tercer componente (`ContadorZona`) que también lea `zona` del mismo store, confirmando que los tres siempre muestran el mismo valor sin ninguna sincronización manual entre ellos. Conecta el filtro de zona del proyecto integrador RutaFlow a un store mínimo y confirma que panel y contador coinciden.
+Corrige el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agrega un tercer componente (`ContadorZona`) que también lea `zona` del mismo store, confirmando que los tres siempre muestran el mismo valor sin ninguna sincronización manual entre ellos. Conecta el filtro de zona del proyecto integrador RutaFlow a un store mínimo y confirma que panel y contador coinciden.
 
 #### Paso 7 · Cierre
-Entregá el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explicá por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuente oficial: https://zustand.docs.pmnd.rs/.
+Entrega el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explica por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuente oficial: https://zustand.docs.pmnd.rs/.
 **Implicación práctica:** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
 
 ### Tema 2: Redux Toolkit — slices y ceremonia
@@ -108,7 +130,7 @@ Redux Toolkit reduce el boilerplate del Redux clásico con `createSlice` e Immer
 
 Redux Toolkit es la forma moderna y recomendada de usar Redux, reduciendo drásticamente el boilerplate del Redux clásico (que requería definir manualmente constantes de action types, creadores de actions, y reducers con switch statements extensos): `createSlice({ name: 'carrito', initialState: { items: [] }, reducers: { agregar: (state, action) => { state.items.push(action.payload); } } })` genera automáticamente los creadores de actions y el reducer correspondiente a partir de una única definición declarativa, y crucialmente usa Immer internamente, permitiendo escribir código que "parece" mutar el estado directamente (`state.items.push(...)`) mientras Immer, por debajo, produce en realidad un nuevo objeto de estado inmutable, preservando la garantía de inmutabilidad que Redux requiere sin que el desarrollador tenga que escribir manualmente el spread de objetos y arreglos.
 
-A pesar de esta reducción significativa de boilerplate respecto al Redux clásico, Redux Toolkit sigue trayendo más ceremonia estructural que Zustand para el mismo caso de uso: un store de Redux Toolkit requiere definir slices, configurar un store central, y envolver la aplicación con un `Provider` de Redux, mientras que el mismo carrito implementado con Zustand (Tema 1) es una única función `create()` sin ninguna infraestructura adicional, reflejando la misma relación de ceremonia frente a beneficio estudiada para NgRx frente a un store de signals en el Módulo 9 del track de Angular: Redux Toolkit se justifica cuando el proyecto necesita las herramientas de depuración de historial (Redux DevTools), RTK Query para gestión de datos del servidor integrada, o un patrón único obligatorio en un equipo grande.
+A pesar de esta reducción significativa de boilerplate respecto al Redux clásico, Redux Toolkit sigue trayendo más ceremonia estructural que Zustand para el mismo caso de uso: un store de Redux Toolkit requiere definir slices, configurar un store central, y envolver la aplicación con un `Provider` de Redux, mientras que el mismo carrito implementado con Zustand (Tema 1) es una única función `create()` sin ninguna infraestructura adicional. Redux Toolkit se justifica cuando el proyecto necesita las herramientas de depuración de historial (Redux DevTools), RTK Query para gestión de datos del servidor integrada, o un patrón único obligatorio en un equipo grande.
 
 **Analogía:** Redux Toolkit es como un sistema de contabilidad corporativo con procedimientos estandarizados y auditoría integrada, considerablemente más simple que la contabilidad manual tradicional (Redux clásico) pero todavía más formal y estructurado que llevar las cuentas en una libreta simple (Zustand).
 
@@ -129,6 +151,9 @@ const carritoSlice = createSlice({
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { configureStore, createSlice } from '@reduxjs/toolkit';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+
 const filtroSlice = createSlice({
   name: 'filtro',
   initialState: { zona: 'todas' },
@@ -136,23 +161,48 @@ const filtroSlice = createSlice({
     setZona: (state, action) => { state.zona = action.payload; }, // Immer permite "mutar" de forma segura
   },
 });
+const { setZona } = filtroSlice.actions;
 const store = configureStore({ reducer: { filtro: filtroSlice.reducer } });
-// y envolver la app: <Provider store={store}>...
+
+function BarraFiltro() {
+  const zona = useSelector(state => state.filtro.zona);
+  const dispatch = useDispatch();
+  return (
+    <select value={zona} onChange={e => dispatch(setZona(e.target.value))} aria-label="Zona">
+      <option value="todas">Todas</option>
+      <option value="norte">Norte</option>
+      <option value="sur">Sur</option>
+    </select>
+  );
+}
+
+function PanelEnvios() {
+  const zona = useSelector(state => state.filtro.zona);
+  return <p>Mostrando envíos de: {zona}</p>;
+}
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <BarraFiltro />
+      <PanelEnvios />
+    </Provider>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes Redux Toolkit y su enlace con React) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install @reduxjs/toolkit react-redux
 npm run dev
 ```
 
-Resultado esperado: lograr el mismo comportamiento que el store de Zustand del Tema 1 exige además definir el slice, configurar `configureStore`, y envolver la aplicación completa con `<Provider>` — tres piezas de infraestructura que Zustand no necesitó para el mismo filtro de zona. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: lograr el mismo comportamiento que el store de Zustand del Tema 1 exige además definir el slice, configurar `configureStore`, y envolver la aplicación completa con `<Provider>` — tres piezas de infraestructura que Zustand no necesitó para el mismo filtro de zona. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con Redux DevTools:**
 1. Abre la app con Redux Toolkit implementado
-2. Abre DevTools → Redux tab (necesitas la extensión Redux DevTools instalada)
+2. Abre DevTools → pestaña Redux (necesitas la extensión Redux DevTools instalada)
 3. Haz click en el botón de cambiar zona
 4. Observa en la pestaña Redux el "action log" que muestra cada dispatch: `filtro/setZona` con el payload
 5. Mira en el panel de "State" cómo el estado se actualizó: `{ filtro: { zona: 'norte' } }`
@@ -202,35 +252,48 @@ Estado usado en un único componente → useState local, sin ninguna librería g
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { create } from 'zustand';
+
 // Mal: mezclar estado de servidor dentro del store de cliente
 const useFiltroStore = create((set) => ({
   zona: 'todas',
   envios: [], // esto no debería vivir acá
   setEnvios: (envios) => set({ envios }),
 }));
+
+export default function App() {
+  const envios = useFiltroStore(state => state.envios);
+  const setEnvios = useFiltroStore(state => state.setEnvios);
+  return (
+    <main>
+      <button onClick={() => setEnvios([{ id: 'RF-4471' }])}>Cargar una vez</button>
+      <ul>{envios.map(envio => <li key={envio.id}>{envio.id}</li>)}</ul>
+      <p>Nadie vuelve a pedir esta lista: no hay caché por zona, ni revalidación, ni invalidación.</p>
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (si no lo instalaste en el Tema 1, instala Zustand) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install zustand
 npm run dev
 ```
 
-Resultado esperado: con `envios` metido en Zustand, cualquier necesidad de revalidación, cache por zona, o invalidación tras una mutación (todo lo que TanStack Query ya resuelve, Módulo 6) tendría que reimplementarse manualmente dentro del store — y efectivamente nadie lo hace, dejando esos datos sin revalidar nunca después de la carga inicial. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: con `envios` metido en Zustand, cualquier necesidad de revalidación, cache por zona, o invalidación tras una mutación (todo lo que TanStack Query ya resuelve, Módulo 6) tendría que reimplementarse manualmente dentro del store — y efectivamente nadie lo hace, dejando esos datos sin revalidar nunca después de la carga inicial. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: implementá un botón "Refrescar" que llame manualmente a `setEnvios(nuevosDatos)` después de un `fetch` directo, en paralelo a seguir usando `useQuery` para la carga inicial en otro componente — ese es el fallo deliberado: ahora hay dos fuentes de la lista de envíos (la cache de TanStack Query y la copia en Zustand), y pueden mostrar datos distintos entre sí según cuál se refrescó más recientemente.
+Pista: implementa un botón "Refrescar" que llame manualmente a `setEnvios(nuevosDatos)` después de un `fetch` directo, en paralelo a seguir usando `useQuery` para la carga inicial en otro componente — ese es el fallo deliberado: ahora hay dos fuentes de la lista de envíos (la cache de TanStack Query y la copia en Zustand), y pueden mostrar datos distintos entre sí según cuál se refrescó más recientemente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro). Deja que `useQuery` sea la fuente de envíos del proyecto integrador RutaFlow y limita Zustand al estado de cliente.
+Corrige el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por completo, dejando que `useQuery` (Módulo 6) sea la única fuente de la lista de envíos, y que el store de Zustand contenga solamente `zona` (estado de cliente puro). Deja que `useQuery` sea la fuente de envíos del proyecto integrador RutaFlow y limita Zustand al estado de cliente.
 
 #### Paso 7 · Cierre
-Entregá la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explicá con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/.
+Entrega la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explica con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/.
 **Implicación práctica:** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
 
-### Tema 4: Jotai, Recoil y XState como alternativas
+### Tema 4: Jotai y XState como alternativas
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar con XState el ciclo de vida de una confirmación de entrega (inactivo → confirmando → éxito/error), rechazando explícitamente transiciones inválidas que un `useReducer` simple no impediría. Prerrequisitos: Tema 3 de este módulo.
@@ -242,13 +305,13 @@ Con el `useReducer` del Módulo 2, nada impide escribir por error una transició
 XState modela estado como una máquina de estados finitos con transiciones explícitamente definidas; un estado solo puede alcanzarse desde las transiciones que la máquina efectivamente declara, rechazando cualquier otra.
 **Conceptos clave:** modelo atómico frente a store centralizado, máquinas de estado explícitas.
 
-Jotai modela el estado global como átomos independientes y pequeños (`const contadorAtom = atom(0)`) en vez de un único store centralizado grande, permitiendo componer átomos derivados a partir de otros átomos de forma similar en espíritu a `computed()` de signals (Módulo 2 del track de Angular), con una granularidad de suscripción naturalmente fina dado que cada átomo es independiente por diseño; Recoil ofrece un modelo conceptualmente similar basado en "atoms" y "selectors" (valores derivados memoizados), aunque con menor adopción activa actualmente que Jotai en el ecosistema.
+Jotai modela el estado global como átomos independientes y pequeños (`const contadorAtom = atom(0)`) en vez de un único store centralizado grande, permitiendo componer átomos derivados a partir de otros átomos como valores calculados a partir de otros, con una granularidad de suscripción naturalmente fina dado que cada átomo es independiente por diseño. Quizá encuentres Recoil en proyectos antiguos, con un modelo parecido de "atoms" y "selectors": no lo uses en código nuevo, porque ya no se mantiene (su última versión en npm es de febrero de 2024 y un mantenedor lo confirmó en [el issue #2288](https://github.com/facebookexperimental/Recoil/issues/2288)); Jotai cubre el mismo modelo atómico.
 
 XState modela estado como una máquina de estados finitos explícita, con estados nombrados y transiciones explícitamente definidas entre ellos (por ejemplo, un estado "inactivo" que solo puede transicionar a "cargando" ante cierto evento, que a su vez solo puede transicionar a "éxito" o "error"), apropiado específicamente para flujos con reglas de transición complejas y estrictas donde ciertos estados simplemente no deberían ser alcanzables desde ciertos otros estados, una garantía estructural que un simple `useState`/`useReducer` no impone por sí solo (nada impide, en un reducer simple, escribir una transición de estado lógicamente inválida por error, mientras que una máquina de estados de XState rechaza explícitamente transiciones no definidas).
 
 **Analogía:** Jotai es como gestionar el inventario mediante etiquetas individuales pequeñas e independientes en cada producto, en vez de un único gran libro de inventario centralizado; XState es como un diagrama de flujo estricto de un proceso de fábrica, donde cada estación solo puede recibir el producto desde ciertas estaciones anteriores específicas, rechazando explícitamente cualquier secuencia de transición no contemplada en el diagrama.
 
-**¿Por qué es importante?** Jotai/Recoil ofrecen un modelo atómico con granularidad fina por diseño; XState aporta garantías estructurales sobre qué transiciones de estado son válidas, apropiado para flujos con reglas de transición complejas y estrictas.
+**¿Por qué es importante?** Jotai ofrece un modelo atómico con granularidad fina por diseño; XState aporta garantías estructurales sobre qué transiciones de estado son válidas, apropiado para flujos con reglas de transición complejas y estrictas.
 
 **Diagrama:**
 
@@ -269,13 +332,14 @@ stateDiagram-v2
     end note
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="xstate|state machine"`
-* Código: `src/hooks/useDeliveryMachine.tsx`
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { createMachine } from 'xstate';
+import { useMachine } from '@xstate/react';
+
 const maquinaConfirmacion = createMachine({
   initial: 'inactivo',
   states: {
@@ -285,28 +349,74 @@ const maquinaConfirmacion = createMachine({
     error: { on: { CONFIRMAR: 'confirmando' } },
   },
 });
+
+export default function App() {
+  const [estado, enviar] = useMachine(maquinaConfirmacion);
+  return (
+    <main>
+      <p>Estado actual: {String(estado.value)}</p>
+      <button onClick={() => enviar({ type: 'CONFIRMAR' })}>CONFIRMAR</button>
+      <button onClick={() => enviar({ type: 'EXITO' })}>EXITO</button>
+      <button onClick={() => enviar({ type: 'ERROR' })}>ERROR</button>
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes XState y su enlace con React) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install xstate @xstate/react
 npm run dev
 ```
 
-Resultado esperado: enviar el evento `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la máquina permanece en `inactivo`), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual.
+Resultado esperado: pulsar `EXITO` mientras la máquina está en `inactivo` no produce ninguna transición (la pantalla sigue en «Estado actual: inactivo»), porque ese estado solo declara una transición válida para el evento `CONFIRMAR` — a diferencia de un reducer manual, donde un `case 'EXITO':` sin ninguna guarda aplicaría ese cambio sin importar el estado actual. Tras `CONFIRMAR`, `EXITO` sí lleva a `exito`.
 
-Ejecuta `npm test` y confirma que las pruebas de las alternativas de estado pasan.
+Antes de seguir, escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx` para la máquina de XState: pulsa `EXITO` con `userEvent` y comprueba que sigue en `inactivo`; pulsa `CONFIRMAR` y `EXITO` y comprueba `exito`. Después ejecuta `npm test` y borra esa prueba antes de reemplazar `App.jsx` por el ejemplo de Jotai.
+
+**La alternativa atómica, Jotai.** Para comparar, reemplaza `src/App.jsx` por este ejemplo de átomos (instala antes `npm install jotai`):
+
+```jsx
+import { atom, useAtom, useAtomValue } from 'jotai';
+
+const zonaAtom = atom('norte');
+const etiquetaAtom = atom(get => `Zona seleccionada: ${get(zonaAtom).toUpperCase()}`); // átomo derivado
+
+function SelectorZona() {
+  const [zona, setZona] = useAtom(zonaAtom);
+  return (
+    <select value={zona} onChange={e => setZona(e.target.value)} aria-label="Zona">
+      <option value="norte">Norte</option>
+      <option value="sur">Sur</option>
+    </select>
+  );
+}
+
+function Etiqueta() {
+  return <p>{useAtomValue(etiquetaAtom)}</p>;
+}
+
+export default function App() {
+  // Sin Provider explícito, Jotai usa un almacén por defecto.
+  return (
+    <main>
+      <SelectorZona />
+      <Etiqueta />
+    </main>
+  );
+}
+```
+
+Resultado esperado: al elegir «Sur», la etiqueta muestra «Zona seleccionada: SUR»; `etiquetaAtom` se recalcula solo porque depende de `zonaAtom`.
 
 #### Paso 5 · Práctica guiada
-Pista: implementá el mismo flujo con un `useReducer` simple donde el `case 'EXITO'` no verifica el estado actual antes de aplicar la transición — ese es el fallo deliberado: llamar `dispatch({ type: 'EXITO' })` estando en `inactivo` (por un bug en otra parte del código) transiciona igual a `exito`, un estado lógicamente imposible en el flujo real, sin que nada en el reducer lo haya impedido.
+Pista: implementa el mismo flujo con un `useReducer` simple donde el `case 'EXITO'` no verifica el estado actual antes de aplicar la transición — ese es el fallo deliberado: llamar `dispatch({ type: 'EXITO' })` estando en `inactivo` (por un bug en otra parte del código) transiciona igual a `exito`, un estado lógicamente imposible en el flujo real, sin que nada en el reducer lo haya impedido.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a la máquina de XState del Paso 4, y agregá un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
+Corrige el Paso 5 volviendo a la máquina de XState del Paso 4, y agrega un quinto estado (`cancelado`) alcanzable solo desde `confirmando`, confirmando que ningún otro estado puede transicionar directamente a `cancelado` sin pasar por `confirmando` primero.
 
 #### Paso 7 · Cierre
-Entregá la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explicá en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cerrá el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
+Entrega la máquina con transiciones explícitas del Paso 4, la transición inválida permitida por el reducer simple del Paso 5, y el quinto estado agregado del Paso 6; explica en qué tipo de flujo (con reglas de transición estrictas y consecuencias reales si se viola el orden) XState aporta una garantía estructural que un `useReducer` simple no ofrece por sí solo. Siguiente paso: cierra el módulo documentando qué estrategia de estado usa cada parte del proyecto integrador. Errores comunes: usar XState para estados triviales sin reglas de transición reales, escribir un reducer sin guardas que permita transiciones lógicamente imposibles, y no documentar explícitamente qué transiciones están permitidas en un flujo crítico. Fuentes oficiales: https://stately.ai/docs/machines y https://jotai.org/docs/introduction.
 **Implicación práctica:** XState aporta garantías estructurales sobre qué transiciones de estado son válidas, una protección que un `useReducer` simple no impone por sí solo y que importa en flujos con reglas estrictas.
 
 ## Laboratorio práctico

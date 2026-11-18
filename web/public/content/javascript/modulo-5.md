@@ -102,7 +102,7 @@ Una Promesa representa un valor que estará disponible en algún momento futuro,
 
 Crear una Promesa manualmente con `new Promise((resolve, reject) => {...})` es útil principalmente para envolver APIs basadas en callbacks (el patrón anterior a las Promesas, dominante en el Node.js clásico) en una interfaz basada en Promesas: la función ejecutora recibe dos funciones, `resolve` y `reject`, y se invoca inmediata y síncronamente al crear la Promesa; invocar `resolve(valor)` dentro de esa función transiciona la Promesa a `fulfilled` con ese valor, mientras que invocar `reject(razon)` la transiciona a `rejected`. Este patrón de "promisificar" una API de callbacks es exactamente el mecanismo detrás de utilidades como `util.promisify` en Node.js.
 
-Un problema relacionado aparece cuando una función puede fallar de forma síncrona (lanzando una excepción) o asíncrona (devolviendo una Promesa rechazada): envolverla a mano en `new Promise(resolve => resolve(funcion()))` no captura el lanzamiento síncrono, que escapa antes de llegar al `.catch`. Desde ECMAScript 2026, `Promise.try(funcion, ...args)` ejecuta la función inmediatamente y normaliza los tres casos —valor síncrono, excepción síncrona o Promesa— en una única Promesa:
+Un problema relacionado aparece cuando una función puede fallar de forma síncrona (lanzando una excepción) o asíncrona (devolviendo una Promesa rechazada): llamarla directamente (`funcion().catch(...)` o `Promise.resolve(funcion())`) no captura el lanzamiento síncrono, que escapa antes de llegar al `.catch`. Desde ECMAScript 2025, `Promise.try(funcion, ...args)` ejecuta la función inmediatamente y normaliza los tres casos —valor síncrono, excepción síncrona o Promesa— en una única Promesa:
 
 ```javascript
 function buscarGuiaSincronaOAsincrona(codigo) {
@@ -113,6 +113,8 @@ function buscarGuiaSincronaOAsincrona(codigo) {
 Promise.try(buscarGuiaSincronaOAsincrona, '101')
   .catch(error => console.error(error.message)); // captura también el throw síncrono
 ```
+
+**Versión mínima:** `Promise.try` existe desde Node.js 23 (en la práctica, Node.js 24 LTS). En Node.js 22 obtienes `TypeError: Promise.try is not a function`; allí usa el equivalente `new Promise(resolve => resolve(buscarGuiaSincronaOAsincrona('101')))`, cuyo ejecutor también convierte el `throw` síncrono en rechazo.
 
 `.then(callbackExito, callbackError)` registra callbacks que se ejecutarán cuando la Promesa se resuelva (en cualquiera de sus dos estados finales); `.catch(callbackError)` es azúcar sintáctica equivalente a `.then(undefined, callbackError)`, específicamente para manejar el caso de rechazo sin necesitar también manejar el éxito en la misma llamada. Encadenar múltiples `.then()` es posible porque cada `.then()` devuelve, a su vez, una nueva Promesa, que se resuelve con el valor que devuelve el callback (o se encadena automáticamente si el callback a su vez devuelve otra Promesa), permitiendo componer secuencias de operaciones asíncronas dependientes de forma lineal y legible.
 

@@ -430,8 +430,8 @@
         "fragment": "tema-2-angular-testing-library"
       },
       {
-        "title": "Mockear HttpClient y el nuevo builder basado en Vitest",
-        "fragment": "tema-3-mockear-httpclient-y-el-nuevo-builder-basado-en-vitest"
+        "title": "Mockear HttpClient y el builder predeterminado basado en Vitest",
+        "fragment": "tema-3-mockear-httpclient-y-el-builder-predeterminado-basado-en-vitest"
       },
       {
         "title": "Angular Material y CDK: componentes accesibles probados con harnesses",
@@ -2494,8 +2494,8 @@
         "fragment": "tema-2-uniendo-los-modulos-del-track"
       },
       {
-        "title": "Cierre del track",
-        "fragment": "tema-3-cierre-del-track"
+        "title": "Retrospectiva del proyecto integrador",
+        "fragment": "tema-3-retrospectiva-del-proyecto-integrador"
       },
       {
         "title": "Arquitectura recomendada de Flutter: views, view models, repositories y services",
@@ -5462,8 +5462,8 @@
         "fragment": "tema-2-integrando-rutas-tanstack-query-y-zustand"
       },
       {
-        "title": "useTareas — hook dedicado con TanStack Query",
-        "fragment": "tema-3-usetareas-hook-dedicado-con-tanstack-query"
+        "title": "useEnvios — hook dedicado con TanStack Query",
+        "fragment": "tema-3-useenvios-hook-dedicado-con-tanstack-query"
       }
     ],
     "13": [
@@ -5498,8 +5498,8 @@
         "fragment": "tema-2-server-actions-y-seguridad"
       },
       {
-        "title": "Next.js ISR, Metadata y Middleware",
-        "fragment": "tema-3-next-js-isr-metadata-y-middleware"
+        "title": "Next.js ISR, Metadata y Proxy (antes Middleware)",
+        "fragment": "tema-3-next-js-isr-metadata-y-proxy-antes-middleware"
       },
       {
         "title": "Optimización de imágenes y fuentes",
@@ -5618,8 +5618,8 @@
         "fragment": "tema-3-estado-de-servidor-vs-estado-de-cliente-y-cuando-no-necesitas-nada-de-esto"
       },
       {
-        "title": "Jotai, Recoil y XState como alternativas",
-        "fragment": "tema-4-jotai-recoil-y-xstate-como-alternativas"
+        "title": "Jotai y XState como alternativas",
+        "fragment": "tema-4-jotai-y-xstate-como-alternativas"
       }
     ],
     "8": [

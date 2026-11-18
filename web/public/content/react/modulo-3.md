@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: React Hook Form y el problema del re-render por tecla
 
@@ -63,32 +63,50 @@ const { register, handleSubmit, formState: { errors } } = useForm();
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-const { register, handleSubmit, formState: { errors } } = useForm();
+import { useForm } from 'react-hook-form';
 
-<form onSubmit={handleSubmit(datos => registrarEnvio(datos))}>
-  <input {...register('destinatario', { required: 'El destinatario es obligatorio' })} />
-  {errors.destinatario && <span>{errors.destinatario.message}</span>}
-</form>
+function registrarEnvio(datos) {
+  console.log('Envío registrado:', datos);
+}
+
+function FormularioEnvio() {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  console.log('render');
+
+  return (
+    <form onSubmit={handleSubmit(datos => registrarEnvio(datos))}>
+      <label>
+        Destinatario{' '}
+        <input {...register('destinatario', { required: 'El destinatario es obligatorio' })} />
+      </label>
+      {errors.destinatario && <span role="alert">{errors.destinatario.message}</span>}
+      <button type="submit">Registrar</button>
+    </form>
+  );
+}
+
+export default function App() {
+  return <FormularioEnvio />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes la librería) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-hook-form
 npm run dev
 ```
 
-Resultado esperado: agregando un `console.log('render')` en el cuerpo del componente, escribir en el campo `destinatario` no imprime ese log en cada tecla — React Hook Form gestiona el valor internamente sin pasar por `setState` de React en cada cambio. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: con la consola del navegador abierta, escribir en el campo `destinatario` no imprime `render` en cada tecla — React Hook Form gestiona el valor internamente sin pasar por `setState` de React en cada cambio. Enviar el campo vacío muestra «El destinatario es obligatorio». Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: reemplazá el campo `destinatario` por una versión controlada con `useState` + `onChange` manual, dejando el resto del formulario con `register` "para comparar" — ese es el fallo deliberado: ahora ese campo específico sí re-renderiza el formulario completo en cada tecla (visible en el `console.log`), mientras los demás campos no lo hacen, mezclando dos modelos sin necesidad.
+Pista: reemplaza el campo `destinatario` por una versión controlada con `useState` + `onChange` manual, dejando el resto del formulario con `register` "para comparar" — ese es el fallo deliberado: ahora ese campo específico sí re-renderiza el formulario completo en cada tecla (visible en el `console.log`), mientras los demás campos no lo hacen, mezclando dos modelos sin necesidad.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `destinatario` a `register`, y agregá un campo nuevo (`peso`) también con `register`, confirmando que agregar campos a React Hook Form no incrementa el costo de render de los campos existentes. Traslada el formulario de entrega del proyecto integrador RutaFlow a React Hook Form y compara el número de renders por tecla.
+Corrige el Paso 5 devolviendo `destinatario` a `register`, y agrega un campo nuevo (`peso`) también con `register`, confirmando que agregar campos a React Hook Form no incrementa el costo de render de los campos existentes. Traslada el formulario de entrega del proyecto integrador RutaFlow a React Hook Form y compara el número de renders por tecla.
 
 #### Paso 7 · Cierre
-Entregá el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explicá por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
+Entrega el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explica por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
 
 ### Tema 2: Validación con zod y formularios multi-paso
 
@@ -102,7 +120,7 @@ El peso de un envío debe ser un número positivo y la dirección no puede estar
 Un schema de zod describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, conectado a React Hook Form mediante `zodResolver` — una plantilla de aduana que especifica qué documentos son válidos para pasar.
 **Conceptos clave:** schema declarativo, `zodResolver`, estado compartido entre pasos.
 
-Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, de forma similar en espíritu a los validadores declarativos de Reactive Forms estudiados en el Módulo 5 del track de Angular, pero expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
+Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
 
 Un formulario multi-paso mantiene el estado combinado de todos los pasos en un componente padre compartido (`const [datos, setDatos] = useState({})`), donde cada paso individual es un sub-formulario independiente que, al completarse, fusiona sus propios datos con el estado acumulado existente (`setDatos(prev => ({ ...prev, ...datosDelPaso }))`) antes de avanzar al siguiente paso (`setPaso(p => p + 1)`); al retroceder a un paso anterior, ese estado combinado ya existente permite prellenar nuevamente los campos con los valores previamente ingresados, en vez de perderlos y forzar al usuario a reescribirlos desde cero.
 
@@ -129,38 +147,92 @@ function siguientePaso(datosDelPaso) {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
 const schemaPaquete = z.object({
   peso: z.number().positive('El peso debe ser mayor a 0'),
   direccion: z.string().min(1, 'La dirección es obligatoria'),
 });
-useForm({ resolver: zodResolver(schemaPaquete) });
+
+const schemaEntrega = z.object({
+  destinatario: z.string().min(1, 'El destinatario es obligatorio'),
+});
+
+function PasoPaquete({ valores, alAvanzar }) {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(schemaPaquete),
+    defaultValues: valores, // prellena lo escrito antes al volver a este paso
+  });
+  return (
+    <form onSubmit={handleSubmit(alAvanzar)}>
+      <label>Peso (kg) <input type="number" step="0.1" {...register('peso', { valueAsNumber: true })} /></label>
+      {errors.peso && <span role="alert">{errors.peso.message}</span>}
+      <label>Dirección <input {...register('direccion')} /></label>
+      {errors.direccion && <span role="alert">{errors.direccion.message}</span>}
+      <button type="submit">Siguiente</button>
+    </form>
+  );
+}
+
+function PasoEntrega({ valores, alVolver, alAvanzar }) {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(schemaEntrega),
+    defaultValues: valores,
+  });
+  return (
+    <form onSubmit={handleSubmit(alAvanzar)}>
+      <label>Destinatario <input {...register('destinatario')} /></label>
+      {errors.destinatario && <span role="alert">{errors.destinatario.message}</span>}
+      <button type="button" onClick={alVolver}>Volver</button>
+      <button type="submit">Registrar</button>
+    </form>
+  );
+}
+
+export default function App() {
+  const [paso, setPaso] = useState(1);
+  const [datos, setDatos] = useState({});
+
+  function siguientePaso(datosDelPaso) {
+    setDatos(prev => ({ ...prev, ...datosDelPaso }));
+    setPaso(p => p + 1);
+  }
+
+  if (paso === 1) return <PasoPaquete valores={datos} alAvanzar={siguientePaso} />;
+  if (paso === 2) {
+    return <PasoEntrega valores={datos} alVolver={() => setPaso(1)} alAvanzar={siguientePaso} />;
+  }
+  return <pre>{JSON.stringify(datos, null, 2)}</pre>;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes las librerías) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-hook-form zod @hookform/resolvers
 npm run dev
 ```
 
-Resultado esperado: intentar enviar el paso 1 con `peso: -5` o `direccion: ''` puebla automáticamente `errors.peso`/`errors.direccion` con el mensaje del schema, sin que el componente escriba ninguna lógica de validación manual. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: intentar enviar el paso 1 con `peso: -5` o `direccion: ''` puebla automáticamente `errors.peso`/`errors.direccion` con el mensaje del schema («El peso debe ser mayor a 0», «La dirección es obligatoria»), sin que el componente escriba ninguna lógica de validación manual. `valueAsNumber: true` convierte el texto del input en número antes de validarlo. Con datos válidos avanzas al paso 2, y «Volver» muestra el paso 1 con lo que ya habías escrito. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado #1 (sobrescribir estado):**
-Cambiá `setDatos(prev => ({ ...prev, ...datosDelPaso }))` por `setDatos(datosDelPaso)` (sin el spread) — al llegar al paso 2, los datos del paso 1 desaparecen, y retroceder muestra un formulario vacío.
+Cambia `setDatos(prev => ({ ...prev, ...datosDelPaso }))` por `setDatos(datosDelPaso)` (sin el spread) — al registrar el paso 2, el resumen final solo contiene `destinatario`: los datos del paso 1 desaparecieron.
 
 **Fallo deliberado #2 (schema incompleto):**
-Remové la validación de `peso: z.number().positive()` del schema, dejando solo `direccion` — ahora puedes enviar un peso negativo (-10 kg) sin que zod lo rechace, porque nunca lo validó.
+Quita la validación `.positive(...)` de `peso` en el schema (deja `z.number()`), dejando solo `direccion` — ahora puedes enviar un peso negativo (-10 kg) sin que zod lo rechace, porque nunca lo validó.
 
 **Fallo deliberado #3 (duplicar validación):**
-Mantén el schema de zod pero agregá además validación manual en el `onSubmit`: `if (peso < 0) setErrors(...)` — ahora tenés dos lugares donde validar la misma regla, fácil de desincronizar cuando una cambia.
-**Pista:** revertí cada fallo antes de probar el siguiente — el Fallo #1 se nota de inmediato al retroceder de paso, pero el Fallo #2 (schema incompleto) solo se nota si intentás enviar explícitamente un valor que debería haber sido rechazado.
+Mantén el schema de zod pero agrega además validación manual en el `onSubmit`: `if (peso < 0) setErrors(...)` — ahora tienes dos lugares donde validar la misma regla, fácil de desincronizar cuando una cambia.
+**Pista:** revierte cada fallo antes de probar el siguiente — el Fallo #1 se nota de inmediato en el resumen final, pero el Fallo #2 (schema incompleto) solo se nota si intentas enviar explícitamente un valor que debería haber sido rechazado.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el spread, y agregá un tercer paso (confirmación) que muestre un resumen de todos los datos acumulados de los pasos 1 y 2, confirmando que nada se perdió en el camino. Valida el formulario multipaso del proyecto integrador RutaFlow con zod y muestra el error del paso que falla.
+Corrige el Paso 5 restaurando el spread, y convierte el resumen final en un tercer paso de confirmación que muestre de todos los datos acumulados de los pasos 1 y 2, confirmando que nada se perdió en el camino. Valida el formulario multipaso del proyecto integrador RutaFlow con zod y muestra el error del paso que falla.
 
 #### Paso 7 · Cierre
-Entregá el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explicá por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.
+Entrega el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explica por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.
 
 ### Tema 3: Eventos sintéticos
 
@@ -190,41 +262,54 @@ graph LR
     style I fill:#e8f5e9
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="events|synthetic"`
-* Código: `src/components/ShipmentForm.tsx`
 * Cuándo: usar `preventDefault` siempre en formularios para evitar recarga del navegador; `SyntheticEvent` garantiza consistencia entre navegadores en vez de depender de APIs nativas inconsistentes.
 
 **¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre navegadores, y sin `preventDefault` el comportamiento nativo del navegador destruye todo el estado de React acumulado.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-function manejarSubmit(e) {
-  e.preventDefault(); // evita la recarga completa de la página
-  handleSubmit(datos => registrarEnvio(datos))(e);
+import { useState } from 'react';
+
+export default function App() {
+  const [registrados, setRegistrados] = useState([]);
+
+  function manejarSubmit(e) {
+    e.preventDefault(); // evita la recarga completa de la página
+    const datos = new FormData(e.currentTarget);
+    setRegistrados(prev => [...prev, datos.get('guia')]);
+    e.currentTarget.reset();
+  }
+
+  return (
+    <>
+      <form onSubmit={manejarSubmit}>
+        <label>Guía <input name="guia" required /></label>
+        <button type="submit">Enviar</button>
+      </form>
+      <p>Registrados en esta sesión: {registrados.join(', ') || 'ninguno'}</p>
+    </>
+  );
 }
-<form onSubmit={manejarSubmit}>
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: al enviar el formulario, la página no se recarga (no aparece el parpadeo característico de una recarga completa), y el estado de React (los datos ya ingresados, cualquier mensaje de error visible) permanece intacto mientras `registrarEnvio` procesa el envío.
+Resultado esperado: al enviar el formulario, la página no se recarga (no aparece el parpadeo característico de una recarga completa), y el estado de React se conserva: la lista «Registrados en esta sesión» acumula cada guía enviada. Este ejemplo usa un formulario sin librerías a propósito: el `handleSubmit` de React Hook Form (Tema 1) ya llama a `preventDefault()` por ti.
 
-Ejecuta `npm test` y confirma que las pruebas de eventos sintéticos pasan.
+Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `RF-4471` en el campo «Guía», pulsa «Enviar» con `userEvent` y comprueba que aparece «Registrados en esta sesión: RF-4471». Después ejecuta `npm test` (cuando reemplaces `App.jsx` en el próximo tema, borra esta prueba o muévela junto al componente).
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `e.preventDefault()` del manejador — ese es el fallo deliberado: al tocar "Enviar", el navegador recarga la página completa con su comportamiento nativo, perdiendo instantáneamente todo el estado de React, incluyendo cualquier dato ya ingresado en los otros pasos del formulario multi-paso del Tema 2.
+Pista: quita `e.preventDefault()` del manejador — ese es el fallo deliberado: al tocar "Enviar", el navegador recarga la página completa con su comportamiento nativo (verás `?guia=...` en la barra de direcciones), perdiendo instantáneamente todo el estado de React: la lista de registrados vuelve a «ninguno».
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `e.preventDefault()`, y agregá un manejador `onKeyDown` en el campo de peso que llame a `e.preventDefault()` específicamente cuando se presione una tecla que no sea un dígito, evitando escribir letras en un campo numérico. En el proyecto integrador RutaFlow, evita la recarga del formulario de entrega con `preventDefault` y prueba el envío con teclado.
+Corrige el Paso 5 restaurando `e.preventDefault()`, y agrega un campo de peso con un manejador `onKeyDown` en el campo de peso que llame a `e.preventDefault()` específicamente cuando se presione una tecla que no sea un dígito, evitando escribir letras en un campo numérico. En el proyecto integrador RutaFlow, evita la recarga del formulario de entrega con `preventDefault` y prueba el envío con teclado.
 
 #### Paso 7 · Cierre
-Entregá el manejador con `preventDefault` del Paso 4, la recarga de página provocada en el Paso 5, y el bloqueo de teclas no numéricas del Paso 6; explicá por qué `e.preventDefault()` dentro de un `SyntheticEvent` de React funciona de forma idéntica sin importar el navegador. Siguiente paso: estudia routing con React Router. Errores comunes: olvidar `preventDefault` en el submit de un formulario, confundir `e.target` con `e.currentTarget` en un evento con burbujeo, y depender de comportamiento específico de un navegador en vez de la API sintética unificada. Fuentes oficiales: https://react.dev/learn/responding-to-events y https://react.dev/reference/react-dom/components/common#react-event-object.
+Entrega el manejador con `preventDefault` del Paso 4, la recarga de página provocada en el Paso 5, y el bloqueo de teclas no numéricas del Paso 6; explica por qué `e.preventDefault()` dentro de un `SyntheticEvent` de React funciona de forma idéntica sin importar el navegador. Siguiente paso: estudia routing con React Router. Errores comunes: olvidar `preventDefault` en el submit de un formulario, confundir `e.target` con `e.currentTarget` en un evento con burbujeo, y depender de comportamiento específico de un navegador en vez de la API sintética unificada. Fuentes oficiales: https://react.dev/learn/responding-to-events y https://react.dev/reference/react-dom/components/common#react-event-object.
 
 ### Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min
 

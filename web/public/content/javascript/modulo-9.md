@@ -23,7 +23,7 @@ Una prueba unitaria verifica que una pieza aislada de código (típicamente una 
 
 El patrón "arrange-act-assert" (organizar-actuar-afirmar) estructura una prueba en tres fases claramente delimitadas, aunque no siempre marcadas explícitamente con comentarios: primero se prepara el estado y los datos necesarios para la prueba (arrange); luego se ejecuta la acción concreta que se quiere verificar, típicamente invocando la función bajo prueba (act); finalmente se afirma que el resultado obtenido coincide con lo esperado (assert). Seguir esta estructura consistentemente, incluso en pruebas simples de una sola línea donde las tres fases colapsan en una expresión compacta, facilita la legibilidad de una suite de pruebas extensa, donde cada prueba comunica claramente su intención sin necesidad de un contexto adicional externo para entenderla.
 
-Una prueba unitaria bien diseñada debe ser determinista (produce siempre el mismo resultado ante las mismas entradas, sin depender de estado externo compartido entre pruebas, del orden de ejecución, o de fuentes de aleatoriedad no controladas) y rápida (idealmente ejecutándose en milisegundos, permitiendo ejecutar la suite completa frecuentemente durante el desarrollo sin fricción de tiempo). Estas dos propiedades —determinismo y velocidad— son las que hacen viable ejecutar una suite de pruebas constantemente durante el desarrollo (o automáticamente en cada commit mediante CI, como se estudió en el track DevOps), en vez de reservarla únicamente para verificaciones esporádicas y manuales.
+Una prueba unitaria bien diseñada debe ser determinista (produce siempre el mismo resultado ante las mismas entradas, sin depender de estado externo compartido entre pruebas, del orden de ejecución, o de fuentes de aleatoriedad no controladas) y rápida (idealmente ejecutándose en milisegundos, permitiendo ejecutar la suite completa frecuentemente durante el desarrollo sin fricción de tiempo). Estas dos propiedades —determinismo y velocidad— son las que hacen viable ejecutar una suite de pruebas constantemente durante el desarrollo (o automáticamente en cada commit mediante integración continua, CI), en vez de reservarla únicamente para verificaciones esporádicas y manuales.
 
 Escribir la primera prueba de un proyecto —por trivial que sea, como verificar que `sumar(2,3)` devuelve `5`— establece la infraestructura básica (configuración de Vitest, comando de ejecución) sobre la que se construirán progresivamente pruebas más sofisticadas, y es un paso de valor práctico inmediato incluso antes de alcanzar una cobertura extensa del proyecto completo.
 
@@ -33,20 +33,14 @@ Escribir la primera prueba de un proyecto —por trivial que sea, como verificar
 
 #### Paso 4 · Demostración guiada desde cero
 
-Instala Vitest y registra el comando estable:
-
-```bash
-npm install --save-dev vitest
-npm pkg set scripts.test="vitest run"
-```
-
-Desde una carpeta vacía crea `ejemplo-vitest`, instala Vitest y crea `src` y `test`:
+Desde una carpeta vacía crea `ejemplo-vitest`, instala Vitest, registra el script `test` y crea `src` y `test`:
 
 ```bash
 mkdir ejemplo-vitest
 cd ejemplo-vitest
 npm init -y
 npm install -D vitest
+npm pkg set scripts.test="vitest run"
 mkdir src test
 ```
 
@@ -64,7 +58,7 @@ Crea `test/guia.test.js`:
 
 ```js
 import { describe, it, expect } from "vitest";
-import { crearGuia } from "./guia.js";
+import { crearGuia } from "../src/guia.js";
 
 describe("crearGuia", () => {
   it("crea una guía en estado inicial", () => {

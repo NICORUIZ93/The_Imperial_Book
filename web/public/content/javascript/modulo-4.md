@@ -102,7 +102,7 @@ La elección entre `Map` y un objeto plano para almacenar pares clave-valor depe
 
 `Set` y `Map` no reemplazan a `Array` y `Object` de forma universal; cada estructura tiene su lugar según la naturaleza del problema: `Array` para colecciones ordenadas donde el índice numérico importa y puede haber duplicados, `Object` para registros con forma fija y conocida, `Set` para colecciones donde la unicidad es la propiedad central, y `Map` para diccionarios verdaderamente dinámicos donde las claves no se conocen de antemano.
 
-Desde ECMAScript 2026, `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
+Desde ECMAScript 2025 (disponible en Node.js 22 o superior), `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
 
 ```javascript
 const enRuta = new Set(['RF-101', 'RF-102', 'RF-103']);

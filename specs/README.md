@@ -12,4 +12,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [011](011-limpieza-total.md) | Limpieza total del repositorio | hecho |
 | [012](012-limpieza-a-fondo.md) | Limpieza a fondo (segunda pasada) | hecho |
 | [013](013-programa-de-cursos-y-correcciones.md) | Programa de cursos y correcciones | en curso |
-| [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | en curso |
+| [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | hecho |

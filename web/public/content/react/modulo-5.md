@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: Rutas anidadas y layouts compartidos
 
@@ -45,7 +45,7 @@ graph TD
 
 React Router permite definir rutas anidadas mediante la propiedad `children` de una configuración de ruta: una ruta padre (`/tareas`) puede definir un `element` que actúa como layout compartido (por ejemplo, una barra de navegación común a todas las sub-rutas), dentro del cual se renderizan sus rutas hijas (`{ index: true, element: <ListaTareas /> }` para la ruta exacta `/tareas`, y `{ path: ':id', element: <DetalleTarea /> }` para `/tareas/:id`), evitando la necesidad de repetir manualmente ese layout compartido (la navbar, por ejemplo) en cada componente de vista individual.
 
-Esta estructura anidada refleja directamente la jerarquía visual real de la aplicación: si todas las vistas bajo `/tareas/*` comparten la misma barra de navegación circundante, expresar esa relación mediante anidamiento de rutas evita duplicar ese layout en cada componente de vista, centralizándolo en un único lugar (el componente de la ruta padre), de forma conceptual similar al routing anidado con layouts compartidos estudiado en el Módulo 4 del track de Angular, aunque expresado con la API específica de React Router en vez de la de Angular Router.
+Esta estructura anidada refleja directamente la jerarquía visual real de la aplicación: si todas las vistas bajo `/tareas/*` comparten la misma barra de navegación circundante, expresar esa relación mediante anidamiento de rutas evita duplicar ese layout en cada componente de vista, centralizándolo en un único lugar (el componente de la ruta padre).
 
 **Analogía:** un layout compartido en rutas anidadas es como un marco de fotos común que envuelve distintas fotos intercambiables: el marco (la navbar) permanece igual, mientras que el contenido específico dentro de él (la vista actual) cambia según la ruta activa.
 
@@ -69,7 +69,39 @@ const router = createBrowserRouter([
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useState } from 'react';
+import { createBrowserRouter, Link, Navigate, Outlet, RouterProvider, useParams } from 'react-router';
+
+function LayoutEnvios() {
+  const [zona, setZona] = useState('norte'); // estado del layout compartido
+  return (
+    <main>
+      <label>
+        Zona{' '}
+        <select value={zona} onChange={e => setZona(e.target.value)}>
+          <option value="norte">Norte</option>
+          <option value="sur">Sur</option>
+        </select>
+      </label>
+      <nav>
+        <Link to="/envios">Lista</Link> · <Link to="/envios/RF-4471">RF-4471</Link>
+      </nav>
+      <Outlet /> {/* aquí se renderiza la ruta hija activa */}
+    </main>
+  );
+}
+
+function ListaEnvios() {
+  return <p>Lista de envíos</p>;
+}
+
+function DetalleEnvio() {
+  const { id } = useParams();
+  return <p>Detalle del envío {id}</p>;
+}
+
 const router = createBrowserRouter([
+  { path: '/', element: <Navigate to="/envios" replace /> },
   {
     path: '/envios',
     element: <LayoutEnvios />, // barra de filtro de zona compartida
@@ -79,26 +111,29 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes React Router) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-router
 npm run dev
 ```
 
-Resultado esperado: navegar de `/envios` a `/envios/RF-4471` no remonta `LayoutEnvios` (la zona seleccionada en la barra de filtro se conserva) — solo el `<Outlet />` dentro de `LayoutEnvios` cambia entre `ListaEnvios` y `DetalleEnvio`. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: navegar de `/envios` a `/envios/RF-4471` no remonta `LayoutEnvios` (la zona seleccionada en la barra de filtro se conserva) — solo el `<Outlet />` dentro de `LayoutEnvios` cambia entre `ListaEnvios` y `DetalleEnvio`. Elige «Sur», pulsa «RF-4471» y comprueba que el selector sigue en «Sur». Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: en vez de anidar, definí `/envios` y `/envios/:id` como dos rutas completamente independientes al mismo nivel, cada una renderizando su propia copia de la barra de filtro — ese es el fallo deliberado: al navegar de la lista al detalle, la barra de filtro se desmonta y vuelve a montar desde cero, perdiendo la zona seleccionada aunque visualmente "se vea igual".
+Pista: en vez de anidar, define `/envios` y `/envios/:id` como dos rutas completamente independientes al mismo nivel, cada una renderizando su propia copia de la barra de filtro — ese es el fallo deliberado: al navegar de la lista al detalle, la barra de filtro se desmonta y vuelve a montar desde cero, perdiendo la zona seleccionada aunque visualmente "se vea igual".
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 volviendo a anidar ambas rutas bajo `LayoutEnvios`, y agregá una tercera ruta hija (`path: ':id/historial'`) que también comparta el mismo layout, confirmando que la barra de filtro sigue sin remontarse al navegar entre las tres. Anida la ruta de historial del proyecto integrador RutaFlow bajo el mismo layout y comprueba que el filtro no se remonta.
+Corrige el Paso 5 volviendo a anidar ambas rutas bajo `LayoutEnvios`, y agrega una tercera ruta hija (`path: ':id/historial'`) que también comparta el mismo layout, confirmando que la barra de filtro sigue sin remontarse al navegar entre las tres. Anida la ruta de historial del proyecto integrador RutaFlow bajo el mismo layout y comprueba que el filtro no se remonta.
 
 #### Paso 7 · Cierre
-Entregá la estructura anidada del Paso 4, la pérdida de estado provocada en el Paso 5, y la tercera ruta hija del Paso 6; explicá por qué anidar rutas (en vez de duplicar el layout en rutas independientes) preserva el estado del layout compartido entre navegaciones. Siguiente paso: estudia loaders para evitar el parpadeo de carga. Errores comunes: duplicar el layout en rutas independientes en vez de anidarlas, olvidar el `<Outlet />` dentro del layout (las rutas hijas nunca se renderizarían), y anidar rutas que en realidad no comparten ningún layout real. Fuentes oficiales: https://reactrouter.com/start/data/route-object y https://reactrouter.com/start/framework/routing.
+Entrega la estructura anidada del Paso 4, la pérdida de estado provocada en el Paso 5, y la tercera ruta hija del Paso 6; explica por qué anidar rutas (en vez de duplicar el layout en rutas independientes) preserva el estado del layout compartido entre navegaciones. Siguiente paso: estudia loaders para evitar el parpadeo de carga. Errores comunes: duplicar el layout en rutas independientes en vez de anidarlas, olvidar el `<Outlet />` dentro del layout (las rutas hijas nunca se renderizarían), y anidar rutas que en realidad no comparten ningún layout real. Fuentes oficiales: https://reactrouter.com/start/data/route-object y https://reactrouter.com/start/framework/routing.
 
 ### Tema 2: Loaders — datos antes de renderizar
 
@@ -134,42 +169,82 @@ const tarea = useLoaderData();
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-{
-  path: ':id',
-  loader: ({ params }) => fetch(`/api/envios/${params.id}`).then(r => r.json()),
-  element: <DetalleEnvio />,
+import { createBrowserRouter, Link, Outlet, RouterProvider, useLoaderData } from 'react-router';
+
+async function cargarEnvio({ params }) {
+  const respuesta = await fetch(`/api/envios/${params.id}.json`);
+  const tipo = respuesta.headers.get('content-type') ?? '';
+  // Vite responde index.html (HTML, no JSON) a un archivo que no existe en public/.
+  if (!respuesta.ok || !tipo.includes('application/json')) {
+    throw new Error(`No existe el envío ${params.id}`);
+  }
+  return respuesta.json();
 }
-// dentro de DetalleEnvio:
-const envio = useLoaderData();
+
+function LayoutEnvios() {
+  return (
+    <main>
+      <nav>
+        <Link to="/envios">Lista</Link> · <Link to="/envios/RF-4471">RF-4471</Link>
+      </nav>
+      <Outlet />
+    </main>
+  );
+}
+
+function DetalleEnvio() {
+  const envio = useLoaderData(); // ya está cargado cuando el componente se monta
+  return <p>{envio.id}: {envio.estado}, destino {envio.direccion}</p>;
+}
+
+const router = createBrowserRouter([
+  {
+    path: '/envios',
+    element: <LayoutEnvios />,
+    children: [
+      { index: true, element: <p>Elige un envío.</p> },
+      { path: ':id', loader: cargarEnvio, element: <DetalleEnvio /> },
+    ],
+  },
+  { path: '*', element: <Link to="/envios">Ir a envíos</Link> },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior. El proyecto Vite no tiene una API: sirve los datos como archivo estático creando `public/api/envios/RF-4471.json` con
+
+```json
+{ "id": "RF-4471", "estado": "en ruta", "direccion": "Calle 170 # 8-20" }
+```
+
+Después reemplaza `src/App.jsx` y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: navegar a `/envios/RF-4471` espera a que la respuesta de la API llegue antes de montar `DetalleEnvio` — nunca se ve un estado intermedio vacío o "Cargando...", el componente aparece directamente con `envio` ya poblado. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: navegar a `/envios/RF-4471` espera a que la respuesta de la API llegue antes de montar `DetalleEnvio` — nunca se ve un estado intermedio vacío o "Cargando...", el componente aparece directamente con `envio` ya poblado. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con React DevTools:**
 1. Implementa la app con loader como arriba
-2. Abre DevTools → Network tab → throttle a "Slow 3G" para simular red lenta
-3. Haz click en un enlace `/envios/1`
-4. Observa en DevTools → Elementos tab: `DetalleEnvio` **no se monta hasta que la respuesta llega** (no ves ningún marcado intermedio)
+2. Abre DevTools → pestaña Network → limitación "Slow 4G" para simular red lenta
+3. Haz click en el enlace «RF-4471»
+4. Observa en DevTools → pestaña Elements: `DetalleEnvio` **no se monta hasta que la respuesta llega** (no ves ningún marcado intermedio)
 5. Compara: implementa la misma vista pero sin loader, manejando fetch en un `useEffect` del componente
 6. Repite el click con throttle: ahora verás un marcado vacío primero, luego "Cargando...", luego los datos
 7. Resultado esperado: ver en DevTools/Network que el loader espera a que el fetch complete antes de renderizar el componente.
 
 #### Paso 5 · Práctica guiada
-Pista: apuntá el loader a una URL inexistente (`/api/envios-typo/${params.id}`) — ese es el fallo deliberado: la petición falla, React Router activa su mecanismo de error de ruta, y si no definiste un `errorElement`, el usuario ve una pantalla de error genérica de React Router en vez de un mensaje específico de RutaFlow explicando qué pasó.
+Pista: apunta el loader a una URL inexistente (`/api/envios-typo/${params.id}.json`) — ese es el fallo deliberado: Vite responde HTML en vez de JSON, `cargarEnvio` lanza el error, React Router activa su mecanismo de error de ruta, y si no definiste un `errorElement`, el usuario ve una pantalla de error genérica de React Router en vez de un mensaje específico de RutaFlow explicando qué pasó.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo la URL correcta, y agregá un `errorElement` específico para esa ruta que muestre "No pudimos cargar este envío" con un botón de reintentar, en vez de la pantalla de error genérica. Carga los datos de la ruta del proyecto integrador RutaFlow en un loader y compara el primer render con y sin él.
+Corrige el Paso 5 devolviendo la URL correcta, y agrega un `errorElement` específico para esa ruta que muestre "No pudimos cargar este envío" con un botón de reintentar, en vez de la pantalla de error genérica. Carga los datos de la ruta del proyecto integrador RutaFlow en un loader y compara el primer render con y sin él.
 
 #### Paso 7 · Cierre
-Entregá el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explicá por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas y code-splitting. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
+Entrega el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explica por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas y code-splitting. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
 
 ### Tema 3: Rutas protegidas y code-splitting por ruta
 
@@ -203,45 +278,95 @@ graph LR
     style E fill:#ffebee
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="protected|lazy"`
-* Código: `src/routes/ProtectedRoute.tsx`
 * Cuándo: usar rutas protegidas para mejorar UX al redirigir sin sesión; usar lazy loading en rutas pesadas (>50KB) para reducir bundle inicial; no conviene si el overhead de un chunk adicional superaría el beneficio.
 
 **¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación y el code-splitting reduce el bundle inicial, pero ninguna de las dos sustituye la autorización real que debe vivir en el servidor.
 
 #### Paso 4 · Demostración guiada desde cero
-```jsx
-function RutaProtegida({ children }) {
-  const { operador } = useContext(SesionContext);
-  return operador.rol === 'supervisor' ? children : <Navigate to="/" />;
-}
+Crea primero `src/Admin.jsx`, el componente que se cargará en un chunk aparte:
 
-const Admin = lazy(() => import('./Admin'));
-<Route path="/admin" element={
-  <RutaProtegida><Suspense fallback={<Spinner />}><Admin /></Suspense></RutaProtegida>
-} />
+```jsx
+export default function Admin() {
+  return <h1>Administración de conductores</h1>;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+Y este `src/App.jsx`:
+
+```jsx
+import { createContext, lazy, Suspense, useContext, useState } from 'react';
+import { createBrowserRouter, Link, Navigate, Outlet, RouterProvider } from 'react-router';
+
+const SesionContext = createContext(null);
+const Admin = lazy(() => import('./Admin.jsx')); // chunk separado, se descarga al usarlo
+
+function Spinner() {
+  return <p role="status">Cargando…</p>;
+}
+
+function RutaProtegida({ children }) {
+  const { operador } = useContext(SesionContext);
+  // Solo experiencia de usuario: el servidor debe repetir esta verificación.
+  return operador.rol === 'supervisor' ? children : <Navigate to="/" replace />;
+}
+
+function Layout() {
+  return (
+    <main>
+      <nav><Link to="/">Inicio</Link> · <Link to="/admin">Administración</Link></nav>
+      <Outlet />
+    </main>
+  );
+}
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      { index: true, element: <p>Panel del operador</p> },
+      {
+        path: 'admin',
+        element: (
+          <RutaProtegida>
+            <Suspense fallback={<Spinner />}><Admin /></Suspense>
+          </RutaProtegida>
+        ),
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  // Cambia 'conductor' por 'supervisor' para probar los dos casos.
+  const [operador] = useState({ nombre: 'Ana', rol: 'conductor' });
+  return (
+    <SesionContext value={{ operador }}>
+      <RouterProvider router={router} />
+    </SesionContext>
+  );
+}
+```
+
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (si no lo instalaste en el Tema 1, instala React Router) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-router
 npm run dev
 ```
 
 Resultado esperado: un conductor (rol distinto de `'supervisor'`) que navega a `/admin` es redirigido inmediatamente a `/` sin que el chunk de `Admin` siquiera se descargue; un supervisor sí accede, y recién ahí el navegador descarga el chunk separado de `Admin` (verificable en la pestaña Network).
 
-Ejecuta `npm test` y confirma que las pruebas de rutas protegidas pasan.
+Ejecuta `npm run build` y comprueba en la salida que aparece un archivo `Admin-*.js` separado del `index-*.js`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: envolvé `Admin` en `Suspense` pero quitá `RutaProtegida` "para simplificar" — ese es el fallo deliberado: cualquier conductor que navegue manualmente a `/admin` ahora sí ve la pantalla de administración completa en el cliente, aunque no tenga el rol correspondiente — una falsa sensación de seguridad, porque esta verificación es solo de experiencia de usuario, no un control de autorización real.
+Pista: envuelve `Admin` en `Suspense` pero quita `RutaProtegida` "para simplificar" — ese es el fallo deliberado: cualquier conductor que navegue manualmente a `/admin` ahora sí ve la pantalla de administración completa en el cliente, aunque no tenga el rol correspondiente — una falsa sensación de seguridad, porque esta verificación es solo de experiencia de usuario, no un control de autorización real.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `RutaProtegida`, y agregá un comentario explícito en el código recordando que el backend de RutaFlow debe repetir esta misma verificación de rol en cada endpoint que `Admin` consuma, porque una ruta protegida en el cliente nunca reemplaza la autorización real del servidor. Protege la ruta de operador del proyecto integrador RutaFlow y carga su chunk solo al entrar.
+Corrige el Paso 5 restaurando `RutaProtegida`, y agrega un comentario explícito en el código recordando que el backend de RutaFlow debe repetir esta misma verificación de rol en cada endpoint que `Admin` consuma, porque una ruta protegida en el cliente nunca reemplaza la autorización real del servidor. Protege la ruta de operador del proyecto integrador RutaFlow y carga su chunk solo al entrar.
 
 #### Paso 7 · Cierre
-Entregá la ruta protegida con lazy loading del Paso 4, el acceso indebido provocado en el Paso 5, y el recordatorio de autorización en servidor del Paso 6; explicá por qué una ruta protegida en el cliente mejora la experiencia pero nunca sustituye la verificación de permisos en el servidor. Siguiente paso: cerrá el módulo integrando rutas, loaders y protección en el proyecto completo. Errores comunes: confiar en una ruta protegida del cliente como única barrera de seguridad, olvidar `Suspense` alrededor de un componente `lazy`, y cargar con `lazy` una ruta tan pequeña que el overhead de un chunk adicional no se justifica. Fuentes oficiales: https://react.dev/reference/react/lazy y https://reactrouter.com/start/framework/navigating.
+Entrega la ruta protegida con lazy loading del Paso 4, el acceso indebido provocado en el Paso 5, y el recordatorio de autorización en servidor del Paso 6; explica por qué una ruta protegida en el cliente mejora la experiencia pero nunca sustituye la verificación de permisos en el servidor. Siguiente paso: cierra el módulo integrando rutas, loaders y protección en el proyecto completo. Errores comunes: confiar en una ruta protegida del cliente como única barrera de seguridad, olvidar `Suspense` alrededor de un componente `lazy`, y cargar con `lazy` una ruta tan pequeña que el overhead de un chunk adicional no se justifica. Fuentes oficiales: https://react.dev/reference/react/lazy y https://reactrouter.com/start/framework/navigating.
 
 ## Laboratorio práctico
 

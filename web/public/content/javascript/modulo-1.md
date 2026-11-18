@@ -149,7 +149,7 @@ console.log(envioOriginal);
 console.log(envioActualizado);
 ```
 
-Ejecuta desde `academia-javascript/`:
+Ejecuta desde `ejemplo-parametros/`:
 
 ```bash
 node src/parametros.js

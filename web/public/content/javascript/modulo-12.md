@@ -33,12 +33,14 @@ Un router manual mínimo, aunque simplificado comparado con las capacidades de u
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-history-router`, ejecuta `npm init -y`, crea `src` y después `src/router.js`:
+Desde una carpeta vacía crea `ejemplo-history-router`, ejecuta `npm init -y`, instala Vitest y Vite, registra los scripts, crea `src` y después `src/router.js`:
 
 ```bash
 mkdir ejemplo-history-router
 cd ejemplo-history-router
 npm init -y
+npm install -D vitest vite
+npm pkg set scripts.test="vitest run" scripts.dev="vite" scripts.build="vite build" scripts.preview="vite preview"
 mkdir src
 ```
 
@@ -63,17 +65,77 @@ export function crearRouter({ renderizar }) {
   };
   addEventListener("popstate", renderActual);
   document.addEventListener("click", alClick);
-  return { navegar, iniciar: renderActual, destruir: () => {
+  return { navegar, iniciar: renderActual, destroy: () => {
     removeEventListener("popstate", renderActual);
     document.removeEventListener("click", alClick);
   } };
 }
 ```
 
-Ejecuta pruebas de `resolverRuta` y luego desarrollo:
+Crea `src/router.test.js` para probar la resolución pura, sin navegador:
+
+```js
+import { describe, it, expect } from "vitest";
+import { resolverRuta } from "./router.js";
+
+describe("resolverRuta", () => {
+  it("resuelve las rutas estáticas", () => {
+    expect(resolverRuta("/").vista).toBe("inicio");
+    expect(resolverRuta("/guias").vista).toBe("guias");
+  });
+
+  it("extrae y decodifica el número del detalle", () => {
+    expect(resolverRuta("/guias/RF%2D101")).toEqual({
+      vista: "detalle",
+      parametros: { numero: "RF-101" },
+    });
+  });
+
+  it("devuelve no-encontrada ante una ruta desconocida", () => {
+    expect(resolverRuta("/otra").vista).toBe("no-encontrada");
+  });
+});
+```
+
+Crea `index.html` en la raíz del proyecto:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Guías</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/" data-link>Inicio</a>
+      <a href="/guias" data-link>Guías</a>
+      <a href="/guias/RF-101" data-link>RF-101</a>
+    </nav>
+    <main id="app"></main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+Y `src/main.js`, que conecta el router con una vista mínima:
+
+```js
+import { crearRouter } from "./router.js";
+
+const raiz = document.querySelector("#app");
+const router = crearRouter({
+  renderizar: ({ vista, parametros }) => {
+    raiz.textContent = vista === "detalle" ? `Detalle de ${parametros.numero}` : `Vista: ${vista}`;
+  },
+});
+router.iniciar();
+```
+
+Ejecuta pruebas de `resolverRuta` y luego desarrollo (abre la URL que imprime Vite):
 
 ```bash
-npm test -- src/router/router.test.js
+npm test -- src/router.test.js
 npm run dev
 ```
 
@@ -138,6 +200,7 @@ mkdir ejemplo-store
 cd ejemplo-store
 npm init -y
 npm install -D vitest
+npm pkg set scripts.test="vitest run"
 mkdir src test
 ```
 
@@ -174,10 +237,37 @@ sequenceDiagram
     V->>S: unsubscribe() al destruirse
 ```
 
-Crea `test/store.test.js` con dos suscriptores, guarda la referencia anterior, actualiza filtro y desuscribe uno.
+Crea `test/store.test.js` con dos suscriptores: guarda la referencia anterior, actualiza el filtro y desuscribe uno.
+
+```js
+import { describe, it, expect, vi } from "vitest";
+import { crearStore } from "../src/store.js";
+
+describe("crearStore", () => {
+  it("notifica, crea una referencia nueva y respeta la desuscripción", () => {
+    const store = crearStore({ filtro: "TODAS" });
+    const cabecera = vi.fn();
+    const lista = vi.fn();
+    store.subscribe(cabecera);
+    const desuscribirLista = store.subscribe(lista);
+    const anterior = store.getState();
+
+    store.setState({ filtro: "EN_RUTA" });
+    expect(cabecera).toHaveBeenCalledTimes(1);
+    expect(lista).toHaveBeenCalledTimes(1);
+    expect(store.getState()).not.toBe(anterior);
+
+    desuscribirLista();
+    store.setState((estado) => ({ filtro: `${estado.filtro}-URGENTE` }));
+    expect(cabecera).toHaveBeenCalledTimes(2);
+    expect(lista).toHaveBeenCalledTimes(1);
+    expect(store.getState().filtro).toBe("EN_RUTA-URGENTE");
+  });
+});
+```
 
 ```bash
-npm test -- src/estado/store.test.js
+npm test -- test/store.test.js
 ```
 
 **Resultado esperado:** ambos reciben la primera actualización, solo uno la segunda y la referencia nueva difiere de la anterior; actualizar funcionalmente puede leer estado reciente.
@@ -232,20 +322,37 @@ Esta separación entre "la lógica que dispara y gestiona la petición asíncron
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-api-client`, ejecuta `npm init -y`, crea `src` y después `src/cargar.js`:
+Desde una carpeta vacía crea `ejemplo-api-client`, ejecuta `npm init -y`, instala Vitest, crea `src` y `test`:
 
 ```bash
 mkdir ejemplo-api-client
 cd ejemplo-api-client
 npm init -y
-mkdir src
+npm install -D vitest
+npm pkg set scripts.test="vitest run"
+mkdir src test
 ```
 
+Crea `src/parsear-guia.js`, una versión mínima del parser del módulo 11:
+
 ```js
+export function parsearGuia(valor) {
+  if (typeof valor?.numero !== "string" || typeof valor?.estado !== "string") {
+    throw new TypeError("Guía inválida");
+  }
+  return { numero: valor.numero, estado: valor.estado };
+}
+```
+
+Crea `src/cargar.js`:
+
+```js
+import { parsearGuia } from "./parsear-guia.js";
+
 export async function cargarGuias(store, { fetchImpl = fetch, signal } = {}) {
   store.setState({ remoto: { tipo: "loading" } });
   try {
-    const respuesta = await fetchImpl("/api/guias", { signal });
+    const respuesta = await fetchImpl("/api/guias.json", { signal });
     if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
     const json = await respuesta.json();
     if (!Array.isArray(json)) throw new TypeError("Respuesta de guías inválida");
@@ -263,14 +370,48 @@ export async function cargarGuias(store, { fetchImpl = fetch, signal } = {}) {
 }
 ```
 
-Importa `parsearGuia`, crea pruebas con fetch inyectado y ejecuta:
+Crea `test/cargar.test.js` con un `fetch` inyectado y un store falso que solo registra los tipos de estado:
 
-```bash
-npm test -- src/api/cargar-guias.test.js
-npm run dev
+```js
+import { describe, it, expect, vi } from "vitest";
+import { cargarGuias } from "../src/cargar.js";
+
+function crearStoreFalso() {
+  const tipos = [];
+  return { tipos, setState: (cambio) => tipos.push(cambio.remoto.tipo) };
+}
+
+const responder = (status, cuerpo) => async () =>
+  new Response(JSON.stringify(cuerpo), { status });
+
+describe("cargarGuias", () => {
+  it("pasa de loading a success con datos válidos", async () => {
+    const store = crearStoreFalso();
+    await cargarGuias(store, { fetchImpl: responder(200, [{ numero: "RF-101", estado: "EN_RUTA" }]) });
+    expect(store.tipos).toEqual(["loading", "success"]);
+  });
+
+  it("trata un HTTP 500 como error aunque el cuerpo sea JSON", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const store = crearStoreFalso();
+    await cargarGuias(store, { fetchImpl: responder(500, []) });
+    expect(store.tipos).toEqual(["loading", "error"]);
+  });
+
+  it("trata un JSON con forma inválida como error", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const store = crearStoreFalso();
+    await cargarGuias(store, { fetchImpl: responder(200, { guias: [] }) });
+    expect(store.tipos).toEqual(["loading", "error"]);
+  });
+});
 ```
 
-**Resultado esperado:** la prueba observa `loading` seguido de `success`; HTTP 500 y JSON inválido terminan en `error` con mensaje seguro; la vista muestra carga, lista o botón Reintentar según `tipo`.
+```bash
+npm test -- test/cargar.test.js
+```
+
+**Resultado esperado:** tres pruebas aprobadas: la primera observa `loading` seguido de `success`; HTTP 500 y JSON inválido terminan en `error` con mensaje seguro. En el Tema 4 una vista mostrará carga, lista o error según `tipo`.
 
 **Fallo deliberado:** elimina `respuesta.ok` y simula 500 con cuerpo JSON. La función puede tratar error como éxito. Restaura la verificación y demuestra que HTTP no equivale a rechazo de red.
 
@@ -329,15 +470,101 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-spa-completa`, ejecuta `npm init -y`, crea `src` y `index.html`, y después `src/app.js`:
+Crea `ejemplo-spa-completa` junto a las carpetas de los temas 1–3 (en el mismo directorio padre), instala Vite y copia las piezas que ya construiste:
 
 ```bash
 mkdir ejemplo-spa-completa
 cd ejemplo-spa-completa
 npm init -y
-mkdir src
-touch index.html
+npm install -D vite
+npm pkg set scripts.dev="vite" scripts.build="vite build" scripts.preview="vite preview"
+mkdir -p src/router src/estado src/api src/vistas public/api
+cp ../ejemplo-history-router/src/router.js src/router/router.js
+cp ../ejemplo-store/src/store.js src/estado/store.js
+cp ../ejemplo-api-client/src/cargar.js src/api/cargar.js
+cp ../ejemplo-api-client/src/parsear-guia.js src/api/parsear-guia.js
 ```
+
+Crea los datos estáticos que servirá Vite en `public/api/guias.json`:
+
+```json
+[
+  { "numero": "RF-101", "estado": "EN_RUTA" },
+  { "numero": "RF-102", "estado": "ENTREGADA" }
+]
+```
+
+Crea `index.html`:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>SPA de guías</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/" data-link>Inicio</a>
+      <a href="/guias" data-link>Guías</a>
+      <a href="/no-existe" data-link>Ruta rota</a>
+    </nav>
+    <main id="app"></main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+Crea `src/vistas/index.js`; cada vista devuelve un objeto con `destroy`:
+
+```js
+function crearTitulo(raiz, texto) {
+  const titulo = document.createElement("h1");
+  titulo.textContent = texto;
+  titulo.tabIndex = -1;
+  raiz.append(titulo);
+  titulo.focus();
+}
+
+export function crearVistaInicio(raiz) {
+  crearTitulo(raiz, "Seguimiento de guías");
+  return { destroy() {} };
+}
+
+export function crearVistaGuias(raiz, { store, cliente }) {
+  crearTitulo(raiz, "Guías");
+  const contenido = document.createElement("div");
+  contenido.setAttribute("aria-live", "polite");
+  raiz.append(contenido);
+
+  const pintar = ({ remoto }) => {
+    if (remoto.tipo === "loading") contenido.textContent = "Cargando…";
+    if (remoto.tipo === "error") contenido.textContent = remoto.mensaje;
+    if (remoto.tipo === "success") {
+      const lista = document.createElement("ul");
+      for (const guia of remoto.guias) {
+        const item = document.createElement("li");
+        item.textContent = `${guia.numero}: ${guia.estado}`;
+        lista.append(item);
+      }
+      contenido.replaceChildren(lista);
+    }
+  };
+
+  const desuscribir = store.subscribe(pintar);
+  const controlador = new AbortController();
+  cliente.cargarGuias(store, { signal: controlador.signal });
+  // destroy deja de escuchar el store y cancela la petición en curso.
+  return { destroy() { controlador.abort(); desuscribir(); } };
+}
+
+export function crearVista404(raiz) {
+  crearTitulo(raiz, "Página no encontrada");
+  return { destroy() {} };
+}
+```
+
+Crea `src/app.js`, el composition root:
 
 ```js
 import { crearRouter } from "./router/router.js";
@@ -360,8 +587,17 @@ export function crearAplicacion(raiz, dependencias) {
 
   const router = crearRouter({ renderizar });
   router.iniciar();
-  return { destroy() { vistaActual.destroy(); router.destruir(); } };
+  return { destroy() { vistaActual.destroy(); router.destroy(); } };
 }
+```
+
+Y `src/main.js`, que inyecta el cliente real:
+
+```js
+import { crearAplicacion } from "./app.js";
+import { cargarGuias } from "./api/cargar.js";
+
+crearAplicacion(document.querySelector("#app"), { cliente: { cargarGuias } });
 ```
 
 Ejecuta desarrollo, build y vista previa:
@@ -372,7 +608,7 @@ npm run build
 npm run preview
 ```
 
-**Resultado esperado:** inicio, lista, detalle/404 y atrás/adelante funcionan; carga/error son visibles; build termina y preview mantiene navegación configurada.
+**Resultado esperado:** inicio, lista (`RF-101: EN_RUTA`, `RF-102: ENTREGADA`), 404 (también para `/guias/RF-101`, porque la vista de detalle es tu Paso 6) y atrás/adelante funcionan; carga/error son visibles; build termina y preview mantiene navegación configurada.
 
 **Fallo deliberado:** comenta `vistaActual.destroy()` y navega diez veces. Un clic o cambio de store se procesa varias veces por listeners acumulados. Restaura cleanup y confirma una sola reacción.
 
@@ -400,11 +636,11 @@ Ya puedes explicar el ciclo completo que automatizan Angular y React. El siguien
 
 **Objetivo del laboratorio:** construir una SPA completa y funcional (varias vistas, estado compartido, datos reales de una API) sin ningún framework de UI, integrando todos los conceptos del track.
 
-**Requisitos previos:** todos los Módulos 0-11 completados, Node.js con Vite instalado.
+**Requisitos previos:** los temas 1–4 de este módulo terminados; el laboratorio parte de `ejemplo-spa-completa`.
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Implementar el router manual | Ver Tema 1, al menos 3 rutas (`/inicio`, `/detalle/:id`, `/404`) | Verifica navegación con clic y con retroceso del navegador |
+| 1 | Implementar el router manual | Ver Tema 1, al menos 3 rutas (`/`, `/guias`, `/guias/:numero`) más la vista 404 | Verifica navegación con clic y con retroceso del navegador |
 | 2 | Construir el store propio | Ver Tema 2 | Verifica que múltiples suscriptores se notifican correctamente |
 | 3 | Conectar el store a datos reales | Ver Tema 3, usa la misma API pública del Módulo 6 | Modela explícitamente `cargando`/`datos`/`error` |
 | 4 | Renderizar las vistas según ruta y estado | Actualiza el DOM manualmente en cada notificación del store | Verifica sincronización entre URL, estado y contenido visible |

@@ -3,15 +3,15 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: useState y actualizaciones funcionales
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir un contador de "intentos de confirmación" en `FormularioConfirmacion` que se incremente correctamente incluso ante un doble click rápido en el botón. Prerrequisitos: Módulo 0 completo.
+Al finalizar vas a construir un contador de "intentos de confirmación" en `FormularioConfirmacion` que se incremente correctamente cuando un mismo manejador lo actualiza dos veces. Prerrequisitos: Módulo 0 completo.
 
 #### Paso 2 · Contexto y caso real
-Un conductor con mala señal a veces hace doble click en "Confirmar entrega" sin darse cuenta — cada click debería contar como un intento real, no perderse uno por culpa de cómo se actualiza el estado. En RutaFlow (Módulo 12), el formulario de confirmación debe registrar correctamente cada intento de envío, incluso si el usuario hace doble click accidentalmente.
+Con mala señal, el manejador de "Confirmar entrega" registra el intento del conductor y, en el mismo click, un reintento automático: son dos actualizaciones del contador dentro de un único evento. Si ambas se calculan a partir del valor capturado, una se pierde. (Un doble click no tiene ese problema: son dos eventos distintos y React procesa cada click por separado, así que cada uno cuenta.) En RutaFlow (Módulo 12), el formulario de confirmación debe registrar correctamente cada intento, también cuando un mismo manejador actualiza el contador más de una vez.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada render ejecuta la función del componente desde cero, y cada variable de `useState` leída dentro de un manejador queda "congelada" en el closure de esa ejecución; la forma funcional del setter (`setIntentos(i => i + 1)`) lee siempre el valor más reciente, no el capturado.
@@ -54,7 +54,7 @@ const [filtro, setFiltro] = useState('');
 const filtroActivo = habilitado ? filtro : '';
 ```
 
-Cada vez que un componente se renderiza, la función del componente se ejecuta de nuevo desde el principio, y cada variable declarada dentro de ella (incluyendo el valor devuelto por `useState`) es una nueva variable local de esa ejecución específica, capturada en el closure de los manejadores de eventos definidos en esa misma ejecución (el concepto de closure, estudiado en profundidad en el Módulo 4 del track de JavaScript, aplicado aquí directamente al modelo de componentes de React): esto explica por qué llamar `setCount(count + 1)` dos veces seguidas dentro del mismo manejador de evento no duplica el incremento, dado que ambas llamadas leen el mismo valor de `count` capturado en esa ejecución específica del componente, sin que la primera llamada a `setCount` actualice sincrónicamente el valor de `count` que la segunda llamada leería.
+Cada vez que un componente se renderiza, la función del componente se ejecuta de nuevo desde el principio, y cada variable declarada dentro de ella (incluyendo el valor devuelto por `useState`) es una nueva variable local de esa ejecución específica, capturada en el closure de los manejadores de eventos definidos en esa misma ejecución (el concepto de closure, estudiado en profundidad en el Módulo 2 del track de JavaScript, aplicado aquí directamente al modelo de componentes de React): esto explica por qué llamar `setCount(count + 1)` dos veces seguidas dentro del mismo manejador de evento no duplica el incremento, dado que ambas llamadas leen el mismo valor de `count` capturado en esa ejecución específica del componente, sin que la primera llamada a `setCount` actualice sincrónicamente el valor de `count` que la segunda llamada leería.
 
 La forma funcional del setter (`setCount(c => c + 1)`) resuelve este problema: en vez de calcular el nuevo valor a partir de la variable capturada en el closure, se le pasa una función que React invoca con el valor de estado más actualizado disponible en el momento en que efectivamente aplica esa actualización, garantizando que actualizaciones sucesivas dentro de un mismo manejador de evento efectivamente se acumulen correctamente unas sobre otras, en vez de sobreescribirse mutuamente basándose en el mismo valor obsoleto capturado.
 
@@ -81,6 +81,8 @@ setCount(c => c + 1); // ahora sí suma 2
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useState } from 'react';
+
 function FormularioConfirmacion() {
   const [intentos, setIntentos] = useState(0);
   function confirmarDosVeces() {
@@ -89,21 +91,23 @@ function FormularioConfirmacion() {
   }
   return <button onClick={confirmarDosVeces}>Intentos: {intentos}</button>;
 }
+
+export default function App() {
+  return <FormularioConfirmacion />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2 — ambas llamadas a `setIntentos` dentro de `confirmarDosVeces` leyeron el mismo valor `0` capturado en esa ejecución del render, así que la segunda llamada sobrescribe a la primera con el mismo resultado. Si haces doble click, el contador sube de 1 en 1 por cada click: cada click es un evento separado. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con React DevTools:**
 1. Abre tu aplicación con el componente anterior
-2. En DevTools → Componentes tab, inspecciona `<FormularioConfirmacion />`
+2. En DevTools → pestaña Components, inspecciona `<FormularioConfirmacion />`
 3. En el panel lateral, mira el estado: `intentos: 0`
 4. Haz click en el botón una vez
 5. Mira cómo `intentos` cambió a `1` en el panel de DevTools (no a 2)
@@ -113,10 +117,10 @@ Resultado esperado: tras un click en el botón, `intentos` pasa de 0 a 1, no a 2
 9. Resultado esperado: ver en tiempo real cómo la forma funcional acumula correctamente los cambios de estado.
 
 #### Paso 5 · Práctica guiada
-Pista: dejá el código del Paso 4 y esperá que `intentos` llegue a 2 "porque llamé a `setIntentos` dos veces" — ese es el fallo deliberado: el contador queda en 1, no en 2, porque ambas llamadas leyeron el mismo `intentos` capturado antes de que ninguna de las dos se aplicara.
+Pista: deja el código del Paso 4 y espera que `intentos` llegue a 2 "porque llamé a `setIntentos` dos veces" — ese es el fallo deliberado: el contador queda en 1, no en 2, porque ambas llamadas leyeron el mismo `intentos` capturado antes de que ninguna de las dos se aplicara.
 
 #### Paso 6 · Práctica independiente
-Corregí `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirmá que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica. Lleva la forma funcional al contador de intentos del proyecto integrador RutaFlow y verifica que dos confirmaciones seguidas no se pierdan.
+Corrige `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirma que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica. Lleva la forma funcional al contador de intentos del proyecto integrador RutaFlow y verifica que dos actualizaciones en el mismo manejador no se pierdan.
 
 #### Paso 7 · Cierre
 Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
@@ -184,31 +188,42 @@ Commit:  compara con el árbol anterior → aplica solo los cambios mínimos al 
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useState } from 'react';
+
 function FormularioConfirmacion() {
   const [pin, setPin] = useState('837201');
-  console.log('render de FormularioConfirmacion');
-  return <input value={pin} onChange={e => setPin(e.target.value)} />;
+  const [revisiones, setRevisiones] = useState(0); // existe en el estado, pero no se muestra
+  console.log('render de FormularioConfirmacion', { revisiones });
+  return (
+    <>
+      <input aria-label="PIN" value={pin} onChange={e => setPin(e.target.value)} />
+      <button onClick={() => setRevisiones(r => r + 1)}>Revisar</button>
+      <button onClick={() => setPin('837201')}>Reaplicar el mismo PIN</button>
+    </>
+  );
+}
+
+export default function App() {
+  return <FormularioConfirmacion />;
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: llamar a `setPin('837201')` con el mismo valor que `pin` ya tiene dispara una nueva ejecución de la función (el `console.log` se imprime de nuevo), pero el input en pantalla no cambia visualmente, porque React compara el árbol resultante y no encuentra ninguna diferencia real que aplicar al DOM. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: cada click en «Revisar» cambia `revisiones`, así que React vuelve a ejecutar la función (el `console.log` se imprime de nuevo; en desarrollo, `StrictMode` lo imprime dos veces por render), pero nada cambia en pantalla: el árbol resultante es idéntico y el commit no tiene nada que aplicar al DOM. En cambio, «Reaplicar el mismo PIN» llama a `setPin('837201')` con el valor que `pin` ya tiene: React lo compara con `Object.is` y descarta la actualización; como mucho ejecuta la función una vez antes de descartarla, y en los clicks siguientes ni siquiera la ejecuta ([react.dev — useState](https://react.dev/reference/react/useState#setstate)). Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: afirmá que "si el `console.log` se imprime de nuevo, significa que algo cambió visualmente" sin comprobar el caso contrario — ese es el fallo deliberado: llamar a `setPin` con el mismo valor también reimprime el `console.log`, sin que haya ningún cambio visual real; la frecuencia del log no te dice nada por sí sola sobre si hubo un commit visible.
+Pista: afirma que "si el `console.log` se imprime de nuevo, significa que algo cambió visualmente" sin comprobar el caso contrario — ese es el fallo deliberado: «Revisar» reimprime el `console.log` sin ningún cambio visual real; la frecuencia del log no te dice nada por sí sola sobre si hubo un commit visible.
 
 #### Paso 6 · Práctica independiente
-Corregí tu conclusión del Paso 5 agregando una segunda prueba: actualizá `pin` a un valor distinto y confirmá explícitamente (mirando el input renderizado) que esta vez sí hubo un cambio visual, a diferencia del Paso 4 donde el valor era idéntico. En el proyecto integrador RutaFlow, registra qué actualización de estado produce un commit visible y cuál solo cambia una referencia.
+Corrige tu conclusión del Paso 5 agregando una segunda prueba: actualiza `pin` a un valor distinto y confirma explícitamente (mirando el input renderizado) que esta vez sí hubo un cambio visual, a diferencia de «Revisar» en el Paso 4. En el proyecto integrador RutaFlow, registra qué actualización de estado produce un commit visible y cuál solo cambia una referencia.
 
 #### Paso 7 · Cierre
-Entregá la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explicá por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
+Entrega la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explica por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
 **Implicación práctica:** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
 
 ### Tema 3: Batching de actualizaciones
@@ -269,32 +284,49 @@ function manejarClick() {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-function confirmar() {
-  setEnviando(true);
-  setIntentos(i => i + 1);
-  setError(null);
+import { useState } from 'react';
+
+function FormularioConfirmacion() {
+  const [enviando, setEnviando] = useState(false);
+  const [intentos, setIntentos] = useState(0);
+  const [error, setError] = useState('sin señal');
+  console.log('render');
+
+  function confirmar() {
+    setEnviando(true);
+    setIntentos(i => i + 1);
+    setError(null);
+  }
+
+  return (
+    <>
+      <button onClick={confirmar}>Confirmar entrega</button>
+      <p>Enviando: {String(enviando)} · Intentos: {intentos} · Error: {error ?? 'ninguno'}</p>
+    </>
+  );
 }
-// dentro del componente: console.log('render')
+
+export default function App() {
+  return <FormularioConfirmacion />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: después de un click que dispara `confirmar()`, el `console.log('render')` se imprime una única vez adicional, no tres — las tres llamadas a setters se agrupan en un único ciclo de render y commit que refleja el efecto combinado de las tres. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: después de un click que dispara `confirmar()`, el `console.log('render')` se imprime una única vez adicional (dos en desarrollo, porque `StrictMode` duplica cada render), no tres — las tres llamadas a setters se agrupan en un único ciclo de render y commit que refleja el efecto combinado de las tres. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: envolvé cada `setState` dentro de su propio `setTimeout(() => ..., 0)` por separado — ese es el fallo deliberado: sacar las actualizaciones del manejador síncrono original rompe el batching automático en ese contexto, y ahora el `console.log` se imprime varias veces en vez de una sola.
+Pista: envuelve cada `setState` dentro de su propio `setTimeout(() => ..., 0)` por separado — ese es el fallo deliberado: sacar las actualizaciones del manejador síncrono original rompe el batching automático en ese contexto, y ahora el `console.log` se imprime varias veces en vez de una sola.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando los `setTimeout` innecesarios, y agregá una cuarta actualización de estado (`setUltimoIntento(new Date())`) al mismo manejador — confirmá que sigue siendo un único render adicional, no cuatro. Aplica el batching al manejador de confirmación del proyecto integrador RutaFlow y cuenta los renders adicionales con el Profiler.
+Corrige el Paso 5 quitando los `setTimeout` innecesarios, y agrega una cuarta actualización de estado (`setUltimoIntento(new Date())`) al mismo manejador — confirma que sigue siendo un único render adicional, no cuatro. Aplica el batching al manejador de confirmación del proyecto integrador RutaFlow y cuenta los renders adicionales con el Profiler.
 
 #### Paso 7 · Cierre
-Entregá la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explicá por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
+Entrega la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explica por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
 
 ### Tema 4: Componentes controlados
 
@@ -337,37 +369,65 @@ graph TD
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-const [pin, setPin] = useState('');
-<input
-  value={pin}
-  onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
-  maxLength={6}
-/>
+import { useState } from 'react';
+
+function CampoPin() {
+  const [pin, setPin] = useState('');
+  return (
+    <label>
+      PIN de entrega{' '}
+      <input
+        value={pin}
+        onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
+        maxLength={6}
+      />
+    </label>
+  );
+}
+
+export default function App() {
+  return <CampoPin />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
 Resultado esperado: escribir letras en el campo de PIN no las muestra en absoluto (`.replace(/\D/g, '')` las descarta antes de llegar a `setPin`), y el input nunca puede mostrar más de 6 caracteres — el valor mostrado en pantalla es siempre exactamente lo que React decidió que `pin` debía ser, nunca lo que el usuario tecleó directamente sin pasar por esa validación.
 
-Ejecuta `npm test` y confirma que las pruebas de componentes controlados pasan.
+Para probarlo, mueve `CampoPin` a `src/CampoPin.jsx` (con `import { useState } from 'react';` y `export default function CampoPin()`), impórtalo en `src/App.jsx` con `import CampoPin from './CampoPin.jsx';` y crea `src/CampoPin.test.jsx`:
+
+```jsx
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it } from 'vitest'
+import CampoPin from './CampoPin.jsx'
+
+describe('CampoPin', () => {
+  it('descarta letras y limita el PIN a 6 dígitos', async () => {
+    const usuario = userEvent.setup()
+    render(<CampoPin />)
+    const campo = screen.getByLabelText(/PIN de entrega/)
+    await usuario.type(campo, 'a1b2c3d4e5f6g7')
+    expect(campo).toHaveValue('123456')
+  })
+})
+```
+
+Ejecuta `npm test` y confirma que la prueba de `CampoPin` pasa.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá el atributo `value` del input, dejando solo `onChange` ("para que sea más simple") — ese es el fallo deliberado: el input pasa a ser no controlado (React ya no gobierna su valor), y la transformación de `onChange` deja de reflejarse visualmente en el campo, porque el DOM ahora mantiene su propio valor interno sin que React lo sincronice de vuelta.
+Pista: quita el atributo `value` del input, dejando solo `onChange` ("para que sea más simple") — ese es el fallo deliberado: el input pasa a ser no controlado (React ya no gobierna su valor), y la transformación de `onChange` deja de reflejarse visualmente en el campo, porque el DOM ahora mantiene su propio valor interno sin que React lo sincronice de vuelta.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `value={pin}`, y agregá un segundo input controlado para la guía del envío, con su propia validación (sin espacios) — confirmá que ambos campos están sincronizados con su estado de React respectivo. Lleva el input controlado al formulario de entrega del proyecto integrador RutaFlow y mide cuántos renders provoca cada tecla.
+Corrige el Paso 5 restaurando `value={pin}`, y agrega un segundo input controlado para la guía del envío, con su propia validación (sin espacios) — confirma que ambos campos están sincronizados con su estado de React respectivo. Lleva el input controlado al formulario de entrega del proyecto integrador RutaFlow y mide cuántos renders provoca cada tecla.
 
 #### Paso 7 · Cierre
-Entregá el input de PIN controlado del Paso 4, la pérdida de sincronización del Paso 5, y el segundo campo del Paso 6; explicá por qué quitar `value` (dejando solo `onChange`) convierte un input controlado en no controlado, y qué se pierde exactamente al hacerlo. Siguiente paso: estudia efectos con `useEffect`. Errores comunes: dejar `onChange` sin `value` (input no controlado accidental), mezclar un input controlado con manipulación directa del DOM vía referencia, y no considerar el costo de un re-render por tecla en formularios extremadamente grandes. Fuentes oficiales: https://react.dev/reference/react-dom/components/input y https://react.dev/learn/sharing-state-between-components.
+Entrega el input de PIN controlado del Paso 4, la pérdida de sincronización del Paso 5, y el segundo campo del Paso 6; explica por qué quitar `value` (dejando solo `onChange`) convierte un input controlado en no controlado, y qué se pierde exactamente al hacerlo. Siguiente paso: estudia efectos con `useEffect`. Errores comunes: dejar `onChange` sin `value` (input no controlado accidental), mezclar un input controlado con manipulación directa del DOM vía referencia, y no considerar el costo de un re-render por tecla en formularios extremadamente grandes. Fuentes oficiales: https://react.dev/reference/react-dom/components/input y https://react.dev/learn/sharing-state-between-components.
 
-* Ejecutar: `npm test -- --match="*controlled*"`
-* Código: `src/components/ControlledInput.tsx`
 * Cuándo: usar componentes controlados para validación y transformación en tiempo real; no conviene en formularios con miles de campos donde el costo de re-render por tecla se vuelve relevante (usa React Hook Form en ese caso).
 
 ### Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min

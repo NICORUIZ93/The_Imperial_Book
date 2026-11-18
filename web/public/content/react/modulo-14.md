@@ -139,10 +139,7 @@ Una Server Action marcada `'use server'` queda expuesta como un endpoint invocab
 **Límites y decisión de uso:** Una Server Action sigue siendo una operación invocable con datos manipulables. Valida sesión antes de usar su identidad, autoriza sobre el recurso y protege cambios concurrentes; el esquema de entrada solo comprueba forma, no permisos.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
-```bash
-npx create-next-app@latest ejemplo
-```
+**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
 
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 
@@ -153,7 +150,52 @@ npm run start
 
 Abre el formulario que invoca `marcarEntregado`; prueba un envío del usuario autenticado y otro de un operador distinto. Comprueba el rechazo y que el segundo registro no cambia en la base.
 
-El ejemplo presupone un repositorio Prisma `db.envio` con `id`, `operadorId` y `estado`, y `auth()` que valida la sesión y devuelve `{ userId }` o null. Prepara dos operadores con guías distintas en la base de laboratorio.
+El ejemplo usa zod (`npm install zod`), un repositorio `db.envio` con `id`, `operadorId` y `estado` (en producción, Prisma) y `auth()`, que valida la sesión y devuelve `{ userId }` o null. Para el laboratorio, crea estos dos stubs con dos operadores y guías distintas.
+
+`lib/auth.ts`:
+
+```ts
+import { cookies } from 'next/headers';
+
+// Stub de laboratorio: en producción, `auth()` valida una sesión firmada
+// (Auth.js, tu proveedor de identidad...). Nunca basta con que la cookie exista.
+const sesionesValidas = new Map([
+  ['token-ana', 'operador-ana'],
+  ['token-luis', 'operador-luis'],
+]);
+
+export async function auth(): Promise<{ userId: string } | null> {
+  const token = (await cookies()).get('session')?.value;
+  const userId = token ? sesionesValidas.get(token) : undefined;
+  return userId ? { userId } : null;
+}
+```
+
+`lib/db.ts`:
+
+```ts
+// Stub en memoria con la misma forma que el repositorio Prisma `db.envio`.
+type Envio = { id: string; operadorId: string; estado: string };
+
+const envios: Envio[] = [
+  { id: 'RF-4471', operadorId: 'operador-ana', estado: 'en ruta' },
+  { id: 'RF-5101', operadorId: 'operador-luis', estado: 'en ruta' },
+];
+
+export const db = {
+  envio: {
+    async updateMany({ where, data }: { where: Partial<Envio>; data: Partial<Envio> }) {
+      const coinciden = envios.filter((envio) =>
+        Object.entries(where).every(([campo, valor]) => envio[campo as keyof Envio] === valor),
+      );
+      coinciden.forEach((envio) => Object.assign(envio, data));
+      return { count: coinciden.length };
+    },
+  },
+};
+```
+
+Para simular la sesión, crea en DevTools → Application → Cookies una cookie `session` con valor `token-ana` (o `token-luis` para el otro operador). Crea también un formulario en `app/page.tsx` que invoque la acción: `<form action={marcarEntregado}><input type="hidden" name="envioId" value="RF-4471" /><button>Marcar entregado</button></form>`.
 
 ```tsx
 // app/actions.ts
@@ -179,18 +221,18 @@ export async function marcarEntregado(formData: FormData) {
 ```
 Resultado esperado: marcar como entregado un envío propio funciona; `zod` rechaza un `envioId` con formato inválido antes de llegar a la base de datos.
 
-**Fallo deliberado:** quita `operadorId: session.userId` del predicado de `updateMany`. Editá el campo oculto `envioId` en las DevTools del navegador para apuntar a un envío de otro operador y enviá el formulario: la acción lo acepta y lo marca como entregado, porque `zod` valida la FORMA del dato (`RF-\d+`), no si el usuario tiene permiso sobre ese id específico.
+**Fallo deliberado:** quita `operadorId: session.userId` del predicado de `updateMany`. Edita el campo oculto `envioId` en las DevTools del navegador para apuntar a un envío de otro operador (`RF-5101` con la sesión `token-ana`) y envía el formulario: la acción lo acepta y lo marca como entregado, porque `zod` valida la FORMA del dato (`RF-\d+`), no si el usuario tiene permiso sobre ese id específico.
 
 #### Paso 5 · Práctica guiada
-Pista: `zod` que valida el formato de `envioId` pasa aunque el id pertenezca a otro operador — probá exactamente ese caso (un id ajeno con formato válido) para confirmar que el problema es de autorización, no de validación de esquema.
+Pista: `zod` que valida el formato de `envioId` pasa aunque el id pertenezca a otro operador — prueba exactamente ese caso (un id ajeno con formato válido) para confirmar que el problema es de autorización, no de validación de esquema.
 
 #### Paso 6 · Práctica independiente
-Restaura el filtro de `operadorId`, y agregá una prueba con una sesión simulada que confirme que llamar a `marcarEntregado` con el id de un envío ajeno lanza el error, junto con una prueba de regresión que confirme que el camino legítimo (envío propio) sigue funcionando.
+Restaura el filtro de `operadorId`, y agrega una prueba con una sesión simulada que confirme que llamar a `marcarEntregado` con el id de un envío ajeno lanza el error, junto con una prueba de regresión que confirme que el camino legítimo (envío propio) sigue funcionando.
 
 #### Paso 7 · Cierre
 Entrega la acción autorizada del Paso 4, el envío ajeno modificado sin autorización del Paso 5, y las dos pruebas del Paso 6; explica por qué validar la forma de los datos con `zod` no es lo mismo que autorizar la operación sobre un recurso específico. Como siguiente paso, estudia ISR y Middleware para proteger rutas completas, no solo acciones puntuales. Errores comunes: confiar en cualquier dato que llega del cliente (incluidos ids en campos ocultos) sin revalidar permisos en el servidor; registrar tokens de sesión completos en logs de error. Fuente oficial: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security.
 
-### Tema 3: Next.js ISR, Metadata y Middleware
+### Tema 3: Next.js ISR, Metadata y Proxy (antes Middleware)
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. **Prerrequisitos:** Next.js con App Router y autenticación del tema anterior. Este ejemplo usa Next.js 16, runtime Node y la configuración tradicional de caché, sin `cacheComponents`; en Next.js 15 la convención equivalente es `middleware.ts` con función `middleware`.
@@ -204,10 +246,7 @@ Proxy puede filtrar navegación antes del render. **Analogía:** un aviso en la 
 ISR conserva una versión pública y permite regenerarla después del intervalo cuando llega otra petición. No es un temporizador que actualiza puntualmente cada 60 segundos; durante regeneración puede servirse una versión anterior. Fuente oficial: [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration).
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `proxy.ts` con el contenido de este tema.
-```bash
-npx create-next-app@latest ejemplo
-```
+**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
 
 Crea `proxy.ts` en la raíz del proyecto Next.js:
 
@@ -225,7 +264,7 @@ export function proxy(request: NextRequest) {
 export const config = { matcher: '/panel/:path*' };
 ```
 
-En `app/panel/layout.tsx` comprueba realmente la sesión. El contrato de `auth` del proyecto debe devolver una identidad validada o null; nunca se limita a leer la cookie. Repite autorización por recurso en cada consulta y mutación del backend, sin depender del layout.
+En `app/panel/layout.tsx` comprueba realmente la sesión con el `auth` de `lib/auth.ts` (Tema 2). El contrato de `auth` del proyecto debe devolver una identidad validada o null; nunca se limita a leer la cookie. Repite autorización por recurso en cada consulta y mutación del backend, sin depender del layout.
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -314,10 +353,7 @@ La foto de evidencia de entrega en la página de detalle de un envío no tenía 
 **Transferencia al proyecto integrador «Portal de clientes»:** Reserva el espacio de la fotografía de evidencia y aplica la fuente seleccionada en el layout. Compara desplazamiento visual con descarga lenta y conserva la medición de la página real.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
-```bash
-npx create-next-app@latest ejemplo
-```
+**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
 
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 
@@ -379,10 +415,7 @@ Un `<div>` no tiene ninguna semántica ARIA implícita: un lector de pantalla no
 **Límites y decisión de uso:** El nombre y role de un diálogo no bastan para hacerlo modal. Debes gestionar foco, cierre, restauración e interacción con el fondo mediante una solución completa y probar el recorrido con teclado.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.tsx` con el contenido de este tema.
-```bash
-npx create-next-app@latest ejemplo
-```
+**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
 
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
 
@@ -448,10 +481,7 @@ Las reglas de pluralización son categorías CLDR específicas de cada idioma (`
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `messages/es.json` con el contenido de este tema.
-```bash
-npx create-next-app@latest ejemplo
-```
+**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
 
 
 Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
@@ -501,10 +531,3 @@ Agregá la clave `envios` a `messages/ar.json` con las categorías de plural cor
 
 #### Paso 7 · Cierre
 Entrega la pluralización y el `dir="rtl"` funcionando del Paso 4, la build rota por la clave faltante del Paso 5, y la prueba de paridad de claves del Paso 6; explica por qué una clave de traducción faltante debe ser un error detectable, nunca un texto de respaldo silencioso. Con esto cerrás el track completo de React, listo para operar en producción real. Errores comunes: tratar la pluralización como un simple singular/plural binario cuando el idioma destino tiene más categorías; fijar `dir="ltr"` de forma fija en vez de derivarlo del locale activo. Fuente oficial: https://next-intl.dev/docs/usage/messages#plurals.
-
-## Trazabilidad de la auditoría original
-
-- **Server Components Avanzado**: cubierto en los Temas 1 (streaming con Suspense) y 2 (Server Actions y seguridad) de este módulo.
-- **Next.js Avanzado**: cubierto en los Temas 3 (ISR, Metadata y Middleware) y 4 (optimización de imágenes y fuentes) de este módulo.
-- **Accessibility (a11y)**: cubierto en el Tema 5 (React Aria) de este módulo.
-- **Internationalization (i18n)**: cubierto en el Tema 6 (i18n, pluralización y RTL) de este módulo.

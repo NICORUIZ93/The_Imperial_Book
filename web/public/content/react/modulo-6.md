@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0 dentro de `mi-react`). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: useQuery y el problema que resuelve
 
@@ -111,13 +111,13 @@ npm run dev
 ```
 Abre la dirección indicada por Vite, normalmente `http://localhost:5173`. **Resultado esperado:** ambos paneles muestran `ENV-42`; al cambiar a sur, ambos muestran `ENV-99`. En Network filtra `envios-`: los dos paneles comparten la consulta de cada zona. `staleTime` evita revalidaciones por obsolescencia durante un minuto; no es una promesa de una única petición durante toda la vida de la aplicación.
 
-Explica cada bloque: QueryClientProvider hace disponible la caché, queryKey identifica los datos, queryFn valida HTTP y los paneles representan carga, error o resultado. El template de Vite no trae un comando `npm test`: aquí la comprobación es explícitamente de navegador. Si borras `public/envios-sur.json`, comprueba el estado de error; algunos servidores dev devuelven HTML con 200 para rutas inexistentes y entonces falla el parseo JSON.
+Explica cada bloque: QueryClientProvider hace disponible la caché, queryKey identifica los datos, queryFn valida HTTP y los paneles representan carga, error o resultado. Este ejemplo vive en su propio proyecto `consulta-envios`, sin Vitest: aquí la comprobación es explícitamente de navegador (los temas 2 y 3 vuelven al proyecto `mi-react`, que sí tiene `npm test`). Si borras `public/envios-sur.json`, comprueba el estado de error; algunos servidores dev devuelven HTML con 200 para rutas inexistentes y entonces falla el parseo JSON.
 
 #### Paso 5 · Práctica guiada
-Pista: usá `queryKey: ['envios']` (sin incluir `zona`) en ambos componentes, pero seguí pasando `zona` dentro de `queryFn` — ese es el fallo deliberado: cambiar de zona no dispara una nueva petición, porque TanStack Query identifica la query por su `queryKey`, y como esa key no cambió, sigue devolviendo el resultado cacheado de la zona anterior aunque `queryFn` internamente apunte a la zona nueva.
+Pista: usa `queryKey: ['envios']` (sin incluir `zona`) en ambos componentes, pero sigue pasando `zona` dentro de `queryFn` — ese es el fallo deliberado: cambiar de zona no dispara una nueva petición, porque TanStack Query identifica la query por su `queryKey`, y como esa key no cambió, sigue devolviendo el resultado cacheado de la zona anterior aunque `queryFn` internamente apunte a la zona nueva.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `zona` a la `queryKey`, y agregá una tercera consulta (`['envios', zona, 'urgentes']`) para los envíos marcados como urgentes de esa misma zona, confirmando que cada combinación distinta de `queryKey` cachea de forma independiente. Reemplaza la carga manual de envíos del proyecto integrador RutaFlow por `useQuery` y documenta qué estados aparecen.
+Corrige el Paso 5 devolviendo `zona` a la `queryKey`, y agrega una tercera consulta (`['envios', zona, 'urgentes']`) para los envíos marcados como urgentes de esa misma zona, confirmando que cada combinación distinta de `queryKey` cachea de forma independiente. Reemplaza la carga manual de envíos del proyecto integrador RutaFlow por `useQuery` y documenta qué estados aparecen.
 
 #### Paso 7 · Cierre
 Entregá la deduplicación del Paso 4, la cache desincronizada por `queryKey` incompleta del Paso 5, y la tercera consulta del Paso 6; explicá por qué la `queryKey` debe incluir cualquier variable que afecte qué datos trae `queryFn`, no solo las que "parecen importantes". Siguiente paso: estudia mutations e invalidación. Errores comunes: una `queryKey` que no incluye todas las variables relevantes del `queryFn`, seguir usando `useState`+`useEffect` para datos que ya tiene una query equivalente, y no aprovechar React Query Devtools para inspeccionar el estado real de la cache. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/queries y https://tanstack.com/query/latest/docs/framework/react/guides/query-keys.
@@ -185,38 +185,88 @@ const crear = useMutation({
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-const queryClient = useQueryClient();
-const registrar = useMutation({
-  mutationFn: (envio) => fetch('/api/envios', { method: 'POST', body: JSON.stringify(envio) }),
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['envios'] }),
-});
+import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+// «Servidor» simulado en memoria: el proyecto Vite no tiene API propia.
+const baseDeDatos = [
+  { id: 'RF-4471', zona: 'norte' },
+  { id: 'RF-5101', zona: 'sur' },
+];
+const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function obtenerEnvios(zona) {
+  await esperar(300);
+  return baseDeDatos.filter(envio => envio.zona === zona);
+}
+
+async function crearEnvio(envio) {
+  await esperar(300);
+  baseDeDatos.push(envio);
+  return envio;
+}
+
+const client = new QueryClient();
+
+function PanelEnvios({ zona }) {
+  const { data, isPending } = useQuery({ queryKey: ['envios', zona], queryFn: () => obtenerEnvios(zona) });
+  if (isPending) return <p role="status">Cargando {zona}…</p>;
+  return (
+    <section>
+      <h2>Zona {zona}</h2>
+      <ul>{data.map(envio => <li key={envio.id}>{envio.id}</li>)}</ul>
+    </section>
+  );
+}
+
+function BotonRegistrar() {
+  const queryClient = useQueryClient();
+  const registrar = useMutation({
+    mutationFn: crearEnvio,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['envios'] }),
+  });
+  const nuevoEnvio = { id: `RF-${4500 + baseDeDatos.length}`, zona: 'norte' };
+  return (
+    <button onClick={() => registrar.mutate(nuevoEnvio)} disabled={registrar.isPending}>
+      Registrar envío en norte
+    </button>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={client}>
+      <BotonRegistrar />
+      <PanelEnvios zona="norte" />
+      <PanelEnvios zona="sur" />
+    </QueryClientProvider>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes TanStack Query) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install @tanstack/react-query@5
 npm run dev
 ```
 
-Resultado esperado: al llamar `registrar.mutate(nuevoEnvio)` y completarse exitosamente, TanStack Query invalida todas las queries cuya key empiece con `['envios']` (incluyendo `['envios', 'norte']`, `['envios', 'sur']`, etc.) y las refetchea automáticamente — `PanelEnvios` muestra el nuevo envío sin que nadie haya llamado a `setEnvios` manualmente. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: al pulsar el botón, `registrar.mutate(nuevoEnvio)` termina y TanStack Query invalida todas las queries cuya key empiece con `['envios']` (`['envios', 'norte']` y `['envios', 'sur']`) y las vuelve a pedir — el panel norte muestra el nuevo envío sin que nadie haya llamado a `setEnvios` manualmente. El «servidor» es un array en memoria con una espera de 300 ms; en un proyecto real `crearEnvio` haría un `fetch` con `method: 'POST'`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
 **Fallo deliberado #1 (olvidar invalidación):**
-Quitá el `onSuccess` de la mutación — el envío se crea en el servidor, pero `PanelEnvios` sigue mostrando la lista vieja sin actualizar.
+Quita el `onSuccess` de la mutación — el envío se crea en el servidor, pero `PanelEnvios` sigue mostrando la lista vieja sin actualizar.
 
 **Fallo deliberado #2 (invalidar queryKey incorrecta):**
-Cambiá `invalidateQueries({ queryKey: ['envios'] })` a `invalidateQueries({ queryKey: ['envios', 'norte'] })` — si la lista estaba filtrando por zona "sur", esa query nunca se invalida porque las keys no coinciden exactamente.
+Cambia `invalidateQueries({ queryKey: ['envios'] })` a `invalidateQueries({ queryKey: ['envios', 'sur'] })` — el envío se crea en norte, pero la query `['envios', 'norte']` nunca se invalida porque las keys no coinciden exactamente.
 
 **Fallo deliberado #3 (olvidar `await` en cancelación):**
-Remové el `await queryClient.cancelQueries(...)` del `onMutate` en un optimistic update — ahora el `getQueryData` obtiene datos desactualizados porque la query aún se estaba refetcheando.
-**Pista:** restaurá cada fallo antes de probar el siguiente — el Fallo #1 y el #2 se notan de inmediato en `PanelEnvios`, pero el Fallo #3 solo aparece bajo una carrera real entre el refetch en curso y la cancelación faltante.
+En el optimistic update del Tema 3, quita el `await queryClient.cancelQueries(...)` del `onMutate` — ahora el `getQueryData` obtiene datos desactualizados porque la query aún se estaba refetcheando.
+**Pista:** restaura cada fallo antes de probar el siguiente — el Fallo #1 y el #2 se notan de inmediato en `PanelEnvios`, pero el Fallo #3 solo aparece bajo una carrera real entre el refetch en curso y la cancelación faltante.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la invalidación, y agregá un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día. En el proyecto integrador RutaFlow, invalida `['envios']` y `['estadisticas']` al marcar una entrega y verifica ambas consultas.
+Corrige el Paso 5 restaurando la invalidación, y agrega un segundo `onSuccess` para una mutación de "marcar como entregado" que invalide tanto `['envios']` como una query separada `['estadisticas']` que cuenta entregas del día. En el proyecto integrador RutaFlow, invalida `['envios']` y `['estadisticas']` al marcar una entrega y verifica ambas consultas.
 
 #### Paso 7 · Cierre
-Entregá la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explicá por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
+Entrega la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explica por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
 **Implicación práctica:** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
 
 ### Tema 3: Optimistic updates
@@ -280,48 +330,96 @@ sequenceDiagram
     end
 ```
 
-Ejercicio: ejecutá el test de este hook y confirmá que la reversión funciona:
+Ejercicio: cuando extraigas el hook a `src/hooks/useMarcarEntregado.js`, escribe su prueba en `src/hooks/useMarcarEntregado.test.jsx` (renderiza un componente que use el hook dentro de un `QueryClientProvider`) y ejecuta solo ese archivo; Vitest filtra por nombre de archivo:
 ```bash
-npm test -- --testPathPattern=useMarcarEntregado
+npm test -- useMarcarEntregado
 ```
-Resultado esperado: el test simula un fallo del servidor y verifica que `queryClient.getQueryData(['envios'])` vuelve exactamente al valor de `anterior` tras ejecutarse `onError`.
+Resultado esperado: tu prueba simula un fallo del servidor y verifica que `queryClient.getQueryData(['envios'])` vuelve exactamente al valor de `anterior` tras ejecutarse `onError`.
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-useMutation({
-  mutationFn: marcarEntregado,
-  onMutate: async (envioId) => {
-    await queryClient.cancelQueries({ queryKey: ['envios'] });
-    const anterior = queryClient.getQueryData(['envios']);
-    queryClient.setQueryData(['envios'], old => old.map(e => e.id === envioId ? { ...e, estado: 'entregado' } : e));
-    return { anterior };
-  },
-  onError: (err, envioId, contexto) => queryClient.setQueryData(['envios'], contexto.anterior),
-});
+import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+// «Servidor» simulado en memoria: RF-4472 ya lo entregó otro operador.
+const baseDeDatos = [
+  { id: 'RF-4471', estado: 'en ruta' },
+  { id: 'RF-4472', estado: 'en ruta' },
+];
+const esperar = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function obtenerEnvios() {
+  await esperar(300);
+  return baseDeDatos.map(envio => ({ ...envio }));
+}
+
+async function marcarEntregado(envioId) {
+  await esperar(1500); // latencia visible para apreciar el cambio optimista
+  if (envioId === 'RF-4472') throw new Error('Otro operador ya entregó RF-4472');
+  baseDeDatos.find(envio => envio.id === envioId).estado = 'entregado';
+}
+
+const client = new QueryClient();
+
+function PanelEnvios() {
+  const queryClient = useQueryClient();
+  const { data, isPending } = useQuery({ queryKey: ['envios'], queryFn: obtenerEnvios });
+  const marcar = useMutation({
+    mutationFn: marcarEntregado,
+    onMutate: async (envioId) => {
+      await queryClient.cancelQueries({ queryKey: ['envios'] });
+      const anterior = queryClient.getQueryData(['envios']);
+      queryClient.setQueryData(['envios'], old => old.map(e => e.id === envioId ? { ...e, estado: 'entregado' } : e));
+      return { anterior };
+    },
+    onError: (err, envioId, contexto) => queryClient.setQueryData(['envios'], contexto.anterior),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['envios'] }),
+  });
+
+  if (isPending) return <p role="status">Cargando…</p>;
+  return (
+    <ul>
+      {data.map(envio => (
+        <li key={envio.id}>
+          {envio.id}: {envio.estado}{' '}
+          <button onClick={() => marcar.mutate(envio.id)} disabled={envio.estado === 'entregado'}>
+            Marcar entregado
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={client}>
+      <PanelEnvios />
+    </QueryClientProvider>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (si no la instalaste en el Tema 2, instala TanStack Query) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install @tanstack/react-query@5
 npm run dev
 ```
 
-Resultado esperado: tocar "Marcar entregado" cambia visualmente el estado del envío en la lista de forma instantánea, sin esperar ninguna respuesta de red; si la mutación falla (el servidor rechaza porque ese envío ya fue entregado por otro operador), la lista vuelve exactamente al estado anterior guardado en `anterior`.
+Resultado esperado: tocar "Marcar entregado" en RF-4471 cambia visualmente su estado a `entregado` de forma instantánea, sin esperar los 1,5 s del «servidor»; en RF-4472 la mutación falla (el servidor simulado rechaza porque otro operador ya lo entregó) y la lista vuelve exactamente al estado anterior guardado en `anterior`. `onSettled` vuelve a pedir la lista al terminar, haya éxito o error.
 
-Ejecuta `npm test` y confirma que las pruebas de optimistic updates pasan.
+Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: espera a que aparezca «RF-4472» (`findByText`), pulsa su botón y comprueba que primero muestra `entregado` y, tras el rechazo, vuelve a `en ruta` (usa `findByText` con `{ timeout: 3000 }`). Después ejecuta `npm test` (borra o adapta esta prueba cuando reemplaces `App.jsx` en otro tema).
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `onMutate` — ese es el fallo deliberado: si un refetch en segundo plano de `['envios']` estaba en vuelo y completa después del `setQueryData` optimista, esa respuesta vieja sobrescribe el cambio optimista, haciendo que el envío "vuelva" a verse como no entregado por un instante confuso.
+Pista: quita `await queryClient.cancelQueries({ queryKey: ['envios'] })` del `onMutate` — ese es el fallo deliberado: si un refetch en segundo plano de `['envios']` estaba en vuelo y completa después del `setQueryData` optimista, esa respuesta vieja sobrescribe el cambio optimista, haciendo que el envío "vuelva" a verse como no entregado por un instante confuso.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `cancelQueries`, y agregá una notificación visual explícita ("no se pudo confirmar, se revirtió el cambio") dentro de `onError`, para que el operador entienda por qué el envío volvió a su estado anterior.
+Corrige el Paso 5 restaurando `cancelQueries`, y agrega una notificación visual explícita ("no se pudo confirmar, se revirtió el cambio") dentro de `onError`, para que el operador entienda por qué el envío volvió a su estado anterior.
 
 #### Paso 7 · Cierre
-Entregá el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explicá por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cerrá el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
+Entrega el optimistic update del Paso 4, la sobrescritura por refetch en vuelo provocada en el Paso 5, y la notificación de reversión del Paso 6; explica por qué `cancelQueries` es necesario específicamente para evitar que una respuesta tardía de un refetch anterior pise la actualización optimista recién aplicada. Siguiente paso: cierra el módulo integrando query, mutation y optimistic update en el flujo completo de confirmación de entrega. Errores comunes: no cancelar queries en curso en `onMutate`, no implementar `onError` para revertir, y no comunicar visualmente al usuario cuando un cambio optimista se revierte. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates.
 **Implicación práctica:** Los optimistic updates mejoran la percepción de velocidad al reflejar cambios instantáneamente, a costa del riesgo de tener que revertir visualmente la interfaz si la operación finalmente falla.
 
 **Proyecto integrador:** aplica una actualización optimista al botón de entrega de RutaFlow, cancela el refetch anterior y muestra una reversión explícita si el servidor rechaza la confirmación.

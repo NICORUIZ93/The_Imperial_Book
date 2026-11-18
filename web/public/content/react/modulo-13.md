@@ -5,7 +5,7 @@ Una SPA puede aprobar el flujo feliz y aun desaparecer ante un error de render, 
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** los temas 1 y 2 se ejecutan en `mi-react` (`npm run dev`, `http://localhost:5173`; `npm test` usa el Vitest configurado en el módulo 0). Los temas 3 y 4 necesitan servidor y se ejecutan en el proyecto Next.js `app` del módulo 10 (`http://localhost:3000`).
 
 ### Tema 1: Diseñar estados de carga, error y recuperación
 
@@ -95,32 +95,70 @@ reset -> nuevo recurso/precondición, no repetir objeto rechazado
 **¿Por qué es importante?** Un error de un widget no debería borrar navegación y trabajo no relacionado, y un fallback sin recuperación real deja al usuario atrapado repitiendo el mismo fallo.
 
 #### Paso 4 · Demostración guiada desde cero
-```tsx
-<ErrorBoundary
-  resetKeys={[envioId]}
-  fallbackRender={({ resetErrorBoundary }) => (
-    <section role="alert">
-      <h2>No pudimos mostrar este envío</h2>
-      <button onClick={resetErrorBoundary}>Intentar de nuevo</button>
-    </section>
-  )}
-  onError={(error, info) => reportError(error, info.componentStack)}
->
-  <Suspense fallback={<EnvioSkeleton />}>
-    <DetalleEnvio id={envioId} />
-  </Suspense>
-</ErrorBoundary>
+```jsx
+import { Suspense, use, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+// API simulada: RF-0000 siempre falla para poder ver el boundary.
+const cache = new Map();
+function obtenerEnvio(id) {
+  if (!cache.has(id)) {
+    cache.set(id, new Promise((resolve, reject) => setTimeout(() => {
+      if (id === 'RF-0000') reject(new Error(`La API no encontró ${id}`));
+      else resolve({ id, estado: 'en ruta' });
+    }, 800)));
+  }
+  return cache.get(id);
+}
+
+function reportError(error, componentStack) {
+  console.error('Reportado al servicio de errores:', error.message, componentStack);
+}
+
+function EnvioSkeleton() {
+  return <p role="status">Cargando envío…</p>;
+}
+
+function DetalleEnvio({ id }) {
+  const envio = use(obtenerEnvio(id)); // suspende mientras carga, lanza si la promesa falla
+  return <p>{envio.id}: {envio.estado}</p>;
+}
+
+export default function App() {
+  const [envioId, setEnvioId] = useState('RF-4471');
+  return (
+    <main>
+      <nav>
+        <button onClick={() => setEnvioId('RF-4471')}>RF-4471</button>
+        <button onClick={() => setEnvioId('RF-0000')}>RF-0000 (falla)</button>
+      </nav>
+      <ErrorBoundary
+        resetKeys={[envioId]}
+        fallbackRender={({ resetErrorBoundary }) => (
+          <section role="alert">
+            <h2>No pudimos mostrar este envío</h2>
+            <button onClick={resetErrorBoundary}>Intentar de nuevo</button>
+          </section>
+        )}
+        onError={(error, info) => reportError(error, info.componentStack)}
+      >
+        <Suspense fallback={<EnvioSkeleton />}>
+          <DetalleEnvio id={envioId} />
+        </Suspense>
+      </ErrorBoundary>
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes react-error-boundary) y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
+npm install react-error-boundary
 npm run dev
 ```
 
-Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error: pulsa «RF-0000 (falla)» y verás el mensaje con los botones de navegación intactos; como `resetKeys={[envioId]}` depende del envío, volver a «RF-4471» limpia el error. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
 Pista: implementá `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
@@ -190,8 +228,10 @@ teclado + lector -> flujo completo comprensible
 **¿Por qué es importante?** Las abstracciones de diseño pueden borrar semántica sin que TypeScript avise; el resultado excluye usuarios y vuelve frágiles las pruebas que dependen de esa semántica.
 
 #### Paso 4 · Demostración guiada desde cero
-```tsx
-function CampoPin({ id, label, error, ...props }: CampoPinProps) {
+```jsx
+import { useState } from 'react';
+
+function CampoPin({ id, label, error, ...props }) {
   const errorId = `${id}-error`;
   return (
     <div>
@@ -201,17 +241,30 @@ function CampoPin({ id, label, error, ...props }: CampoPinProps) {
     </div>
   );
 }
+
+export default function App() {
+  const [error, setError] = useState('');
+  function enviar(evento) {
+    evento.preventDefault();
+    const pin = new FormData(evento.currentTarget).get('pin');
+    setError(pin === '837201' ? '' : 'El PIN no coincide con el de la guía.');
+  }
+  return (
+    <form onSubmit={enviar}>
+      <CampoPin id="pin" name="pin" label="PIN de entrega" inputMode="numeric" error={error} />
+      <button type="submit">Confirmar</button>
+    </form>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir. Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `1` en «PIN de entrega», pulsa «Confirmar» y comprueba `expect(campo).toHaveAttribute('aria-invalid', 'true')` y `expect(campo).toHaveAccessibleDescription('El PIN no coincide con el de la guía.')`. Después ejecuta `npm test`.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
@@ -279,9 +332,45 @@ CSP/Trusted Types cubren DOM completo
 **¿Por qué es importante?** Mezclar render de servidor/cliente mueve datos y acciones a través de fronteras invisibles en JSX; un supuesto equivocado sobre quién verifica qué filtra datos o autoriza por interfaz en vez de por permiso real.
 
 #### Paso 4 · Demostración guiada desde cero
+Crea las piezas de seguridad simuladas en `src/lib/seguridad.ts`:
+
 ```ts
+// Piezas mínimas de seguridad para el ejemplo. En producción, la sesión sale de
+// una cookie firmada o de tu proveedor de identidad, y `asignaciones` de la base de datos.
+const asignaciones = new Map([['RF-4471', 'conductor-ana']]);
+
+export async function requireSession() {
+  return { userId: 'conductor-luis' }; // simula al conductor autenticado
+}
+
+export const EnvioId = {
+  parse(valor: FormDataEntryValue | null): string {
+    if (typeof valor !== 'string' || !/^RF-\d{4}$/.test(valor)) throw new Error('envioId inválido');
+    return valor;
+  },
+};
+
+export async function authorize(userId: string, accion: 'confirmar', envioId: string) {
+  if (asignaciones.get(envioId) !== userId) {
+    throw new Error(`No autorizado: ${userId} no puede ${accion} ${envioId}`);
+  }
+}
+
+export const envios = {
+  async confirmar(envioId: string) {
+    console.log(`Envío ${envioId} confirmado`);
+  },
+};
+```
+
+La acción en `src/app/seguridad/actions.ts`:
+
+```ts
+'use server';
+
+import { authorize, EnvioId, envios, requireSession } from '@/lib/seguridad';
+
 export async function confirmarEntregaAction(formData: FormData) {
-  'use server';
   const session = await requireSession();
   const envioId = EnvioId.parse(formData.get('envioId'));
   await authorize(session.userId, 'confirmar', envioId);
@@ -289,15 +378,31 @@ export async function confirmarEntregaAction(formData: FormData) {
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+Y una página que la usa, `src/app/seguridad/page.tsx`:
+
+```tsx
+import { confirmarEntregaAction } from './actions';
+
+export default function PaginaSeguridad() {
+  // El formulario se muestra a cualquiera a propósito: la autorización vive en la acción.
+  return (
+    <form action={confirmarEntregaAction}>
+      <input type="hidden" name="envioId" value="RF-4471" />
+      <button type="submit">Confirmar RF-4471</button>
+    </form>
+  );
+}
+```
+
+**Ejecuta el ejemplo** en el proyecto Next.js `app` del módulo 10 (una Server Action necesita un framework con React Server Components; en `mi-react`, con Vite, `'use server'` no tiene efecto):
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario. Ejecuta `npm test` para comprobar las pruebas del tema.
+Abre `http://localhost:3000/seguridad` y pulsa el botón.
+
+Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario: el ejemplo simula al conductor `conductor-luis` y RF-4471 está asignado a `conductor-ana`, así que la acción lanza «No autorizado…». Cambia `requireSession` para que devuelva `conductor-ana` y la confirmación pasa (la terminal imprime «Envío RF-4471 confirmado»).
 
 #### Paso 5 · Práctica guiada
 Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
@@ -370,26 +475,45 @@ graph LR
     style L fill:#ff9800
 ```
 
-* Ejecutar: `npm run build && npm run preview`
-* Código: `src/components/DetalleEnvio.tsx`
+* Ejecutar: `npm run build && npm start` en el proyecto Next.js `app` del módulo 10
 
 #### Paso 4 · Demostración guiada desde cero
+Este tema necesita render en servidor e hidratación, así que usa el proyecto Next.js `app` del módulo 10. Crea `src/app/fecha/FechaEntrega.tsx` (componente de cliente: se renderiza en el servidor y luego se hidrata en el navegador):
+
 ```tsx
-const due = new Intl.DateTimeFormat(locale, {
-  dateStyle: 'long',
-  timeZone: userTimeZone, // la misma zona decidida en el servidor, no la del navegador
-}).format(new Date(envio.fechaEstimada));
+'use client';
+
+export default function FechaEntrega({ fechaEstimada, locale, userTimeZone }: {
+  fechaEstimada: string; locale: string; userTimeZone: string;
+}) {
+  const due = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'long',
+    timeZone: userTimeZone, // la misma zona decidida en el servidor, no la del navegador
+  }).format(new Date(fechaEstimada));
+  return <p>Entrega estimada: {due}</p>;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+Y `src/app/fecha/page.tsx`, que decide `locale` y zona una sola vez:
+
+```tsx
+import FechaEntrega from './FechaEntrega';
+
+export default function PaginaFecha() {
+  // Se decide una sola vez (aquí fijo; en una app real, desde la sesión del usuario).
+  const locale = 'es-CO';
+  const userTimeZone = 'America/Bogota';
+  return <FechaEntrega fechaEstimada="2026-11-20T03:30:00Z" locale={locale} userTimeZone={userTimeZone} />;
+}
+```
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados — sin ninguna advertencia de mismatch de hidratación en consola. Ejecuta `npm test` para comprobar las pruebas del tema.
+Abre `http://localhost:3000/fecha`.
+
+Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados («Entrega estimada: 19 de noviembre de 2026») — sin ninguna advertencia de mismatch de hidratación en consola. La fecha elegida lo hace visible: la misma hora en UTC ya es 20 de noviembre, así que si quitas `timeZone` y tu servidor y tu navegador están en zonas distintas, cada lado muestra un día diferente.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
@@ -488,7 +612,7 @@ Ejecútalo:
 
 ```bash
 git switch -c migracion-react-19
-npm install react@18.3 react-dom@18.3 && npm test
+npm install react@18.3 react-dom@18.3 && npm test   # el portal necesita un script test, como el del módulo 0
 npx codemod@latest react/19/migration-recipe
 npm install react@19 react-dom@19
 npm test && npm run build

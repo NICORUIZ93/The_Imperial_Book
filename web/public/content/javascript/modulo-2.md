@@ -133,14 +133,14 @@ mkdir src
 ```
 
 ```javascript
-iniciar(); // la declaración completa está disponible
+const crearRepositorio = () => ({ nombre: 'entregas-en-memoria' });
+
+iniciar(); // la function declaration completa está disponible antes de su línea
 
 function iniciar() {
   const repositorio = crearRepositorio();
   console.log(repositorio.nombre);
 }
-
-const crearRepositorio = () => ({ nombre: 'entregas-en-memoria' });
 ```
 
 ```bash
@@ -149,7 +149,7 @@ node src/hoisting.js
 
 **Resultado esperado:** `entregas-en-memoria`.
 
-**Fallo deliberado:** mueve una llamada a `crearRepositorio()` encima de su declaración. `ReferenceError: Cannot access ... before initialization` señala la TDZ; el enlace existe, pero todavía no tiene valor utilizable.
+**Fallo deliberado:** mueve la línea `const crearRepositorio = ...` debajo de la función `iniciar` (al final del archivo). Ahora `iniciar()` se ejecuta antes de que la constante se inicialice y obtienes `ReferenceError: Cannot access 'crearRepositorio' before initialization`: eso es la TDZ; el enlace existe, pero todavía no tiene valor utilizable. La function declaration `iniciar` sí funciona antes de su línea porque se eleva completa.
 
 #### Paso 5 · Práctica guiada
 
@@ -276,7 +276,7 @@ A diferencia de la mayoría de variables en JavaScript, cuyo valor se determina 
 
 Las arrow functions rompen deliberadamente esta regla dinámica: no tienen su propio `this` en absoluto, y en su lugar heredan (capturan léxicamente, como un closure) el `this` del scope donde fueron definidas. Esto explica por qué un método de objeto definido como arrow function (`obj = { nombre: "Ana", flecha: () => this?.nombre }`) no apunta a `obj` al invocarse como `obj.flecha()`: la arrow function captura el `this` del scope léxico externo (típicamente el módulo o el objeto global), no el de `obj`, sin importar cómo se invoque después.
 
-`call`, `apply` y `bind` son tres métodos disponibles en toda función normal que permiten fijar explícitamente el valor de `this` en una invocación, en vez de dejar que se determine implícitamente por la sintaxis de la llamada. `fn.call(contexto, arg1, arg2)` invoca `fn` inmediatamente con `this` fijado a `contexto` y los argumentos listados individualmente; `fn.apply(contexto, [arg1, arg2])` hace lo mismo pero recibiendo los argumentos como un array; `fn.bind(contexto)` no invoca la función inmediatamente, sino que devuelve una nueva función con `this` permanentemente fijado a `contexto`, útil quando se necesita pasar una referencia a la función (por ejemplo, como callback de un evento) preservando su `this` original.
+`call`, `apply` y `bind` son tres métodos disponibles en toda función normal que permiten fijar explícitamente el valor de `this` en una invocación, en vez de dejar que se determine implícitamente por la sintaxis de la llamada. `fn.call(contexto, arg1, arg2)` invoca `fn` inmediatamente con `this` fijado a `contexto` y los argumentos listados individualmente; `fn.apply(contexto, [arg1, arg2])` hace lo mismo pero recibiendo los argumentos como un array; `fn.bind(contexto)` no invoca la función inmediatamente, sino que devuelve una nueva función con `this` permanentemente fijado a `contexto`, útil cuando se necesita pasar una referencia a la función (por ejemplo, como callback de un evento) preservando su `this` original.
 
 Comprender profundamente esta mecánica de `this` es esencial antes de trabajar con clases (Módulo 3), donde es común encontrarse con el bug clásico de pasar un método de una instancia como callback (`boton.addEventListener("click", instancia.metodo)`) y descubrir que, al invocarse, `this` dentro de `metodo` ya no apunta a `instancia`, sino que es `undefined`, precisamente porque la forma de invocación cambió (ya no es `instancia.metodo()`, sino una invocación suelta disparada por el listener de eventos).
 

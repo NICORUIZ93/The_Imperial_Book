@@ -993,7 +993,7 @@ El proyecto parseará códigos públicos `CO-2026-000123` y conservará polític
 
 **Conceptos clave:** grupos capturan partes; grupos nombrados documentan; lookahead verifica sin consumir; flags `u`/`v` tratan Unicode correctamente; anclas definen toda la entrada.
 
-Cuando un fragmento de la expresión proviene de datos dinámicos (una búsqueda escrita por la persona usuaria, por ejemplo), insertarlo sin escapar permite que caracteres como `.`, `*` o `(` se interpreten como metacaracteres y rompan o manipulen la gramática esperada. Desde ECMAScript 2026, `RegExp.escape(texto)` devuelve el texto con todos los metacaracteres escapados, reemplazando la función utilitaria casera que la mayoría de proyectos mantenía para este propósito:
+Cuando un fragmento de la expresión proviene de datos dinámicos (una búsqueda escrita por la persona usuaria, por ejemplo), insertarlo sin escapar permite que caracteres como `.`, `*` o `(` se interpreten como metacaracteres y rompan o manipulen la gramática esperada. Desde ECMAScript 2025 (Node.js 24 o superior; en Node.js 22 obtienes `TypeError: RegExp.escape is not a function`), `RegExp.escape(texto)` devuelve el texto con todos los metacaracteres escapados, reemplazando la función utilitaria casera que la mayoría de proyectos mantenía para este propósito:
 
 ```javascript
 const busqueda = 'CO-2026 (urgente)';
@@ -1734,13 +1734,3 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un
 **Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
 
 **Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
-
-## Trazabilidad de la auditoría original
-
-- **TypeScript**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **WebAssembly**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Web3**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Machine Learning en navegador**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Web Workers**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Bundlers**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Accessibility (a11y)**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

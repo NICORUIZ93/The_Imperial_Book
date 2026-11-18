@@ -379,21 +379,50 @@ flowchart TB
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-entorno-js`, ejecuta `npm init -y`, crea `src` y `web`, y añade `"type": "module"` a `package.json`. Mueve y exporta la función desde `src/resumen.js`, y crea `src/cli.js`:
+Desde una carpeta vacía crea `ejemplo-entorno-js`, ejecuta `npm init -y`, crea `src` y `web`, y añade `"type": "module"` a `package.json` (el comando `npm pkg set` lo hace por ti):
 
 ```bash
 mkdir ejemplo-entorno-js
 cd ejemplo-entorno-js
 npm init -y
+npm pkg set type=module
 mkdir src web
 ```
+
+Crea `src/resumen.js` con la función del tema anterior, ahora exportada:
+
+```javascript
+export function resumenEnvio(envio) {
+  const destino = envio.destino ?? 'sin destino';
+  return `Guía ${envio.guia}: ${envio.estado}\nDestino: ${destino}\nPeso: ${envio.pesoKg} kg`;
+}
+```
+
+Crea `src/cli.js`:
 
 ```javascript
 import { resumenEnvio } from './resumen.js';
 console.log(resumenEnvio({ guia: 'RF-001', estado: 'en-ruta', pesoKg: 2.5 }));
 ```
 
-Crea también `web/index.html` y `web/app.js`:
+Crea también `web/index.html`:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Resumen de envío</title>
+  </head>
+  <body>
+    <h1>Resumen de envío</h1>
+    <output id="estado" style="white-space: pre-line"></output>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+```
+
+Y `web/app.js`:
 
 ```javascript
 import { resumenEnvio } from '../src/resumen.js';
@@ -410,7 +439,7 @@ npx serve .
 
 `npx` es el comando que ejecuta un paquete sin instalarlo globalmente (acá, `serve`, un servidor estático simple).
 
-**Resultado esperado:** terminal y `<output id="estado">` muestran el mismo resumen.
+**Resultado esperado:** terminal y `<output id="estado">` (abre `http://localhost:3000/web/` en el navegador) muestran el mismo resumen.
 
 **Fallo deliberado:** escribe `document.querySelector` en `src/cli.js`; Node informa `ReferenceError: document is not defined`. El cálculo no falla: el adaptador está en el entorno incorrecto.
 

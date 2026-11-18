@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: useEffect — dependencias y limpieza
 
@@ -40,7 +40,7 @@ graph TD
 
 El array de dependencias, segundo argumento de `useEffect`, controla exactamente cuándo el efecto se vuelve a ejecutar: sin ningún array (`useEffect(() => {...})`), el efecto se ejecuta después de cada render, sin excepción; con un array vacío (`useEffect(() => {...}, [])`), se ejecuta una única vez, inmediatamente después del primer montaje del componente; con un array que contiene valores específicos (`useEffect(() => {...}, [valor])`), se ejecuta después del montaje inicial y de nuevo cada vez que cualquiera de esos valores listados cambia entre un render y el siguiente, comparando cada valor mediante igualdad referencial (`Object.is`).
 
-La función que un efecto puede devolver opcionalmente es su función de limpieza, ejecutada por React inmediatamente antes de que el efecto se vuelva a ejecutar (si sus dependencias cambiaron) y también cuando el componente se desmonta definitivamente (`return () => window.removeEventListener('resize', handler)`), garantizando que cualquier suscripción, temporizador o conexión establecida por el efecto se libere correctamente antes de establecer una nueva, o antes de que el componente deje de existir, evitando fugas de memoria del mismo tipo conceptual estudiadas para suscripciones de RxJS en el Módulo 6 del track de Angular, aunque aquí aplicado al modelo de efectos de React en vez de a Observables.
+La función que un efecto puede devolver opcionalmente es su función de limpieza, ejecutada por React inmediatamente antes de que el efecto se vuelva a ejecutar (si sus dependencias cambiaron) y también cuando el componente se desmonta definitivamente (`return () => window.removeEventListener('resize', handler)`), garantizando que cualquier suscripción, temporizador o conexión establecida por el efecto se libere correctamente antes de establecer una nueva, o antes de que el componente deje de existir, evitando fugas de memoria: suscripciones o temporizadores que siguen vivos aunque ya nadie los necesite.
 
 **Analogía:** un efecto sin limpieza es como suscribirse a una lista de correo sin nunca darse de baja, incluso después de mudarse de dirección; la función de limpieza es el mecanismo explícito de darse de baja correctamente antes de suscribirse a una nueva lista o de abandonar definitivamente esa dirección.
 
@@ -59,33 +59,78 @@ useEffect(() => {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-useEffect(() => {
-  const controller = new AbortController();
-  fetch(`/api/envios?zona=${zona}`, { signal: controller.signal })
-    .then(res => res.json())
-    .then(setEnvios);
-  return () => controller.abort();
-}, [zona]);
+import { useEffect, useState } from 'react';
+
+function PanelEnvios({ zona }) {
+  const [envios, setEnvios] = useState([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`/api/envios-${zona}.json`, { signal: controller.signal })
+      .then(res => res.json())
+      .then(setEnvios)
+      .catch(error => {
+        if (error.name !== 'AbortError') console.error(error); // la cancelación no es un fallo
+      });
+    return () => controller.abort();
+  }, [zona]);
+
+  return (
+    <ul>
+      {envios.map(envio => <li key={envio.id}>{envio.id} — {envio.direccion}</li>)}
+    </ul>
+  );
+}
+
+export default function App() {
+  const [zona, setZona] = useState('norte');
+  const [visible, setVisible] = useState(true);
+  return (
+    <main>
+      <select value={zona} onChange={e => setZona(e.target.value)} aria-label="Zona">
+        <option value="norte">Norte</option>
+        <option value="sur">Sur</option>
+      </select>
+      <button onClick={() => setVisible(v => !v)}>{visible ? 'Desmontar' : 'Montar'} panel</button>
+      {visible && <PanelEnvios zona={zona} />}
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior. Antes, crea los datos que servirá Vite como archivos estáticos (todo lo que está en `public/` se sirve tal cual): `public/api/envios-norte.json` con
+
+```json
+[
+  { "id": "RF-4471", "direccion": "Calle 170 # 8-20" },
+  { "id": "RF-4472", "direccion": "Carrera 15 # 127-40" }
+]
+```
+
+y `public/api/envios-sur.json` con
+
+```json
+[
+  { "id": "RF-5101", "direccion": "Avenida 1 de Mayo # 30-12" }
+]
+```
+
+Después reemplaza `src/App.jsx` y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: cambiar `zona` cancela la petición anterior (todavía en vuelo) antes de disparar la nueva, y desmontar `PanelEnvios` cancela cualquier petición pendiente — nunca llega una respuesta vieja a actualizar `envios` después de que la zona o el componente ya cambiaron. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: cambiar `zona` cancela la petición anterior (todavía en vuelo) antes de disparar la nueva, y desmontar `PanelEnvios` cancela cualquier petición pendiente — nunca llega una respuesta vieja a actualizar `envios` después de que la zona o el componente ya cambiaron. Con archivos locales la respuesta llega casi al instante; para ver la cancelación, activa en la pestaña Network de DevTools la limitación «Slow 4G» y cambia de zona dos veces seguidas: la primera petición aparece como `(canceled)`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá el `return () => controller.abort()` del efecto — ese es el fallo deliberado: cambiá `zona` rápidamente dos veces seguidas y, si la primera respuesta llega después de la segunda, `envios` termina mostrando los envíos de la zona vieja, sobrescribiendo silenciosamente los de la zona actual.
+Pista: quita el `return () => controller.abort()` del efecto — ese es el fallo deliberado: cambia `zona` rápidamente dos veces seguidas y, si la primera respuesta llega después de la segunda, `envios` termina mostrando los envíos de la zona vieja, sobrescribiendo silenciosamente los de la zona actual.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando la cancelación, y agregá un segundo `useEffect` separado que sincronice el título del documento (`document.title`) con la cantidad de envíos pendientes, confirmando que cada efecto tiene su propio array de dependencias independiente. En el proyecto integrador RutaFlow, limpia la suscripción de seguimiento al desmontar y confirma que no quedan listeners.
+Corrige el Paso 5 restaurando la cancelación, y agrega un segundo `useEffect` separado que sincronice el título del documento (`document.title`) con la cantidad de envíos pendientes, confirmando que cada efecto tiene su propio array de dependencias independiente. En el proyecto integrador RutaFlow, limpia la suscripción de seguimiento al desmontar y confirma que no quedan listeners.
 
 #### Paso 7 · Cierre
-Entregá el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explicá por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: estudia `useRef` para valores que no disparen un render. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
+Entrega el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explica por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: estudia `useRef` para valores que no disparen un render. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
 **Implicación práctica:** Los efectos son la frontera donde React toca red, DOM y recursos externos; sin limpieza, una respuesta obsoleta puede sobrescribir silenciosamente el estado actual.
 
 ### Tema 2: useRef — valores mutables sin re-render
@@ -138,32 +183,43 @@ renderCount.current++; // no causa re-render, a diferencia de useState
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useRef, useState } from 'react';
+
 function PanelEnvios() {
+  const [zona, setZona] = useState('');
   const renderCount = useRef(0);
-  renderCount.current++;
+  renderCount.current++; // mutar una ref no provoca un render nuevo
   console.log(`PanelEnvios se renderizó ${renderCount.current} veces`);
-  // ...
+
+  return (
+    <label>
+      Filtrar por zona{' '}
+      <input value={zona} onChange={e => setZona(e.target.value)} />
+    </label>
+  );
+}
+
+export default function App() {
+  return <PanelEnvios />;
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: cada letra que el operador escribe en el filtro de zona incrementa `renderCount.current` y lo imprime, pero ese incremento por sí mismo nunca provoca un render adicional — el contador solo avanza como consecuencia de renders que ya ocurrían por otra razón (el cambio de `zona`). Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: cada letra que el operador escribe en el filtro de zona incrementa `renderCount.current` y lo imprime, pero ese incremento por sí mismo nunca provoca un render adicional — el contador solo avanza como consecuencia de renders que ya ocurrían por otra razón (el cambio de `zona`). En desarrollo, `StrictMode` ejecuta cada render dos veces, así que el número avanza de dos en dos y cada mensaje puede aparecer duplicado. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá `useRef(0)` por `useState(0)` y `renderCount.current++` por `setRenderCount(c => c + 1)` directamente en el cuerpo del componente, sin ningún `useEffect` — ese es el fallo deliberado: llamar al setter dentro del cuerpo del componente dispara un nuevo render, que vuelve a ejecutar esa misma línea, que vuelve a llamar al setter: un loop infinito que cuelga la pestaña del navegador.
+Pista: cambia `useRef(0)` por `useState(0)` y `renderCount.current++` por `setRenderCount(c => c + 1)` directamente en el cuerpo del componente, sin ningún `useEffect` — ese es el fallo deliberado: llamar al setter dentro del cuerpo del componente dispara un nuevo render, que vuelve a ejecutar esa misma línea, que vuelve a llamar al setter: un loop infinito que cuelga la pestaña del navegador.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `useRef`, y agregá una segunda referencia que guarde la última `zona` consultada, comparándola contra la `zona` actual dentro de un efecto para loguear solo cuándo realmente cambió, no en cada render. En el proyecto integrador RutaFlow, usa una ref para la última zona consultada y evita repetir la petición cuando no cambió.
+Corrige el Paso 5 devolviendo `useRef`, y agrega una segunda referencia que guarde la última `zona` consultada, comparándola contra la `zona` actual dentro de un efecto para loguear solo cuándo realmente cambió, no en cada render. En el proyecto integrador RutaFlow, usa una ref para la última zona consultada y evita repetir la petición cuando no cambió.
 
 #### Paso 7 · Cierre
-Entregá el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explicá por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
+Entrega el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explica por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
 
 ### Tema 3: useMemo y useCallback con criterio
 
@@ -219,25 +275,47 @@ const manejarClick = useCallback(() => hacer(id), [id]);          // memoiza una
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-console.time('ordenar');
-const ordenados = [...envios].sort((a, b) => a.fechaEstimada - b.fechaEstimada);
-console.timeEnd('ordenar');
+import { useState } from 'react';
+
+const envios = Array.from({ length: 100 }, (_, i) => ({
+  id: `RF-${4400 + i}`,
+  fechaEstimada: Date.UTC(2026, 10, 1 + (i * 7) % 28),
+}));
+
+function ListaOrdenada({ envios }) {
+  console.time('ordenar');
+  const ordenados = [...envios].sort((a, b) => a.fechaEstimada - b.fechaEstimada);
+  console.timeEnd('ordenar');
+  return (
+    <ol>
+      {ordenados.map(envio => <li key={envio.id}>{envio.id}</li>)}
+    </ol>
+  );
+}
+
+export default function App() {
+  const [oscuro, setOscuro] = useState(false); // estado no relacionado con la lista
+  return (
+    <main style={{ background: oscuro ? '#222' : '#fff', color: oscuro ? '#eee' : '#111' }}>
+      <button onClick={() => setOscuro(o => !o)}>Cambiar tema</button>
+      <ListaOrdenada envios={envios} />
+    </main>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: con una lista realista de RutaFlow (decenas de envíos, no miles), `console.timeEnd` reporta una fracción de milisegundo — un costo insignificante que no justifica envolver ese `sort` en `useMemo`, dado que el propio overhead de comparar dependencias en cada render sería comparable o mayor al costo del cálculo real. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: con una lista realista de RutaFlow (decenas de envíos, no miles), `console.timeEnd` reporta una fracción de milisegundo — un costo insignificante que no justifica envolver ese `sort` en `useMemo`, dado que el propio overhead de comparar dependencias en cada render sería comparable o mayor al costo del cálculo real. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con React DevTools Profiler + console.time:**
-1. Crea un componente `ListaOrdenada` que ordene 100 envíos cada render (sin useMemo)
+1. Usa el `ListaOrdenada` del ejemplo, que ordena 100 envíos en cada render (sin useMemo)
 2. Abre DevTools → Profiler tab → grabar
-3. Cambia otro estado no relacionado (p. ej., el tema claro/oscuro)
+3. Cambia un estado no relacionado con el botón «Cambiar tema»
 4. Mira la consola: `console.timeEnd` reporta 0.5-1ms (trivial)
 5. Ahora envuelve el sort en `useMemo`
 6. Repite: grabar cambio de tema
@@ -246,13 +324,13 @@ Resultado esperado: con una lista realista de RutaFlow (decenas de envíos, no m
 9. Resultado esperado: entender que sin un cálculo realmente costoso (p. ej., 100,000 items), memoizar no tiene impacto visible, pero SÍ agrega complejidad al código.
 
 #### Paso 5 · Práctica guiada
-Pista: envolvé ese `sort` trivial en `useMemo` igual, "para estar seguros", y medí el tiempo total de un render completo antes y después — ese es el fallo deliberado: el tiempo total no mejora de forma perceptible, pero el código ahora es más difícil de leer, con una dependencia adicional (`[envios]`) que hay que mantener sincronizada correctamente.
+Pista: envuelve ese `sort` trivial en `useMemo` igual, "para estar seguros", y mide el tiempo total de un render completo antes y después — ese es el fallo deliberado: el tiempo total no mejora de forma perceptible, pero el código ahora es más difícil de leer, con una dependencia adicional (`[envios]`) que hay que mantener sincronizada correctamente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lugar medí con el Profiler de React (Módulo 9) si memoizar el callback `onSeleccionarEnvio` pasado a una lista larga de `EnvioCard` envueltos en `React.memo` sí previene re-renders mensurables — un caso donde memoizar sí puede justificarse. Mide en el proyecto integrador RutaFlow si memoizar `onSeleccionarEnvio` reduce renders de la lista antes de conservar la optimización.
+Corrige el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lugar mide con el Profiler de React (Módulo 9) si memoizar el callback `onSeleccionarEnvio` pasado a una lista larga de `EnvioCard` envueltos en `React.memo` sí previene re-renders mensurables — un caso donde memoizar sí puede justificarse. Mide en el proyecto integrador RutaFlow si memoizar `onSeleccionarEnvio` reduce renders de la lista antes de conservar la optimización.
 
 #### Paso 7 · Cierre
-Entregá la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explicá la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
+Entrega la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explica la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
 
 ### Tema 4: Reglas de los hooks, useReducer y useImperativeHandle
 
@@ -268,9 +346,9 @@ Con `useState` separados para `cargando`, `envios` y `error`, nada impide que el
 
 Las reglas de los hooks establecen que los hooks deben llamarse siempre en el mismo orden, en el nivel superior de la función componente, nunca dentro de un `if`, un bucle, o una función anidada condicional: React asocia internamente cada hook con su estado correspondiente basándose estrictamente en el orden en que fueron llamados durante el render (no en un nombre o identificador explícito), por lo que llamar un hook condicionalmente (a veces sí, a veces no, según una rama de código) rompería esa asociación posicional, causando que React confunda el estado de un hook con el de otro en renders sucesivos, un error que React detecta y reporta explícitamente en desarrollo cuando ocurre.
 
-`useReducer` modela transiciones de estado más complejas que un simple `useState` mediante el mismo patrón de reducer estudiado para NgRx en el Módulo 9 del track de Angular (aunque aquí sin la infraestructura completa de una librería dedicada): una función reducer pura que recibe el estado actual y una "action" describiendo qué ocurrió, devolviendo el nuevo estado sin mutar el original, invocada mediante `dispatch(action)` en vez de un setter directo, apropiado cuando las transiciones de estado de un componente son numerosas o interdependientes de forma no trivial (por ejemplo, un formulario multi-paso con reglas de transición complejas entre pasos).
+`useReducer` modela transiciones de estado más complejas que un simple `useState` mediante el patrón reducer: una función reducer pura que recibe el estado actual y una "action" describiendo qué ocurrió, devolviendo el nuevo estado sin mutar el original, invocada mediante `dispatch(action)` en vez de un setter directo, apropiado cuando las transiciones de estado de un componente son numerosas o interdependientes de forma no trivial (por ejemplo, un formulario multi-paso con reglas de transición complejas entre pasos).
 
-`useImperativeHandle`, usado junto con `forwardRef`, permite a un componente controlar exactamente qué API imperativa expone hacia un componente padre que sostiene una referencia (`ref`) hacia él, en vez de exponer automáticamente el nodo DOM completo o la instancia interna completa del componente, un mecanismo deliberadamente restrictivo que preserva la encapsulación del componente hijo, exponiendo únicamente los métodos imperativos específicos que el diseño del componente decide hacer públicos (por ejemplo, un método `focus()` personalizado, sin exponer el resto de la implementación interna del componente).
+`useImperativeHandle` permite a un componente (que en React 19 recibe `ref` como una prop más; `forwardRef` ya no es necesario, según [react.dev](https://react.dev/reference/react/forwardRef))  controlar exactamente qué API imperativa expone hacia un componente padre que sostiene una referencia (`ref`) hacia él, en vez de exponer automáticamente el nodo DOM completo o la instancia interna completa del componente, un mecanismo deliberadamente restrictivo que preserva la encapsulación del componente hijo, exponiendo únicamente los métodos imperativos específicos que el diseño del componente decide hacer públicos (por ejemplo, un método `focus()` personalizado, sin exponer el resto de la implementación interna del componente).
 
 **Analogía:** las reglas de los hooks son como una lista de tareas diarias que deben ejecutarse siempre en el mismo orden estricto, porque un sistema externo lleva la cuenta de cada tarea únicamente por su posición en la secuencia, no por su nombre; `useImperativeHandle` es como una recepción que solo permite a los visitantes acceder a ciertos servicios específicos autorizados del edificio, sin darles acceso irrestricto a todas las instalaciones internas.
 
@@ -298,43 +376,62 @@ graph TD
     style J fill:#e8f5e9
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="reducer|rules"`
-* Código: `src/hooks/useShipmentReducer.tsx`
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { useReducer } from 'react';
+
+const estadoInicial = { estado: 'cargando', envios: [], error: null };
+
 function reducer(estado, accion) {
   switch (accion.type) {
     case 'cargando': return { estado: 'cargando', envios: [], error: null };
     case 'exito': return { estado: 'listo', envios: accion.envios, error: null };
     case 'error': return { estado: 'error', envios: [], error: accion.error };
+    default: throw new Error(`Acción desconocida: ${accion.type}`);
   }
 }
-const [estado, dispatch] = useReducer(reducer, { estado: 'cargando', envios: [], error: null });
+
+function PanelEnvios() {
+  // useReducer, como todo Hook, se llama en el nivel superior de un componente.
+  const [estado, dispatch] = useReducer(reducer, estadoInicial);
+
+  return (
+    <section>
+      <p>Estado: {estado.estado}{estado.error && ` — ${estado.error}`}</p>
+      <p>Envíos: {estado.envios.join(', ') || 'ninguno'}</p>
+      <button onClick={() => dispatch({ type: 'cargando' })}>Cargar</button>
+      <button onClick={() => dispatch({ type: 'exito', envios: ['RF-4471', 'RF-4472'] })}>Simular éxito</button>
+      <button onClick={() => dispatch({ type: 'error', error: 'Sin conexión' })}>Simular error</button>
+    </section>
+  );
+}
+
+export default function App() {
+  return <PanelEnvios />;
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: en cualquier momento, `estado.estado` es exactamente uno de `'cargando'`, `'listo'` o `'error'` — nunca una combinación ambigua de "cargando con error" al mismo tiempo, porque cada `case` del reducer devuelve un objeto completo y consistente, no un parche parcial sobre el estado anterior.
+Resultado esperado: en cualquier momento, `estado.estado` es exactamente uno de `'cargando'`, `'listo'` o `'error'` — nunca una combinación ambigua de "cargando con error" al mismo tiempo, porque cada `case` del reducer devuelve un objeto completo y consistente, no un parche parcial sobre el estado anterior; una acción desconocida lanza un error en vez de devolver `undefined`.
 
-Ejecuta `npm test` y confirma que las pruebas del reducer y de las reglas de hooks pasan.
+Exporta `reducer` (`export function reducer…`) y escribe `src/reducer.test.jsx` con el patrón de `DeliveryCard.test.jsx`: comprueba que `reducer(estadoInicial, { type: 'error', error: 'x' })` devuelve `estado: 'error'` y `envios: []`. Después ejecuta `npm test`.
 
 #### Paso 5 · Práctica guiada
-Pista: dentro de un `if (zona === 'norte')`, agregá una llamada a un nuevo `useState` adicional "solo para esa zona" — ese es el fallo deliberado: React reporta un error explícito en desarrollo ("Rendered more hooks than during the previous render") en cuanto `zona` cambia de `'norte'` a cualquier otro valor entre renders, porque la cantidad y posición de hooks llamados dejó de ser consistente.
+Pista: haz que `PanelEnvios` reciba una prop `zona` (en `App`, guárdala con `useState('norte')` y agrega un botón que la alterne entre `'norte'` y `'sur'`) y, dentro de un `if (zona === 'norte')`, agrega una llamada a un nuevo `useState` adicional "solo para esa zona" — ese es el fallo deliberado: el linter (`npm run lint`) ya lo marca, y en ejecución React lanza un error explícito en cuanto cambia la cantidad de Hooks entre renders. Al pasar de `'norte'` a `'sur'` se llaman menos Hooks y el mensaje es «Rendered fewer hooks than expected. This may be caused by an accidental early return statement.»; si empiezas en `'sur'` y pasas a `'norte'`, el mensaje es «Rendered more hooks than during the previous render.».
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agregá además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo. Lleva el reducer de envíos al proyecto integrador RutaFlow y comprueba que las reglas de hooks siguen pasando el linter.
+Corrige el Paso 5 moviendo ese `useState` al nivel superior del componente (sin ningún `if` alrededor), usando la condición solo para decidir qué hacer con el valor, no para decidir si llamar al hook; agrega además un `useImperativeHandle` en `PanelEnvios` que exponga únicamente un método `refrescar()` hacia un componente padre con `ref`, sin exponer el nodo DOM completo (en React 19, `PanelEnvios` recibe `ref` como prop: `function PanelEnvios({ ref })`, sin `forwardRef`). Lleva el reducer de envíos al proyecto integrador RutaFlow y comprueba que las reglas de hooks siguen pasando el linter.
 
 #### Paso 7 · Cierre
-Entregá el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explicá por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
+Entrega el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explica por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
 **Implicación práctica:** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 
 ### Tema 5: Error Boundaries — contener errores de render sin romper toda la app
@@ -412,11 +509,9 @@ export default function App() {
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite, pega esto en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 

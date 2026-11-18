@@ -1,6 +1,6 @@
 # 014 · Corrección de bloqueantes y errores técnicos verificados
 
-**Estado:** en curso
+**Estado:** hecho
 **Origen:** el dueño eligió el 2026-11-18 «bloqueantes primero» tras la auditoría completa
 ([docs/auditoria/README.md](../docs/auditoria/README.md)).
 
@@ -23,11 +23,11 @@ bloqueante y error técnico: `corregido`, `no reproducible` o `pendiente: motivo
 
 ## Criterios
 
-- **B1** `pendiente` — Los 8 informes por curso tienen su sección de correcciones.
+- **B1** `hecho` — Los 8 informes por curso tienen su sección de correcciones.
   Verificación: `test $(grep -l "Correcciones aplicadas (specs/014)" docs/auditoria/*.md | wc -l) -ge 8`
-- **B2** `pendiente` — Los restos editoriales ya no aparecen en las lecciones.
+- **B2** `hecho` — Los restos editoriales ya no aparecen en las lecciones.
   Verificación: `! grep -rqE "Trazabilidad de la auditoría original|El prompt menciona|merged\.pdf" web/public/content`
-- **B3** `pendiente` — No quedan runtimes ni servicios retirados que la auditoría señaló.
+- **B3** `hecho` — No quedan runtimes ni servicios retirados que la auditoría señaló.
   Verificación: `! grep -rqE "nodejs20\.x|App Mesh|jenkins:lts-jdk17" web/public/content`
-- **B4** `pendiente` — Índice, catálogo y validación siguen en verde tras las correcciones.
+- **B4** `hecho` — Índice, catálogo y validación siguen en verde tras las correcciones.
   Verificación: `python3 scripts/build_curriculum_catalog.py --check && python3 scripts/validate_lesson_labs.py`

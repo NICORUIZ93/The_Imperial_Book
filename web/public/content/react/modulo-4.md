@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-**Servidor del módulo:** cada ejemplo se sirve con `npm run dev`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas. Si el puerto cambia, usa el que imprima la terminal.
+**Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
 ### Tema 1: createContext y useContext
 
@@ -43,7 +43,7 @@ graph TD
 
 **Conceptos clave:** proveedor y consumidor, evitar prop drilling.
 
-`createContext('claro')` crea un objeto Context con un valor por defecto, que luego se provee a un subárbol completo de componentes mediante un componente `Provider` (`<ThemeContext.Provider value={{ tema, setTema }}>`) envolviendo esa parte de la aplicación; cualquier componente descendiente de ese Provider, sin importar cuántos niveles de anidamiento existan entre ambos, puede leer ese valor directamente con `useContext(ThemeContext)`, sin que ningún componente intermedio entre el Provider y el consumidor final necesite recibir, conocer, ni reenviar manualmente ese valor a través de sus propias props.
+`createContext({ tema: 'claro', setTema: () => {} })` crea un objeto Context con un valor por defecto (con la misma forma que el valor real, para que quien lo lea sin Provider no reciba un tipo distinto), que luego se provee a un subárbol completo de componentes mediante un componente `Provider` (`<ThemeContext.Provider value={{ tema, setTema }}>`) envolviendo esa parte de la aplicación; cualquier componente descendiente de ese Provider, sin importar cuántos niveles de anidamiento existan entre ambos, puede leer ese valor directamente con `useContext(ThemeContext)`, sin que ningún componente intermedio entre el Provider y el consumidor final necesite recibir, conocer, ni reenviar manualmente ese valor a través de sus propias props.
 
 Esto resuelve directamente el problema conocido como "prop drilling": sin Context, compartir un valor entre un componente ancestro y otro descendiente lejano en el árbol requeriría pasar ese valor explícitamente como prop a través de cada componente intermedio en el camino entre ambos, incluso si esos componentes intermedios no usan ese valor para nada propio, simplemente lo reenvían hacia abajo — un acoplamiento innecesario que hace que cambiar la forma de ese valor compartido, o insertar un nuevo componente intermedio en el árbol, requiera modificar potencialmente muchos componentes que no tienen ninguna relación conceptual real con ese dato compartido, más allá de estar geográficamente ubicados entre el proveedor y el consumidor final.
 
@@ -54,7 +54,7 @@ Esto resuelve directamente el problema conocido como "prop drilling": sin Contex
 **Código del ejemplo:**
 
 ```jsx
-const ThemeContext = createContext('claro');
+const ThemeContext = createContext({ tema: 'claro', setTema: () => {} });
 
 function App() {
   const [tema, setTema] = useState('claro');
@@ -74,14 +74,26 @@ function BotonToggle() {
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { createContext, useContext, useState } from 'react';
+
 const SesionContext = createContext(null);
 
-function App() {
+export default function App() {
   const [operador, setOperador] = useState({ nombre: 'Ana', zona: 'norte' });
   return (
     <SesionContext.Provider value={{ operador, setOperador }}>
       <PanelEnvios />
     </SesionContext.Provider>
+  );
+}
+
+// Componente intermedio: no recibe ni reenvía `operador`.
+function PanelEnvios() {
+  return (
+    <section>
+      <BarraSuperior />
+      <p>Lista de envíos…</p>
+    </section>
   );
 }
 
@@ -91,24 +103,22 @@ function BarraSuperior() {
 }
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — ningún componente entre ambos necesitó recibir ni reenviar esa prop. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: `BarraSuperior`, sin importar cuántos componentes intermedios existan entre ella y `App`, lee `operador.nombre` directamente — `PanelEnvios`, entre ambos, no necesitó recibir ni reenviar esa prop. En React 19 también puedes escribir `<SesionContext value={...}>` sin `.Provider`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: renderizá `BarraSuperior` en una parte del árbol que queda fuera de `SesionContext.Provider` (por ejemplo, un modal montado vía portal directamente en el `<body>`, sin envolverlo con el Provider) — ese es el fallo deliberado: `useContext(SesionContext)` devuelve `null`, y leer `operador.nombre` lanza un error en tiempo de ejecución porque `operador` es `null`.
+Pista: renderiza `BarraSuperior` en una parte del árbol que queda fuera de `SesionContext.Provider` (por ejemplo, un modal montado vía portal directamente en el `<body>`, sin envolverlo con el Provider) — ese es el fallo deliberado: `useContext(SesionContext)` devuelve `null`, y leer `operador.nombre` lanza un error en tiempo de ejecución porque `operador` es `null`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y agregá una validación explícita en `BarraSuperior` que muestre un mensaje claro de error de configuración si el contexto llega como `null`, en vez de crashear con un error críptico. Envuelve el modal de confirmación del proyecto integrador RutaFlow con el proveedor de sesión y documenta el error de contexto ausente.
+Corrige el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y agrega una validación explícita en `BarraSuperior` que muestre un mensaje claro de error de configuración si el contexto llega como `null`, en vez de crashear con un error críptico. Envuelve el modal de confirmación del proyecto integrador RutaFlow con el proveedor de sesión y documenta el error de contexto ausente.
 
 #### Paso 7 · Cierre
-Entregá el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explicá por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
+Entrega el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explica por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
 **Implicación práctica:** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, pero solo funciona dentro del subárbol efectivamente envuelto por su Provider.
 
 ### Tema 2: Cuándo Context es suficiente y cuándo no
@@ -141,23 +151,50 @@ Context problemático: valor de un input en cada tecla (cambia mucho, re-renderi
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
-// Mal: mezclar un valor de cambio frecuente dentro de un Context de cambio infrecuente
-<SesionContext.Provider value={{ operador, filtroBusqueda, setFiltroBusqueda }}>
+import { createContext, useContext, useState } from 'react';
+
+const SesionContext = createContext(null);
+
+export default function App() {
+  const [operador] = useState({ nombre: 'Ana', zona: 'norte' });
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  // Mal: mezclar un valor de cambio frecuente dentro de un Context de cambio infrecuente
+  return (
+    <SesionContext.Provider value={{ operador, filtroBusqueda, setFiltroBusqueda }}>
+      <BarraSuperior />
+      <CampoBusqueda />
+    </SesionContext.Provider>
+  );
+}
+
+function BarraSuperior() {
+  const { operador } = useContext(SesionContext);
+  console.log('render de BarraSuperior');
+  return <p>Operador: {operador.nombre}</p>;
+}
+
+function CampoBusqueda() {
+  const { filtroBusqueda, setFiltroBusqueda } = useContext(SesionContext);
+  return (
+    <label>
+      Buscar envío{' '}
+      <input value={filtroBusqueda} onChange={e => setFiltroBusqueda(e.target.value)} />
+    </label>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior, abre la consola del navegador y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
-Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que solo lee `operador`, nunca `filtroBusqueda`), escribir en el campo de búsqueda re-renderiza `BarraSuperior` de todas formas — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee. Ejecuta `npm test` para comprobar las pruebas del tema.
+Resultado esperado: `BarraSuperior` solo lee `operador`, nunca `filtroBusqueda`, pero cada tecla en el campo de búsqueda imprime `render de BarraSuperior` (dos veces en desarrollo, por `StrictMode`) — React re-renderiza todos los consumidores del Context cuando el valor provisto cambia, sin importar qué parte de ese valor cada consumidor efectivamente lee. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 **Demo con React DevTools:**
-1. Crea un componente `BarraSuperior` que consuma `SesionContext` y solo lea `operador`
-2. Crea un componente `CampoBusqueda` que también lea `filtroBusqueda` del mismo Context
+1. Usa `BarraSuperior` del ejemplo, que consume `SesionContext` y solo lee `operador`
+2. Usa `CampoBusqueda`, que lee `filtroBusqueda` del mismo Context
 3. Abre DevTools → Profiler tab → Grabar
 4. Tipea en el campo de búsqueda
 5. Detén la grabación y mira el chart: verás que `BarraSuperior` aparece resaltada en amarillo/rojo (re-renderizada)
@@ -167,13 +204,13 @@ Resultado esperado: agregando un `console.log('render')` en `BarraSuperior` (que
 9. Resultado esperado: ver en el Profiler la diferencia visual entre compartir estado innecesariamente vs mantenerlo local.
 
 #### Paso 5 · Práctica guiada
-Pista: dejá `filtroBusqueda` dentro de `SesionContext` y escribí rápido en el campo de búsqueda mientras mirás el `console.log` de `BarraSuperior` — ese es el fallo deliberado confirmado: `BarraSuperior` se re-renderiza en cada tecla aunque nunca lee `filtroBusqueda`, un desperdicio que empeora proporcionalmente a la cantidad de consumidores de `SesionContext`.
+Pista: deja `filtroBusqueda` dentro de `SesionContext` y escribe rápido en el campo de búsqueda mientras miras el `console.log` de `BarraSuperior` — ese es el fallo deliberado confirmado: `BarraSuperior` se re-renderiza en cada tecla aunque nunca lee `filtroBusqueda`, un desperdicio que empeora proporcionalmente a la cantidad de consumidores de `SesionContext`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirmá que `BarraSuperior` ya no se re-renderiza al escribir. En el proyecto integrador RutaFlow, mueve el filtro de búsqueda a estado local y confirma qué componentes dejan de re-renderizarse.
+Corrige el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con un `useState` local dentro del componente de búsqueda, sin Context, porque solo lo necesita ese componente y sus hijos directos — confirma que `BarraSuperior` ya no se re-renderiza al escribir. En el proyecto integrador RutaFlow, mueve el filtro de búsqueda a estado local y confirma qué componentes dejan de re-renderizarse.
 
 #### Paso 7 · Cierre
-Entregá la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explicá con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
+Entrega la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explica con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
 **Implicación práctica:** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; mezclar un valor de cambio frecuente dentro del mismo Context re-renderiza innecesariamente a todos los consumidores que no lo usan.
 
 ### Tema 3: Componentes compuestos, render props y hooks personalizados
@@ -208,20 +245,21 @@ graph TD
     style D fill:#e8f5e9
 ```
 
-* Ejecutar: `npm test -- --testNamePattern="compound|tabs"`
-* Código: `src/components/CompoundTabs.tsx`
 * Cuándo: usar componentes compuestos cuando varios componentes relacionados necesitan coordinación interna oculta; no conviene cuando la coordinación es simple o cuando la lógica se reutiliza en contextos distintos (usa hooks personalizados en ese caso).
 
 **¿Por qué es importante?** Los componentes compuestos ofrecen una API declarativa y limpia para el usuario final, ocultando la coordinación interna necesaria sin exponer detalles de implementación.
 
 #### Paso 4 · Demostración guiada desde cero
 ```jsx
+import { createContext, useContext, useState } from 'react';
+
 const PestaniasContext = createContext(null);
 
 function Pestanias({ children }) {
   const [activa, setActiva] = useState(0);
   return <PestaniasContext.Provider value={{ activa, setActiva }}>{children}</PestaniasContext.Provider>;
 }
+
 Pestanias.Panel = function Panel({ indice, titulo, children }) {
   const { activa, setActiva } = useContext(PestaniasContext);
   return (
@@ -231,28 +269,35 @@ Pestanias.Panel = function Panel({ indice, titulo, children }) {
     </>
   );
 };
+
+export default function App() {
+  return (
+    <Pestanias>
+      <Pestanias.Panel indice={0} titulo="Envíos activos">RF-4471 · en ruta</Pestanias.Panel>
+      <Pestanias.Panel indice={1} titulo="Historial">RF-4410 · entregado</Pestanias.Panel>
+    </Pestanias>
+  );
+}
 ```
 
-**Ejecuta el ejemplo** (monta un proyecto React con Vite desde cero, pega el componente en `src/App.jsx` y arráncalo):
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
 
 ```bash
-npm create vite@latest demo-react -- --template react
-cd demo-react && npm install
 npm run dev
 ```
 
 Resultado esperado: `<Pestanias><Pestanias.Panel indice={0} titulo="Envíos activos">...</Pestanias.Panel></Pestanias>` coordina automáticamente cuál panel se muestra, sin que el código que usa `Pestanias` escriba ningún `useState` propio para rastrear la pestaña activa.
 
-Ejecuta `npm test` y confirma que las pruebas de componentes compuestos pasan.
+Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: comprueba que al inicio se ve «RF-4471 · en ruta» y no «RF-4410 · entregado», pulsa el botón «Historial» con `userEvent` y comprueba lo contrario. Después ejecuta `npm test` (borra o adapta esta prueba cuando reemplaces `App.jsx` en otro tema).
 
 #### Paso 5 · Práctica guiada
-Pista: usá `Pestanias.Panel` fuera de un `<Pestanias>` envolvente, directamente en la pantalla — ese es el fallo deliberado: `useContext(PestaniasContext)` devuelve `null` dentro de `Panel`, y desestructurar `{ activa, setActiva }` de `null` lanza un error en tiempo de ejecución, porque `Panel` depende implícitamente de estar dentro de un `Pestanias`.
+Pista: usa `Pestanias.Panel` fuera de un `<Pestanias>` envolvente, directamente en la pantalla — ese es el fallo deliberado: `useContext(PestaniasContext)` devuelve `null` dentro de `Panel`, y desestructurar `{ activa, setActiva }` de `null` lanza un error en tiempo de ejecución, porque `Panel` depende implícitamente de estar dentro de un `Pestanias`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `Panel` dentro de `Pestanias`, y agregá una validación explícita dentro de `Panel` que lance un error descriptivo ("Pestanias.Panel debe usarse dentro de Pestanias") si el contexto es `null`, en vez de un error críptico de desestructuración. Extrae las pestañas del detalle de envío del proyecto integrador RutaFlow a un componente compuesto y conserva el foco.
+Corrige el Paso 5 devolviendo `Panel` dentro de `Pestanias`, y agrega una validación explícita dentro de `Panel` que lance un error descriptivo ("Pestanias.Panel debe usarse dentro de Pestanias") si el contexto es `null`, en vez de un error críptico de desestructuración. Extrae las pestañas del detalle de envío del proyecto integrador RutaFlow a un componente compuesto y conserva el foco.
 
 #### Paso 7 · Cierre
-Entregá el componente compuesto funcionando del Paso 4, el error por uso fuera de contexto del Paso 5, y el mensaje de error descriptivo del Paso 6; explicá por qué `Pestanias.Panel` depende implícitamente de un ancestro `Pestanias`, y por qué hacer ese error explícito mejora la experiencia de quien use el componente. Siguiente paso: integrá esto al panel de operador completo. Errores comunes: exponer el Context interno de un componente compuesto directamente al usuario, no validar el caso de uso fuera de contexto con un mensaje claro, y recrear patrones antiguos (render props, HOCs) cuando un componente compuesto expresa la misma idea de forma más directa. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/reusing-logic-with-custom-hooks.
+Entrega el componente compuesto funcionando del Paso 4, el error por uso fuera de contexto del Paso 5, y el mensaje de error descriptivo del Paso 6; explica por qué `Pestanias.Panel` depende implícitamente de un ancestro `Pestanias`, y por qué hacer ese error explícito mejora la experiencia de quien use el componente. Siguiente paso: integra esto al panel de operador completo. Errores comunes: exponer el Context interno de un componente compuesto directamente al usuario, no validar el caso de uso fuera de contexto con un mensaje claro, y recrear patrones antiguos (render props, HOCs) cuando un componente compuesto expresa la misma idea de forma más directa. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/reusing-logic-with-custom-hooks.
 
 ## Laboratorio práctico
 
