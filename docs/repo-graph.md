@@ -1,9 +1,9 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 06:49 UTC
+Generated: 2026-11-18 06:59 UTC
 Root: `the_imperial_book`
-Indexed files: 1653
-Import edges: 67
+Indexed files: 1663
+Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
 
@@ -15,21 +15,21 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## Project Shape
 
-- `angular-app`: 69 files
-- `automation-script`: 51 files
+- `angular-app`: 71 files
+- `automation-script`: 55 files
 - `course-content`: 331 files
-- `documentation`: 153 files
+- `documentation`: 156 files
 - `example`: 962 files
 - `local-infra`: 1 files
-- `project-file`: 86 files
+- `project-file`: 87 files
 
 ## File Types
 
-- `.md`: 517
+- `.md`: 520
 - `.java`: 417
-- `.py`: 180
-- `.json`: 124
-- `.ts`: 72
+- `.py`: 184
+- `.json`: 125
+- `.ts`: 74
 - `.js`: 54
 - `.html`: 50
 - `.yml`: 37
@@ -53,7 +53,7 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `README.md` (388 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (225 lines, automation-script)
+- `scripts/validate.sh` (228 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
@@ -107,6 +107,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.ts` -> `web/src/app/command-palette.service.ts`
 - `web/src/app/command-palette.ts` -> `web/src/app/course-data.ts`
 - `web/src/app/command-palette.ts` -> `web/src/app/topic-index.service.ts`
+- `web/src/app/command-palette.ts` -> `web/src/app/topic-title.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/course-module.model.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/android.track.ts`
 - `web/src/app/course-data.ts` -> `web/src/app/tracks/angular.track.ts`
@@ -134,6 +135,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/project-bootstrap.spec.ts` -> `web/src/app/course-data.ts`
 - `web/src/app/project-bootstrap.spec.ts` -> `web/src/app/project-bootstrap.ts`
 - `web/src/app/theme.service.spec.ts` -> `web/src/app/theme.service.ts`
+- `web/src/app/topic-title.spec.ts` -> `web/src/app/topic-title.ts`
 - `web/src/main.ts` -> `web/src/app/app.config.ts`
 - `web/src/main.ts` -> `web/src/app/app.ts`
 
@@ -141,13 +143,14 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `web/src/app/course-data.ts`: in=4, out=16
 - `web/src/app/app.routes.ts`: in=2, out=5
+- `web/src/app/command-palette.ts`: in=1, out=4
 - `web/src/app/app.spec.ts`: in=0, out=5
 - `examples/javascript-master/src/main.ts`: in=0, out=5
 - `examples/javascript-master/src/demo.ts`: in=0, out=5
-- `web/src/app/command-palette.ts`: in=1, out=3
 - `web/src/app/course/book-mode.service.ts`: in=3, out=0
 - `web/src/app/app.ts`: in=2, out=1
 - `web/src/app/course/course-shell.ts`: in=1, out=2
+- `web/src/app/topic-title.ts`: in=2, out=0
 - `web/src/app/course-module.model.ts`: in=2, out=0
 - `web/src/app/catalog/course-catalog.ts`: in=2, out=0
 - `examples/rutaflow-material/socketio/gateway.mjs`: in=2, out=0
@@ -158,7 +161,6 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/progress.service.ts`: in=1, out=1
 - `web/src/app/course/lesson-viewer.ts`: in=1, out=1
 - `web/src/app/app.config.ts`: in=1, out=1
-- `web/src/main.ts`: in=0, out=2
 
 ## Files By Area
 
@@ -176,14 +178,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/catalog/curriculum-library.html` (97 lines) - symbols: curriculum-title, stack-browser-title, implementation-title
 - `web/src/app/catalog/curriculum-library.scss` (152 lines)
 - `web/src/app/catalog/curriculum-library.ts` (219 lines) - symbols: CurriculumLibraryComponent, CurriculumStackComponent, query, scope, filteredStacks, topicScope, selectedModule, visibleCount; imports: @angular/common, @angular/core, @angular/core/rxjs-interop, @angular/router, lucide-angular, rxjs, ../course-data, ../curriculum-library.service
-- `web/src/app/catalog/curriculum-stack.html` (154 lines) - symbols: stack-title, ocr-title, course-source-title, topic-browser-title
+- `web/src/app/catalog/curriculum-stack.html` (155 lines) - symbols: stack-title, ocr-title, course-source-title, topic-browser-title
 - `web/src/app/command-palette.html` (29 lines) - symbols: palette-title, palette-results
 - `web/src/app/command-palette.scss` (38 lines)
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
 - `web/src/app/command-palette.ts` (131 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (78 lines) - symbols: ContentService; imports: @angular/core, marked
 - `web/src/app/course-data.ts` (891 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
-- ... 51 more files
+- ... 53 more files
 
 ### automation-script
 
@@ -191,10 +193,12 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/audit_code_visual_quality.py` (226 lines) - symbols: student_visible_content, structural_text, blocks, official_source_urls, evaluate, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, urllib.parse, audit_topic_learning_quality
 - `scripts/audit_course_depth.py` (148 lines) - symbols: signals, human_review_status, build, markdown, main; imports: __future__, argparse, collections, json, pathlib, re, audit_topic_learning_quality
 - `scripts/audit_full.py` (278 lines) - symbols: Tema, structural_text, split_temas, evaluar, recolectar, shingles, detectar_duplicados, pct; imports: __future__, argparse, json, re, sys, collections, dataclasses, datetime
+- `scripts/audit_lesson_assets.py` (113 lines) - symbols: lessons, check_logos, check_links, check_images, check_docs_counts, main; imports: __future__, argparse, json, re, sys, pathlib
 - `scripts/audit_lesson_substance.py` (346 lines) - symbols: norm, paragraphs, count_words, evaluate_topic, module_level_sections, topic_key, build, render_markdown; imports: __future__, argparse, hashlib, json, re, sys, collections, pathlib
 - `scripts/audit_seven_step_methodology.py` (176 lines) - symbols: matches, evaluate, build, render_markdown, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_subtopic_depth.py` (164 lines) - symbols: semantic_headings, broad_title, build, render, main; imports: __future__, argparse, json, re, collections, pathlib, audit_topic_learning_quality
 - `scripts/audit_topic_learning_quality.py` (266 lines) - symbols: student_visible_content, structural_text, topic_blocks, resolve_archify_visual_link, unresolved_archify_visual_links, canonical_practice, evaluate, classify; imports: __future__, argparse, json, re, collections, pathlib
+- `scripts/audit_visual_aids.py` (106 lines) - symbols: topic_text, code_blocks_without_filename, audit, main; imports: __future__, json, re, sys, pathlib
 - `scripts/build_editorial_backlog.py` (100 lines) - symbols: render, main; imports: __future__, argparse, pathlib, audit_topic_learning_quality
 - `scripts/build_full_review.py` (175 lines) - symbols: total_field, topic_count, build, main; imports: __future__, argparse, json, pathlib, audit_code_visual_quality, audit_course_depth, audit_lesson_substance, audit_seven_step_methodology
 - `scripts/build_prerequisite_graph.py` (115 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
@@ -203,9 +207,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
 - `scripts/build_total_book_topics.py` (129 lines) - symbols: normalized, main, render_item; imports: __future__, json, re, unicodedata, collections, pathlib
 - `scripts/build_unified_curriculum.py` (211 lines) - symbols: norm, main; imports: __future__, json, re, unicodedata, collections, pathlib
-- `scripts/build_web_curriculum_catalog.py` (191 lines) - symbols: build_assets, write_json, main; imports: __future__, json, collections, pathlib, typing
-- `scripts/build_web_topic_index.py` (81 lines) - symbols: slugify, clean_topic_title, main; imports: __future__, json, re, sys, unicodedata, collections, pathlib
-- ... 33 more files
+- ... 37 more files
 
 ### course-content
 
@@ -233,10 +235,10 @@ For automated lookups, use `docs/repo-graph.json`.
 
 - `AGENTS.md` (92 lines) - headings: # The Imperial Book: trabajo con contenido y experiencia de estudio, ## Skills para el objetivo de la academia, ## Contrato de estudio desde cero, ### Profundidad obligatoria de temas y subtemas
 - `CHANGELOG.md` (17 lines) - headings: # Changelog, ## Unreleased, ## 2026-10-13
-- `CLAUDE.md` (129 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
+- `CLAUDE.md` (133 lines) - headings: # CLAUDE.md, ## What this is, ## First step for any repo exploration, ## Specs first (SDD)
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
-- `MASTER-PROMPT.md` (149 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables, ### 1.2 Regla de preservación
+- `MASTER-PROMPT.md` (223 lines) - headings: # MASTER PROMPT — THE IMPERIAL BOOK · RECONSTRUCCIÓN COMPLETA, ## PARTE 0 · CÓMO TRABAJAR: ESPECIFICACIÓN PRIMERO (SDD), ## PARTE 1 · METODOLOGÍA EDITORIAL, ### 1.1 Las 12 pautas innegociables
 - `README.md` (388 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
@@ -249,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/INVENTARIO-CURSOS-TEMAS-SUBTEMAS.md` (11995 lines) - headings: # Inventario completo: cursos, módulos, temas y subtemas, ## 1. RutaFlow — Proyecto integrador logístico, ### Módulo 0 · RutaFlow desde cero: producto, entorno y dominio, #### Tema 1: El proceso logístico como sistema
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
-- ... 135 more files
+- ... 138 more files
 
 ### example
 
@@ -297,4 +299,4 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/book-curriculum-inventory.json` (527350 lines)
-- ... 68 more files
+- ... 69 more files

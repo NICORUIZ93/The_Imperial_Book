@@ -13,7 +13,7 @@ SOURCE = ROOT / "docs" / "temario-maestro-unificado.json"
 CONTENT = ROOT / "web" / "public" / "content"
 INDEX = CONTENT / "curriculum-catalog.json"
 STACKS_DIR = CONTENT / "curriculum-stacks"
-EXPECTED_STACKS = 27
+EXPECTED_STACKS = 29  # incluye microservices y control-1 (specs/003)
 
 
 def build_assets(source: dict[str, Any]) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:

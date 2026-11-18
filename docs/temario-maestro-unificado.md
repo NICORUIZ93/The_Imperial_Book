@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1146
+- Temas actuales conservados: 1326
 - Temas actuales con evidencia exacta en libros: 3
 - Temas adicionales únicos de libros: 73027
-- Temas candidatos provenientes de cursos: 18
-- Cursos externos inventariados: 1
-- Total unificado provisional: 74191
+- Temas candidatos provenientes de cursos: 49
+- Cursos externos inventariados: 6
+- Total unificado provisional: 74402
 - Libros pendientes de OCR: 109
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -20,7 +20,7 @@
 
 ## Stack: foundations
 
-Total provisional: 2422 temas.
+Total provisional: 2429 temas.
 
 ### Módulo actual 0
 
@@ -90,6 +90,7 @@ Total provisional: 2422 temas.
 3. **Diseño modular, principios, patrones y refactoring** — `actual`
 4. **Decisiones, documentación, deuda y evolución** — `actual`
 5. **Records de C#: igualdad por valor no implica inmutabilidad profunda** — `actual`
+6. **Desarrollo guiado por especificación con agentes de IA** — `actual`
 
 ### Módulo actual 8
 
@@ -114,6 +115,7 @@ Total provisional: 2422 temas.
 4. **Resiliencia y observabilidad orientadas a objetivos** — `actual`
 5. **Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases** — `actual`
 6. **Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada** — `actual`
+7. **Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella** — `actual`
 
 ### Módulo actual 11
 
@@ -4882,9 +4884,27 @@ Total provisional: 2422 temas.
 2322. **426.pdf (p.426)** — `candidato-libros`
    - Fuente (es, p. 426): Programación - Algoritmos y ejercicios resueltos en Java — `Colecciones_Importadas_Mac/Libros_de_tecnologia/Programación y lenguajes/Programación - Algoritmos y ejercicios resueltos en Java.pdf`
 
+### Curso fuente: Dos formas de trabajar con IA: Vibe coding vs Spec-Driven
+
+1. **Vibe coding: ciclo prompt, resultado y corrección** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Warren Roque — Dos formas de trabajar con IA: Vibe coding vs Spec-Driven]()
+2. **Spec-Driven: especificación como única fuente de verdad** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Warren Roque — Dos formas de trabajar con IA: Vibe coding vs Spec-Driven]()
+3. **Agentes de IA trabajando contra una especificación** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Warren Roque — Dos formas de trabajar con IA: Vibe coding vs Spec-Driven]()
+4. **Git, revisión y CI/CD como controles** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Warren Roque — Dos formas de trabajar con IA: Vibe coding vs Spec-Driven]()
+5. **Mejora continua de la especificación** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Warren Roque — Dos formas de trabajar con IA: Vibe coding vs Spec-Driven]()
+
 ### Libros pendientes de OCR
 
 - Código limpio - Manual de estilo para el desarrollo ágil de software — 452 páginas — `Colecciones_Importadas_Mac/Libros_de_tecnologia/Ingeniería de software/Código limpio - Manual de estilo para el desarrollo ágil de software.pdf`
+
+#### Alcance anunciado del proyecto final: Dos formas de trabajar con IA: Vibe coding vs Spec-Driven
+
+- Audiencia indicada: Personas que programan con asistentes y agentes de IA.
+- Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.
 
 ## Stack: javascript
 
@@ -10523,7 +10543,7 @@ Total provisional: 2725 temas.
 
 ## Stack: node
 
-Total provisional: 552 temas.
+Total provisional: 558 temas.
 
 ### Módulo actual 0
 
@@ -10642,10 +10662,19 @@ Total provisional: 552 temas.
 
 1. **TypeScript en Node.js** — `actual`
 2. **GraphQL avanzado y Federation** — `actual`
-3. **Microservicios, Kafka, RabbitMQ y sagas** — `actual`
+3. **Compensar una entrega cuando falla un paso** — `actual`
 4. **Serverless multi-cloud** — `actual`
 5. **Docker productivo con Node** — `actual`
 6. **CI/CD y promoción de artefactos** — `actual`
+7. **Kafka desde Node: clave, grupo consumidor y offset** — `actual`
+8. **RabbitMQ desde Node: exchange, cola y confirmaciones** — `actual`
+
+### Módulo actual 15
+
+1. **Deno y permisos explícitos** — `actual`
+2. **Bun reúne runtime, paquetes, pruebas y bundler** — `actual`
+3. **Migrar un proyecto Node a Bun sin perder reproducibilidad** — `actual`
+4. **Elegir entre Node, Deno y Bun** — `actual`
 
 ### Expansión editorial por organizar
 
@@ -14173,7 +14202,7 @@ Total provisional: 950 temas.
 
 ## Stack: java
 
-Total provisional: 3082 temas.
+Total provisional: 3111 temas.
 
 ### Módulo actual 0
 
@@ -14218,7 +14247,7 @@ Total provisional: 3082 temas.
 2. **CompletableFuture** — `actual`
 3. **Virtual threads** — `actual`
 4. **Condiciones de carrera y sincronización** — `actual`
-5. **Structured Concurrency (StructuredTaskScope, preview en JDK 27)** — `actual`
+5. **Structured Concurrency (StructuredTaskScope, Java 25)** — `actual`
 6. **Scoped Values frente a ThreadLocal (Java 25)** — `actual`
 7. **Timeouts y cancelación cooperativa sin abandonar recursos** — `actual`
 
@@ -14252,7 +14281,7 @@ Total provisional: 3082 temas.
 
 1. **module-info.java y encapsulación fuerte** — `actual`
 2. **Migración incremental y cuándo JPMS aporta valor** — `actual`
-3. **`opens` para acceso reflexivo controlado de frameworks** — `actual`
+3. **opens para acceso reflexivo controlado de frameworks** — `actual`
 
 ### Módulo actual 11
 
@@ -14267,8 +14296,8 @@ Total provisional: 3082 temas.
 2. **Factory Method y Strategy** — `actual`
 3. **Abstract Factory y familias de productos compatibles** — `actual`
 4. **SOLID y cuándo NO aplicar un patrón** — `actual`
-5. **Prototype — copiar configuración sin compartir estado mutable** — `actual`
-6. **Patrones estructurales — elegir por intención** — `actual`
+5. **Prototype: copiar un objeto sin compartir sus datos** — `actual`
+6. **Patrones estructurales para conectar piezas existentes** — `actual`
 
 ### Módulo actual 13
 
@@ -14296,6 +14325,12 @@ Total provisional: 3082 temas.
 
 1. **Entidades y relaciones JPA** — `actual`
 2. **FetchType.LAZY, EAGER y el problema N+1** — `actual`
+3. **Relaciones uno a uno, muchos a muchos y herencia** — `actual`
+4. **Ciclo de vida, EntityManager y consultas tipadas** — `actual`
+5. **Búsquedas dinámicas con Criteria y Querydsl** — `actual`
+6. **EntityGraph y cachés de persistencia** — `actual`
+7. **Concurrencia, transacciones y propagación** — `actual`
+8. **Migraciones y pruebas JPA con Testcontainers** — `actual`
 
 ### Módulo actual 17
 
@@ -14306,8 +14341,6 @@ Total provisional: 3082 temas.
 
 1. **HttpClient, REST, timeouts y fallos** — `actual`
 2. **Tokens, validación y límites de seguridad** — `actual`
-3. **Sockets TCP y UDP — la red que hay debajo de HttpClient** — `actual`
-4. **Seguridad defensiva — hash, HMAC, firma y cifrado** — `actual`
 
 ### Módulo actual 19
 
@@ -14321,10 +14354,19 @@ Total provisional: 3082 temas.
 
 ### Módulo actual 20
 
-1. **Lambdas a fondo — tipo objetivo, captura y referencias a métodos** — `actual`
-2. **Las cuatro formas: Predicate, Function, Consumer y Supplier** — `actual`
-3. **Componer sin anidar: andThen, compose, negate y reglas encadenadas** — `actual`
-4. **Streams como composición: pereza, orden y efectos que se esconden** — `actual`
+1. **Las cuatro formas: Predicate, Function, Consumer y Supplier** — `actual`
+2. **Componer sin anidar: andThen, compose, negate y reglas encadenadas** — `actual`
+3. **Streams como composición: pereza, orden y efectos que se esconden** — `actual`
+4. **Function y BiFunction: transformar uno o dos datos** — `actual`
+5. **UnaryOperator y BinaryOperator: la salida conserva el tipo** — `actual`
+6. **Referencias a métodos: escribir la operación sin repetirla** — `actual`
+7. **Optional: buscar un envío que puede no existir** — `actual`
+8. **Streams intermedios: filtrar, transformar, aplanar y ordenar** — `actual`
+9. **Streams terminales: encontrar, contar y combinar resultados** — `actual`
+10. **Collectors: formar listas, mapas, grupos y texto** — `actual`
+11. **Streams paralelos: comparar antes de acelerarlos** — `actual`
+12. **Pureza y efectos: calcular separado de guardar o imprimir** — `actual`
+13. **Flow API: publicar datos con demanda y cierre** — `actual`
 
 ### Módulo actual 21
 
@@ -21086,13 +21128,53 @@ Total provisional: 3082 temas.
 2984. **Palabras Finales** — `candidato-libros`
    - Fuente (es, p. 99): java_el_cambio_es_la_unica_constante_2025 — `Programacion/Java/java_el_cambio_es_la_unica_constante_2025.pdf`
 
+### Curso fuente: Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción
+
+1. **Fundamentos de Java** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+2. **Conceptos de OOP** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+3. **Marco de colecciones** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+4. **Manejo de excepciones** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+5. **Multihilo** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+6. **JDBC** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+7. **SQL** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+8. **Spring Core** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+9. **Spring Boot** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+10. **JPA / Hibernate** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+11. **Microservicios** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+12. **Kafka** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+13. **Docker** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+14. **Kubernetes** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+15. **AWS en la nube** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+16. **Diseño de sistemas** — `candidato-cursos`
+   - Curso fuente: [LinkedIn — Nicolás Valenzuela — Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción]()
+
 ### Libros pendientes de OCR
 
 - Programacion_Java_17_Guia_Intermedio — 392 páginas — `Programacion/Java/Programacion_Java_17_Guia_Intermedio.pdf`
 
+#### Alcance anunciado del proyecto final: Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción
+
+- Audiencia indicada: Ruta para quien empieza en Java y quiere llegar a backend en producción.
+- Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. La imagen no muestra un paso 10.
+
 ## Stack: spring-boot
 
-Total provisional: 117 temas.
+Total provisional: 141 temas.
 
 ### Módulo actual 0
 
@@ -21126,7 +21208,7 @@ Total provisional: 117 temas.
 1. **SecurityFilterChain moderno** — `actual`
 2. **Filtro JWT y autorización por rol** — `actual`
 3. **CORS y CSRF** — `actual`
-4. **Protección SSRF con InetAddressFilter (Spring Boot 4.1)** — `actual`
+4. **Reducir SSRF en clientes HTTP con InetAddressFilter** — `actual`
 5. **Flujo de login completo — de `/api/auth/login` a una ruta protegida** — `actual`
 
 ### Módulo actual 5
@@ -21137,23 +21219,27 @@ Total provisional: 117 temas.
 
 ### Módulo actual 6
 
-1. **Slices de testing — @WebMvcTest** — `actual`
-2. **@DataJpaTest con Testcontainers** — `actual`
-3. **@SpringBootTest completo y estrategia de pirámide de tests** — `actual`
+1. **Probar un controller con `@WebMvcTest`** — `actual`
+2. **Probar el repositorio contra PostgreSQL con `@DataJpaTest`** — `actual`
+3. **Integrar el flujo con `@SpringBootTest`** — `actual`
 
 ### Módulo actual 7
 
 1. **Actuator y health checks personalizados** — `actual`
-2. **Métricas de negocio con Micrometer** — `actual`
-3. **Liveness vs readiness** — `actual`
+2. **Contar operaciones de negocio con Micrometer** — `actual`
+3. **Liveness y readiness sin reinicios en cadena** — `actual`
 
 ### Módulo actual 8
 
 1. **Producers y consumers con Spring Kafka** — `actual`
 2. **Dead-letter queue** — `actual`
-3. **Productor idempotente y transacciones (exactly-once)** — `actual`
-4. **Rebalanceo de consumer groups y partition assignment** — `actual`
+3. **Transacciones Kafka y SQL: idempotencia y límites de exactly-once** — `actual`
+4. **Rebalanceo de consumer groups y asignación de particiones** — `actual`
 5. **Kafka frente a RabbitMQ** — `actual`
+6. **Spring Cloud Stream y binders de Kafka/RabbitMQ** — `actual`
+7. **Kafka Streams con Spring para transformar eventos** — `actual`
+8. **Avro y Schema Registry para contratos de eventos** — `actual`
+9. **RabbitMQ con Spring AMQP: routing, ack y prefetch** — `actual`
 
 ### Módulo actual 9
 
@@ -21168,9 +21254,13 @@ Total provisional: 117 temas.
 3. **Circuit breaker con Resilience4j** — `actual`
 4. **OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización** — `actual`
 5. **HTTP Interfaces, deadlines y descubrimiento según el entorno** — `actual`
-6. **Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)** — `actual`
+6. **Spring gRPC, contrato HTTP/2 y evolución segura** — `actual`
 7. **DDD para decidir límites y propiedad de datos** — `actual`
-8. **Orquestación de microservicios con Temporal y Spring Boot** — `actual`
+8. **Orquestar pedidos con Temporal y Spring Boot** — `actual`
+9. **Comprueba módulos antes de separar servicios** — `actual`
+10. **Spring Cloud Bus para propagar cambios de configuración** — `actual`
+11. **Micrometer Tracing entre servicios** — `actual`
+12. **Contract testing entre productor y consumidor** — `actual`
 
 ### Módulo actual 11
 
@@ -21181,8 +21271,8 @@ Total provisional: 117 temas.
 ### Módulo actual 12
 
 1. **Arquitectura del microservicio integrador** — `actual`
-2. **Integrando seguridad, persistencia y observabilidad** — `actual`
-3. **Cierre del track y próximos pasos** — `actual`
+2. **Integra seguridad JWT y observabilidad** — `actual`
+3. **Cierra el servicio con evidencia y próximos pasos** — `actual`
 
 ### Módulo actual 13
 
@@ -21254,6 +21344,32 @@ Total provisional: 117 temas.
 2. **C4: contexto, contenedores, componentes y código** — `actual`
 3. **ADR: decisiones con contexto, alternativas y consecuencias** — `actual`
 
+### Módulo actual 23
+
+1. **módulos y límites entre paquetes** — `actual`
+2. **eventos entre módulos sin importar implementación** — `actual`
+3. **documentación generada y mapa de dependencias** — `actual`
+4. **pruebas de integración por módulo** — `actual`
+
+### Módulo actual 24
+
+1. **schema-first con tipos y consultas** — `actual`
+2. **data fetchers, relaciones y problema N+1** — `actual`
+3. **mutations y subscriptions** — `actual`
+4. **pruebas GraphQL con GraphQlTester** — `actual`
+
+### Módulo actual 25
+
+1. **bindings y destinations** — `actual`
+2. **binder Kafka y binder RabbitMQ** — `actual`
+3. **reintentos, error handler y dead-letter** — `actual`
+4. **test binder y límites de la prueba** — `actual`
+
+### Módulo actual 26
+
+1. **CompletableFuture, @Async y el bug de la autoinvocación** — `actual`
+2. **Locks, deadlocks, semáforos y MDC en concurrencia** — `actual`
+
 ### Expansión editorial por organizar
 
 1. **Autor…………………………………............…** — `candidato-libros`
@@ -21308,6 +21424,59 @@ Total provisional: 117 temas.
    - Fuente (es, p. 239): Spring_Boot_Backend_Arquitectura — `Programacion/Backend_Java_Spring/Spring_Boot_Backend_Arquitectura.pdf`
 26. **5.4 JPA Wildcards………………………………** — `candidato-libros`
    - Fuente (es, p. 259): Spring_Boot_Backend_Arquitectura — `Programacion/Backend_Java_Spring/Spring_Boot_Backend_Arquitectura.pdf`
+
+### Curso fuente: Spring Boot Harness (anunciado)
+
+
+### Curso fuente: Mitos y verdades de Domain-Driven Design (webinar gratuito)
+
+1. **Qué es realmente Domain-Driven Design** — `candidato-cursos`
+   - Curso fuente: [DAS Academy — Mitos y verdades de Domain-Driven Design (webinar gratuito)]()
+2. **Mitos y verdades de DDD** — `candidato-cursos`
+   - Curso fuente: [DAS Academy — Mitos y verdades de Domain-Driven Design (webinar gratuito)]()
+
+#### Alcance anunciado del proyecto final: Spring Boot Harness (anunciado)
+
+- Audiencia indicada: No publicada en el anuncio.
+- Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Solo existe un anuncio («Viene, viene…»); el temario no es público. Se registra como candidato sin temas para no inventarlos.
+
+#### Alcance anunciado del proyecto final: Mitos y verdades de Domain-Driven Design (webinar gratuito)
+
+- Audiencia indicada: Desarrolladores y arquitectos que evalúan DDD.
+- Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.
+
+## Stack: microservices
+
+Total provisional: 23 temas.
+
+### Módulo actual 0
+
+1. **Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min** — `actual`
+2. **Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min** — `actual`
+3. **Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min** — `actual`
+4. **Clasificar un resultado desconocido antes de reintentar · Integración · 45 min** — `actual`
+5. **Evitar efectos duplicados con una clave idempotente · Integración · 45 min** — `actual`
+6. **Seleccionar un reloj según la evidencia temporal · Integración · 40 min** — `actual`
+7. **Preservar el orden de eventos por versión del agregado · Integración · 45 min** — `actual`
+8. **Evolucionar un contrato JSON sin romper consumidores** — `actual`
+9. **Rechazar un frame excesivo antes de reservar memoria** — `actual`
+10. **Refutar falacias distribuidas mediante evidencia reproducible** — `actual`
+
+### Módulo actual 1
+
+1. **Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min** — `actual`
+2. **Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min** — `actual`
+3. **Agrupar código por capacidad de negocio · Aplicación · 40 min** — `actual`
+4. **Proteger la API pública de un módulo · Aplicación · 45 min** — `actual`
+5. **Mantener reglas de dominio libres de frameworks · Aplicación · 40 min** — `actual`
+6. **Sustituir adaptadores mediante puertos · Aplicación · 45 min** — `actual`
+7. **Representar dependencias de módulos como un grafo · Integración · 35 min** — `actual`
+8. **Romper ciclos según el tipo de acoplamiento · Integración · 45 min** — `actual`
+9. **Bloquear accesos a internals con ArchUnit · Integración · 40 min** — `actual`
+10. **Detectar ciclos de paquetes con ArchUnit · Integración · 35 min** — `actual`
+11. **Evitar falsos verdes en fitness functions · Integración · 35 min** — `actual`
+12. **Medir señales que justifican una extracción** — `actual`
+13. **Registrar una decisión reversible en un ADR** — `actual`
 
 ## Stack: kotlin-multiplatform
 
@@ -41816,7 +41985,7 @@ Total provisional: 4692 temas.
 
 ## Stack: flutter
 
-Total provisional: 2775 temas.
+Total provisional: 2818 temas.
 
 ### Módulo actual 0
 
@@ -41929,6 +42098,70 @@ Total provisional: 2775 temas.
 4. **Clean Architecture** — `actual`
 5. **Internacionalización completa** — `actual`
 6. **Builds, firma y despliegue** — `actual`
+
+### Módulo actual 16
+
+1. **reconocer cuándo usar FFI y crear el paquete** — `actual`
+2. **generar bindings C seguros para Dart** — `actual`
+3. **conectar una biblioteca Rust mediante una ABI C** — `actual`
+4. **compilar y empaquetar bibliotecas por plataforma** — `actual`
+5. **medir rendimiento y evitar bloquear la interfaz** — `actual`
+6. **propiedad de memoria, liberación y errores** — `actual`
+
+### Módulo actual 17
+
+1. **macros de Dart y alternativas disponibles** — `actual`
+2. **generación avanzada con build_runner** — `actual`
+3. **reflexión limitada y registro tipado** — `actual`
+4. **recorrer el AST de Dart con analyzer** — `actual`
+5. **crear un builder pequeño para build_runner** — `actual`
+6. **diseñar y validar un paquete Dart** — `actual`
+
+### Módulo actual 18
+
+1. **la frontera entre Dart y el código nativo** — `actual`
+2. **secretos fuera del binario** — `actual`
+3. **fluidez y presupuesto de frames** — `actual`
+4. **protocolo, telemetría y contención** — `actual`
+5. **reportes de fallos con Crashlytics y Sentry** — `actual`
+6. **analítica con privacidad y consentimiento** — `actual`
+7. **monitoreo de rendimiento en una versión publicada** — `actual`
+
+### Módulo actual 19
+
+1. **estado de la jornada con Riverpod** — `actual`
+2. **mapa y permiso de ubicación** — `actual`
+3. **posiciones en tiempo real con Socket.IO** — `actual`
+4. **animar el marcador sin saltos** — `actual`
+5. **confirmaciones offline y sincronización** — `actual`
+6. **carga de evidencia con Dio y notificaciones** — `actual`
+
+### Módulo actual 20
+
+1. **pruebas unitarias y de widget con Flutter Test** — `actual`
+2. **golden e integración de un flujo real** — `actual`
+3. **perfilado y presupuesto de rendimiento** — `actual`
+4. **Clean Architecture y sustitución de dependencias** — `actual`
+5. **internacionalización y formatos locales** — `actual`
+6. **builds por plataforma, firma y entrega** — `actual`
+
+### Módulo actual 21
+
+1. **catálogo y flujo con `in_app_purchase`** — `actual`
+2. **suscripciones Android, planes base y cambios** — `actual`
+3. **suscripciones iOS con StoreKit** — `actual`
+4. **restauración de compras y entitlement** — `actual`
+5. **pruebas de IAP en sandbox** — `actual`
+6. **validación de transacciones en servidor** — `actual`
+
+### Módulo actual 22
+
+1. **configurar AdMob y cargar el primer banner de prueba** — `actual`
+2. **elegir mediación, bidding y waterfall** — `actual`
+3. **banners, interstitials y anuncios recompensados** — `actual`
+4. **consentimiento, privacidad y audiencias** — `actual`
+5. **pruebas de anuncios y diagnóstico de no-fill** — `actual`
+6. **comparar AdMob, AppLovin MAX y Unity LevelPlay** — `actual`
 
 ### Expansión editorial por organizar
 
@@ -48224,7 +48457,7 @@ Total provisional: 2775 temas.
 
 ## Stack: devops
 
-Total provisional: 340 temas.
+Total provisional: 349 temas.
 
 ### Módulo actual 0
 
@@ -48293,6 +48526,7 @@ Total provisional: 340 temas.
 5. **Namespaces** — `actual`
 6. **StatefulSets, DaemonSets, Jobs y CronJobs** — `actual`
 7. **Persistent Volumes, PVCs y StorageClasses** — `actual`
+8. **Clúster local con Minikube: perfiles, addons e Ingress** — `actual`
 
 ### Módulo actual 7
 
@@ -48849,11 +49083,35 @@ Total provisional: 340 temas.
 211. **1. Archivos especiales** — `candidato-libros`
    - Fuente (es, p. 24): Programacion_Linux_Administracion_Tutorial_Avanzado — `Programacion/Sistemas_Linux_DevOps/Programacion_Linux_Administracion_Tutorial_Avanzado.pdf`
 
+### Curso fuente: Kubernetes for Developers
+
+1. **ReplicaSet** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+2. **EKS (AKS/GKE)** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+3. **Minikube** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+4. **Deployment** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+5. **ConfigMap** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+6. **Namespace** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+7. **Ingress** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+8. **Volúmenes (PV/PVC)** — `candidato-cursos`
+   - Curso fuente: [Galaxy Training — Kubernetes for Developers]()
+
 ### Libros pendientes de OCR
 
 - Programacion_Docker_Contenedores_Tutorial_Basico — 540 páginas — `Programacion/Docker/Programacion_Docker_Contenedores_Tutorial_Basico.pdf`
 - Programacion_Kali_Linux_Seguridad_Curso_Profesional — 185 páginas — `Programacion/Sistemas_Linux_DevOps/Programacion_Kali_Linux_Seguridad_Curso_Profesional.pdf`
 - Sistemas Operativos Distribuidos Tanenbaum 1a Ed — 634 páginas — `Programacion/Sistemas_Linux_DevOps/Sistemas Operativos Distribuidos Tanenbaum 1a Ed.pdf`
+
+#### Alcance anunciado del proyecto final: Kubernetes for Developers
+
+- Audiencia indicada: Desarrolladores que despliegan aplicaciones en Kubernetes.
+- Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Inicio anunciado: lunes 9 de noviembre de 2026, 19:00–21:00.
 
 ## Stack: cloud
 
@@ -49176,6 +49434,149 @@ Total provisional: 29 temas.
 2. **SLO y respuesta a incidentes** — `actual`
 3. **Pruebas end-to-end del sistema completo (app ↔ backend)** — `actual`
 4. **Continuidad, costes y proyecto final** — `actual`
+
+## Stack: control-1
+
+Total provisional: 70 temas.
+
+### Módulo actual 0
+
+1. **Cómo está armado cada capítulo** — `actual`
+
+### Módulo actual 1
+
+1. **¿Qué es un número complejo?** — `actual`
+2. **Operaciones** — `actual`
+3. **Raíces de s²+bs+c** — `actual`
+4. **Forma polar, fórmula de Euler y evaluación de G(jω)** — `actual`
+
+### Módulo actual 2
+
+1. **La idea** — `actual`
+2. **La tabla** — `actual`
+3. **Propiedades** — `actual`
+4. **Valor final y valor inicial** — `actual`
+
+### Módulo actual 3
+
+1. **Caso 1: polos reales distintos** — `actual`
+2. **Caso 2: polos repetidos** — `actual`
+3. **Caso 3: polos complejos (completar el cuadrado)** — `actual`
+4. **Resolver una ecuación diferencial completa** — `actual`
+
+### Módulo actual 4
+
+1. **Qué es la función de transferencia** — `actual`
+
+### Módulo actual 5
+
+1. **¿Qué es un sistema de control?** — `actual`
+2. **Los elementos** — `actual`
+3. **Álgebra de bloques** — `actual`
+
+### Módulo actual 6
+
+1. **Reglas para mover bloques** — `actual`
+2. **Grafos de flujo de señal** — `actual`
+3. **Regla de Mason** — `actual`
+4. **Referencia y perturbación juntas** — `actual`
+
+### Módulo actual 7
+
+1. **Impedancias** — `actual`
+2. **Circuitos pasivos: divisor de voltaje** — `actual`
+3. **El op-amp inversor** — `actual`
+
+### Módulo actual 8
+
+1. **Mecánico de traslación** — `actual`
+2. **Mecánico de rotación** — `actual`
+3. **Motor DC (electromecánico)** — `actual`
+4. **Sistemas térmicos e hidráulicos** — `actual`
+5. **Analogías** — `actual`
+
+### Módulo actual 9
+
+1. **La idea** — `actual`
+
+### Módulo actual 10
+
+1. **La forma de estado** — `actual`
+2. **De estados a función de transferencia** — `actual`
+
+### Módulo actual 11
+
+1. **Forma estándar** — `actual`
+2. **Respuestas** — `actual`
+3. **Retardo o tiempo muerto** — `actual`
+4. **Identificación desde una gráfica** — `actual`
+
+### Módulo actual 12
+
+1. **Forma estándar** — `actual`
+2. **Simulador: mueve ζ y ωn** — `actual`
+3. **Los cuatro casos según ζ** — `actual`
+4. **Fórmulas del caso subamortiguado** — `actual`
+5. **De las especificaciones a la función de transferencia** — `actual`
+
+### Módulo actual 13
+
+1. **Polos dominantes** — `actual`
+2. **Efecto de un cero** — `actual`
+3. **Cero de fase no mínima** — `actual`
+
+### Módulo actual 14
+
+1. **Fórmula general** — `actual`
+2. **Tipo de sistema y constantes** — `actual`
+
+### Módulo actual 15
+
+1. **Qué es estabilidad** — `actual`
+2. **El arreglo de Routh** — `actual`
+3. **Casos especiales** — `actual`
+4. **Rango de K para estabilidad** — `actual`
+
+### Módulo actual 16
+
+1. **Geometría de un polo** — `actual`
+2. **Estabilidad** — `actual`
+3. **La zona de diseño** — `actual`
+
+### Módulo actual 17
+
+1. **Las dos condiciones** — `actual`
+2. **Reglas de construcción (con su porqué)** — `actual`
+3. **Elegir K desde el lugar de las raíces** — `actual`
+
+### Módulo actual 18
+
+1. **La idea** — `actual`
+2. **Error en estado estacionario** — `actual`
+3. **Cada acción, con números** — `actual`
+4. **Ventajas y desventajas (punto 4 del Parcial 1)** — `actual`
+5. **Sintonía de Ziegler-Nichols** — `actual`
+
+### Módulo actual 19
+
+1. **Diseño de un adelanto** — `actual`
+2. **Diseño de un atraso** — `actual`
+3. **Implementación con op-amps** — `actual`
+
+### Módulo actual 20
+
+1. **Qué es la respuesta en frecuencia** — `actual`
+2. **Decibeles y la escala logarítmica** — `actual`
+3. **Los bloques básicos** — `actual`
+4. **Márgenes de estabilidad** — `actual`
+
+### Módulo actual 21
+
+1. **Parcial 1** — `actual`
+
+### Módulo actual 22
+
+1. **Simulacro con solución** — `actual`
 
 ## Stack: python
 

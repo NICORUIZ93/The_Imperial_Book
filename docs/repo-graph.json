@@ -52,7 +52,7 @@
     },
     {
       "path": "CLAUDE.md",
-      "lines": 129,
+      "lines": 133,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -93,23 +93,23 @@
     },
     {
       "path": "MASTER-PROMPT.md",
-      "lines": 149,
+      "lines": 223,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
         "# MASTER PROMPT \u2014 THE IMPERIAL BOOK \u00b7 RECONSTRUCCI\u00d3N COMPLETA",
+        "## PARTE 0 \u00b7 C\u00d3MO TRABAJAR: ESPECIFICACI\u00d3N PRIMERO (SDD)",
         "## PARTE 1 \u00b7 METODOLOG\u00cdA EDITORIAL",
         "### 1.1 Las 12 pautas innegociables",
         "### 1.2 Regla de preservaci\u00f3n",
         "### 1.3 Formato de capstone",
-        "## PARTE 2 \u00b7 CURR\u00cdCULO COMPLETO \u2014 15 TRACKS PUBLICADOS + CURSOS APROBADOS",
+        "## PARTE 2 \u00b7 CURR\u00cdCULO COMPLETO \u2014 16 RUTAS PUBLICADAS + CURSOS APROBADOS",
         "## PARTE 3 \u00b7 INSTRUCCIONES DE EJECUCI\u00d3N",
         "### 3.1 Expandir cada tema al formato de 7 pasos",
+        "### 3.1.1 Convertir capturas de pantalla en temas",
         "### 3.2 Orden de ejecuci\u00f3n por track",
-        "### 3.3 Puerta estricta antes de publicar un tema",
-        "## PARTE 4 \u00b7 VALIDACI\u00d3N Y ENTREGABLES",
-        "### 4.1 Criterios por track"
+        "### 3.3 Puerta estricta antes de publicar un tema"
       ]
     },
     {
@@ -455,12 +455,12 @@
     },
     {
       "path": "docs/PROMPT-MAESTRO-METODOLOGIA-EDUCATIVA.md",
-      "lines": 290,
+      "lines": 309,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
       "headings": [
-        "# Prompt maestro para transformar el temario en formaci\u00f3n desde cero hasta nivel profesional y experto",
+        "# Prompt maestro para transformar el temario en formaci\u00f3n desde cero hasta nivel profesional master",
         "## Aplicaci\u00f3n editorial"
       ]
     },
@@ -2161,7 +2161,7 @@
     },
     {
       "path": "docs/course-curriculum-inventory.json",
-      "lines": 53,
+      "lines": 148,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2984,7 +2984,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 1119600,
+      "lines": 1122226,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -2992,7 +2992,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 162048,
+      "lines": 162449,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -12032,6 +12032,28 @@
       "headings": []
     },
     {
+      "path": "scripts/audit_lesson_assets.py",
+      "lines": 113,
+      "kind": "automation-script",
+      "symbols": [
+        "lessons",
+        "check_logos",
+        "check_links",
+        "check_images",
+        "check_docs_counts",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "json",
+        "re",
+        "sys",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/audit_lesson_substance.py",
       "lines": 346,
       "kind": "automation-script",
@@ -12129,6 +12151,25 @@
         "json",
         "re",
         "collections",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
+      "path": "scripts/audit_visual_aids.py",
+      "lines": 106,
+      "kind": "automation-script",
+      "symbols": [
+        "topic_text",
+        "code_blocks_without_filename",
+        "audit",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "json",
+        "re",
+        "sys",
         "pathlib"
       ],
       "headings": []
@@ -12553,6 +12594,27 @@
       "headings": []
     },
     {
+      "path": "scripts/render_terminal_capture.py",
+      "lines": 110,
+      "kind": "automation-script",
+      "symbols": [
+        "run_commands",
+        "wrap",
+        "render",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "datetime",
+        "subprocess",
+        "sys",
+        "pathlib",
+        "xml.sax.saxutils"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/start.sh",
       "lines": 10,
       "kind": "automation-script",
@@ -12648,7 +12710,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 225,
+      "lines": 228,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -12825,6 +12887,27 @@
       "headings": []
     },
     {
+      "path": "scripts/validate_specs.py",
+      "lines": 113,
+      "kind": "automation-script",
+      "symbols": [
+        "Criterion",
+        "parse",
+        "run",
+        "main"
+      ],
+      "imports": [
+        "__future__",
+        "argparse",
+        "re",
+        "subprocess",
+        "sys",
+        "dataclasses",
+        "pathlib"
+      ],
+      "headings": []
+    },
+    {
       "path": "scripts/verify_control1_snippets.py",
       "lines": 89,
       "kind": "automation-script",
@@ -12882,6 +12965,55 @@
         "time",
         "xml.etree.ElementTree"
       ],
+      "headings": []
+    },
+    {
+      "path": "specs/001-correcciones-revision-2026-11-18.md",
+      "lines": 47,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 001 \u00b7 Correcciones de la revisi\u00f3n completa del 2026-11-18",
+        "## Contexto y l\u00edmites",
+        "## Criterios",
+        "## Fuera de alcance (registrado para no repetir el an\u00e1lisis)"
+      ]
+    },
+    {
+      "path": "specs/002-estandar-temas-con-capturas-y-ayudas.md",
+      "lines": 61,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 002 \u00b7 Est\u00e1ndar para crear temas con capturas, ayudas de c\u00f3digo y ayudas visuales",
+        "## Contexto y l\u00edmites",
+        "## Criterios",
+        "## C\u00f3mo crear un tema con este est\u00e1ndar",
+        "## Piloto"
+      ]
+    },
+    {
+      "path": "specs/README.md",
+      "lines": 43,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Especificaciones (SDD)",
+        "## Ciclo",
+        "## Formato de un criterio",
+        "## Comandos",
+        "## \u00cdndice"
+      ]
+    },
+    {
+      "path": "specs/visual-aids-scope.json",
+      "lines": 25,
+      "kind": "project-file",
+      "symbols": [],
+      "imports": [],
       "headings": []
     },
     {
@@ -20384,7 +20516,7 @@
     },
     {
       "path": "web/src/app/catalog/curriculum-stack.html",
-      "lines": 154,
+      "lines": 155,
       "kind": "angular-app",
       "symbols": [
         "stack-title",
@@ -20938,6 +21070,34 @@
       "headings": []
     },
     {
+      "path": "web/src/app/topic-title.spec.ts",
+      "lines": 34,
+      "kind": "angular-app",
+      "symbols": [],
+      "imports": [
+        "@angular/core",
+        "@angular/core/testing",
+        "./topic-title"
+      ],
+      "headings": []
+    },
+    {
+      "path": "web/src/app/topic-title.ts",
+      "lines": 51,
+      "kind": "angular-app",
+      "symbols": [
+        "TopicTitle",
+        "TitlePart",
+        "titleParts",
+        "plainTitle",
+        "parts"
+      ],
+      "imports": [
+        "@angular/core"
+      ],
+      "headings": []
+    },
+    {
       "path": "web/src/app/track-guides.ts",
       "lines": 27,
       "kind": "angular-app",
@@ -21314,6 +21474,10 @@
       "target": "web/src/app/topic-index.service.ts"
     },
     {
+      "source": "web/src/app/command-palette.ts",
+      "target": "web/src/app/topic-title.ts"
+    },
+    {
       "source": "web/src/app/course/book-mode.service.spec.ts",
       "target": "web/src/app/course/book-mode.service.ts"
     },
@@ -21420,6 +21584,10 @@
     {
       "source": "web/src/app/theme.service.spec.ts",
       "target": "web/src/app/theme.service.ts"
+    },
+    {
+      "source": "web/src/app/topic-title.spec.ts",
+      "target": "web/src/app/topic-title.ts"
     },
     {
       "source": "web/src/main.ts",

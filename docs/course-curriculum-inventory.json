@@ -47,6 +47,101 @@
         "Vista previa web de componentes",
         "Compilación release y EAS Build para Android e iOS, anunciadas por la ficha"
       ]
+    },
+    {
+      "id": "linkedin-recorrido-desarrollador-java-17-pasos",
+      "provider": "LinkedIn — Nicolás Valenzuela",
+      "title": "Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción",
+      "url": "",
+      "stack": "java",
+      "language": "es",
+      "audience": "Ruta para quien empieza en Java y quiere llegar a backend en producción.",
+      "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. La imagen no muestra un paso 10.",
+      "topics": [
+        "Fundamentos de Java",
+        "Conceptos de OOP",
+        "Marco de colecciones",
+        "Manejo de excepciones",
+        "Multihilo",
+        "JDBC",
+        "SQL",
+        "Spring Core",
+        "Spring Boot",
+        "JPA / Hibernate",
+        "Microservicios",
+        "Kafka",
+        "Docker",
+        "Kubernetes",
+        "AWS en la nube",
+        "Diseño de sistemas"
+      ],
+      "projectFeatures": []
+    },
+    {
+      "id": "galaxy-training-kubernetes-for-developers",
+      "provider": "Galaxy Training",
+      "title": "Kubernetes for Developers",
+      "url": "",
+      "stack": "devops",
+      "language": "es",
+      "audience": "Desarrolladores que despliegan aplicaciones en Kubernetes.",
+      "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Inicio anunciado: lunes 9 de noviembre de 2026, 19:00–21:00.",
+      "topics": [
+        "ReplicaSet",
+        "EKS (AKS/GKE)",
+        "Minikube",
+        "Deployment",
+        "ConfigMap",
+        "Namespace",
+        "Ingress",
+        "Volúmenes (PV/PVC)"
+      ],
+      "projectFeatures": []
+    },
+    {
+      "id": "linkedin-vibe-coding-vs-spec-driven",
+      "provider": "LinkedIn — Warren Roque",
+      "title": "Dos formas de trabajar con IA: Vibe coding vs Spec-Driven",
+      "url": "",
+      "stack": "foundations",
+      "language": "es",
+      "audience": "Personas que programan con asistentes y agentes de IA.",
+      "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.",
+      "topics": [
+        "Vibe coding: ciclo prompt, resultado y corrección",
+        "Spec-Driven: especificación como única fuente de verdad",
+        "Agentes de IA trabajando contra una especificación",
+        "Git, revisión y CI/CD como controles",
+        "Mejora continua de la especificación"
+      ],
+      "projectFeatures": []
+    },
+    {
+      "id": "devtalles-spring-boot-harness",
+      "provider": "DevTalles",
+      "title": "Spring Boot Harness (anunciado)",
+      "url": "https://devtalles.com",
+      "stack": "spring-boot",
+      "language": "es",
+      "audience": "No publicada en el anuncio.",
+      "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Solo existe un anuncio («Viene, viene…»); el temario no es público. Se registra como candidato sin temas para no inventarlos.",
+      "topics": [],
+      "projectFeatures": []
+    },
+    {
+      "id": "das-academy-mitos-verdades-ddd",
+      "provider": "DAS Academy",
+      "title": "Mitos y verdades de Domain-Driven Design (webinar gratuito)",
+      "url": "",
+      "stack": "spring-boot",
+      "language": "es",
+      "audience": "Desarrolladores y arquitectos que evalúan DDD.",
+      "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.",
+      "topics": [
+        "Qué es realmente Domain-Driven Design",
+        "Mitos y verdades de DDD"
+      ],
+      "projectFeatures": []
     }
   ]
 }

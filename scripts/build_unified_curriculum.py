@@ -19,7 +19,7 @@ OUT_JSON = ROOT / "docs" / "temario-maestro-unificado.json"
 STACK_ORDER = [
     "foundations", "javascript", "node", "angular", "react", "java",
     "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter",
-    "devops", "cloud", "rutaflow", "python", "cpp", "data-ai",
+    "devops", "cloud", "rutaflow", "control-1", "python", "cpp", "data-ai",
     "cybersecurity", "databases", "iot-embedded", "robotics-drones",
     "ui-ux", "game-development", "quantum-computing", "electronics",
     "math-science", "general-technical",

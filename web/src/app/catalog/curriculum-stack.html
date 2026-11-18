@@ -49,7 +49,7 @@
           <p class="eyebrow">Referencia externa · contenido no verificado como lección</p>
           <h2 id="course-source-title">Cursos técnicos inventariados</h2>
           <article *ngFor="let course of loadedStack.courses" class="course-source-card">
-            <h3><a [href]="course.url" target="_blank" rel="noopener noreferrer">{{ course.title }} ↗</a></h3>
+            <h3><a *ngIf="course.url; else courseWithoutUrl" [href]="course.url" target="_blank" rel="noopener noreferrer">{{ course.title }} ↗</a><ng-template #courseWithoutUrl>{{ course.title }} <small>(fuente: captura, sin enlace público)</small></ng-template></h3>
             <p>{{ course.provider }} · {{ language(course.language) }}</p>
             <p>{{ course.audience }}</p>
             <p class="curriculum-caveat">{{ course.sourceNote }}</p>
@@ -118,9 +118,10 @@
                   <summary>{{ item.topic.courseSources.length }} curso(s) fuente</summary>
                   <ul>
                     <li *ngFor="let source of item.topic.courseSources">
-                      <a [href]="loadedStack.courses[source.courseId].url" target="_blank" rel="noopener noreferrer">
+                      <a *ngIf="loadedStack.courses[source.courseId].url; else sourceWithoutUrl" [href]="loadedStack.courses[source.courseId].url" target="_blank" rel="noopener noreferrer">
                         {{ loadedStack.courses[source.courseId].provider }} · {{ loadedStack.courses[source.courseId].title }}
                       </a>
+                      <ng-template #sourceWithoutUrl>{{ loadedStack.courses[source.courseId].provider }} · {{ loadedStack.courses[source.courseId].title }}</ng-template>
                     </li>
                   </ul>
                 </details>

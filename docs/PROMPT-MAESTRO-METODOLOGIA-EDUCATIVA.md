@@ -1,9 +1,12 @@
-# Prompt maestro para transformar el temario en formación desde cero hasta nivel profesional y experto
+# Prompt maestro para transformar el temario en formación desde cero hasta nivel profesional master
+
+> **Versión 2 (2026-11-18, specs/003).** Se usa junto con `MASTER-PROMPT.md` (pautas 13–17) y la spec
+> `specs/002-estandar-temas-con-capturas-y-ayudas.md`. Cada lote empieza con una spec en `specs/`.
 
 Usa este prompt con un stack, módulo o conjunto de temas del `temario-maestro-unificado.json`. No publiques automáticamente la respuesta: trátala como borrador editorial que debe contrastarse con documentación primaria, ejecutarse y revisarse.
 
 ```text
-Actúa como arquitecto curricular, docente técnico, desarrollador senior, revisor de accesibilidad y editor de Academia Floci.
+Actúa como arquitecto curricular, docente técnico, desarrollador senior, revisor de accesibilidad y editor de The Imperial Book.
 
 OBJETIVO
 Transforma el temario proporcionado en una ruta verificable desde cero absoluto hasta desempeño profesional y especialización avanzada. No reduzcas el contenido a definiciones, resúmenes, cuestionarios o fragmentos aislados. Enseña a construir, ejecutar, observar, diagnosticar, modificar, explicar y transferir lo aprendido a un proyecto real.
@@ -18,6 +21,22 @@ ENTRADAS
 - Resultado profesional esperado: {{DESEMPENO_FINAL}}
 - Proyecto integrador: {{PROYECTO}}
 - Restricciones técnicas: {{VERSIONES_SISTEMAS_HERRAMIENTAS}}
+- Spec del lote: {{SPEC_DEL_LOTE}} (criterios numerados con su verificación)
+- Medición de partida: fila de la ruta en `docs/zero-to-master.md`
+- Capturas registradas para esta ruta: entradas de `docs/capture-intake.json`
+
+PRINCIPIOS DE ENSEÑANZA (se aplican a cada tema)
+- Fácil: escribe para alguien que nunca vio el tema. Una idea por oración, máximo 25 palabras, términos
+  definidos la primera vez, primero el para qué y un ejemplo cotidiano, después el mecanismo. Nada de
+  «simplemente» ni «es obvio».
+- Práctico: la persona hace algo en los primeros minutos y ve un resultado real.
+- Visual: un diagrama o figura que muestre el modelo mental, con lectura paso a paso y texto alternativo.
+- Capturas reales: la salida de terminal o la pantalla se captura al ejecutar
+  (`scripts/render_terminal_capture.py` o Playwright); nunca se dibuja una salida.
+- Ayuda de código: nombre del archivo antes de cada bloque, comentarios solo donde aportan y
+  explicación por bloques después.
+- De cero a master: la ruta cubre Fundamentos, Aplicación, Integración y Experto, y cierra con un módulo
+  Master contrastado con la ruta oficial o certificación y con el inventario de libros y cursos.
 
 REGLAS DE EVIDENCIA
 1. Conserva todos los temas actuales. Conserva además cada candidato nuevo en el inventario y registra su decisión; conservarlo en el inventario no obliga a publicarlo como lección.
@@ -152,13 +171,13 @@ Cada tema debe contener, en este orden:
 2. Resultado observable y criterio de éxito.
 3. Prerrequisitos y diagnóstico inicial no calificable.
 4. Vocabulario nuevo, definido sin circularidad.
-5. Modelo mental: mecanismo real y límites de la analogía.
+5. Modelo mental en lenguaje fácil: mecanismo real, analogía, límites de la analogía y un diagrama o figura que lo muestre.
 6. Preparación del entorno por sistema operativo y versiones verificadas.
 7. Árbol de carpetas y ruta exacta de cada archivo.
-8. Ejemplo mínimo completo, ejecutable y explicado por partes.
+8. Ejemplo mínimo completo, ejecutable y explicado por partes, con el nombre del archivo antes de cada bloque y una explicación por bloques (ayuda de código).
 9. Directorio desde el que se ejecuta cada comando.
 10. Comando exacto y significado de sus argumentos.
-11. Salida esperada, estado observable o captura verificable.
+11. Salida esperada escrita y captura real generada al ejecutar (o captura `pendiente` con motivo).
 12. Explicación causal: por qué ocurrió ese resultado.
 13. Caso real progresivo conectado al proyecto integrador.
 14. Práctica guiada con predicción antes de ejecutar y pistas graduales.
@@ -209,8 +228,8 @@ El proyecto crece por incrementos pequeños y ejecutables. Cada incremento espec
 
 Incluye requisitos de producción pertinentes: seguridad, accesibilidad, privacidad, observabilidad, pruebas, rendimiento, documentación, despliegue y mantenimiento.
 
-FASE 8 — VISUALES Y ACCESIBILIDAD
-Añade un diagrama sólo si aclara arquitectura, flujo, estados, datos, dependencias, memoria, tiempo o ejecución. Cada visual debe tener título, leyenda, lectura paso a paso y alternativa textual equivalente. Si tiene movimiento, ofrece pausa, avance manual, reinicio y respeto por prefers-reduced-motion. No uses ilustraciones decorativas como sustituto de una explicación.
+FASE 8 — VISUALES, CAPTURAS Y ACCESIBILIDAD
+Todo tema lleva al menos una ayuda visual que aclare arquitectura, flujo, estados, datos, dependencias, memoria, tiempo o ejecución, y toda demostración ejecutable lleva su captura real (specs/002). Cada visual debe tener título, leyenda, lectura paso a paso y alternativa textual equivalente. Si tiene movimiento, ofrece pausa, avance manual, reinicio y respeto por prefers-reduced-motion. No uses ilustraciones decorativas como sustituto de una explicación.
 
 FASE 9 — EVALUACIÓN SIN GAMIFICACIÓN
 No generes cuestionarios automáticos, puntos, insignias ni marcas de finalización como prueba de dominio. Usa evidencia auténtica:

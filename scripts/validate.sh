@@ -222,3 +222,6 @@ python3 scripts/validate_specs.py
 python3 scripts/audit_lesson_assets.py
 python3 scripts/audit_lesson_substance.py --strict
 python3 scripts/audit_visual_aids.py
+python3 scripts/validate_capture_intake.py
+python3 scripts/validate_master_prompt.py
+python3 scripts/build_zero_to_master_report.py --check

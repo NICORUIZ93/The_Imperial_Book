@@ -1,0 +1,80 @@
+{
+  "description": "Registro de capturas de pantalla procesadas para el temario (specs/003). Cada tema extraído tiene una decisión verificable: cubierto o agregado (con ubicación real en topic-index.json), candidato (registrado en docs/course-curriculum-inventory.json) o fuera de alcance.",
+  "batches": [
+    {
+      "id": "capturas-2026-11-17",
+      "receivedAt": "2026-11-17",
+      "reviewedAt": "2026-11-18",
+      "captures": [
+        {
+          "file": "E60A4222-5A00-425D-BFC7-A541400F893B.PNG",
+          "kind": "ruta-de-aprendizaje",
+          "source": "Publicación en LinkedIn de Nicolás Valenzuela (Backend & AI Engineer): «Recorrido del Desarrollador Java — 17 pasos desde principiante hasta listo para producción»",
+          "inventoryCourse": "linkedin-recorrido-desarrollador-java-17-pasos",
+          "notes": "La imagen salta del paso 09 al 11: no existe un paso 10 en la fuente. No se inventa.",
+          "topics": [
+            {"title": "Fundamentos de Java", "decision": "cubierto", "where": [{"track": "java", "module": 0, "topic": 1}, {"track": "java", "module": 0, "topic": 4}]},
+            {"title": "Conceptos de OOP", "decision": "cubierto", "where": [{"track": "java", "module": 1, "topic": 1}, {"track": "java", "module": 1, "topic": 2}]},
+            {"title": "Marco de colecciones", "decision": "cubierto", "where": [{"track": "java", "module": 2, "topic": 1}]},
+            {"title": "Manejo de excepciones", "decision": "cubierto", "where": [{"track": "java", "module": 3, "topic": 3}]},
+            {"title": "Multihilo", "decision": "cubierto", "where": [{"track": "java", "module": 13, "topic": 2}]},
+            {"title": "JDBC", "decision": "cubierto", "where": [{"track": "java", "module": 17, "topic": 1}, {"track": "spring-boot", "module": 17, "topic": 1}]},
+            {"title": "SQL", "decision": "cubierto", "where": [{"track": "foundations", "module": 4, "topic": 2}]},
+            {"title": "Spring Core", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 0, "topic": 1}, {"track": "spring-boot", "module": 0, "topic": 2}]},
+            {"title": "Spring Boot", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 0, "topic": 3}, {"track": "spring-boot", "module": 1, "topic": 1}]},
+            {"title": "JPA / Hibernate", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 6, "topic": 2}]},
+            {"title": "Microservicios", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 12, "topic": 1}, {"track": "microservices", "module": 1, "topic": 5}]},
+            {"title": "Kafka", "decision": "cubierto", "where": [{"track": "spring-boot", "module": 8, "topic": 1}]},
+            {"title": "Docker", "decision": "cubierto", "where": [{"track": "devops", "module": 2, "topic": 1}]},
+            {"title": "Kubernetes", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
+            {"title": "AWS en la nube", "decision": "cubierto", "where": [{"track": "cloud", "module": 14, "topic": 3}]},
+            {"title": "Diseño de sistemas", "decision": "agregado", "where": [{"track": "foundations", "module": 10, "topic": 7}]}
+          ]
+        },
+        {
+          "file": "9B57E326-3A26-46FE-88FA-2E5213BF6012.PNG",
+          "kind": "curso",
+          "source": "Publicidad de Galaxy Training: curso «Kubernetes for Developers», inicio lunes 9 de noviembre de 2026, 19:00–21:00",
+          "inventoryCourse": "galaxy-training-kubernetes-for-developers",
+          "topics": [
+            {"title": "ReplicaSet", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
+            {"title": "EKS (AKS/GKE)", "decision": "cubierto", "where": [{"track": "cloud", "module": 14, "topic": 3}, {"track": "cloud", "module": 33, "topic": 2}]},
+            {"title": "Minikube", "decision": "agregado", "where": [{"track": "devops", "module": 6, "topic": 8}]},
+            {"title": "Deployment", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 1}]},
+            {"title": "ConfigMap", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 3}]},
+            {"title": "Namespace", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 5}]},
+            {"title": "Ingress", "decision": "cubierto", "where": [{"track": "devops", "module": 7, "topic": 2}, {"track": "devops", "module": 6, "topic": 8}]},
+            {"title": "Volumen (PV/PVC)", "decision": "cubierto", "where": [{"track": "devops", "module": 6, "topic": 7}]}
+          ]
+        },
+        {
+          "file": "FA6FAA6F-D109-4E80-ABBD-76AAFB0AA384.PNG",
+          "kind": "metodologia",
+          "source": "Publicación de Warren Roque (Senior DevOps / Cloud Engineer): «Dos formas de trabajar con IA: Vibe coding vs Spec-Driven»",
+          "inventoryCourse": "linkedin-vibe-coding-vs-spec-driven",
+          "topics": [
+            {"title": "Desarrollo guiado por especificación (Spec-Driven) frente a vibe coding", "decision": "agregado", "where": [{"track": "foundations", "module": 7, "topic": 6}]}
+          ]
+        },
+        {
+          "file": "74014BD1-7496-4DD5-A7FF-261B1AE05923.PNG",
+          "kind": "anuncios",
+          "source": "Tres publicaciones de Facebook en una captura: meme de la PS5, DevTalles «Spring Boot Harness» y DAS Academy «Mitos y verdades de Domain-Driven Design»",
+          "topics": [
+            {"title": "Meme: comprar una PS5 usada", "decision": "fuera-de-alcance", "reason": "No es contenido técnico; quedó como recomendación personal en Notion."},
+            {"title": "Spring Boot Harness (DevTalles)", "decision": "candidato", "stack": "spring-boot", "inventoryCourse": "devtalles-spring-boot-harness", "reason": "Solo hay un anuncio («Viene, viene…») con iconos de Spring y de un robot; el temario no es público y no se pudo verificar. Coincide con un hueco real: la academia no tiene un tema de Spring AI (ChatClient, herramientas, RAG, MCP). Ver specs/003 P5."},
+            {"title": "Mitos y verdades de Domain-Driven Design (DAS Academy)", "decision": "cubierto", "inventoryCourse": "das-academy-mitos-verdades-ddd", "where": [{"track": "spring-boot", "module": 10, "topic": 7}, {"track": "microservices", "module": 1, "topic": 5}]}
+          ]
+        },
+        {
+          "file": "925C50C1-2028-4692-96C1-599403945454.PNG",
+          "kind": "entretenimiento",
+          "source": "Video de Daniel Martínez mostrando el menú de Bendy and the Ink Machine",
+          "topics": [
+            {"title": "Bendy and the Ink Machine", "decision": "fuera-de-alcance", "reason": "Videojuego; quedó como recomendación personal en Notion."}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "summary": {
-    "currentTopics": 1146,
+    "currentTopics": 1326,
     "currentTopicsWithExactBookEvidence": 3,
     "additionalUniqueBookTopics": 73027,
-    "additionalCourseTopics": 18,
-    "courses": 1,
-    "unifiedTopics": 74191,
+    "additionalCourseTopics": 49,
+    "courses": 6,
+    "unifiedTopics": 74402,
     "booksRequiringOcr": 109,
     "rule": "Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack."
   },
@@ -552,6 +552,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Desarrollo guiado por especificación con agentes de IA",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 6,
+                "fragment": "tema-6-desarrollo-guiado-por-especificacion-con-agentes-de-ia"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -732,6 +743,17 @@
                 "module": "10",
                 "order": 6,
                 "fragment": "tema-6-latencia-y-throughput-medir-concurrencia-sin-confundirla-con-capacidad-ilimitada"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 7,
+                "fragment": "tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella"
               },
               "bookSources": [],
               "courseSources": []
@@ -34111,6 +34133,58 @@
               "courseSources": []
             }
           ]
+        },
+        {
+          "id": "linkedin-vibe-coding-vs-spec-driven",
+          "kind": "course",
+          "title": "Dos formas de trabajar con IA: Vibe coding vs Spec-Driven",
+          "topics": [
+            {
+              "title": "Vibe coding: ciclo prompt, resultado y corrección",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-vibe-coding-vs-spec-driven"
+              ]
+            },
+            {
+              "title": "Spec-Driven: especificación como única fuente de verdad",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-vibe-coding-vs-spec-driven"
+              ]
+            },
+            {
+              "title": "Agentes de IA trabajando contra una especificación",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-vibe-coding-vs-spec-driven"
+              ]
+            },
+            {
+              "title": "Git, revisión y CI/CD como controles",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-vibe-coding-vs-spec-driven"
+              ]
+            },
+            {
+              "title": "Mejora continua de la especificación",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-vibe-coding-vs-spec-driven"
+              ]
+            }
+          ]
         }
       ],
       "booksRequiringOcr": [
@@ -34120,7 +34194,26 @@
           "path": "Colecciones_Importadas_Mac/Libros_de_tecnologia/Ingeniería de software/Código limpio - Manual de estilo para el desarrollo ágil de software.pdf"
         }
       ],
-      "courses": []
+      "courses": [
+        {
+          "id": "linkedin-vibe-coding-vs-spec-driven",
+          "provider": "LinkedIn — Warren Roque",
+          "title": "Dos formas de trabajar con IA: Vibe coding vs Spec-Driven",
+          "url": "",
+          "stack": "foundations",
+          "language": "es",
+          "audience": "Personas que programan con asistentes y agentes de IA.",
+          "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.",
+          "topics": [
+            "Vibe coding: ciclo prompt, resultado y corrección",
+            "Spec-Driven: especificación como única fuente de verdad",
+            "Agentes de IA trabajando contra una especificación",
+            "Git, revisión y CI/CD como controles",
+            "Mejora continua de la especificación"
+          ],
+          "projectFeatures": []
+        }
+      ]
     },
     "javascript": {
       "modules": [
@@ -74330,12 +74423,12 @@
               "courseSources": []
             },
             {
-              "title": "Microservicios, Kafka, RabbitMQ y sagas",
+              "title": "Compensar una entrega cuando falla un paso",
               "status": "actual",
               "current": {
                 "module": "14",
                 "order": 3,
-                "fragment": "tema-3-microservicios-kafka-rabbitmq-y-sagas"
+                "fragment": "tema-3-compensar-una-entrega-cuando-falla-un-paso"
               },
               "bookSources": [],
               "courseSources": []
@@ -74369,6 +74462,78 @@
                 "module": "14",
                 "order": 6,
                 "fragment": "tema-6-ci-cd-y-promocion-de-artefactos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Kafka desde Node: clave, grupo consumidor y offset",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 7,
+                "fragment": "tema-7-kafka-desde-node-clave-grupo-consumidor-y-offset"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "RabbitMQ desde Node: exchange, cola y confirmaciones",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 8,
+                "fragment": "tema-8-rabbitmq-desde-node-exchange-cola-y-confirmaciones"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "15",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Deno y permisos explícitos",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 1,
+                "fragment": "tema-1-deno-y-permisos-explicitos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Bun reúne runtime, paquetes, pruebas y bundler",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 2,
+                "fragment": "tema-2-bun-reune-runtime-paquetes-pruebas-y-bundler"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Migrar un proyecto Node a Bun sin perder reproducibilidad",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 3,
+                "fragment": "tema-3-migrar-un-proyecto-node-a-bun-sin-perder-reproducibilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Elegir entre Node, Deno y Bun",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 4,
+                "fragment": "tema-4-elegir-entre-node-deno-y-bun"
               },
               "bookSources": [],
               "courseSources": []
@@ -98656,12 +98821,12 @@
               "courseSources": []
             },
             {
-              "title": "Structured Concurrency (StructuredTaskScope, preview en JDK 27)",
+              "title": "Structured Concurrency (StructuredTaskScope, Java 25)",
               "status": "actual",
               "current": {
                 "module": "5",
                 "order": 5,
-                "fragment": "tema-5-structured-concurrency-structuredtaskscope-preview-en-jdk-27"
+                "fragment": "tema-5-structured-concurrency-structuredtaskscope-java-25"
               },
               "bookSources": [],
               "courseSources": []
@@ -98895,7 +99060,7 @@
               "courseSources": []
             },
             {
-              "title": "`opens` para acceso reflexivo controlado de frameworks",
+              "title": "opens para acceso reflexivo controlado de frameworks",
               "status": "actual",
               "current": {
                 "module": "10",
@@ -99006,23 +99171,23 @@
               "courseSources": []
             },
             {
-              "title": "Prototype — copiar configuración sin compartir estado mutable",
+              "title": "Prototype: copiar un objeto sin compartir sus datos",
               "status": "actual",
               "current": {
                 "module": "12",
                 "order": 5,
-                "fragment": "tema-5-prototype-copiar-configuracion-sin-compartir-estado-mutable"
+                "fragment": "tema-5-prototype-copiar-un-objeto-sin-compartir-sus-datos"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Patrones estructurales — elegir por intención",
+              "title": "Patrones estructurales para conectar piezas existentes",
               "status": "actual",
               "current": {
                 "module": "12",
                 "order": 6,
-                "fragment": "tema-6-patrones-estructurales-elegir-por-intencion"
+                "fragment": "tema-6-patrones-estructurales-para-conectar-piezas-existentes"
               },
               "bookSources": [],
               "courseSources": []
@@ -99215,6 +99380,72 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Relaciones uno a uno, muchos a muchos y herencia",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 3,
+                "fragment": "tema-3-relaciones-uno-a-uno-muchos-a-muchos-y-herencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Ciclo de vida, EntityManager y consultas tipadas",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 4,
+                "fragment": "tema-4-ciclo-de-vida-entitymanager-y-consultas-tipadas"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Búsquedas dinámicas con Criteria y Querydsl",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 5,
+                "fragment": "tema-5-busquedas-dinamicas-con-criteria-y-querydsl"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "EntityGraph y cachés de persistencia",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 6,
+                "fragment": "tema-6-entitygraph-y-caches-de-persistencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Concurrencia, transacciones y propagación",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 7,
+                "fragment": "tema-7-concurrencia-transacciones-y-propagacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Migraciones y pruebas JPA con Testcontainers",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 8,
+                "fragment": "tema-8-migraciones-y-pruebas-jpa-con-testcontainers"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -99268,28 +99499,6 @@
                 "module": "18",
                 "order": 2,
                 "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
-              },
-              "bookSources": [],
-              "courseSources": []
-            },
-            {
-              "title": "Sockets TCP y UDP — la red que hay debajo de HttpClient",
-              "status": "actual",
-              "current": {
-                "module": "18",
-                "order": 3,
-                "fragment": "tema-3-sockets-tcp-y-udp-la-red-que-hay-debajo-de-httpclient"
-              },
-              "bookSources": [],
-              "courseSources": []
-            },
-            {
-              "title": "Seguridad defensiva — hash, HMAC, firma y cifrado",
-              "status": "actual",
-              "current": {
-                "module": "18",
-                "order": 4,
-                "fragment": "tema-4-seguridad-defensiva-hash-hmac-firma-y-cifrado"
               },
               "bookSources": [],
               "courseSources": []
@@ -99384,23 +99593,12 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Lambdas a fondo — tipo objetivo, captura y referencias a métodos",
-              "status": "actual",
-              "current": {
-                "module": "20",
-                "order": 1,
-                "fragment": "tema-1-lambdas-a-fondo-tipo-objetivo-captura-y-referencias-a-metodos"
-              },
-              "bookSources": [],
-              "courseSources": []
-            },
-            {
               "title": "Las cuatro formas: Predicate, Function, Consumer y Supplier",
               "status": "actual",
               "current": {
                 "module": "20",
-                "order": 2,
-                "fragment": "tema-2-las-cuatro-formas-predicate-function-consumer-y-supplier"
+                "order": 1,
+                "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
               },
               "bookSources": [],
               "courseSources": []
@@ -99410,8 +99608,8 @@
               "status": "actual",
               "current": {
                 "module": "20",
-                "order": 3,
-                "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+                "order": 2,
+                "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
               },
               "bookSources": [],
               "courseSources": []
@@ -99421,8 +99619,118 @@
               "status": "actual",
               "current": {
                 "module": "20",
+                "order": 3,
+                "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Function y BiFunction: transformar uno o dos datos",
+              "status": "actual",
+              "current": {
+                "module": "20",
                 "order": 4,
-                "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
+                "fragment": "tema-4-function-y-bifunction-transformar-uno-o-dos-datos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 5,
+                "fragment": "tema-5-unaryoperator-y-binaryoperator-la-salida-conserva-el-tipo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Referencias a métodos: escribir la operación sin repetirla",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 6,
+                "fragment": "tema-6-referencias-a-metodos-escribir-la-operacion-sin-repetirla"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Optional: buscar un envío que puede no existir",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 7,
+                "fragment": "tema-7-optional-buscar-un-envio-que-puede-no-existir"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Streams intermedios: filtrar, transformar, aplanar y ordenar",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 8,
+                "fragment": "tema-8-streams-intermedios-filtrar-transformar-aplanar-y-ordenar"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Streams terminales: encontrar, contar y combinar resultados",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 9,
+                "fragment": "tema-9-streams-terminales-encontrar-contar-y-combinar-resultados"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Collectors: formar listas, mapas, grupos y texto",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 10,
+                "fragment": "tema-10-collectors-formar-listas-mapas-grupos-y-texto"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Streams paralelos: comparar antes de acelerarlos",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 11,
+                "fragment": "tema-11-streams-paralelos-comparar-antes-de-acelerarlos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Pureza y efectos: calcular separado de guardar o imprimir",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 12,
+                "fragment": "tema-12-pureza-y-efectos-calcular-separado-de-guardar-o-imprimir"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Flow API: publicar datos con demanda y cierre",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 13,
+                "fragment": "tema-13-flow-api-publicar-datos-con-demanda-y-cierre"
               },
               "bookSources": [],
               "courseSources": []
@@ -145970,6 +146278,157 @@
               "courseSources": []
             }
           ]
+        },
+        {
+          "id": "linkedin-recorrido-desarrollador-java-17-pasos",
+          "kind": "course",
+          "title": "Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción",
+          "topics": [
+            {
+              "title": "Fundamentos de Java",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Conceptos de OOP",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Marco de colecciones",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Manejo de excepciones",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Multihilo",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "JDBC",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "SQL",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Spring Core",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Spring Boot",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "JPA / Hibernate",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Microservicios",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Kafka",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Docker",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Kubernetes",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "AWS en la nube",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            },
+            {
+              "title": "Diseño de sistemas",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "linkedin-recorrido-desarrollador-java-17-pasos"
+              ]
+            }
+          ]
         }
       ],
       "booksRequiringOcr": [
@@ -145979,7 +146438,37 @@
           "path": "Programacion/Java/Programacion_Java_17_Guia_Intermedio.pdf"
         }
       ],
-      "courses": []
+      "courses": [
+        {
+          "id": "linkedin-recorrido-desarrollador-java-17-pasos",
+          "provider": "LinkedIn — Nicolás Valenzuela",
+          "title": "Recorrido del Desarrollador Java: 17 pasos desde principiante hasta listo para producción",
+          "url": "",
+          "stack": "java",
+          "language": "es",
+          "audience": "Ruta para quien empieza en Java y quiere llegar a backend en producción.",
+          "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. La imagen no muestra un paso 10.",
+          "topics": [
+            "Fundamentos de Java",
+            "Conceptos de OOP",
+            "Marco de colecciones",
+            "Manejo de excepciones",
+            "Multihilo",
+            "JDBC",
+            "SQL",
+            "Spring Core",
+            "Spring Boot",
+            "JPA / Hibernate",
+            "Microservicios",
+            "Kafka",
+            "Docker",
+            "Kubernetes",
+            "AWS en la nube",
+            "Diseño de sistemas"
+          ],
+          "projectFeatures": []
+        }
+      ]
     },
     "spring-boot": {
       "modules": [
@@ -146210,12 +146699,12 @@
               "courseSources": []
             },
             {
-              "title": "Protección SSRF con InetAddressFilter (Spring Boot 4.1)",
+              "title": "Reducir SSRF en clientes HTTP con InetAddressFilter",
               "status": "actual",
               "current": {
                 "module": "4",
                 "order": 4,
-                "fragment": "tema-4-proteccion-ssrf-con-inetaddressfilter-spring-boot-4-1"
+                "fragment": "tema-4-reducir-ssrf-en-clientes-http-con-inetaddressfilter"
               },
               "bookSources": [],
               "courseSources": []
@@ -146277,34 +146766,34 @@
           "kind": "current",
           "topics": [
             {
-              "title": "Slices de testing — @WebMvcTest",
+              "title": "Probar un controller con `@WebMvcTest`",
               "status": "actual",
               "current": {
                 "module": "6",
                 "order": 1,
-                "fragment": "tema-1-slices-de-testing-webmvctest"
+                "fragment": "tema-1-probar-un-controller-con-webmvctest"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "@DataJpaTest con Testcontainers",
+              "title": "Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
               "status": "actual",
               "current": {
                 "module": "6",
                 "order": 2,
-                "fragment": "tema-2-datajpatest-con-testcontainers"
+                "fragment": "tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "@SpringBootTest completo y estrategia de pirámide de tests",
+              "title": "Integrar el flujo con `@SpringBootTest`",
               "status": "actual",
               "current": {
                 "module": "6",
                 "order": 3,
-                "fragment": "tema-3-springboottest-completo-y-estrategia-de-piramide-de-tests"
+                "fragment": "tema-3-integrar-el-flujo-con-springboottest"
               },
               "bookSources": [],
               "courseSources": []
@@ -146327,23 +146816,23 @@
               "courseSources": []
             },
             {
-              "title": "Métricas de negocio con Micrometer",
+              "title": "Contar operaciones de negocio con Micrometer",
               "status": "actual",
               "current": {
                 "module": "7",
                 "order": 2,
-                "fragment": "tema-2-metricas-de-negocio-con-micrometer"
+                "fragment": "tema-2-contar-operaciones-de-negocio-con-micrometer"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Liveness vs readiness",
+              "title": "Liveness y readiness sin reinicios en cadena",
               "status": "actual",
               "current": {
                 "module": "7",
                 "order": 3,
-                "fragment": "tema-3-liveness-vs-readiness"
+                "fragment": "tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
               },
               "bookSources": [],
               "courseSources": []
@@ -146377,23 +146866,23 @@
               "courseSources": []
             },
             {
-              "title": "Productor idempotente y transacciones (exactly-once)",
+              "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
               "status": "actual",
               "current": {
                 "module": "8",
                 "order": 3,
-                "fragment": "tema-3-productor-idempotente-y-transacciones-exactly-once"
+                "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Rebalanceo de consumer groups y partition assignment",
+              "title": "Rebalanceo de consumer groups y asignación de particiones",
               "status": "actual",
               "current": {
                 "module": "8",
                 "order": 4,
-                "fragment": "tema-4-rebalanceo-de-consumer-groups-y-partition-assignment"
+                "fragment": "tema-4-rebalanceo-de-consumer-groups-y-asignacion-de-particiones"
               },
               "bookSources": [],
               "courseSources": []
@@ -146405,6 +146894,50 @@
                 "module": "8",
                 "order": 5,
                 "fragment": "tema-5-kafka-frente-a-rabbitmq"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Spring Cloud Stream y binders de Kafka/RabbitMQ",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 6,
+                "fragment": "tema-6-spring-cloud-stream-y-binders-de-kafka-rabbitmq"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Kafka Streams con Spring para transformar eventos",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 7,
+                "fragment": "tema-7-kafka-streams-con-spring-para-transformar-eventos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Avro y Schema Registry para contratos de eventos",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 8,
+                "fragment": "tema-8-avro-y-schema-registry-para-contratos-de-eventos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 9,
+                "fragment": "tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
               },
               "bookSources": [],
               "courseSources": []
@@ -146510,12 +147043,12 @@
               "courseSources": []
             },
             {
-              "title": "Spring gRPC para comunicación interna de alta frecuencia (Spring Boot 4.1)",
+              "title": "Spring gRPC, contrato HTTP/2 y evolución segura",
               "status": "actual",
               "current": {
                 "module": "10",
                 "order": 6,
-                "fragment": "tema-6-spring-grpc-para-comunicacion-interna-de-alta-frecuencia-spring-boot-4-1"
+                "fragment": "tema-6-spring-grpc-contrato-http-2-y-evolucion-segura"
               },
               "bookSources": [],
               "courseSources": []
@@ -146532,12 +147065,56 @@
               "courseSources": []
             },
             {
-              "title": "Orquestación de microservicios con Temporal y Spring Boot",
+              "title": "Orquestar pedidos con Temporal y Spring Boot",
               "status": "actual",
               "current": {
                 "module": "10",
                 "order": 8,
-                "fragment": "tema-8-orquestacion-de-microservicios-con-temporal-y-spring-boot"
+                "fragment": "tema-8-orquestar-pedidos-con-temporal-y-spring-boot"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Comprueba módulos antes de separar servicios",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 9,
+                "fragment": "tema-9-comprueba-modulos-antes-de-separar-servicios"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Spring Cloud Bus para propagar cambios de configuración",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 10,
+                "fragment": "tema-10-spring-cloud-bus-para-propagar-cambios-de-configuracion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Micrometer Tracing entre servicios",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 11,
+                "fragment": "tema-11-micrometer-tracing-entre-servicios"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Contract testing entre productor y consumidor",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 12,
+                "fragment": "tema-12-contract-testing-entre-productor-y-consumidor"
               },
               "bookSources": [],
               "courseSources": []
@@ -146599,23 +147176,23 @@
               "courseSources": []
             },
             {
-              "title": "Integrando seguridad, persistencia y observabilidad",
+              "title": "Integra seguridad JWT y observabilidad",
               "status": "actual",
               "current": {
                 "module": "12",
                 "order": 2,
-                "fragment": "tema-2-integrando-seguridad-persistencia-y-observabilidad"
+                "fragment": "tema-2-integra-seguridad-jwt-y-observabilidad"
               },
               "bookSources": [],
               "courseSources": []
             },
             {
-              "title": "Cierre del track y próximos pasos",
+              "title": "Cierra el servicio con evidencia y próximos pasos",
               "status": "actual",
               "current": {
                 "module": "12",
                 "order": 3,
-                "fragment": "tema-3-cierre-del-track-y-proximos-pasos"
+                "fragment": "tema-3-cierra-el-servicio-con-evidencia-y-proximos-pasos"
               },
               "bookSources": [],
               "courseSources": []
@@ -147015,7 +147592,7 @@
               "current": {
                 "module": "20",
                 "order": 6,
-                "fragment": "tema-complementario-integraciones-empresariales-soap-y-fronteras-de-protocolo"
+                "fragment": "tema-6-integraciones-empresariales-soap-y-fronteras-de-protocolo"
               },
               "bookSources": [],
               "courseSources": []
@@ -147026,7 +147603,7 @@
               "current": {
                 "module": "20",
                 "order": 7,
-                "fragment": "tema-6-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
+                "fragment": "tema-7-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
               },
               "bookSources": [],
               "courseSources": []
@@ -147037,7 +147614,7 @@
               "current": {
                 "module": "20",
                 "order": 8,
-                "fragment": "tema-7-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
+                "fragment": "tema-8-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
               },
               "bookSources": [],
               "courseSources": []
@@ -147116,6 +147693,184 @@
                 "module": "22",
                 "order": 3,
                 "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "23",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "módulos y límites entre paquetes",
+              "status": "actual",
+              "current": {
+                "module": "23",
+                "order": 1,
+                "fragment": "tema-1-modulos-y-limites-entre-paquetes"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "eventos entre módulos sin importar implementación",
+              "status": "actual",
+              "current": {
+                "module": "23",
+                "order": 2,
+                "fragment": "tema-2-eventos-entre-modulos-sin-importar-implementacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "documentación generada y mapa de dependencias",
+              "status": "actual",
+              "current": {
+                "module": "23",
+                "order": 3,
+                "fragment": "tema-3-documentacion-generada-y-mapa-de-dependencias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "pruebas de integración por módulo",
+              "status": "actual",
+              "current": {
+                "module": "23",
+                "order": 4,
+                "fragment": "tema-4-pruebas-de-integracion-por-modulo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "24",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "schema-first con tipos y consultas",
+              "status": "actual",
+              "current": {
+                "module": "24",
+                "order": 1,
+                "fragment": "tema-1-schema-first-con-tipos-y-consultas"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "data fetchers, relaciones y problema N+1",
+              "status": "actual",
+              "current": {
+                "module": "24",
+                "order": 2,
+                "fragment": "tema-2-data-fetchers-relaciones-y-problema-n-1"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "mutations y subscriptions",
+              "status": "actual",
+              "current": {
+                "module": "24",
+                "order": 3,
+                "fragment": "tema-3-mutations-y-subscriptions"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "pruebas GraphQL con GraphQlTester",
+              "status": "actual",
+              "current": {
+                "module": "24",
+                "order": 4,
+                "fragment": "tema-4-pruebas-graphql-con-graphqltester"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "25",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "bindings y destinations",
+              "status": "actual",
+              "current": {
+                "module": "25",
+                "order": 1,
+                "fragment": "tema-1-bindings-y-destinations"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "binder Kafka y binder RabbitMQ",
+              "status": "actual",
+              "current": {
+                "module": "25",
+                "order": 2,
+                "fragment": "tema-2-binder-kafka-y-binder-rabbitmq"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "reintentos, error handler y dead-letter",
+              "status": "actual",
+              "current": {
+                "module": "25",
+                "order": 3,
+                "fragment": "tema-3-reintentos-error-handler-y-dead-letter"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "test binder y límites de la prueba",
+              "status": "actual",
+              "current": {
+                "module": "25",
+                "order": 4,
+                "fragment": "tema-4-test-binder-y-limites-de-la-prueba"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "26",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "CompletableFuture, @Async y el bug de la autoinvocación",
+              "status": "actual",
+              "current": {
+                "module": "26",
+                "order": 1,
+                "fragment": "tema-1-completablefuture-async-y-el-bug-de-la-autoinvocacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Locks, deadlocks, semáforos y MDC en concurrencia",
+              "status": "actual",
+              "current": {
+                "module": "26",
+                "order": 2,
+                "fragment": "tema-2-locks-deadlocks-semaforos-y-mdc-en-concurrencia"
               },
               "bookSources": [],
               "courseSources": []
@@ -147488,6 +148243,336 @@
                   "path": "Programacion/Backend_Java_Spring/Spring_Boot_Backend_Arquitectura.pdf"
                 }
               ],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "devtalles-spring-boot-harness",
+          "kind": "course",
+          "title": "Spring Boot Harness (anunciado)",
+          "topics": []
+        },
+        {
+          "id": "das-academy-mitos-verdades-ddd",
+          "kind": "course",
+          "title": "Mitos y verdades de Domain-Driven Design (webinar gratuito)",
+          "topics": [
+            {
+              "title": "Qué es realmente Domain-Driven Design",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "das-academy-mitos-verdades-ddd"
+              ]
+            },
+            {
+              "title": "Mitos y verdades de DDD",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "das-academy-mitos-verdades-ddd"
+              ]
+            }
+          ]
+        }
+      ],
+      "booksRequiringOcr": [],
+      "courses": [
+        {
+          "id": "devtalles-spring-boot-harness",
+          "provider": "DevTalles",
+          "title": "Spring Boot Harness (anunciado)",
+          "url": "https://devtalles.com",
+          "stack": "spring-boot",
+          "language": "es",
+          "audience": "No publicada en el anuncio.",
+          "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Solo existe un anuncio («Viene, viene…»); el temario no es público. Se registra como candidato sin temas para no inventarlos.",
+          "topics": [],
+          "projectFeatures": []
+        },
+        {
+          "id": "das-academy-mitos-verdades-ddd",
+          "provider": "DAS Academy",
+          "title": "Mitos y verdades de Domain-Driven Design (webinar gratuito)",
+          "url": "",
+          "stack": "spring-boot",
+          "language": "es",
+          "audience": "Desarrolladores y arquitectos que evalúan DDD.",
+          "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor.",
+          "topics": [
+            "Qué es realmente Domain-Driven Design",
+            "Mitos y verdades de DDD"
+          ],
+          "projectFeatures": []
+        }
+      ]
+    },
+    "microservices": {
+      "modules": [
+        {
+          "id": "0",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Ejecutar dos procesos Java y comprobar su socket HTTP · Fundamentos · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 1,
+                "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http-fundamentos-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Imponer un presupuesto temporal a una solicitud HTTP · Aplicación · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 2,
+                "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http-aplicacion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Propagar un deadline absoluto entre servicios HTTP · Aplicación · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 3,
+                "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http-aplicacion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Clasificar un resultado desconocido antes de reintentar · Integración · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 4,
+                "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar-integracion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Evitar efectos duplicados con una clave idempotente · Integración · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 5,
+                "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente-integracion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Seleccionar un reloj según la evidencia temporal · Integración · 40 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 6,
+                "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal-integracion-40-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Preservar el orden de eventos por versión del agregado · Integración · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 7,
+                "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado-integracion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Evolucionar un contrato JSON sin romper consumidores",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 8,
+                "fragment": "tema-8-evolucionar-un-contrato-json-sin-romper-consumidores"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Rechazar un frame excesivo antes de reservar memoria",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 9,
+                "fragment": "tema-9-rechazar-un-frame-excesivo-antes-de-reservar-memoria"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Refutar falacias distribuidas mediante evidencia reproducible",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 10,
+                "fragment": "tema-10-refutar-falacias-distribuidas-mediante-evidencia-reproducible"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Distinguir estructura lógica de unidad de despliegue · Fundamentos · 40 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 1,
+                "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue-fundamentos-40-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Evaluar autonomía antes de extraer un proceso · Fundamentos · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 2,
+                "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso-fundamentos-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Agrupar código por capacidad de negocio · Aplicación · 40 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 3,
+                "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio-aplicacion-40-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Proteger la API pública de un módulo · Aplicación · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 4,
+                "fragment": "tema-4-proteger-la-api-publica-de-un-modulo-aplicacion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Mantener reglas de dominio libres de frameworks · Aplicación · 40 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 5,
+                "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks-aplicacion-40-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Sustituir adaptadores mediante puertos · Aplicación · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 6,
+                "fragment": "tema-6-sustituir-adaptadores-mediante-puertos-aplicacion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Representar dependencias de módulos como un grafo · Integración · 35 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 7,
+                "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo-integracion-35-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Romper ciclos según el tipo de acoplamiento · Integración · 45 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 8,
+                "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento-integracion-45-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Bloquear accesos a internals con ArchUnit · Integración · 40 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 9,
+                "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit-integracion-40-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Detectar ciclos de paquetes con ArchUnit · Integración · 35 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 10,
+                "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit-integracion-35-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Evitar falsos verdes en fitness functions · Integración · 35 min",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 11,
+                "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions-integracion-35-min"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Medir señales que justifican una extracción",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 12,
+                "fragment": "tema-12-medir-senales-que-justifican-una-extraccion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Registrar una decisión reversible en un ADR",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 13,
+                "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
+              },
+              "bookSources": [],
               "courseSources": []
             }
           ]
@@ -289262,6 +290347,521 @@
           ]
         },
         {
+          "id": "16",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "reconocer cuándo usar FFI y crear el paquete",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 1,
+                "fragment": "tema-1-reconocer-cuando-usar-ffi-y-crear-el-paquete"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "generar bindings C seguros para Dart",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 2,
+                "fragment": "tema-2-generar-bindings-c-seguros-para-dart"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "conectar una biblioteca Rust mediante una ABI C",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 3,
+                "fragment": "tema-3-conectar-una-biblioteca-rust-mediante-una-abi-c"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "compilar y empaquetar bibliotecas por plataforma",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 4,
+                "fragment": "tema-4-compilar-y-empaquetar-bibliotecas-por-plataforma"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "medir rendimiento y evitar bloquear la interfaz",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 5,
+                "fragment": "tema-5-medir-rendimiento-y-evitar-bloquear-la-interfaz"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "propiedad de memoria, liberación y errores",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 6,
+                "fragment": "tema-6-propiedad-de-memoria-liberacion-y-errores"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "17",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "macros de Dart y alternativas disponibles",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 1,
+                "fragment": "tema-1-macros-de-dart-y-alternativas-disponibles"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "generación avanzada con build_runner",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 2,
+                "fragment": "tema-2-generacion-avanzada-con-build-runner"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "reflexión limitada y registro tipado",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 3,
+                "fragment": "tema-3-reflexion-limitada-y-registro-tipado"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "recorrer el AST de Dart con analyzer",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 4,
+                "fragment": "tema-4-recorrer-el-ast-de-dart-con-analyzer"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "crear un builder pequeño para build_runner",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 5,
+                "fragment": "tema-5-crear-un-builder-pequeno-para-build-runner"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "diseñar y validar un paquete Dart",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 6,
+                "fragment": "tema-6-disenar-y-validar-un-paquete-dart"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "18",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "la frontera entre Dart y el código nativo",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 1,
+                "fragment": "tema-1-la-frontera-entre-dart-y-el-codigo-nativo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "secretos fuera del binario",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 2,
+                "fragment": "tema-2-secretos-fuera-del-binario"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "fluidez y presupuesto de frames",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 3,
+                "fragment": "tema-3-fluidez-y-presupuesto-de-frames"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "protocolo, telemetría y contención",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 4,
+                "fragment": "tema-4-protocolo-telemetria-y-contencion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "reportes de fallos con Crashlytics y Sentry",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 5,
+                "fragment": "tema-5-reportes-de-fallos-con-crashlytics-y-sentry"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "analítica con privacidad y consentimiento",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 6,
+                "fragment": "tema-6-analitica-con-privacidad-y-consentimiento"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "monitoreo de rendimiento en una versión publicada",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 7,
+                "fragment": "tema-7-monitoreo-de-rendimiento-en-una-version-publicada"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "19",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "estado de la jornada con Riverpod",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 1,
+                "fragment": "tema-1-estado-de-la-jornada-con-riverpod"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "mapa y permiso de ubicación",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 2,
+                "fragment": "tema-2-mapa-y-permiso-de-ubicacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "posiciones en tiempo real con Socket.IO",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 3,
+                "fragment": "tema-3-posiciones-en-tiempo-real-con-socket-io"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "animar el marcador sin saltos",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 4,
+                "fragment": "tema-4-animar-el-marcador-sin-saltos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "confirmaciones offline y sincronización",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 5,
+                "fragment": "tema-5-confirmaciones-offline-y-sincronizacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "carga de evidencia con Dio y notificaciones",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 6,
+                "fragment": "tema-6-carga-de-evidencia-con-dio-y-notificaciones"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "20",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "pruebas unitarias y de widget con Flutter Test",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 1,
+                "fragment": "tema-1-pruebas-unitarias-y-de-widget-con-flutter-test"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "golden e integración de un flujo real",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 2,
+                "fragment": "tema-2-golden-e-integracion-de-un-flujo-real"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "perfilado y presupuesto de rendimiento",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 3,
+                "fragment": "tema-3-perfilado-y-presupuesto-de-rendimiento"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Clean Architecture y sustitución de dependencias",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 4,
+                "fragment": "tema-4-clean-architecture-y-sustitucion-de-dependencias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "internacionalización y formatos locales",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 5,
+                "fragment": "tema-5-internacionalizacion-y-formatos-locales"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "builds por plataforma, firma y entrega",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 6,
+                "fragment": "tema-6-builds-por-plataforma-firma-y-entrega"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "21",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "catálogo y flujo con `in_app_purchase`",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 1,
+                "fragment": "tema-1-catalogo-y-flujo-con-in-app-purchase"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "suscripciones Android, planes base y cambios",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 2,
+                "fragment": "tema-2-suscripciones-android-planes-base-y-cambios"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "suscripciones iOS con StoreKit",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 3,
+                "fragment": "tema-3-suscripciones-ios-con-storekit"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "restauración de compras y entitlement",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 4,
+                "fragment": "tema-4-restauracion-de-compras-y-entitlement"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "pruebas de IAP en sandbox",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 5,
+                "fragment": "tema-5-pruebas-de-iap-en-sandbox"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "validación de transacciones en servidor",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 6,
+                "fragment": "tema-6-validacion-de-transacciones-en-servidor"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "configurar AdMob y cargar el primer banner de prueba",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 1,
+                "fragment": "tema-1-configurar-admob-y-cargar-el-primer-banner-de-prueba"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "elegir mediación, bidding y waterfall",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 2,
+                "fragment": "tema-2-elegir-mediacion-bidding-y-waterfall"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "banners, interstitials y anuncios recompensados",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 3,
+                "fragment": "tema-3-banners-interstitials-y-anuncios-recompensados"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "consentimiento, privacidad y audiencias",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 4,
+                "fragment": "tema-4-consentimiento-privacidad-y-audiencias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "pruebas de anuncios y diagnóstico de no-fill",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 5,
+                "fragment": "tema-5-pruebas-de-anuncios-y-diagnostico-de-no-fill"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 6,
+                "fragment": "tema-6-comparar-admob-applovin-max-y-unity-levelplay"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
           "id": "expansion-editorial",
           "kind": "candidate",
           "topics": [
@@ -332987,6 +334587,17 @@
               },
               "bookSources": [],
               "courseSources": []
+            },
+            {
+              "title": "Clúster local con Minikube: perfiles, addons e Ingress",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 8,
+                "fragment": "tema-8-cluster-local-con-minikube-perfiles-addons-e-ingress"
+              },
+              "bookSources": [],
+              "courseSources": []
             }
           ]
         },
@@ -336947,6 +338558,85 @@
               "courseSources": []
             }
           ]
+        },
+        {
+          "id": "galaxy-training-kubernetes-for-developers",
+          "kind": "course",
+          "title": "Kubernetes for Developers",
+          "topics": [
+            {
+              "title": "ReplicaSet",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "EKS (AKS/GKE)",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "Minikube",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "Deployment",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "ConfigMap",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "Namespace",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "Ingress",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            },
+            {
+              "title": "Volúmenes (PV/PVC)",
+              "status": "candidato-cursos",
+              "current": null,
+              "bookSources": [],
+              "courseSources": [
+                "galaxy-training-kubernetes-for-developers"
+              ]
+            }
+          ]
         }
       ],
       "booksRequiringOcr": [
@@ -336966,7 +338656,29 @@
           "path": "Programacion/Sistemas_Linux_DevOps/Sistemas Operativos Distribuidos Tanenbaum 1a Ed.pdf"
         }
       ],
-      "courses": []
+      "courses": [
+        {
+          "id": "galaxy-training-kubernetes-for-developers",
+          "provider": "Galaxy Training",
+          "title": "Kubernetes for Developers",
+          "url": "",
+          "stack": "devops",
+          "language": "es",
+          "audience": "Desarrolladores que despliegan aplicaciones en Kubernetes.",
+          "sourceNote": "Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Inicio anunciado: lunes 9 de noviembre de 2026, 19:00–21:00.",
+          "topics": [
+            "ReplicaSet",
+            "EKS (AKS/GKE)",
+            "Minikube",
+            "Deployment",
+            "ConfigMap",
+            "Namespace",
+            "Ingress",
+            "Volúmenes (PV/PVC)"
+          ],
+          "projectFeatures": []
+        }
+      ]
     },
     "cloud": {
       "modules": [
@@ -339263,6 +340975,920 @@
                 "module": "7",
                 "order": 4,
                 "fragment": "tema-4-continuidad-costes-y-proyecto-final"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        }
+      ],
+      "booksRequiringOcr": [],
+      "courses": []
+    },
+    "control-1": {
+      "modules": [
+        {
+          "id": "0",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Cómo está armado cada capítulo",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 1,
+                "fragment": "tema-1-como-esta-armado-cada-capitulo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "1",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "¿Qué es un número complejo?",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 1,
+                "fragment": "tema-1-que-es-un-numero-complejo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Operaciones",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 2,
+                "fragment": "tema-2-operaciones"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Raíces de s²+bs+c",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 3,
+                "fragment": "tema-3-raices-de-s-bs-c"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Forma polar, fórmula de Euler y evaluación de G(jω)",
+              "status": "actual",
+              "current": {
+                "module": "1",
+                "order": 4,
+                "fragment": "tema-4-forma-polar-formula-de-euler-y-evaluacion-de-g-j"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "La idea",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 1,
+                "fragment": "tema-1-la-idea"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "La tabla",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 2,
+                "fragment": "tema-2-la-tabla"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Propiedades",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 3,
+                "fragment": "tema-3-propiedades"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Valor final y valor inicial",
+              "status": "actual",
+              "current": {
+                "module": "2",
+                "order": 4,
+                "fragment": "tema-4-valor-final-y-valor-inicial"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "3",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Caso 1: polos reales distintos",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 1,
+                "fragment": "tema-1-caso-1-polos-reales-distintos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Caso 2: polos repetidos",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 2,
+                "fragment": "tema-2-caso-2-polos-repetidos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Caso 3: polos complejos (completar el cuadrado)",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 3,
+                "fragment": "tema-3-caso-3-polos-complejos-completar-el-cuadrado"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Resolver una ecuación diferencial completa",
+              "status": "actual",
+              "current": {
+                "module": "3",
+                "order": 4,
+                "fragment": "tema-4-resolver-una-ecuacion-diferencial-completa"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "4",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Qué es la función de transferencia",
+              "status": "actual",
+              "current": {
+                "module": "4",
+                "order": 1,
+                "fragment": "tema-1-que-es-la-funcion-de-transferencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "5",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "¿Qué es un sistema de control?",
+              "status": "actual",
+              "current": {
+                "module": "5",
+                "order": 1,
+                "fragment": "tema-1-que-es-un-sistema-de-control"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Los elementos",
+              "status": "actual",
+              "current": {
+                "module": "5",
+                "order": 2,
+                "fragment": "tema-2-los-elementos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Álgebra de bloques",
+              "status": "actual",
+              "current": {
+                "module": "5",
+                "order": 3,
+                "fragment": "tema-3-algebra-de-bloques"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "6",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Reglas para mover bloques",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 1,
+                "fragment": "tema-1-reglas-para-mover-bloques"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Grafos de flujo de señal",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 2,
+                "fragment": "tema-2-grafos-de-flujo-de-senal"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Regla de Mason",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 3,
+                "fragment": "tema-3-regla-de-mason"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Referencia y perturbación juntas",
+              "status": "actual",
+              "current": {
+                "module": "6",
+                "order": 4,
+                "fragment": "tema-4-referencia-y-perturbacion-juntas"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "7",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Impedancias",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 1,
+                "fragment": "tema-1-impedancias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Circuitos pasivos: divisor de voltaje",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 2,
+                "fragment": "tema-2-circuitos-pasivos-divisor-de-voltaje"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "El op-amp inversor",
+              "status": "actual",
+              "current": {
+                "module": "7",
+                "order": 3,
+                "fragment": "tema-3-el-op-amp-inversor"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "8",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Mecánico de traslación",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 1,
+                "fragment": "tema-1-mecanico-de-traslacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Mecánico de rotación",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 2,
+                "fragment": "tema-2-mecanico-de-rotacion"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Motor DC (electromecánico)",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 3,
+                "fragment": "tema-3-motor-dc-electromecanico"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Sistemas térmicos e hidráulicos",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 4,
+                "fragment": "tema-4-sistemas-termicos-e-hidraulicos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Analogías",
+              "status": "actual",
+              "current": {
+                "module": "8",
+                "order": 5,
+                "fragment": "tema-5-analogias"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "9",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "La idea",
+              "status": "actual",
+              "current": {
+                "module": "9",
+                "order": 1,
+                "fragment": "tema-1-la-idea"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "10",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "La forma de estado",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 1,
+                "fragment": "tema-1-la-forma-de-estado"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "De estados a función de transferencia",
+              "status": "actual",
+              "current": {
+                "module": "10",
+                "order": 2,
+                "fragment": "tema-2-de-estados-a-funcion-de-transferencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "11",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Forma estándar",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 1,
+                "fragment": "tema-1-forma-estandar"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Respuestas",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 2,
+                "fragment": "tema-2-respuestas"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Retardo o tiempo muerto",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 3,
+                "fragment": "tema-3-retardo-o-tiempo-muerto"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Identificación desde una gráfica",
+              "status": "actual",
+              "current": {
+                "module": "11",
+                "order": 4,
+                "fragment": "tema-4-identificacion-desde-una-grafica"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "12",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Forma estándar",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 1,
+                "fragment": "tema-1-forma-estandar"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Simulador: mueve ζ y ωn",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 2,
+                "fragment": "tema-2-simulador-mueve-y-n"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Los cuatro casos según ζ",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 3,
+                "fragment": "tema-3-los-cuatro-casos-segun"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Fórmulas del caso subamortiguado",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 4,
+                "fragment": "tema-4-formulas-del-caso-subamortiguado"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "De las especificaciones a la función de transferencia",
+              "status": "actual",
+              "current": {
+                "module": "12",
+                "order": 5,
+                "fragment": "tema-5-de-las-especificaciones-a-la-funcion-de-transferencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "13",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Polos dominantes",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 1,
+                "fragment": "tema-1-polos-dominantes"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Efecto de un cero",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 2,
+                "fragment": "tema-2-efecto-de-un-cero"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Cero de fase no mínima",
+              "status": "actual",
+              "current": {
+                "module": "13",
+                "order": 3,
+                "fragment": "tema-3-cero-de-fase-no-minima"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "14",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Fórmula general",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 1,
+                "fragment": "tema-1-formula-general"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Tipo de sistema y constantes",
+              "status": "actual",
+              "current": {
+                "module": "14",
+                "order": 2,
+                "fragment": "tema-2-tipo-de-sistema-y-constantes"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "15",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Qué es estabilidad",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 1,
+                "fragment": "tema-1-que-es-estabilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "El arreglo de Routh",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 2,
+                "fragment": "tema-2-el-arreglo-de-routh"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Casos especiales",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 3,
+                "fragment": "tema-3-casos-especiales"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Rango de K para estabilidad",
+              "status": "actual",
+              "current": {
+                "module": "15",
+                "order": 4,
+                "fragment": "tema-4-rango-de-k-para-estabilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "16",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Geometría de un polo",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 1,
+                "fragment": "tema-1-geometria-de-un-polo"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Estabilidad",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 2,
+                "fragment": "tema-2-estabilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "La zona de diseño",
+              "status": "actual",
+              "current": {
+                "module": "16",
+                "order": 3,
+                "fragment": "tema-3-la-zona-de-diseno"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "17",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Las dos condiciones",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 1,
+                "fragment": "tema-1-las-dos-condiciones"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Reglas de construcción (con su porqué)",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 2,
+                "fragment": "tema-2-reglas-de-construccion-con-su-porque"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Elegir K desde el lugar de las raíces",
+              "status": "actual",
+              "current": {
+                "module": "17",
+                "order": 3,
+                "fragment": "tema-3-elegir-k-desde-el-lugar-de-las-raices"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "18",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "La idea",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 1,
+                "fragment": "tema-1-la-idea"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Error en estado estacionario",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 2,
+                "fragment": "tema-2-error-en-estado-estacionario"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Cada acción, con números",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 3,
+                "fragment": "tema-3-cada-accion-con-numeros"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Ventajas y desventajas (punto 4 del Parcial 1)",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 4,
+                "fragment": "tema-4-ventajas-y-desventajas-punto-4-del-parcial-1"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Sintonía de Ziegler-Nichols",
+              "status": "actual",
+              "current": {
+                "module": "18",
+                "order": 5,
+                "fragment": "tema-5-sintonia-de-ziegler-nichols"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "19",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Diseño de un adelanto",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 1,
+                "fragment": "tema-1-diseno-de-un-adelanto"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Diseño de un atraso",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 2,
+                "fragment": "tema-2-diseno-de-un-atraso"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Implementación con op-amps",
+              "status": "actual",
+              "current": {
+                "module": "19",
+                "order": 3,
+                "fragment": "tema-3-implementacion-con-op-amps"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "20",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Qué es la respuesta en frecuencia",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 1,
+                "fragment": "tema-1-que-es-la-respuesta-en-frecuencia"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Decibeles y la escala logarítmica",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 2,
+                "fragment": "tema-2-decibeles-y-la-escala-logaritmica"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Los bloques básicos",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 3,
+                "fragment": "tema-3-los-bloques-basicos"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Márgenes de estabilidad",
+              "status": "actual",
+              "current": {
+                "module": "20",
+                "order": 4,
+                "fragment": "tema-4-margenes-de-estabilidad"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "21",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Parcial 1",
+              "status": "actual",
+              "current": {
+                "module": "21",
+                "order": 1,
+                "fragment": "tema-1-parcial-1"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        },
+        {
+          "id": "22",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Simulacro con solución",
+              "status": "actual",
+              "current": {
+                "module": "22",
+                "order": 1,
+                "fragment": "tema-1-simulacro-con-solucion"
               },
               "bookSources": [],
               "courseSources": []
