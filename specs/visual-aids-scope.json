@@ -19,6 +19,40 @@
       "topic": 8,
       "capture": "pendiente",
       "reason": "La demostración necesita Docker y Minikube; el entorno de generación no los tiene. Generar la captura con render_terminal_capture.py en una máquina con Minikube."
+    },
+    {
+      "track": "spring-boot",
+      "module": 20,
+      "topic": 9,
+      "capture": "pendiente",
+      "reason": "Necesita Maven Central (bloqueado en el entorno de generación) y un modelo con clave de API. Generar con render_terminal_capture.py o Playwright sobre el MCP Inspector en una máquina con red."
+    },
+    {
+      "track": "microservices",
+      "module": 1,
+      "topic": 14,
+      "capture": "requerida"
+    },
+    {
+      "track": "flutter",
+      "module": 15,
+      "topic": 7,
+      "capture": "pendiente",
+      "reason": "El entorno de generación no tiene el SDK de Flutter 3.50. Capturar flutter --version, dart fix y flutter test en la Mac del proyecto."
+    },
+    {
+      "track": "flutter",
+      "module": 15,
+      "topic": 8,
+      "capture": "pendiente",
+      "reason": "Necesita SDK de Flutter, un proyecto de Firebase con AI Logic y un dispositivo. Capturar la pantalla del resumen con la app en ejecución."
+    },
+    {
+      "track": "flutter",
+      "module": 5,
+      "topic": 4,
+      "capture": "pendiente",
+      "reason": "Necesita SDK de Flutter y el backend de autenticación del proyecto integrador. Capturar los logs de dio con el refresh único."
     }
   ]
 }

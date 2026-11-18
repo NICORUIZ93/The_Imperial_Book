@@ -18,7 +18,7 @@ profesional master con explicaciones fáciles, práctica real y ayudas visuales 
 
 - **P1** `hecho` — Cada captura recibida tiene registro en `docs/capture-intake.json` con una decisión
   por tema (cubierto o agregado con su ubicación real, candidato con motivo, o fuera de alcance con
-  motivo). Lote 2026-11-17: 29 temas (23 cubiertos, 3 agregados, 1 candidato, 2 fuera de alcance).
+  motivo). Lote 2026-11-17: 29 temas (24 cubiertos, 3 agregados, 2 fuera de alcance; «Spring Boot Harness» pasó de candidato a cubierto tras corregir la búsqueda).
   Verificación: `python3 scripts/validate_capture_intake.py`
 - **P2** `hecho` — Los cursos y rutas validados de las capturas están en
   `docs/course-curriculum-inventory.json` y en el temario maestro regenerado, que ahora incluye las
@@ -32,9 +32,9 @@ profesional master con explicaciones fáciles, práctica real y ayudas visuales 
   remite a specs/002 para visuales y código, y su contrato de tema incluye explicación fácil,
   captura real y ayuda de código.
   Verificación: `python3 scripts/validate_master_prompt.py`
-- **P5** `pendiente` — Crear en Spring Boot un tema de Spring AI (ChatClient, herramientas, RAG y MCP)
-  que cubra el hueco detectado al validar «Spring Boot Harness», con el estándar de specs/002.
-  Verificación: `python3 scripts/audit_visual_aids.py && grep -qi "spring ai" web/public/content/topic-index.json`
+- **P5** `hecho` — Cubrir en Spring Boot el hueco detectado al validar «Spring Boot Harness». Corregido
+  el 2026-11-18: Spring AI ya existe (M20 Temas 7 y 8); falta MCP. Se resuelve en specs/005 E3.
+  Verificación: `python3 scripts/audit_visual_aids.py && grep -q "Model Context Protocol" web/public/content/topic-index.json`
 - **P6** `hecho` — `docs/zero-to-master.md` mide por ruta niveles, módulo Master, ayudas visuales y
   transferencia al proyecto, y está al día; es la entrada para elegir el siguiente lote.
   Verificación: `python3 scripts/build_zero_to_master_report.py --check`
@@ -44,7 +44,7 @@ profesional master con explicaciones fáciles, práctica real y ayudas visuales 
 | Ruta | Hueco medido en `docs/zero-to-master.md` |
 |---|---|
 | java | 19/111 temas con ayuda visual |
-| spring-boot | 43/113 con ayuda visual; falta Spring AI (P5) |
+| spring-boot | 43/113 con ayuda visual; falta MCP con Spring AI (P5, specs/005 E3) |
 | microservices | solo nivel Fundamentos (2 módulos); faltan Aplicación, Integración y Experto |
 | control-1 | 0/70 con diagrama detectado y 5/70 con proyecto; sin módulo Master |
 | node | 36/83 con ayuda visual |
