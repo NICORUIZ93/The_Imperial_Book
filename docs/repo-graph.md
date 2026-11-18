@@ -1,6 +1,6 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 20:14 UTC
+Generated: 2026-11-18 20:33 UTC
 Root: `the_imperial_book`
 Indexed files: 1585
 Import edges: 69

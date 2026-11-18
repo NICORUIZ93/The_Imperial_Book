@@ -26,8 +26,8 @@ para maquetación y UI/UX, backend, DevOps y microservicios». Prompt aprobado p
 
 | Fase | Spec | Estado |
 |---|---|---|
-| 1 · Limpieza del repo | 009 | por escribir: inventario para aprobación |
-| 2 · Curso Docker de cero a experto (piloto) | 010 | por escribir |
+| 1 · Limpieza del repo | 009 | hecho |
+| 2 · Curso Docker de cero a experto (piloto) | 010 | temario propuesto |
 | 3 · Web académica y sistema de diseño | 011 | por escribir |
 | 4 · Kubernetes (CKAD, CKA y CKS vigentes) | 012 | por escribir |
 | 5 · Maquetación profesional y UI/UX | 013 | por escribir |

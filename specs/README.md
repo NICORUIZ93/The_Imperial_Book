@@ -46,4 +46,5 @@ python3 scripts/validate_specs.py --run    # además ejecuta cada verificación 
 | [007](007-mejoras-del-informe-de-capturas.md) | Mejoras del informe de capturas: Multihilo, registro, contenedores locales, evaluar skills, EKS/AKS/GKE y mapas de ruta | hecho |
 | [008](008-gobierno-prompt-maestro-v3.md) | Gobierno: prompt maestro v3 y plan por fases | vigente |
 | [009](009-limpieza-del-repo.md) | Limpieza del repositorio: inventario aprobado y rama archivo | hecho |
+| [010](010-curso-docker-de-cero-a-experto.md) | Curso Docker de cero a experto (piloto del estándar v3) | vigente |
 | [tracks/](tracks/) | Una spec por ruta con criterios T1–T7 y sus temas reales pendientes | en-curso |
