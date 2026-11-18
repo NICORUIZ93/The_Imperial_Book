@@ -107,12 +107,14 @@ esa función con `DeliveryCommands` y haz que solo dé el comando por terminado 
 escribir en `ShipmentEvents`, no antes.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema. La primera línea del segundo bloque obtiene la URL de la cola del Tema 1 (`create-queue` devuelve la misma URL si la cola ya existe con los mismos atributos), así no dependes de una variable de otra sesión.
 ```bash
 mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
+QUEUE_URL=$(aws sqs create-queue --queue-name delivery-commands --query QueueUrl --output text)
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body '{"shipmentId":"env-4471"}'
 RECEIPT=$(aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].ReceiptHandle' --output text)
 aws sqs delete-message --queue-url "$QUEUE_URL" --receipt-handle "$RECEIPT"
 aws sqs receive-message --queue-url "$QUEUE_URL"
@@ -123,7 +125,7 @@ está en la cola.
 Pista: recibí el mensaje restante (el del Paso 6 del Tema 1) pero NO lo borres, y volvé a
 hacer `receive-message` antes de que pase el visibility timeout (30s por defecto) — vas a ver
 que no te lo vuelve a entregar todavía, porque sigue "invisible", no eliminado.
-**Fallo deliberado:** guardá el `ReceiptHandle` de esta recepción, dejá pasar el visibility timeout sin borrar el mensaje, y usá ESE handle viejo en un `delete-message` después de que el mensaje ya volvió a estar visible — provoca un error (`ReceiptHandle` inválido), porque cada recepción emite un handle distinto y el anterior queda obsoleto; diagnosticalo comparándolo con el `ReceiptHandle` nuevo que te devuelve el siguiente `receive-message`.
+**Fallo deliberado:** guarda el `ReceiptHandle` de esta recepción, deja pasar el visibility timeout sin borrar el mensaje, vuelve a recibirlo y usa ESE handle viejo en un `delete-message`. El comando no muestra error, pero el mensaje puede seguir en la cola: según la API de SQS, con un handle antiguo «la solicitud tiene éxito, pero el mensaje podría no borrarse». Compruébalo con otro `receive-message` cuando pase el timeout y diagnostícalo comparando el handle viejo con el nuevo: para borrar, usa siempre el `ReceiptHandle` de la recepción más reciente.
 #### Paso 6 · Práctica independiente
 Esperá a que pase el visibility timeout (o acortalo con `--visibility-timeout 5` al recibir) y
 repetí `receive-message` — el mismo mensaje vuelve a aparecer, demostrando la entrega "al

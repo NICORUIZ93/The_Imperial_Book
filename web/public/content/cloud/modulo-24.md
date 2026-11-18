@@ -103,21 +103,37 @@ Cuando el tipo de artefactos es `S3`, el bucket destino debe existir de antemano
 **Cuándo no usarlo:** no metas lógica de negocio compleja directamente en el buildspec; para pipelines grandes, invoca scripts versionados en tu repositorio desde cada fase en vez de inline.
 
 #### Paso 4 · Demostración guiada
-Crea `buildspec.yml` y `src/app.js` desde una carpeta vacía.
+Desde una carpeta vacía, escribe `buildspec.yml` con cuatro fases y un artefacto dentro de `dist/`, y lánzalo con el proyecto `demo-build` del Tema 1:
 ```bash
-mkdir ejemplo-buildspec
-node --version
+mkdir ejemplo-buildspec && cd ejemplo-buildspec
+cat > buildspec.yml <<'EOF'
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "instalando dependencias"
+  pre_build:
+    commands:
+      - mkdir -p dist
+  build:
+    commands:
+      - echo "servicio-de-seguimiento 1.0" > dist/app.txt
+  post_build:
+    commands:
+      - sha256sum dist/app.txt > dist/app.sha256
+artifacts:
+  base-directory: dist
+  files:
+    - app.txt
+    - app.sha256
+EOF
+ID=$(aws codebuild start-build --project-name demo-build --buildspec-override "$(cat buildspec.yml)" \
+  --query 'build.id' --output text)
+until [ "$(aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildComplete' --output text)" = "True" ]; do sleep 3; done
+aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildStatus' --output text
+aws s3 ls s3://demo-artefactos/ --recursive
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: el bucle termina cuando `buildComplete` es `True`, el estado es `SUCCEEDED` y `s3 ls` lista `app.txt` y `app.sha256`. Por `base-directory: dist` los archivos suben sin el prefijo `dist/`. `--buildspec-override` acepta un buildspec en línea o una ruta relativa al código fuente; como `demo-build` usa `NO_SOURCE` y no hay código fuente donde buscar esa ruta, se pasa el contenido con `"$(cat buildspec.yml)"`.
 #### Paso 5 · Práctica guiada
 Pista: apunta a una carpeta de artefactos inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente

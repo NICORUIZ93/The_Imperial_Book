@@ -17,7 +17,8 @@ Una confirmación de entrega cruza API Gateway, la Lambda y, en el flujo asíncr
 ```bash
 aws logs create-log-group --log-group-name /mi-app/backend
 aws logs create-log-stream --log-group-name /mi-app/backend --log-stream-name app-001
-aws logs put-log-events --log-group-name /mi-app/backend --log-stream-name app-001 --log-events '[{"timestamp":...,"message":"ERROR request_id=abc tarea_id=001 msg=fallo"}]'
+AHORA_MS=$(( $(date +%s) * 1000 ))   # CloudWatch Logs espera milisegundos desde 1970
+aws logs put-log-events --log-group-name /mi-app/backend --log-stream-name app-001 --log-events "[{\"timestamp\":$AHORA_MS,\"message\":\"ERROR request_id=abc tarea_id=001 msg=fallo\"}]"
 ```
 
 `--log-group-name` identifica el log group (el "archivo" del componente); `--log-stream-name` identifica un stream específico dentro de ese group (por ejemplo, una instancia o invocación puntual); `--log-events` es el arreglo de eventos de log que efectivamente estás enviando, cada uno con su marca de tiempo y mensaje. En resumen: `--log-group-name` es la bandera que fija el grupo de logs, y `--log-stream-name` es la bandera que fija el stream específico dentro de ese grupo.
@@ -25,10 +26,15 @@ aws logs put-log-events --log-group-name /mi-app/backend --log-stream-name app-0
 Un log group centraliza los logs de un componente lógico de la aplicación (por ejemplo, todos los logs de un servicio backend específico), organizado internamente en log streams (típicamente uno por instancia o invocación en ejecución); centralizar logs en CloudWatch en vez de dejarlos dispersos en archivos locales de cada instancia individual permite consultar y correlacionar logs de múltiples instancias simultáneamente desde un único lugar, esencial en cualquier arquitectura distribuida donde un problema puede manifestarse a través de múltiples componentes ejecutándose en paralelo.
 
 ```python
+import logging
 import uuid
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 correlation_id = str(uuid.uuid4())
 logging.info(f"correlation_id={correlation_id} accion=procesar_tarea")
 ```
+
+Guárdalo como `correlacion.py` y ejecuta `python3 correlacion.py`. Imprime una línea como `INFO correlation_id=<uuid> accion=procesar_tarea`. Sin `basicConfig(level=logging.INFO)`, `logging.info` no imprime nada, porque el nivel por defecto es `WARNING`.
 
 Un correlation ID es un identificador único generado al inicio de una solicitud (o transacción) que se propaga consistentemente a través de cada log emitido durante el procesamiento de esa solicitud específica, incluso si esa solicitud atraviesa múltiples servicios o funciones distintas; sin un correlation ID, diagnosticar un problema reportado por un usuario específico requiere intentar correlacionar manualmente logs dispersos basándose en timestamps aproximados o suposiciones, un proceso lento y propenso a error, mientras que con un correlation ID consistente, filtrar todos los logs relacionados con esa transacción específica es una simple búsqueda directa por ese identificador exacto.
 
@@ -155,21 +161,18 @@ flowchart TD
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Sigue una confirmación desde HTTP hasta su consumidor usando el mismo identificador. Introduce una dependencia lenta y conserva los eventos o spans que permiten localizarla sin registrar datos personales.
 
 #### Paso 4 · Demostración guiada
-Crea `src/incident.md` desde una carpeta vacía.
+Desde una carpeta vacía, registra dos entregas en CloudWatch Logs (una falla y otra no) y reconstruye el incidente filtrando primero por el error y después por el correlation ID:
 ```bash
-mkdir ejemplo-incidente
-node --version
+mkdir ejemplo-incidente && cd ejemplo-incidente
+aws logs create-log-group --log-group-name /rutaflow/confirmar-entrega
+aws logs create-log-stream --log-group-name /rutaflow/confirmar-entrega --log-stream-name incidente-001
+AHORA_MS=$(( $(date +%s) * 1000 ))
+aws logs put-log-events --log-group-name /rutaflow/confirmar-entrega --log-stream-name incidente-001 --log-events \
+  "[{\"timestamp\":$AHORA_MS,\"message\":\"INFO shipmentId=env-4471 accion=recibir\"},{\"timestamp\":$((AHORA_MS+1)),\"message\":\"ERROR shipmentId=env-4471 msg=tabla no encontrada\"},{\"timestamp\":$((AHORA_MS+2)),\"message\":\"INFO shipmentId=env-5002 accion=recibir\"}]"
+aws logs filter-log-events --log-group-name /rutaflow/confirmar-entrega --filter-pattern "ERROR" --query 'events[].message' --output text
+aws logs filter-log-events --log-group-name /rutaflow/confirmar-entrega --filter-pattern '"env-4471"' --query 'events[].message' --output text
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: el primer filtro devuelve solo `ERROR shipmentId=env-4471 msg=tabla no encontrada`; el segundo devuelve las dos líneas de `env-4471` (la de `accion=recibir` y la del error) y ninguna de `env-5002`. Con el ID del envío reconstruyes el recorrido del caso afectado. Escribe en `src/incident.md` una línea de tiempo con esas dos líneas, tu hipótesis («falta la tabla») y la prueba que la confirmaría.
 #### Paso 5 · Práctica guiada
 Pista: oculta una señal para provocar un fallo deliberado de diagnóstico y corrígelo.
 #### Paso 6 · Práctica independiente

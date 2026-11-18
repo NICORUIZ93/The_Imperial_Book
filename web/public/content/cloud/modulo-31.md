@@ -195,21 +195,26 @@ Los tres casos siguen el mismo principio: "real engines, not mocks".
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Arranca el entorno de entregas como dependencia temporal del job de CI. Espera disponibilidad, ejecuta una prueba y destruye recursos al terminar, incluidos los casos de fallo.
 
 #### Paso 4 · Demostración guiada
-Crea `tests/container.test.js` desde una carpeta vacía.
+Desde una carpeta vacía, escribe el script que un job de CI ejecutaría: arranca un Floci desechable, espera a que responda, hace una prueba y lo destruye siempre, también si la prueba falla.
 ```bash
-mkdir ejemplo-testcontainers
-node --version
+mkdir ejemplo-ci && cd ejemplo-ci
+cat > ci-integracion.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+NOMBRE=floci-ci-$$
+docker run -d --rm --name "$NOMBRE" -p 4566:4566 floci/floci:2.2.0 > /dev/null
+trap 'docker stop "$NOMBRE" > /dev/null; echo "limpieza: $NOMBRE detenido"' EXIT
+for intento in $(seq 1 30); do
+  curl -sf http://localhost:4566/_floci/health > /dev/null && break
+  sleep 1
+done
+export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
+aws s3 mb "s3://ci-evidencias-$$"
+aws s3 ls | grep -q "ci-evidencias-$$" && echo "prueba de integración: ok"
+EOF
+bash ci-integracion.sh
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Detén antes cualquier Floci que use el puerto 4566 (`floci stop` o `docker compose stop aws-local`). Resultado esperado: `make_bucket: s3://ci-evidencias-<número>`, `prueba de integración: ok` y, al final, `limpieza: floci-ci-<número> detenido`. El `trap … EXIT` se ejecuta al salir del script por cualquier motivo: si cambias la última línea por `false`, el script termina con código `1` y aun así imprime la línea de limpieza. `docker ps` ya no muestra el contenedor.
 #### Paso 5 · Práctica guiada
 Pista: usa imagen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -361,10 +366,12 @@ describe("S3", () => {
 
 **Ejemplo en Python (pytest, fixture de sesión):**
 
+Instala el paquete con la versión fijada: `pip install testcontainers-floci==0.4.0 pytest boto3`. Aunque el paquete se llama `testcontainers-floci`, el módulo que importas se llama `floci`.
+
 ```python
 import pytest
 import boto3
-from testcontainers_floci import FlociContainer
+from floci import FlociContainer
 
 @pytest.fixture(scope="session")
 def floci():
@@ -412,21 +419,50 @@ flowchart TD
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Crea recursos únicos por prueba de integración y consulta una evidencia recién almacenada. Ejecuta dos pruebas en paralelo y demuestra que no comparten nombres ni dejan recursos tras un fallo.
 
 #### Paso 4 · Demostración guiada
-Crea `tests/isolated.test.js` desde una carpeta vacía.
-```bash
-mkdir ejemplo-isolated-tests
-node --version
+Desde una carpeta vacía, crea `tests/test_aislado.py`: cada prueba usa un bucket con nombre único dentro de un Floci propio de la sesión.
+```python
+import uuid
+
+import boto3
+import pytest
+from floci import FlociContainer
+
+
+@pytest.fixture(scope="session")
+def s3():
+    with FlociContainer() as floci:
+        yield boto3.client(
+            "s3",
+            endpoint_url=floci.get_endpoint(),
+            region_name=floci.get_region(),
+            aws_access_key_id=floci.get_access_key(),
+            aws_secret_access_key=floci.get_secret_key(),
+        )
+
+
+def bucket_unico() -> str:
+    return f"evidencias-{uuid.uuid4().hex[:12]}"
+
+
+def test_guarda_evidencia(s3):
+    bucket = bucket_unico()
+    s3.create_bucket(Bucket=bucket)
+    s3.put_object(Bucket=bucket, Key="RF-101.json", Body=b'{"estado":"entregado"}')
+    assert s3.get_object(Bucket=bucket, Key="RF-101.json")["Body"].read() == b'{"estado":"entregado"}'
+
+
+def test_bucket_nuevo_esta_vacio(s3):
+    bucket = bucket_unico()
+    s3.create_bucket(Bucket=bucket)
+    assert s3.list_objects_v2(Bucket=bucket).get("KeyCount") == 0
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
 ```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
+mkdir -p ejemplo-isolated-tests/tests && cd ejemplo-isolated-tests
+python3 -m venv .venv && . .venv/bin/activate
+pip install testcontainers-floci==0.4.0 pytest boto3
+python3 -m pytest -q tests/test_aislado.py
 ```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: `2 passed`. El segundo test no ve el objeto del primero porque cada uno crea su propio bucket, y el contenedor se destruye al cerrar la sesión de pytest. `FlociContainer` publica Floci en un puerto libre del host que obtienes con `get_endpoint()`; por eso no fijas `4566`.
 #### Paso 5 · Práctica guiada
 Pista: fija un puerto ocupado para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente

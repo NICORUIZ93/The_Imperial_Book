@@ -85,7 +85,7 @@ Un service mesh es una red de carteros privados entre tus propios servicios: cad
 
 Un service mesh resuelve un problema específico: cuando tenés varios servicios propios hablando entre sí (no con el cliente final, sino servicio-a-servicio), necesitás cifrado, reintentos, circuit breakers y métricas de esas llamadas internas sin reescribir esa lógica en cada servicio. Un sidecar (normalmente Envoy) se inyecta junto a cada contenedor y intercepta ese tráfico interno de forma transparente.
 
-El error común es instalar esta complejidad antes de necesitarla. RutaFlow, con un solo `confirmar-entrega` (Lambda) y un planificador (ECS) que no se llaman entre sí directamente, no tiene todavía el problema que un mesh resuelve. EKS es Kubernetes gestionado, no un mesh en sí — podrías tener EKS sin mesh, o ECS con un mesh (App Mesh) encima; son dos decisiones independientes, aunque Kubernetes es el ecosistema donde los meshes son más comunes porque ahí suele haber más servicios internos desde el principio.
+El error común es instalar esta complejidad antes de necesitarla. RutaFlow, con un solo `confirmar-entrega` (Lambda) y un planificador (ECS) que no se llaman entre sí directamente, no tiene todavía el problema que un mesh resuelve. EKS es Kubernetes gestionado, no un mesh en sí — podrías tener EKS sin mesh, o ECS con conectividad entre servicios gestionada (ECS Service Connect, la opción que AWS indica para migrar desde su malla de servicios discontinuada el 30-sep-2026); son dos decisiones independientes, aunque Kubernetes es el ecosistema donde los meshes son más comunes porque ahí suele haber más servicios internos desde el principio.
 
 **Analogía:** un service mesh es como instalar una central telefónica interna con grabación y reintento automático entre las oficinas de tu propia empresa; tiene sentido cuando hay muchas oficinas llamándose entre sí todo el día, no cuando solo hay dos y se hablan una vez por semana.
 
@@ -144,7 +144,7 @@ aws ecs describe-services --cluster rutaflow-cluster --services demo-planificado
 ```
 Resultado esperado: el servicio ECS del planificador (Módulo 14) muestra su `deploymentController` nativo — sin ningún sidecar de mesh instalado, porque con un solo servicio real hablando con una sola base de datos, ECS puro ya resuelve el problema sin esa capa adicional.
 #### Paso 5 · Práctica guiada
-Pista: instalar App Mesh o un sidecar Envoy sobre `demo-planificador-service` HOY, cuando solo existe un servicio consumiendo la tabla `ShipmentEvents` directamente — ese es el fallo deliberado de sobre-ingeniería: agregarías latencia, complejidad de configuración y un nuevo punto de fallo (el propio sidecar) sin ningún beneficio real, porque no hay todavía múltiples servicios que necesiten mTLS entre sí.
+Pista: activar ECS Service Connect o un sidecar Envoy sobre `demo-planificador-service` HOY, cuando solo existe un servicio consumiendo la tabla `ShipmentEvents` directamente — ese es el fallo deliberado de sobre-ingeniería: agregarías latencia, complejidad de configuración y un nuevo punto de fallo (el propio sidecar) sin ningún beneficio real, porque no hay todavía múltiples servicios que necesiten mTLS entre sí.
 #### Paso 6 · Práctica independiente
 Documentá la condición concreta que justificaría migrar: "si RutaFlow tuviera 3+ servicios en contenedores hablando entre sí con reintentos y cifrado propios, un service mesh (o EKS con Istio) empezaría a pagar su complejidad" — y compará esa condición contra el estado real de hoy (1 servicio, ECS puro).
 #### Paso 7 · Cierre
@@ -531,28 +531,3 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no usar MFA en root
 **Transferencia al proyecto integrador «RutaFlow»:** agrega a RutaFlow alertas por uso de root, intentos de apagar CloudTrail y ráfagas de accesos denegados, cada una con su runbook.
 
 **Fuente oficial:** [AWS CloudTrail — Record contents](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html) y [Amazon GuardDuty — Finding types](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_finding-types-active.html).
-
-## Trazabilidad de la auditoría original
-
-- **Terraform Avanzado**: cubierto en el Tema 1 (Terraform avanzado y CI/CD cloud) de este módulo.
-- **CI/CD en Cloud**: cubierto en el Tema 1 de este módulo.
-- **Kubernetes en Cloud**: cubierto en el Tema 2 (Kubernetes administrado, ECS y Service Mesh) de este módulo.
-- **ECS/EKS Avanzado**: cubierto en el Tema 2 de este módulo.
-- **EC2 Avanzado**: cubierto en la Profundización de Auto Scaling por CPU del Tema 3 de este módulo.
-- **VPC Avanzado**: cubierto en la Profundización de VPC Endpoint para DynamoDB del Tema 3 de este módulo.
-- **RDS Avanzado**: cubierto en el Tema 3 (réplica de lectura) de este módulo.
-- **S3 Avanzado**: cubierto en la Profundización de lifecycle policy del Tema 3 de este módulo.
-- **DynamoDB Avanzado**: cubierto en el Tema 3 (tabla global multi-región) de este módulo.
-- **Serverless Avanzado**: cubierto en el Tema 4 (Lambda, API Gateway y observabilidad avanzada) de este módulo.
-- **Lambda Avanzado**: cubierto en el Tema 4 (concurrencia aprovisionada) de este módulo.
-- **API Gateway Avanzado**: cubierto en el Tema 4 (traza X-Ray a través de API Gateway) de este módulo.
-- **Observabilidad Avanzada**: cubierto en el Tema 4 (X-Ray) y en la Profundización de CloudWatch Logs Insights del Tema 4 de este módulo.
-- **CloudWatch**: cubierto en la Profundización de Logs Insights del Tema 4 de este módulo.
-- **Seguridad Avanzada**: cubierto en el Tema 5 (Seguridad, auditoría y FinOps) de este módulo.
-- **IAM Avanzado**: cubierto en el Tema 5 (simulación de permisos sobre el presupuesto) de este módulo.
-- **FinOps**: cubierto en el Tema 5 (alarma de presupuesto) de este módulo.
-- **CloudTrail**: cubierto en la Profundización de `lookup-events` del Tema 5 de este módulo.
-- **Microservicios**: cubierto en el Tema 6 (Microservicios, Big Data, AI/ML y multi-cloud) de este módulo.
-- **Big Data**: cubierto en el Tema 6 de este módulo.
-- **AI/ML en Cloud**: cubierto en el Tema 6 de este módulo.
-- **Multi-Cloud**: cubierto en el Tema 6 de este módulo.

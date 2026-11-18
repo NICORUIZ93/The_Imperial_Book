@@ -27,8 +27,8 @@ Una vez definido el esquema, cada campo de tipo `Query`, `Mutation` o `Subscript
 ```bash
 # archivo: src/labs/modulo-27/tema-1-appsync-api.sh — ejecutar con: bash tema-1-appsync-api.sh
 API_ID=$(aws appsync create-graphql-api --name demo-api --authentication-type API_KEY --query 'graphqlApi.apiId' --output text)
-aws appsync start-schema-creation --api-id "$API_ID" \
-  --definition 'type Query { estadoEntrega(guia: String!): String }'
+printf 'type Query { estadoEntrega(guia: String!): String }\n' > schema.graphql
+aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://schema.graphql
 ```
 
 `--authentication-type` elige cómo se autentican los clientes de la API (`API_KEY` es el más simple: una clave compartida, sin login de usuario); `--api-id` (tomado de la respuesta del primer comando) identifica esa API en cada llamada siguiente.
@@ -44,21 +44,22 @@ aws appsync start-schema-creation --api-id "$API_ID" \
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Expón una consulta de estado de guía por GraphQL con campos públicos explícitos. Prueba una selección válida y el intento de consultar un dato privado que no debe formar parte del esquema.
 
 #### Paso 4 · Demostración guiada
-Crea `src/schema.graphql` desde una carpeta vacía.
+Desde una carpeta vacía, guarda el esquema en un archivo, créalo en una API nueva y descárgalo de vuelta para confirmar qué quedó publicado:
 ```bash
-mkdir ejemplo-graphql
-node --version
+mkdir -p ejemplo-graphql/src && cd ejemplo-graphql
+cat > src/schema.graphql <<'EOF'
+type Query {
+  estadoEntrega(guia: String!): String
+}
+EOF
+API_ID=$(aws appsync create-graphql-api --name demo-api-esquema --authentication-type API_KEY \
+  --query 'graphqlApi.apiId' --output text)
+aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://src/schema.graphql
+aws appsync get-schema-creation-status --api-id "$API_ID" --query status --output text
+aws appsync get-introspection-schema --api-id "$API_ID" --format SDL esquema-publicado.graphql
+grep estadoEntrega esquema-publicado.graphql
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: `get-schema-creation-status` imprime `SUCCESS` (en AWS real puede mostrar `PROCESSING` unos segundos; repite la consulta) y `grep` encuentra la línea `estadoEntrega(guia: String!): String` en el esquema descargado. `--definition` es un parámetro binario: con `fileb://` la CLI envía el archivo tal cual; si pegas el texto del esquema directamente, la AWS CLI v2 lo interpreta como texto codificado en base64 y no envía el esquema que escribiste.
 #### Paso 5 · Práctica guiada
 Pista: consulta un campo inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente

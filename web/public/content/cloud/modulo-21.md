@@ -59,21 +59,14 @@ docker ps -a | grep "$ID"       # mismo contenedor, ahora "Exited"
 **Cómo crece tu proyecto:** esta instancia es el primer nodo de cómputo que usará tu proyecto para correr el agente de seguimiento del proyecto integrador — arráncala y detenla aquí antes de conectarla a nada más.
 
 #### Paso 4 · Demostración guiada
-Crea `src/instance.js` desde una carpeta vacía.
+Con Floci iniciado con `floci start` (monta el socket de Docker que EC2 necesita) y `eval "$(floci env)"` cargado, guarda el bloque **Practícalo tú** de este tema en `ejemplo-ec2/tema-1-ciclo-de-vida.sh` y ejecútalo:
 ```bash
-mkdir ejemplo-ec2
-node --version
+mkdir ejemplo-ec2 && cd ejemplo-ec2
+# pega aquí el contenido de tema-1-ciclo-de-vida.sh y guárdalo
+bash tema-1-ciclo-de-vida.sh
+aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,State.Name]' --output text
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: el primer `docker ps` muestra una fila con el ID de la instancia y estado `Up`; después de `stop-instances`, `docker ps -a` muestra el mismo contenedor `Exited`, y `describe-instances` lista ese `InstanceId` con estado `stopped`. La instancia de Floci es un contenedor real: detenerla detiene el contenedor sin borrarlo.
 #### Paso 5 · Práctica guiada
 Pista: usa una imagen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -179,21 +172,14 @@ curl -s -H "x-aws-ec2-metadata-token: $TOKEN" http://localhost:9169/latest/meta-
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Prepara el arranque de una instancia de laboratorio para el consumidor. Registra cómo obtiene configuración e identidad temporal y verifica que los logs de inicialización no contienen credenciales.
 
 #### Paso 4 · Demostración guiada
-Crea `src/bootstrap.sh` desde una carpeta vacía.
+Con Floci iniciado con `floci start`, el puerto `9169` accesible desde tu equipo y `eval "$(floci env)"` cargado, guarda el bloque **Practícalo tú** de este tema en `ejemplo-bootstrap/tema-3-userdata-imds.sh` y ejecútalo:
 ```bash
-mkdir ejemplo-bootstrap
-node --version
+mkdir ejemplo-bootstrap && cd ejemplo-bootstrap
+# pega aquí el contenido de tema-3-userdata-imds.sh y guárdalo
+bash tema-3-userdata-imds.sh
+docker logs "$(docker ps -lq)" | grep -ci 'secret\|password' || true
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: `grep listo` encuentra la línea del script de `UserData`, la consulta IMDSv2 imprime un `InstanceId` igual al de `run-instances`, y el último comando imprime `0`: los logs de arranque no contienen palabras como `secret` o `password`. Si la consulta a `9169` no responde, revisa la sección de errores comunes del laboratorio.
 #### Paso 5 · Práctica guiada
 Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -409,7 +395,7 @@ Entrega la VPC con sus subredes, el security group restrictivo y el análisis de
 
 **Errores comunes y soluciones**
 
-- **IMDS no responde desde fuera del contenedor.** El puerto `9169` no está expuesto en tu `docker-compose.yml`. Añade `"9169:9169"` a los `ports` del servicio `floci` y reinicia con `docker compose up -d`.
+- **IMDS no responde desde fuera del contenedor.** El `docker-compose.yml` de la raíz no publica el puerto `9169` ni monta el socket de Docker en su servicio `aws-local`. En tu copia, añade `"9169:9169"` a sus `ports` y `/var/run/docker.sock:/var/run/docker.sock` a sus `volumes`, y reinicia con `docker compose up -d aws-local`.
 - **`ImportKeyPair` funciona pero SSH pide contraseña.** Revisa que estés usando la clave privada correspondiente a la pública importada, y que el puerto SSH asignado (rango 2200–2299) sea el correcto: consúltalo con `docker port <container-id>`.
 - **El Auto Scaling Group no lanza instancias.** Verifica que el socket Docker esté montado (`-v /var/run/docker.sock:/var/run/docker.sock`); sin él, EC2 —y por lo tanto Auto Scaling— no puede lanzar contenedores reales.
 - **Las instancias no se registran en el grupo objetivo del balanceador.** Confirma que usaste `attach-load-balancer-target-groups` con el ARN correcto del Módulo 22, y que el grupo objetivo existe antes de adjuntarlo.

@@ -126,6 +126,11 @@ y el crawler pueden declararse en la plantilla `template.yaml` que escribas.
 aws glue create-crawler --name crawler-ubicaciones --role arn:aws:iam::000000000000:role/glue-crawler-role \
   --targets '{"S3Targets":[{"Path":"s3://rutaflow-ubicaciones-historico/"}]}' --database-name rutaflow_analytics
 aws glue start-crawler --name crawler-ubicaciones
+# El crawler es asíncrono: espera a que vuelva a READY antes de leer la tabla.
+sleep 5
+until [ "$(aws glue get-crawler --name crawler-ubicaciones --query 'Crawler.State' --output text)" = "READY" ]; do
+  echo "crawler en curso…"; sleep 5
+done
 aws glue get-table --database-name rutaflow_analytics --name ubicaciones_historico --query 'Table.StorageDescriptor.Columns'
 ```
 Resultado esperado: `get-table` muestra las columnas que el crawler encontró de verdad en los archivos (`conductorId`, `lat`, `lon`), sin la columna `velocidad` inventada del Tema 1 — porque esta vez nadie la declaró, el crawler solo reporta lo que existe.

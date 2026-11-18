@@ -50,13 +50,21 @@ cliente y a analítica sin tocar su lógica de escritura actual.
 TOPIC_ARN=$(aws sns create-topic --name rutaflow-envio-entregado --query TopicArn --output text)
 NOTIF_Q=$(aws sqs create-queue --queue-name notificaciones-cliente --query QueueUrl --output text)
 ANALYTICS_Q=$(aws sqs create-queue --queue-name analitica-entregas --query QueueUrl --output text)
+# Cada cola debe autorizar al tema a escribir en ella; sin esta política, en AWS real el mensaje no llega.
+permitir_sns() {
+  QUEUE_ARN=$(aws sqs get-queue-attributes --queue-url "$1" --attribute-names QueueArn --query Attributes.QueueArn --output text)
+  python3 -c 'import json,sys; q,t=sys.argv[1:]; p={"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"sns.amazonaws.com"},"Action":"sqs:SendMessage","Resource":q,"Condition":{"ArnEquals":{"aws:SourceArn":t}}}]}; print(json.dumps({"Policy":json.dumps(p)}))' "$QUEUE_ARN" "$TOPIC_ARN" > atributos.json
+  aws sqs set-queue-attributes --queue-url "$1" --attributes file://atributos.json
+}
+permitir_sns "$NOTIF_Q"
+permitir_sns "$ANALYTICS_Q"
 aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$NOTIF_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
 aws sns subscribe --topic-arn "$TOPIC_ARN" --protocol sqs --notification-endpoint "$(aws sqs get-queue-attributes --queue-url "$ANALYTICS_Q" --attribute-names QueueArn --query Attributes.QueueArn --output text)"
 aws sns publish --topic-arn "$TOPIC_ARN" --message '{"shipmentId":"env-4471","estado":"entregado"}'
 aws sqs receive-message --queue-url "$NOTIF_Q"
 aws sqs receive-message --queue-url "$ANALYTICS_Q"
 ```
-Resultado esperado: AMBAS colas reciben su propia copia del mismo mensaje — `confirmar-entrega` publicó una sola vez, y ni `notificaciones-cliente` ni `analitica-entregas` sabían de la existencia de la otra.
+Resultado esperado: AMBAS colas reciben su propia copia del mismo mensaje — `confirmar-entrega` publicó una sola vez, y ni `notificaciones-cliente` ni `analitica-entregas` sabían de la existencia de la otra. El `Body` que recibe cada cola no es tu JSON tal cual: SNS lo envuelve en un documento con `"Type": "Notification"`, `TopicArn` y tu mensaje dentro del campo `Message`, así que el consumidor debe leer `Message`. La política de `permitir_sns` sigue el ejemplo de la documentación de SNS: solo el servicio `sns.amazonaws.com`, y solo desde este tema (`aws:SourceArn`), puede hacer `sqs:SendMessage`.
 #### Paso 5 · Práctica guiada
 Pista: desuscribí `analitica-entregas` (`aws sns unsubscribe --subscription-arn <arn-de-esa-suscripción>`) y publicá un segundo mensaje — ese es el fallo deliberado: `notificaciones-cliente` sigue recibiendo todo con normalidad, pero `analitica-entregas` nunca va a ver ese segundo mensaje, porque ya no está suscrita, sin que `confirmar-entrega` se entere de que algo cambió del lado de los consumidores.
 #### Paso 6 · Práctica independiente

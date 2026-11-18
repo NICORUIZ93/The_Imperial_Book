@@ -20,7 +20,7 @@ Los contenedores resuelven el mismo problema —aislar aplicaciones para que no 
 
 La consecuencia práctica es enorme: un contenedor típico arranca en menos de un segundo, mientras que una máquina virtual puede tardar decenas de segundos o minutos en arrancar su sistema operativo completo. Un contenedor pesa, en muchos casos, decenas de megabytes; una máquina virtual con su sistema operativo completo puede pesar varios gigabytes. Esto es exactamente lo que hace posible que en este curso levantes y destruyas Floci en segundos, tantas veces como quieras, sin esperar minutos cada vez.
 
-Esto no significa que los contenedores reemplacen completamente a las máquinas virtuales: las máquinas virtuales siguen siendo necesarias cuando se necesita aislar kernels distintos (por ejemplo, correr Windows y Linux en la misma máquina física), o cuando se necesita el aislamiento de seguridad más fuerte posible entre cargas de trabajo que no confían entre sí. De hecho, Docker Desktop en macOS y Windows internamente usa una máquina virtina ligera de Linux para poder ejecutar contenedores Linux sobre esos sistemas operativos, porque los contenedores Linux necesitan un kernel Linux por debajo.
+Esto no significa que los contenedores reemplacen completamente a las máquinas virtuales: las máquinas virtuales siguen siendo necesarias cuando se necesita aislar kernels distintos (por ejemplo, correr Windows y Linux en la misma máquina física), o cuando se necesita el aislamiento de seguridad más fuerte posible entre cargas de trabajo que no confían entre sí. De hecho, Docker Desktop en macOS y Windows internamente usa una máquina virtual ligera de Linux para poder ejecutar contenedores Linux sobre esos sistemas operativos, porque los contenedores Linux necesitan un kernel Linux por debajo.
 
 **Analogía:** una máquina virtual es como construir un edificio completo nuevo —con su propia estructura, tuberías y sistema eléctrico— cada vez que quieres alquilar una oficina. Un contenedor es como alquilar una oficina dentro de un edificio ya construido: compartes la estructura, las tuberías y la electricidad del edificio (el kernel), pero tu oficina está completamente separada y con llave propia de las demás.
 
@@ -61,12 +61,15 @@ flowchart LR
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Ejecuta el servicio de entregas dentro de un contenedor y registra qué comparte con el host. Reinícialo y comprueba que los datos persistentes dependen del volumen configurado, no del proceso anterior.
 
 #### Paso 4 · Demostración guiada
-Crea `src/isolation.md` desde una carpeta vacía.
+Desde una carpeta vacía, compara lo que ve tu equipo con lo que ve un contenedor:
 ```bash
-mkdir ejemplo-contenedores
-docker --version
+mkdir ejemplo-contenedores && cd ejemplo-contenedores
+uname -r
+docker run --rm ubuntu:24.04 uname -r
+docker run --rm ubuntu:24.04 sh -c '. /etc/os-release; echo "$PRETTY_NAME"'
+docker run --rm ubuntu:24.04 ps -e
 ```
-Resultado esperado: Docker disponible.
+Resultado esperado: en Linux, los dos `uname -r` imprimen la misma versión de kernel, porque el contenedor no arranca un kernel propio; en macOS y Windows, el segundo muestra el kernel de la máquina virtual Linux de Docker Desktop. El tercer comando imprime una línea que empieza con `Ubuntu 24.04`, aunque tu equipo use otro sistema: el sistema de archivos sí es propio. El último lista un solo proceso, `ps`, con `PID` 1: el contenedor no ve los procesos del host. Copia las cuatro salidas en `src/isolation.md`.
 #### Paso 5 · Práctica guiada
 Pista: ejecuta un contenedor con recurso inválido para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -112,12 +115,21 @@ flowchart TD
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Construye la imagen del consumidor de entregas y modifica solo su código. Compara capas reutilizadas y tamaño final; la imagen debe arrancar sin archivos de desarrollo ni credenciales incorporadas.
 
 #### Paso 4 · Demostración guiada
-Crea `src/image.js` y `Dockerfile` en `ejemplo-imagen` desde una carpeta vacía.
+Desde una carpeta vacía, crea el script y el `Dockerfile`, construye la imagen y revisa sus capas:
 ```bash
-mkdir ejemplo-imagen
-docker --version
+mkdir -p ejemplo-imagen/src && cd ejemplo-imagen
+printf '#!/bin/sh\necho "Hola desde la imagen ejemplo-imagen:1.0"\n' > src/saludo.sh
+cat > Dockerfile <<'EOF'
+FROM ubuntu:24.04
+WORKDIR /app
+COPY src/saludo.sh .
+CMD ["sh", "saludo.sh"]
+EOF
+docker build -t ejemplo-imagen:1.0 .
+docker run --rm ejemplo-imagen:1.0
+docker history ejemplo-imagen:1.0
 ```
-Resultado esperado: contexto listo.
+Resultado esperado: `docker run` imprime `Hola desde la imagen ejemplo-imagen:1.0`. `docker history` muestra arriba una fila por instrucción (`CMD`, `COPY src/saludo.sh .`, `WORKDIR /app`) y debajo las capas de `ubuntu:24.04`. Ahora cambia solo el script (`echo 'echo "versión 2"' >> src/saludo.sh`) y construye `ejemplo-imagen:1.1`: en la salida de `docker build`, el paso `WORKDIR` aparece como `CACHED` y solo se repite `COPY`.
 #### Paso 5 · Práctica guiada
 Pista: usa una instrucción inválida para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -159,12 +171,15 @@ flowchart LR
 ```
 
 #### Paso 4 · Demostración guiada
-Crea `src/registry.md` en `ejemplo-registry` desde una carpeta vacía.
+Desde una carpeta vacía, descarga una imagen de Docker Hub, consulta su digest y dale un nombre de tu propio repositorio:
 ```bash
-mkdir ejemplo-registry
-docker --version
+mkdir ejemplo-registry && cd ejemplo-registry
+docker pull ubuntu:24.04
+docker image inspect ubuntu:24.04 --format '{{index .RepoDigests 0}}'
+docker tag ubuntu:24.04 miusuario/base-rutaflow:1.0
+docker images miusuario/base-rutaflow
 ```
-Resultado esperado: entorno listo.
+Resultado esperado: `inspect` imprime `ubuntu@sha256:` seguido de 64 caracteres hexadecimales; ese digest identifica el contenido exacto, mientras que la etiqueta `24.04` puede moverse a otra versión. `docker images` muestra `miusuario/base-rutaflow` con la etiqueta `1.0` y el mismo `IMAGE ID` que `ubuntu:24.04`: etiquetar no copia la imagen. Para publicarla necesitarías `docker login` y `docker push miusuario/base-rutaflow:1.0` con tu usuario real de Docker Hub. Anota el digest en `src/registry.md`.
 #### Paso 5 · Práctica guiada
 Pista: usa una etiqueta inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -212,12 +227,18 @@ flowchart TD
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Escribe un procedimiento de diagnóstico para el emulador con listado, logs e inspección de puertos. Provoca un contenedor detenido y demuestra cómo identificarlo antes de recrear recursos cloud.
 
 #### Paso 4 · Demostración guiada
-Crea `src/commands.md` en `ejemplo-comandos` desde una carpeta vacía.
+Recorre el ciclo de vida completo de un contenedor:
 ```bash
-mkdir ejemplo-comandos
-docker --version
+mkdir ejemplo-comandos && cd ejemplo-comandos
+docker run -d --name rutaflow-demo ubuntu:24.04 sh -c 'echo "servicio iniciado"; sleep 300'
+docker ps --filter name=rutaflow-demo
+docker logs rutaflow-demo
+docker exec rutaflow-demo cat /etc/os-release
+docker stop rutaflow-demo
+docker ps -a --filter name=rutaflow-demo
+docker rm rutaflow-demo
 ```
-Resultado esperado: entorno listo.
+Resultado esperado: `docker ps` muestra `rutaflow-demo` con estado `Up`; `docker logs` imprime `servicio iniciado`; `exec` ejecuta un comando dentro del contenedor que sigue corriendo. `docker stop` tarda unos 10 segundos y después `docker ps -a` muestra `Exited (137)`: `sh` no atendió la señal de parada y Docker lo terminó a la fuerza al vencer el plazo. Lee los logs antes del `rm`; después del `rm`, `docker logs rutaflow-demo` responde `Error response from daemon: No such container: rutaflow-demo`. Guarda los comandos y sus salidas en `src/commands.md`.
 #### Paso 5 · Práctica guiada
 Pista: consulta un contenedor inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -270,12 +291,36 @@ flowchart LR
 **Límites y decisión de uso:** Compose sirve para reproducir varios servicios en un host, pero no garantiza alta disponibilidad entre máquinas. Que un contenedor haya arrancado tampoco implica que su dependencia esté lista: combina healthchecks con recuperación en la aplicación.
 
 #### Paso 4 · Demostración guiada
-Crea `docker-compose.yml` en `ejemplo-compose` desde una carpeta vacía.
-```bash
-mkdir ejemplo-compose
-docker compose version
+Crea `ejemplo-compose/docker-compose.yml` con dos servicios que comparten un volumen con nombre:
+```yaml
+services:
+  escritor:
+    image: ubuntu:24.04
+    command: sh -c 'date -u +%FT%TZ >> /datos/registro.txt && echo "escribí una línea"'
+    volumes:
+      - datos-entregas:/datos
+  lector:
+    image: ubuntu:24.04
+    command: sh -c 'wc -l < /datos/registro.txt'
+    volumes:
+      - datos-entregas:/datos
+    depends_on:
+      escritor:
+        condition: service_completed_successfully
+
+volumes:
+  datos-entregas:
 ```
-Resultado esperado: Compose disponible.
+Desde `ejemplo-compose` ejecuta:
+```bash
+docker compose run --rm lector
+docker compose run --rm lector
+docker compose down
+docker compose run --rm lector
+docker compose down -v
+docker compose run --rm lector
+```
+Resultado esperado: los cuatro `run` imprimen `1`, `2`, `3` y `1`. Cada `run` arranca antes al `escritor` por `depends_on`, que añade una línea al archivo. `docker compose down` elimina contenedores y red, pero conserva el volumen, por eso el conteo sigue en `3`; `down -v` también borra el volumen y el conteo vuelve a `1`.
 #### Paso 5 · Práctica guiada
 Pista: usa un volumen inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -319,18 +364,21 @@ A partir de aquí, este curso usa `floci-cli` —la CLI oficial del proyecto— 
 | 2 | Ver los logs de arranque | `floci logs --tail 50` | Floci imprime en sus logs qué servicios ha inicializado correctamente | Líneas indicando que S3, SQS, DynamoDB, Lambda, API Gateway e IAM están listos |
 | 3 | Detener Floci al terminar | `floci stop` | Detiene el contenedor de forma ordenada; usa `floci stop --remove` si además quieres eliminarlo | Confirmación de que el contenedor se detuvo |
 
-**Alternativa: Docker Compose.** Si prefieres orquestar Floci junto a otros servicios (o necesitas correr AWS, Azure y GCP local a la vez, como en los Módulos 8 y 31), el `docker-compose.yml` de la raíz del proyecto sigue siendo válido:
+**Alternativa: Docker Compose.** Si prefieres orquestar Floci junto a otros servicios (o necesitas correr AWS, Azure y GCP local a la vez, como en los Módulos 8 y 31), usa el `docker-compose.yml` de la raíz del proyecto. Define cuatro servicios: `aws-local` (puerto 4566), `azure-local` (4577), `gcp-local` (4588) y `stackport` (8080). Este es su servicio AWS:
 
 ```yaml
 services:
-  floci:
-    image: floci/floci:latest
+  aws-local:
+    image: floci/floci:2.2.0@sha256:e97cd0c1dc2aa14e7697fb5ef5018404c4d6345169dbd276315f0bed2c7b0520
+    container_name: floci-aws
     ports:
-      - "4566:4566"
+      - "${AWS_LOCAL_PORT:-4566}:4566"
 ```
 
+Antes de usar el Compose, detén el contenedor de `floci start` con `floci stop`, porque ambos publican el puerto 4566. Este Compose no monta el socket de Docker (`/var/run/docker.sock`), y Floci necesita Docker para los servicios que lanzan contenedores (Lambda, ECS, CodeBuild, RDS, ElastiCache y EC2); para esos módulos usa `floci start`.
+
 ```bash
-docker compose up -d
+docker compose up -d aws-local
 # equivalente manual a `eval $(floci env)`:
 export AWS_ENDPOINT_URL=http://localhost:4566
 export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1

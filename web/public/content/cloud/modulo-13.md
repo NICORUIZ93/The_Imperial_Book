@@ -138,13 +138,13 @@ Una migración es una receta versionada y numerada que se aplica una sola vez y 
 **Conceptos clave:** evolución versionada y reproducible del esquema, no cambios manuales ad hoc.
 
 ```sql
-CREATE TABLE tareas (id SERIAL PRIMARY KEY, titulo TEXT, estado TEXT);
-INSERT INTO tareas (titulo, estado) VALUES ('Mi tarea', 'pendiente');
+-- V1__agregar_estado_pago.sql
+ALTER TABLE facturas ADD COLUMN estado_pago TEXT DEFAULT 'pendiente';
 ```
 
 Una migration es un cambio de esquema versionado y ejecutado de forma reproducible (típicamente mediante una herramienta de migraciones que rastrea qué cambios ya se aplicaron a una base de datos específica), en vez de ejecutar comandos SQL de modificación de esquema manualmente y de forma ad hoc directamente contra la base de datos de producción; esto es importante porque garantiza que el esquema de la base de datos evolucione de forma consistente y rastreable a través de distintos entornos (desarrollo, pruebas, producción) y a través del tiempo, con un historial claro de qué cambios se aplicaron y en qué orden, permitiendo además revertir un cambio problemático de forma controlada si fuera necesario.
 
-Esta necesidad de gestionar la evolución del esquema de forma versionada es exactamente el mismo principio ya estudiado con Flyway en Spring Boot (Módulo 3 de ese track) y con las migraciones de Room en Android (Módulo 6 de ese track): sin un mecanismo formal de migraciones, cada entorno de despliegue podría terminar con un esquema ligeramente distinto e inconsistente entre sí, dependiendo de qué cambios manuales se aplicaron o se olvidaron aplicar en cada uno de ellos.
+Herramientas como Flyway o Liquibase automatizan este registro de versiones; en este tema lo construyes a mano con una tabla `migraciones_aplicadas` para ver qué hacen por dentro. Sin un mecanismo formal de migraciones, cada entorno de despliegue podría terminar con un esquema ligeramente distinto e inconsistente entre sí, dependiendo de qué cambios manuales se aplicaron o se olvidaron aplicar en cada uno de ellos.
 
 **Analogía:** una migration es como una bitácora de construcción versionada que documenta cada modificación estructural realizada a un edificio en un orden específico y verificable, permitiendo reconstruir exactamente el mismo edificio en una ubicación nueva siguiendo esa misma bitácora paso a paso, en vez de intentar replicar modificaciones ad hoc no documentadas de memoria.
 
@@ -154,8 +154,8 @@ Esta necesidad de gestionar la evolución del esquema de forma versionada es exa
 
 ```mermaid
 flowchart LR
-    V1["V1__crear_tabla_tareas.sql"] --> D1["aplicado en dev, staging, producción, en ese orden rastreado"]
-    D1 --> V2["V2__agregar_columna_prioridad.sql"] --> D2["aplicado consistentemente después de V1 en cada entorno"]
+    V1["V1__agregar_estado_pago.sql"] --> D1["aplicado en dev, staging, producción, en ese orden rastreado"]
+    D1 --> V2["V2__agregar_fecha_pago.sql"] --> D2["aplicado consistentemente después de V1 en cada entorno"]
 ```
 
 No conviene correr estas migraciones manualmente contra producción como hiciste con `psql`
@@ -185,14 +185,6 @@ BEGIN
 END \$\$;
 "
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
 
 Resultado esperado: `facturas` ahora tiene la columna `estado_pago`, y `migraciones_aplicadas` registra que la versión 1 ya se aplicó — cualquiera que corra este mismo script contra otro ambiente obtiene exactamente el mismo resultado.
 #### Paso 5 · Práctica guiada

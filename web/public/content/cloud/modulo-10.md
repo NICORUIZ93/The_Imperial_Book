@@ -42,13 +42,20 @@ aws secretsmanager get-secret-value --secret-id /app/db-password --query SecretS
 
 #### Paso 4 · Demostración guiada
 ```bash
-echo "SMS_GATEWAY_API_KEY=sk_live_rutaflow_demo_12345" > .env
+echo "SMS_GATEWAY_API_KEY=demo_rutaflow_12345" > .env
 grep SMS_GATEWAY_API_KEY .env
-aws secretsmanager create-secret --name /rutaflow/sms-gateway-api-key --secret-string "sk_live_rutaflow_demo_12345"
+aws secretsmanager create-secret --name /rutaflow/sms-gateway-api-key --secret-string "demo_rutaflow_12345"
 ```
 Resultado esperado: el `grep` confirma que la clave está ahí, en texto plano, en un archivo que un `git add .` descuidado versionaría sin pensarlo dos veces; `create-secret` la guarda cifrada en reposo, en un servicio separado del código.
 #### Paso 5 · Práctica guiada
-Pista: ese `.env` del Paso 4 ES el fallo deliberado — corré `git log --all --oneline -- .env` (si llegaste a commitearlo alguna vez) para confirmar que, aunque borres el archivo ahora, el historial de Git seguiría teniendo la clave para siempre. Corregilo borrando el archivo (`rm .env`) y confirmando con `aws secretsmanager get-secret-value --secret-id /rutaflow/sms-gateway-api-key --query SecretString --output text` que la aplicación puede seguir obteniendo la clave sin que exista en ningún archivo local.
+Pista: ese `.env` del Paso 4 ES el fallo deliberado. Provoca la fuga en un repositorio de prueba y comprueba que borrar el archivo no la elimina del historial:
+```bash
+git init -q && git add .env && git commit -qm "config: agrega .env por error"
+git rm -q .env && git commit -qm "config: elimina .env"
+git log --all --oneline -- .env
+git show HEAD~1:.env
+```
+`git log` lista los dos commits y `git show` imprime todavía `SMS_GATEWAY_API_KEY=demo_rutaflow_12345`: aunque el archivo ya no exista, el historial de Git conserva la clave. Corrígelo confirmando con `aws secretsmanager get-secret-value --secret-id /rutaflow/sms-gateway-api-key --query SecretString --output text` que la aplicación puede seguir obteniendo la clave sin que exista en ningún archivo local.
 #### Paso 6 · Práctica independiente
 Documentá, en una frase, cada cuánto correspondería rotar `/rutaflow/sms-gateway-api-key` si el proveedor de SMS sufriera una filtración, y qué comando usarías para revisar quién accedió a ese secreto en los últimos días (pista: es un servicio distinto de Secrets Manager, el mismo que audita accesos IAM en general).
 #### Paso 7 · Cierre
@@ -98,11 +105,11 @@ significa que el rol nunca hereda `kms:Decrypt` por defecto solo por existir.
 ```bash
 aws kms create-key --description "Clave de respaldo RutaFlow" --query KeyMetadata.KeyId --output text
 aws kms create-alias --alias-name alias/rutaflow-backup --target-key-id "$(aws kms list-keys --query 'Keys[-1].KeyId' --output text)"
-echo "sk_live_rutaflow_demo_12345" > respaldo-secreto.txt
+echo "demo_rutaflow_12345" > respaldo-secreto.txt
 aws kms encrypt --key-id alias/rutaflow-backup --plaintext fileb://respaldo-secreto.txt --query CiphertextBlob --output text | base64 -d > respaldo-secreto.enc
 aws kms decrypt --ciphertext-blob fileb://respaldo-secreto.enc --query Plaintext --output text | base64 -d
 ```
-Resultado esperado: el `decrypt` final devuelve exactamente `sk_live_rutaflow_demo_12345` — el archivo `.enc` en disco nunca es legible por sí solo, necesita pasar siempre por KMS para recuperar el valor real.
+Resultado esperado: el `decrypt` final devuelve exactamente `demo_rutaflow_12345` — el archivo `.enc` en disco nunca es legible por sí solo, necesita pasar siempre por KMS para recuperar el valor real.
 #### Paso 5 · Práctica guiada
 Pista: creá una política que deniegue `kms:Decrypt` sobre `alias/rutaflow-backup` para el rol `RutaFlowConfirmarEntregaRole` (Módulo 7), simulala con `aws iam simulate-custom-policy`, y confirmá `implicitDeny` — ese es el fallo deliberado que corresponde: `confirmar-entrega` nunca debería poder descifrar el respaldo completo, solo leer el secreto puntual que ya tiene permitido en Secrets Manager.
 #### Paso 6 · Práctica independiente

@@ -35,7 +35,7 @@ zip funcion-vacio.zip
 # Sin agregar index.js
 
 aws lambda create-function --function-name confirmar-entrega \
-  --runtime nodejs20.x \
+  --runtime nodejs24.x \
   --handler index.handler \
   --zip-file fileb://funcion-vacio.zip \
   --role arn:aws:iam::000000000000:role/lambda-role
@@ -149,7 +149,7 @@ flowchart LR
 mkdir -p confirmar-entrega && cd confirmar-entrega
 echo 'exports.handler = async () => ({ mensaje: "ok" });' > index.js
 zip funcion.zip index.js
-aws lambda create-function --function-name confirmar-entrega --runtime nodejs20.x \
+aws lambda create-function --function-name confirmar-entrega --runtime nodejs24.x \
   --handler index.handler --zip-file fileb://funcion.zip \
   --role arn:aws:iam::000000000000:role/lambda-role
 time aws lambda invoke --function-name confirmar-entrega salida1.json
@@ -321,7 +321,7 @@ Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en vivo qué pasa cuando el código de `confirmar-entrega` necesita una dependencia que el runtime de Node.js no trae incluida, y aprenderás a empaquetar correctamente con dependencias REALES del proyecto integrador. Prerrequisitos: Tema 2 de este módulo.
 #### Paso 2 · Contexto y caso real
-El handler de RutaFlow que escribirás en este tema usa `@aws-sdk/client-dynamodb` para escribir en `ShipmentEvents` (la misma tabla que estudiaste en Módulo 4) — una dependencia externa que instalarás y empaquetarás tú, y que el runtime `nodejs20.x` no incluye por defecto. Sin empaquetar correctamente esta dependencia, tu código no puede acceder a DynamoDB.
+El handler de RutaFlow que escribirás en este tema usa `@aws-sdk/client-dynamodb` para escribir en `ShipmentEvents` (la misma tabla que estudiaste en Módulo 4) — una dependencia que instalarás y empaquetarás tú. El runtime `nodejs24.x` de AWS trae una versión menor fija del AWS SDK v3, no la última; empaquetarla tú fija la versión que probaste. Si el entorno donde corre la función no la incluye, sin empaquetarla tu código no puede acceder a DynamoDB.
 #### Paso 3 · Teoría, modelo mental y analogía
 El runtime es el motor; las dependencias externas son el combustible que ese motor no trae de fábrica — si no las empaquetás junto a tu código, el motor arranca pero se queda sin combustible a mitad de camino.
 
@@ -811,7 +811,6 @@ Archivo `academia-labs/cloud/deprecaciones/calendario.json`:
   "_fuente": "Copia las fechas de la tabla oficial de runtimes de AWS Lambda; estas son de ejemplo para el ejercicio.",
   "nodejs18.x": "2025-09-01",
   "python3.9": "2025-12-15",
-  "nodejs20.x": "2026-04-30",
   "python3.12": "2028-10-31",
   "java21": "2029-06-30",
   "nodejs22.x": "2027-04-30"
@@ -868,8 +867,8 @@ def estado(runtime: str) -> tuple[int, str]:
         return (2, f"vence en {dias} días: planear migración")
     return (3, f"ok hasta {fin.isoformat()}")
 
-# Ordena por urgencia: vencidos primero.
-for f in sorted(inventario, key=lambda f: estado(f["runtime"])[0] or 9):
+# Ordena por urgencia: desconocidos y vencidos primero.
+for f in sorted(inventario, key=lambda f: estado(f["runtime"])[0]):
     print(f"{f['funcion']:<18} {f['runtime']:<12} {estado(f['runtime'])[1]}")
 ```
 
@@ -939,7 +938,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mantener el inventa
 |---|---|---|---|---|
 | 1 | Crear el archivo de la función | Crea un archivo `index.js` con:<br>`exports.handler = async (event) => {`<br>`  return { mensaje: "Hola, " + (event.nombre || "mundo") };`<br>`};` | Handler mínimo que devuelve un saludo personalizado usando el `event` de entrada | El archivo se guarda sin errores |
 | 2 | Comprimir el código | `zip funcion.zip index.js` | Lambda requiere el código empaquetado en un archivo `.zip` para desplegarlo | Se crea `funcion.zip` en el directorio actual |
-| 3 | Crear la función Lambda | `aws lambda create-function --function-name mi-funcion --runtime nodejs20.x --handler index.handler --zip-file fileb://funcion.zip --role arn:aws:iam::000000000000:role/lambda-role` | Despliega el código empaquetado como una función nueva | Un JSON con `FunctionName`, `Runtime` y `State` |
+| 3 | Crear la función Lambda | `aws lambda create-function --function-name mi-funcion --runtime nodejs24.x --handler index.handler --zip-file fileb://funcion.zip --role arn:aws:iam::000000000000:role/lambda-role` | Despliega el código empaquetado como una función nueva | Un JSON con `FunctionName`, `Runtime` y `State` |
 | 4 | Invocar la función | `aws lambda invoke --function-name mi-funcion --payload '{"nombre":"Nicolás"}' --cli-binary-format raw-in-base64-out salida.json` | Ejecuta la función con un payload de entrada específico y guarda la respuesta en un archivo local | Un JSON de metadatos con `StatusCode: 200` |
 | 5 | Ver el resultado de la invocación | `cat salida.json` | Muestra lo que la función devolvió realmente | `{"mensaje":"Hola, Nicolás"}` |
 

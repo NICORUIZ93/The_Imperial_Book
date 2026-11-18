@@ -29,7 +29,7 @@ Instalar es preparar herramientas y luego comprobar el diagnóstico, como revisa
 
 ##### macOS
 
-Con Homebrew, ejecuta `brew install floci-io/floci/floci`. Si prefieres el instalador oficial, usa `curl -fsSL https://floci.io/install.sh | sh`. Comprueba el resultado con `floci --version` y `floci doctor`; instalar no basta: el diagnóstico demuestra que Docker, la CLI y la conectividad local funcionan juntos.
+Con Homebrew, ejecuta `brew install floci-io/floci/floci`. Si prefieres el instalador oficial, usa `curl -fsSL https://floci.io/install.sh | sh`. Comprueba el resultado con `floci version` y `floci doctor`; instalar no basta: el diagnóstico demuestra que Docker, la CLI y la conectividad local funcionan juntos.
 
 ##### Instalación en Linux
 
@@ -44,11 +44,11 @@ En PowerShell puedes ejecutar `iwr https://floci.io/install.ps1 | iex`. La alter
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `install.md` para tu bitácora y escribe `tema-1-diagnostico.sh` con los tres comandos de la sección **Practícalo tú**.
 ```bash
-mkdir floci-install
-cd floci-install
-docker --version
+mkdir floci-install && cd floci-install
+# guarda aquí el bloque «Practícalo tú» como tema-1-diagnostico.sh
+bash tema-1-diagnostico.sh | tee install.md
 ```
-Resultado esperado: Docker disponible.
+Resultado esperado: `install.md` contiene la versión del servidor Docker, la versión de floci-cli y el informe de `floci doctor` sin chequeos fallidos. Si Docker está detenido, el primer comando termina con un error de conexión al daemon: ese es el fallo deliberado del Paso 5.
 #### Paso 5 · Práctica guiada
 Pista: detén Docker para provocar un fallo deliberado, registra el mensaje y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -59,13 +59,13 @@ Repite en tu sistema y conserva captura y salida.
 ```bash
 # archivo: tema-1-diagnostico.sh — ejecutar con: bash tema-1-diagnostico.sh
 docker version --format '{{.Server.Version}}'
-floci --version
+floci version
 floci doctor
 ```
 
 `--format` es la bandera que le dice a `docker version` qué parte de su respuesta imprimir y con qué plantilla (aquí, solo la versión del servidor Docker), en vez de volcar el bloque completo de información.
 
-**Resultado esperado:** los tres comandos responden sin error, en cualquier sistema operativo: Docker reporta una versión de servidor, `floci --version` confirma la instalación, y `floci doctor` reporta que Docker, la CLI y la conectividad local funcionan juntos — el mismo diagnóstico sin importar si instalaste con Homebrew, el script curl o Scoop.
+**Resultado esperado:** los tres comandos responden sin error, en cualquier sistema operativo: Docker reporta una versión de servidor, `floci version` confirma la instalación, y `floci doctor` reporta que Docker, la CLI y la conectividad local funcionan juntos — el mismo diagnóstico sin importar si instalaste con Homebrew, el script curl o Scoop.
 
 **Modifica esto:** detén Docker Desktop deliberadamente y vuelve a correr `floci doctor`; confirma que el diagnóstico señala explícitamente el problema (Docker no disponible) en vez de fallar con un error genérico.
 
@@ -139,12 +139,15 @@ Inicia AWS con `floci start`, Azure con `floci az start` y GCP con `floci gcp st
 
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía y crea `model.md` con la tabla de motores, los dos diagramas Mermaid y los endpoints 4566, 4577 y 4588 explicados en este tema.
+Después, con `floci start` en marcha, separa una operación del plano de gestión de una del plano de datos:
 ```bash
-mkdir floci-model
-cd floci-model
-docker --version
+mkdir floci-model && cd floci-model
+eval "$(floci env)"
+QUEUE_URL=$(aws sqs create-queue --queue-name modelo-mental --query QueueUrl --output text)   # plano de gestión
+aws sqs send-message --queue-url "$QUEUE_URL" --message-body "hola desde el plano de datos"  # plano de datos
+aws sqs receive-message --queue-url "$QUEUE_URL" --query 'Messages[0].Body' --output text
 ```
-Resultado esperado: Docker disponible.
+Resultado esperado: `create-queue` devuelve la URL de la cola (configuración) y `receive-message` imprime `hola desde el plano de datos` (uso del servicio). Anota en `model.md` qué comando pertenece a cada plano.
 #### Paso 5 · Práctica guiada
 Pista: apunta al endpoint incorrecto para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -183,14 +186,6 @@ echo "Azure -> $AZURE_STORAGE_CONNECTION_STRING" | grep -o 'BlobEndpoint=[^;]*'
 eval "$(floci gcp env)"
 echo "GCP storage -> $STORAGE_EMULATOR_HOST"
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
 
 Resultado esperado: los tres `echo` muestran endpoints con `localhost` en los puertos 4566, 4577 y 4588 — confirmación de que las tres CLI oficiales apuntan a Floci, no a AWS, Azure o GCP reales.
 #### Paso 5 · Práctica guiada
@@ -238,7 +233,7 @@ Los puertos principales son 4566, 4577 y 4588. Azure también puede exponer AMQP
 
 #### Persistencia y snapshots
 
-`floci start --persist ./data` conserva estado entre reinicios. `floci snapshot save <nombre>` y `floci snapshot restore <nombre>` permiten guardar y recuperar un punto conocido. Persistencia sirve para desarrollo diario; una instancia limpia por suite es mejor para pruebas porque evita que un bucket o una cola anterior produzcan falsos positivos.
+`floci start --persist ./data` conserva estado entre reinicios. `floci snapshot save <nombre>` y `floci snapshot load <nombre>` permiten guardar y recuperar un punto conocido. Persistencia sirve para desarrollo diario; una instancia limpia por suite es mejor para pruebas porque evita que un bucket o una cola anterior produzcan falsos positivos.
 
 #### Aislamiento multi-account y aislamiento multi-project
 
@@ -263,7 +258,7 @@ aws s3 ls | grep demo-persistente
 
 **Resultado esperado:** tras detener y reiniciar Floci con el mismo directorio `--persist`, `aws s3 ls` sigue mostrando `demo-persistente` — el bucket sobrevivió al reinicio porque el estado quedó en disco, no solo en memoria.
 
-**Modifica esto:** restaura el snapshot con `floci snapshot restore antes-de-reiniciar` después de crear un segundo bucket, y confirma que ese segundo bucket desaparece — el snapshot vuelve exactamente al punto guardado.
+**Modifica esto:** restaura el snapshot con `floci snapshot load antes-de-reiniciar` después de crear un segundo bucket, y confirma que ese segundo bucket desaparece — el snapshot vuelve exactamente al punto guardado.
 
 **Cuándo no usarlo:** no uses `--persist` para tu suite de pruebas automatizadas; ahí una instancia limpia por corrida es mejor, porque evita que un recurso de una corrida anterior produzca un falso positivo.
 
@@ -274,11 +269,12 @@ aws s3 ls | grep demo-persistente
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `lifecycle.md` para registrar el estado observado y escribe `tema-4-persistencia.sh` con el flujo completo de la sección **Practícalo tú**.
 ```bash
-mkdir floci-lifecycle
-cd floci-lifecycle
-docker --version
+mkdir floci-lifecycle && cd floci-lifecycle
+eval "$(floci env)"
+# guarda aquí el bloque «Practícalo tú» como tema-4-persistencia.sh
+bash tema-4-persistencia.sh | tee lifecycle.md
 ```
-Resultado esperado: Docker disponible.
+Resultado esperado: la última línea de `lifecycle.md` contiene `demo-persistente`, el bucket que sobrevivió al reinicio con `--persist ./data`, y la carpeta `data/` existe en `floci-lifecycle`.
 #### Paso 5 · Práctica guiada
 Pista: conserva un estado incompatible para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -501,14 +497,6 @@ az storage blob download --container-name evidencias --name RF-101.json --file r
 cmp evidencia.json recuperada.json
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
 Resultado esperado: `cmp` no imprime nada cuando ambos archivos son idénticos — la evidencia de `RF-101` subió y bajó intacta de Blob Storage, sin pasar nunca por S3.
 #### Paso 5 · Práctica guiada
 Pista: intentá descargar un blob de un contenedor que nunca creaste (`evidencias-inexistente`) — ese es el fallo deliberado: el comando falla con un error claro de recurso no disponible, no con un archivo vacío silencioso; corregilo apuntando al contenedor real `evidencias`.
@@ -546,6 +534,8 @@ También forman parte del catálogo Cloud Storage, Pub/Sub, Firestore, Datastore
 Ejecuta `floci gcp start` y después `eval "$(floci gcp env)"`; en PowerShell canaliza la salida a `Invoke-Expression`. Los SDK de GCP no comparten una única variable: Storage, Pub/Sub, Firestore y otros clientes leen hosts de emulador diferentes. `CLOUDSDK_CORE_PROJECT=floci-local` identifica el espacio local; no necesitas descargar un JSON de cuenta de servicio.
 
 ```bash
+export CLOUDSDK_API_ENDPOINT_OVERRIDES_STORAGE=http://localhost:4588/   # gcloud ignora STORAGE_EMULATOR_HOST
+export CLOUDSDK_CORE_PROJECT=floci-local CLOUDSDK_AUTH_ACCESS_TOKEN=floci
 mkdir gcp-storage
 cd gcp-storage
 printf '{"envio":"RF-102","estado":"en-ruta"}\n' > evento.json
@@ -573,6 +563,8 @@ flowchart LR
 #### Paso 4 · Demostración guiada
 ```bash
 eval "$(floci gcp env)"
+export CLOUDSDK_API_ENDPOINT_OVERRIDES_STORAGE=http://localhost:4588/   # gcloud ignora STORAGE_EMULATOR_HOST
+export CLOUDSDK_CORE_PROJECT=floci-local CLOUDSDK_AUTH_ACCESS_TOKEN=floci
 mkdir gcp-storage && cd gcp-storage
 printf '{"envio":"RF-102","estado":"en-ruta"}\n' > evento.json
 gcloud storage buckets create gs://demo-local
@@ -580,14 +572,6 @@ gcloud storage cp evento.json gs://demo-local/eventos/RF-102.json
 gcloud storage cp gs://demo-local/eventos/RF-102.json recuperado.json
 cmp evento.json recuperado.json
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
 
 Resultado esperado: `cmp` termina con código `0` — el evento `RF-102` subió y bajó intacto de Cloud Storage local, con `CLOUDSDK_CORE_PROJECT=floci-local` identificando el proyecto, sin ningún JSON de cuenta de servicio real.
 #### Paso 5 · Práctica guiada
@@ -677,11 +661,13 @@ Inicia una instancia local, abre y cierra puertos mientras corre y observa los s
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `lab.md` para hipótesis, evidencia y limpieza, y escribe `tema-10-s3-101.sh` con el laboratorio completo de la sección **Practícalo tú**.
 ```bash
-mkdir floci-lab
-cd floci-lab
-docker --version
+mkdir floci-lab && cd floci-lab
+eval "$(floci env)"
+# guarda aquí el bloque «Practícalo tú» como tema-10-s3-101.sh
+bash tema-10-s3-101.sh | tee lab.md
+aws s3 rb s3://demo-101 --force   # limpieza
 ```
-Resultado esperado: Docker disponible.
+Resultado esperado: `lab.md` termina con dos códigos HTTP, `200` y después `403`, como explica la sección **Practícalo tú**; `rb --force` borra el objeto y el bucket para que el laboratorio pueda repetirse desde cero.
 #### Paso 5 · Práctica guiada
 Pista: omite un prerrequisito para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -731,20 +717,12 @@ Compatibilidad de API significa que clientes y formatos se comportan como espera
 #### Paso 4 · Demostración guiada
 Parte de una carpeta vacía, crea `production-boundaries.md` con los criterios de promoción y escribe `tema-11-matriz-de-limites.sh` con el contenido de la sección **Practícalo tú**; ese script generará `matriz-limites.md`.
 ```bash
-mkdir floci-limits
-cd floci-limits
-node --version
+mkdir floci-limits && cd floci-limits
+# guarda aquí el bloque «Practícalo tú» como tema-11-matriz-de-limites.sh
+bash tema-11-matriz-de-limites.sh
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: la terminal muestra la tabla de cuatro filas que empieza con `| Capacidad | Validado localmente | Requiere nube real | Riesgo si se omite |` y queda escrito `matriz-limites.md`. Copia en `production-boundaries.md` las filas con riesgo `Alto` como criterios que deben probarse en la nube real antes de promover.
 #### Paso 5 · Práctica guiada
 Pista: afirma paridad total para provocar un fallo deliberado de diseño y corrígelo.
 #### Paso 6 · Práctica independiente

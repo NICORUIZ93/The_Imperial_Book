@@ -157,7 +157,7 @@ sino como tarea ECS o EKS separada.
 
 #### Paso 4 · Demostración guiada
 ```bash
-aws lambda create-function --function-name planificador-fallido --runtime nodejs20.x \
+aws lambda create-function --function-name planificador-fallido --runtime nodejs24.x \
   --handler index.handler --zip-file fileb://funcion.zip --timeout 1800 \
   --role arn:aws:iam::000000000000:role/lambda-role
 ```
@@ -254,6 +254,8 @@ Ejecútalo:
 ```bash
 terraform -chdir=infra apply
 VERSION=1.4.0 CUENTA=111122223333 bash ci/firmar-y-verificar.sh
+# IMAGEN solo existe dentro del script; defínela también en esta terminal.
+IMAGEN="111122223333.dkr.ecr.us-east-1.amazonaws.com/rutaflow/api"
 docker push "$IMAGEN:1.4.0"   # segundo intento con la misma etiqueta
 ```
 

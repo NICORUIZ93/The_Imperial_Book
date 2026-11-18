@@ -229,21 +229,25 @@ Esta jerarquía —`Deny` explícito siempre gana— es una herramienta de segur
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Redacta una política para el prefijo de evidencias autorizado. Revisa acciones, recurso y condiciones con ejemplos concretos de claves aceptadas y rechazadas; evita ampliar recursos para ocultar un error de ARN.
 
 #### Paso 4 · Demostración guiada
-Crea `src/policy.json` desde una carpeta vacía.
+Desde una carpeta vacía, guarda la política del diagrama en `src/policy.json` y pide al simulador de IAM que la evalúe contra dos objetos:
 ```bash
-mkdir ejemplo-policy
-node --version
+mkdir -p ejemplo-policy/src && cd ejemplo-policy
+cat > src/policy.json <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {"Effect": "Allow", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/*"},
+    {"Effect": "Deny", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/privado/*"}
+  ]
+}
+EOF
+for objeto in publico/guia.pdf privado/nomina.pdf; do
+  aws iam simulate-custom-policy --policy-input-list file://src/policy.json \
+    --action-names s3:GetObject --resource-arns "arn:aws:s3:::mi-bucket/$objeto" \
+    --query 'EvaluationResults[0].ResourceSpecificResults[0].[EvalResourceName,EvalResourceDecision]' --output text
+done
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: dos líneas, `arn:aws:s3:::mi-bucket/publico/guia.pdf  allowed` y `arn:aws:s3:::mi-bucket/privado/nomina.pdf  explicitDeny`. El `Allow` general cubre los dos objetos, pero el `Deny` explícito gana en `privado/`. Una acción que ninguna declaración menciona (prueba `--action-names s3:PutObject`) sale `implicitDeny`: denegada por defecto. La consulta lee `ResourceSpecificResults` porque el `EvalDecision` general agrega todos los recursos simulados. Si tu versión de Floci no implementa el simulador, anótalo como límite del emulador y repite la prueba en el simulador de políticas de una cuenta real.
 #### Paso 5 · Práctica guiada
 Pista: cambia Allow por Deny para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente

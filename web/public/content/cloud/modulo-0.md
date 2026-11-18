@@ -294,7 +294,7 @@ docker compose up -d aws-local
 docker compose ps aws-local
 curl -i http://localhost:4566/_floci/health
 ```
-La primera orden descarga y enciende el contenedor; la segunda muestra si está activo; la tercera pregunta por su estado. Busca una respuesta HTTP `200`. Floci ofrece una herramienta llamada LocalStack, pero aquí vamos a usar Floci: ambos permiten practicar servicios de AWS en local y sus catálogos no son idénticos.
+La primera orden descarga y enciende el contenedor; la segunda muestra si está activo; la tercera pregunta por su estado. Busca una respuesta HTTP `200`. LocalStack es otro emulador, independiente de Floci; Floci acepta algunas de sus variables (como `PERSISTENCE` y `EDGE_PORT`) y publica una guía de migración. Ambos permiten practicar servicios de AWS en local y sus catálogos no son idénticos.
 Ahora crea `ejemplo-floci/revisar.mjs` con este código:
 ```js
 const respuesta = await fetch("http://localhost:4566/_floci/health");
@@ -336,7 +336,7 @@ Desde la carpeta principal del proyecto ejecuta:
 ```bash
 docker compose config --services
 ```
-**Resultado esperado:** verás `aws-local`, `azure-local` y `gcp-local`. En `docker-compose.yml`, busca `ports:` y lee las tres asignaciones. En esta versión son `4566`, `4577` y `4588`, respectivamente. El curso comienza con AWS; los otros dos se usan en el tema multi-nube.
+**Resultado esperado:** verás cuatro nombres, en un orden que puede variar: `aws-local`, `azure-local`, `gcp-local` y `stackport`. Los tres primeros son los emuladores; `stackport` es un explorador visual de los recursos AWS que usarás en el Módulo 1. En `docker-compose.yml`, busca `ports:` y lee las asignaciones de los emuladores: `4566`, `4577` y `4588`, respectivamente (StackPort usa `8080`). El curso comienza con AWS; los otros dos se usan en el tema multi-nube.
 Si el listado no coincide, comprueba que abriste la carpeta correcta: `pwd` muestra la ruta actual en macOS/Linux y `Get-Location` la muestra en PowerShell. `docker compose config --services` lee la configuración; no inicia contenedores. Esta es una ventaja para explorar el proyecto sin ocupar memoria.
 
 | Proveedor | Ejemplo de almacenamiento | Servicio local | Puerto |
@@ -397,7 +397,7 @@ Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás estudiar cada módulo del curso con el mismo ciclo de tres fases y dejar evidencia de cada una en una bitácora versionada. **Conceptos clave:** ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito. **Prerrequisitos:** una terminal, un editor y Git; comprueba `git --version` antes de empezar.
 #### Paso 2 · Contexto y caso real
-Cada uno de los diez módulos sigue el mismo ciclo. La **teoría** explica cada concepto con una analogía, el motivo por el que importa y un diagrama; no tiene comandos, porque sirve para construir el modelo mental antes de tocar el teclado. El **laboratorio** da cada acción con su comando exacto, lo que hace y la salida esperada para comparar, e incluye una verificación final y los errores comunes. La **evaluación** ya no da el comando: plantea una tarea, una solución de referencia y criterios de éxito para autoevaluarte sin depender de que alguien corrija. **¿Por qué es importante?** Saber cómo está construido cada módulo te deja dosificar el tiempo: la teoría es el mínimo para no perderte, el laboratorio la práctica guiada y la evaluación la única prueba de que aprendiste y no solo copiaste comandos.
+Cada módulo del curso sigue este ciclo, aunque no todos lo rotulan igual. La **teoría** explica cada concepto con una analogía, el motivo por el que importa y un diagrama; no tiene comandos, porque sirve para construir el modelo mental antes de tocar el teclado. El **laboratorio** da cada acción con su comando exacto, lo que hace y la salida esperada para comparar, e incluye una verificación final y los errores comunes. La **evaluación** ya no da el comando: plantea una tarea, una solución de referencia y criterios de éxito para autoevaluarte sin depender de que alguien corrija. **¿Por qué es importante?** Saber cómo está construido cada módulo te deja dosificar el tiempo: la teoría es el mínimo para no perderte, el laboratorio la práctica guiada y la evaluación la única prueba de que aprendiste y no solo copiaste comandos.
 #### Paso 3 · Teoría, modelo mental y analogía
 Cada ciclo es una iteración: entender, construir, fallar, corregir y explicar. Al final de cada módulo, el resumen funciona como checklist: si no puedes explicar con tus palabras cada punto clave, repasa antes de avanzar. **Analogía:** es la secuencia de una escuela de vuelo: clase teórica (por qué funciona así), práctica supervisada con instrucciones exactas y, al final, el vuelo sin ayuda comprobado con una lista de criterios. Nadie pasa directo de la teoría a volar solo.
 
@@ -418,7 +418,7 @@ git log --oneline -1
 ```
 **Resultado esperado:** `git log` muestra un commit `bitácora: inicia módulo 0`. Cada fase que completes cambiará su línea de `pendiente` a la evidencia concreta (comando, salida o archivo).
 
-Cuando tengas Floci corriendo, el laboratorio del Módulo 1 empieza con esta comprobación; anota su salida en la bitácora:
+Cuando tengas Floci corriendo (Laboratorio 1.2 del Módulo 1), haz esta comprobación y anota su salida en la bitácora; debe devolver un JSON con los campos `UserId`, `Account` y `Arn`:
 ```bash
 aws --endpoint-url http://localhost:4566 sts get-caller-identity
 ```
@@ -443,7 +443,7 @@ Entrega la bitácora con su historial de commits, el fallo deliberado y su corre
 
 #### Paso 1 · Objetivo y preparación
 
-Ten a mano la AWS CLI configurada contra el emulador local del curso (`eval "$(floci env)"`) o una cuenta real en modo solo lectura. Crea `academia-labs/cloud/fundamentos/decision-region.md`.
+Ten a mano la AWS CLI configurada contra el emulador local del curso (levántalo con `docker compose up -d aws-local` desde la carpeta principal del proyecto y exporta `AWS_ENDPOINT_URL=http://localhost:4566` junto con las credenciales `test` del laboratorio de este módulo) o una cuenta real en modo solo lectura. Crea `academia-labs/cloud/fundamentos/decision-region.md`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -499,7 +499,8 @@ Decisión: ... · Zonas: al menos 2 AZ para la API y la base.
 Ejecútalo:
 
 ```bash
-eval "$(floci env)"   # o tu perfil de AWS en modo lectura
+export AWS_ENDPOINT_URL=http://localhost:4566   # omítelo si usas tu perfil de AWS en modo lectura
+export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 aws ec2 describe-regions --query "Regions[].RegionName" --output text
 aws ec2 describe-availability-zones --region us-east-1 --query "AvailabilityZones[].ZoneName" --output text
 ```
@@ -536,7 +537,7 @@ Para un proyecto propio, decide entre IaaS y PaaS para el backend y justifica co
 - [ ] Reconoces el punto único de falla de una sola AZ.
 - [ ] Decides la región con cuatro criterios.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** elegir la región por defecto, desplegar todo en una sola AZ y confundir multi-AZ con multi-región. **Siguiente paso:** el tema «Qué vas a aprender y cómo está estructurado» presenta los servicios que usarás en cada modelo.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** elegir la región por defecto, desplegar todo en una sola AZ y confundir multi-AZ con multi-región. **Siguiente paso:** el laboratorio práctico de este módulo deja instalado el software que necesitas desde el Módulo 1.
 
 **Transferencia al proyecto integrador «RutaFlow»:** documenta la región y las zonas de RutaFlow con la plantilla y despliega la API en al menos dos zonas.
 
@@ -565,14 +566,14 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 | Paso | Acción | Comando | Explicación | Salida esperada |
 |---|---|---|---|---|
 | 1 | Instalar Docker | Descarga Docker Desktop (Windows/Mac) desde el sitio oficial de Docker, o Docker Engine (Linux) con el gestor de paquetes de tu distribución | Docker es el motor de contenedores que va a ejecutar Floci; sin Docker no puedes levantar ningún emulador de este curso | El instalador termina sin errores y Docker Desktop (o el daemon en Linux) queda corriendo |
-| 2 | Verificar Docker | `docker --version` | Confirma que el binario de Docker está en tu PATH y responde | Una línea como `Docker version 27.x.x, build xxxxxxx` |
+| 2 | Verificar Docker | `docker --version` | Confirma que el binario de Docker está en tu PATH y responde | Una línea que empieza con `Docker version` seguida del número de versión y del `build` |
 | 3 | Probar que Docker funciona de extremo a extremo | `docker run hello-world` | Descarga una imagen mínima de prueba y la ejecuta en un contenedor | Un mensaje de texto que empieza con "Hello from Docker!" |
 | 4 | Instalar AWS CLI | Descarga el instalador de AWS CLI v2 desde la documentación oficial de AWS para tu sistema operativo | La AWS CLI es la herramienta de línea de comandos que vas a usar en casi todos los módulos para hablar con Floci | El instalador termina sin errores |
 | 5 | Verificar AWS CLI | `aws --version` | Confirma que el binario está instalado y en tu PATH | Una línea como `aws-cli/2.x.x Python/3.x.x ...` |
 | 6 | Instalar Python 3 | Descarga Python 3 desde python.org o usa el gestor de paquetes de tu sistema | Vas a usar Python (con la librería boto3) en varios laboratorios para hablar con Floci desde código, no solo desde la CLI | El instalador termina sin errores |
-| 7 | Verificar Python | `python3 --version` | Confirma la versión instalada | Una línea como `Python 3.11.x` (cualquier versión 3.9 o superior sirve) |
+| 7 | Verificar Python | `python3 --version` | Confirma la versión instalada | Una línea como `Python 3.12.x` o superior (Python 3.9 llegó a fin de vida en octubre de 2025 y Lambda deprecó su runtime el 15-dic-2025) |
 | 8 | Instalar Node.js | Descarga Node.js LTS desde nodejs.org o usa un gestor de versiones como nvm | Vas a escribir funciones Lambda en Node.js en el Módulo 5 | El instalador termina sin errores |
-| 9 | Verificar Node.js | `node --version` | Confirma la versión instalada | Una línea como `v20.x.x` o superior |
+| 9 | Verificar Node.js | `node --version` | Confirma la versión instalada | Una línea como `v22.x.x`, `v24.x.x` o `v26.x.x` (líneas LTS vigentes; Lambda deprecó el runtime de Node.js 20 el 30-abr-2026) |
 | 10 | Configurar variables de entorno de AWS CLI | En Linux/macOS: `export AWS_ACCESS_KEY_ID=test`<br>`export AWS_SECRET_ACCESS_KEY=test`<br>`export AWS_DEFAULT_REGION=us-east-1`<br><br>En Windows (PowerShell): `$Env:AWS_ACCESS_KEY_ID="test"`<br>`$Env:AWS_SECRET_ACCESS_KEY="test"`<br>`$Env:AWS_DEFAULT_REGION="us-east-1"` | Floci no valida credenciales reales, pero la AWS CLI exige que existan unas credenciales con formato válido antes de dejarte ejecutar cualquier comando | Los comandos se ejecutan sin mostrar ningún error |
 | 11 | Confirmar que las variables quedaron activas | `echo $AWS_ACCESS_KEY_ID` (Linux/macOS) o `echo $Env:AWS_ACCESS_KEY_ID` (PowerShell) | Verifica que el valor se guardó correctamente en la sesión actual de la terminal | Se imprime `test` |
 
@@ -582,7 +583,7 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 
 - **`docker: command not found` después de instalar Docker Desktop.** En macOS y Windows, cierra y vuelve a abrir la terminal después de instalar; el instalador actualiza el PATH pero las terminales ya abiertas no lo recargan automáticamente.
 - **`Cannot connect to the Docker daemon` al ejecutar `docker run hello-world`.** Docker Desktop debe estar abierto y completamente iniciado (el ícono de la ballena en la barra de tareas debe indicar que está corriendo, no "starting"). En Linux, verifica que el servicio esté activo con `sudo systemctl status docker` y arráncalo con `sudo systemctl start docker` si no lo está.
-- **Las variables de entorno desaparecen al cerrar la terminal.** Esto es esperado: las variables exportadas con `export` (o `$Env:` en PowerShell) solo viven en la sesión actual. Si quieres que persistan, añádelas a tu archivo de configuración de shell (`.bashrc`, `.zshrc`) o crea un perfil de AWS CLI dedicado con `aws configure --profile floci`, que verás en detalle en el Módulo 1.
+- **Las variables de entorno desaparecen al cerrar la terminal.** Esto es esperado: las variables exportadas con `export` (o `$Env:` en PowerShell) solo viven en la sesión actual. Si quieres que persistan, añádelas a tu archivo de configuración de shell (`.bashrc`, `.zshrc`) o vuelve a cargarlas en cada terminal con `eval "$(floci env)"`, que verás en el Laboratorio 1.2 del Módulo 1.
 - **`aws: command not found` en Windows tras instalar.** Asegúrate de haber reiniciado la terminal (o la sesión de Windows) después de la instalación; el instalador de AWS CLI v2 en Windows requiere reiniciar la consola para actualizar el PATH del sistema.
 
 ---

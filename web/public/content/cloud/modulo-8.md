@@ -47,27 +47,21 @@ si Blob Storage necesita el mismo versionado y ciclo de vida que ya configuraste
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo && floci start
+mkdir ejemplo && cd ejemplo && floci az start
+eval "$(floci az env)"   # exporta AZURE_STORAGE_CONNECTION_STRING (puerto 4577)
+printf 'foto de prueba de la entrega 001\n' > entrega-001.jpg
 ```
 
 ```bash
-az storage container create --name pruebas-entrega --connection-string "$AZURE_CONN_LOCAL"
-az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_CONN_LOCAL"
-az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_CONN_LOCAL"
+az storage container create --name pruebas-entrega --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+az storage blob upload --container-name pruebas-entrega --file entrega-001.jpg --name envio-4471/entrega-001.jpg --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+az storage blob download --container-name pruebas-entrega --name envio-4471/entrega-001.jpg --file descargada-azure.jpg --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
 diff entrega-001.jpg descargada-azure.jpg
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: `diff` no muestra ninguna diferencia — el mismo archivo que subiste a S3 en el Módulo 2 ahora hace el mismo ciclo completo (subir, descargar, verificar) en Blob Storage.
+Resultado esperado: `diff` no muestra ninguna diferencia: el archivo hace el mismo ciclo que en S3 en el Módulo 2 (subir, descargar, verificar), ahora en Blob Storage. Floci Azure atiende Blob, Queue y Table en el mismo puerto `4577` y los distingue por la ruta: `/devstoreaccount1` para Blob, `/devstoreaccount1-queue` para Queue y `/devstoreaccount1-table` para Table.
 #### Paso 5 · Práctica guiada
-Pista: reintentá el `upload` apuntando la cadena de conexión al puerto de Queue Storage (10001) en vez del puerto de Blob (10000) — ese es el fallo deliberado: la conexión falla o el servicio rechaza la operación, porque Queue Storage no entiende peticiones de blobs aunque esté en la misma cuenta de almacenamiento.
+Pista: reintenta el `upload` con una copia de la cadena de conexión donde `BlobEndpoint` usa el puerto `4578` en vez de `4577`: ese es el fallo deliberado. La conexión es rechazada porque en ese puerto no escucha nada; compara el puerto con el que muestra `floci az status` y corrígelo.
 #### Paso 6 · Práctica independiente
 Relacioná cada pieza de RutaFlow con su servicio Azure correcto: la foto de entrega (Blob Storage), el mensaje "confirmar entrega" (Queue Storage), el historial de eventos del envío (Cosmos DB) — y justificá por qué ninguno de los tres es intercambiable con otro.
 #### Paso 7 · Cierre
@@ -118,23 +112,16 @@ como la de SQS.
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo && floci start
+mkdir ejemplo && cd ejemplo && floci gcp start
+export PUBSUB_EMULATOR_HOST=localhost:4588   # Pub/Sub de floci-gcp
 ```
 
 ```bash
-gcloud pubsub topics create delivery-commands --project mi-proyecto-local
-gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project mi-proyecto-local
-gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project mi-proyecto-local
-gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project mi-proyecto-local
+gcloud pubsub topics create delivery-commands --project floci-local
+gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --project floci-local
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-4471","recipientPin":"837201"}' --project floci-local
+gcloud pubsub subscriptions pull delivery-commands-sub --auto-ack --project floci-local
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
 
 Resultado esperado: el `pull` devuelve el mismo JSON que publicaste — el mismo comando "confirmar entrega" que en el Módulo 3 viajaba por `DeliveryCommands` (SQS), ahora viajando por un topic+suscripción de Pub/Sub.
 #### Paso 5 · Práctica guiada
@@ -227,24 +214,17 @@ conviene hacerlo sin rediseñar (mensajería, donde SQS FIFO y Pub/Sub con
 #### Paso 4 · Demostración guiada
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
 ```bash
-mkdir ejemplo && cd ejemplo && floci start
+mkdir ejemplo && cd ejemplo && floci gcp start
+export PUBSUB_EMULATOR_HOST=localhost:4588
 ```
 
 ```bash
-gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project mi-proyecto-local
+gcloud pubsub topics publish delivery-commands --message '{"shipmentId":"env-5002","sequence":1}' --ordering-key env-5002 --project floci-local
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: ese es el fallo deliberado — `FAILED_PRECONDITION: The subscription delivery-commands-sub does not have message ordering enabled`, porque publicar con `--ordering-key` no alcanza: también hay que habilitar el ordenamiento en la suscripción.
+Resultado esperado: el `publish` se acepta y devuelve un `messageIds`, pero ese es el fallo deliberado, que no muestra error: `delivery-commands-sub` se creó sin ordenamiento, y según la documentación de Pub/Sub una suscripción sin ordenamiento «recibe los mensajes sin un orden esperado». Publicar con `--ordering-key` no alcanza: también hay que habilitar el ordenamiento en la suscripción.
 #### Paso 5 · Práctica guiada
-Pista: corregí el error del Paso 4 recreando la suscripción con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project mi-proyecto-local`, y repetí el `publish` con `--ordering-key` — ahora sí se acepta, porque tanto el productor como la suscripción acordaron explícitamente mantener el orden.
+Pista: corrige el fallo del Paso 4. El ordenamiento no se puede activar en una suscripción existente, así que bórrala con `gcloud pubsub subscriptions delete delivery-commands-sub --project floci-local` y créala de nuevo con `gcloud pubsub subscriptions create delivery-commands-sub --topic delivery-commands --enable-message-ordering --project floci-local`. Repite el `publish` con `--ordering-key`: ahora productor y suscripción acordaron explícitamente mantener el orden de los mensajes con la misma clave.
 #### Paso 6 · Práctica independiente
 Armá una tabla de tres columnas (AWS / Azure / GCP) solo para la fila "mensajería", anotando qué necesita cada uno para garantizar orden (SQS FIFO vs Pub/Sub con `--enable-message-ordering`), y decidí cuál requeriría menos cambios de configuración si RutaFlow migrara hoy.
 #### Paso 7 · Cierre
@@ -252,7 +232,7 @@ Entregá el error de ordenamiento no habilitado y su corrección, y la tabla com
 
 ## Laboratorio práctico
 
-> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`.
+> Este laboratorio asume que ya ejecutaste `floci start` y `eval $(floci env)` (Módulo 1) en tu sesión de terminal, así que los comandos de `aws` no repiten `--endpoint-url`. Para Azure y GCP usa el `docker-compose.yml` de la raíz del proyecto, que publica `azure-local` en el puerto `4577` y `gcp-local` en el `4588`.
 
 **Objetivo del laboratorio:** subir y descargar un archivo en Blob Storage (Azure) y en Cloud Storage (GCP), crear una cola en Azure y un topic con suscripción en GCP, y documentar el mismo caso de uso resuelto en los tres proveedores.
 
@@ -262,30 +242,30 @@ Entregá el error de ordenamiento no habilitado y su corrección, y la tabla com
 
 | Paso | Acción | Comando | Explicación | Salida esperada |
 |---|---|---|---|---|
-| 1 | Levantar floci-az | `docker run -d -p 10000:10000 -p 10001:10001 -p 10002:10002 floci/floci-az:latest` | Expone los puertos estándar de emulación de almacenamiento Azure (Blob, Queue, Table) | El contenedor aparece corriendo con `docker ps` |
-| 2 | Crear un contenedor Blob | `az storage container create --name mi-contenedor --connection-string "<cadena-de-conexion-local>"` | Crea el equivalente a un bucket de S3 dentro de Blob Storage | `{"created": true}` |
-| 3 | Subir un blob | `az storage blob upload --container-name mi-contenedor --file hola.txt --name hola.txt --connection-string "<cadena-de-conexion-local>"` | Sube el mismo archivo `hola.txt` que usaste en el Módulo 2 con S3 | Confirmación de subida sin errores |
-| 4 | Descargar el blob | `az storage blob download --container-name mi-contenedor --name hola.txt --file hola-descargado-azure.txt --connection-string "<cadena-de-conexion-local>"` | Confirma el ciclo completo de subida y descarga, igual que hiciste con S3 | El contenido descargado coincide con el original |
-| 5 | Crear una cola Queue Storage | `az storage queue create --name mi-cola-azure --connection-string "<cadena-de-conexion-local>"` | Crea el equivalente más cercano a una cola SQS Standard | Confirmación de creación |
+| 1 | Levantar floci-az y cargar su cadena de conexión | `docker compose up -d azure-local` y después `export AZURE_STORAGE_CONNECTION_STRING='DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://localhost:4577/devstoreaccount1;QueueEndpoint=http://localhost:4577/devstoreaccount1-queue;TableEndpoint=http://localhost:4577/devstoreaccount1-table;'` | Floci Azure atiende Blob, Queue y Table en un solo puerto, `4577`, y los distingue por la ruta; no usa los puertos 10000–10002 de Azurite. La cuenta `devstoreaccount1` y su clave son las públicas de desarrollo | `docker compose ps azure-local` muestra el servicio corriendo con `0.0.0.0:4577->4577/tcp` |
+| 2 | Crear un contenedor Blob | `az storage container create --name mi-contenedor --connection-string "$AZURE_STORAGE_CONNECTION_STRING"` | Crea el equivalente a un bucket de S3 dentro de Blob Storage | `{"created": true}` |
+| 3 | Subir un blob | `az storage blob upload --container-name mi-contenedor --file hola.txt --name hola.txt --connection-string "$AZURE_STORAGE_CONNECTION_STRING"` | Sube el mismo archivo `hola.txt` que usaste en el Módulo 2 con S3 | Confirmación de subida sin errores |
+| 4 | Descargar el blob | `az storage blob download --container-name mi-contenedor --name hola.txt --file hola-descargado-azure.txt --connection-string "$AZURE_STORAGE_CONNECTION_STRING"` | Confirma el ciclo completo de subida y descarga, igual que hiciste con S3 | El contenido descargado coincide con el original |
+| 5 | Crear una cola Queue Storage | `az storage queue create --name mi-cola-azure --connection-string "$AZURE_STORAGE_CONNECTION_STRING"` | Crea el equivalente más cercano a una cola SQS Standard | Confirmación de creación |
 
 ### Laboratorio 8.2 — GCP: Cloud Storage y Pub/Sub
 
 | Paso | Acción | Comando | Explicación | Salida esperada |
 |---|---|---|---|---|
-| 1 | Levantar floci-gcp | `docker run -d -p 4443:4443 -p 8085:8085 -p 8080:8080 floci/floci-gcp:latest` | Expone los puertos estándar de emulación de Cloud Storage, Pub/Sub y Firestore | El contenedor aparece corriendo con `docker ps` |
-| 2 | Crear un bucket | `gcloud storage buckets create gs://mi-bucket-gcp --project mi-proyecto-local` | Crea el equivalente directo a un bucket de S3 | Confirmación de creación del bucket |
+| 1 | Levantar floci-gcp y apuntar `gcloud` a él | `docker compose up -d gcp-local` y después `export CLOUDSDK_API_ENDPOINT_OVERRIDES_STORAGE=http://localhost:4588/ CLOUDSDK_CORE_PROJECT=floci-local CLOUDSDK_AUTH_ACCESS_TOKEN=floci PUBSUB_EMULATOR_HOST=localhost:4588` | Floci GCP atiende todos sus servicios en el puerto `4588`. `gcloud storage` ignora `STORAGE_EMULATOR_HOST`, así que necesita el override de endpoint; en local cualquier token sirve | `docker compose ps gcp-local` muestra el servicio corriendo con `0.0.0.0:4588->4588/tcp` |
+| 2 | Crear un bucket | `gcloud storage buckets create gs://mi-bucket-gcp --project floci-local` | Crea el equivalente directo a un bucket de S3 | Confirmación de creación del bucket |
 | 3 | Subir un archivo | `gcloud storage cp hola.txt gs://mi-bucket-gcp/` | Sube el mismo archivo de prueba a Cloud Storage | Confirmación de la subida |
-| 4 | Crear un topic Pub/Sub | `gcloud pubsub topics create mi-topic --project mi-proyecto-local` | Crea el canal de publicación al que se enviarán mensajes | Confirmación de creación del topic |
-| 5 | Crear una suscripción sobre ese topic | `gcloud pubsub subscriptions create mi-suscripcion --topic mi-topic --project mi-proyecto-local` | Crea el punto de recepción independiente que va a recibir copia de cada mensaje publicado en el topic | Confirmación de creación de la suscripción |
-| 6 | Publicar un mensaje | `gcloud pubsub topics publish mi-topic --message "Hola desde GCP" --project mi-proyecto-local` | Envía un mensaje al topic; cualquier suscripción activa recibirá una copia | Un JSON con el `messageIds` del mensaje publicado |
-| 7 | Confirmar la recepción del mensaje | `gcloud pubsub subscriptions pull mi-suscripcion --auto-ack --project mi-proyecto-local` | Extrae el mensaje de la suscripción y lo confirma automáticamente (`--auto-ack`) | El texto `Hola desde GCP` aparece en la respuesta |
+| 4 | Crear un topic Pub/Sub | `gcloud pubsub topics create mi-topic --project floci-local` | Crea el canal de publicación al que se enviarán mensajes | Confirmación de creación del topic |
+| 5 | Crear una suscripción sobre ese topic | `gcloud pubsub subscriptions create mi-suscripcion --topic mi-topic --project floci-local` | Crea el punto de recepción independiente que va a recibir copia de cada mensaje publicado en el topic | Confirmación de creación de la suscripción |
+| 6 | Publicar un mensaje | `gcloud pubsub topics publish mi-topic --message "Hola desde GCP" --project floci-local` | Envía un mensaje al topic; cualquier suscripción activa recibirá una copia | Un JSON con el `messageIds` del mensaje publicado |
+| 7 | Confirmar la recepción del mensaje | `gcloud pubsub subscriptions pull mi-suscripcion --auto-ack --project floci-local` | Extrae el mensaje de la suscripción y lo confirma automáticamente (`--auto-ack`) | El texto `Hola desde GCP` aparece en la respuesta |
 
 **Verificación:** el laboratorio se considera exitoso si tanto el archivo subido a Blob Storage como el subido a Cloud Storage se descargan correctamente con el contenido original intacto, y si el mensaje publicado en el topic de Pub/Sub se recibe correctamente en la suscripción creada.
 
 **Errores comunes y soluciones**
 
-- **`az` no reconoce la cadena de conexión local.** Verifica que la cadena de conexión apunta explícitamente a los puertos locales de floci-az (10000-10002), no a una cuenta de Azure real; una cadena de conexión de Azure real y una apuntando a un emulador local tienen un formato similar pero con el host y los puertos claramente distintos.
-- **`gcloud` intenta autenticarse contra Google Cloud real en vez de contra floci-gcp.** Asegúrate de configurar la variable de entorno del emulador correspondiente a cada servicio (por ejemplo, `STORAGE_EMULATOR_HOST` para Cloud Storage, `PUBSUB_EMULATOR_HOST` para Pub/Sub) antes de ejecutar cualquier comando de `gcloud` contra floci-gcp.
+- **`az` no reconoce la cadena de conexión local.** Verifica que la cadena de conexión apunta a `http://localhost:4577/devstoreaccount1` (Blob), `…/devstoreaccount1-queue` (Queue) y `…/devstoreaccount1-table` (Table), no a una cuenta de Azure real; una cadena de conexión de Azure real y una apuntando a un emulador local tienen un formato similar pero con el host y el puerto claramente distintos.
+- **`gcloud` intenta autenticarse contra Google Cloud real en vez de contra floci-gcp.** `gcloud storage` ignora `STORAGE_EMULATOR_HOST`: exporta `CLOUDSDK_API_ENDPOINT_OVERRIDES_STORAGE=http://localhost:4588/`, `CLOUDSDK_CORE_PROJECT=floci-local` y `CLOUDSDK_AUTH_ACCESS_TOKEN=floci` (en local cualquier token sirve). Para `gcloud pubsub`, la guía de Pub/Sub de floci-gcp usa `PUBSUB_EMULATOR_HOST=localhost:4588`. `STORAGE_EMULATOR_HOST` sí lo leen los SDK de cliente, no `gcloud`.
 - **La suscripción de Pub/Sub no recibe ningún mensaje.** Confirma que la suscripción se creó sobre el mismo topic exacto donde publicaste el mensaje, y recuerda que una suscripción creada después de publicar un mensaje no recibe retroactivamente mensajes publicados antes de su creación (a menos que el topic tenga retención de mensajes configurada, un detalle avanzado fuera del alcance de este módulo).
 - **Confundir el orden de creación en Pub/Sub.** A diferencia de SQS, donde solo existe la cola, en Pub/Sub necesitas crear primero el topic y después, por separado, al menos una suscripción sobre ese topic antes de que cualquier mensaje publicado tenga a dónde llegar de forma recuperable.
 

@@ -182,26 +182,19 @@ mkdir ejemplo && cd ejemplo && floci start
 ```
 
 ```bash
-CODE_VERIFIER=$(openssl rand -base64 32 | tr -d '=+/')
-CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | openssl dgst -sha256 -binary | base64 | tr -d '=+/')
-echo "Abrí en el navegador: https://localhost:4566/oauth2/authorize?client_id=$CLIENT_ID&response_type=code&code_challenge=$CODE_CHALLENGE&code_challenge_method=S256&redirect_uri=rutaflow://callback"
+CODE_VERIFIER=$(openssl rand -base64 48 | tr '+/' '-_' | tr -d '=')
+CODE_CHALLENGE=$(printf '%s' "$CODE_VERIFIER" | openssl dgst -sha256 -binary | base64 | tr '+/' '-_' | tr -d '=')
+echo "verifier: ${#CODE_VERIFIER} caracteres, challenge: ${#CODE_CHALLENGE} caracteres"
+echo "Abre en el navegador: http://localhost:4566/oauth2/authorize?client_id=$CLIENT_ID&response_type=code&code_challenge=$CODE_CHALLENGE&code_challenge_method=S256&redirect_uri=rutaflow://callback"
 ```
 
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: el flujo arranca con un `code_challenge` derivado del `code_verifier`, nunca el verificador en sí — ese valor original solo vive en la app del conductor hasta el último paso del intercambio.
+Resultado esperado: `verifier: 64 caracteres, challenge: 43 caracteres`. RFC 7636 exige un verificador de 43 a 128 caracteres, y el challenge `S256` es `BASE64URL(SHA256(verifier))`: base64 con `+` y `/` cambiados por `-` y `_`, sin `=` al final. Borrar `+/` en lugar de sustituirlos produciría un challenge que el servidor no puede reproducir. El flujo arranca con el `code_challenge`, nunca con el verificador en sí: ese valor original solo vive en la app del conductor hasta el último paso del intercambio. `$CLIENT_ID` es el ID del app client `app-conductor` que creaste en el Tema 1 de este módulo.
 #### Paso 5 · Práctica guiada
 Pista: en el intercambio final, probá `POST /oauth2/token` con el código de autorización pero SIN el parámetro `code_verifier` — ese es el fallo deliberado: Cognito rechaza el intercambio (`invalid_grant` o un error equivalente de verificación PKCE fallida), porque sin el verificador original no hay forma de confirmar que quien presenta el código es la misma app que inició el flujo.
 #### Paso 6 · Práctica independiente
 Documentá, para `app-conductor`, qué `redirect_uri` debería aceptar Cognito (pista: una URI de esquema personalizado como `rutaflow://callback`, nunca un wildcard abierto que acepte cualquier destino) y qué scope mínimo necesitaría pedir para confirmar entregas, sin pedir de más.
 #### Paso 7 · Cierre
-Entregá el `code_challenge` generado del Paso 4, el intercambio rechazado sin `code_verifier` del Paso 5, y el `redirect_uri`/scope documentados del Paso 6; explicá por qué un cliente público como `app-conductor` necesita PKCE y un backend con secreto propio no lo necesitaría de la misma forma. Siguiente paso: autorización por roles. Errores comunes: redirect abierto y scopes excesivos. Fuente oficial: https://www.rfc-editor.org/rfc/rfc6749.
+Entrega el `code_challenge` generado del Paso 4, el intercambio rechazado sin `code_verifier` del Paso 5, y el `redirect_uri`/scope documentados del Paso 6; explica por qué un cliente público como `app-conductor` está obligado a usar PKCE y por qué la guía de seguridad actual de OAuth 2.0 (RFC 9700) también lo recomienda para un backend con secreto propio. Siguiente paso: autorización por roles. Errores comunes: redirect abierto y scopes excesivos. Fuente oficial: https://www.rfc-editor.org/rfc/rfc6749.
 
 ## Laboratorio práctico
 

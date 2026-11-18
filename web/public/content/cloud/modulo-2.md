@@ -17,7 +17,7 @@ Un bucket es un almacén y la key es la etiqueta única de cada paquete.
 An error occurred (NoSuchBucket) when calling the PutObject operation: The specified bucket does not exist
 ```
 
-**Diagnosis:**
+**Diagnóstico:**
 1. **Qué sucedió:** Intentaste subir (`cp`) o leer (`get-object`) desde un bucket que no existe.
 2. **Por qué sucede:** S3 requiere crear el bucket ANTES de poder usarlo. Tipear mal el nombre o asumir que existe sin verificar causa este error.
 3. **Qué buscar en logs:** Revisar el nombre del bucket en el comando — ¿existe? Verifica con `aws s3 ls`.
@@ -45,11 +45,11 @@ aws s3 mb s3://pruebas-entrega
 aws s3 cp entrega-001.jpg s3://pruebas-entrega/envio-4471/entrega-001.jpg
 ```
 
-**Learning:**
+**Lo que aprendes:**
 S3 no crea buckets automáticamente si la key es nueva — a diferencia de un sistema de archivos donde hacer `mkdir -p` crea la estructura. Buckets deben existir explícitamente. Validar que existen ANTES de operaciones en un script es crítico.
 
-**Trade-off en RutaFlow:**
-El flujo de despliegue de RutaFlow incluye un paso `floci init` que crea todos los buckets necesarios definidos en `template.yaml`. En desarrollo local, si olvidas ese paso, uploads fallan. Por eso se documenta en README: "Asegúrate de ejecutar `floci init` antes de `floci start`".
+**Compromiso en RutaFlow:**
+El arranque local de RutaFlow incluye un paso que crea los buckets necesarios con `aws s3 mb` justo después de `floci start`. Si olvidas ese paso, las subidas fallan con `NoSuchBucket`. Por eso el README lo documenta: «Después de `floci start`, ejecuta el script que crea los buckets».
 
 ---
 
@@ -83,13 +83,17 @@ No hay carpetas reales: "fotos/2024/" es solo texto dentro de cada clave, no una
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Define nombres y separación de buckets para evidencias públicas y privadas. Sube dos objetos con la misma clave en buckets distintos y comprueba que cada lectura devuelve el contenido correspondiente.
 
 #### Paso 4 · Demostración guiada
-Crea `src/upload.js` desde una carpeta vacía.
+Con Floci corriendo y `eval "$(floci env)"` cargado (Laboratorio 1.2), crea un bucket, sube un objeto, lístalo y descárgalo:
 ```bash
-mkdir ejemplo-s3
-aws --version
-node --version
+mkdir ejemplo-s3 && cd ejemplo-s3
+printf 'entrega 001 firmada\n' > entrega-001.txt
+aws s3 mb s3://pruebas-entrega
+aws s3 cp entrega-001.txt s3://pruebas-entrega/envio-4471/entrega-001.txt
+aws s3 ls s3://pruebas-entrega/envio-4471/
+aws s3 cp s3://pruebas-entrega/envio-4471/entrega-001.txt descargada.txt
+diff entrega-001.txt descargada.txt && echo "contenido idéntico"
 ```
-Resultado esperado: CLI disponible.
+Resultado esperado: `mb` imprime `make_bucket: s3://pruebas-entrega`; el primer `cp` imprime `upload: ./entrega-001.txt to s3://pruebas-entrega/envio-4471/entrega-001.txt`; `ls` muestra una fila con fecha, tamaño (`20`) y `entrega-001.txt`; el segundo `cp` imprime una línea `download: …`, y `diff` no encuentra diferencias, por lo que ves `contenido idéntico`. La key completa es `envio-4471/entrega-001.txt`: la «carpeta» es parte del nombre.
 #### Paso 5 · Práctica guiada
 Pista: usa un bucket inexistente para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -408,8 +412,11 @@ Desde la carpeta vacía `s3-sdk-lab`, inicializa tu proyecto e instala la depend
 
 ```bash
 npm init -y
+npm pkg set type=module
 npm install @aws-sdk/client-s3
 ```
+
+`npm pkg set type=module` declara el proyecto como módulo ES. Sin esa línea, Node 22 ejecuta el `import` igual, pero imprime el aviso `MODULE_TYPELESS_PACKAGE_JSON`.
 
 Crea `s3-list-buckets.js` con este contenido completo:
 

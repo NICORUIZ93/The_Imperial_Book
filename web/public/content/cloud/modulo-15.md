@@ -6,7 +6,7 @@
 ### Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás declarar infraestructura desde cero. Prerrequisitos: Terraform y Docker; verifica `terraform --version`.
+Al finalizar podrás declarar infraestructura desde cero. Prerrequisitos: Floci corriendo y `eval "$(floci env)"` cargado (Laboratorio 1.2); verifica `aws --version`.
 #### Paso 2 · Contexto y caso real
 Una plataforma de entregas necesita repetir ambientes sin configurarlos a mano.
 #### Paso 3 · Teoría, modelo mental y analogía
@@ -29,7 +29,7 @@ Outputs:
 aws cloudformation deploy --template-file stack-basico.yaml --stack-name mi-stack
 ```
 
-(`terraform` es una herramienta de infraestructura como código, de HashiCorp, que este módulo usa para verificar tu entorno pero que no es la protagonista aquí — CloudFormation, el servicio nativo de IaC de AWS, sí lo es; volverás a Terraform con más detalle en el track de DevOps.) En los comandos de CloudFormation, `--template-file` es la ruta al archivo que declara los recursos deseados, y `--stack-name` es el nombre con el que identificás ese despliegue como unidad (para poder actualizarlo o borrarlo después).
+(Terraform es otra herramienta de infraestructura como código, de HashiCorp; aquí la protagonista es CloudFormation, el servicio nativo de IaC de AWS, y Terraform aparece solo como comparación en el Tema 3.) En los comandos de CloudFormation, `--template-file` es la ruta al archivo que declara los recursos deseados, y `--stack-name` es el nombre con el que identificas ese despliegue como unidad (para poder actualizarlo o borrarlo después).
 
 Un template de CloudFormation declara el estado deseado de la infraestructura completa (qué recursos deben existir y cómo deben estar configurados) en un único archivo de texto versionable en el control de versiones junto al resto del código de la aplicación; un stack es la instancia desplegada de ese template, gestionada como una unidad completa por CloudFormation. Crear recursos manualmente con comandos individuales de la CLI (como se hizo en módulos anteriores para aprender cada servicio de forma aislada) funciona bien para exploración y aprendizaje, pero se vuelve insostenible para gestionar infraestructura real: no hay ningún registro versionado de qué comandos exactos se ejecutaron ni en qué orden, recrear la misma infraestructura en un entorno nuevo requiere repetir manualmente cada comando (propenso a errores de omisión), y no existe una forma sencilla de saber qué recursos pertenecen a qué sistema o pueden eliminarse de forma segura sin dejar recursos huérfanos.
 
@@ -52,23 +52,44 @@ Outputs:
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Describe bucket, cola y función de entregas en un template versionado. Crea el stack de prueba, consulta sus recursos y elimina el stack comprobando qué datos requieren una política de conservación.
 
 #### Paso 4 · Demostración guiada
-Crea `main.tf` desde una carpeta vacía.
-```bash
-mkdir ejemplo-terraform
-terraform --version
+Crea `ejemplo-cloudformation/plantilla.yaml` desde una carpeta vacía:
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Bucket de evidencias de RutaFlow
+Parameters:
+  Entorno:
+    Type: String
+    AllowedValues: [dev, prod]
+    Default: dev
+Resources:
+  EvidenciasBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "rutaflow-evidencias-${Entorno}"
+Outputs:
+  NombreBucket:
+    Value: !Ref EvidenciasBucket
 ```
-Resultado esperado: Terraform disponible.
+Despliégala como stack y consulta el resultado:
+```bash
+cd ejemplo-cloudformation
+aws cloudformation deploy --template-file plantilla.yaml --stack-name rutaflow-evidencias
+aws cloudformation describe-stacks --stack-name rutaflow-evidencias \
+  --query 'Stacks[0].[StackStatus,Outputs[0].OutputValue]' --output text
+aws s3 ls
+```
+Resultado esperado: `deploy` crea un change set, lo ejecuta y termina cuando el stack queda creado. `describe-stacks` imprime `CREATE_COMPLETE` y `rutaflow-evidencias-dev`, y `aws s3 ls` lista el bucket `rutaflow-evidencias-dev`. No creaste el bucket con `s3 mb`: lo creó CloudFormation a partir de la plantilla.
 #### Paso 5 · Práctica guiada
 Pista: declara un recurso inválido para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
 Añade variables, outputs y un módulo.
 #### Paso 7 · Cierre
-Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: plan. Errores comunes: estado local perdido y secretos en variables. Fuente oficial: https://developer.hashicorp.com/terraform/docs.
+Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: change sets. Errores comunes: plantillas sin versionar y secretos en parámetros. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy/index.html.
 
 ### Tema 2: Change sets
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás revisar un plan desde cero. Prerrequisitos: Terraform y Docker; verifica `terraform --version`.
+Al finalizar podrás revisar un plan desde cero. Prerrequisitos: el stack `rutaflow-evidencias` del Tema 1; verifica `aws --version`.
 #### Paso 2 · Contexto y caso real
 Antes de cambiar producción necesitas conocer recursos que se crearán o destruirán.
 #### Paso 3 · Teoría, modelo mental y analogía
@@ -105,23 +126,33 @@ execute-change-set  → aplica el cambio YA revisado y aprobado
 ```
 
 #### Paso 4 · Demostración guiada
-Crea `main.tf` y `variables.tf` desde una carpeta vacía.
-```bash
-mkdir ejemplo-plan
-terraform --version
+En `ejemplo-cloudformation/plantilla.yaml` del Tema 1, añade el versionado dentro de `Properties` del bucket:
+```yaml
+      VersioningConfiguration:
+        Status: Enabled
 ```
-Resultado esperado: Terraform disponible.
+Calcula el impacto sin aplicarlo, revísalo y solo entonces ejecútalo:
+```bash
+aws cloudformation create-change-set --stack-name rutaflow-evidencias \
+  --change-set-name activar-versionado --template-body file://plantilla.yaml
+aws cloudformation wait change-set-create-complete --stack-name rutaflow-evidencias \
+  --change-set-name activar-versionado
+aws cloudformation describe-change-set --stack-name rutaflow-evidencias --change-set-name activar-versionado \
+  --query 'Changes[].ResourceChange.[Action,LogicalResourceId,Replacement]' --output text
+aws cloudformation execute-change-set --stack-name rutaflow-evidencias --change-set-name activar-versionado
+```
+Resultado esperado: `describe-change-set` imprime `Modify  EvidenciasBucket  False`: el bucket se modifica sin reemplazarse, porque la documentación de `AWS::S3::Bucket` indica que cambiar `VersioningConfiguration` no requiere reemplazo. Repite el ciclo con un change set que cambie `BucketName` (por ejemplo, el prefijo `rutaflow-evidencias-` por `rutaflow-fotos-`) y no lo ejecutes: `Replacement` sale `True`, porque cambiar el nombre exige crear un bucket nuevo y borrar el anterior. Ese es el cambio peligroso que el change set te deja ver antes de aplicarlo.
 #### Paso 5 · Práctica guiada
 Pista: modifica una variable para provocar un fallo deliberado de validación y corrígelo.
 #### Paso 6 · Práctica independiente
 Guarda plan y revisa cambios peligrosos.
 #### Paso 7 · Cierre
-Entrega plan, salida, fallo y corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://developer.hashicorp.com/terraform/cli/commands/plan.
+Entrega el change set, su salida, el fallo y la corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-change-set.html.
 
 ### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás detectar drift desde cero. Prerrequisitos: Terraform y Docker; verifica `terraform --version`.
+Al finalizar podrás detectar drift desde cero. Prerrequisitos: el stack `rutaflow-evidencias` del Tema 2; verifica `aws --version`.
 #### Paso 2 · Contexto y caso real
 Un cambio manual en consola puede dejar infraestructura fuera del control del repositorio.
 #### Paso 3 · Teoría, modelo mental y analogía
@@ -152,12 +183,14 @@ flowchart LR
 **Transferencia al proyecto integrador «Cloud local multi-nube»:** Modifica manualmente un recurso de laboratorio y compara su estado con la definición. Documenta la detección de drift y la reparación elegida; no permitas que dos herramientas administren el mismo recurso simultáneamente.
 
 #### Paso 4 · Demostración guiada
-Crea `main.tf` y `README.md` desde una carpeta vacía.
+Con el stack del Tema 2 (versionado activado), cambia el bucket a mano, fuera de CloudFormation, y pide a CloudFormation que compare:
 ```bash
-mkdir ejemplo-drift
-terraform --version
+aws s3api put-bucket-versioning --bucket rutaflow-evidencias-dev --versioning-configuration Status=Suspended
+aws cloudformation detect-stack-drift --stack-name rutaflow-evidencias
+aws cloudformation describe-stack-resource-drifts --stack-name rutaflow-evidencias \
+  --query 'StackResourceDrifts[].[LogicalResourceId,StackResourceDriftStatus]' --output text
 ```
-Resultado esperado: Terraform disponible.
+Resultado esperado: `detect-stack-drift` devuelve un `StackDriftDetectionId`; la detección es asíncrona, así que si la última consulta no lista nada, espera unos segundos y repítela. Cuando termina, imprime `EvidenciasBucket  MODIFIED`: la propiedad real ya no coincide con la plantilla. Para reconciliar, vuelve a dejar `Status=Enabled` con `put-bucket-versioning` y repite la detección hasta ver `IN_SYNC`. Si tu versión de Floci no implementa la detección de drift, anótalo como límite del emulador y compáralo en una cuenta real.
 #### Paso 5 · Práctica guiada
 Pista: cambia un recurso manualmente para provocar un fallo deliberado de convergencia y corrígelo.
 #### Paso 6 · Práctica independiente

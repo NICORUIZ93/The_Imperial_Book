@@ -285,7 +285,7 @@ python3 lote.py
 python3 lote.py   # segunda vez: idempotente
 ```
 
-**Explicación por bloques:** `ENTRADA` simula los diez archivos del mes, divididos en lotes de cuatro. `procesar` es idempotente: si ya existe la marca `.ok`, no hace nada. `fallos_simulados` hace que `guias-06.csv` falle una vez, como un timeout real. Cada lote se intenta hasta tres veces; el `else` del `for` solo corre si nunca hubo `break`, es decir, si los tres intentos fallaron. En el reintento del lote 2, los archivos 5 y 6… que ya estaban hechos se saltan gracias a la marca.
+**Explicación por bloques:** `ENTRADA` simula los diez archivos del mes, divididos en lotes de cuatro. `procesar` es idempotente: si ya existe la marca `.ok`, no hace nada. `fallos_simulados` hace que `guias-06.csv` falle una vez, como un timeout real. Cada lote se intenta hasta tres veces; el `else` del `for` solo corre si nunca hubo `break`, es decir, si los tres intentos fallaron. En el reintento del lote 2, solo `guias-05.csv`, que ya estaba hecho, se salta gracias a la marca; `guias-06.csv` falló en el primer intento y se procesa ahora, junto con `guias-07.csv` y `guias-08.csv`, que no se alcanzaron a procesar.
 
 ![Captura de terminal: el lote 2 falla por tiempo agotado, se reintenta y al final se procesan los 10 archivos](content/figures/cloud/procesamiento-batch.svg)
 

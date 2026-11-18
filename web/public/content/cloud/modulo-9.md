@@ -45,8 +45,9 @@ crear a mano por CLI.
 #### Paso 4 · Demostración guiada
 ```bash
 aws dynamodb create-table --table-name Tareas \
-  --attribute-definitions AttributeName=id,AttributeType=S \
-  --key-schema AttributeName=id,KeyType=HASH --billing-mode PAY_PER_REQUEST
+  --attribute-definitions AttributeName=id,AttributeType=S AttributeName=estado,AttributeType=S AttributeName=fecha_creacion,AttributeType=S \
+  --key-schema AttributeName=id,KeyType=HASH --billing-mode PAY_PER_REQUEST \
+  --global-secondary-indexes '[{"IndexName":"estado-fecha","KeySchema":[{"AttributeName":"estado","KeyType":"HASH"},{"AttributeName":"fecha_creacion","KeyType":"RANGE"}],"Projection":{"ProjectionType":"ALL"}}]'
 aws s3 mb s3://adjuntos-tareas
 aws sqs create-queue --queue-name procesar-adjunto
 ```
@@ -73,7 +74,7 @@ El modelo de datos central del proyecto es la tarea: un item de DynamoDB con, co
 
 Puedes implementar el backend de dos formas razonables: con una función Lambda separada por cada operación CRUD (una para crear, otra para leer, otra para actualizar, otra para eliminar), cada una con su propia integración específica en API Gateway; o con una única función Lambda que actúa como router interno, inspeccionando el método HTTP y la ruta recibidos en el `event` (recordando el Tema 4 del Módulo 5 y el formato de integración proxy del Módulo 6) para decidir internamente qué operación ejecutar. Ambos enfoques son válidos y verás ambos en proyectos reales; para este curso, el enfoque de una única función router es más simple de desplegar y suficiente para el alcance del proyecto, aunque el enfoque de funciones separadas escala mejor en proyectos más grandes al permitir desplegar y escalar cada operación de forma independiente.
 
-Cada operación CRUD se apoya directamente en los comandos que ya practicaste en el Módulo 4: crear una tarea usa `put_item` (o su equivalente en el SDK del lenguaje que elijas), leer una tarea usa `get_item` por su clave, listar tareas de un patrón de acceso concreto usa `query` (nunca `scan`, recordando por qué en el Tema 6 del Módulo 4), actualizar usa `update_item` con una expresión que modifica solo los atributos necesarios, y eliminar usa `delete_item`.
+Cada operación CRUD se apoya directamente en los comandos que ya practicaste en el Módulo 4: crear una tarea usa `put_item` (o su equivalente en el SDK del lenguaje que elijas), leer una tarea usa `get_item` por su clave, listar tareas de un patrón de acceso concreto usa `query` (nunca `scan`, recordando por qué en el Tema 6 del Módulo 4): con la clave simple `id` solo puedes consultar una tarea a la vez, así que la tabla declara el índice secundario global `estado-fecha` y el listado hace `query` sobre ese índice (`--index-name estado-fecha --key-condition-expression "estado = :e"`). Con pocos estados posibles, ese índice concentra las escrituras en pocas particiones; para el volumen de este proyecto es aceptable, pero anótalo como límite, actualizar usa `update_item` con una expresión que modifica solo los atributos necesarios, y eliminar usa `delete_item`.
 
 Es importante que cada operación valide su entrada antes de tocar la base de datos: por ejemplo, rechazar una creación de tarea sin `titulo`, o una actualización de `estado` a un valor fuera del conjunto de estados válidos. Esta validación puede reforzarse parcialmente con un modelo de API Gateway (Módulo 6, Tema 4), pero la validación de reglas de negocio más específicas (como los valores válidos de `estado`) debe vivir en el código de la función, no solo en la capa de API Gateway.
 
@@ -92,7 +93,7 @@ flowchart LR
         B1["GET /tareas/{id}"] --> B2["get_item"]
     end
     subgraph Listar["Listar tareas"]
-        C1["GET /tareas"] --> C2["query (nunca scan)"]
+        C1["GET /tareas?estado=pendiente"] --> C2["query sobre el GSI estado-fecha (nunca scan)"]
     end
     subgraph Actualizar["Actualizar tarea"]
         D1["PUT /tareas/{id}"] --> D2["update_item"]
@@ -290,21 +291,31 @@ flowchart TD
 **Límites y decisión de uso:** Una guía de despliegue ligada a rutas personales o recursos de una sesión no es reproducible. Pruébala desde un entorno limpio y distingue preparación, creación, comprobación y limpieza; no incluyas credenciales reales como valores de ejemplo.
 
 #### Paso 4 · Demostración guiada
-Crea `README.md` y `src/deploy.js` desde una carpeta vacía.
+Desde una carpeta vacía, escribe una guía de despliegue con sus tres fases (preparación, creación, comprobación) y ejecútala tal como la leería otra persona:
 ```bash
-mkdir ejemplo-documentado
-node --version
+mkdir -p ejemplo-documentado/scripts && cd ejemplo-documentado
+cat > scripts/desplegar.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+: "${AWS_ENDPOINT_URL:?define el endpoint con eval \"\$(floci env)\" antes de desplegar}"
+echo "1/3 preparación: endpoint $AWS_ENDPOINT_URL"
+aws dynamodb create-table --table-name Tareas \
+  --attribute-definitions AttributeName=id,AttributeType=S \
+  --key-schema AttributeName=id,KeyType=HASH --billing-mode PAY_PER_REQUEST > /dev/null
+aws dynamodb wait table-exists --table-name Tareas
+echo "2/3 creación: tabla Tareas"
+echo "3/3 comprobación: $(aws dynamodb describe-table --table-name Tareas --query 'Table.TableStatus' --output text)"
+EOF
+cat > README.md <<'EOF'
+# Tareas RutaFlow
+## Despliegue local
+1. Preparación: `floci start` y `eval "$(floci env)"`.
+2. Creación y comprobación: `bash scripts/desplegar.sh`.
+3. Limpieza: `aws dynamodb delete-table --table-name Tareas`.
+EOF
+bash scripts/desplegar.sh
 ```
-
-**Ejecuta el ejemplo** (con Floci corriendo en local, ejecuta el comando contra el emulador):
-
-```bash
-floci up
-aws --endpoint-url http://localhost:4566 sts get-caller-identity
-```
-Confirma la respuesta del servicio emulado.
-
-Resultado esperado: Node disponible.
+Resultado esperado: `1/3 preparación: endpoint …` con la URL de Floci, `2/3 creación: tabla Tareas` y `3/3 comprobación: ACTIVE`. Para el fallo deliberado del Paso 5, abre una terminal nueva sin `eval "$(floci env)"` y ejecuta el script: termina antes de crear nada con `AWS_ENDPOINT_URL: define el endpoint con eval "$(floci env)" antes de desplegar`. La guía falla con un mensaje que dice qué hacer, en lugar de crear recursos en una cuenta real por accidente. Ejecuta la limpieza del README antes de repetir el despliegue.
 #### Paso 5 · Práctica guiada
 Pista: elimina un parámetro para provocar un fallo deliberado y corrígelo.
 #### Paso 6 · Práctica independiente
@@ -395,7 +406,7 @@ Entrega README, salida, fallo y corrección; explica el resultado. Siguiente pas
 
 | Comando | Propósito |
 |---|---|
-| `aws lambda create-function --function-name f --runtime nodejs20.x --handler index.handler --zip-file fileb://f.zip --role arn` | Desplegar una función nueva |
+| `aws lambda create-function --function-name f --runtime nodejs24.x --handler index.handler --zip-file fileb://f.zip --role arn` | Desplegar una función nueva |
 | `aws lambda invoke --function-name f --payload '{...}' salida.json` | Invocar una función |
 | `aws lambda update-function-code --function-name f --zip-file fileb://f.zip` | Actualizar el código de una función |
 | `aws lambda update-function-configuration --function-name f --memory-size 256` | Actualizar configuración (memoria, variables de entorno) |
