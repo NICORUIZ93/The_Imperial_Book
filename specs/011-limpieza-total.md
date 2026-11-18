@@ -32,7 +32,7 @@ resuelve al rehacer cada curso.
 
 - **C1** `hecho` — Existen las ramas de archivo con todo lo retirado.
   Verificación: `git rev-parse --verify archivo-2026-11-18 && git rev-parse --verify archivo-docker-piloto`
-- **C2** `hecho` — `examples/` (salvo `control-1-tanque`, devuelto en specs/012), los informes de `docs/` y los restos de Floci ya no están en `main`.
-  Verificación: `test "$(git ls-files examples | grep -vc '^examples/control-1-tanque/')" -eq 0 && test ! -e docker-compose.yml && test "$(ls docs | wc -l)" -eq 2`
+- **C2** `hecho` — `examples/` solo guarda laboratorios que citan las lecciones (specs/013), y los informes de `docs/` y los restos de Floci ya no están en `main`, salvo `docker-compose.yml`, que vuelve porque Cloud M0–M1 lo usan (specs/013).
+  Verificación: `python3 scripts/validate_lesson_labs.py && test -f docker-compose.yml`
 - **C3** `hecho` — La validación mínima pasa.
   Verificación: `./scripts/validate.sh`
