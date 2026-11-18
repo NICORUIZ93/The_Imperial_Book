@@ -43,6 +43,7 @@ const TRACK_SOURCES = {
   foundations: 'web/src/app/tracks/foundations.track.ts',
   cloud: 'web/src/app/course-data.ts',
   devops: 'web/src/app/tracks/devops.track.ts',
+  docker: 'web/src/app/tracks/docker.track.ts',
   javascript: 'web/src/app/tracks/javascript.track.ts',
   node: 'web/src/app/tracks/node.track.ts',
   angular: 'web/src/app/tracks/angular.track.ts',
@@ -124,7 +125,7 @@ const readmeExpiry = readme.match(/La comprobación vence a los (\d+) días/);
 if (!readmeExpiry || Number(readmeExpiry[1]) !== sourceRegistry.maxAgeDays) {
   throw new Error('README desactualizado vs official-sources.json: caducidad');
 }
-const declaredInventory = readme.match(/La academia reúne 16 tracks, (\d+) módulos y (\d+) temas editoriales/);
+const declaredInventory = readme.match(/La academia reúne 17 tracks, (\d+) módulos y (\d+) temas editoriales/);
 if (!declaredInventory) {
   throw new Error('README.md debe declarar el inventario actual de 15 tracks, módulos y temas');
 }
@@ -223,6 +224,8 @@ python3 scripts/validate_specs.py
 python3 scripts/audit_topic_integrity.py
 # specs/007 C6: mapa de cada ruta generado desde las definiciones de módulos.
 python3 scripts/build_route_maps.py --check
+# specs/010: cada tema de la ruta Docker cumple las 12 partes de MASTER-PROMPT v3.
+python3 scripts/audit_topic_standard_v3.py --track docker
 python3 scripts/audit_lesson_assets.py
 python3 scripts/audit_lesson_substance.py --strict
 python3 scripts/audit_visual_aids.py

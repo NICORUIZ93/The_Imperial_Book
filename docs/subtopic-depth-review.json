@@ -1,9 +1,9 @@
 {
   "summary": {
-    "topics": 1432,
+    "topics": 1437,
     "reviewed": 276,
-    "pending": 1156,
-    "priorityCandidates": 1017,
+    "pending": 1161,
+    "priorityCandidates": 1022,
     "byTrack": {
       "android": {
         "topics": 83,
@@ -29,6 +29,11 @@
         "topics": 139,
         "reviewed": 9,
         "pending": 130
+      },
+      "docker": {
+        "topics": 5,
+        "reviewed": 0,
+        "pending": 5
       },
       "flutter": {
         "topics": 119,
@@ -9844,6 +9849,101 @@
           "https://chaos-mesh.org/docs/simulate-pod-chaos-on-kubernetes/"
         ]
       }
+    },
+    {
+      "id": "docker/modulo-0::Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+      "track": "docker",
+      "module": 0,
+      "topic": "Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo",
+        "Por qué importa",
+        "Explicación",
+        "Ejemplo desde cero",
+        "Fallo deliberado",
+        "Ejercicios"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "docker/modulo-0::Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+      "track": "docker",
+      "module": 0,
+      "topic": "Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo",
+        "Por qué importa",
+        "Explicación",
+        "Ejemplo desde cero",
+        "Fallo deliberado",
+        "Ejercicios"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "docker/modulo-0::Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+      "track": "docker",
+      "module": 0,
+      "topic": "Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo",
+        "Por qué importa",
+        "Explicación",
+        "Ejemplo desde cero",
+        "Fallo deliberado",
+        "Ejercicios"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "docker/modulo-0::Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+      "track": "docker",
+      "module": 0,
+      "topic": "Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo",
+        "Por qué importa",
+        "Explicación",
+        "Ejemplo desde cero",
+        "Fallo deliberado",
+        "Ejercicios"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
+    },
+    {
+      "id": "docker/modulo-0::Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
+      "track": "docker",
+      "module": 0,
+      "topic": "Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
+      "status": "pending",
+      "semanticHeadings": [
+        "Objetivo",
+        "Por qué importa",
+        "Explicación",
+        "Ejemplo desde cero",
+        "Fallo deliberado",
+        "Ejercicios"
+      ],
+      "prioritySignals": [
+        "título agrupa varios conceptos"
+      ],
+      "review": null
     },
     {
       "id": "flutter/modulo-0::Tema 1: Sound null safety",

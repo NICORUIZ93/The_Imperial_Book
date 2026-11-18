@@ -1,11 +1,11 @@
 {
   "summary": {
-    "currentTopics": 1432,
+    "currentTopics": 1437,
     "currentTopicsWithExactBookEvidence": 0,
     "additionalUniqueBookTopics": 0,
     "additionalCourseTopics": 54,
     "courses": 7,
-    "unifiedTopics": 1486,
+    "unifiedTopics": 1491,
     "booksRequiringOcr": 0,
     "rule": "Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack."
   },
@@ -14952,6 +14952,73 @@
           "projectFeatures": []
         }
       ]
+    },
+    "docker": {
+      "modules": [
+        {
+          "id": "0",
+          "kind": "current",
+          "topics": [
+            {
+              "title": "Procesos, PID y señales: cómo se apaga bien un programa",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 1,
+                "fragment": "tema-1-procesos-pid-y-senales-como-se-apaga-bien-un-programa"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Usuarios, permisos y capacidades: qué puede hacer un proceso",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 2,
+                "fragment": "tema-2-usuarios-permisos-y-capacidades-que-puede-hacer-un-proceso"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Namespaces: darle a un proceso su propia vista del sistema",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 3,
+                "fragment": "tema-3-namespaces-darle-a-un-proceso-su-propia-vista-del-sistema"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "cgroups v2: limitar memoria y CPU de un proceso",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 4,
+                "fragment": "tema-4-cgroups-v2-limitar-memoria-y-cpu-de-un-proceso"
+              },
+              "bookSources": [],
+              "courseSources": []
+            },
+            {
+              "title": "Un contenedor sin Docker: namespaces, raíz propia y chroot",
+              "status": "actual",
+              "current": {
+                "module": "0",
+                "order": 5,
+                "fragment": "tema-5-un-contenedor-sin-docker-namespaces-raiz-propia-y-chroot"
+              },
+              "bookSources": [],
+              "courseSources": []
+            }
+          ]
+        }
+      ],
+      "booksRequiringOcr": [],
+      "courses": []
     },
     "cloud": {
       "modules": [

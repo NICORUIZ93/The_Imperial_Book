@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.card').first()).toBeVisible();
-  await expect(page.locator('.hero-stats')).toContainText('16');
+  await expect(page.locator('.hero-stats')).toContainText('17');
 });
 
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
@@ -23,7 +23,7 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
 
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.group-title').first()).toBeVisible();
-  await expect(page.locator('.card')).toHaveCount(16);
+  await expect(page.locator('.card')).toHaveCount(17);
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
   await expect(page.getByRole('link', { name: /Ver el temario completo/ })).toBeVisible();
 });
@@ -32,8 +32,8 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   await page.goto('/temario');
 
   await expect(page.getByRole('heading', { name: /Todos los temas, cada uno con su lección/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText('1432');
-  await expect(page.locator('.stack-row')).toHaveCount(16);
+  await expect(page.locator('.curriculum-stats')).toContainText('1437');
+  await expect(page.locator('.stack-row')).toHaveCount(17);
   await expect(page.locator('body')).not.toContainText('candidato');
 
   await page.goto('/temario/foundations');
@@ -544,7 +544,7 @@ test('biblioteca: filtra por área y encuentra temas reales sin perder accesos',
   await query.fill('no-existe-este-curso');
   await expect(page.locator('.no-results')).toBeVisible();
   await page.getByRole('button', { name: 'Mostrar todos los cursos', exact: true }).click();
-  await expect(page.locator('.card')).toHaveCount(16);
+  await expect(page.locator('.card')).toHaveCount(17);
   await query.fill('Tiempo determinista');
   await expect(page.locator('.card')).toHaveCount(1);
   await expect(page.locator('.card')).toContainText('Kotlin MP');

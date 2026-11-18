@@ -2,12 +2,12 @@
 
 > Conserva todos los temas actuales y todos los encabezados únicos recuperados. Una entrada candidata aún requiere revisión curricular y pedagógica antes de publicarse como lección.
 
-- Temas actuales conservados: 1432
+- Temas actuales conservados: 1437
 - Temas actuales con evidencia exacta en libros: 0
 - Temas adicionales únicos de libros: 0
 - Temas candidatos provenientes de cursos: 54
 - Cursos externos inventariados: 7
-- Total unificado provisional: 1486
+- Total unificado provisional: 1491
 - Libros pendientes de OCR: 0
 - Regla de fusión: Sólo se fusionan coincidencias exactas normalizadas dentro del mismo stack.
 
@@ -2088,6 +2088,18 @@ Total provisional: 147 temas.
 
 - Audiencia indicada: Desarrolladores que despliegan aplicaciones en Kubernetes.
 - Nota: Extraído de una captura de pantalla guardada el 2026-11-17 y revisado el 2026-11-18 (ver docs/capture-intake.json). No se verificó la ficha completa del proveedor. Inicio anunciado: lunes 9 de noviembre de 2026, 19:00–21:00.
+
+## Stack: docker
+
+Total provisional: 5 temas.
+
+### Módulo actual 0
+
+1. **Procesos, PID y señales: cómo se apaga bien un programa** — `actual`
+2. **Usuarios, permisos y capacidades: qué puede hacer un proceso** — `actual`
+3. **Namespaces: darle a un proceso su propia vista del sistema** — `actual`
+4. **cgroups v2: limitar memoria y CPU de un proceso** — `actual`
+5. **Un contenedor sin Docker: namespaces, raíz propia y chroot** — `actual`
 
 ## Stack: cloud
 

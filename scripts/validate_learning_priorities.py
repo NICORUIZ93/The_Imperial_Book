@@ -7,13 +7,14 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "web/public/content"
 TRACKS = (
-    "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
+    "foundations", "cloud", "devops", "docker", "javascript", "node", "angular", "react",
     "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow", "control-1",
 )
 TRACK_SOURCES = {
     "foundations": "web/src/app/tracks/foundations.track.ts",
     "cloud": "web/src/app/course-data.ts",
     "devops": "web/src/app/tracks/devops.track.ts",
+    "docker": "web/src/app/tracks/docker.track.ts",
     "javascript": "web/src/app/tracks/javascript.track.ts",
     "node": "web/src/app/tracks/node.track.ts",
     "angular": "web/src/app/tracks/angular.track.ts",
@@ -52,7 +53,7 @@ for track in TRACKS:
             next_section = re.search(r"^## ", block[heading.end() - heading.start():], re.MULTILINE)
             if next_section:
                 block = block[:heading.end() - heading.start() + next_section.start()]
-            if not re.search(r"\*\*(?:¿Por qué es importante\?|Por qué importa:)\*\*|^#{3,4}\s+¿Por qué es importante\?", block, re.MULTILINE):
+            if not re.search(r"\*\*(?:¿Por qué es importante\?|Por qué importa:)\*\*|^#{3,4}\s+¿Por qué es importante\?|^#### Por qué importa\s*$", block, re.MULTILINE):
                 errors.append(f"{path.relative_to(ROOT)} · {heading.group(0)}: falta importancia explícita")
 
 viewer = (ROOT / "web/src/app/course/lesson-viewer.ts").read_text(encoding="utf-8")

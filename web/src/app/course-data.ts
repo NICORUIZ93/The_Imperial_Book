@@ -1,5 +1,6 @@
 import { CourseModule, Track, createModule } from './course-module.model';
 import { DEVOPS_MODULES } from './tracks/devops.track';
+import { DOCKER_MODULES } from './tracks/docker.track';
 import { JAVASCRIPT_MODULES } from './tracks/javascript.track';
 import { NODE_MODULES } from './tracks/node.track';
 import { ANGULAR_MODULES } from './tracks/angular.track';
@@ -873,6 +874,7 @@ export const TRACKS: Track[] = [
   { id: 'foundations', name: 'Fundamentos de Ingeniería de Software', shortName: 'Fundamentos', tagline: 'Punto de entrada: computador, terminal y fundamentos de programación.', color: '#b45309', icon: 'book-open', modules: FOUNDATIONS_MODULES },
   { id: 'cloud', name: 'Cloud Local — AWS, Azure y GCP', shortName: 'Cloud', tagline: 'Servicios cloud reales en local, sin pagar ni crear cuentas.', color: '#3f6212', icon: 'cloud-cog', modules: COURSE_MODULES },
   { id: 'devops', name: 'DevOps', shortName: 'DevOps', tagline: 'Linux, Docker, CI/CD, Kubernetes e infraestructura como código.', color: '#57534e', icon: 'git-branch', modules: DEVOPS_MODULES },
+  { id: 'docker', name: 'Docker de cero a experto', shortName: 'Docker', tagline: 'Contenedores desde el kernel de Linux hasta imágenes firmadas, CI/CD y despliegue.', color: '#0e7490', icon: 'container', modules: DOCKER_MODULES },
   { id: 'javascript', name: 'JavaScript: fundamentos y temas avanzados', shortName: 'JavaScript', tagline: 'El lenguaje base de la web: sintaxis, APIs y conceptos avanzados.', color: '#a16207', icon: 'braces', modules: JAVASCRIPT_MODULES },
   { id: 'node', name: 'Node.js: fundamentos de backend', shortName: 'Node.js', tagline: 'Backend en JavaScript: APIs, bases de datos y operación de servicios.', color: '#4d7c0f', icon: 'server', modules: NODE_MODULES },
   { id: 'angular', name: 'Angular — última versión y migraciones', shortName: 'Angular', tagline: 'Componentes, signals y arquitectura moderna sin NgModules.', color: '#be123c', icon: 'shield', modules: ANGULAR_MODULES },

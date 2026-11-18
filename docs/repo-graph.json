@@ -114,7 +114,7 @@
     },
     {
       "path": "README.md",
-      "lines": 388,
+      "lines": 389,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -591,7 +591,7 @@
     },
     {
       "path": "docs/atomic-subtopics.json",
-      "lines": 20400,
+      "lines": 20444,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -599,7 +599,7 @@
     },
     {
       "path": "docs/atomic-subtopics.md",
-      "lines": 1292,
+      "lines": 1301,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -611,11 +611,11 @@
         "### cloud",
         "### control-1",
         "### devops",
+        "### docker",
         "### flutter",
         "### foundations",
         "### ios",
-        "### java",
-        "### javascript"
+        "### java"
       ]
     },
     {
@@ -860,7 +860,7 @@
     },
     {
       "path": "docs/code-visual-quality.json",
-      "lines": 2728,
+      "lines": 2740,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -868,7 +868,7 @@
     },
     {
       "path": "docs/code-visual-quality.md",
-      "lines": 29,
+      "lines": 30,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -895,7 +895,7 @@
     },
     {
       "path": "docs/course-depth-review.json",
-      "lines": 17807,
+      "lines": 17877,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -903,7 +903,7 @@
     },
     {
       "path": "docs/course-depth-review.md",
-      "lines": 1464,
+      "lines": 1469,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -936,7 +936,7 @@
     },
     {
       "path": "docs/editorial-backlog.md",
-      "lines": 50,
+      "lines": 51,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1124,7 +1124,7 @@
     },
     {
       "path": "docs/lesson-substance.json",
-      "lines": 11918,
+      "lines": 11960,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1159,7 +1159,7 @@
     },
     {
       "path": "docs/master-prompt-compliance.json",
-      "lines": 766,
+      "lines": 798,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1167,7 +1167,7 @@
     },
     {
       "path": "docs/master-prompt-compliance.md",
-      "lines": 39,
+      "lines": 40,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1437,7 +1437,7 @@
     },
     {
       "path": "docs/seven-step-methodology.json",
-      "lines": 36143,
+      "lines": 36289,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1445,7 +1445,7 @@
     },
     {
       "path": "docs/seven-step-methodology.md",
-      "lines": 34,
+      "lines": 35,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1621,7 +1621,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.json",
-      "lines": 25567,
+      "lines": 25667,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1629,7 +1629,7 @@
     },
     {
       "path": "docs/subtopic-depth-review.md",
-      "lines": 1329,
+      "lines": 1335,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1650,7 +1650,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.json",
-      "lines": 18308,
+      "lines": 18375,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1658,7 +1658,7 @@
     },
     {
       "path": "docs/temario-maestro-unificado.md",
-      "lines": 2568,
+      "lines": 2580,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1697,7 +1697,7 @@
     },
     {
       "path": "docs/topic-learning-quality.json",
-      "lines": 31811,
+      "lines": 31939,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1705,7 +1705,7 @@
     },
     {
       "path": "docs/topic-learning-quality.md",
-      "lines": 28,
+      "lines": 29,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -1740,7 +1740,7 @@
     },
     {
       "path": "docs/zero-to-master.json",
-      "lines": 250,
+      "lines": 269,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -1748,7 +1748,7 @@
     },
     {
       "path": "docs/zero-to-master.md",
-      "lines": 30,
+      "lines": 31,
       "kind": "documentation",
       "symbols": [],
       "imports": [],
@@ -10408,6 +10408,21 @@
       "headings": []
     },
     {
+      "path": "research/docker.md",
+      "lines": 54,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# Investigaci\u00f3n: curso Docker de cero a experto (specs/010)",
+        "## 1. Fuentes oficiales",
+        "## 2. Temarios de referencia (resumen propio)",
+        "## 3. Comunidad (consejos que entran solo si la doc oficial los confirma)",
+        "## 4. Huecos que el curso cubre y los cursos de referencia no",
+        "## 5. Decisiones"
+      ]
+    },
+    {
       "path": "scripts/audit_atomic_subtopics.py",
       "lines": 151,
       "kind": "automation-script",
@@ -10787,7 +10802,7 @@
     },
     {
       "path": "scripts/build_route_maps.py",
-      "lines": 114,
+      "lines": 116,
       "kind": "automation-script",
       "symbols": [
         "unescape",
@@ -11134,7 +11149,7 @@
     },
     {
       "path": "scripts/validate.sh",
-      "lines": 235,
+      "lines": 238,
       "kind": "automation-script",
       "symbols": [],
       "imports": [],
@@ -11191,7 +11206,7 @@
     },
     {
       "path": "scripts/validate_learning_priorities.py",
-      "lines": 96,
+      "lines": 97,
       "kind": "automation-script",
       "symbols": [],
       "imports": [
@@ -11555,6 +11570,19 @@
       ]
     },
     {
+      "path": "specs/010-curso-docker-de-cero-a-experto.md",
+      "lines": 56,
+      "kind": "documentation",
+      "symbols": [],
+      "imports": [],
+      "headings": [
+        "# 010 \u00b7 Curso Docker de cero a experto (piloto del est\u00e1ndar v3)",
+        "## Contexto y l\u00edmites",
+        "## Temario propuesto",
+        "## Criterios"
+      ]
+    },
+    {
       "path": "specs/README.md",
       "lines": 51,
       "kind": "documentation",
@@ -11778,7 +11806,7 @@
     },
     {
       "path": "specs/visual-aids-scope.json",
-      "lines": 740,
+      "lines": 771,
       "kind": "project-file",
       "symbols": [],
       "imports": [],
@@ -18225,7 +18253,7 @@
     },
     {
       "path": "web/public/content/topic-index.json",
-      "lines": 6345,
+      "lines": 6369,
       "kind": "course-content",
       "symbols": [],
       "imports": [],
@@ -19522,7 +19550,7 @@
     },
     {
       "path": "web/src/app/course-data.ts",
-      "lines": 891,
+      "lines": 893,
       "kind": "angular-app",
       "symbols": [
         "ServiceGroup",
@@ -19532,6 +19560,7 @@
       "imports": [
         "./course-module.model",
         "./tracks/devops.track",
+        "./tracks/docker.track",
         "./tracks/javascript.track",
         "./tracks/node.track",
         "./tracks/angular.track",
@@ -19599,7 +19628,7 @@
     },
     {
       "path": "web/src/app/icon-registry.ts",
-      "lines": 38,
+      "lines": 40,
       "kind": "angular-app",
       "symbols": [],
       "imports": [
@@ -19619,7 +19648,7 @@
     },
     {
       "path": "web/src/app/learning-activities.ts",
-      "lines": 30,
+      "lines": 31,
       "kind": "angular-app",
       "symbols": [
         "TrackProject",
@@ -19687,7 +19716,7 @@
     },
     {
       "path": "web/src/app/project-bootstrap.ts",
-      "lines": 161,
+      "lines": 170,
       "kind": "angular-app",
       "symbols": [
         "ProjectBootstrap",
@@ -19778,7 +19807,7 @@
     },
     {
       "path": "web/src/app/track-guides.ts",
-      "lines": 27,
+      "lines": 28,
       "kind": "angular-app",
       "symbols": [
         "TrackGuide"

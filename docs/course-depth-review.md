@@ -24,7 +24,7 @@ Se distingue revisión estructural, ejecución de ejemplos, pruebas de navegador
 
 ## Registro tema por tema
 
-Revisión humana firmada: 0/1432 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
+Revisión humana firmada: 0/1437 temas. Pre-lectura registrada sin firma: 14. La pre-lectura no acredita ejecución, comprensión ni calidad pedagógica; consulta `docs/manual-review-log.md`.
 Los laboratorios nuevos tienen una verificación técnica separada; la ejecución correcta tampoco demuestra comprensión.
 
 | Curso / módulo | Tema | Señales para revisar |
@@ -567,6 +567,11 @@ Los laboratorios nuevos tienen una verificación técnica separada; la ejecució
 | devops / 9 | [Tema 6: OpenTelemetry como estándar de instrumentación](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
 | devops / 9 | [Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min](../web/public/content/devops/modulo-9.md) | Sin señales de estos detectores; revisión pendiente |
+| docker / 0 | [Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min](../web/public/content/docker/modulo-0.md) | demostracion-no-delimitada |
+| docker / 0 | [Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min](../web/public/content/docker/modulo-0.md) | demostracion-no-delimitada |
+| docker / 0 | [Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min](../web/public/content/docker/modulo-0.md) | demostracion-no-delimitada |
+| docker / 0 | [Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min](../web/public/content/docker/modulo-0.md) | demostracion-no-delimitada |
+| docker / 0 | [Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min](../web/public/content/docker/modulo-0.md) | demostracion-no-delimitada |
 | flutter / 0 | [Tema 1: Sound null safety](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 2: Clases y mixins](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |
 | flutter / 0 | [Tema 3: Futures, async/await y colecciones funcionales](../web/public/content/flutter/modulo-0.md) | Sin señales de estos detectores; revisión pendiente |

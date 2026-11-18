@@ -266,6 +266,38 @@
       }
     },
     {
+      "track": "docker",
+      "topics": 5,
+      "status": {
+        "T1": false,
+        "T2": false,
+        "T3": false,
+        "T4": true,
+        "T5": true,
+        "T6": false,
+        "T7": true
+      },
+      "exempt": {},
+      "detail": {
+        "missingLevels": [
+          "Aplicación",
+          "Integración",
+          "Experto"
+        ],
+        "realTopics": {
+          "official": 0,
+          "taught": 0,
+          "missing": [],
+          "note": "sin atlas oficial registrado"
+        },
+        "visual": 5,
+        "easy": 5,
+        "measuredTopics": 5,
+        "captureScope": 4,
+        "project": 5
+      }
+    },
+    {
       "track": "flutter",
       "topics": 119,
       "status": {

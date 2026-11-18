@@ -2,7 +2,7 @@
 
 > Auditoría estructural. Un encabezado o criterio detectado no demuestra que el ejemplo se haya ejecutado ni que la explicación sea pedagógicamente suficiente.
 
-Temas conformes a cuatro pasos: **215/1432**. Tracks inventariados: **16**.
+Temas conformes a cuatro pasos: **215/1437**. Tracks inventariados: **17**.
 
 | Track | Temas conformes | Temas inventariados | Subtemas detectados | Subtemas con estructura completa |
 |---|---:|---:|---:|---:|
@@ -11,6 +11,7 @@ Temas conformes a cuatro pasos: **215/1432**. Tracks inventariados: **16**.
 | cloud | 0 | 168 | 0 | 0 |
 | control-1 | 0 | 70 | 0 | 0 |
 | devops | 0 | 139 | 0 | 0 |
+| docker | 0 | 5 | 0 | 0 |
 | flutter | 1 | 119 | 3 | 3 |
 | foundations | 0 | 103 | 0 | 0 |
 | ios | 0 | 69 | 0 | 0 |
@@ -577,6 +578,14 @@ Temas conformes a cuatro pasos: **215/1432**. Tracks inventariados: **16**.
 - M9 ### Tema 6: OpenTelemetry como estándar de instrumentación: tiene 0 subtemas
 - M9 ### Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate: tiene 0 subtemas
 - M9 ### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min: tiene 0 subtemas
+
+### docker
+
+- M0 ### Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min: tiene 0 subtemas
+- M0 ### Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min: tiene 0 subtemas
+- M0 ### Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min: tiene 0 subtemas
+- M0 ### Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min: tiene 0 subtemas
+- M0 ### Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min: tiene 0 subtemas
 
 ### flutter
 

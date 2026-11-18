@@ -2395,6 +2395,30 @@
       }
     ]
   },
+  "docker": {
+    "0": [
+      {
+        "title": "Procesos, PID y señales: cómo se apaga bien un programa",
+        "fragment": "tema-1-procesos-pid-y-senales-como-se-apaga-bien-un-programa"
+      },
+      {
+        "title": "Usuarios, permisos y capacidades: qué puede hacer un proceso",
+        "fragment": "tema-2-usuarios-permisos-y-capacidades-que-puede-hacer-un-proceso"
+      },
+      {
+        "title": "Namespaces: darle a un proceso su propia vista del sistema",
+        "fragment": "tema-3-namespaces-darle-a-un-proceso-su-propia-vista-del-sistema"
+      },
+      {
+        "title": "cgroups v2: limitar memoria y CPU de un proceso",
+        "fragment": "tema-4-cgroups-v2-limitar-memoria-y-cpu-de-un-proceso"
+      },
+      {
+        "title": "Un contenedor sin Docker: namespaces, raíz propia y chroot",
+        "fragment": "tema-5-un-contenedor-sin-docker-namespaces-raiz-propia-y-chroot"
+      }
+    ]
+  },
   "flutter": {
     "0": [
       {

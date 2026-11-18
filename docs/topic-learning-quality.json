@@ -92,6 +92,22 @@
       "genericScaffold": 0,
       "repeatedDemo": 0
     },
+    "docker": {
+      "topics": 5,
+      "explanation": 5,
+      "code": 5,
+      "visual": 5,
+      "filePath": 5,
+      "runCommand": 5,
+      "expectedResult": 5,
+      "practice": 5,
+      "project": 5,
+      "modelMental": 5,
+      "limitsDecision": 5,
+      "practicable": 5,
+      "genericScaffold": 0,
+      "repeatedDemo": 0
+    },
     "flutter": {
       "topics": 119,
       "explanation": 119,
@@ -12096,6 +12112,118 @@
       {
         "module": 9,
         "topic": "Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      }
+    ],
+    "docker": [
+      {
+        "module": 0,
+        "topic": "Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+        "criteria": {
+          "explanation": true,
+          "code": true,
+          "visual": true,
+          "filePath": true,
+          "runCommand": true,
+          "expectedResult": true,
+          "practice": true,
+          "project": true,
+          "modelMental": true,
+          "limitsDecision": true
+        },
+        "classification": {
+          "rubricScore": 16,
+          "practicable": true,
+          "genericScaffold": false,
+          "repeatedDemo": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,

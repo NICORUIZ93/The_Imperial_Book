@@ -95,6 +95,25 @@
       "standaloneExample": 131,
       "complete": 131
     },
+    "docker": {
+      "topics": 5,
+      "objective": 0,
+      "prerequisites": 5,
+      "context": 0,
+      "theoryAnalogy": 0,
+      "guidedDemo": 0,
+      "codeExplanation": 5,
+      "execution": 5,
+      "expectedResult": 5,
+      "deliberateFailure": 5,
+      "guidedPractice": 0,
+      "independentPractice": 0,
+      "closure": 0,
+      "commonErrors": 5,
+      "resources": 0,
+      "standaloneExample": 2,
+      "complete": 0
+    },
     "flutter": {
       "topics": 119,
       "objective": 118,
@@ -13762,6 +13781,133 @@
         },
         "classification": {
           "stepsPassed": 14,
+          "complete": false
+        }
+      }
+    ],
+    "docker": [
+      {
+        "module": 0,
+        "topic": "Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": false
+        },
+        "classification": {
+          "stepsPassed": 6,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 7,
+          "complete": false
+        }
+      },
+      {
+        "module": 0,
+        "topic": "Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
+        "criteria": {
+          "objective": false,
+          "prerequisites": true,
+          "context": false,
+          "theoryAnalogy": false,
+          "guidedDemo": false,
+          "codeExplanation": true,
+          "execution": true,
+          "expectedResult": true,
+          "deliberateFailure": true,
+          "guidedPractice": false,
+          "independentPractice": false,
+          "closure": false,
+          "commonErrors": true,
+          "resources": false,
+          "standaloneExample": true
+        },
+        "classification": {
+          "stepsPassed": 7,
           "complete": false
         }
       }

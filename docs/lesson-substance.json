@@ -731,6 +731,11 @@
       "track": "devops"
     },
     {
+      "legacySections": [],
+      "module": 0,
+      "track": "docker"
+    },
+    {
       "legacySections": [
         "## Ruta de proyecto progresivo desde carpeta vacía",
         "**Errores comunes y soluciones**"
@@ -1844,16 +1849,16 @@
     }
   ],
   "summary": {
-    "fingerprint": "dc8af5c980f0167d0795e6f2718e96f40e9a4c50ad7aed7817f32d29cb0a9559",
+    "fingerprint": "bae3aa9c19ad43fc4422449967765778316b39cd0f2c015679666270b9615c65",
     "issues": {},
     "legacySections": {
       "## Construcción guiada del capítulo": 39,
       "## Ruta de proyecto progresivo desde carpeta vacía": 12,
       "**Errores comunes y soluciones**": 166
     },
-    "modules": 291,
+    "modules": 292,
     "modulesWithLegacySections": 170,
-    "topics": 1432,
+    "topics": 1437,
     "topicsWithIssues": 0
   },
   "topics": {
@@ -5631,6 +5636,43 @@
         "tailWords": 121,
         "topic": "Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
         "words": 1071
+      }
+    ],
+    "docker": [
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+        "words": 1486
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+        "words": 1393
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+        "words": 1362
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+        "words": 1572
+      },
+      {
+        "issues": [],
+        "module": 0,
+        "tailWords": 0,
+        "topic": "Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
+        "words": 1506
       }
     ],
     "flutter": [

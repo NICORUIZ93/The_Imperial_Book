@@ -36,6 +36,18 @@
       "runCommand": 138,
       "officialSource": 138
     },
+    "docker": {
+      "topics": 5,
+      "code": 5,
+      "commentedCode": 5,
+      "mermaid": 5,
+      "archifyVisual": 0,
+      "asciiVisual": 0,
+      "misleadingDiagramLabel": 0,
+      "filePath": 5,
+      "runCommand": 5,
+      "officialSource": 5
+    },
     "javascript": {
       "topics": 92,
       "code": 92,

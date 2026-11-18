@@ -11,7 +11,7 @@ METHODOLOGY = ROOT / "docs" / "METODOLOGIA-DE-APRENDIZAJE.md"
 TRACKS = (
     "foundations", "cloud", "angular", "react", "java", "spring-boot",
     "kotlin-multiplatform", "android", "ios", "flutter",
-    "node", "javascript", "devops", "rutaflow",
+    "node", "javascript", "devops", "docker", "rutaflow",
 )
 
 errors: list[str] = []

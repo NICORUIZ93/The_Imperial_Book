@@ -8,7 +8,7 @@ CONTENT = ROOT / "web" / "public" / "content"
 TRACKS = (
     "foundations", "cloud", "angular", "react", "java", "spring-boot",
     "kotlin-multiplatform", "android", "ios", "flutter", "node",
-    "javascript", "devops", "rutaflow",
+    "javascript", "devops", "docker", "rutaflow",
 )
 STANDARD = ROOT / "docs" / "ESTANDAR-DE-CODIGO.md"
 errors: list[str] = []

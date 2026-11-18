@@ -2,15 +2,15 @@
   "method": "Lectura automática de todos los bloques visibles; alertas para revisión, no veredictos de corrección ni aprendizaje. Una demo breve puede ser suficiente. La ausencia de alertas no acredita ejecutabilidad.",
   "totals": {
     "tracks": 15,
-    "modules": 291,
-    "topics": 1432,
-    "topicsWithSignals": 264,
+    "modules": 292,
+    "topics": 1437,
+    "topicsWithSignals": 269,
     "newLaboratories": 26
   },
   "humanPedagogicalReview": {
     "reviewed": 0,
     "preRead": 14,
-    "total": 1432,
+    "total": 1437,
     "date": "2026-10-31",
     "responsible": "persona revisora pendiente; pre-lectura de agente registrada",
     "evidence": "docs/manual-review-log.md"
@@ -6549,6 +6549,76 @@
       "file": "web/public/content/devops/modulo-9.md",
       "line": 608,
       "signals": [],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "docker",
+      "module": 0,
+      "title": "Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+      "file": "web/public/content/docker/modulo-0.md",
+      "line": 46,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "docker",
+      "module": 0,
+      "title": "Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+      "file": "web/public/content/docker/modulo-0.md",
+      "line": 271,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "docker",
+      "module": 0,
+      "title": "Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+      "file": "web/public/content/docker/modulo-0.md",
+      "line": 478,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "docker",
+      "module": 0,
+      "title": "Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+      "file": "web/public/content/docker/modulo-0.md",
+      "line": 666,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
+      "newLaboratory": false,
+      "humanPedagogicalReview": "pending",
+      "humanReviewEvidence": null,
+      "executionEvidence": "see examples/professional-bridges/verification.json for new laboratories; historical examples not executed by this audit"
+    },
+    {
+      "track": "docker",
+      "module": 0,
+      "title": "Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
+      "file": "web/public/content/docker/modulo-0.md",
+      "line": 851,
+      "signals": [
+        "demostracion-no-delimitada"
+      ],
       "newLaboratory": false,
       "humanPedagogicalReview": "pending",
       "humanReviewEvidence": null,

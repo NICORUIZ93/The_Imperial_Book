@@ -2,10 +2,10 @@
 
 > Las señales automáticas no prueban profundidad ni ausencia de ella. Un tema sólo queda revisado mediante el registro humano con mapa de subtemas críticos, evidencia y fuentes.
 
-- Temas inventariados: 1432
+- Temas inventariados: 1437
 - Revisados humanamente para subtemas: 276
-- Pendientes: 1156
-- Candidatos prioritarios por señales: 1017
+- Pendientes: 1161
+- Candidatos prioritarios por señales: 1022
 
 ## Cobertura por track
 
@@ -16,6 +16,7 @@
 | cloud | 168 | 12 | 156 |
 | control-1 | 70 | 0 | 70 |
 | devops | 139 | 9 | 130 |
+| docker | 5 | 0 | 5 |
 | flutter | 119 | 73 | 46 |
 | foundations | 103 | 1 | 102 |
 | ios | 69 | 13 | 56 |
@@ -401,6 +402,11 @@
 - `devops/modulo-9` — Tema 5: SLI, SLO, SLA — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 6: OpenTelemetry como estándar de instrumentación — lista conceptos clave sin mapa interno verificable
 - `devops/modulo-9` — Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate — lista conceptos clave sin mapa interno verificable
+- `docker/modulo-0` — Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min — título agrupa varios conceptos
+- `docker/modulo-0` — Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min — título agrupa varios conceptos
+- `docker/modulo-0` — Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min — título agrupa varios conceptos
+- `docker/modulo-0` — Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min — título agrupa varios conceptos
+- `docker/modulo-0` — Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min — título agrupa varios conceptos
 - `flutter/modulo-15` — Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `flutter/modulo-15` — Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic — título agrupa varios conceptos; menos de dos encabezados semánticos internos; lista conceptos clave sin mapa interno verificable
 - `flutter/modulo-16` — Tema 1: reconocer cuándo usar FFI y crear el paquete — título agrupa varios conceptos; menos de dos encabezados semánticos internos

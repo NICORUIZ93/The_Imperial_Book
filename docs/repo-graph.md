@@ -1,8 +1,8 @@
 # The Imperial Book Repo Graph
 
-Generated: 2026-11-18 20:33 UTC
+Generated: 2026-11-18 20:59 UTC
 Root: `the_imperial_book`
-Indexed files: 1585
+Indexed files: 1587
 Import edges: 69
 
 Use this file as the first, compact context for AI assistants. Refresh it with:
@@ -18,14 +18,14 @@ For automated lookups, use `docs/repo-graph.json`.
 - `angular-app`: 71 files
 - `automation-script`: 56 files
 - `course-content`: 320 files
-- `documentation`: 114 files
+- `documentation`: 116 files
 - `example`: 941 files
 - `local-infra`: 1 files
 - `project-file`: 82 files
 
 ## File Types
 
-- `.md`: 477
+- `.md`: 479
 - `.java`: 416
 - `.py`: 185
 - `.json`: 112
@@ -51,14 +51,14 @@ For automated lookups, use `docs/repo-graph.json`.
 
 ## High Signal Files
 
-- `README.md` (388 lines, documentation)
+- `README.md` (389 lines, documentation)
   - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci, # 1. Levantar todos los servicios
-- `scripts/validate.sh` (235 lines, automation-script)
+- `scripts/validate.sh` (238 lines, automation-script)
 - `scripts/build_repo_graph.py` (477 lines, automation-script)
   - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports, parse_markdown_headings, unique
 - `web/src/app/app.ts` (11 lines, angular-app)
   - symbols: App
-- `web/src/app/course-data.ts` (891 lines, angular-app)
+- `web/src/app/course-data.ts` (893 lines, angular-app)
   - symbols: ServiceGroup, CloudComparison, AltCloudGroup
 - `web/src/app/catalog/course-catalog.ts` (158 lines, angular-app)
   - symbols: CourseCatalogComponent, query, category, backupStatus, cards, featuredTracks, foundationTracks, mobileTracks, filteredCards, resumableTracks
@@ -184,7 +184,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `web/src/app/command-palette.service.ts` (11 lines) - symbols: CommandPaletteService, isOpen; imports: @angular/core
 - `web/src/app/command-palette.ts` (131 lines) - symbols: CommandPaletteComponent, query, activeIndex, activeResultId, index, results; imports: @angular/common, @angular/core, @angular/forms, @angular/router, lucide-angular, ./course-data, ./command-palette.service, ./topic-index.service
 - `web/src/app/content.service.ts` (78 lines) - symbols: ContentService; imports: @angular/core, marked
-- `web/src/app/course-data.ts` (891 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track, ./tracks/spring-boot.track
+- `web/src/app/course-data.ts` (893 lines) - symbols: ServiceGroup, CloudComparison, AltCloudGroup; imports: ./course-module.model, ./tracks/devops.track, ./tracks/docker.track, ./tracks/javascript.track, ./tracks/node.track, ./tracks/angular.track, ./tracks/react.track, ./tracks/java.track
 - ... 53 more files
 
 ### automation-script
@@ -205,7 +205,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `scripts/build_prerequisite_graph.py` (115 lines) - symbols: topics_for, build, render, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_priority_temarios.py` (191 lines) - symbols: build, main; imports: __future__, argparse, json, re, pathlib
 - `scripts/build_repo_graph.py` (477 lines) - symbols: FileNode, repo_files, read_text, classify, parse_ts_symbols, parse_ts_imports, parse_python_symbols, parse_python_imports; imports: __future__, argparse, ast, json, re, subprocess, collections, dataclasses
-- `scripts/build_route_maps.py` (114 lines) - symbols: unescape, modules_by_constant, ranges, section, apply, main; imports: __future__, argparse, re, sys, pathlib
+- `scripts/build_route_maps.py` (116 lines) - symbols: unescape, modules_by_constant, ranges, section, apply, main; imports: __future__, argparse, re, sys, pathlib
 - `scripts/build_spring_topic_review.py` (96 lines) - symbols: build, main; imports: pathlib, argparse, json, re
 - ... 38 more files
 
@@ -239,7 +239,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `CODE_OF_CONDUCT.md` (25 lines) - headings: # Código de conducta, ## Compromiso, ## Conducta esperada, ## Aplicación
 - `CONTRIBUTING.md` (41 lines) - headings: # Contribuir a The Imperial Book, ## Idioma y commits, ## Antes de abrir un cambio, ## Licencias
 - `MASTER-PROMPT.md` (141 lines) - headings: # MASTER-PROMPT v3 · The Imperial Book, ## 0. Rol y misión, ## 1. Constitución (reglas que no se negocian), ## 2. Flujo spec-driven por lote
-- `README.md` (388 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
+- `README.md` (389 lines) - headings: # The_Imperial_Book, ## Cómo empezar, ## Requisitos del sistema, ## Levantar Floci
 - `docs/ACADEMIA-EXPERIENCIA-DE-ESTUDIO.md` (66 lines) - headings: # Experiencia de estudio: contrato editorial y de interfaz, ## Principios de aprendizaje, ## Contrato de cada tema, ## Contrato del lector
 - `docs/ACADEMIA-PROTOTIPO-6-CONTEXTOS.md` (46 lines) - headings: # Prototipo editorial: seis contextos, ## Puerta de validación, ## Estado
 - `docs/AUDITORIA-COBERTURA-SPRING-20261101.md` (157 lines) - headings: # Auditoría de cobertura — Track Spring Boot vs temario profesional, ## Resumen de huecos confirmados, ### ALTA (prerrequisitos del núcleo / imprescindibles), ### MEDIA
@@ -251,7 +251,7 @@ For automated lookups, use `docs/repo-graph.json`.
 - `docs/MATRIZ-CURRICULAR.md` (73 lines) - headings: # Matriz curricular auditable, ## Progresión de competencia, ## Cobertura por módulo, ## Método de evaluación
 - `docs/METODOLOGIA-DE-APRENDIZAJE.md` (95 lines) - headings: # Metodología Aprende construyendo, ## Estructura de tema y subtema, ### Hito al final de cada tema, ### Ruta del proyecto
 - `docs/PLAN-CURSO-BUILD-MAVEN-GRADLE.md` (161 lines) - headings: # Plan curricular verificable: Build Tools — Maven y Gradle de cero a experto, ## Motivo del curso separado, ## Frontera con el track Java, ## Secuencia completa
-- ... 96 more files
+- ... 98 more files
 
 ### example
 
@@ -285,18 +285,18 @@ For automated lookups, use `docs/repo-graph.json`.
 - `.github/ISSUE_TEMPLATE/bug_report.yml` (80 lines)
 - `.github/workflows/ci.yml` (76 lines)
 - `docs/app-flow-inspection.json` (16517 lines)
-- `docs/atomic-subtopics.json` (20400 lines)
+- `docs/atomic-subtopics.json` (20444 lines)
 - `docs/biblioteca/catalogo.json` (564 lines)
 - `docs/biblioteca/imagenes.json` (577 lines)
 - `docs/browser-course-review.json` (2712 lines)
 - `docs/capture-intake.json` (578 lines)
-- `docs/code-visual-quality.json` (2728 lines)
+- `docs/code-visual-quality.json` (2740 lines)
 - `docs/control-1-code-verification.json` (578 lines)
 - `docs/course-curriculum-inventory.json` (166 lines)
-- `docs/course-depth-review.json` (17807 lines)
+- `docs/course-depth-review.json` (17877 lines)
 - `docs/curriculum-matrix.json` (394 lines)
 - `docs/floci-official-curriculum.json` (14 lines)
 - `docs/lesson-substance-baseline.json` (5 lines)
-- `docs/lesson-substance.json` (11918 lines)
-- `docs/master-prompt-compliance.json` (766 lines)
+- `docs/lesson-substance.json` (11960 lines)
+- `docs/master-prompt-compliance.json` (798 lines)
 - ... 64 more files

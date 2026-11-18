@@ -62,6 +62,8 @@ def section(track: str, name: str, modules: list[tuple[int, str, str]]) -> str:
     lines = [HEADING, "",
              (f"«{name}» tiene {len(modules)} módulos en {len(present)} etapas. Cada etapa se apoya en la "
               "anterior; usa la tabla para saltar a un módulo concreto." if len(present) > 1 else
+              f"«{name}» tiene, por ahora, 1 módulo publicado, de la etapa {present[0]}; los siguientes se "
+              "agregan a medida que pasan la revisión." if len(modules) == 1 else
               f"«{name}» tiene {len(modules)} módulos, todos de la etapa {present[0]}; usa la tabla para "
               "saltar a un módulo concreto."), "",
              "```mermaid", "flowchart LR"]

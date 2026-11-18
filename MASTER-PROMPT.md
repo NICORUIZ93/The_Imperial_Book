@@ -1,7 +1,7 @@
 # MASTER-PROMPT v3 · The Imperial Book
 
 > **Versión 3 (2026-11-18, specs/008).** Reemplaza a la v2 (specs/003), que sigue en el historial de git.
-> Cifras vigentes: **16 rutas · 291 módulos · 1432 temas** (fuente: `web/public/content/topic-index.json`).
+> Cifras vigentes: **17 rutas · 292 módulos · 1437 temas** (fuente: `web/public/content/topic-index.json`).
 > El temario vigente por ruta está en `specs/tracks/*.md` y en el índice web. Las pautas 13–17 de la v2
 > siguen vigentes dentro de la sección 4 (equivalencias al final).
 

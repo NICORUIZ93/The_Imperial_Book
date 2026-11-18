@@ -9,8 +9,8 @@
 Academia en español para estudiar programación, desarrollo de software y cloud local. La
 experiencia oficial es una aplicación Angular con lecciones Markdown.
 
-La academia reúne 16 tracks, 291 módulos y 1432 temas editoriales en formato de
-libro. Esos 16 tracks son Fundamentos + RutaFlow + 14 rutas de especialización.
+La academia reúne 17 tracks, 292 módulos y 1437 temas editoriales en formato de
+libro. Esos 17 tracks son Fundamentos + RutaFlow + 15 rutas de especialización.
 La presencia de criterios editoriales y la completitud de los siete pasos
 se reportan por separado; ninguna métrica automática sustituye la revisión técnica
 ni demuestra por sí sola que un ejemplo se ejecutó.
@@ -213,8 +213,8 @@ El contrato editorial que debe alcanzar cada tema es:
 ## Tracks de la academia
 
 La versión Angular tiene su propio contenido, más amplio, en formato Markdown
-(`web/public/content/<track>/modulo-N.md`), organizado en 16 tracks, 291
-módulos y 1432 temas editoriales visibles. Cada módulo prioriza una secuencia de
+(`web/public/content/<track>/modulo-N.md`), organizado en 17 tracks, 292
+módulos y 1437 temas editoriales visibles. Cada módulo prioriza una secuencia de
 temas prácticos. El sílabo y el estándar de calidad viven en documentos
 centrales; las fuentes específicas permanecen junto al tema que sustentan. No
 existen rutas separadas de cuestionarios, rúbricas o laboratorios repetidos.
@@ -223,10 +223,10 @@ Los conteos se verifican contra los tracks y el Markdown desde
 `scripts/validate_learning_priorities.py`; la validación falla si README vuelve
 a quedar desincronizado. La auditoría de criterios editoriales informa presencia
 estructural detectada por heurísticas, no calidad ni ejecución: el corte
-versionado registra 1432/1432 temas con los nueve criterios detectados. El
+versionado registra 1437/1437 temas con los nueve criterios detectados. El
 criterio de práctica acepta tanto el vocabulario de los siete pasos como una
 sección `#### Practica` con cuerpo accionable. La
-auditoría independiente de metodología registra 972/1432 temas con sus
+auditoría independiente de metodología registra 972/1437 temas con sus
 marcadores de siete pasos. Los 17 módulos migrados usan la envoltura
 Aprende/Practica/Aplica y 249 conservan el formato anterior; ambos formatos
 pueden contener temas cuyos siete pasos se auditan por separado. Ninguno de esos resultados demuestra que las instrucciones sean
@@ -275,6 +275,7 @@ independientes.
 | Fundamentos | 16 | Computador, programación, algoritmos, web, datos e ingeniería de software |
 | Cloud Local | 35 | AWS, Azure y GCP en local con Floci |
 | DevOps | 23 | Linux, Git, Docker, CI/CD, Kubernetes, IaC, QA Automation, sistemas distribuidos, servidor propio, DDD, eventos, microservicios y laboratorio Floci |
+| Docker | 1 | Contenedores de cero a experto con el estándar v3; publicación progresiva (módulo 0: Linux para contenedores) |
 | JavaScript | 15 | Lenguaje, DOM, asincronía, rendimiento |
 | Node.js | 16 | Backend, APIs, bases de datos, producción |
 | Angular | 17 | Componentes, Signals, routing, SSR, zoneless |

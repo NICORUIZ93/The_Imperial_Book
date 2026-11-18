@@ -45,6 +45,15 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
     expected: 'Compose imprime la configuración normalizada sin errores.',
     recovery: ['En Windows ejecuta los comandos Linux dentro de WSL.', 'Ante permisos denegados, revisa propietario y permisos; no uses sudo sin diagnóstico.'],
   },
+  docker: {
+    workspace: 'academia-docker',
+    prerequisites: ['Linux, una VM Linux o WSL 2 (macOS no tiene namespaces)', 'bash, python3 y util-linux (unshare, setpriv)', 'sudo en una máquina de práctica'],
+    createCommands: ['mkdir -p ~/academia-docker/rutaflow', 'cd ~/academia-docker', 'git init rutaflow', 'touch rutaflow/NOTAS.md'],
+    structure: ['m0-senales/', 'm0-capacidades/', 'm0-namespaces/', 'rutaflow/worker/', 'rutaflow/NOTAS.md'],
+    runCommand: 'sudo unshare --pid --fork --mount-proc ps -e',
+    expected: 'ps muestra solo dos procesos y el primero es el PID 1: ya estás dentro de un namespace PID.',
+    recovery: ['Si unshare responde «Operation not permitted», ejecútalo con sudo o en una VM Linux.', 'En macOS, abre una VM Linux (multipass o UTM): el kernel de macOS no tiene namespaces.'],
+  },
   javascript: {
     workspace: 'academia-labs/javascript',
     prerequisites: ['Node.js LTS', 'npm', 'Git'],

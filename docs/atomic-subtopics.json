@@ -35,6 +35,13 @@
       "subtopics": 0,
       "completeSubtopics": 0
     },
+    "docker": {
+      "topics": 5,
+      "completeTopics": 0,
+      "topicsWith3to6Subtopics": 0,
+      "subtopics": 0,
+      "completeSubtopics": 0
+    },
     "flutter": {
       "topics": 119,
       "completeTopics": 1,
@@ -3885,6 +3892,43 @@
       {
         "module": 9,
         "topic": "### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      }
+    ],
+    "docker": [
+      {
+        "module": 0,
+        "topic": "### Tema 1: Procesos, PID y señales: cómo se apaga bien un programa · Básico · 40 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 2: Usuarios, permisos y capacidades: qué puede hacer un proceso · Básico · 40 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 3: Namespaces: darle a un proceso su propia vista del sistema · Intermedio · 45 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 4: cgroups v2: limitar memoria y CPU de un proceso · Intermedio · 45 min",
+        "subtopicCount": 0,
+        "subtopics": [],
+        "complete": false
+      },
+      {
+        "module": 0,
+        "topic": "### Tema 5: Un contenedor sin Docker: namespaces, raíz propia y chroot · Intermedio · 45 min",
         "subtopicCount": 0,
         "subtopics": [],
         "complete": false

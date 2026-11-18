@@ -17,7 +17,7 @@ CONTENT = ROOT / "web/public/content"
 JSON_REPORT = ROOT / "docs/code-visual-quality.json"
 MD_REPORT = ROOT / "docs/code-visual-quality.md"
 TRACKS = (
-    "foundations", "cloud", "devops", "javascript", "node", "angular", "react",
+    "foundations", "cloud", "devops", "docker", "javascript", "node", "angular", "react",
     "java", "spring-boot", "microservices", "kotlin-multiplatform", "android", "ios", "flutter", "rutaflow",
 )
 EDITORIAL_MARKERS = ("DEFINITIVE-COMPLEMENTS", "SUPPLEMENTAL-COMPLEMENTS", "REQUESTED-PRACTICAL-EXAMPLES")
