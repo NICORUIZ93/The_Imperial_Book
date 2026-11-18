@@ -348,7 +348,7 @@ flowchart LR
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás construir un agregado `Envio` que valide una invariante, devuelva un resultado nuevo y emita eventos de dominio, y demostrar con pruebas que una mutación externa no puede saltarse la regla. **Conocimiento previo:** Temas 1 y 2, clases y `node --test`.
+Al finalizar podrás construir un agregado `Envio` que valide una invariante, cambie su estado solo mediante sus métodos y emita eventos de dominio, y demostrar con pruebas que una mutación externa no puede saltarse la regla. **Conocimiento previo:** Temas 1 y 2, clases y `node --test`.
 
 ```bash
 mkdir -p arquitectura-moderna/modulo-19/tema-3-agregado/{src/domain,test}
@@ -452,7 +452,7 @@ node --test
 
 **Resultado esperado:** dos pruebas en verde y un evento `EntregaConfirmada` por cada confirmación válida.
 
-**Fallo deliberado:** agrega `envio.estado = 'en_transito'` después de confirmar en la segunda prueba y ejecuta `node --test`. El estado no cambia porque la propiedad es privada y el getter no tiene setter; el intento de asignación falla en modo estricto o se ignora. El diagnóstico es que el agregado ya no expone una puerta trasera. Si en tu versión el campo fuera público, la prueba podría pasar sin detectar la reapertura: por eso la encapsulación importa.
+**Fallo deliberado:** agrega `'use strict';` como primera línea del archivo de pruebas y `envio.estado = 'en_transito';` después de confirmar en la segunda prueba; ejecuta `node --test`. La segunda prueba falla con `TypeError: Cannot set property estado of #<Envio> which has only a getter`: `estado` es un getter sin setter sobre un campo privado. Sin `'use strict'`, un archivo CommonJS ignora esa asignación en silencio y la prueba sigue en verde, así que el modo estricto convierte la puerta trasera en un error visible. Para dejar la protección como prueba permanente, reemplaza esa línea por `assert.throws(() => { envio.estado = 'en_transito'; }, TypeError);` y añade `assert.equal(envio.estado, 'entregado');`. Si el campo fuera público, esta prueba fallaría: por eso la encapsulación importa.
 
 #### Paso 5 · Práctica guiada
 

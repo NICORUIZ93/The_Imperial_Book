@@ -268,7 +268,7 @@ cd academia-kmp
 ./gradlew projects
 ```
 
-**Explicación línea por línea:** `androidTarget()` habilita la compilación para Android; `iosX64(); iosArm64(); iosSimulatorArm64()` habilitan las tres variantes de iOS necesarias (simulador Intel, dispositivo físico ARM, simulador ARM en Mac Apple Silicon); `commonMain.dependencies { implementation(...) }` declara Ktor disponible para TODO el código compartido, no solo para una plataforma.
+**Explicación línea por línea:** `androidTarget()` habilita la compilación para Android; `iosX64(); iosArm64(); iosSimulatorArm64()` habilitan tres variantes de iOS (simulador Intel, dispositivo físico ARM, simulador ARM en Mac Apple Silicon); `iosArm64` e `iosSimulatorArm64` son las necesarias hoy, mientras que `iosX64` es un destino de nivel 3 (Tier 3) que Kotlin no garantiza probar en CI: mantenlo solo si tu equipo aún usa Macs Intel; `commonMain.dependencies { implementation(...) }` declara Ktor disponible para TODO el código compartido, no solo para una plataforma.
 
 Agrega en `commonMain` un archivo que use una clase de Ktor, y compila para confirmar que la dependencia declarada en `commonMain.dependencies` es visible:
 
@@ -515,9 +515,9 @@ Archivo `gradle/libs.versions.toml`:
 
 ```toml
 [versions]
-kotlin = "2.2.20"
-ktor = "3.3.0"
-coroutines = "1.10.2"
+kotlin = "2.4.21"
+ktor = "3.5.0"
+coroutines = "1.11.0"
 
 [libraries]
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

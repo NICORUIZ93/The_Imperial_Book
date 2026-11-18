@@ -557,15 +557,3 @@ Corregí el Paso 5 filtrando únicamente los despliegues que llegaron a producci
 
 #### Paso 7 · Cierre
 Entregá el cálculo correcto de las 4 métricas DORA del Paso 4, la frecuencia inflada del Paso 5, y la frecuencia real corregida del Paso 6; explicá por qué contar ejecuciones de pipeline en vez de despliegues exitosos a producción invalida la métrica como señal de mejora real. Siguiente paso: usá estas cuatro métricas para decidir en qué parte del pipeline de RutaFlow invertir el próximo esfuerzo de mejora. Errores comunes: medir actividad del pipeline en vez de entregas reales a producción, calcular MTTR solo desde la detección y no desde el inicio real del incidente, y no definir qué cuenta como "cambio que falla" de forma consistente entre equipos. Fuentes oficiales: https://dora.dev/guides/dora-metrics-four-keys/ y https://cloud.google.com/blog/products/devops-sre/the-2019-accelerate-state-of-devops-report.
-
-## Trazabilidad de la auditoría original
-
-- **Service Mesh**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **GitOps**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Ansible**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **DevSecOps**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Métricas DORA**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Docker Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Docker Compose Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Kubernetes Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Helm Avanzado**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

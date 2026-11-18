@@ -19,7 +19,7 @@ Al finalizar podrás escribir un workflow de GitHub Actions con un job matricial
 
 **Conceptos clave:** job, step, ejecución paralela, `strategy.matrix`, runner.
 
-Un pipeline de CI se organiza en jobs, cada uno en su propio runner, compuesto de steps secuenciales. Distintos jobs corren en paralelo por defecto, a menos que se declare una dependencia explícita entre ellos. Una matriz de build (`strategy.matrix`) ejecuta el mismo job múltiples veces, una por cada combinación de valores especificados (por ejemplo, `node-version: [20, 22]`), sin duplicar la definición del job.
+Un pipeline de CI se organiza en jobs, cada uno en su propio runner, compuesto de steps secuenciales. Distintos jobs corren en paralelo por defecto, a menos que se declare una dependencia explícita entre ellos. Una matriz de build (`strategy.matrix`) ejecuta el mismo job múltiples veces, una por cada combinación de valores especificados (por ejemplo, `node-version: [22, 24]`), sin duplicar la definición del job.
 
 **Analogía:** los jobs son como distintos equipos de inspección trabajando en paralelo sobre un mismo producto. Una matriz de build es pedirle al mismo equipo que repita la misma prueba sobre varias versiones del producto, automáticamente y en paralelo.
 
@@ -30,7 +30,7 @@ flowchart TD
     W["Workflow CI"]
     W --> L["Job &quot;lint&quot; (paralelo con &quot;test&quot;)"]
     L --> LS["steps: checkout, deps, linter"]
-    W --> T["Job &quot;test&quot; (matriz: node 20, node 22)"]
+    W --> T["Job &quot;test&quot; (matriz: node 22, node 24)"]
     T --> T20["instancia node-20: checkout, deps, test"]
     T --> T22["instancia node-22: checkout, deps, test"]
 ```
@@ -50,10 +50,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20, 22]
+        node-version: [22, 24]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm test
@@ -67,13 +67,13 @@ Valida la sintaxis YAML y simula localmente las dos instancias de la matriz con 
 
 ```bash
 docker run --rm -v "$(pwd)":/w -w /w python:3.12-alpine sh -c "pip install --no-cache-dir pyyaml -q && python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/ci.yml')); print('YAML valido')\""
-for version in 20 22; do
+for version in 22 24; do
   echo "--- instancia matriz node-version=$version ---"
   docker run --rm -v "$(pwd)":/app -w /app "node:$version-alpine" npm test
 done
 ```
 
-**Resultado esperado:** `YAML valido` confirma que el workflow no tiene errores de sintaxis; cada instancia de la "matriz" simulada imprime su propia versión de Node (`v20.x.x` y `v22.x.x`), demostrando en local el mismo paralelismo que GitHub Actions ejecutaría remotamente.
+**Resultado esperado:** `YAML valido` confirma que el workflow no tiene errores de sintaxis; cada instancia de la "matriz" simulada imprime su propia versión de Node (`v22.x.x` y `v24.x.x`), demostrando en local el mismo paralelismo que GitHub Actions ejecutaría remotamente.
 
 **Fallo deliberado:** rompe la indentación de `strategy` (quítale dos espacios, dejándola al mismo nivel que `jobs` en vez de dentro de `test`) y repite la validación con `python3 -c "import yaml; yaml.safe_load(...)"`. El YAML puede seguir siendo sintácticamente válido pero GitHub Actions lo rechazaría como estructura de workflow inválida — diagnostica revisando que cada clave estructural (`strategy`, `steps`) esté anidada exactamente bajo el job correspondiente.
 
@@ -273,7 +273,7 @@ Desde una carpeta vacía crea `academia-devops/src/modulo4/pipeline-como-codigo`
 ```bash
 mkdir -p academia-devops/src/modulo4/pipeline-como-codigo/.github/workflows
 cd academia-devops/src/modulo4/pipeline-como-codigo
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   git init -q && git config user.email demo@academia.dev && git config user.name demo
   echo "name: CI
 on: [push]
@@ -382,27 +382,39 @@ on: { push: { branches: [main] } }
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: { contents: read, packages: write }
+    permissions:
+      contents: read
+      packages: write
     outputs:
       digest: ${{ steps.imagen.outputs.digest }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: npm ci && npm test -- --coverage --coverage.thresholds.branches=80 # puerta: pruebas y cobertura
-      - uses: docker/login-action@v3
-        with: { registry: ghcr.io, username: ${{ github.actor }}, password: ${{ secrets.GITHUB_TOKEN }} }
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - id: imagen
-        uses: docker/build-push-action@v6
-        with: { push: true, tags: ghcr.io/rutaflow/api:${{ github.sha }} }
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          push: true
+          tags: ghcr.io/rutaflow/api:${{ github.sha }}
 
   escaneo:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      packages: read
     steps:
-      - uses: aquasecurity/trivy-action@0.28.0
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ghcr.io/rutaflow/api@${{ needs.build.outputs.digest }}
           severity: CRITICAL
           exit-code: '1' # puerta: falla si hay críticas
+        env:
+          TRIVY_USERNAME: ${{ github.actor }} # la imagen de GHCR es privada por defecto
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
   staging:
     needs: [build, escaneo]
@@ -426,7 +438,7 @@ git commit -am "cambio" && git push
 # en la pestaña Actions: build -> escaneo -> staging -> (aprobación) -> produccion
 ```
 
-**Explicación por bloques:** El job `build` corre pruebas con un umbral de cobertura de ramas (primera puerta), publica la imagen y expone su digest como salida. `escaneo` revisa esa imagen exacta por digest y falla si encuentra vulnerabilidades críticas (segunda puerta). `staging` despliega solo si las dos anteriores pasan. `produccion` depende de staging y del entorno `produccion`, que exige aprobación (tercera puerta). Los dos despliegues usan el mismo digest, nunca vuelven a construir.
+**Explicación por bloques:** Los bloques `with:` y `permissions:` usan una clave por línea: dentro de un mapa en línea (`{ … }`), YAML no admite el `{` de `${{ … }}` y el archivo ni siquiera se puede leer. Cada acción se fija por el SHA completo de su commit, con la versión en un comentario: una etiqueta (`@v4`, `@0.28.0`) puede moverse a otro código, y en marzo de 2026 casi todas las etiquetas de `aquasecurity/trivy-action` se reescribieron para apuntar a commits maliciosos; un SHA no se puede reescribir. El job `build` corre pruebas con un umbral de cobertura de ramas (primera puerta), publica la imagen y expone su digest como salida. `escaneo` revisa esa imagen exacta por digest y falla si encuentra vulnerabilidades críticas (segunda puerta). `staging` despliega solo si las dos anteriores pasan. `produccion` depende de staging y del entorno `produccion`, que exige aprobación (tercera puerta). Los dos despliegues usan el mismo digest, nunca vuelven a construir.
 
 **Resultado esperado:**
 
@@ -473,10 +485,10 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reconstruir por ent
 | Paso | Acción | Configuración | Explicación | Resultado esperado |
 |---|---|---|---|---|
 | 1 | Crear el archivo del workflow | `.github/workflows/ci.yml` con `name: CI` y `on: [pull_request]` | Define cuándo se dispara el pipeline | El archivo existe en la ruta correcta |
-| 2 | Definir el job con matriz | Job `test` con `strategy: matrix: node-version: [20, 22]` | Ejecutará el job dos veces | La definición incluye la matriz correctamente |
-| 3 | Añadir steps de checkout y setup con caché | `actions/checkout@v4`, `actions/setup-node@v4` con `cache: 'npm'` | Descarga código y configura runtime con caché | Ambos steps sin errores de sintaxis |
+| 2 | Definir el job con matriz | Job `test` con `strategy: matrix: node-version: [22, 24]` | Ejecutará el job dos veces | La definición incluye la matriz correctamente |
+| 3 | Añadir steps de checkout y setup con caché | `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1` (v7.0.1), `actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1` (v7.1.0) con `cache: 'npm'` | Descarga código y configura runtime con caché | Ambos steps sin errores de sintaxis |
 | 4 | Añadir instalación, lint y test | `npm ci`, `npm run lint`, `npm test -- --coverage` | Instala y ejecuta validaciones | Los tres steps en orden secuencial |
-| 5 | Añadir publicación del artifact | `actions/upload-artifact@v4` con `path: coverage/` | Sube el reporte de cobertura | El artifact queda definido |
+| 5 | Añadir publicación del artifact | `actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9` (v7.0.2) con `path: coverage/` | Sube el reporte de cobertura | El artifact queda definido |
 | 6 | Abrir un pull request de prueba | Crea rama, cambio menor, abre PR | Dispara el workflow | GitHub muestra el workflow ejecutándose |
 | 7 | Verificar la matriz en paralelo | Observa la ejecución | Dos instancias del job `test` | Ambas aparecen ejecutándose independientemente |
 | 8 | Descargar el artifact de cobertura | Desde la ejecución completada | Confirma disponibilidad del reporte | El archivo descargado contiene el reporte |

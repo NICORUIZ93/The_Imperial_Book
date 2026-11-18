@@ -53,15 +53,15 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/branching` y simula u
 ```bash
 mkdir -p academia-devops/src/modulo1/branching/trunk-demo
 cd academia-devops/src/modulo1/branching/trunk-demo
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c \
-  "git init -q && git config user.email demo@academia.dev && git config user.name demo && \
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c \
+  "git init -q -b main && git config user.email demo@academia.dev && git config user.name demo && \
    echo v1 > app.txt && git add . && git commit -qm inicio && \
    git checkout -qb feature/x && echo 'v2 tras flag' >> app.txt && git commit -qam 'feature x' && \
    git checkout -q main && git merge --no-ff -q feature/x -m 'integra feature x' && \
    git log --oneline --graph --all"
 ```
 
-**Explicación línea por línea:** `git` es el comando de control de versiones que rastrea el historial de cambios del proyecto; `--no-ff` es la bandera que fuerza un commit de merge explícito aunque el merge pudiera resolverse en avance rápido, dejando visible en el historial cuándo se integró cada feature — el patrón típico de trunk-based con integración frecuente. Al ver el historial, `--oneline` es la bandera que muestra cada commit en una sola línea compacta, `--graph` es la bandera que dibuja las ramas y merges como un árbol ASCII, y `--all` es la bandera que incluye todas las ramas, no solo la actual.
+**Explicación línea por línea:** la imagen `alpine/git` tiene `git` como punto de entrada, así que todo lo que escribes después del nombre de la imagen se le pasa a `git`; `--entrypoint sh` cambia ese punto de entrada por la shell para que `-c '…'` ejecute un guion completo. `-u "$(id -u):$(id -g)"` ejecuta el contenedor con tu usuario: así los archivos quedan a tu nombre y Git no rechaza la carpeta montada con `detected dubious ownership`. `git init -b main` fija el nombre de la rama inicial, que de otro modo depende de la configuración de cada instalación. `git` es el comando de control de versiones que rastrea el historial de cambios del proyecto; `--no-ff` es la bandera que fuerza un commit de merge explícito aunque el merge pudiera resolverse en avance rápido, dejando visible en el historial cuándo se integró cada feature — el patrón típico de trunk-based con integración frecuente. Al ver el historial, `--oneline` es la bandera que muestra cada commit en una sola línea compacta, `--graph` es la bandera que dibuja las ramas y merges como un árbol ASCII, y `--all` es la bandera que incluye todas las ramas, no solo la actual.
 
 **Resultado esperado:** `git log --oneline --graph --all` muestra dos commits en `main` con un merge explícito de `feature/x`, simulando una integración frecuente y de corta duración.
 
@@ -130,8 +130,8 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/rebase` y genera tres
 ```bash
 mkdir -p academia-devops/src/modulo1/rebase
 cd academia-devops/src/modulo1/rebase
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c \
-  "git init -q && git config user.email demo@academia.dev && git config user.name demo && \
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c \
+  "git init -q -b main && git config user.email demo@academia.dev && git config user.name demo && \
    echo v1 > archivo.txt && git add . && git commit -qm WIP && \
    echo v2 >> archivo.txt && git commit -qam fix && \
    echo v3 >> archivo.txt && git commit -qam 'fix de verdad' && git log --oneline"
@@ -142,9 +142,11 @@ docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c \
 Combina los tres en uno usando `GIT_SEQUENCE_EDITOR` para automatizar el editor interactivo:
 
 ```bash
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c \
-  "GIT_SEQUENCE_EDITOR='sed -i 2,3s/^pick/squash/' git rebase -i HEAD~3 && git log --oneline"
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c \
+  "GIT_SEQUENCE_EDITOR='sed -i 2,3s/^pick/squash/' GIT_EDITOR=true git rebase -i --root && git log --oneline"
 ```
+
+`--root` incluye el primer commit del repositorio (con solo tres commits, `HEAD~3` no existe y Git responde `invalid upstream`), y `GIT_EDITOR=true` acepta sin abrir editor el mensaje combinado que propone `squash`.
 
 **Resultado esperado:** un único commit en el historial en vez de tres, con un mensaje que combina los tres originales.
 
@@ -206,8 +208,8 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/bisect` con seis comm
 ```bash
 mkdir -p academia-devops/src/modulo1/bisect
 cd academia-devops/src/modulo1/bisect
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
-  git init -q && git config user.email demo@academia.dev && git config user.name demo
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
+  git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
   echo "def suma(a,b): return a+b" > operacion.py && git add . && git commit -qm v1
   echo "def resta(a,b): return a-b" >> operacion.py && git commit -qam v2
   echo "def bug(a,b): return a-b  # BUG: debería sumar" >> operacion.py && git commit -qam v3-bug
@@ -221,7 +223,7 @@ docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
 Automatiza la búsqueda con un script que detecta el bug (`grep` sobre el comentario `BUG`) y `bisect run`:
 
 ```bash
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   echo "#!/bin/sh
   grep -q BUG operacion.py && exit 1 || exit 0" > /repo/test-bug.sh && chmod +x /repo/test-bug.sh
   git bisect start HEAD HEAD~4
@@ -293,8 +295,8 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/hooks` con un hook `p
 ```bash
 mkdir -p academia-devops/src/modulo1/hooks
 cd academia-devops/src/modulo1/hooks
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
-  git init -q && git config user.email demo@academia.dev && git config user.name demo
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
+  git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
   mkdir -p .git/hooks
   printf "#!/bin/sh\nif git diff --cached | grep -q SECRETO; then echo \"bloqueado: SECRETO detectado\"; exit 1; fi\n" > .git/hooks/pre-commit
   chmod +x .git/hooks/pre-commit
@@ -306,7 +308,7 @@ docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
 Ejecuta la prueba que debe fallar:
 
 ```bash
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   echo "DB_PASSWORD=SECRETO123" >> config.txt
   git add . && git commit -qm "intento con secreto"; echo "codigo de salida: $?"'
 ```
@@ -375,8 +377,8 @@ Desde una carpeta vacía, simula un monorepo mínimo con dos paquetes que compar
 ```bash
 mkdir -p academia-devops/src/modulo1/monorepo-demo
 cd academia-devops/src/modulo1/monorepo-demo
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
-  git init -q && git config user.email demo@academia.dev && git config user.name demo
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
+  git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
   mkdir -p paquete-a paquete-b tooling-compartido
   echo "function formatear(x) { return x.toFixed(2); }" > tooling-compartido/formato.js
   echo "const { formatear } = require(\"../tooling-compartido/formato\"); console.log(formatear(3));" > paquete-a/index.js
@@ -455,8 +457,8 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/reset-revert` con un 
 ```bash
 mkdir -p academia-devops/src/modulo1/reset-revert
 cd academia-devops/src/modulo1/reset-revert
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
-  git init -q && git config user.email demo@academia.dev && git config user.name demo
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
+  git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
   echo v1 > dato.txt && git add . && git commit -qm v1
   echo v2 >> dato.txt && git commit -qam v2
   echo v3-error >> dato.txt && git commit -qam "v3 con error"
@@ -529,8 +531,8 @@ Desde una carpeta vacía crea `academia-devops/src/modulo1/reflog` y provoca una
 ```bash
 mkdir -p academia-devops/src/modulo1/reflog
 cd academia-devops/src/modulo1/reflog
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
-  git init -q && git config user.email demo@academia.dev && git config user.name demo
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
+  git init -q -b main && git config user.email demo@academia.dev && git config user.name demo
   echo v1 > dato.txt && git add . && git commit -qm v1
   echo v2 > dato.txt && git commit -qam "commit importante"
   git reset --hard HEAD~1

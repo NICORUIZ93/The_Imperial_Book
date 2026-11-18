@@ -53,10 +53,12 @@ presupuesto = validos * (1 - slo)
 consumido = validos - buenos
 print(f"SLI: {sli:.4%}")
 print(f"Presupuesto: {presupuesto:.0f} eventos")
-print(f"Consumido: {consumido:.0f} ({consumido / presupuesto:.1%} del presupuesto)")
 if consumido > presupuesto:
     raise SystemExit("presupuesto de error agotado: congelar cambios riesgosos")
+print(f"Consumido: {consumido:.0f} ({consumido / presupuesto:.1%} del presupuesto)")
 ```
+
+La comprobación del presupuesto va antes del porcentaje: si el presupuesto vale 0, la división `consumido / presupuesto` fallaría con `ZeroDivisionError` antes de llegar al `if`.
 
 **Ejecuta el ejemplo** (desde la carpeta creada):
 ```bash
@@ -67,7 +69,7 @@ Verifica la salida y compárala con el resultado esperado.
 Resultado esperado: `SLI: 99.9450%`, `Presupuesto: 1000 eventos` y `Consumido: 550 (55.0% del presupuesto)`. Explica cada línea: `validos` y `buenos` son los conteos de la ventana, `slo` fija el objetivo, `presupuesto` es el 0.1% de eventos válidos y `consumido` es la diferencia entre válidos y buenos; mientras el consumo no supere el presupuesto, el proceso termina con código 0.
 
 #### Paso 5 · Práctica guiada
-**Fallo deliberado:** cambiá `slo = 0.999` por `slo = 1.0` y ejecutá de nuevo. Falla con `presupuesto de error agotado` en cuanto hay un solo evento malo, porque con ese objetivo cualquier error consume presupuesto y dispara alertas constantes; un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto. **Pista:** el presupuesto no es un adorno; si vale cero, el sistema solo puede congelarse.
+**Fallo deliberado:** cambia `slo = 0.999` por `slo = 1.0` y ejecuta de nuevo. Imprime `Presupuesto: 0 eventos` y termina con código 1 y el mensaje `presupuesto de error agotado: congelar cambios riesgosos` en cuanto hay un solo evento malo, porque con ese objetivo cualquier error consume presupuesto y dispara alertas constantes; un objetivo de 100% suele ser económicamente imposible además de frenar cualquier cambio que introduzca el más mínimo riesgo, incluso mejoras reales al producto. **Pista:** el presupuesto no es un adorno; si vale cero, el sistema solo puede congelarse.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos minutos de presupuesto representa el 0.1% en un mes de 30 días (agregá `print(f"Minutos: {0.001 * 30 * 24 * 60:.1f}")` al script). Después llevá el cálculo al **proyecto integrador** RutaFlow: crea tu propio `deployment.yaml` para `rutaflow-delivery-api` y medí el SLI del viaje `/envios` que ese despliegue expone; no confundas sus `readinessProbe`/`livenessProbe` con el SLO de negocio, porque un Pod "listo" (probe verde) puede dejar el viaje completo fuera del SLO si la dependencia de DynamoDB (Módulo Cloud 4) responde lenta.

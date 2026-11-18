@@ -251,37 +251,75 @@ export async function confirmarConOutbox({ envioId, ocurridoEn, evento }) {
 }
 ```
 
-Crea `scripts/crear-tablas.mjs` para preparar las tablas locales y `scripts/registrar.mjs` para invocar la transacción. Para el relay, `src/relay.mjs` lee pendientes, publica y marca:
+Las tablas y la cola se crean con la CLI de AWS en el bloque de ejecución de más abajo. Crea `scripts/registrar.mjs`, que invoca la transacción para el envío `RF-1`:
+
+```javascript
+// Registra la confirmación de RF-1 y su evento en una sola transacción.
+import { randomUUID } from 'node:crypto';
+import { confirmarConOutbox } from '../src/outbox.js';
+
+const ocurridoEn = new Date().toISOString();
+const evento = { eventId: randomUUID(), tipo: 'EntregaConfirmada', envioId: 'RF-1', ocurridoEn };
+
+await confirmarConOutbox({ envioId: 'RF-1', ocurridoEn, evento });
+console.log(`registrado ${evento.eventId} como pendiente`);
+```
+
+Para el relay, `src/relay.mjs` lee pendientes, publica y marca. Al ejecutarlo con `node src/relay.mjs`, crea sus clientes y lee la URL de la cola de `SQS_QUEUE_URL`:
 
 ```javascript
 // El relay publica después del commit; si falla, el mensaje sigue pendiente.
-import { ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { SendMessageCommand } from '@aws-sdk/client-sqs';
+import { pathToFileURL } from 'node:url';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
-export async function relay({ documentos, sqs, queueUrl, limite = 10 }) {
-  const pendientes = await documentos.send(new ScanCommand({
-    TableName: 'rutaflow_outbox',
-    FilterExpression: 'estado = :pendiente',
-    ExpressionAttributeValues: { ':pendiente': 'pendiente' },
-    Limit: limite,
-  }));
-
-  for (const item of pendientes.Items ?? []) {
-    await sqs.send(new SendMessageCommand({
-      QueueUrl: queueUrl,
-      MessageBody: JSON.stringify(item.payload),
-    }));
-
-    await documentos.send(new UpdateCommand({
+export async function relay({ documentos, sqs, queueUrl }) {
+  let publicados = 0;
+  let desde; // clave donde continúa el Scan en la página siguiente
+  do {
+    const pagina = await documentos.send(new ScanCommand({
       TableName: 'rutaflow_outbox',
-      Key: { pk: item.pk },
-      UpdateExpression: 'SET estado = :publicado, intentos = intentos + :uno',
-      ExpressionAttributeValues: { ':publicado': 'publicado', ':uno': 1 },
+      FilterExpression: 'estado = :pendiente',
+      ExpressionAttributeValues: { ':pendiente': 'pendiente' },
+      ConsistentRead: true,
+      ExclusiveStartKey: desde,
     }));
-  }
-  return pendientes.Items?.length ?? 0;
+
+    for (const item of pagina.Items ?? []) {
+      await sqs.send(new SendMessageCommand({
+        QueueUrl: queueUrl,
+        MessageBody: JSON.stringify(item.payload),
+      }));
+
+      await documentos.send(new UpdateCommand({
+        TableName: 'rutaflow_outbox',
+        Key: { pk: item.pk },
+        UpdateExpression: 'SET estado = :publicado, intentos = intentos + :uno',
+        ExpressionAttributeValues: { ':publicado': 'publicado', ':uno': 1 },
+      }));
+      publicados += 1;
+    }
+    desde = pagina.LastEvaluatedKey;
+  } while (desde);
+  return publicados;
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const queueUrl = process.env.SQS_QUEUE_URL;
+  if (!queueUrl) throw new Error('Define SQS_QUEUE_URL antes de ejecutar el relay');
+  const conexion = {
+    region: 'us-east-1',
+    endpoint: 'http://localhost:4566',
+    credentials: { accessKeyId: 'test', secretAccessKey: 'test' },
+  };
+  const documentos = DynamoDBDocumentClient.from(new DynamoDBClient(conexion));
+  const sqs = new SQSClient(conexion);
+  console.log(`publicados: ${await relay({ documentos, sqs, queueUrl })}`);
 }
 ```
+
+El `Scan` recorre todas las páginas con `LastEvaluatedKey`. No uses `Limit` junto con `FilterExpression` para «leer N pendientes»: DynamoDB aplica `Limit` a los ítems que lee **antes** de filtrar, así que una página puede volver vacía aunque haya pendientes más adelante. En producción, un índice secundario por `estado` evita leer la tabla completa.
 
 Ejecuta el flujo con Floci y la CLI de AWS o con los scripts del proyecto:
 
@@ -311,7 +349,7 @@ aws --endpoint-url http://localhost:4566 sqs receive-message \
   --query 'Messages[0].Body'
 ```
 
-`relay.mjs` debe leer `SQS_QUEUE_URL` del entorno. La semilla crea el envío `RF-1` porque la transacción exige `attribute_exists(pk)`; si tu `registrar.mjs` usa otro identificador, ajusta la semilla.
+`relay.mjs` lee `SQS_QUEUE_URL` del entorno. La semilla crea el envío `RF-1` porque la transacción exige `attribute_exists(pk)`; si cambias el identificador en `registrar.mjs`, ajusta la semilla.
 
 **Resultado esperado:** después de `registrar`, existe un ítem `OUTBOX#...` con `estado=pendiente`; después de `relay`, el ítem cambia a `publicado` y `receive-message` imprime el cuerpo JSON del evento con su `eventId`. Si el relay se ejecuta dos veces antes de marcar, el consumidor recibirá un duplicado; el Tema 3 lo resuelve.
 

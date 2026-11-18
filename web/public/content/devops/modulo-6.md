@@ -68,12 +68,13 @@ Actualiza la imagen y observa el rollout gestionado automáticamente:
 
 ```bash
 kubectl get replicasets
-kubectl set image deployment/mi-api mi-api=node:20-alpine --record 2>/dev/null || true
+kubectl set image deployment/mi-api mi-api=node:24-alpine
+kubectl annotate deployment/mi-api kubernetes.io/change-cause="imagen node:24-alpine"
 kubectl rollout status deployment/mi-api
 kubectl get replicasets
 ```
 
-`--record` es la bandera que guarda el comando ejecutado como anotación del rollout, útil para ver después qué comando causó cada cambio con `kubectl rollout history`. El tag cambia de `node:22-alpine` a `node:20-alpine`: Kubernetes solo crea un ReplicaSet nuevo cuando el pod template efectivamente cambia — fijar la MISMA imagen que ya está desplegada no dispara ningún rollout, por eso el tag tiene que ser genuinamente distinto, no solo "reaplicado".
+`kubectl annotate … kubernetes.io/change-cause=…` guarda el motivo del cambio en la anotación que Kubernetes copia a cada revisión; `kubectl rollout history` lo muestra en la columna `CHANGE-CAUSE`. La antigua bandera `--record` hacía eso automáticamente, pero está obsoleta y se retirará. No se silencian los errores: si `set image` falla, debes ver el mensaje. El tag cambia de `node:22-alpine` a `node:24-alpine` (las dos son versiones LTS de Node): Kubernetes solo crea un ReplicaSet nuevo cuando el pod template efectivamente cambia — fijar la MISMA imagen que ya está desplegada no dispara ningún rollout, por eso el tag tiene que ser genuinamente distinto, no solo "reaplicado".
 
 **Resultado esperado:** antes de la actualización, `kubectl get replicasets` muestra un único ReplicaSet con 3 réplicas; después de `kubectl rollout status`, aparece un segundo ReplicaSet con 3 réplicas activas y el original en 0, confirmando la transición gestionada.
 

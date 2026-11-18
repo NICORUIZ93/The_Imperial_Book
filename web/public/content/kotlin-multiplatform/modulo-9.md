@@ -6,7 +6,7 @@
 ### Tema 1: kotlin.test en commonTest
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 17+, Kotlin, Gradle (`./gradlew --version`).
+Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 27 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
 
 #### Paso 2 · Contexto y caso real
 El equipo de tareas tiene duplicada la prueba del filtro de pendientes: una suite en Android con JUnit y otra en iOS con XCTest, ambas verificando la misma regla de negocio por separado, y ya divergieron ligeramente entre sí.
@@ -60,10 +60,10 @@ class ObtenerTareasPendientesUseCaseTest {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -126,10 +126,10 @@ class TareaRepositoryFake(private val datos: List<Tarea>) : TareaRepository {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -204,10 +204,10 @@ fun pruebaConDelay() = runTest {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -272,7 +272,7 @@ Archivo `shared/build.gradle.kts`:
 plugins {
     id("rutaflow.kmp.library")
     id("org.jetbrains.kotlinx.benchmark") version "0.4.14"
-    kotlin("plugin.allopen") version "2.2.20"
+    kotlin("plugin.allopen") version "2.4.21"
 }
 
 allOpen { annotation("org.openjdk.jmh.annotations.State") }

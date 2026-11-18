@@ -46,17 +46,18 @@ cd academia-devops/src/modulo2/multistage
 cat > package.json <<'EOF'
 {"name":"api-demo","version":"1.0.0","scripts":{"build":"echo 'compilado' > dist-marker.txt"},"main":"index.js"}
 EOF
+docker run --rm -v "$(pwd)":/app -w /app node:22-alpine npm install --package-lock-only
 mkdir dist && echo "console.log('API corriendo')" > index.js
 cat > Dockerfile.sinoptimizar <<'EOF'
 FROM node:22
 WORKDIR /app
 COPY . .
-RUN npm ci --omit=dev || true
+RUN npm ci --omit=dev
 CMD ["node", "index.js"]
 EOF
 ```
 
-**Explicación línea por línea:** `Dockerfile.sinoptimizar` copia todo el proyecto en una imagen `node:22` completa (cientos de MB), sin separar build de runtime — el punto de partida deliberadamente no optimizado para comparar.
+**Explicación línea por línea:** `npm ci` solo instala a partir de un `package-lock.json` y sin él falla con `The npm ci command can only install with an existing package-lock.json`; por eso el contenedor de `node:22-alpine` genera primero ese archivo con `npm install --package-lock-only`, sin descargar dependencias. `Dockerfile.sinoptimizar` copia todo el proyecto en una imagen `node:22` completa (cientos de MB), sin separar build de runtime — el punto de partida deliberadamente no optimizado para comparar.
 
 Construye ambas versiones y compara tamaños:
 
@@ -82,7 +83,7 @@ docker images | grep api-demo
 
 **Resultado esperado:** `api-demo:sin-optimizar` pesa varios cientos de MB; `api-demo:multistage` pesa decenas de MB, confirmando la reducción del patrón multi-stage.
 
-**Fallo deliberado:** cambia `COPY --from=build /app/dist-marker.txt ./` por `COPY --from=otra-etapa /app/dist-marker.txt ./` (un nombre de etapa que no existe). El build falla con un error de etapa no encontrada — diagnostica que el nombre después de `--from=` debe coincidir exactamente con el declarado en `AS <nombre>`.
+**Fallo deliberado:** cambia `COPY --from=build /app/dist-marker.txt ./` por `COPY --from=otra-etapa /app/dist-marker.txt ./` (un nombre de etapa que no existe). El build falla con `failed to resolve source metadata for docker.io/library/otra-etapa:latest`: como no existe ninguna etapa con ese nombre, BuildKit lo interpreta como una imagen del registro e intenta descargarla. Diagnostica que el nombre después de `--from=` debe coincidir exactamente con el declarado en `AS <nombre>`.
 
 #### Paso 5 · Práctica guiada
 
@@ -147,6 +148,7 @@ mkdir -p academia-devops/src/modulo2/cache-test && cd academia-devops/src/modulo
 cat > package.json <<'EOF'
 {"name":"api-demo","version":"1.0.0","scripts":{"build":"echo compilado > dist-marker.txt"}}
 EOF
+docker run --rm -v "$(pwd)":/app -w /app node:22-alpine npm install --package-lock-only
 echo "console.log('v1')" > index.js
 cat > Dockerfile <<'EOF'
 FROM node:22-alpine AS build

@@ -614,7 +614,7 @@ spec:
           command: ["node", "-e", "require('http').createServer((q,r)=>r.end('v1')).listen(3000)"]
 EOF
 kubectl apply -f deployment-recreate.yaml
-kubectl set image deployment/mi-api mi-api=node:20-alpine
+kubectl set image deployment/mi-api mi-api=node:24-alpine
 kubectl get pods -w
 ```
 
@@ -650,7 +650,7 @@ Entregá el despliegue con `Recreate` y la ventana de cero pods del Paso 4, la i
 
 #### Paso 1 · Objetivo y preparación
 
-Necesitas un clúster con un plugin de red que aplique NetworkPolicy: kind no lo hace por defecto. Usa `minikube start --cni=calico` o kind con Calico.
+Necesitas un clúster con un plugin de red que aplique NetworkPolicy. kind lo hace de serie desde la versión 0.24.0 (agosto de 2024), que incorpora `kube-network-policies`; comprueba tu versión con `kind version`. Con minikube, usa `minikube start --cni=calico`, como en la demostración.
 
 #### Paso 2 · Contexto y caso real
 

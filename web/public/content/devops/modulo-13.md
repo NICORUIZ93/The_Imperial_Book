@@ -6,7 +6,7 @@
 ### Tema 1: El pipeline completo — de commit a producción verificada
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos y Python 3 con PyYAML; no necesitás un clúster real para comprobar la configuración.
+Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos y Python 3 con PyYAML (`python3 -m pip install pyyaml`); no necesitas un clúster real para comprobar la configuración.
 
 #### Paso 2 · Contexto y caso real
 A lo largo del track construiste cada etapa por separado: tests, escaneo, build, despliegue y verificación. Nadie confirmó todavía que esas etapas estén realmente conectadas. En RutaFlow, un pipeline que ejecuta Trivy pero no falla ante una vulnerabilidad crítica produce una falsa sensación de seguridad: el escaneo aparece en verde y la imagen vulnerable se publica igual.
@@ -43,7 +43,7 @@ flowchart LR
 mkdir ejemplo && cd ejemplo
 ```
 
-Crea `.github/workflows/pipeline.yml` con cuatro jobs encadenados y un escaneo que falla ante vulnerabilidades críticas:
+Crea `.github/workflows/pipeline.yml` con cuatro jobs encadenados y un escaneo que falla ante vulnerabilidades críticas. Cada job corre en una máquina limpia: el que necesita el código hace `checkout`, `build` publica la imagen en el registro para que `scan` pueda descargarla, y todas las acciones se fijan por el SHA completo de su commit:
 
 ```yaml
 name: pipeline
@@ -52,31 +52,45 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: npm test
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: npm ci && npm test
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - run: docker build -t registry.rutaflow.app/api:${{ github.sha }} .
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: registry.rutaflow.app
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - run: |
+          docker build -t registry.rutaflow.app/api:${{ github.sha }} .
+          docker push registry.rutaflow.app/api:${{ github.sha }}
   scan:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: aquasecurity/trivy-action@0.28.0
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: registry.rutaflow.app/api:${{ github.sha }}
           severity: CRITICAL
           exit-code: "1"
+        env:
+          TRIVY_USERNAME: ${{ secrets.REGISTRY_USER }}
+          TRIVY_PASSWORD: ${{ secrets.REGISTRY_TOKEN }}
   deploy:
     needs: scan
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: helm upgrade --install api ./chart --set image.tag=${{ github.sha }}
 ```
 
-Crea `verificar_pipeline.py` para comprobar el orden, las dependencias y el gate de seguridad:
+Crea `verificar_pipeline.py` para comprobar el orden, las dependencias, el gate de seguridad, la etiqueta de la imagen y la fijación de las acciones. Cada comprobación termina el script con un mensaje de `fallo:` si no se cumple:
 
 ```python
+import re
 import sys
 from pathlib import Path
 
@@ -85,18 +99,41 @@ import yaml
 flujo = yaml.safe_load(Path(".github/workflows/pipeline.yml").read_text(encoding="utf-8"))
 jobs = flujo["jobs"]
 orden = ["test", "build", "scan", "deploy"]
+TAG = "${{ github.sha }}"
+
+
+def comandos(job):
+    return "\n".join(paso.get("run", "") for paso in jobs[job]["steps"])
+
 
 for anterior, siguiente in zip(orden, orden[1:]):
     if jobs[siguiente].get("needs") != anterior:
         sys.exit(f"fallo: {siguiente} no depende de {anterior}")
 
-escaneo = jobs["scan"]["steps"][0]["with"]
+pasos_trivy = [p for p in jobs["scan"]["steps"] if p.get("uses", "").startswith("aquasecurity/trivy-action@")]
+if not pasos_trivy:
+    sys.exit("fallo: el job scan no ejecuta Trivy")
+escaneo = pasos_trivy[0]["with"]
 if str(escaneo.get("exit-code")) != "1" or escaneo.get("severity") != "CRITICAL":
     sys.exit("fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL")
 
+imagen = f"registry.rutaflow.app/api:{TAG}"
+if f"docker build -t {imagen}" not in comandos("build") or f"docker push {imagen}" not in comandos("build"):
+    sys.exit("fallo: build no construye y publica la imagen etiquetada con github.sha")
+if escaneo.get("image-ref") != imagen:
+    sys.exit("fallo: scan no revisa la imagen etiquetada con github.sha")
+if f"image.tag={TAG}" not in comandos("deploy"):
+    sys.exit("fallo: deploy no despliega la imagen etiquetada con github.sha")
+
+for nombre, job in jobs.items():
+    for paso in job["steps"]:
+        if "uses" in paso and not re.search(r"@[0-9a-f]{40}$", paso["uses"]):
+            sys.exit(f"fallo: {nombre} usa {paso['uses']} sin fijarla por SHA")
+
 print("jobs:", " -> ".join(orden))
 print("gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)")
-print("imagen etiquetada con el hash del commit: True")
+print("imagen etiquetada con el hash del commit en build, scan y deploy")
+print("acciones fijadas por SHA de commit")
 ```
 
 **Ejecuta el ejemplo:**
@@ -110,13 +147,14 @@ Resultado esperado:
 ```text
 jobs: test -> build -> scan -> deploy
 gate de seguridad: bloqueante (exit-code 1, severity CRITICAL)
-imagen etiquetada con el hash del commit: True
+imagen etiquetada con el hash del commit en build, scan y deploy
+acciones fijadas por SHA de commit
 ```
 
-El script explica cada comprobación: `needs` define el orden, `exit-code` distingue un gate real de un reporte informativo y el tag con `github.sha` evita depender de `latest`.
+El script explica cada comprobación: `needs` define el orden, `exit-code` distingue un gate real de un reporte informativo, el tag con `github.sha` en los tres jobs evita depender de `latest` y el SHA completo impide que alguien cambie el código de una acción moviendo su etiqueta. PyYAML no conserva los comentarios, así que `# v7.0.1` no interfiere con la comprobación.
 
 #### Paso 5 · Práctica guiada
-Pista: cambiá `exit-code: "1"` por `exit-code: "0"` y volvé a ejecutar `python3 verificar_pipeline.py`; ese es el fallo deliberado: el validador termina con `fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL`, porque el job de Trivy informaría el hallazgo pero no detendría el pipeline.
+Pista: cambia `exit-code: "1"` por `exit-code: "0"` y vuelve a ejecutar `python3 verificar_pipeline.py`; ese es el fallo deliberado: el validador termina con `fallo: el escaneo no bloquea ante una vulnerabilidad CRITICAL`, porque el job de Trivy informaría el hallazgo pero no detendría el pipeline. Restáuralo y cambia `${{ github.sha }}` por `latest` en el job `deploy`: ahora termina con `fallo: deploy no despliega la imagen etiquetada con github.sha`.
 
 #### Paso 6 · Práctica independiente
 Restaurá `exit-code: "1"` y agregá un job `verify` que dependa de `deploy` y falle si la tasa de error supera un umbral. Luego conectá el ejercicio con el proyecto integrador: el pipeline real de RutaFlow debe promover el mismo digest que pasó el escaneo, no reconstruir “la misma versión” para producción. Documentá qué parte del flujo pudiste validar con el script y cuál requiere un runner real.

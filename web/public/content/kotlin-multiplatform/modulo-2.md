@@ -48,7 +48,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/ConcurrenciaEstructurada.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/ConcurrenciaEstructurada.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -68,10 +68,9 @@ suspend fun cargarPantalla() = coroutineScope {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `coroutineScope { ... }` crea un scope que agrupa las coroutines lanzadas dentro; `async { obtenerUsuario() }` y `async { obtenerPedidos() }` se lanzan AMBAS antes de llamar a `.await()` en cualquiera, por lo que corren en paralelo desde el inicio; `usuario.await()` y `pedidos.await()` esperan cada resultado sin bloquear el hilo mientras tanto.
@@ -180,7 +179,7 @@ Al finalizar podrás elegir entre `Flow`, `StateFlow` y `SharedFlow` según si t
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/FlowTipos.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/FlowTipos.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -203,10 +202,9 @@ class ObservadorDeEstado {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `flow { for (i in 1..n) { delay(10); emit(i) } }` define un flujo perezoso que emite valores solo cuando algo lo recolecta; `MutableStateFlow<EstadoPantalla>(EstadoPantalla.Cargando)` EXIGE un valor inicial en el constructor porque siempre debe haber un "valor actual"; `MutableSharedFlow<String>()` no recibe (ni acepta) un valor inicial, porque conceptualmente representa eventos, no un estado persistente.
@@ -312,7 +310,7 @@ Al finalizar podrás capturar errores de una llamada `suspend` transformándolos
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/ErroresYMutex.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/ErroresYMutex.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -362,10 +360,9 @@ class ContadorProtegido {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `sealed class EstadoUI` reutiliza exactamente el mismo conjunto de tres casos declarado en el Módulo 0, Tema 3 (`Cargando`/`Exito`/`Error`), no una versión parcial con un solo caso; `try { EstadoUI.Exito(listOf(obtenerUsuario(id))) } catch (e: Exception) { EstadoUI.Error(...) }` convierte el resultado feliz en `Exito` y cualquier excepción en un `Error` explícito manejable por la UI; `yield()` cede el control cooperativamente, dando oportunidad a que otra coroutine se intercale exactamente entre la lectura y la escritura; `mutex.withLock { ... }` garantiza que solo UNA coroutine a la vez ejecuta el bloque completo de lectura-escritura, sin importar cuántas veces ceda el control con `yield()` en el medio.
@@ -479,7 +476,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Dispatchers.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/Dispatchers.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -504,10 +501,9 @@ suspend fun leerArchivoSeguro(): String = withContext(Dispatchers.IO) {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `leerArchivoGrandeBloqueante()` bloquea el hilo real con un busy-wait multiplataforma (análogo a leer un archivo grande de forma síncrona; `Thread.sleep` no está disponible en código `commonMain`, solo en JVM); `withContext(Dispatchers.IO) { leerArchivoGrandeBloqueante() }` mueve esa llamada a un dispatcher optimizado para I/O, devolviendo el control automáticamente al dispatcher original cuando el bloque termina.
@@ -522,7 +518,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class DispatchersTest {
     @Test
@@ -530,9 +525,11 @@ class DispatchersTest {
         var marcas = 0
         val ticker = async { repeat(6) { delay(50); marcas++ } }
         leerArchivoGrandeBloqueante() // ejecutado DIRECTO en este hilo, sin withContext
+        val marcasDuranteElBloqueo = marcas // se lee ANTES de esperar al ticker
         ticker.await()
-        // el busy-wait de 300ms bloqueó este hilo, así que el ticker (que también lo necesita) avanzó poco o nada mientras tanto
-        assertTrue(marcas <= 6)
+        // runBlocking usa un solo hilo: mientras el busy-wait lo ocupa, el ticker no puede ni empezar
+        assertEquals(0, marcasDuranteElBloqueo)
+        assertEquals(6, marcas) // al liberar el hilo, el ticker completa sus 6 marcas
     }
 
     @Test

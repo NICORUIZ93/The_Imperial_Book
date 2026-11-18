@@ -135,7 +135,14 @@ docker run --rm -v "$(pwd)":/work -w /work alpine sh -c \
 
 **Resultado esperado:** la primera línea muestra los permisos por defecto (normalmente `-rw-r--r--`); tras `chmod 600` verás `-rw-------`; tras `chmod 754` verás `-rwxr-xr--`, exactamente los mismos nueve bits explicados en el diagrama.
 
-**Fallo deliberado:** ejecuta `./script.sh` directamente en tu host inmediatamente después de `chmod 600` (sin el bit de ejecución). Debes ver `Permission denied` — diagnostica con `ls -l script.sh` que falta el bit `x`, y corrige con `chmod +x script.sh` antes de reintentar.
+**Fallo deliberado:** el comando anterior termina en `chmod 754`, así que el script ya es ejecutable. Quita el bit de ejecución y ejecútalo en un comando aparte:
+
+```bash
+docker run --rm -v "$(pwd)":/work -w /work alpine sh -c \
+  'chmod 600 script.sh; ls -l script.sh; ./script.sh; echo "codigo de salida: $?"'
+```
+
+Debes ver `Permission denied` y `codigo de salida: 126` (126 significa «encontrado pero no ejecutable»). Diagnostica con `ls -l script.sh` que falta el bit `x` y corrige con `chmod +x script.sh` antes de reintentar.
 
 #### Paso 5 · Práctica guiada
 
@@ -787,7 +794,7 @@ En `compose.yaml` conecta ambos servicios en una red privada y publica solamente
 ```yaml
 services:
   backend:
-    image: node:20-alpine
+    image: node:24-alpine
     working_dir: /app
     command: ["node", "server.js"]
     environment:

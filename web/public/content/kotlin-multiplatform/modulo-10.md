@@ -6,7 +6,7 @@
 ### Tema 1: Pipeline Gradle multiplataforma en CI
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a configurar un pipeline de CI que compile y pruebe el módulo `shared` contra el target Android y el target iOS en cada push, usando un runner macOS específicamente para iOS. Prerrequisitos: JDK 17+, Gradle, acceso a un runner CI con macOS disponible.
+Al finalizar vas a configurar un pipeline de CI que compile y pruebe el módulo `shared` contra el target Android y el target iOS en cada push, usando un runner macOS específicamente para iOS. Prerrequisitos: JDK 27 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»), y acceso a un runner CI con macOS.
 
 #### Paso 2 · Contexto y caso real
 Un cambio en `commonMain` compiló perfectamente en el pipeline que solo corría `assembleDebug` de Android, se mergeó a `main`, y recién se descubrió roto para iOS tres días después, cuando alguien intentó hacer un build de release.
@@ -14,21 +14,7 @@ Un cambio en `commonMain` compiló perfectamente en el pipeline que solo corría
 #### Paso 3 · Teoría, modelo mental y analogía
 Un build exitoso en un target no garantiza éxito en el otro: un cambio puede usar accidentalmente una API no disponible para todos los targets desde `commonMain` (Módulo 3). Validar ambos targets en cada push detecta la regresión con el contexto todavía fresco. La analogía es probar un vehículo en ciudad y en montaña cada vez que se modifica el motor, no solo en el terreno más cómodo de probar.
 
-**Conceptos clave:** validar ambos targets en cada push, runner macOS requerido para iOS.
-
-```yaml
-jobs:
-  test-common:
-    steps:
-      - run: ./gradlew :shared:allTests   # corre commonTest en ambos targets
-  build-android:
-    steps:
-      - run: ./gradlew :androidApp:assembleDebug
-  build-ios:
-    runs-on: macos-latest   # builds de iOS requieren un runner macOS
-    steps:
-      - run: ./gradlew :shared:linkDebugFrameworkIosArm64
-```
+**Conceptos clave:** validar ambos targets en cada push, runner macOS requerido para iOS. El workflow completo está en el Paso 4.
 
 Un pipeline de CI para un proyecto KMP necesita validar explícitamente ambos targets en cada push (no solo uno), dado que un cambio de código que compila perfectamente para Android puede fallar de forma completamente inesperada al compilar para iOS (por ejemplo, si usa accidentalmente una API no disponible en `commonMain` para todos los targets, Módulo 3), un problema que solo se detectaría ejecutando efectivamente el build de ambos targets, no asumiendo que un build exitoso en un target garantiza éxito en el otro. Un detalle técnico importante: compilar para targets de iOS requiere específicamente un runner de CI que ejecute macOS (dado que las herramientas de compilación de Apple, como el propio Xcode toolchain, solo están disponibles en ese sistema operativo), a diferencia del build de Android, que puede ejecutarse en cualquier runner Linux estándar más económico.
 
@@ -41,23 +27,7 @@ Validar ambos targets en cada push individual (no solo antes de un release) dete
 - Ejecutar `commonTest` (Módulo 9) en cada push para atrapar regresiones de lógica compartida temprano.
 - Presupuestar el costo de CI sabiendo que los runners macOS para iOS son más caros que los runners Linux para Android.
 
-**Configuración del ejemplo:**
-
-```yaml
-jobs:
-  test-common:
-    steps:
-      - run: ./gradlew :shared:allTests   # corre commonTest en ambos targets
-  build-android:
-    steps:
-      - run: ./gradlew :androidApp:assembleDebug
-  build-ios:
-    runs-on: macos-latest   # builds de iOS requieren un runner macOS
-    steps:
-      - run: ./gradlew :shared:linkDebugFrameworkIosArm64
-```
-
-Este pipeline vive como `.github/workflows/ci.yml` en el repositorio. El siguiente diagrama muestra por qué `test-common` debe ser `needs:` de ambos builds de plataforma:
+**Configuración del ejemplo:** el pipeline del Paso 4 vive como `.github/workflows/ci.yml` en el repositorio. El siguiente diagrama muestra por qué los dos builds de plataforma declaran `needs: test-common`:
 
 ```mermaid
 flowchart TD
@@ -73,28 +43,60 @@ Aplica exactamente esta estructura a tu proyecto RutaFlow: el módulo `shared`, 
 **¿Por qué es importante?** Validar ambos targets en cada push detecta regresiones específicas de plataforma inmediatamente tras introducirse, con contexto fresco para diagnosticar, en vez de descubrirlas tardíamente justo antes de un release planificado.
 
 #### Paso 4 · Demostración guiada desde cero
+Archivo `.github/workflows/ci.yml`:
+
 ```yaml
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
 jobs:
   test-common:
+    runs-on: ubuntu-latest
     steps:
-      - run: ./gradlew :shared:allTests
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '27'
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - run: ./gradlew :shared:allTests   # en Linux ejecuta los tests de JVM y Android; los de iOS se omiten
   build-android:
+    needs: test-common
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '27'
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: ./gradlew :androidApp:assembleDebug
   build-ios:
-    runs-on: macos-latest
+    needs: test-common
+    runs-on: macos-latest   # los builds de iOS requieren un runner macOS
     steps:
-      - run: ./gradlew :shared:linkDebugFrameworkIosArm64
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '27'
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - run: ./gradlew :shared:iosSimulatorArm64Test :shared:linkDebugFrameworkIosArm64
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Explicación por bloques:** `on:` dispara el workflow en cada push a `main` y en cada pull request. Cada job necesita `runs-on` (la máquina) y sus propios pasos de preparación, porque los jobs no comparten disco: `actions/checkout` descarga el código, `actions/setup-java` instala el JDK 27 y `gradle/actions/setup-gradle` configura la caché de Gradle. Las acciones se fijan por el SHA completo del commit (con la versión en un comentario) porque una etiqueta como `v7` se puede mover a otro código; un SHA no. `needs: test-common` hace que los builds de plataforma esperen a que pasen los tests comunes. En Linux, `allTests` no puede ejecutar los tests de iOS; por eso `build-ios` ejecuta `iosSimulatorArm64Test` en macOS además de enlazar el framework.
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: el job `build-ios` corre específicamente en un runner `macos-latest` (porque el toolchain de Apple solo está disponible en macOS) y falla el pipeline completo si `commonMain` rompe la compilación de iOS, incluso si `build-android` pasó sin problemas.
+Resultado esperado: `test-common` corre primero; si pasa, `build-android` y `build-ios` corren en paralelo. El job `build-ios` corre en un runner `macos-latest` (porque el toolchain de Apple solo está disponible en macOS) y falla el pipeline completo si `commonMain` rompe la compilación de iOS, incluso si `build-android` pasó sin problemas.
 
 #### Paso 5 · Práctica guiada
 Pista: quitá el job `build-ios` del workflow "para ahorrar minutos de runner macOS, que son más caros". Ese es el fallo deliberado: un cambio en `commonMain` que rompe la compilación de iOS ahora pasa el pipeline completo en verde (porque solo se valida Android), y el equipo se entera del build roto recién cuando alguien intenta compilar la app de iOS localmente, días después del merge.
@@ -167,10 +169,10 @@ lane :beta do
 end
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -228,10 +230,10 @@ Evita: "¿qué versión del módulo compartido corre esta versión específica d
 sharedVersion=2.3.1
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 

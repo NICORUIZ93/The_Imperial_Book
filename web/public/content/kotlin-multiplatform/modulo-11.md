@@ -18,7 +18,7 @@ La arquitectura organiza `shared/src/commonMain/kotlin/` en `dominio/` (modelos 
 
 El proyecto integrador organiza el código compartido en `shared/src/commonMain/kotlin/` con `dominio/` (modelos y casos de uso, Módulo 4) y `data/` (`TareaRepositoryImpl` combinando Ktor para datos remotos y SQLDelight para caché local, Módulos 5-6), con `commonTest/` conteniendo los tests que verifican esa lógica compartida usando fakes (Módulo 9); `androidApp/` e `iosApp/` contienen la UI específica de cada plataforma (ya sea nativa completa — Jetpack Compose en Android, SwiftUI en iOS consumiendo el `Shared.framework`, Módulo 8 — o Compose Multiplatform compartido, Módulo 7, según la decisión de arquitectura tomada para ese proyecto específico).
 
-Esta estructura demuestra el patrón central de todo el track aplicado en su forma más completa: maximizar el código en `commonMain` (dominio, datos, y potencialmente UI si se opta por Compose Multiplatform) mientras se aísla en cada `App` específico únicamente lo que genuinamente requiere una integración nativa profunda de cada plataforma particular, con `commonTest` verificando exhaustivamente esa capa compartida una única vez, con la garantía de que esa verificación es igualmente válida para ambas plataformas de destino.
+Esta estructura demuestra el patrón central de todo el track aplicado en su forma más completa: maximizar el código en `commonMain` (dominio, datos, y potencialmente UI si se opta por Compose Multiplatform) mientras se aísla en cada `App` específico únicamente lo que genuinamente requiere una integración nativa profunda de cada plataforma particular, con `commonTest` escribiendo una única vez las pruebas de esa capa compartida. Escribirlas una vez no basta para darlas por válidas en ambas plataformas: `./gradlew :shared:allTests` las compila y ejecuta por separado en cada destino (JVM o Android e iOS Simulator), y un resultado verde en JVM no demuestra nada sobre el binario iOS.
 
 **Analogía:** la arquitectura del proyecto integrador es como una fábrica central que produce el componente principal común (compartido en `commonMain`) distribuido hacia dos plantas de ensamblaje final especializadas (`androidApp`, `iosApp`), cada una encargándose únicamente del acabado final específico según el mercado particular al que se dirige.
 
@@ -62,10 +62,10 @@ androidApp/           <- UI Compose o Jetpack Compose nativo
 iosApp/                <- UI SwiftUI consumiendo Shared.framework (Módulo 8)
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -151,10 +151,10 @@ class TareaRepositoryImpl(
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -221,10 +221,10 @@ Compartido (redundancia pura si se duplicara): lógica de negocio, networking, p
 Decisión de arquitectura del equipo: UI nativa (fidelidad) vs Compose Multiplatform (velocidad compartida)
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 

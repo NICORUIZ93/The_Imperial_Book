@@ -56,15 +56,15 @@ services:
       interval: 2s
       retries: 10
   app:
-    image: alpine
+    image: postgres:16-alpine
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "echo 'app arrancó DESPUES de que db reportara healthy'; sleep 5"
+    command: ["sh", "-c", "pg_isready -h db -U postgres && echo 'app arrancó DESPUES de que db reportara healthy'"]
 EOF
 ```
 
-**Explicación línea por línea:** `condition: service_healthy` hace que Compose no arranque `app` hasta que el healthcheck de `db` (`pg_isready`) reporte éxito, no simplemente hasta que el contenedor de `db` exista.
+**Explicación línea por línea:** `condition: service_healthy` hace que Compose no arranque `app` hasta que el healthcheck de `db` (`pg_isready`) reporte éxito, no simplemente hasta que el contenedor de `db` exista. `app` reutiliza la imagen de PostgreSQL solo por su cliente `pg_isready`: con `-h db` intenta conectarse de verdad a la base por la red de Compose, así que su log muestra si `db` ya aceptaba conexiones.
 
 Levanta el stack y observa el orden real de arranque:
 
@@ -74,9 +74,9 @@ docker compose logs app
 docker compose ps
 ```
 
-**Resultado esperado:** los logs de `app` muestran el mensaje solo después de que `docker compose ps` reporta `db` como `healthy`; nunca antes.
+**Resultado esperado:** los logs de `app` muestran `db:5432 - accepting connections` seguido del mensaje, y `docker compose ps` reporta `db` como `healthy`.
 
-**Fallo deliberado:** quita el bloque `healthcheck` completo de `db` y deja solo `depends_on: [db]` (sin `condition`) en `app`. Repite `docker compose up -d`. En una máquina lenta o bajo carga, `app` puede arrancar e intentar conectar a `db` antes de que esté realmente lista — diagnostica revisando `docker compose logs app` en busca de errores de conexión intermitentes al inicio.
+**Fallo deliberado:** ejecuta `docker compose down`, quita el bloque `healthcheck` completo de `db` y deja solo `depends_on: [db]` (sin `condition`) en `app`. Repite `docker compose up -d` y `docker compose logs app`. Ahora `app` arranca en cuanto existe el contenedor de `db`, mientras PostgreSQL todavía se inicializa: lo habitual es ver `db:5432 - no response` o `db:5432 - rejecting connections` y que no aparezca el mensaje, porque `pg_isready` termina con código 2 o 1. Si tu máquina es muy rápida y aun así ves `accepting connections`, repite con `docker compose down -v && docker compose up -d`; diagnostica que el orden correcto dependía de la suerte, no de una garantía.
 
 #### Paso 5 · Práctica guiada
 

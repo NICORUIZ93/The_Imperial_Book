@@ -421,7 +421,7 @@ Desde una carpeta vacía crea `academia-devops/src/modulo12/gitops-reconciliacio
 ```bash
 mkdir -p academia-devops/src/modulo12/gitops-reconciliacion
 cd academia-devops/src/modulo12/gitops-reconciliacion
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git:2.45.2 sh -c "
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git:2.45.2 -c "
   git init -q -b main &&
   git config user.email a@a.com && git config user.name a &&
   echo 'replicas: 3' > deployment-mi-api.yaml &&

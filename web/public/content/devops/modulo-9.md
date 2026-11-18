@@ -147,8 +147,10 @@ Genera tráfico real y ejecuta `rate()` sobre el counter acumulado vía la API H
 ```bash
 for i in $(seq 30); do curl -s http://localhost:3010/ >/dev/null & done; wait
 sleep 10
-curl -s 'http://localhost:9090/api/v1/query?query=rate(http_requests_total[1m])' | python3 -m json.tool
+curl -sS -G 'http://localhost:9090/api/v1/query' --data-urlencode 'query=rate(http_requests_total[1m])' | python3 -m json.tool
 ```
+
+`-G` envía los datos como parámetros de la URL en una petición GET y `--data-urlencode` codifica la consulta. Sin eso, curl interpreta `[1m]` como un rango de su propia sintaxis de patrones y falla con `curl: (3) bad range in URL`; `-S` muestra ese tipo de error aunque uses `-s`.
 
 **Resultado esperado:** la consulta `up` devuelve `1` para el target `metricas-app`, confirmando el scrape exitoso; `rate(http_requests_total[1m])` devuelve un valor numérico positivo (peticiones por segundo), calculado a partir del incremento del counter durante el último minuto, no el valor acumulado absoluto.
 
@@ -388,11 +390,15 @@ Desde una carpeta vacía crea `academia-devops/src/modulo9/slo` y calcula un SLI
 
 ```bash
 mkdir -p academia-devops/src/modulo9/slo && cd academia-devops/src/modulo9/slo
-docker run --rm curlimages/curl sh -c 'for i in $(seq 5); do curl -s http://host.docker.internal:3010/ >/dev/null; done' 2>/dev/null || true
+docker run --rm --add-host=host.docker.internal:host-gateway curlimages/curl sh -c 'for i in $(seq 5); do curl -sS http://host.docker.internal:3010/ >/dev/null; done'
 for i in $(seq 40); do curl -s http://localhost:3010/ >/dev/null & done; wait
 sleep 5
-curl -s 'http://localhost:9090/api/v1/query?query=sum(rate(latencia_segundos_bucket{le="0.5"}[5m]))/sum(rate(latencia_segundos_count[5m]))' | python3 -m json.tool | grep -A1 '"value"'
+curl -sS -G 'http://localhost:9090/api/v1/query' \
+  --data-urlencode 'query=sum(rate(latencia_segundos_bucket{le="0.5"}[5m]))/sum(rate(latencia_segundos_count[5m]))' \
+  | python3 -m json.tool | grep -A1 '"value"'
 ```
+
+El punto de entrada de `curlimages/curl` ejecuta directamente un comando que exista en la imagen (aquí `sh`) y solo antepone `curl` cuando el primer argumento es una opción. `--add-host=host.docker.internal:host-gateway` hace que ese nombre también resuelva en Linux, y ya no se ocultan los errores con `2>/dev/null || true`. La consulta va con `-G --data-urlencode` porque curl interpretaría `{…}` y `[…]` de PromQL como patrones propios.
 
 **Explicación línea por línea:** dividir las observaciones que cayeron en el bucket `le="0.5"` (menos de 500ms) entre el total de observaciones (`_count`) produce directamente el SLI "porcentaje de peticiones bajo 500ms", el mismo tipo de cálculo que respalda cualquier SLO real.
 
@@ -559,7 +565,7 @@ Desde una carpeta vacía crea `academia-devops/src/modulo9/dora` y calcula Lead 
 
 ```bash
 mkdir -p academia-devops/src/modulo9/dora && cd academia-devops/src/modulo9/dora
-docker run --rm -v "$(pwd)":/repo -w /repo alpine/git sh -c '
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint sh alpine/git -c '
   git init -q && git config user.email demo@academia.dev && git config user.name demo
   echo v1 > app.txt && git add . && git commit -qm "feature: agrega validacion" --date="2026-01-01T10:00:00"
   GIT_COMMITTER_DATE="2026-01-01T14:00:00" git tag -a v1.0 -m "deploy" -m "" 2>/dev/null || git tag v1.0

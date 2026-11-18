@@ -6,51 +6,60 @@
 ### Tema 1: Kotlin/Native
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y combinarlos en un único framework universal con `lipo`. Prerrequisitos: Xcode instalado, módulo `shared` del proyecto integrador (Módulo 11).
+Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y empaquetarlos juntos en un XCFramework. Prerrequisitos: macOS con Xcode instalado, módulo `shared` del proyecto integrador (Módulo 11).
 
 #### Paso 2 · Contexto y caso real
 Un desarrollador corre la app en un dispositivo físico sin problema, pero al intentar correrla en el Simulador de Xcode obtiene el error "building for iOS Simulator, but linking against a dylib built for iOS" — el framework que el equipo distribuye solo se compiló para el target de dispositivo.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Kotlin/Native compila directamente a código máquina nativo por arquitectura/target específico (no una VM compartida); un framework para dispositivo físico (`iosArm64`) y uno para el simulador (`iosSimulatorArm64`) son binarios distintos que deben combinarse explícitamente para funcionar en ambos contextos. La analogía es una pieza industrial con medidas distintas según la máquina que la recibe: no alcanza con fabricar una sola versión y esperar que encaje en todas.
+Kotlin/Native compila directamente a código máquina nativo por arquitectura/target específico (no una VM compartida); un framework para dispositivo físico (`iosArm64`) y uno para el simulador (`iosSimulatorArm64`) son binarios distintos que deben distribuirse juntos para funcionar en ambos contextos. Los dos son arm64, así que no caben en un único binario universal ("fat"): `lipo` solo admite un binario por arquitectura y rechaza dos arm64. El formato que los reúne es el XCFramework, una carpeta con un framework por plataforma (dispositivo y simulador) que Xcode elige al compilar. La analogía es una pieza industrial con medidas distintas según la máquina que la recibe: no alcanza con fabricar una sola versión y esperar que encaje en todas.
 
 **¿Por qué es importante?** Kotlin/Native compila a binarios específicos por arquitectura; un framework que no cubre explícitamente el target del Simulador bloquea el flujo de desarrollo diario de todo el equipo, no solo un caso extremo.
-**Conceptos clave:** compilación nativa por target, iosArm64, iosSimulatorArm64, framework, lipo, fat binary, toolchain Apple y cross-compilation.
+**Conceptos clave:** compilación nativa por target, iosArm64, iosSimulatorArm64, framework, XCFramework, toolchain Apple y cross-compilation.
 
 **Límites y decisión de uso:** Compartir Kotlin no elimina diferencias del entorno nativo, herramientas y bibliotecas disponibles. Verifica cada target y las reglas de interacción con memoria externa; una compilación JVM exitosa no demuestra que el binario iOS funcione.
 
 #### Paso 4 · Demostración guiada desde cero
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe el archivo que se muestra a continuación con el contenido de este tema.
-```bash
-gradle init --type kotlin-application
+**Desde el proyecto:** trabaja en el módulo `shared` del proyecto integrador (Módulo 11). En `shared/build.gradle.kts`, declara los dos targets iOS y añade sus frameworks a un XCFramework:
+
+```kotlin
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
+kotlin {
+    val xcf = XCFramework()
+    listOf(iosArm64(), iosSimulatorArm64()).forEach {
+        it.binaries.framework {
+            baseName = "Shared"
+            xcf.add(this)
+        }
+    }
+}
 ```
 
-
-Crea `shared/build.gradle.kts` con targets iOS nativos y ejecuta `gradle` con `lipo` para combinar:
+En macOS, genera el XCFramework de release:
 
 ```bash
-./gradlew :shared:linkReleaseFrameworkIosArm64
-./gradlew :shared:linkReleaseFrameworkIosSimulatorArm64
-lipo -create \
-  shared/build/bin/iosArm64/releaseFramework/shared.framework/shared \
-  shared/build/bin/iosSimulatorArm64/releaseFramework/shared.framework/shared \
-  -output shared.framework/shared
+./gradlew :shared:assembleSharedReleaseXCFramework
+ls shared/build/XCFrameworks/release/Shared.xcframework
 ```
-Resultado esperado: el framework resultante corre tanto en un dispositivo físico como en el Simulador de Xcode, porque `lipo` combinó ambas arquitecturas en un único binario "fat" (universal) dentro del mismo bundle `.framework`.
+
+`XCFramework()` registra las tareas `assembleXCFramework`, `assembleSharedDebugXCFramework` y `assembleSharedReleaseXCFramework` (el nombre incluye el `baseName`). Cada `xcf.add(this)` aporta el framework de un target.
+
+Resultado esperado: `Shared.xcframework` contiene una carpeta para el dispositivo y otra para el simulador, y la misma app corre en un dispositivo físico y en el Simulador de Xcode sin recompilar el framework.
 
 #### Paso 5 · Práctica guiada
-Pista: distribuí únicamente el framework compilado con `linkReleaseFrameworkIosArm64` (solo para dispositivo), asumiendo que "el simulador es solo para desarrollo, no importa". Ese es el fallo deliberado: cualquier desarrollador que intente correr la app en el Simulador de Xcode obtiene el error de arquitectura incompatible, bloqueando su trabajo local aunque el framework funcione perfectamente en un dispositivo real.
+Pista: distribuye únicamente el framework compilado con `./gradlew :shared:linkReleaseFrameworkIosArm64` (solo para dispositivo), asumiendo que "el simulador es solo para desarrollo, no importa". Ese es el fallo deliberado: cualquier desarrollador que intente correr la app en el Simulador de Xcode obtiene el error de arquitectura incompatible, bloqueando su trabajo local aunque el framework funcione perfectamente en un dispositivo real.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 generando también el build para `iosSimulatorArm64`, combinando ambos con `lipo -create` como en el Paso 4, y verificá corriendo la app tanto en un dispositivo físico como en el Simulador sin recompilar nada entre ambas corridas.
+Corrige el Paso 5 distribuyendo el XCFramework del Paso 4, que incluye también el build de `iosSimulatorArm64`, y verifica corriendo la app tanto en un dispositivo físico como en el Simulador sin recompilar nada entre ambas corridas. Si intentas unir los dos binarios con `lipo -create`, `lipo` falla porque ambos son arm64: anota ese mensaje como evidencia de por qué se usa el XCFramework.
 
 #### Paso 7 · Cierre
-Entregá el framework universal del Paso 4, el error de arquitectura del Simulador del Paso 5, y la verificación en ambos contextos del Paso 6; explicá por qué "funciona en mi dispositivo" no es evidencia suficiente de que un framework nativo está completo. Siguiente paso: si el proyecto necesita interactuar con una librería C existente, estudiá cómo Kotlin/Native expone ese interop. Errores comunes: distribuir un framework compilado para una sola arquitectura asumiendo que cubre todos los casos de uso del equipo, no probar el Simulador antes de distribuir un build, y mezclar binarios de distintas versiones de Kotlin/Native con `lipo` sin verificar compatibilidad. Fuentes oficiales: https://kotlinlang.org/docs/native-overview.html y https://kotlinlang.org/docs/multiplatform-build-native-binaries.html.
+Entrega el XCFramework del Paso 4, el error de arquitectura del Simulador del Paso 5, y la verificación en ambos contextos del Paso 6; explicá por qué "funciona en mi dispositivo" no es evidencia suficiente de que un framework nativo está completo. Siguiente paso: si el proyecto necesita interactuar con una librería C existente, estudiá cómo Kotlin/Native expone ese interop. Errores comunes: distribuir un framework compilado para una sola arquitectura asumiendo que cubre todos los casos de uso del equipo, no probar el Simulador antes de distribuir un build, e intentar unir con `lipo` los frameworks de dispositivo y de simulador, que comparten arquitectura arm64. Fuentes oficiales: https://kotlinlang.org/docs/native-overview.html y https://kotlinlang.org/docs/multiplatform-build-native-binaries.html.
 
 ### Tema 2: Interop con C
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar `usePinned` correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque. Prerrequisitos: Tema 1 de este módulo; definición `.def` de cinterop configurada.
+Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar `usePinned` correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque. Prerrequisitos: Tema 1 de este módulo; macOS con Xcode para ejecutar el target `iosSimulatorArm64`.
 
 #### Paso 2 · Contexto y caso real
 Una función que envuelve una llamada C guarda el puntero obtenido dentro de `usePinned` en una variable fuera del bloque "para reusarlo después sin tener que pinnear de nuevo" — la app funciona en pruebas rápidas pero falla de forma intermitente y difícil de reproducir en uso real.
@@ -64,22 +73,70 @@ El interop con C permite llamar funciones nativas que esperan punteros estables 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Encapsula la llamada C detrás de una interfaz del núcleo compartido. Prueba propiedad y liberación de memoria con datos pequeños y devuelve errores tipados a consumidores Android e iOS.
 
 #### Paso 4 · Demostración guiada desde cero
+Archivo `shared/src/nativeInterop/cinterop/nativo.def` (la ruta por defecto de cinterop es `src/nativeInterop/cinterop/<nombre>.def`). El código C después de `---` se compila junto al binding; por eso la función se declara `static`:
+
+```c
+package = com.academia.kmp.nativo
+---
+static int c_funcion_nativa(char* datos, int largo) {
+    int suma = 0;
+    for (int i = 0; i < largo; i++) suma += (unsigned char) datos[i];
+    return suma;
+}
+```
+
+Registra el binding en `shared/build.gradle.kts`, dentro del bloque `kotlin { }`:
+
 ```kotlin
-fun procesarBuffer(datos: ByteArray) {
-    datos.usePinned { pinned ->
-        c_funcion_nativa(pinned.addressOf(0), datos.size) // puntero válido SOLO dentro de este bloque
+iosSimulatorArm64 {
+    compilations.getByName("main") {
+        val nativo by cinterops.creating
     }
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+Archivo `shared/src/iosSimulatorArm64Main/kotlin/com/academia/kmp/Buffer.kt`:
+
+```kotlin
+package com.academia.kmp
+
+import com.academia.kmp.nativo.c_funcion_nativa
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+
+@OptIn(ExperimentalForeignApi::class)
+fun procesarBuffer(datos: ByteArray): Int =
+    datos.usePinned { pinned ->
+        c_funcion_nativa(pinned.addressOf(0), datos.size) // puntero válido SOLO dentro de este bloque
+    }
+```
+
+Y su prueba en `shared/src/iosSimulatorArm64Test/kotlin/com/academia/kmp/BufferTest.kt`:
+
+```kotlin
+package com.academia.kmp
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class BufferTest {
+    @Test
+    fun sumaLosBytesDelBuffer() {
+        assertEquals(6, procesarBuffer(byteArrayOf(1, 2, 3)))
+    }
+}
+```
+
+Usa `char*` y no `const char*`: cinterop representa los parámetros `const char*` como `String` de Kotlin, mientras que `char*` llega como `CPointer<ByteVar>`, el tipo que devuelve `addressOf(0)` sobre un `ByteArray`. Todas las declaraciones generadas por cinterop exigen `@OptIn(ExperimentalForeignApi::class)`.
+
+**Ejecuta el ejemplo** en macOS:
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:iosSimulatorArm64Test
 ```
-Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: `c_funcion_nativa` recibe un puntero válido porque la llamada ocurre completamente dentro del bloque `usePinned`; apenas termina el bloque, el runtime de Kotlin/Native puede volver a mover o liberar esa memoria libremente.
+Resultado esperado: la prueba pasa. `c_funcion_nativa` recibe un puntero válido porque la llamada ocurre completamente dentro del bloque `usePinned`; apenas termina el bloque, el runtime de Kotlin/Native puede volver a mover o liberar esa memoria libremente.
 
 #### Paso 5 · Práctica guiada
 Pista: extraé el puntero fuera del bloque con `val puntero = datos.usePinned { it.addressOf(0) }` y usalo después en una segunda llamada C separada "para no pinnear dos veces". Ese es el fallo deliberado: ese puntero queda apuntando a memoria que el runtime ya puede haber movido o reutilizado apenas terminó el bloque `usePinned`, y la segunda llamada C corrompe datos o crashea de forma intermitente.
@@ -118,18 +175,18 @@ El proyecto integrador RutaFlow aplicaría la misma cautela si expusiera `SyncEn
 
 #### Paso 4 · Demostración guiada desde cero
 ```kotlin
-public suspend fun TaskClient.task(id: TaskId): TaskResult // Swift Export mapea esto a: func task(id: TaskId) async -> TaskResult
+public suspend fun TaskClient.task(id: TaskId): TaskResult // Swift Export lo expone como una función async que puede lanzar: se llama con try await
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
 ```swift
-let resultado = await taskClient.task(id: taskId) // consumido directamente como async de Swift
+let resultado = try await taskClient.task(id: taskId) // consumido directamente como async de Swift, con try
 ```
 Resultado esperado: la función `suspend` de Kotlin se consume en Swift como una función `async` nativa, sin necesidad de un wrapper manual de cancelación como el de `TaskScreenModel` (Módulo 12) para este caso específico — pero esta vía queda documentada explícitamente como dependiente del estado de estabilidad actual de Swift Export.
 
@@ -263,8 +320,8 @@ La matriz vive en `.github/workflows/ci.yml`, el mismo workflow del Módulo 10 a
 
 ```mermaid
 flowchart TD
-    Matrix["matrix xcode 15.0 y 16.2"] --> J1[job build-ios xcode 15.0]
-    Matrix --> J2[job build-ios xcode 16.2]
+    Matrix["matrix xcode 16.2 y 26.3"] --> J1[job build-ios xcode 16.2]
+    Matrix --> J2[job build-ios xcode 26.3]
     J1 --> Gate{ambos compilan?}
     J2 --> Gate
     Gate -->|si| Verde[pipeline verde]
@@ -275,29 +332,39 @@ flowchart TD
 
 #### Paso 4 · Demostración guiada desde cero
 ```yaml
-strategy:
-  matrix:
-    xcode: ["15.0", "16.2"]   # mínima soportada declarada y la más reciente
-    jdk: ["17", "21"]
+name: CI
+on: [push, pull_request]
+
 jobs:
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-15   # imagen fija: cada imagen trae su propia lista de Xcode instalados
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ["16.2", "26.3"]   # mínima soportada declarada y la más reciente
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '27'
       - run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
       - run: ./gradlew :shared:linkDebugFrameworkIosArm64
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+`strategy.matrix` va dentro del job: GitHub crea una copia del job por cada valor de `xcode`. `fail-fast: false` deja terminar todas las combinaciones para que veas cuáles fallan; cualquier combinación en rojo sigue marcando el workflow como fallido. Las rutas `/Applications/Xcode_<versión>.app` existen solo si esa versión está instalada en la imagen del runner: consulta la lista de la imagen (`macos-15`) antes de declarar la versión mínima.
+
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
-Resultado esperado: el pipeline de CI compila explícitamente contra la versión mínima de Xcode declarada como soportada (`15.0`) y contra la más reciente (`16.2`), detectando si un cambio reciente usa accidentalmente una API solo disponible en la versión más nueva.
+Resultado esperado: el pipeline de CI compila explícitamente contra la versión mínima de Xcode declarada como soportada (`16.2`) y contra la más reciente (`26.3`), detectando si un cambio reciente usa accidentalmente una API solo disponible en la versión más nueva.
 
 #### Paso 5 · Práctica guiada
-Pista: dejá la matriz con un solo valor, la versión de Xcode más reciente instalada en el runner, asumiendo que "si compila con la más nueva, compila con todas". Ese es el fallo deliberado: un cambio reciente usa accidentalmente una API de Swift interop disponible solo desde Xcode 16, el pipeline pasa en verde porque solo prueba esa versión, y un equipo consumidor que todavía usa Xcode 15 (la versión mínima que el proyecto declara soportar) no puede compilar la nueva versión en absoluto.
+Pista: deja la matriz con un solo valor, la versión de Xcode más reciente instalada en el runner, asumiendo que "si compila con la más nueva, compila con todas". Ese es el fallo deliberado: un cambio reciente usa accidentalmente una API de Swift interop disponible solo desde Xcode 26, el pipeline pasa en verde porque solo prueba esa versión, y un equipo consumidor que todavía usa Xcode 16.2 (la versión mínima que el proyecto declara soportar) no puede compilar la nueva versión en absoluto.
 
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 restaurando ambas versiones en la matriz (mínima declarada y más reciente), y agregá una verificación explícita: el pipeline debe fallar si cualquier combinación de la matriz no compila, no solo reportarlo como advertencia.
@@ -313,28 +380,20 @@ Entregá la matriz de CI del Paso 4, la API exclusiva de la versión nueva no de
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Compilar el framework para dispositivo físico y para el simulador, y combinarlos con `lipo` | Ver Tema 1 | Framework universal que corre en ambos contextos |
+| 1 | Compilar el framework para dispositivo físico y para el simulador, y empaquetarlos en un XCFramework | Ver Tema 1 | Un XCFramework que corre en ambos contextos |
 | 2 | Declarar un binding cinterop hacia una función C que recibe un buffer | Ver Tema 2 | `usePinned` limitado estrictamente al bloque, sin puntero colgante |
 | 3 | Exportar una función `suspend` como `async` nativo de Swift con Swift Export | Ver Tema 3 | Aislado detrás de un experimento; la facade manual sigue siendo la vía estable |
 | 4 | Empaquetar el framework en un XCFramework con export explícito | Ver Tema 4 | Solo el dominio, nunca dependencias transitivas internas como Ktor |
 | 5 | Publicar el módulo compartido en Maven Central con una versión nueva | Ver Tema 5 | Coordenadas y checksums inmutables; nunca se reescribe una versión ya publicada |
 | 6 | Configurar la matriz de CI contra la versión mínima y la más reciente de Xcode soportadas | Ver Tema 6 | El pipeline falla si cualquier combinación de la matriz no compila |
 
-**Verificación:** el laboratorio se considera exitoso si el framework universal generado con `lipo` corre tanto en un dispositivo físico como en el Simulador de Xcode, si una prueba de 1000 repeticiones del binding cinterop no muestra corrupción de memoria, si el experimento de Swift Export queda aislado detrás de un flag sin reemplazar la facade manual estable, si el XCFramework expone únicamente el dominio (sin conflicto de símbolo duplicado con dependencias del consumidor), si la versión publicada en Maven Central es nueva e inmutable, y si la matriz de CI bloquea el pipeline ante cualquier combinación de Xcode que no compile.
+**Verificación:** el laboratorio se considera exitoso si el XCFramework generado con `assembleSharedReleaseXCFramework` corre tanto en un dispositivo físico como en el Simulador de Xcode, si una prueba de 1000 repeticiones del binding cinterop no muestra corrupción de memoria, si el experimento de Swift Export queda aislado detrás de un flag sin reemplazar la facade manual estable, si el XCFramework expone únicamente el dominio (sin conflicto de símbolo duplicado con dependencias del consumidor), si la versión publicada en Maven Central es nueva e inmutable, y si la matriz de CI bloquea el pipeline ante cualquier combinación de Xcode que no compile.
 
 **Errores comunes y soluciones**
 
-- **Distribuir el framework compilado solo para el target de dispositivo físico.** Genera también el build para `iosSimulatorArm64` y combina ambos con `lipo -create` antes de distribuir.
+- **Distribuir el framework compilado solo para el target de dispositivo físico.** Genera también el build para `iosSimulatorArm64` y distribuye ambos en un XCFramework (`assembleSharedReleaseXCFramework`); `lipo` no sirve aquí porque los dos binarios son arm64.
 - **Retener un puntero obtenido de `usePinned` fuera de su bloque.** Usa ese puntero exclusivamente dentro del mismo bloque `usePinned`, nunca después de que termine.
 - **Reemplazar todos los wrappers manuales de interop por Swift Export mientras sigue en estado Alpha.** Mantén la facade manual como vía estable de producción y aísla Swift Export detrás de un experimento documentado.
 - **Exportar dependencias transitivas internas (como el motor HTTP de Ktor) en el XCFramework "para comodidad del consumidor".** Exporta explícitamente solo el dominio; evita conflictos de símbolo duplicado con Pods o paquetes que el consumidor ya incluye.
 - **Sobrescribir una versión ya publicada en Maven Central.** Publica siempre una versión nueva e inmutable; nunca reescribas `1.2.0`.
 - **Probar la matriz de CI solo contra la versión de Xcode más reciente disponible.** Incluye también la versión mínima soportada que el proyecto declara, no solo la más nueva.
-
----
-
-## Trazabilidad de la auditoría original
-
-- **Kotlin Native**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Publicación de Librerías**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.
-- **Kotlin-to-Swift Export**: cubierto mediante fundamento, laboratorio y evidencia del capítulo.

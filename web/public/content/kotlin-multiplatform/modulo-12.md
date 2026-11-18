@@ -87,10 +87,10 @@ public sealed interface TaskResult {
 }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -175,10 +175,10 @@ public fun TaskClient.subscribe(
 )
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 
@@ -371,10 +371,10 @@ public interface Diagnostics {
 public enum class DiagnosticEvent { SYNC_STARTED, SYNC_CONFLICT, SYNC_FAILED }
 ```
 
-**Ejecuta el ejemplo** (en un proyecto KMP con Gradle, corre las pruebas del módulo común):
+**Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 
 ```bash
-./gradlew commonTest
+./gradlew :shared:allTests
 ```
 Para compilar todos los targets: `./gradlew build`.
 

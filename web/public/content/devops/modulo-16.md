@@ -359,7 +359,7 @@ mkdir -p academia-devops/src/modulo16/jenkins
 cd academia-devops/src/modulo16/jenkins
 docker run -d --name academia-jenkins -p 8080:8080 \
   -e JAVA_OPTS="-Djenkins.install.runSetupWizard=false" \
-  jenkins/jenkins:lts-jdk17
+  jenkins/jenkins:lts-jdk21
 sleep 20
 curl -s http://localhost:8080/api/json | python3 -c "import json,sys; d=json.load(sys.stdin); print('useSecurity:', d['useSecurity'])"
 ```

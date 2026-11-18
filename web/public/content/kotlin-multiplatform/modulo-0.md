@@ -22,7 +22,56 @@ Verifica `java --version`, `./gradlew --version` (Gradle 9.8 o superior) y `git 
 .\gradlew.bat tasks      # Windows
 ```
 
-Si Gradle no encuentra Java, configura `JAVA_HOME` hacia el JDK, no hacia una JRE. No intentes resolver problemas de lógica común y de toolchain iOS al mismo tiempo: haz funcionar primero `commonTest`, después cada plataforma por separado.
+Si Gradle no encuentra Java, configura `JAVA_HOME` hacia el JDK, no hacia una JRE. No intentes resolver problemas de lógica común y de toolchain iOS al mismo tiempo: haz funcionar primero los tests de `commonTest` en JVM, después cada plataforma por separado.
+
+### Paso 0 · Crea el proyecto `academia-kmp`
+
+Los temas de los módulos 0 a 2 trabajan dentro de un proyecto mínimo con un único módulo `shared` y el destino JVM, que funciona en Windows, macOS y Linux. Necesitas Gradle instalado una sola vez para generar el wrapper; a partir de ahí usas siempre `./gradlew`:
+
+```bash
+mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp \
+         academia-kmp/shared/src/commonTest/kotlin/com/academia/kmp
+cd academia-kmp
+cat > settings.gradle.kts <<'EOF'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+rootProject.name = "academia-kmp"
+include(":shared")
+EOF
+cat > shared/build.gradle.kts <<'EOF'
+plugins {
+    kotlin("multiplatform") version "2.4.21"
+}
+
+kotlin {
+    jvm()
+    sourceSets {
+        commonMain.dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0") // módulo 2
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0") // módulo 2
+        }
+    }
+}
+EOF
+gradle wrapper --gradle-version 9.8.0
+./gradlew :shared:jvmTest
+```
+
+`settings.gradle.kts` declara los repositorios y el módulo `shared`; `shared/build.gradle.kts` aplica el plugin multiplataforma, declara el destino `jvm()` y añade `kotlin("test")` a `commonTest`, con lo que Gradle elige la variante JUnit adecuada para JVM. `gradle wrapper` genera `gradlew`, `gradlew.bat` y `gradle/wrapper/`, que fijan la versión de Gradle del proyecto.
+
+**Resultado esperado:** `BUILD SUCCESSFUL`. Todavía no hay código, así que `jvmTest` termina sin ejecutar pruebas. Cada tema añade archivos a `shared/src/commonMain` y `shared/src/commonTest`; `./gradlew :shared:assemble` compila el código y `./gradlew :shared:allTests` ejecuta los tests en todos los destinos declarados (aquí, solo JVM). Los destinos Android e iOS se añaden en el módulo 3.
 
 
 ## Mapa de la ruta
@@ -90,7 +139,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/NullSafety.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/NullSafety.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -104,10 +153,9 @@ fun describirApodo(apodo: String?): String {
 Guarda el archivo y compila el módulo compartido con Gradle:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 `gradlew` (el "Gradle Wrapper") es el script incluido en el repositorio que descarga y ejecuta la versión exacta de Gradle que el proyecto necesita, sin requerir una instalación global.
@@ -219,7 +267,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Persona.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/Persona.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -232,10 +280,9 @@ fun String.esEmailValido(): Boolean = this.contains("@") && this.contains(".")
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `data class Persona(val nombre: String, val edad: Int)` genera automáticamente los cuatro métodos a partir de los parámetros del constructor; `fun String.esEmailValido()` declara `String` como receptor, permitiendo llamarla como `"texto".esEmailValido()` aunque `String` sea una clase de la librería estándar que no modificaste.
@@ -358,7 +405,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/EstadoUI.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/EstadoUI.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -380,10 +427,9 @@ fun describir(estado: EstadoUI): String = when (estado) {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `sealed class EstadoUI` cierra el conjunto de subtipos posibles a los declarados en el mismo archivo; `when (estado) { is EstadoUI.Cargando -> ...; ... }` devuelve directamente el `String` de cada rama como resultado de la función `describir`, sin una variable intermedia; la ausencia de `else` es intencional — el compilador exige que las tres ramas cubran todos los casos.
@@ -424,7 +470,7 @@ cd academia-kmp
 
 **Resultado esperado:** las tres pruebas pasan en verde, produciendo `"cargando..."`, `"éxito: 3 elementos"` y `"error: sin conexión"` respectivamente para cada subtipo de la sealed class.
 
-**Fallo deliberado:** agrega un cuarto subtipo `data class Vacio(val razon: String) : EstadoUI()` a la sealed class, sin agregar una rama `is EstadoUI.Vacio` en el `when` de `describir`. `./gradlew :shared:compileKotlinMetadata` falla en tiempo de COMPILACIÓN con un error de exhaustividad ("'when' expression must be exhaustive") — diagnostica confirmando que el compilador, no una prueba en tiempo de ejecución, es quien atrapa el caso faltante: exactamente la garantía que motiva combinar sealed class con `when` exhaustivo. Si en cambio agregas una rama `else -> "desconocido"` al `when` original, el código sigue compilando, pero ahora un futuro cuarto subtipo no manejado caería silenciosamente en `else` en vez de producir ese mismo error de compilación — renunciando deliberadamente a la garantía de exhaustividad.
+**Fallo deliberado:** agrega un cuarto subtipo `data class Vacio(val razon: String) : EstadoUI()` a la sealed class, sin agregar una rama `is EstadoUI.Vacio` en el `when` de `describir`. `./gradlew :shared:assemble` falla en tiempo de COMPILACIÓN con un error de exhaustividad ("'when' expression must be exhaustive") — diagnostica confirmando que el compilador, no una prueba en tiempo de ejecución, es quien atrapa el caso faltante: exactamente la garantía que motiva combinar sealed class con `when` exhaustivo. Si en cambio agregas una rama `else -> "desconocido"` al `when` original, el código sigue compilando, pero ahora un futuro cuarto subtipo no manejado caería silenciosamente en `else` en vez de producir ese mismo error de compilación — renunciando deliberadamente a la garantía de exhaustividad.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -496,7 +542,7 @@ Una `data class` genera automáticamente funciones `component1()`, `component2()
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Destructuring.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/Destructuring.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -516,10 +562,9 @@ fun pasosImpares(hasta: Int): List<Int> {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `val (x, y) = punto` invoca implícitamente `punto.component1()` y `punto.component2()` (generados automáticamente por `data class Punto`), asignando cada resultado a `x` e `y` respectivamente; `1..hasta step 2` construye un rango desde `1` hasta `hasta` (inclusive), avanzando de dos en dos.

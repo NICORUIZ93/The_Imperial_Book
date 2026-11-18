@@ -596,7 +596,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 **Fuente oficial:** [documentación de Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html).
 
 #### Paso 4 · Demostración guiada desde cero
-Añade el plugin y la dependencia en `build.gradle.kts` del módulo compartido (`plugins { kotlin("plugin.serialization") }` y `implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")`). Luego, en `commonMain`:
+Añade el plugin y la dependencia en `build.gradle.kts` del módulo compartido (`plugins { kotlin("plugin.serialization") }` y `implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")`). Luego, en `commonMain`:
 
 ```kotlin
 import kotlinx.serialization.*

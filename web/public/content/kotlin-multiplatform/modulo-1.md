@@ -36,7 +36,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/OrdenSuperior.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/OrdenSuperior.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -49,10 +49,9 @@ fun procesarLista(lista: List<Int>, accion: (Int) -> Unit) {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `accion: (Int) -> Unit` documenta que el parámetro es una función que recibe un `Int` y no devuelve nada relevante; `lista.forEach { accion(it) }` invoca esa función recibida sobre cada elemento, sin que `procesarLista` sepa qué hace `accion` internamente.
@@ -92,7 +91,7 @@ cd academia-kmp
 
 **Resultado esperado:** las dos pruebas pasan en verde, confirmando que la misma función `procesarLista` produce comportamientos completamente distintos según la función recibida, sin ninguna modificación a `procesarLista` en sí.
 
-**Fallo deliberado:** intenta pasar `accion: (String) -> Unit` en Kotlin donde se espera `(Int) -> Unit` (por ejemplo, `procesarLista(listOf(1,2,3)) { texto: String -> println(texto) }`). `./gradlew :shared:compileKotlinMetadata` rechaza el código inmediatamente en tiempo de COMPILACIÓN porque la firma de tipo no coincide — diagnostica confirmando que la verificación de tipos de funciones de orden superior ocurre antes de ejecutar una sola línea, a diferencia de lenguajes con tipado dinámico donde el mismo error solo aparecería al ejecutar el código con ese argumento incompatible.
+**Fallo deliberado:** intenta pasar `accion: (String) -> Unit` en Kotlin donde se espera `(Int) -> Unit` (por ejemplo, `procesarLista(listOf(1,2,3)) { texto: String -> println(texto) }`). `./gradlew :shared:assemble` rechaza el código inmediatamente en tiempo de COMPILACIÓN porque la firma de tipo no coincide — diagnostica confirmando que la verificación de tipos de funciones de orden superior ocurre antes de ejecutar una sola línea, a diferencia de lenguajes con tipado dinámico donde el mismo error solo aparecería al ejecutar el código con ese argumento incompatible.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -157,7 +156,7 @@ Al finalizar podrás elegir entre `let`, `run`, `apply` y `also` según qué nec
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/ScopeFunctions.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/ScopeFunctions.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -175,10 +174,9 @@ fun saludarSiExiste(nombre: String?): String? = nombre?.let { n -> "Hola, $n" }
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `Config().apply { timeout = 30; reintentos = 3 }` configura el objeto recién creado dentro del bloque (usando `this` implícito) y devuelve ESE MISMO objeto como resultado de toda la expresión; `nombre?.let { n -> "Hola, $n" }` ejecuta el bloque solo si `nombre` no es `null`, devolviendo el resultado del bloque (el saludo) en vez del `nombre` original.
@@ -222,7 +220,7 @@ cd academia-kmp
 
 **Resultado esperado:** las tres pruebas pasan en verde: `construirConfig()` devuelve el mismo objeto `Config` configurado (`timeout = 30, reintentos = 3`); `saludarSiExiste("Nico")` devuelve `"Hola, Nico"` (el resultado del bloque, no el `Config`); `saludarSiExiste(null)` devuelve `null` sin ejecutar el bloque.
 
-**Fallo deliberado:** cambia `construirConfig` para usar `run` en vez de `apply` (`Config().run { timeout = 30; reintentos = 3 }`). `./gradlew :shared:compileKotlinMetadata` falla, porque el bloque de `run` termina con dos asignaciones (`reintentos = 3`) que no producen ningún valor de tipo `Config` — el tipo de retorno de `run` es el resultado del bloque (`Unit` en este caso), no el receptor, así que `construirConfig(): Config` deja de coincidir con lo que la expresión devuelve — diagnostica confirmando que confundir qué devuelve cada scope function (`apply`/`also` el receptor; `run`/`let` el resultado del bloque) rompe el tipo de retorno esperado, un error que el compilador atrapa inmediatamente.
+**Fallo deliberado:** cambia `construirConfig` para usar `run` en vez de `apply` (`Config().run { timeout = 30; reintentos = 3 }`). `./gradlew :shared:assemble` falla, porque el bloque de `run` termina con dos asignaciones (`reintentos = 3`) que no producen ningún valor de tipo `Config` — el tipo de retorno de `run` es el resultado del bloque (`Unit` en este caso), no el receptor, así que `construirConfig(): Config` deja de coincidir con lo que la expresión devuelve — diagnostica confirmando que confundir qué devuelve cada scope function (`apply`/`also` el receptor; `run`/`let` el resultado del bloque) rompe el tipo de retorno esperado, un error que el compilador atrapa inmediatamente.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -304,7 +302,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/EstadoYColecciones.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/EstadoYColecciones.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -322,10 +320,9 @@ fun totalPedidos(pedidos: List<Pedido>): Double =
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `personas.filter { it.edad >= 18 }` produce una nueva lista solo con adultos; `.map { it.nombre }` transforma esa lista filtrada extrayendo solo el nombre; `pedidos.fold(0.0) { acumulado, pedido -> acumulado + pedido.monto }` recorre cada pedido acumulando su monto sobre el valor inicial `0.0`.
@@ -364,7 +361,7 @@ cd academia-kmp
 
 **Resultado esperado:** las dos pruebas pasan en verde: `nombresAdultos` devuelve `["Ana", "Sofía"]` (excluyendo a Leo, de 15 años); `totalPedidos` devuelve `125.49`, la suma acumulada de los tres montos.
 
-**Fallo deliberado:** invierte el orden a `map` antes de `filter` (`personas.map { it.nombre }.filter { it.edad >= 18 }`). `./gradlew :shared:compileKotlinMetadata` falla en tiempo de COMPILACIÓN con `Unresolved reference: edad`, porque tras el `map`, el tipo de la lista pasó de `List<Persona>` a `List<String>`, y `String` no tiene una propiedad `edad` — diagnostica confirmando que el ORDEN de las operaciones encadenadas importa: una vez que `map` descarta información (aquí, transformando `Persona` en solo su nombre), esa información ya no está disponible para un `filter` posterior; filtra siempre antes de transformar si la transformación descarta datos que el filtro necesita.
+**Fallo deliberado:** invierte el orden a `map` antes de `filter` (`personas.map { it.nombre }.filter { it.edad >= 18 }`). `./gradlew :shared:assemble` falla en tiempo de COMPILACIÓN con `Unresolved reference: edad`, porque tras el `map`, el tipo de la lista pasó de `List<Persona>` a `List<String>`, y `String` no tiene una propiedad `edad` — diagnostica confirmando que el ORDEN de las operaciones encadenadas importa: una vez que `map` descarta información (aquí, transformando `Persona` en solo su nombre), esa información ya no está disponible para un `filter` posterior; filtra siempre antes de transformar si la transformación descarta datos que el filtro necesita.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -429,7 +426,7 @@ Una lambda normal (`(T) -> Unit`) recibe el objeto como parámetro (`it`); una l
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/DslBuilder.kt` con este contenido:
+Dentro del proyecto `academia-kmp` que creaste en el Paso 0 del módulo 0, crea `shared/src/commonMain/kotlin/com/academia/kmp/DslBuilder.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
@@ -450,10 +447,9 @@ fun ruta(bloque: RutaBuilder.() -> Unit): List<String> {
 Guarda el archivo y compila el módulo compartido:
 
 ```bash
-# compila el módulo compartido de Kotlin Multiplatform con Gradle
-mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp
+# compila el módulo compartido del proyecto academia-kmp (Paso 0 del módulo 0)
 cd academia-kmp
-./gradlew :shared:compileKotlinMetadata
+./gradlew :shared:assemble
 ```
 
 **Explicación línea por línea:** `bloque: RutaBuilder.() -> Unit` declara que `bloque` es una función que, al ejecutarse, tiene `RutaBuilder` como receptor implícito (`this`); `builder.bloque()` ejecuta ese bloque usando `builder` como el `this` dentro de él; dentro de `ruta { parada("Depósito central") }`, `parada(...)` se resuelve como `builder.parada(...)` sin necesitar el prefijo, porque `this` dentro del bloque ES `builder`.
@@ -489,7 +485,7 @@ cd academia-kmp
 
 **Resultado esperado:** la prueba pasa en verde, confirmando que `parada(...)` se escribe SIN ningún prefijo dentro del bloque de `ruta { ... }` — la lambda con receptor hace que `parada` se resuelva como `builder.parada(...)` automáticamente, la capacidad que hace que los DSL de Kotlin luzcan como si fueran una extensión del lenguaje en vez de llamadas a función ordinarias.
 
-**Fallo deliberado:** cambia la firma de `ruta` de `bloque: RutaBuilder.() -> Unit` a `bloque: (RutaBuilder) -> Unit` (lambda normal, sin receptor) sin cambiar el resto. `./gradlew :shared:compileKotlinMetadata` falla, porque dentro de una lambda normal no existe un `this` implícito de tipo `RutaBuilder` — el test tendría que reescribirse como `ruta { it.parada("Depósito central") }`, con el receptor explícito — diagnostica confirmando que la diferencia entre `T.() -> Unit` y `(T) -> Unit` no es cosmética: determina si el código dentro del bloque puede omitir el receptor o debe nombrarlo explícitamente en cada llamada.
+**Fallo deliberado:** cambia la firma de `ruta` de `bloque: RutaBuilder.() -> Unit` a `bloque: (RutaBuilder) -> Unit` (lambda normal, sin receptor) sin cambiar el resto. `./gradlew :shared:assemble` falla, porque dentro de una lambda normal no existe un `this` implícito de tipo `RutaBuilder` — el test tendría que reescribirse como `ruta { it.parada("Depósito central") }`, con el receptor explícito — diagnostica confirmando que la diferencia entre `T.() -> Unit` y `(T) -> Unit` no es cosmética: determina si el código dentro del bloque puede omitir el receptor o debe nombrarlo explícitamente en cada llamada.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 

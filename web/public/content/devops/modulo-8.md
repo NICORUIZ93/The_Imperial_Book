@@ -66,7 +66,6 @@ Aplica la configuración y confirma que el `resource` creó el archivo:
 ```bash
 terraform apply -auto-approve
 cat config-generado.txt
-terraform output -json 2>/dev/null || true
 ```
 
 **Resultado esperado:** `terraform apply` reporta `1 added` (el `local_file.config`); `cat config-generado.txt` muestra el contenido exacto declarado en `content`, confirmando que el resource efectivamente gestionó la creación del archivo real en disco.
@@ -193,7 +192,7 @@ Al finalizar podrás extraer infraestructura repetida en un módulo con variable
 
 **Conceptos clave:** módulo, variables de entrada, outputs, composición de infraestructura.
 
-Un módulo encapsula un conjunto de recursos relacionados como unidad reutilizable con variables de entrada y outputs, análogo a una función. `module "vpc" { source = "./modulos/vpc"; cidr = "10.0.0.0/16" }` invoca un módulo pasándole `cidr`, sin que el código invocador conozca los detalles internos. Los módulos pueden vivir localmente o publicarse en registros compartidos.
+Un módulo encapsula un conjunto de recursos relacionados como unidad reutilizable con variables de entrada y outputs, análogo a una función. un bloque `module "vpc"` con `source = "./modulos/vpc"` y `cidr = "10.0.0.0/16"`, cada argumento en su propia línea (HCL no admite `;` como separador y un bloque de una sola línea solo puede llevar un argumento), invoca un módulo pasándole `cidr`, sin que el código invocador conozca los detalles internos. Los módulos pueden vivir localmente o publicarse en registros compartidos.
 
 **Analogía:** un módulo es un plano arquitectónico estandarizado de una habitación de hotel: cada hotel nuevo reutiliza el mismo plano probado, ajustando solo parámetros específicos (tamaño, color), sin rediseñar tuberías y electricidad desde cero.
 

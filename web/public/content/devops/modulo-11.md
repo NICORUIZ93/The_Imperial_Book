@@ -58,6 +58,7 @@ cat > Dockerfile <<'EOF'
 FROM node:18.19.0-alpine3.18
 WORKDIR /app
 COPY package.json .
+RUN npm install --omit=dev
 CMD ["node", "-e", "console.log('mi-api activa')"]
 EOF
 cat > package.json <<'EOF'
@@ -67,7 +68,7 @@ docker build -t mi-api:1.0 .
 docker run --rm aquasec/trivy:0.55.0 --version
 ```
 
-**Explicación línea por línea:** `--version` es la bandera que confirma qué versión de Trivy está corriendo, sin escanear nada todavía; se fija deliberadamente una versión antigua de `node:18-alpine` y de `lodash` (4.17.15, con CVEs conocidas y corregidas en versiones posteriores) para que el escaneo tenga contenido real que reportar, en vez de una imagen ya limpia sin ningún hallazgo.
+**Explicación línea por línea:** `--version` es la bandera que confirma qué versión de Trivy está corriendo, sin escanear nada todavía; se fija deliberadamente una versión antigua de `node:18-alpine` y de `lodash` (4.17.15, con CVEs conocidas y corregidas en versiones posteriores) para que el escaneo tenga contenido real que reportar, en vez de una imagen ya limpia sin ningún hallazgo. `RUN npm install --omit=dev` instala `lodash` dentro de `node_modules`: al escanear una imagen, Trivy detecta los paquetes de Node instalados buscando los `package.json` de `node_modules`, así que sin esa línea solo vería las librerías del sistema.
 
 Escanea la imagen construida y filtra por severidad:
 
@@ -152,7 +153,7 @@ jobs:
   escaneo-seguridad:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Construir imagen
         run: docker build -t mi-api:${{ github.sha }} .
       - name: Escanear con Trivy (gate obligatorio)
