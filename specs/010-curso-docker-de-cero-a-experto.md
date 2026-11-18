@@ -38,8 +38,18 @@ a experto, con lo más actual», investigado en documentación oficial, cursos (
 - **D1** `hecho` — La investigación del curso está escrita con fuentes oficiales, temarios de referencia,
   consejos de comunidad verificados y huecos.
   Verificación: `grep -q "## 4. Huecos" research/docker.md && grep -q "docs.docker.com" research/docker.md`
-- **D2** `pendiente` — El dueño aprueba el temario propuesto (o sus cambios quedan escritos aquí).
+- **D2** `hecho` — El dueño aprueba el temario propuesto (o sus cambios quedan escritos aquí). Temario aprobado por el dueño el 2026-11-18, sin cambios.
   Verificación: `grep -q "Temario aprobado por el dueño" specs/010-curso-docker-de-cero-a-experto.md`
 
-Los criterios por módulo (D3 en adelante) se agregan al aprobar el temario, junto con el auditor del
-estándar de 12 partes que los verifica.
+- **D3** `hecho` — Existe el auditor del estándar de 12 partes de MASTER-PROMPT v3 y `validate.sh` lo
+  ejecuta sobre la ruta Docker.
+  Verificación: `grep -q "audit_topic_standard_v3.py --track docker" scripts/validate.sh && python3 scripts/audit_topic_standard_v3.py --track docker`
+- **D4** `hecho` — La ruta `docker` está registrada en la app (definición de módulos, catálogo, logo, proyecto
+  integrador y mapa de ruta) y la validación completa sigue en verde.
+  Verificación: `grep -q "id: 'docker'" web/src/app/course-data.ts && test -f web/public/brands/docker.svg && python3 scripts/build_route_maps.py --check`
+- **D5** `pendiente` — Módulo 0 (Linux para contenedores): sus 5 temas cumplen las 12 partes, tienen
+  captura real salvo cgroups v2 (pendiente con motivo) y pasaron la revisión independiente con 4 o más en
+  cada criterio de la rúbrica y 5 en exactitud (`research/revisiones/docker-modulo-0.md`).
+  Verificación: `python3 scripts/audit_topic_standard_v3.py --track docker --module 0 && grep -q "Veredicto: aprobado" research/revisiones/docker-modulo-0.md`
+- **D6** a **D16** `pendiente` — Módulos 1 a 11 del temario, uno por lote, con la misma puerta que D5.
+  Verificación: `python3 scripts/audit_topic_standard_v3.py --track docker`
