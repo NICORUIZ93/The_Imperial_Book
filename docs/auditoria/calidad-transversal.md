@@ -1,0 +1,759 @@
+# Auditoría transversal de calidad
+
+Generado por `scripts/audit_calidad.py`.
+
+| Curso | modulos | temas | palabras | temas_cortos | temas_largos | sin_codigo | sin_solucion | sin_duracion | duracion_mayor_45 | voseo | titulos_repetidos | enlaces_rotos | imagenes_rotas |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| android | 19 | 83 | 86830 | 1 | 0 | 0 | 83 | 73 | 4 | 0 | 0 | 0 | 0 |
+| angular | 17 | 78 | 99193 | 0 | 0 | 0 | 78 | 71 | 1 | 2 | 0 | 0 | 0 |
+| cloud | 35 | 168 | 185203 | 0 | 0 | 0 | 165 | 156 | 0 | 389 | 0 | 0 | 0 |
+| control-1 | 23 | 70 | 77027 | 0 | 0 | 0 | 53 | 70 | 0 | 0 | 0 | 0 | 0 |
+| devops | 23 | 139 | 144521 | 2 | 0 | 0 | 139 | 130 | 1 | 53 | 0 | 0 | 0 |
+| flutter | 23 | 119 | 101723 | 4 | 0 | 0 | 119 | 108 | 2 | 148 | 0 | 0 | 0 |
+| foundations | 16 | 103 | 114631 | 0 | 0 | 0 | 69 | 101 | 1 | 265 | 0 | 0 | 0 |
+| ios | 15 | 69 | 69077 | 1 | 0 | 0 | 69 | 56 | 1 | 169 | 0 | 0 | 0 |
+| java | 23 | 117 | 118658 | 0 | 0 | 0 | 116 | 89 | 2 | 1 | 0 | 0 | 0 |
+| javascript | 15 | 92 | 88962 | 2 | 0 | 0 | 92 | 88 | 0 | 0 | 0 | 0 | 0 |
+| kotlin-multiplatform | 14 | 66 | 73570 | 0 | 0 | 0 | 66 | 56 | 0 | 68 | 0 | 0 | 0 |
+| microservices | 2 | 24 | 21030 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 | 0 |
+| node | 16 | 90 | 105586 | 0 | 0 | 0 | 90 | 10 | 64 | 0 | 0 | 0 | 0 |
+| react | 15 | 64 | 69434 | 0 | 0 | 0 | 64 | 58 | 0 | 51 | 0 | 0 | 0 |
+| rutaflow | 8 | 29 | 32284 | 0 | 0 | 0 | 29 | 29 | 0 | 79 | 0 | 0 | 0 |
+| spring-boot | 27 | 121 | 127474 | 0 | 0 | 0 | 119 | 96 | 4 | 2 | 0 | 0 | 0 |
+
+## android
+
+- resto `todo` en modulo-0.md:81
+- resto `todo` en modulo-0.md:207
+- resto `todo` en modulo-0.md:546
+- resto `todo` en modulo-0.md:774
+- resto `todo` en modulo-0.md:881
+- resto `todo` en modulo-1.md:35
+- resto `todo` en modulo-1.md:125
+- resto `TODO` en modulo-1.md:137
+- resto `todo` en modulo-1.md:225
+- resto `todo` en modulo-1.md:300
+- resto `todo` en modulo-2.md:297
+- resto `todo` en modulo-2.md:369
+- resto `todo` en modulo-2.md:461
+- resto `todo` en modulo-2.md:514
+- resto `todo` en modulo-5.md:52
+- resto `todo` en modulo-5.md:382
+- resto `todo` en modulo-6.md:189
+- resto `todo` en modulo-7.md:57
+- resto `todo` en modulo-7.md:233
+- resto `todo` en modulo-7.md:477
+- resto `todo` en modulo-8.md:395
+- resto `todo` en modulo-9.md:357
+- resto `TODO` en modulo-10.md:367
+- resto `TODO` en modulo-12.md:151
+- resto `todo` en modulo-12.md:217
+- resto `todo` en modulo-12.md:473
+- resto `todo` en modulo-13.md:129
+- resto `todo` en modulo-13.md:544
+- resto `todo` en modulo-14.md:299
+- resto `todo` en modulo-15.md:267
+- resto `<!--` en modulo-15.md:302
+- resto `todo` en modulo-15.md:426
+- resto `<!--` en modulo-15.md:469
+- resto `<!--` en modulo-15.md:485
+- resto `todo` en modulo-15.md:702
+- resto `todo` en modulo-15.md:704
+- resto `todo` en modulo-15.md:994
+- resto `todo` en modulo-16.md:569
+- resto `todo` en modulo-16.md:667
+- resto `todo` en modulo-16.md:676
+- tema corto (498 palabras): modulo-16.md · Tema 3: Paging 3, estados de carga y RemoteMediator
+- resto `todo` en modulo-17.md:202
+- resto `todo` en modulo-18.md:107
+
+## angular
+
+- resto `<!--` en modulo-0.md:254
+- resto `<!--` en modulo-0.md:255
+- resto `todo` en modulo-0.md:661
+- resto `todo` en modulo-1.md:197
+- resto `todo` en modulo-1.md:330
+- resto `<!--` en modulo-1.md:650
+- resto `todo` en modulo-2.md:396
+- resto `<!--` en modulo-5.md:485
+- resto `<!--` en modulo-6.md:325
+- resto `todo` en modulo-8.md:152
+- resto `todo` en modulo-8.md:158
+- resto `todo` en modulo-8.md:164
+- resto `todo` en modulo-8.md:166
+- resto `todo` en modulo-8.md:168
+- resto `todo` en modulo-8.md:173
+- resto `todo` en modulo-8.md:269
+- resto `todo` en modulo-8.md:299
+- resto `Todo` en modulo-8.md:523
+- resto `todo` en modulo-8.md:546
+- resto `todo` en modulo-10.md:300
+- resto `todo` en modulo-10.md:475
+- resto `TODO` en modulo-11.md:412
+- resto `todo` en modulo-11.md:526
+- resto `todo` en modulo-11.md:634
+- resto `<!--` en modulo-11.md:713
+- resto `<!--` en modulo-11.md:720
+- resto `<!--` en modulo-11.md:725
+- resto `todo` en modulo-12.md:25
+- resto `todo` en modulo-13.md:24
+- resto `todo` en modulo-13.md:24
+- resto `todo` en modulo-13.md:315
+- resto `todo` en modulo-14.md:123
+- resto `todo` en modulo-14.md:402
+- resto `todo` en modulo-14.md:491
+- resto `<!--` en modulo-14.md:607
+- resto `<!--` en modulo-14.md:714
+- resto `todo` en modulo-14.md:825
+- resto `<!--` en modulo-14.md:834
+- resto `<!--` en modulo-14.md:851
+
+## cloud
+
+- resto `todo` en modulo-0.md:141
+- resto `todo` en modulo-0.md:220
+- resto `todo` en modulo-0.md:229
+- resto `todo` en modulo-0.md:383
+- resto `todo` en modulo-0.md:461
+- resto `todo` en modulo-0.md:474
+- resto `todo` en modulo-0.md:517
+- resto `todo` en modulo-0.md:540
+- resto `todo` en modulo-0.md:548
+- resto `todo` en modulo-0.md:562
+- resto `Todo` en modulo-1.md:27
+- resto `todo` en modulo-1.md:91
+- resto `todo` en modulo-1.md:201
+- resto `todo` en modulo-1.md:211
+- resto `todo` en modulo-1.md:264
+- resto `todo` en modulo-2.md:62
+- resto `Todo` en modulo-2.md:121
+- resto `Todo` en modulo-2.md:195
+- resto `todo` en modulo-2.md:262
+- resto `todo` en modulo-2.md:268
+- resto `todo` en modulo-3.md:31
+- resto `todo` en modulo-3.md:157
+- resto `todo` en modulo-3.md:231
+- resto `todo` en modulo-3.md:284
+- resto `todo` en modulo-4.md:40
+- resto `todo` en modulo-4.md:101
+- resto `todo` en modulo-4.md:163
+- resto `todo` en modulo-4.md:218
+- resto `todo` en modulo-4.md:561
+- resto `todo` en modulo-5.md:68
+- resto `todo` en modulo-5.md:369
+- resto `todo` en modulo-5.md:634
+- resto `todo` en modulo-5.md:638
+- resto `todo` en modulo-5.md:714
+- resto `todo` en modulo-6.md:109
+- resto `Todo` en modulo-6.md:303
+- resto `todo` en modulo-6.md:315
+- resto `todo` en modulo-7.md:13
+- resto `todo` en modulo-7.md:17
+- resto `todo` en modulo-7.md:25
+- resto `TODO` en modulo-7.md:39
+- resto `todo` en modulo-7.md:141
+- resto `todo` en modulo-7.md:312
+- resto `todo` en modulo-8.md:208
+- resto `todo` en modulo-9.md:150
+- resto `todo` en modulo-9.md:274
+- resto `todo` en modulo-9.md:452
+- resto `todo` en modulo-10.md:137
+- resto `todo` en modulo-10.md:186
+- resto `todo` en modulo-11.md:69
+- resto `todo` en modulo-12.md:81
+- resto `todo` en modulo-13.md:42
+- resto `todo` en modulo-13.md:83
+- resto `todo` en modulo-13.md:85
+- resto `todo` en modulo-15.md:100
+- resto `todo` en modulo-16.md:191
+- resto `todo` en modulo-16.md:207
+- resto `todo` en modulo-16.md:325
+- resto `todo` en modulo-17.md:55
+- resto `todo` en modulo-20.md:57
+- resto `todo` en modulo-21.md:223
+- resto `todo` en modulo-21.md:313
+- resto `todo` en modulo-21.md:355
+- resto `todo` en modulo-22.md:161
+- resto `todo` en modulo-22.md:436
+- resto `todo` en modulo-23.md:17
+- resto `todo` en modulo-23.md:23
+- resto `todo` en modulo-23.md:83
+- resto `todo` en modulo-24.md:188
+- resto `todo` en modulo-24.md:192
+- resto `todo` en modulo-24.md:208
+- resto `todo` en modulo-24.md:245
+- resto `todo` en modulo-24.md:295
+- resto `todo` en modulo-24.md:307
+- resto `todo` en modulo-25.md:17
+- resto `todo` en modulo-25.md:364
+- resto `todo` en modulo-26.md:154
+- resto `todo` en modulo-26.md:217
+- resto `todo` en modulo-26.md:242
+- resto `todo` en modulo-27.md:83
+- … 35 más
+
+## control-1
+
+- resto `todo` en modulo-0.md:68
+- resto `Todo` en modulo-1.md:224
+- resto `todo` en modulo-1.md:305
+- resto `todo` en modulo-1.md:685
+- resto `todo` en modulo-2.md:15
+- resto `todo` en modulo-2.md:624
+- resto `todo` en modulo-3.md:257
+- resto `todo` en modulo-3.md:258
+- resto `todo` en modulo-3.md:279
+- resto `todo` en modulo-3.md:621
+- resto `todo` en modulo-3.md:694
+- resto `Todo` en modulo-4.md:3
+- resto `todo` en modulo-4.md:31
+- resto `todo` en modulo-4.md:59
+- resto `Todo` en modulo-5.md:249
+- resto `todo` en modulo-5.md:412
+- resto `Todo` en modulo-5.md:526
+- resto `todo` en modulo-6.md:84
+- resto `todo` en modulo-8.md:293
+- resto `Todo` en modulo-9.md:3
+- resto `todo` en modulo-9.md:14
+- resto `todo` en modulo-12.md:25
+- resto `todo` en modulo-12.md:30
+- resto `todo` en modulo-12.md:41
+- resto `todo` en modulo-12.md:101
+- resto `todo` en modulo-12.md:184
+- resto `todo` en modulo-12.md:214
+- resto `todo` en modulo-12.md:228
+- resto `todo` en modulo-12.md:242
+- resto `todo` en modulo-12.md:256
+- resto `todo` en modulo-12.md:270
+- resto `todo` en modulo-12.md:813
+- resto `todo` en modulo-15.md:16
+- resto `todo` en modulo-16.md:184
+- resto `todo` en modulo-17.md:16
+- resto `todo` en modulo-17.md:313
+- resto `todo` en modulo-17.md:369
+- resto `todo` en modulo-18.md:379
+- resto `todo` en modulo-18.md:640
+- resto `todo` en modulo-20.md:318
+- resto `Todo` en modulo-21.md:92
+- resto `todo` en modulo-21.md:109
+- resto `Todo` en modulo-22.md:99
+
+## devops
+
+- resto `todo` en modulo-0.md:260
+- resto `todo` en modulo-0.md:398
+- resto `todo` en modulo-0.md:500
+- resto `todo` en modulo-0.md:642
+- resto `todo` en modulo-0.md:861
+- resto `todo` en modulo-0.md:966
+- resto `Todo` en modulo-0.md:980
+- resto `todo` en modulo-0.md:1100
+- resto `todo` en modulo-1.md:22
+- resto `todo` en modulo-1.md:64
+- resto `todo` en modulo-1.md:275
+- resto `todo` en modulo-1.md:354
+- resto `todo` en modulo-2.md:24
+- resto `todo` en modulo-2.md:24
+- resto `todo` en modulo-2.md:24
+- resto `todo` en modulo-2.md:60
+- resto `todo` en modulo-2.md:90
+- resto `todo` en modulo-2.md:188
+- resto `todo` en modulo-2.md:891
+- resto `todo` en modulo-3.md:343
+- resto `todo` en modulo-4.md:108
+- resto `todo` en modulo-4.md:189
+- resto `todo` en modulo-4.md:363
+- resto `todo` en modulo-5.md:22
+- resto `todo` en modulo-5.md:22
+- resto `todo` en modulo-5.md:128
+- resto `todo` en modulo-5.md:213
+- resto `todo` en modulo-5.md:482
+- resto `todo` en modulo-5.md:581
+- resto `todo` en modulo-6.md:95
+- resto `todo` en modulo-6.md:435
+- resto `todo` en modulo-6.md:520
+- resto `Todo` en modulo-6.md:751
+- resto `todo` en modulo-6.md:753
+- resto `todo` en modulo-7.md:496
+- resto `TODO` en modulo-7.md:555
+- resto `todo` en modulo-7.md:663
+- resto `todo` en modulo-7.md:669
+- resto `todo` en modulo-7.md:702
+- resto `todo` en modulo-7.md:705
+- resto `todo` en modulo-7.md:732
+- resto `todo` en modulo-7.md:760
+- resto `todo` en modulo-8.md:77
+- resto `todo` en modulo-8.md:111
+- resto `todo` en modulo-8.md:328
+- resto `todo` en modulo-8.md:341
+- resto `todo` en modulo-8.md:438
+- resto `todo` en modulo-8.md:715
+- tema corto (475 palabras): modulo-8.md · Tema 8: OpenTofu, plan y estado sin recursos cloud
+- resto `todo` en modulo-9.md:22
+- resto `todo` en modulo-9.md:289
+- resto `todo` en modulo-9.md:636
+- resto `todo` en modulo-9.md:760
+- resto `todo` en modulo-10.md:87
+- resto `todo` en modulo-10.md:135
+- resto `TODO` en modulo-10.md:213
+- resto `todo` en modulo-11.md:295
+- resto `todo` en modulo-11.md:295
+- resto `todo` en modulo-11.md:377
+- resto `todo` en modulo-11.md:383
+- resto `todo` en modulo-11.md:458
+- resto `todo` en modulo-11.md:484
+- resto `todo` en modulo-11.md:502
+- resto `todo` en modulo-12.md:16
+- resto `Todo` en modulo-12.md:22
+- resto `todo` en modulo-12.md:365
+- resto `todo` en modulo-12.md:591
+- resto `todo` en modulo-12.md:746
+- resto `todo` en modulo-12.md:752
+- resto `todo` en modulo-14.md:78
+- resto `<!--` en modulo-14.md:456
+- resto `<!--` en modulo-14.md:473
+- resto `todo` en modulo-15.md:249
+- resto `xxx` en modulo-15.md:440
+- resto `todo` en modulo-15.md:481
+- resto `todo` en modulo-16.md:382
+- resto `todo` en modulo-16.md:439
+- resto `todo` en modulo-16.md:508
+- tema corto (490 palabras): modulo-16.md · Tema 6: Bruno y Postman, evaluar con el mismo contrato
+- resto `todo` en modulo-17.md:17
+- … 17 más
+
+## flutter
+
+- resto `todo` en modulo-0.md:4
+- resto `todo` en modulo-0.md:114
+- resto `todo` en modulo-0.md:128
+- resto `todo` en modulo-0.md:134
+- resto `TODO` en modulo-0.md:139
+- resto `todo` en modulo-0.md:526
+- resto `todo` en modulo-0.md:901
+- resto `todo` en modulo-1.md:252
+- resto `Todo` en modulo-1.md:367
+- resto `todo` en modulo-1.md:501
+- resto `todo` en modulo-2.md:97
+- resto `todo` en modulo-2.md:103
+- resto `todo` en modulo-2.md:161
+- resto `todo` en modulo-2.md:194
+- resto `todo` en modulo-4.md:325
+- resto `todo` en modulo-4.md:325
+- resto `todo` en modulo-5.md:261
+- resto `todo` en modulo-5.md:392
+- resto `todo` en modulo-8.md:243
+- resto `todo` en modulo-8.md:254
+- resto `todo` en modulo-8.md:312
+- resto `todo` en modulo-9.md:38
+- resto `todo` en modulo-10.md:34
+- resto `todo` en modulo-11.md:106
+- resto `todo` en modulo-12.md:15
+- resto `todo` en modulo-12.md:31
+- resto `todo` en modulo-12.md:31
+- resto `todo` en modulo-12.md:35
+- resto `todo` en modulo-12.md:35
+- resto `todo` en modulo-12.md:82
+- resto `Todo` en modulo-13.md:17
+- resto `Todo` en modulo-13.md:24
+- resto `todo` en modulo-13.md:317
+- resto `<!--` en modulo-13.md:397
+- resto `<!--` en modulo-13.md:414
+- resto `todo` en modulo-15.md:215
+- resto `todo` en modulo-15.md:526
+- resto `todo` en modulo-15.md:557
+- resto `todo` en modulo-16.md:246
+- resto `todo` en modulo-17.md:481
+- resto `todo` en modulo-18.md:341
+- tema corto (481 palabras): modulo-20.md · Tema 1: pruebas unitarias y de widget con Flutter Test
+- tema corto (498 palabras): modulo-20.md · Tema 2: golden e integración de un flujo real
+- tema corto (475 palabras): modulo-20.md · Tema 4: Clean Architecture y sustitución de dependencias
+- tema corto (468 palabras): modulo-20.md · Tema 5: internacionalización y formatos locales
+- resto `<!--` en modulo-22.md:29
+- resto `<!--` en modulo-22.md:36
+- resto `todo` en modulo-22.md:399
+
+## foundations
+
+- resto `todo` en modulo-1.md:456
+- resto `todo` en modulo-1.md:465
+- resto `todo` en modulo-1.md:465
+- resto `todo` en modulo-1.md:497
+- resto `todo` en modulo-1.md:605
+- resto `todo` en modulo-1.md:613
+- resto `todo` en modulo-1.md:684
+- resto `todo` en modulo-2.md:645
+- resto `todo` en modulo-2.md:645
+- resto `todo` en modulo-2.md:749
+- resto `todo` en modulo-2.md:815
+- resto `todo` en modulo-2.md:828
+- resto `todo` en modulo-2.md:910
+- resto `todo` en modulo-3.md:176
+- resto `todo` en modulo-3.md:244
+- resto `todo` en modulo-3.md:274
+- resto `todo` en modulo-3.md:332
+- resto `todo` en modulo-3.md:336
+- resto `todo` en modulo-4.md:54
+- resto `todo` en modulo-4.md:358
+- resto `todo` en modulo-4.md:466
+- resto `todo` en modulo-4.md:546
+- resto `todo` en modulo-4.md:625
+- resto `todo` en modulo-4.md:761
+- resto `todo` en modulo-4.md:1041
+- resto `todo` en modulo-5.md:176
+- resto `todo` en modulo-5.md:176
+- resto `todo` en modulo-5.md:480
+- resto `todo` en modulo-6.md:11
+- resto `todo` en modulo-6.md:625
+- resto `Todo` en modulo-6.md:947
+- resto `Todo` en modulo-6.md:1202
+- resto `todo` en modulo-6.md:1213
+- resto `todo` en modulo-6.md:1228
+- resto `Todo` en modulo-7.md:38
+- resto `todo` en modulo-7.md:271
+- resto `todo` en modulo-8.md:506
+- resto `todo` en modulo-9.md:38
+- resto `todo` en modulo-9.md:46
+- resto `todo` en modulo-9.md:202
+- resto `todo` en modulo-9.md:384
+- resto `todo` en modulo-9.md:561
+- resto `todo` en modulo-10.md:250
+- resto `todo` en modulo-10.md:476
+- resto `todo` en modulo-10.md:553
+- resto `todo` en modulo-10.md:701
+- resto `todo` en modulo-10.md:705
+- resto `todo` en modulo-10.md:722
+- resto `todo` en modulo-11.md:16
+- resto `todo` en modulo-11.md:539
+- resto `todo` en modulo-12.md:881
+- resto `todo` en modulo-12.md:889
+- resto `todo` en modulo-12.md:898
+- resto `todo` en modulo-14.md:107
+- resto `todo` en modulo-14.md:469
+- resto `todo` en modulo-14.md:881
+- resto `todo` en modulo-15.md:345
+
+## ios
+
+- resto `todo` en modulo-0.md:20
+- resto `todo` en modulo-0.md:211
+- resto `todo` en modulo-0.md:362
+- resto `todo` en modulo-0.md:636
+- resto `todo` en modulo-0.md:649
+- resto `todo` en modulo-1.md:228
+- resto `todo` en modulo-2.md:104
+- resto `todo` en modulo-4.md:309
+- resto `todo` en modulo-4.md:371
+- resto `todo` en modulo-4.md:464
+- resto `todo` en modulo-4.md:526
+- resto `todo` en modulo-4.md:594
+- tema corto (488 palabras): modulo-4.md · Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo 
+- resto `todo` en modulo-5.md:184
+- resto `todo` en modulo-5.md:231
+- resto `todo` en modulo-6.md:37
+- resto `todo` en modulo-6.md:153
+- resto `todo` en modulo-9.md:209
+- resto `todo` en modulo-10.md:151
+- resto `todo` en modulo-10.md:326
+- resto `todo` en modulo-12.md:17
+- resto `todo` en modulo-12.md:29
+- resto `todo` en modulo-12.md:89
+- resto `todo` en modulo-12.md:298
+- resto `todo` en modulo-12.md:368
+- resto `todo` en modulo-13.md:337
+- resto `Todo` en modulo-13.md:404
+- resto `todo` en modulo-13.md:656
+- resto `<!--` en modulo-13.md:1047
+- resto `<!--` en modulo-13.md:1064
+- resto `todo` en modulo-14.md:564
+- resto `Todo` en modulo-14.md:607
+- resto `todo` en modulo-14.md:713
+
+## java
+
+- resto `todo` en modulo-0.md:786
+- resto `todo` en modulo-0.md:1189
+- resto `todo` en modulo-3.md:127
+- resto `todo` en modulo-3.md:241
+- resto `todo` en modulo-6.md:286
+- resto `todo` en modulo-6.md:315
+- resto `todo` en modulo-6.md:372
+- resto `<!--` en modulo-8.md:205
+- resto `<!--` en modulo-8.md:304
+- resto `todo` en modulo-8.md:374
+- resto `todo` en modulo-8.md:386
+- resto `todo` en modulo-10.md:130
+- resto `todo` en modulo-10.md:182
+- resto `todo` en modulo-10.md:252
+- resto `todo` en modulo-10.md:301
+- resto `todo` en modulo-12.md:442
+- resto `todo` en modulo-14.md:28
+- resto `todo` en modulo-14.md:649
+- resto `<!--` en modulo-14.md:657
+- resto `<!--` en modulo-14.md:674
+- resto `todo` en modulo-16.md:184
+- resto `todo` en modulo-16.md:194
+- resto `todo` en modulo-16.md:215
+- resto `todo` en modulo-18.md:554
+- resto `todo` en modulo-18.md:558
+- resto `Todo` en modulo-19.md:12
+- resto `todo` en modulo-19.md:17
+- resto `todo` en modulo-19.md:125
+- resto `todo` en modulo-19.md:222
+- resto `todo` en modulo-19.md:233
+- resto `todo` en modulo-20.md:13
+- resto `Todo` en modulo-21.md:3
+- resto `todo` en modulo-21.md:200
+- resto `todo` en modulo-21.md:250
+- resto `todo` en modulo-21.md:284
+- resto `todo` en modulo-21.md:422
+- resto `todo` en modulo-22.md:42
+- resto `todo` en modulo-22.md:270
+- resto `todo` en modulo-22.md:959
+- resto `todo` en modulo-22.md:981
+- resto `todo` en modulo-22.md:1194
+
+## javascript
+
+- resto `todo` en modulo-0.md:146
+- resto `todo` en modulo-0.md:218
+- resto `todo` en modulo-0.md:286
+- tema corto (477 palabras): modulo-0.md · Tema 2: Tipos primitivos y `typeof`
+- tema corto (487 palabras): modulo-0.md · Tema 3: Conversión, coerción e igualdad
+- resto `todo` en modulo-1.md:115
+- resto `todo` en modulo-1.md:198
+- resto `todo` en modulo-1.md:380
+- resto `todo` en modulo-2.md:112
+- resto `todo` en modulo-2.md:166
+- resto `Todo` en modulo-3.md:22
+- resto `todo` en modulo-3.md:100
+- resto `todo` en modulo-4.md:24
+- resto `todo` en modulo-4.md:184
+- resto `todo` en modulo-5.md:24
+- resto `todo` en modulo-5.md:195
+- resto `todo` en modulo-5.md:201
+- resto `todo` en modulo-5.md:203
+- resto `todo` en modulo-5.md:207
+- resto `todo` en modulo-5.md:267
+- resto `todo` en modulo-5.md:287
+- resto `todo` en modulo-5.md:372
+- resto `todo` en modulo-6.md:207
+- resto `todo` en modulo-6.md:545
+- resto `todo` en modulo-6.md:570
+- resto `todo` en modulo-7.md:150
+- resto `todo` en modulo-7.md:150
+- resto `todo` en modulo-7.md:264
+- resto `todo` en modulo-7.md:383
+- resto `todo` en modulo-7.md:714
+- resto `<!--` en modulo-7.md:790
+- resto `todo` en modulo-7.md:824
+- resto `todo` en modulo-7.md:854
+- resto `todo` en modulo-8.md:442
+- resto `todo` en modulo-8.md:458
+- resto `todo` en modulo-8.md:503
+- resto `todo` en modulo-8.md:535
+- resto `todo` en modulo-8.md:539
+- resto `todo` en modulo-8.md:745
+- resto `todo` en modulo-9.md:129
+- resto `todo` en modulo-10.md:316
+- resto `todo` en modulo-11.md:24
+- resto `todo` en modulo-11.md:102
+- resto `todo` en modulo-11.md:558
+- resto `todo` en modulo-12.md:436
+- resto `todo` en modulo-12.md:462
+- resto `Todo` en modulo-13.md:24
+- resto `todo` en modulo-13.md:248
+- resto `<!--` en modulo-13.md:492
+- resto `<!--` en modulo-13.md:509
+- resto `todo` en modulo-14.md:1157
+- resto `todo` en modulo-14.md:1280
+- resto `todo` en modulo-14.md:1622
+
+## kotlin-multiplatform
+
+- resto `todo` en modulo-0.md:645
+- resto `todo` en modulo-1.md:627
+- resto `todo` en modulo-3.md:3
+- resto `todo` en modulo-3.md:207
+- resto `todo` en modulo-3.md:233
+- resto `TODO` en modulo-3.md:271
+- resto `todo` en modulo-3.md:305
+- resto `todo` en modulo-3.md:343
+- resto `todo` en modulo-3.md:343
+- resto `todo` en modulo-3.md:379
+- resto `todo` en modulo-3.md:664
+- resto `todo` en modulo-5.md:283
+- resto `todo` en modulo-6.md:430
+- resto `todo` en modulo-6.md:541
+- resto `todo` en modulo-6.md:839
+- resto `todo` en modulo-7.md:454
+- resto `todo` en modulo-7.md:1158
+- resto `todo` en modulo-10.md:21
+- resto `todo` en modulo-10.md:133
+- resto `todo` en modulo-11.md:21
+- resto `todo` en modulo-11.md:180
+- resto `todo` en modulo-12.md:21
+- resto `todo` en modulo-12.md:188
+- resto `<!--` en modulo-12.md:432
+- resto `<!--` en modulo-12.md:449
+- resto `todo` en modulo-13.md:17
+- resto `todo` en modulo-13.md:174
+- resto `todo` en modulo-13.md:226
+- resto `todo` en modulo-13.md:249
+- resto `todo` en modulo-13.md:255
+- resto `todo` en modulo-13.md:268
+- resto `todo` en modulo-13.md:303
+
+## microservices
+
+- resto `todo` en modulo-0.md:344
+- resto `todo` en modulo-0.md:372
+- resto `todo` en modulo-1.md:1028
+
+## node
+
+- resto `todo` en modulo-0.md:65
+- resto `todo` en modulo-0.md:115
+- resto `todo` en modulo-0.md:357
+- resto `todo` en modulo-1.md:75
+- resto `todo` en modulo-2.md:168
+- resto `todo` en modulo-2.md:315
+- resto `Todo` en modulo-2.md:335
+- resto `todo` en modulo-2.md:471
+- resto `todo` en modulo-2.md:788
+- resto `todo` en modulo-2.md:840
+- resto `todo` en modulo-2.md:921
+- resto `todo` en modulo-2.md:1035
+- resto `todo` en modulo-3.md:210
+- resto `todo` en modulo-3.md:214
+- resto `Todo` en modulo-3.md:653
+- resto `todo` en modulo-3.md:669
+- resto `todo` en modulo-7.md:830
+- resto `todo` en modulo-7.md:955
+- resto `todo` en modulo-9.md:118
+- resto `todo` en modulo-9.md:795
+- resto `todo` en modulo-9.md:811
+- resto `todo` en modulo-9.md:880
+- resto `todo` en modulo-9.md:896
+- resto `todo` en modulo-9.md:906
+- resto `todo` en modulo-10.md:640
+- resto `todo` en modulo-11.md:167
+- resto `todo` en modulo-11.md:314
+- resto `todo` en modulo-12.md:17
+- resto `Todo` en modulo-12.md:832
+- resto `todo` en modulo-12.md:885
+- resto `todo` en modulo-12.md:1695
+- resto `todo` en modulo-15.md:19
+- resto `todo` en modulo-15.md:52
+
+## react
+
+- resto `todo` en modulo-0.md:320
+- resto `todo` en modulo-0.md:436
+- resto `todo` en modulo-0.md:530
+- resto `todo` en modulo-0.md:573
+- resto `todo` en modulo-1.md:100
+- resto `todo` en modulo-1.md:211
+- resto `todo` en modulo-1.md:314
+- resto `todo` en modulo-1.md:393
+- resto `todo` en modulo-1.md:461
+- resto `todo` en modulo-2.md:101
+- resto `todo` en modulo-2.md:101
+- resto `todo` en modulo-2.md:207
+- resto `todo` en modulo-2.md:263
+- resto `todo` en modulo-2.md:307
+- resto `todo` en modulo-2.md:398
+- resto `todo` en modulo-2.md:417
+- resto `todo` en modulo-2.md:512
+- resto `todo` en modulo-2.md:549
+- resto `todo` en modulo-2.md:644
+- resto `todo` en modulo-3.md:40
+- resto `todo` en modulo-3.md:93
+- resto `todo` en modulo-3.md:212
+- resto `todo` en modulo-3.md:267
+- resto `todo` en modulo-3.md:295
+- resto `todo` en modulo-3.md:306
+- resto `todo` en modulo-3.md:412
+- resto `todo` en modulo-3.md:431
+- resto `todo` en modulo-4.md:106
+- resto `todo` en modulo-4.md:121
+- resto `todo` en modulo-4.md:140
+- resto `todo` en modulo-4.md:140
+- resto `todo` en modulo-4.md:187
+- resto `todo` en modulo-4.md:213
+- resto `todo` en modulo-4.md:283
+- resto `todo` en modulo-5.md:120
+- resto `todo` en modulo-5.md:217
+- resto `todo` en modulo-5.md:351
+- resto `todo` en modulo-6.md:46
+- resto `todo` en modulo-6.md:48
+- resto `todo` en modulo-6.md:246
+- resto `todo` en modulo-6.md:404
+- resto `todo` en modulo-7.md:100
+- resto `todo` en modulo-7.md:125
+- resto `todo` en modulo-7.md:194
+- resto `todo` en modulo-7.md:213
+- resto `todo` en modulo-7.md:228
+- resto `todo` en modulo-7.md:277
+- resto `todo` en modulo-7.md:284
+- resto `todo` en modulo-7.md:293
+- resto `todo` en modulo-7.md:366
+- resto `todo` en modulo-8.md:6
+- resto `todo` en modulo-9.md:26
+- resto `todo` en modulo-9.md:101
+- resto `todo` en modulo-9.md:174
+- resto `todo` en modulo-9.md:194
+- resto `todo` en modulo-9.md:258
+- resto `todo` en modulo-9.md:353
+- resto `todo` en modulo-9.md:422
+- resto `todo` en modulo-9.md:718
+- resto `todo` en modulo-10.md:6
+- resto `todo` en modulo-10.md:109
+- resto `todo` en modulo-10.md:121
+- resto `todo` en modulo-10.md:218
+- resto `todo` en modulo-10.md:286
+- resto `todo` en modulo-11.md:62
+- resto `todo` en modulo-11.md:104
+- resto `todo` en modulo-11.md:190
+- resto `todo` en modulo-11.md:290
+- resto `Todo` en modulo-12.md:6
+- resto `todo` en modulo-13.md:154
+- resto `todo` en modulo-13.md:261
+- resto `todo` en modulo-13.md:550
+- resto `<!--` en modulo-13.md:698
+- resto `<!--` en modulo-13.md:715
+- resto `todo` en modulo-14.md:9
+- resto `todo` en modulo-14.md:15
+- resto `todo` en modulo-14.md:45
+- resto `todo` en modulo-14.md:120
+
+## rutaflow
+
+- resto `todo` en modulo-0.md:16
+- resto `todo` en modulo-1.md:220
+- resto `todo` en modulo-1.md:278
+- resto `todo` en modulo-2.md:133
+- resto `todo` en modulo-3.md:265
+- resto `todo` en modulo-4.md:453
+- resto `todo` en modulo-4.md:457
+
+## spring-boot
+
+- resto `todo` en modulo-0.md:750
+- resto `todo` en modulo-1.md:546
+- resto `todo` en modulo-3.md:476
+- resto `todo` en modulo-3.md:674
+- resto `todo` en modulo-4.md:166
+- resto `todo` en modulo-7.md:558
+- resto `todo` en modulo-7.md:558
+- resto `todo` en modulo-7.md:566
+- resto `todo` en modulo-9.md:497
+- resto `<!--` en modulo-11.md:508
+- resto `todo` en modulo-13.md:339
+- resto `todo` en modulo-13.md:469
+- resto `todo` en modulo-15.md:347
+- resto `todo` en modulo-16.md:195
+- resto `todo` en modulo-20.md:700
+- resto `todo` en modulo-22.md:191
+- resto `todo` en modulo-23.md:263
