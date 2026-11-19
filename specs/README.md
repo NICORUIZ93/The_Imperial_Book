@@ -14,3 +14,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [013](013-programa-de-cursos-y-correcciones.md) | Programa de cursos y correcciones | en curso |
 | [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | hecho |
 | [015](015-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
+| [016](016-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |
