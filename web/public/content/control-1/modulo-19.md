@@ -1,6 +1,6 @@
 # Módulo 19: Compensadores de adelanto y atraso
 
-Cuando subir la ganancia no basta (módulo 14, Ejemplo 4), se agrega un compensador: un cero y un polo bien puestos que cambian la forma del lugar de las raíces.
+Cuando subir la ganancia no basta (módulo 14, Ejemplo 4), se agrega un compensador: un cero y un polo bien puestos que cambian la forma del lugar de las raíces. Este módulo va después de Bode y Nyquist en la ruta: aquí diseñas con el lugar de las raíces y en el módulo 24 diseñas los mismos compensadores con el margen de fase.
 
 **Al terminar podrás:**
 

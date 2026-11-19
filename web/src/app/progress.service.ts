@@ -218,11 +218,13 @@ export class ProgressService {
     this.persist();
   }
 
-  nextPendingModuleId(trackId: string, totalModules: number): number {
+  /**
+   * Primer módulo pendiente. Con la lista de ids del track se respeta su orden de estudio, que puede no
+   * coincidir con la numeración (Control 1 estudia Bode, módulo 20, antes que el módulo 19).
+   */
+  nextPendingModuleId(trackId: string, modules: number | number[]): number {
+    const ids = Array.isArray(modules) ? modules : Array.from({ length: modules }, (_, id) => id);
     const completed = this.trackProgress(trackId).completedModules;
-    for (let id = 0; id < totalModules; id++) {
-      if (!completed.includes(id)) return id;
-    }
-    return Math.max(0, totalModules - 1);
+    return ids.find(id => !completed.includes(id)) ?? ids[ids.length - 1] ?? 0;
   }
 }

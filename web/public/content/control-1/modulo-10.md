@@ -1,6 +1,6 @@
 # Módulo 10: Introducción al espacio de estados
 
-Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es la base del control moderno. Aquí ves cómo se arma y cómo se relaciona con \(G(s)\).
+Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es la base del control moderno y forma parte del examen final de Control I (unidad 6). Aquí ves cómo se arma y cómo se relaciona con \(G(s)\); el análisis y el diseño con estados siguen en los módulos 25 (controlabilidad, observabilidad y ubicación de polos) y 26 (observadores).
 
 **Al terminar podrás:**
 

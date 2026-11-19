@@ -12,7 +12,7 @@ const BOOTSTRAPS: Record<string, ProjectBootstrap> = {
   'control-1': {
     workspace: 'academia-labs/control-1',
     prerequisites: ['Python 3', 'Git', 'Visual Studio Code'],
-    createCommands: ['mkdir -p academia-labs/control-1/{ejercicios,evidence}', 'cd academia-labs/control-1', 'git init', 'python3 -m venv .venv', 'source .venv/bin/activate  # Windows: .venv\\Scripts\\Activate.ps1', 'python3 -m pip install sympy scipy matplotlib'],
+    createCommands: ['mkdir -p academia-labs/control-1/{ejercicios,evidence}', 'cd academia-labs/control-1', 'git init', 'python3 -m venv .venv', 'source .venv/bin/activate  # Windows: .venv\\Scripts\\Activate.ps1', 'python3 -m pip install sympy scipy matplotlib control'],
     structure: ['README.md', 'ejercicios/', 'ejercicios/verificar.py', 'evidence/'],
     runCommand: 'python3 ejercicios/verificar.py',
     expected: 'El script imprime cada resultado calculado a mano junto al que da SymPy o SciPy, y ambos coinciden.',

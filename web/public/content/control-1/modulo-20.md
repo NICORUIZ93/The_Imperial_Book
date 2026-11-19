@@ -1,6 +1,6 @@
 # Módulo 20: Respuesta en frecuencia y diagramas de Bode
 
-Otra forma de ver un sistema: qué le hace a una entrada senoidal de cada frecuencia. Con ella se miden los márgenes de estabilidad. Es el puente hacia Control 2.
+Otra forma de ver un sistema: qué le hace a una entrada senoidal de cada frecuencia. Con ella se miden los márgenes de estabilidad. Es la unidad 5 del programa de Control I y sigue con el criterio de Nyquist (módulo 23) y la compensación en frecuencia (módulo 24).
 
 **Al terminar podrás:**
 
