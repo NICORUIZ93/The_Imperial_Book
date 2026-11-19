@@ -1,7 +1,7 @@
 # Reordenar los temas: Node.js y la deuda de orden de los otros cursos, 2026-11-19
 
 **Petición:** «quiero que revises cada tema cada curso y reorganices de manera mejora ordenada cada tema».
-**Alcance elegido:** *curso completo por curso*. Cinco lotes en este documento: Node.js reordenado por completo (14 capítulos, 78 temas), los 10 capítulos que los demás cursos dejaban declarados como incumplidos, JavaScript como curso completo etiquetado y ordenado (15 capítulos, 92 temas), React como curso completo etiquetado y ordenado (15 capítulos, 64 temas) e iOS como curso completo etiquetado y ordenado (15 capítulos, 69 temas), que además aporta el auditor de citas numéricas. Quedan 11 cursos sin etiquetar; ver «Deuda que queda» al final.
+**Alcance elegido:** *curso completo por curso*. Seis lotes en este documento: Node.js reordenado por completo (14 capítulos, 78 temas), los 10 capítulos que los demás cursos dejaban declarados como incumplidos, JavaScript como curso completo etiquetado y ordenado (15 capítulos, 92 temas), React como curso completo etiquetado y ordenado (15 capítulos, 64 temas), iOS como curso completo etiquetado y ordenado (15 capítulos, 69 temas) —que además aporta el auditor de citas numéricas— y Java como curso completo etiquetado y ordenado (23 capítulos, 117 temas), que amplía ese auditor a las dos formas de citar de Java y obliga a declarar la primera excepción de orden del programa. Quedan 10 cursos sin etiquetar; ver «Deuda que queda» al final.
 
 ## Qué se midió antes de tocar nada
 
@@ -373,14 +373,120 @@ Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la n
 
 Ejemplo: `python3 scripts/reorder_track_topics.py --track ios --module 13 --order 1,2,7,8,3,4,6,5,9,10 --apply`. Después hay que deshacer a mano las 18 citas de arriba (prerrequisitos, «Siguiente paso», tablas y el nodo del diagrama vuelven a los números antiguos) y quitar las 56 etiquetas nuevas devolviendo cada cabecera a su texto sin ` · Nivel · XX min`, salvo las trece originales: capítulo 0 tema 5 (Experto · 45), capítulo 4 temas 5 (Avanzado · 40) y 6 (Experto · 50), capítulo 6 temas 4 (Intermedio · 40) y 5 (Avanzado · 45), capítulo 10 tema 4 (Intermedio · 40), capítulo 12 tema 3 (Avanzado · 45), capítulo 13 temas 5 (Intermedio · 35), 9 (Avanzado · 45) y 10 (Avanzado · 45), y capítulo 14 temas 2 (Intermedio · 40), 9 (Avanzado · 45) y 10 (Avanzado · 40). Cerrar con los generadores y `./scripts/validate.sh`; el auditor de citas no hay que deshacerlo porque es herramienta, no contenido — y sigue pasando con iOS en su orden viejo, porque las cuatro citas de `react`, `node` y `javascript` que se repararon en este lote son mejoras de texto, no del orden.
 
+## Sexto lote: Java, un curso completo (117 temas)
+
+Java es el curso más grande después de Cloud: **23 capítulos y 117 temas**, con 16 etiquetas puestas. Como en los lotes anteriores, el trabajo mayoritario es leer el `Prerrequisito`, el objetivo y la carga de cada tema y declararle nivel y duración: **101 etiquetas nuevas, 16 que ya estaban y se dejaron byte a byte como estaban, 0 niveles cambiados**. Reparto final: 14 Básico, 64 Intermedio, 37 Avanzado, 2 Experto; duraciones 30 min (3 temas), 35 (22), 40 (52), 45 (30), 50 (10).
+
+Que las dieciséis previas quedaran intactas es el punto que hay que leer: capítulo 9 tema 4, capítulo 14 temas 5 y 6, capítulo 18 tema 3, capítulo 19 temas 8 y 9, y los diez temas de los capítulos 21 y 22. **Ningún nivel existente se subió ni se bajó para hacer pasar la puerta.**
+
+### Los ocho capítulos reordenados
+
+Con las etiquetas puestas, **ocho de los veintitrés capítulos incumplían la regla de nivel** y se reordenaron; los quince restantes solo recibieron etiquetas. En total **22 de los 117 temas cambian de número**. La lista dice «en la posición nueva i pongo el tema que entonces llevaba el número orden[i]».
+
+| Capítulo | Orden aplicado | Dónde caía el nivel |
+|---|---|---|
+| 0 «Sintaxis, tipos y el modelo de la JVM» | `1,3,2,4,5,6,7,8` | 2 Intermedio → 3 Básico |
+| 2 «Colecciones y genéricos» | `1,3,2` | 2 Avanzado → 3 Intermedio |
+| 4 «Streams y programación funcional» | `1,2,4,3` | 3 Avanzado → 4 Intermedio |
+| 13 «Proyecto integrador» | `1,3,2` | 2 Avanzado → 3 Intermedio |
+| 15 «Java Master — builds, pruebas y observabilidad» | `1,3,4,6,2,5` | 2 Avanzado → 3 Intermedio y 5 Avanzado → 6 Intermedio |
+| 16 «JPA, Hibernate y FetchType.LAZY vs EAGER» | `1,3,4,5,2,6,7,8` | 2 Avanzado → 3 Intermedio |
+| 19 «Java del día a día» | `1,2,3,4,5,7,6,8,9` | 6 Avanzado → 7 Intermedio |
+| 20 «Java funcional — interfaces que componen comportamiento» | `1,4,2,3,5,6,7,8,9,10,11,12,13` | 3 Intermedio → 4 Básico (y ver la excepción más abajo) |
+
+Las cadenas que motivan cada movimiento, leídas del contenido:
+
+- **Capítulo 0:** «JDK, JRE y JVM» (Básico · 30) estaba tercero, detrás de «public static void main» (Intermedio · 40, que solo pide `M0 T1`, o sea el primer tema del propio capítulo). Sube a la segunda posición: son los dos temas de arranque del curso y «JDK, JRE y JVM» no declara ningún prerrequisito, así que ninguno de los dos depende del otro.
+- **Capítulo 2:** «Genéricos, wildcards y type erasure» (Avanzado · 40) era segundo y «Comparable vs Comparator, e iteración» (Intermedio · 35) tercero, aunque este último solo pide «M2 T1 (colecciones) y M1 T3 (interfaces)». Intercambio: el Avanzado cierra el capítulo.
+- **Capítulos 4 y 13:** en ambos el tema Avanzado iba justo delante del Intermedio de cierre («Streams paralelos y referencias a métodos» delante de «Stream Gatherers (Java 24)»; «Integrando concurrencia, modelado y testing» delante de «Build reproducible y cierre del track»). Un intercambio cada uno. Ninguno de los dos capítulos declara un solo prerrequisito en todo su texto (0 menciones de «prerrequisit»), así que mover no puede romper ninguna cadena.
+- **Capítulo 15:** el más desordenado del curso. Iba Intermedio, Avanzado, Intermedio, Intermedio, Avanzado, Intermedio. Los cuatro temas de herramienta (Maven, multi-módulo, JUnit 5/Mockito, SLF4J/Logback) quedan delante y los dos Avanzado (Gradle y builds reproducibles, pruebas de integración con Testcontainers) cierran el bloque. Tampoco aquí hay prerrequisito declarado.
+- **Capítulo 16:** «FetchType.LAZY, EAGER y el problema N+1» (Avanzado · 50) era el segundo tema, por delante de Relaciones, Ciclo de vida/EntityManager y Búsquedas con Criteria (los tres Intermedio · 40). Baja a la quinta posición, que es donde empieza el bloque Avanzado del capítulo.
+- **Capítulo 19:** «Proxies dinámicos» (Avanzado · 45, prerrequisito «Java M19 Tema 1») iba sexto y «Internacionalización» (Intermedio · 40, prerrequisito «Java M0 Tema 8») séptimo. Se intercambian; los dos prerrequisitos siguen mirando hacia atrás porque el tema 1 no se mueve.
+- **Capítulo 20:** «Function y BiFunction» (Básico · 35) estaba cuarto, por detrás de dos Intermedios («Componer sin anidar» y «Streams como composición»). Sube a la segunda posición y los temas 2 y 3 bajan un puesto; los dos temas que de verdad consumen Function —«UnaryOperator y BinaryOperator» y «Optional», que no se mueven— pasan a pedir `Java M20 Tema 2` y siguen mirando hacia atrás. La otra caída del capítulo, 11 Avanzado → 12 Intermedio, **no** se mueve: ver la excepción más abajo.
+
+### La excepción declarada en el capítulo 20, y por qué
+
+La primera vez que se aplicó el lote entero, la puerta de citas falló con un defecto que había creado el propio reordenado:
+
+```
+error: java/20 tema 11 línea 1461: prerrequisito abreviado que no es anterior (Tema 12)
+```
+
+El capítulo tiene 11 Avanzado · 50 («Streams paralelos»), 12 Intermedio · 40 («Pureza y efectos») y 13 Avanzado · 50 (Flow API). Para subir el nivel hasta el tema 13 había que colocar «Pureza y efectos» delante de «Streams paralelos», y eso invierte una dependencia real: el propio tema 12 declara `**Prerrequisito:** Java M20 Temas 8–11`, o sea que consume el tema de streams paralelos.
+
+Dos salidas se descartaron por inventar una cifra:
+
+- **Subir «Pureza y efectos» a Avanzado · 45** para que la escalera se respetara sola. Sus tres ejercicios son `map` produciendo una lista nueva, un `Consumer` que imprime después del cálculo y una `Function` aplicada dos veces: material Intermedio. La única parte avanzada es el *fallo deliberado* («cambia sus elementos dentro de un `forEach` paralelo»), que es una ilustración, no la carga del tema.
+- **Estrechar su prerrequisito a «Temas 8–10»** para que el movimiento fuera legal. El fallo paralelo es parte del tema, así que el 11 sí lo es.
+
+Se aplica la tercera: **la dependencia manda sobre la escalera**. Del capítulo 20 solo se mueve lo que no choca (Function y BiFunction a la posición 2) y los temas 11, 12 y 13 conservan su orden. La caída Avanzado → Intermedio queda **declarada en `docs/topic-order-exceptions.json`**, que es para lo que existe esa lista: un incumplimiento conocido y justificado, no una puerta aflojada. La puerta sigue fallando si el capítulo deja de necesitar la excepción, y sigue fallando para cualquier otro capítulo que la liste sin motivo.
+
+### Ochenta y nueve números reescritos
+
+La herramienta renumera cabeceras y remapea registros, pero no reescribe texto. Java guarda el número de un tema en tres sitios más, y todos había que moverlos con la misma permutación:
+
+- **74 números de subtema**: las cabeceras `#### Subtema N.K` —que llevan el número viejo del tema dentro— y las veces que el propio texto menciona un subtema.
+- **9 filas `Ver Tema N`** de las tablas de cierre: capítulo 0 línea 1212 (JDK vs JRE vs JVM pasa a `Ver Tema 2`), capítulo 2 líneas 556-558, capítulo 4 líneas 541-543 y capítulo 13 líneas 306 y 309.
+- **6 abreviaturas `Java M20 Tema(s) N`** de los prerrequisitos del capítulo 20, donde el rango se granula y se vuelve a renderizar: `Temas 1–2` → `Temas 1 y 3` (el 2 se fue al 3), `Temas 1 y 4` → `Temas 1–2` (el 4 bajó al 2), `Tema 4` → `Tema 2` en dos temas, `Tema 3` → `Tema 4`, `Temas 3 y 8` → `Temas 4 y 8`.
+
+Comprobado en el lector servido: los trece prerrequisitos del capítulo 20 miran todos hacia atrás (`20.5 UnaryOperator → Tema 2`, `20.6 Referencias a métodos → Temas 1–2`, `20.12 Pureza y efectos → Temas 8–11`, `20.13 Flow API → Temas 1–12`).
+
+### Dos defectos que no era del reordenado
+
+- **Cuatro duraciones por debajo de su propia carga.** Medido el minuto declarado contra la suma de los `#### Subtema N.K` del propio tema, cuatro temas de Java decían menos de lo que sus bloques suman: capítulo 0 temas 1, 3 y 4 (4 subtemas de 10 min = 40, declaraban 30, 30 y 35) y capítulo 18 tema 1 (45, declaraba 40). Corregidos a 40, 40, 40 y 45. Los dos primeros llevaban además su propia línea `**Duración estimada:** 30 min` dentro del cuerpo, que contradecían sus cuatro bloques de 10: esas dos líneas dicen ahora 40, para que el tema no se contradiga a sí mismo. Hecho el mismo barrido sobre los 16 cursos, **los únicos cuatro casos del repositorio eran estos**; ningún otro curso tiene esa incoherencia.
+- **Un mérito interno mal atribuido.** `java/modulo-14.md:211` cerraba su Límite diciendo «por eso el Tema 1 insiste en comparar bajo carga real con JFR», pero el tema 1 de ese capítulo es «Compartir memoria requiere orden y visibilidad» y no habla de JFR: quien insiste en comparar bajo carga real es el capítulo 11 tema 2 («Java Flight Recorder y JIT compilation»). Reescrito a `el Módulo 11, Tema 2`, que el auditor ya resuelve y juzga.
+
+## Instrumento ampliado en este lote: las dos formas de citar de Java
+
+El auditor de citas que aportó React conocía `de este módulo` y `del Módulo 7`, y no juzgaba nada más. Java no usa casi ninguna de esas dos: cita con **abreviatura de curso** (`Java M20 Temas 8–11`, `M0 T1–T3`, `M20 Temas 9–10`) y con **filas de tabla** (`| 3 | Validar el alta | Ver Tema 4 |`). Eran la mayoría de las citas del repositorio y estaban fuera de control.
+
+Se añadieron dos reconocedores y su juzgado (`scripts/audit_topic_citations.py`):
+
+- `SHORT` resuelve `M<capítulo> T<tema>` con rangos y pares (`1–3`, `9–10`, `3 y 8`) dentro del mismo curso, comprueba que el tema exista y que un prerrequisito abreviado mire hacia atrás. Las citas sueltas que caen dentro de un tramo ya juzgado por `SHORT` se saltan, para no contar dos veces `Java M19 Tema 1`.
+- `SEE` reconoce el `Ver`/`Mira`/`Revisa` que precede a un número de tabla y le da como alcance el capítulo propio. Estas se juzgan **solo por existencia**: una fila de tabla no dice si es prerrequisito, y adivinarlo por la posición del tema sería una puerta que falla según dónde esté el lector.
+
+Medido, con la misma puerta y el mismo contenido:
+
+| Forma de cita | Cantidad |
+|---|---|
+| `… de este módulo` | 513 |
+| `… del Módulo N` / `Módulo N, Tema M` | 74 |
+| `M3 T1` / `Java M19 Tema 1` (nuevo) | 148 |
+| `Ver Tema N` en tablas (nuevo) | 483 |
+| **Total juzgado** | **1.218** |
+
+Pasó de **586 a 1.218 citas** y las 631 nuevas no escondían ninguna rota: 0 rotas, 1 nota (la misma de siempre, `spring-boot/26`). Y se comprobó que la ampliación detecta de verdad, con una sonda sobre una copia del capítulo 20: renumerar 11 ↔ 12 sin tocar la prosa hace fallar la puerta con `prerrequisito abreviado que no es anterior (Tema 11)`; con los dos reconocedores nuevos apagados, esa misma copia declara **0 citas y pasa**. Es decir: antes del lote, el defecto que el lote estaba a punto de cometer era invisible.
+
+## Lo que nota el lector con Java etiquetado
+
+- **22 de los 117 temas cambian de enlace**, todos por el reordenado y ninguno por etiquetar: 2 en el capítulo 0, 2 en el 2, 2 en el 4, 2 en el 13, 5 en el 15, 4 en el 16, 2 en el 19 y 3 en el 20. Los otros 95 conservan el suyo, incluidos los 15 capítulos que solo recibieron etiquetas. Medido comparando `topic-index.json` de antes del lote, después de etiquetar y después de reordenar: **etiquetar los 101 temas cambió 0 de 117 fragmentos**.
+- Quien tuviera marcado como leído uno de esos 22 pierde esa marca; un enlace antiguo no rompe: abre la portada del capítulo.
+- Nivel y duración se ven en cada cabecera del lector (`§ 20.1 Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min`), y la portada del capítulo lista los temas en el orden nuevo.
+
+## Verificación del sexto lote
+
+- `python3 scripts/audit_topic_order.py --check` → salida 0: **1.420 temas, 907 sin nivel declarado, 1 módulo con incidencias**. Java pasa de 16 a 117 temas etiquetados (1.008 → 907 sin declarar en todo el repositorio). Sus 23 capítulos cumplen la numeración continua; 22 cumplen las dos reglas y el capítulo 20 está declarado por el motivo de arriba.
+- `python3 scripts/audit_topic_citations.py --check` → salida 0: **1.218 citas, 0 rotas, 1 nota**.
+- Integridad de los cuerpos: comparado cada capítulo contra la copia previa al lote, normalizando dígitos y quitando el sufijo ` · Nivel · XX min`, el multiset de líneas es idéntico salvo **dos líneas del capítulo 20**, que son las dos reescrituras de rango previstas (`Temas 1–2` → `Temas 1 y 3` y `Temas 1 y 4` → `Temas 1–2`). Ninguna frase perdida ni reescrita fuera de los números.
+- Registros: `docs/topic-learning-quality.json` tiene sus **117 filas de Java sincronizadas con la cabecera real** (52 estaban desactualizadas; 0 desajustes al comprobar) y `specs/visual-aids-scope.json`, sin cambios: Java solo tiene 6 entradas en el alcance (capítulos 9, 14, 18 y 19) y ninguna cae sobre un tema movido; las dos del capítulo 19 viven en los temas 8 y 9, que bajo la permutación de ese capítulo conservan su puesto. Por eso el script de reordenado informó **0 entradas movidas** en los ocho capítulos, y el archivo salió byte a byte idéntico. Regenerados `topic-index.json` (86 líneas distintas), `curriculum-stacks/java.json`, `zero-to-master` y `master-prompt-compliance`; `curriculum-catalog.json` se volvió a calcular y salió idéntico, porque no guarda el número de tema dentro del capítulo. Total intacto: **16 rutas · 289 módulos · 1.420 temas**.
+- `./scripts/validate.sh` → salida 0 con las dos puertas de orden enganchadas. `validate_specs`: 43 criterios, 36 `hecho` y 7 `pendiente`; Java no cierra ningún criterio nuevo del prompt maestro.
+- Navegador sobre el servidor de desarrollo (puerto 4213): `/curso/java/20` lista la portada con el orden nuevo (01 Las cuatro formas, 02 Function y BiFunction, 03 Componer sin anidar, 04 Streams como composición, 05 UnaryOperator…) y `/curso/java/20/tema/2` despliega el tema movido con sus `Subtema 2.1/2.2/2.3` ya renumerados; `/curso/java/15/tema/6` muestra la escalera Intermedio · 40, Intermedio · 40, Intermedio · 40, Intermedio · 40, Avanzado · 45, Avanzado · 45 con el tema 15.6 abierto y sus listados numerados. Cero `.lesson-error` y consola limpia salvo el aviso conocido de saneado de HTML de Angular. Capturas: `/tmp/java_lector_cap20.png` y `/tmp/java_lector_cap15.png`.
+- No se corrió `npm run build` ni la suite de Playwright en este lote: lo único que cambió son archivos Markdown de contenido y un script Python de auditoría; el lector vuelve a leer el mismo `modulo-N.md` por ruta, y la verificación de arriba es sobre el servidor de desarrollo real. La suite sigue teniendo la misma prueba fallida de siempre (salida del modo libro en móvil).
+
+## Cómo revertir el sexto lote
+
+Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la numeración original): capítulo 0 `1,3,2,4,5,6,7,8` (es su propia inversa) · capítulo 2 `1,3,2` (igual) · capítulo 4 `1,2,4,3` (igual) · capítulo 13 `1,3,2` (igual) · capítulo 15 `1,5,2,3,6,4` · capítulo 16 `1,5,2,3,4,6,7,8` · capítulo 19 `1,2,3,4,5,7,6,8,9` (igual) · capítulo 20 `1,3,4,2,5,6,7,8,9,10,11,12,13`.
+
+Ejemplo: `python3 scripts/reorder_track_topics.py --track java --module 15 --order 1,5,2,3,6,4 --apply`. Después hay que deshacer a mano los 89 números de arriba (los `#### Subtema N.K`, las nueve filas `Ver Tema` y las seis abreviaturas `Java M20 …` vuelven a los números viejos), quitar las 101 etiquetas nuevas devolviendo cada cabecera a su texto sin ` · Nivel · XX min` salvo las dieciséis originales, devolver las cuatro duraciones (capítulo 0 temas 1, 3 y 4 a 30/30/35 y capítulo 18 tema 1 a 40, con las dos líneas `Duración estimada` del capítulo 0 otra vez en 30), y vaciar `docs/topic-order-exceptions.json`. El `Módulo 11, Tema 2` del capítulo 14 es una corrección de texto, no de orden: se queda. El auditor ampliado tampoco se revierte, es herramienta. Cerrar con los generadores y `./scripts/validate.sh`.
+
 ## Deuda que queda
 
-
-- **1.008 de los 1.420 temas (71 %) siguen sin nivel ni duración declarados.** Tras iOS, cinco cursos están completos: Node.js (78/78), Microservicios (24/24), JavaScript (92/92), React (64/64) e iOS (69/69). Los otros once andan entre 0 y 16 etiquetas: Java 16/117, Kotlin Multiplatform 10/66, control-1 0/70, rutaflow 0/29, Angular 7/78, Android 10/83, Fundamentos 2/103, Flutter 10/119, Spring Boot 9/121, DevOps 9/139, Cloud 12/168.
-- El patrón de los cinco lotes es el que queda para los once cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. No hay ninguna decisión pendiente sobre los enlaces: como el fragmento se calcula sin el sufijo de nivel y duración (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84`), **etiquetar un curso entero no cambia ni un enlace ni borra ninguna marca de leído**. Lo único que mueve URLs es renumerar, y eso pasa solo en los capítulos que de verdad hace falta reordenar: en React, 10 de 64; en JavaScript, 31 de 92; en iOS, 18 de 69.
-- El siguiente candidato natural es **Java**: es el curso con más etiquetas parciales puestas (16/117) y el más grande sin cerrar después de Cloud, así que su deuda de orden es la que más temas afecta.
-- Los cinco cursos ya completos (Node, Microservicios, JavaScript, React e iOS) no tienen incidencias declaradas: sus capítulos cumplen las dos reglas, y la lista de excepciones sigue vacía.
-- **Deuda nueva que el auditor de citas deja vista, y no gatea:** (a) 18 de las 110 citas por título del repositorio no coinciden con ninguna cabecera, casi todas truncadas con «…» o renombradas de oído — Cloud 9, Flutter 3, Kotlin Multiplatform 2, Spring Boot 2, Angular 1 y DevOps 1 —; son las que hay que reescribir cuando toque cada curso, como las dos de React y una de iOS de este lote; (b) un `del Módulo 99` que no exista en el curso se salta en silencio; (c) las citas numéricas sin alcance (`Ver Tema 4` en las tablas finales, que son las que más se rompen al reordenar) no se juzgan: el auditor solo puede decidir sobre las 586 que declaran su capítulo, por eso cada lote sigue reescribiendo sus tablas a mano y verificándolas contra el texto.
+- **907 de los 1.420 temas (64 %) siguen sin nivel ni duración declarados.** Tras Java, seis cursos están completos: Node.js (78/78), Microservicios (24/24), JavaScript (92/92), React (64/64), iOS (69/69) y Java (117/117). Los otros diez: Cloud 12/168, Flutter 10/119, Spring Boot 9/121, DevOps 9/139, Android 10/83, Kotlin Multiplatform 10/66, Angular 7/78, Fundamentos 2/103, control-1 0/70, rutaflow 0/29.
+- El patrón de los seis lotes es el que queda para los diez cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. Etiquetar no mueve ni un enlace (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84` recortan el sufijo antes de calcular el fragmento): en React 10 de 64, en JavaScript 31 de 92, en iOS 18 de 69 y en Java 22 de 117 cambiaron, y en los cuatro casos la cifra es exactamente el número de temas renumerados.
+- **Primera excepción declarada de la historia del programa**: `docs/topic-order-exceptions.json` lista `java/20` con el motivo escrito arriba (la escalera de nivel choca con el prerrequisito `Temas 8–11` del tema 12). Los otros cinco cursos completos siguen sin incidencias declaradas.
+- El siguiente candidato natural es **Flutter** (10/119) o **Spring Boot** (9/121): son los dos cursos grandes con menos etiquetas puestas, y Cloud (12/168) queda para el final por tamaño.
+- **Deuda que el auditor de citas deja vista y no gatea:** (a) las citas por título (`tema «X» de este módulo`) no se juzgan: hay 110 en el repositorio y 18 no coinciden con ninguna cabecera — Cloud 9, Flutter 3, Kotlin Multiplatform 2, Spring Boot 2, Angular 1, DevOps 1 —; (b) un `del Módulo 99` que no exista en el curso se salta en silencio; (c) las filas `Ver Tema N` se juzgan solo por existencia, así que un reordenado que las deje apuntando a un tema que sí existe pero es otro no salta en la puerta: en Java las nueve que había que mover se recalcularon con la permutación, no a ojo.
+- **Deuda de dependencias entre capítulos, no dentro de uno** (el programa solo juzga el orden interno de cada capítulo): el capítulo 6 tema 2 necesita Maven, que se enseña en el capítulo 8; el capítulo 10 tema 3 necesita reflexión, que está en el capítulo 19; y el capítulo 9 tema 4 fija una base de JDK distinta (21) de la que usa el resto del curso (25 LTS / 27). Ninguna de las tres la detecta la puerta actual; hay que decidir si se reescribe el prerrequisito o se mueve el capítulo.
 - Siguen abiertos desde antes: la prueba de salida del modo libro en móvil (`web/e2e/academy.spec.ts:649`, falla en los 84/84 de todos los lotes), las 49 capturas huérfanas de Node y la fila `docs/requested-master-topics.json:82`.
 
 

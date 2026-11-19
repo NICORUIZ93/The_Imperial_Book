@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Stream API — map, filter, reduce, collect
+### Tema 1: Stream API — map, filter, reduce, collect · Básico · 35 min
 
 **¿Por qué es importante?** Un reporte con filtros y totales se vuelve más fácil de revisar cuando cada paso expresa una operación concreta. **Modelo mental:** el stream es una cinta que deja pasar, transforma y reúne piezas.
 
@@ -144,7 +144,7 @@ Las operaciones intermedias son perezosas; la terminal dispara el trabajo y cons
 
 Explica cuál llamada fue terminal y por qué la segunda no se puede ejecutar. Fuente oficial: [Stream API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html).
 
-### Tema 2: Optional — evitar null explícitamente
+### Tema 2: Optional — evitar null explícitamente · Básico · 35 min
 
 **¿Por qué es importante?** Buscar una guía puede no producir resultado y el código debe mostrar qué hará en ese caso. **Modelo mental:** Optional es una caja que puede estar vacía o contener un valor.
 
@@ -276,132 +276,13 @@ Compila y ejecuta `javac -d out src/OptionalSeguro.java` y `java -cp out Optiona
 
 Explica por qué `ofNullable` es adecuado en esta frontera. Fuente oficial: [Optional API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html).
 
-### Tema 3: Streams paralelos y referencias a métodos
-
-**¿Por qué es importante?** Paralelizar sin medir puede empeorar el reporte y mezclar el orden que espera la persona usuaria. **Modelo mental:** varios trabajadores avanzan a la vez, pero después deben coordinarse.
-
-**Proyecto integrador:** compara el total secuencial y paralelo antes de elegir uno. **Límite:** evita efectos compartidos y no infieras rendimiento con una sola corrida. **Práctica:** cambia forEachOrdered por forEach y observa el contrato que se pierde.
-
-```bash
-javac -d out src/Comparar.java
-java -cp out Comparar
-```
-
-#### Subtema 3.1: Reemplaza una lambda por referencia a método · 10 min
-
-**1. Contexto**
-
-Si una lambda solo llama a un método, una referencia puede mostrar la misma intención con menos texto.
-
-**2. Hazlo tú**
-
-Crea `src/Referencias.java`:
-
-```java
-import java.util.List;
-
-public class Referencias {
-    public static void main(String[] args) {
-        List<String> guias = List.of("rt-1", "rt-2");
-        guias.stream().map(String::toUpperCase).forEach(System.out::println);
-    }
-}
-```
-
-Compila y ejecuta `javac -d out src/Referencias.java` y `java -cp out Referencias`.
-
-**Resultado esperado:** `RT-1` y `RT-2`, una por línea.
-
-**Fallo deliberado:** reemplaza `String::toUpperCase` por `String::trim` y repite. **Diagnóstico:** el código sigue compilando, pero ahora conserva minúsculas; el método elegido no hace la transformación deseada.
-
-**3. Entiende**
-
-`String::toUpperCase` equivale a `texto -> texto.toUpperCase()`. Una referencia mejora brevedad si no oculta la intención.
-
-**4. Cierra**
-
-Escribe la lambda equivalente a `System.out::println`.
-
-#### Subtema 3.2: Compara una suma secuencial y paralela · 10 min
-
-**1. Contexto**
-
-Dividir trabajo puede ayudar en una colección grande, pero añade coordinación. No supongas que la versión paralela siempre gana.
-
-**2. Hazlo tú**
-
-Crea `src/Comparar.java`:
-
-```java
-import java.util.stream.LongStream;
-
-public class Comparar {
-    public static void main(String[] args) {
-        long secuencial = LongStream.rangeClosed(1, 1_000_000).sum();
-        long paralelo = LongStream.rangeClosed(1, 1_000_000).parallel().sum();
-        System.out.println(secuencial);
-        System.out.println(paralelo);
-    }
-}
-```
-
-Compila y ejecuta `javac -d out src/Comparar.java` y `java -cp out Comparar`.
-
-**Resultado esperado:** ambos totales son iguales. El tiempo puede variar por equipo; esta salida sola no demuestra cuál es más rápido.
-
-**Fallo deliberado:** cambia la suma paralela por una variable compartida incrementada desde `forEach`. **Diagnóstico:** varias tareas modificarían el mismo dato sin coordinación; conserva `sum`, que combina resultados de forma segura.
-
-**3. Entiende**
-
-Las operaciones paralelas necesitan ser seguras al dividir y combinar. Para medir rendimiento hace falta calentar la JVM y usar una herramienta de benchmark; una sola ejecución cronometrada engaña.
-
-**4. Cierra**
-
-Guarda ambos totales y explica por qué igualdad del resultado no prueba una mejora de velocidad.
-
-#### Subtema 3.3: Conserva el orden cuando lo necesitas · 10 min
-
-**1. Contexto**
-
-Un reporte debe presentar guías en el orden de entrada aunque el stream use trabajo paralelo.
-
-**2. Hazlo tú**
-
-Crea `src/Orden.java`:
-
-```java
-import java.util.List;
-
-public class Orden {
-    public static void main(String[] args) {
-        List.of("RT-1", "RT-2", "RT-3").parallelStream()
-            .map(String::toUpperCase)
-            .forEachOrdered(System.out::println);
-    }
-}
-```
-
-Compila y ejecuta `javac -d out src/Orden.java` y `java -cp out Orden`.
-
-**Resultado esperado:** aparecen `RT-1`, `RT-2` y `RT-3` en ese orden.
-
-**Fallo deliberado:** cambia `forEachOrdered` por `forEach`. **Diagnóstico:** no exijas orden de salida en un terminal paralelo que no lo promete; restaura `forEachOrdered` si el orden es un requisito visible.
-
-**3. Entiende**
-
-El paralelismo no es gratis y puede cambiar el orden de efectos laterales. Evita usarlo solo por tener muchos elementos.
-
-**4. Cierra**
-
-Anota si tu reporte necesita orden y por qué. Fuente oficial: [parallel streams](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
-
-### Tema 4: Stream Gatherers (Java 24)
+### Tema 3: Stream Gatherers (Java 24) · Intermedio · 40 min
 
 **¿Por qué es importante?** Algunas alertas dependen de varios eventos vecinos, algo que un filtro por elemento no puede expresar. **Modelo mental:** una ventana móvil compara los últimos datos juntos.
 
 **Proyecto integrador:** detecta tres entregas atrasadas consecutivas. **Límite:** Gatherers requiere Java 24 o posterior; usa filter si los elementos son independientes. **Práctica:** cambia la secuencia y compara windowSliding con windowFixed.
 
-#### Subtema 4.1: Agrupa elementos consecutivos en ventanas · 10 min
+#### Subtema 3.1: Agrupa elementos consecutivos en ventanas · 10 min
 
 **1. Contexto**
 
@@ -441,7 +322,7 @@ Con JDK 24 o posterior, desde el proyecto ejecuta `javac -d out src/Rachas.java`
 
 Dibuja las tres ventanas de tamaño tres que se forman con los cinco valores.
 
-#### Subtema 4.2: Compara ventana móvil y grupos separados · 10 min
+#### Subtema 3.2: Compara ventana móvil y grupos separados · 10 min
 
 **1. Contexto**
 
@@ -472,7 +353,7 @@ Compila y ejecuta el archivo. Al pegarlo, coloca estas líneas dentro de `main` 
 
 Registra cuántos elementos comparte una ventana móvil y cuántos comparte un bloque fijo.
 
-#### Subtema 4.3: Elige la herramienta según la relación entre datos · 10 min
+#### Subtema 3.3: Elige la herramienta según la relación entre datos · 10 min
 
 **1. Contexto**
 
@@ -527,6 +408,125 @@ Gatherers extiende los pipelines con operaciones intermedias con estado. Úsalo 
 
 Explica en una frase por qué un simple filtro no conserva la consecutividad. Fuente oficial: [Stream Gatherers](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html).
 
+### Tema 4: Streams paralelos y referencias a métodos · Avanzado · 45 min
+
+**¿Por qué es importante?** Paralelizar sin medir puede empeorar el reporte y mezclar el orden que espera la persona usuaria. **Modelo mental:** varios trabajadores avanzan a la vez, pero después deben coordinarse.
+
+**Proyecto integrador:** compara el total secuencial y paralelo antes de elegir uno. **Límite:** evita efectos compartidos y no infieras rendimiento con una sola corrida. **Práctica:** cambia forEachOrdered por forEach y observa el contrato que se pierde.
+
+```bash
+javac -d out src/Comparar.java
+java -cp out Comparar
+```
+
+#### Subtema 4.1: Reemplaza una lambda por referencia a método · 10 min
+
+**1. Contexto**
+
+Si una lambda solo llama a un método, una referencia puede mostrar la misma intención con menos texto.
+
+**2. Hazlo tú**
+
+Crea `src/Referencias.java`:
+
+```java
+import java.util.List;
+
+public class Referencias {
+    public static void main(String[] args) {
+        List<String> guias = List.of("rt-1", "rt-2");
+        guias.stream().map(String::toUpperCase).forEach(System.out::println);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Referencias.java` y `java -cp out Referencias`.
+
+**Resultado esperado:** `RT-1` y `RT-2`, una por línea.
+
+**Fallo deliberado:** reemplaza `String::toUpperCase` por `String::trim` y repite. **Diagnóstico:** el código sigue compilando, pero ahora conserva minúsculas; el método elegido no hace la transformación deseada.
+
+**3. Entiende**
+
+`String::toUpperCase` equivale a `texto -> texto.toUpperCase()`. Una referencia mejora brevedad si no oculta la intención.
+
+**4. Cierra**
+
+Escribe la lambda equivalente a `System.out::println`.
+
+#### Subtema 4.2: Compara una suma secuencial y paralela · 10 min
+
+**1. Contexto**
+
+Dividir trabajo puede ayudar en una colección grande, pero añade coordinación. No supongas que la versión paralela siempre gana.
+
+**2. Hazlo tú**
+
+Crea `src/Comparar.java`:
+
+```java
+import java.util.stream.LongStream;
+
+public class Comparar {
+    public static void main(String[] args) {
+        long secuencial = LongStream.rangeClosed(1, 1_000_000).sum();
+        long paralelo = LongStream.rangeClosed(1, 1_000_000).parallel().sum();
+        System.out.println(secuencial);
+        System.out.println(paralelo);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Comparar.java` y `java -cp out Comparar`.
+
+**Resultado esperado:** ambos totales son iguales. El tiempo puede variar por equipo; esta salida sola no demuestra cuál es más rápido.
+
+**Fallo deliberado:** cambia la suma paralela por una variable compartida incrementada desde `forEach`. **Diagnóstico:** varias tareas modificarían el mismo dato sin coordinación; conserva `sum`, que combina resultados de forma segura.
+
+**3. Entiende**
+
+Las operaciones paralelas necesitan ser seguras al dividir y combinar. Para medir rendimiento hace falta calentar la JVM y usar una herramienta de benchmark; una sola ejecución cronometrada engaña.
+
+**4. Cierra**
+
+Guarda ambos totales y explica por qué igualdad del resultado no prueba una mejora de velocidad.
+
+#### Subtema 4.3: Conserva el orden cuando lo necesitas · 10 min
+
+**1. Contexto**
+
+Un reporte debe presentar guías en el orden de entrada aunque el stream use trabajo paralelo.
+
+**2. Hazlo tú**
+
+Crea `src/Orden.java`:
+
+```java
+import java.util.List;
+
+public class Orden {
+    public static void main(String[] args) {
+        List.of("RT-1", "RT-2", "RT-3").parallelStream()
+            .map(String::toUpperCase)
+            .forEachOrdered(System.out::println);
+    }
+}
+```
+
+Compila y ejecuta `javac -d out src/Orden.java` y `java -cp out Orden`.
+
+**Resultado esperado:** aparecen `RT-1`, `RT-2` y `RT-3` en ese orden.
+
+**Fallo deliberado:** cambia `forEachOrdered` por `forEach`. **Diagnóstico:** no exijas orden de salida en un terminal paralelo que no lo promete; restaura `forEachOrdered` si el orden es un requisito visible.
+
+**3. Entiende**
+
+El paralelismo no es gratis y puede cambiar el orden de efectos laterales. Evita usarlo solo por tener muchos elementos.
+
+**4. Cierra**
+
+Anota si tu reporte necesita orden y por qué. Fuente oficial: [parallel streams](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir un pipeline de procesamiento de datos con Streams que reemplace loops manuales.
@@ -538,9 +538,9 @@ Explica en una frase por qué un simple filtro no conserva la consecutividad. Fu
 | 1 | Filtrar y transformar con `filter`/`map`; elegir `toList` o `collect` | Ver Tema 1 | Conserva la misma lista de guías activas y decide si la salida debe ser modificable |
 | 2 | Sumar centavos con `reduce` y `mapToLong().sum()` | Ver Tema 1 | Comprueba identidad cero y equivalencia con el recorrido manual |
 | 3 | Reemplazar un método que devuelve `null` por `Optional` | Ver Tema 2 | Maneja el caso vacío con `orElseThrow` |
-| 4 | Comparar suma secuencial y paralela con los mismos datos | Ver Tema 3 | Comprueba igualdad; el ejemplo no mide rendimiento |
-| 5 | Reemplazar lambdas verbosas por referencias a métodos | Ver Tema 3 | Donde aplique directamente |
-| 6 | Detectar una racha con `Gatherers.windowSliding` | Ver Tema 4 | Lógica que `filter`/`map` no pueden expresar |
+| 4 | Comparar suma secuencial y paralela con los mismos datos | Ver Tema 4 | Comprueba igualdad; el ejemplo no mide rendimiento |
+| 5 | Reemplazar lambdas verbosas por referencias a métodos | Ver Tema 4 | Donde aplique directamente |
+| 6 | Detectar una racha con `Gatherers.windowSliding` | Ver Tema 3 | Lógica que `filter`/`map` no pueden expresar |
 
 **Verificación:** el laboratorio se considera exitoso si el pipeline con Streams produce el mismo resultado que un recorrido manual equivalente, las dos sumas coinciden con identidad cero, la suma paralela conserva el valor y el gatherer detecta una racha real de tres elementos pero rechaza dos atrasos seguidos. Para afirmar una mejora de velocidad hace falta un benchmark aparte, con calentamiento de JVM y datos representativos.
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura por capas del proyecto integrador
+### Tema 1: Arquitectura por capas del proyecto integrador · Intermedio · 40 min
 
 **¿Por qué es importante?** las reglas del dominio no deberían depender de HTTP, una base de datos o el framework elegido.
 
@@ -103,11 +103,103 @@ java -cp out Main
 
 Modifica `CrearGuia` para que reciba directamente un `HttpServletRequest` en vez del número ya extraído, y explica por escrito qué se rompe al intentar probar el caso de uso sin un servidor.
 
-### Tema 2: Integrando concurrencia, modelado y testing
+### Tema 2: Build reproducible y cierre del track · Intermedio · 40 min
+
+**¿Por qué es importante?** otra persona debe poder obtener el mismo programa sin conocer pasos secretos del entorno del autor.
+
+#### Subtema 2.1: Fija herramientas y dependencias · 10 min
+
+**1. Contexto**
+
+El build local funciona, pero CI usa otra versión de Maven o de una librería.
+
+**2. Hazlo tú**
+
+En `pom.xml`, fija `maven.compiler.release`, versiones de plugins y dependencias; genera Maven Wrapper con `mvn wrapper:wrapper` y guarda `mvnw`, `mvnw.cmd` y `.mvn/wrapper`. Ejecuta `./mvnw --version` y `./mvnw clean verify`.
+
+**Resultado esperado:** el wrapper informa su versión fijada y la compilación limpia ejecuta las pruebas.
+
+**Fallo deliberado:** deja `LATEST` o rangos abiertos en la dependencia directa. **Diagnóstico:** fija versión concreta y conserva el archivo del wrapper en control de versiones.
+
+**3. Entiende**
+
+El wrapper fija Maven; no fija automáticamente el JDK de todos los equipos. Declara también la versión Java que usa CI.
+
+**4. Cierra**
+
+Guarda la versión de JDK, Maven wrapper y resultado de `verify`.
+
+#### Subtema 2.2: Arranca desde una copia limpia · 10 min
+
+**1. Contexto**
+
+El repositorio debe funcionar en una carpeta nueva y no apoyarse en archivos locales ignorados.
+
+**2. Hazlo tú**
+
+Desde la raíz ejecuta `git worktree add /tmp/java-limpio HEAD`, entra a esa copia con `cd /tmp/java-limpio`, corre `./mvnw clean verify` e inicia la aplicación con los comandos del `README.md`.
+
+**Resultado esperado:** una copia limpia compila y arranca sin depender de `target/` ni de variables locales no documentadas.
+
+**Fallo deliberado:** borra de tu entorno de trabajo una variable necesaria sin documentarla. **Diagnóstico:** añade al README el requisito, valor de ejemplo no secreto y forma de ejecutarlo localmente.
+
+**3. Entiende**
+
+La clonación limpia detecta dependencias ocultas en artefactos compilados o configuraciones personales.
+
+**4. Cierra**
+
+Guarda los comandos reproducidos y cualquier requisito externo que quede.
+
+#### Subtema 2.3: Cierra con evidencia verificable · 10 min
+
+**1. Contexto**
+
+Una marca de “terminado” no prueba que el código compile, que las pruebas se ejecuten o que la persona entienda el diseño.
+
+**2. Hazlo tú**
+
+En `docs/evidencia-java.md` enlaza el árbol del proyecto, el resultado de `./mvnw clean verify`, una prueba de dominio, una prueba de concurrencia y un diagrama de dependencias. Ejecuta `./mvnw clean verify` desde la raíz y revisa que cada evidencia exista en el repositorio.
+
+**Resultado esperado:** cada afirmación apunta a un archivo o salida que otra persona puede volver a comprobar.
+
+**Fallo deliberado:** marca el ejemplo como ejecutado porque tiene un bloque de código en Markdown. **Diagnóstico:** un bloque documentado no demuestra que el comando corrió; registra por separado lo que está pendiente de ejecución.
+
+**3. Entiende**
+
+La evidencia estructural, ejecución automatizada y revisión humana son estados diferentes; no los mezcles.
+
+**4. Cierra**
+
+Entrega una lista de lo que sí ejecutaste y lo que todavía necesita revisión humana.
+
+
+**Cierre reproducible:** desde un checkout limpio ejecuta `./mvnw clean verify` o `./gradlew clean check`. Anota la versión del wrapper y JDK; confirma que no necesitas archivos generados a mano antes del build. Si solo funciona en tu carpeta, revisa rutas relativas, configuración local y artefactos no versionados. El comando y sus requisitos deben bastar para que otra persona reconstruya el proyecto. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
+
+#### Fragmento real
+
+```bash
+mvn wrapper:wrapper
+./mvnw --version
+./mvnw clean verify
+```
+
+**Conexión con el proyecto integrador:** este es literalmente el cierre de tu proyecto integrador: el wrapper versionado, el build limpio desde una copia nueva y la evidencia verificable son lo que entregas al final del track, no un ejercicio adicional sobre otro programa.
+
+**Límite:** `./mvnw clean verify` prueba que el proyecto compila y pasa sus tests en tu máquina (o en CI); no certifica que el diseño sea correcto ni sustituye una revisión humana del dominio y la arquitectura (Subtema 2.3 lo distingue explícitamente).
+
+#### Practica
+
+Modifica temporalmente una versión de dependencia en `pom.xml` a un rango abierto (`[1.0,)`) en vez de una versión fija, ejecuta `./mvnw clean verify` dos veces separadas en el tiempo y explica por qué eso pone en riesgo la reproducibilidad.
+
+---
+
+
+### Tema 3: Integrando concurrencia, modelado y testing · Avanzado · 45 min
 
 **¿Por qué es importante?** la concurrencia debe preservar las reglas de dominio y probar resultados sin depender de pausas arbitrarias.
 
-#### Subtema 2.1: Envía trabajos acotados a un executor · 10 min
+#### Subtema 3.1: Envía trabajos acotados a un executor · 10 min
 
 **1. Contexto**
 
@@ -129,7 +221,7 @@ El pool controla concurrencia; el dominio sigue describiendo cada guía y no dep
 
 Guarda el número de trabajos y el máximo de workers configurado.
 
-#### Subtema 2.2: Conserva el orden y diagnostica una tarea fallida · 10 min
+#### Subtema 3.2: Conserva el orden y diagnostica una tarea fallida · 10 min
 
 **1. Contexto**
 
@@ -151,7 +243,7 @@ En `src/application/ProcesarGuias.java`, guarda los `Future` en el mismo orden q
 
 Guarda ambos resultados y la causa observada.
 
-#### Subtema 2.3: Prueba coordinación sin Thread.sleep · 10 min
+#### Subtema 3.3: Prueba coordinación sin Thread.sleep · 10 min
 
 **1. Contexto**
 
@@ -196,103 +288,11 @@ java -cp out Main
 
 **Conexión con el proyecto integrador:** el reporte concurrente de guías de este tema es el procesamiento por lotes que tu proyecto integrador necesita para no bloquear una petición mientras calcula resultados para muchos envíos a la vez.
 
-**Límite:** un pool fijo de 2 hilos limita la concurrencia pero no elimina condiciones de carrera si varias tareas comparten una colección mutable sin sincronizar; el aislamiento de datos por tarea (Subtema 2.1) importa tanto como el límite de hilos.
+**Límite:** un pool fijo de 2 hilos limita la concurrencia pero no elimina condiciones de carrera si varias tareas comparten una colección mutable sin sincronizar; el aislamiento de datos por tarea (Subtema 3.1) importa tanto como el límite de hilos.
 
 #### Practica
 
-Modifica el Subtema 2.3 para reemplazar el `CountDownLatch` por `Thread.sleep(2000)` y ejecuta el test varias veces seguidas; identifica en qué condición de carga empieza a fallar de forma intermitente.
-
-### Tema 3: Build reproducible y cierre del track
-
-**¿Por qué es importante?** otra persona debe poder obtener el mismo programa sin conocer pasos secretos del entorno del autor.
-
-#### Subtema 3.1: Fija herramientas y dependencias · 10 min
-
-**1. Contexto**
-
-El build local funciona, pero CI usa otra versión de Maven o de una librería.
-
-**2. Hazlo tú**
-
-En `pom.xml`, fija `maven.compiler.release`, versiones de plugins y dependencias; genera Maven Wrapper con `mvn wrapper:wrapper` y guarda `mvnw`, `mvnw.cmd` y `.mvn/wrapper`. Ejecuta `./mvnw --version` y `./mvnw clean verify`.
-
-**Resultado esperado:** el wrapper informa su versión fijada y la compilación limpia ejecuta las pruebas.
-
-**Fallo deliberado:** deja `LATEST` o rangos abiertos en la dependencia directa. **Diagnóstico:** fija versión concreta y conserva el archivo del wrapper en control de versiones.
-
-**3. Entiende**
-
-El wrapper fija Maven; no fija automáticamente el JDK de todos los equipos. Declara también la versión Java que usa CI.
-
-**4. Cierra**
-
-Guarda la versión de JDK, Maven wrapper y resultado de `verify`.
-
-#### Subtema 3.2: Arranca desde una copia limpia · 10 min
-
-**1. Contexto**
-
-El repositorio debe funcionar en una carpeta nueva y no apoyarse en archivos locales ignorados.
-
-**2. Hazlo tú**
-
-Desde la raíz ejecuta `git worktree add /tmp/java-limpio HEAD`, entra a esa copia con `cd /tmp/java-limpio`, corre `./mvnw clean verify` e inicia la aplicación con los comandos del `README.md`.
-
-**Resultado esperado:** una copia limpia compila y arranca sin depender de `target/` ni de variables locales no documentadas.
-
-**Fallo deliberado:** borra de tu entorno de trabajo una variable necesaria sin documentarla. **Diagnóstico:** añade al README el requisito, valor de ejemplo no secreto y forma de ejecutarlo localmente.
-
-**3. Entiende**
-
-La clonación limpia detecta dependencias ocultas en artefactos compilados o configuraciones personales.
-
-**4. Cierra**
-
-Guarda los comandos reproducidos y cualquier requisito externo que quede.
-
-#### Subtema 3.3: Cierra con evidencia verificable · 10 min
-
-**1. Contexto**
-
-Una marca de “terminado” no prueba que el código compile, que las pruebas se ejecuten o que la persona entienda el diseño.
-
-**2. Hazlo tú**
-
-En `docs/evidencia-java.md` enlaza el árbol del proyecto, el resultado de `./mvnw clean verify`, una prueba de dominio, una prueba de concurrencia y un diagrama de dependencias. Ejecuta `./mvnw clean verify` desde la raíz y revisa que cada evidencia exista en el repositorio.
-
-**Resultado esperado:** cada afirmación apunta a un archivo o salida que otra persona puede volver a comprobar.
-
-**Fallo deliberado:** marca el ejemplo como ejecutado porque tiene un bloque de código en Markdown. **Diagnóstico:** un bloque documentado no demuestra que el comando corrió; registra por separado lo que está pendiente de ejecución.
-
-**3. Entiende**
-
-La evidencia estructural, ejecución automatizada y revisión humana son estados diferentes; no los mezcles.
-
-**4. Cierra**
-
-Entrega una lista de lo que sí ejecutaste y lo que todavía necesita revisión humana.
-
-
-**Cierre reproducible:** desde un checkout limpio ejecuta `./mvnw clean verify` o `./gradlew clean check`. Anota la versión del wrapper y JDK; confirma que no necesitas archivos generados a mano antes del build. Si solo funciona en tu carpeta, revisa rutas relativas, configuración local y artefactos no versionados. El comando y sus requisitos deben bastar para que otra persona reconstruya el proyecto. Fuente: https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html.
-
-#### Fragmento real
-
-```bash
-mvn wrapper:wrapper
-./mvnw --version
-./mvnw clean verify
-```
-
-**Conexión con el proyecto integrador:** este es literalmente el cierre de tu proyecto integrador: el wrapper versionado, el build limpio desde una copia nueva y la evidencia verificable son lo que entregas al final del track, no un ejercicio adicional sobre otro programa.
-
-**Límite:** `./mvnw clean verify` prueba que el proyecto compila y pasa sus tests en tu máquina (o en CI); no certifica que el diseño sea correcto ni sustituye una revisión humana del dominio y la arquitectura (Subtema 3.3 lo distingue explícitamente).
-
-#### Practica
-
-Modifica temporalmente una versión de dependencia en `pom.xml` a un rango abierto (`[1.0,)`) en vez de una versión fija, ejecuta `./mvnw clean verify` dos veces separadas en el tiempo y explica por qué eso pone en riesgo la reproducibilidad.
-
----
-
+Modifica el Subtema 3.3 para reemplazar el `CountDownLatch` por `Thread.sleep(2000)` y ejecuta el test varias veces seguidas; identifica en qué condición de carga empieza a fallar de forma intermitente.
 
 ## Construcción guiada del capítulo
 
@@ -303,10 +303,10 @@ Modifica temporalmente una versión de dependencia en `pom.xml` a un rango abier
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
 | 1 | Diseñar la arquitectura por capas | Ver Tema 1 | `dominio/`, `servicio/`, `infraestructura/` |
-| 2 | Implementar procesamiento con virtual threads | Ver Tema 2 | Modela el resultado como sealed interface |
+| 2 | Implementar procesamiento con virtual threads | Ver Tema 3 | Modela el resultado como sealed interface |
 | 3 | Modelar el dominio con records y sealed interfaces | Módulo 7 | Donde sea apropiado |
 | 4 | Escribir tests con JUnit 5 y Mockito | Módulo 9 | Para la lógica de negocio crítica |
-| 5 | Configurar el build reproducible | Ver Tema 3 | Ejecutable con un solo comando |
+| 5 | Configurar el build reproducible | Ver Tema 2 | Ejecutable con un solo comando |
 
 **Verificación:** el laboratorio (y el track completo) se considera exitoso si la aplicación procesa tareas concurrentemente sin condiciones de carrera, si el manejo de éxito/error está modelado explícitamente y verificado exhaustivamente por el compilador, y si cualquier persona puede clonar y ejecutar el proyecto con un único comando documentado.
 

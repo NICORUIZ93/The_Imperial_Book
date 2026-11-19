@@ -5,9 +5,13 @@ Una cabecera `### Tema N:` se renumera al reordenar un capítulo, pero la prosa 
 ese bloque sigue citando los números viejos. Este auditor busca cada cita con alcance claro
 dentro de un tema y comprueba dónde apunta:
 
+Los formatos que resuelve:
+
   * `… de este módulo`                       → el capítulo actual;
   * `… del Módulo 7` / `Módulo 7, Tema 2`    → el capítulo 7 del mismo curso;
-  * sin cualificar (`Java M10 Tema 3`)       → no se juzga: puede ser de otro curso.
+  * `Ver Tema 2` (filas de las tablas)       → el capítulo actual;
+  * `M3 T1` / `Java M19 Tema 1` (abreviatura de curso) → el capítulo 3 y el 19 del mismo curso;
+  * sin cualificar (`Tema 5` a secas)        → no se juzga: puede ser de otro curso.
 
 Tres reglas duras, que hacen fallar la puerta:
 
@@ -52,6 +56,17 @@ THIS = re.compile(r"de este m[óo]dulo", re.IGNORECASE)
 THAT = re.compile(r"(?:del|en el|en|de)\s*M[óo]dulo\s*(\d+)|M[óo]dulo\s*(\d+)\s*,", re.IGNORECASE)
 # «Prerrequisitos: Módulo 12, Tema 4» — el alcance va antes del número que después.
 BEFORE = re.compile(r"M[óo]dulo\s*(\d+)\s*[,.]?\s*$", re.IGNORECASE)
+# Las tablas de cierre dicen `| 3 | Validar el alta | Ver Tema 4 |`: el número es del capítulo.
+# `Temas?` ya lo aporta la cita, así que aquí solo queda el verbo y su artículo.
+SEE = re.compile(r"\b(?:Ver|Mira|Revisa)\s+(?:los|las|el|la)?\s*$", re.IGNORECASE)
+# Abreviatura de curso: `M3 T1`, `Java M19 Tema 1`, `M0 T1–T3`, `M20 Temas 9–10`.
+# El grupo 1 es el capítulo; el 2 el primer tema; el 3 arrastra el resto del rango o del par.
+SHORT = re.compile(
+    r"\bM(\d{1,2})\s*T(?:emas?|ema)?\s*(\d{1,2})"
+    r"((?:\s*[–-]\s*(?:T(?:emas?|ema)?\s*)?\d+|\s+y\s*(?:T(?:emas?|ema)?\s*)?\d+)*)",
+    re.IGNORECASE,
+)
+SHORT_TAIL = re.compile(r"\d+")
 PREREQ = re.compile(
     r"prerrequisitos?|requisitos previos|conocimiento previo|requiere|necesitas|"
     r"despu[ée]s del|completados",
@@ -110,7 +125,12 @@ def main() -> int:
         module = int(path.stem.split("-")[1])
         text = path.read_text(encoding="utf-8")
         points = marks(text)
+        shorts = [(m.start(), m.end(), int(m.group(1)),
+                   [int(m.group(2))] + [int(n) for n in SHORT_TAIL.findall(m.group(3))])
+                  for m in SHORT.finditer(text)]
         for m in CITATION.finditer(text):
+            if any(start <= m.start() < end for start, end, _, _ in shorts):
+                continue  # `Java M19 Tema 1` ya la juzgó la abreviatura
             window = m.group(4)
             cut = CUT.search(window)
             if cut:
@@ -127,6 +147,8 @@ def main() -> int:
                 scope, kind = index[track][other], f"Módulo {other}"
             elif here:
                 scope, kind = index[track][module], "este módulo"
+            elif SEE.search(text[max(0, m.start() - 12): m.start()]):
+                scope, kind = index[track][module], "Ver Tema"
             else:
                 pre = BEFORE.search(text[max(0, m.start() - 40): m.start()])
                 if not pre:
@@ -154,6 +176,28 @@ def main() -> int:
                     elif n > tema:
                         notes.append(f"{where}: cita hacia adelante, admisible si avisa "
                                      f"(Tema {n} > tema {tema})")
+
+        for start, _, other, numbers in shorts:
+            if other not in index.get(track, {}):
+                continue
+            scope, kind = index[track][other], f"Módulo {other}"
+            if other == module:
+                scope, kind = index[track][module], "este módulo"
+            tema = topic_at(points, start)
+            line = text.count("\n", 0, start) + 1
+            where = f"{track}/{module} tema {tema} línea {line}"
+            phrase = text[sentence_start(text, start):start + 120]
+            for n in numbers:
+                total += 1
+                if n not in scope:
+                    errors.append(
+                        f"{where}: la abreviatura cita el Tema {n} de {kind}, que no existe "
+                        f"(están los números {sorted(scope)})"
+                    )
+                elif kind != "este módulo" or tema is None:
+                    continue
+                elif PREREQ.search(phrase) and n >= tema:
+                    errors.append(f"{where}: prerrequisito abreviado que no es anterior (Tema {n})")
 
     print(f"audit_topic_citations: {total} citas numéricas en "
           f"{sum(len(v) for v in index.values())} capítulos — "

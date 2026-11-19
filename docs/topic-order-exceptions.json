@@ -1,4 +1,6 @@
 {
   "schemaVersion": 1,
-  "modules": []
+  "modules": [
+    "java/20"
+  ]
 }

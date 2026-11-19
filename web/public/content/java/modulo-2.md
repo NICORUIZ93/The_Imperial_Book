@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: List, Set, Map y sus implementaciones
+### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Una colección organiza datos según cómo los vas a consultar: por posición, sin duplicados o mediante una clave.
@@ -153,200 +153,7 @@ Agrega la guía RF-999 con estado `EN_RUTA`, observa qué devuelve `getOrDefault
 
 **Transferencia al proyecto integrador:** almacena guías en una lista ordenada, usa un Set para rechazar importaciones duplicadas y conserva el estado actual en un Map por código. **Límite:** usa `ArrayList` cuando el orden de llegada importa y habrá lecturas frecuentes por índice; usa `HashSet` solo para descartar duplicados sin importar el orden; si necesitas orden de inserción y descarte de duplicados a la vez, usa `LinkedHashSet` en vez de combinar las dos estructuras a mano. **Práctica:** modifica `ColeccionesDemo.java` para usar `getOrDefault("RF-999", "SIN_REGISTRO")` en vez de `get`, y confirma que ya no se produce `NullPointerException`.
 
-### Tema 2: Genéricos, wildcards y type erasure
-
-**Duración estimada:** 40 min.
-**¿Por qué es importante?** Los genéricos hacen que el compilador detecte mezclas de tipos antes de ejecutar; los wildcards dejan aceptar familias de tipos sin perder esa seguridad.
-**Prerrequisitos:** M2 T1. Proyecto continuo: construir herramientas reutilizables para almacenar y procesar guías de distintos tipos.
-
-**Mapa de subtemas críticos:** parámetro de tipo e inferencia del diamante (núcleo, 2.1); invariancia y lectura mediante `? extends` (prerrequisito y núcleo, 2.2); escritura mediante `? super` y límite de lectura (variante, 2.3); borrado de tipos, prueba con `instanceof` y riesgo de tipos raw (límite y diagnóstico, 2.4). Cada mecanismo tiene un resultado compilado o un error reproducible y una práctica de transferencia.
-
-#### Subtema 2.1: Crea una clase genérica segura · 10 min
-
-**1. Contexto**
-El motor puede guardar una guía o su peso temporalmente sin copiar una clase contenedora para cada tipo.
-
-**2. Hazlo tú**
-Crea java-motor-colecciones/src/GenericosDemo.java:
-
-```java
-final class Caja<T> {
-    private final T contenido;
-
-    Caja(T contenido) { this.contenido = contenido; }
-
-    T obtener() { return contenido; }
-}
-
-public class GenericosDemo {
-    public static void main(String[] args) {
-        Caja<String> guia = new Caja<>("RF-401");
-        Caja<Integer> peso = new Caja<>(12);
-        System.out.println(guia.obtener());
-        System.out.println(peso.obtener() + " kg");
-    }
-}
-```
-
-Desde java-motor-colecciones/, compila y ejecuta:
-
-```bash
-mkdir -p out
-javac -d out src/GenericosDemo.java
-java -cp out GenericosDemo
-```
-
-**Resultado esperado:** RF-401 y 12 kg.
-
-**Fallo deliberado:** cambia el argumento new Caja<>("RF-401") por new Caja<>(12) y deja la variable como Caja<String>. **Error esperado:** incompatible types o inference variable T has incompatible bounds. **Diagnóstico:** una Caja<String> solo puede contener texto; conserva el tipo de la variable y el del valor alineados.
-
-**3. Entiende**
-`T` es un parámetro de tipo. Al escribir `Caja<String>`, el compilador comprueba que obtienes y guardas texto sin casts. El diamante `<>` de `new Caja<>(...)` infiere aquí `String` desde el tipo declarado de `guia`; no crea una clase nueva llamada `Caja<String>` en ejecución. Por eso `new Caja<>(12)` no puede satisfacer una variable `Caja<String>`.
-
-**4. Cierra**
-Agrega una Caja<Double> para una tarifa y explica qué verifica el compilador.
-
-#### Subtema 2.2: Lee una familia de tipos con extends · 10 min
-
-**1. Contexto**
-Un reporte de peso acepta valores enteros o decimales; el método no necesita conocer qué tipo exacto de Number recibe.
-
-**2. Hazlo tú**
-Reemplaza java-motor-colecciones/src/GenericosDemo.java:
-
-```java
-import java.util.List;
-
-public class GenericosDemo {
-    static double sumarPesos(List<? extends Number> pesos) {
-        double total = 0;
-        for (Number peso : pesos) {
-            total += peso.doubleValue();
-        }
-        return total;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(sumarPesos(List.of(2, 3, 4)));
-        System.out.println(sumarPesos(List.of(1.5, 2.5)));
-    }
-}
-```
-
-Compila y ejecuta con los comandos del subtema 2.1.
-
-**Resultado esperado:** 9.0 y 4.0.
-
-**Fallo deliberado:** dentro del ciclo, intenta pesos.add(5). **Error esperado:** el compilador rechaza el argumento porque no conoce el subtipo concreto de la lista. **Diagnóstico:** ? extends Number permite leer elementos como Number; no agregar valores arbitrarios.
-
-**3. Entiende**
-Una `List<Integer>` no es una `List<Number>`: si esa asignación se permitiera, otra parte del programa podría agregar un `Double` a la lista de enteros. Compruébalo en una copia del archivo: declara `List<Integer> enteros = List.of(2, 3);` y luego `List<Number> numeros = enteros;`; `javac` rechaza la segunda línea por tipos incompatibles. El comodín `? extends Number` permite recibir la lista sin prometer que se le puedan agregar números de cualquier subtipo. Como `sumarPesos` solo lee, puede tratar cada valor como `Number`. El límite no convierte los enteros en otro tipo ni copia la lista.
-
-**4. Cierra**
-Prueba una lista de `Long` y explica por qué el método no requiere una nueva sobrecarga. Predice además si `List<Number> numeros = List.of(1, 2);` y `List<Number> numeros = enteros;` tienen la misma validez; compila ambos casos para comprobarlo.
-
-#### Subtema 2.3: Escribe con super y conserva seguridad · 10 min
-
-**1. Contexto**
-El motor genera códigos enteros para agregarlos a una colección que puede guardar Integer o alguno de sus tipos base.
-
-**2. Hazlo tú**
-Reemplaza java-motor-colecciones/src/GenericosDemo.java:
-
-```java
-import java.util.ArrayList;
-import java.util.List;
-
-public class GenericosDemo {
-    static void agregarCodigos(List<? super Integer> destino) {
-        destino.add(401);
-        destino.add(402);
-    }
-
-    public static void main(String[] args) {
-        List<Integer> codigos = new ArrayList<>();
-        List<Number> numeros = new ArrayList<>();
-        agregarCodigos(codigos);
-        agregarCodigos(numeros);
-        System.out.println(codigos);
-        System.out.println(numeros);
-    }
-}
-```
-
-Compila y ejecuta con los comandos del subtema 2.1.
-
-**Resultado esperado:** [401, 402] en ambas líneas.
-
-**Fallo deliberado:** deja la firma intacta y añade en `main` `List<Double> decimales = new ArrayList<>(); agregarCodigos(decimales);`. **Error esperado:** `List<Double>` no se puede convertir a `List<? super Integer>`. **Diagnóstico:** el límite acepta `Integer` o un supertipo suyo, como `Number` u `Object`; `Double` es otro subtipo de `Number`, no un supertipo de `Integer`.
-
-**3. Entiende**
-`? super Integer` permite agregar `Integer` con seguridad. Dentro de `agregarCodigos`, una lectura de `destino.get(0)` solo se puede asignar a `Object`: la lista real podría ser `List<Integer>`, `List<Number>` o `List<Object>`, y el compilador no sabe cuál. Este límite sirve cuando el método produce enteros para un destino; no convierte una `List<Double>` en una lista de enteros.
-
-**4. Cierra**
-Escribe qué tipo de lista es válido para el parámetro y por qué no acepta List<Double>.
-
-#### Subtema 2.4: Observa qué conserva type erasure · 10 min
-
-**1. Contexto**
-En ejecución, las variantes parametrizadas de Caja comparten la misma clase. Reconoce esta limitación antes de diseñar lógica que dependa de inspeccionar el tipo T.
-
-**2. Hazlo tú**
-Reemplaza java-motor-colecciones/src/GenericosDemo.java:
-
-```java
-final class Caja<T> {
-    private final T contenido;
-    Caja(T contenido) { this.contenido = contenido; }
-    T obtener() { return contenido; }
-}
-
-public class GenericosDemo {
-    public static void main(String[] args) {
-        Caja<String> texto = new Caja<>("RF-401");
-        Caja<Integer> numero = new Caja<>(401);
-        System.out.println(texto.getClass() == numero.getClass());
-        System.out.println(texto.obtener().getClass().getSimpleName());
-        System.out.println(numero.obtener().getClass().getSimpleName());
-    }
-}
-```
-
-Compila y ejecuta con los comandos del subtema 2.1.
-
-**Resultado esperado:** true, String y Integer.
-
-**Fallo deliberado:** declara `Object desconocido = texto;` e intenta `System.out.println(desconocido instanceof Caja<String>);`. **Error esperado:** el compilador rechaza la prueba de un tipo parametrizado no reificable. **Diagnóstico:** desde una referencia `Object` no se puede comprobar en ejecución si la caja era `Caja<String>`; usa `desconocido instanceof Caja<?>` y valida el contenido por separado si hace falta. La expresión `texto instanceof Caja<String>` sí puede compilar porque el tipo estático de `texto` ya es `Caja<String>`; no demuestra que la JVM haya conservado `String`.
-
-**3. Entiende**
-El borrado de tipos hace que Caja<String> y Caja<Integer> compartan la clase Caja en ejecución. Java mantiene cierta información genérica en firmas declaradas para herramientas de reflexión, pero no puedes inspeccionar el parámetro de tipo de un objeto común como si fuera una clase distinta.
-
-Para observar el riesgo profesional del borrado, agrega antes del cierre de `main` estas tres líneas, sin quitar las salidas anteriores:
-
-```java
-Caja sinTipo = numero;
-Caja<String> contaminada = sinTipo;
-System.out.println(contaminada.obtener().length());
-```
-
-Compila desde `java-motor-colecciones/` con `javac -Xlint:unchecked -d out src/GenericosDemo.java` y ejecuta `java -cp out GenericosDemo`. **Resultado observable:** el compilador avisa de una conversión `unchecked` en la asignación a `Caja<String>`; tras las tres salidas iniciales, la llamada a `length()` falla con `ClassCastException` porque el contenido era un `Integer`. Un tipo raw evita la comprobación genérica en el límite y desplaza el fallo a quien lee. **Límite:** `@SuppressWarnings` ocultaría el aviso, no volvería segura la conversión. Restaura el archivo original después del diagnóstico.
-
-**4. Cierra**
-Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y qué parámetro genérico no se puede probar con `instanceof`. Después de reproducir el fallo raw, cambia `Caja sinTipo` por `Caja<?> sinTipo` y predice qué asignación dejará de compilar; compruébalo antes de restaurar el archivo.
-
-**Hito del tema:**
-
-- [ ] Construí Caja<T> y el compilador rechazó un valor de tipo equivocado.
-- [ ] Leí números de List<? extends Number>.
-- [ ] Agregué enteros a List<? super Integer> sin perder seguridad de tipos.
-- [ ] Comprobé que dos variantes de Caja comparten la clase en runtime.
-- [ ] Reproduje una advertencia `unchecked` y su `ClassCastException` posterior al mezclar un tipo raw con uno parametrizado.
-
-**Fuentes oficiales:** [genéricos en dev.java](https://dev.java/learn/generics/), [wildcards](https://dev.java/learn/generics/wildcards/), [tipos raw y advertencias unchecked](https://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html) y [borrado de tipos en la especificación Java](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.6).
-
-**Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos. **Práctica:** agrega un segundo tipo de parámetro a `Caja<T>` (por ejemplo una etiqueta `Caja<T, E>`) y confirma con `instanceof Caja<?, ?>` que ambos parámetros siguen borrados en tiempo de ejecución.
-
-### Tema 3: Comparable vs Comparator, e iteración
+### Tema 2: Comparable vs Comparator, e iteración · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** El orden natural sirve cuando una clase tiene un criterio principal; un Comparator permite cambiarlo para una vista concreta. La iteración permite procesar colecciones sin depender de su implementación.
@@ -354,7 +161,7 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 
 **Mapa de subtemas críticos:** `Comparable` y el criterio de equivalencia por código (núcleo, subtema 3.1); `Comparator` externo, desempate y estabilidad del resultado (variante y límite, subtema 3.2); recorrido de `entrySet`, contrato de `Iterator.remove` y modificación estructural indebida (núcleo y diagnóstico, subtema 3.3). Cada bloque muestra una salida, un fallo comprobable y una transferencia distinta.
 
-#### Subtema 3.1: Define el orden natural con Comparable · 10 min
+#### Subtema 2.1: Define el orden natural con Comparable · 10 min
 
 **1. Contexto**
 Cuando el motor muestre sus guías, el orden estable por código ayuda a localizar una entrada repetidamente.
@@ -414,7 +221,7 @@ java -cp out OrdenDemo
 **4. Cierra**
 Cambia los valores de entrada y confirma que el orden natural sigue comparando por código. Comprueba con tres instancias las relaciones `RF-101 < RF-102`, `RF-102 < RF-103` y `RF-101 < RF-103`; luego agrega una segunda instancia con código `RF-102` al `TreeSet` y predice el valor de `add` y el tamaño final antes de ejecutar.
 
-#### Subtema 3.2: Cambia el criterio con Comparator · 10 min
+#### Subtema 2.2: Cambia el criterio con Comparator · 10 min
 
 **1. Contexto**
 Una pantalla de despacho puede necesitar ordenar por destino sin reemplazar el orden natural de la clase.
@@ -481,7 +288,7 @@ Compila y ejecuta con los comandos del subtema 3.1.
 **4. Cierra**
 Cambia solo la comparación del destino a `segunda.destino().compareTo(primera.destino())`; predice qué ciudad aparecerá primero y comprueba que los códigos dentro de Bogota siguen ascendentes. Explica por qué no conviene restar números para implementar `compare`.
 
-#### Subtema 3.3: Recorre entradas y elimina con Iterator · 15 min
+#### Subtema 2.3: Recorre entradas y elimina con Iterator · 15 min
 
 **1. Contexto**
 El proceso de cierre debe recorrer estados de guías y quitar las entregas ya completadas sin modificar una colección a escondidas durante un for-each.
@@ -544,6 +351,199 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 
 **Transferencia al proyecto integrador:** ordena las guías por el criterio natural acordado, agrega vistas alternativas con Comparator y elimina del registro entradas completadas durante su recorrido seguro. **Límite:** implementa `Comparable` solo cuando la clase tiene un único orden natural y obvio (por ejemplo el código de guía); si necesitas varios criterios de orden distintos según la pantalla o el reporte, usa `Comparator` externos en vez de forzar varios "órdenes naturales" en la misma clase.
 
+### Tema 3: Genéricos, wildcards y type erasure · Avanzado · 40 min
+
+**Duración estimada:** 40 min.
+**¿Por qué es importante?** Los genéricos hacen que el compilador detecte mezclas de tipos antes de ejecutar; los wildcards dejan aceptar familias de tipos sin perder esa seguridad.
+**Prerrequisitos:** M2 T1. Proyecto continuo: construir herramientas reutilizables para almacenar y procesar guías de distintos tipos.
+
+**Mapa de subtemas críticos:** parámetro de tipo e inferencia del diamante (núcleo, 2.1); invariancia y lectura mediante `? extends` (prerrequisito y núcleo, 2.2); escritura mediante `? super` y límite de lectura (variante, 2.3); borrado de tipos, prueba con `instanceof` y riesgo de tipos raw (límite y diagnóstico, 2.4). Cada mecanismo tiene un resultado compilado o un error reproducible y una práctica de transferencia.
+
+#### Subtema 3.1: Crea una clase genérica segura · 10 min
+
+**1. Contexto**
+El motor puede guardar una guía o su peso temporalmente sin copiar una clase contenedora para cada tipo.
+
+**2. Hazlo tú**
+Crea java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+final class Caja<T> {
+    private final T contenido;
+
+    Caja(T contenido) { this.contenido = contenido; }
+
+    T obtener() { return contenido; }
+}
+
+public class GenericosDemo {
+    public static void main(String[] args) {
+        Caja<String> guia = new Caja<>("RF-401");
+        Caja<Integer> peso = new Caja<>(12);
+        System.out.println(guia.obtener());
+        System.out.println(peso.obtener() + " kg");
+    }
+}
+```
+
+Desde java-motor-colecciones/, compila y ejecuta:
+
+```bash
+mkdir -p out
+javac -d out src/GenericosDemo.java
+java -cp out GenericosDemo
+```
+
+**Resultado esperado:** RF-401 y 12 kg.
+
+**Fallo deliberado:** cambia el argumento new Caja<>("RF-401") por new Caja<>(12) y deja la variable como Caja<String>. **Error esperado:** incompatible types o inference variable T has incompatible bounds. **Diagnóstico:** una Caja<String> solo puede contener texto; conserva el tipo de la variable y el del valor alineados.
+
+**3. Entiende**
+`T` es un parámetro de tipo. Al escribir `Caja<String>`, el compilador comprueba que obtienes y guardas texto sin casts. El diamante `<>` de `new Caja<>(...)` infiere aquí `String` desde el tipo declarado de `guia`; no crea una clase nueva llamada `Caja<String>` en ejecución. Por eso `new Caja<>(12)` no puede satisfacer una variable `Caja<String>`.
+
+**4. Cierra**
+Agrega una Caja<Double> para una tarifa y explica qué verifica el compilador.
+
+#### Subtema 3.2: Lee una familia de tipos con extends · 10 min
+
+**1. Contexto**
+Un reporte de peso acepta valores enteros o decimales; el método no necesita conocer qué tipo exacto de Number recibe.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+import java.util.List;
+
+public class GenericosDemo {
+    static double sumarPesos(List<? extends Number> pesos) {
+        double total = 0;
+        for (Number peso : pesos) {
+            total += peso.doubleValue();
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sumarPesos(List.of(2, 3, 4)));
+        System.out.println(sumarPesos(List.of(1.5, 2.5)));
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** 9.0 y 4.0.
+
+**Fallo deliberado:** dentro del ciclo, intenta pesos.add(5). **Error esperado:** el compilador rechaza el argumento porque no conoce el subtipo concreto de la lista. **Diagnóstico:** ? extends Number permite leer elementos como Number; no agregar valores arbitrarios.
+
+**3. Entiende**
+Una `List<Integer>` no es una `List<Number>`: si esa asignación se permitiera, otra parte del programa podría agregar un `Double` a la lista de enteros. Compruébalo en una copia del archivo: declara `List<Integer> enteros = List.of(2, 3);` y luego `List<Number> numeros = enteros;`; `javac` rechaza la segunda línea por tipos incompatibles. El comodín `? extends Number` permite recibir la lista sin prometer que se le puedan agregar números de cualquier subtipo. Como `sumarPesos` solo lee, puede tratar cada valor como `Number`. El límite no convierte los enteros en otro tipo ni copia la lista.
+
+**4. Cierra**
+Prueba una lista de `Long` y explica por qué el método no requiere una nueva sobrecarga. Predice además si `List<Number> numeros = List.of(1, 2);` y `List<Number> numeros = enteros;` tienen la misma validez; compila ambos casos para comprobarlo.
+
+#### Subtema 3.3: Escribe con super y conserva seguridad · 10 min
+
+**1. Contexto**
+El motor genera códigos enteros para agregarlos a una colección que puede guardar Integer o alguno de sus tipos base.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class GenericosDemo {
+    static void agregarCodigos(List<? super Integer> destino) {
+        destino.add(401);
+        destino.add(402);
+    }
+
+    public static void main(String[] args) {
+        List<Integer> codigos = new ArrayList<>();
+        List<Number> numeros = new ArrayList<>();
+        agregarCodigos(codigos);
+        agregarCodigos(numeros);
+        System.out.println(codigos);
+        System.out.println(numeros);
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** [401, 402] en ambas líneas.
+
+**Fallo deliberado:** deja la firma intacta y añade en `main` `List<Double> decimales = new ArrayList<>(); agregarCodigos(decimales);`. **Error esperado:** `List<Double>` no se puede convertir a `List<? super Integer>`. **Diagnóstico:** el límite acepta `Integer` o un supertipo suyo, como `Number` u `Object`; `Double` es otro subtipo de `Number`, no un supertipo de `Integer`.
+
+**3. Entiende**
+`? super Integer` permite agregar `Integer` con seguridad. Dentro de `agregarCodigos`, una lectura de `destino.get(0)` solo se puede asignar a `Object`: la lista real podría ser `List<Integer>`, `List<Number>` o `List<Object>`, y el compilador no sabe cuál. Este límite sirve cuando el método produce enteros para un destino; no convierte una `List<Double>` en una lista de enteros.
+
+**4. Cierra**
+Escribe qué tipo de lista es válido para el parámetro y por qué no acepta List<Double>.
+
+#### Subtema 3.4: Observa qué conserva type erasure · 10 min
+
+**1. Contexto**
+En ejecución, las variantes parametrizadas de Caja comparten la misma clase. Reconoce esta limitación antes de diseñar lógica que dependa de inspeccionar el tipo T.
+
+**2. Hazlo tú**
+Reemplaza java-motor-colecciones/src/GenericosDemo.java:
+
+```java
+final class Caja<T> {
+    private final T contenido;
+    Caja(T contenido) { this.contenido = contenido; }
+    T obtener() { return contenido; }
+}
+
+public class GenericosDemo {
+    public static void main(String[] args) {
+        Caja<String> texto = new Caja<>("RF-401");
+        Caja<Integer> numero = new Caja<>(401);
+        System.out.println(texto.getClass() == numero.getClass());
+        System.out.println(texto.obtener().getClass().getSimpleName());
+        System.out.println(numero.obtener().getClass().getSimpleName());
+    }
+}
+```
+
+Compila y ejecuta con los comandos del subtema 2.1.
+
+**Resultado esperado:** true, String y Integer.
+
+**Fallo deliberado:** declara `Object desconocido = texto;` e intenta `System.out.println(desconocido instanceof Caja<String>);`. **Error esperado:** el compilador rechaza la prueba de un tipo parametrizado no reificable. **Diagnóstico:** desde una referencia `Object` no se puede comprobar en ejecución si la caja era `Caja<String>`; usa `desconocido instanceof Caja<?>` y valida el contenido por separado si hace falta. La expresión `texto instanceof Caja<String>` sí puede compilar porque el tipo estático de `texto` ya es `Caja<String>`; no demuestra que la JVM haya conservado `String`.
+
+**3. Entiende**
+El borrado de tipos hace que Caja<String> y Caja<Integer> compartan la clase Caja en ejecución. Java mantiene cierta información genérica en firmas declaradas para herramientas de reflexión, pero no puedes inspeccionar el parámetro de tipo de un objeto común como si fuera una clase distinta.
+
+Para observar el riesgo profesional del borrado, agrega antes del cierre de `main` estas tres líneas, sin quitar las salidas anteriores:
+
+```java
+Caja sinTipo = numero;
+Caja<String> contaminada = sinTipo;
+System.out.println(contaminada.obtener().length());
+```
+
+Compila desde `java-motor-colecciones/` con `javac -Xlint:unchecked -d out src/GenericosDemo.java` y ejecuta `java -cp out GenericosDemo`. **Resultado observable:** el compilador avisa de una conversión `unchecked` en la asignación a `Caja<String>`; tras las tres salidas iniciales, la llamada a `length()` falla con `ClassCastException` porque el contenido era un `Integer`. Un tipo raw evita la comprobación genérica en el límite y desplaza el fallo a quien lee. **Límite:** `@SuppressWarnings` ocultaría el aviso, no volvería segura la conversión. Restaura el archivo original después del diagnóstico.
+
+**4. Cierra**
+Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y qué parámetro genérico no se puede probar con `instanceof`. Después de reproducir el fallo raw, cambia `Caja sinTipo` por `Caja<?> sinTipo` y predice qué asignación dejará de compilar; compruébalo antes de restaurar el archivo.
+
+**Hito del tema:**
+
+- [ ] Construí Caja<T> y el compilador rechazó un valor de tipo equivocado.
+- [ ] Leí números de List<? extends Number>.
+- [ ] Agregué enteros a List<? super Integer> sin perder seguridad de tipos.
+- [ ] Comprobé que dos variantes de Caja comparten la clase en runtime.
+- [ ] Reproduje una advertencia `unchecked` y su `ClassCastException` posterior al mezclar un tipo raw con uno parametrizado.
+
+**Fuentes oficiales:** [genéricos en dev.java](https://dev.java/learn/generics/), [wildcards](https://dev.java/learn/generics/wildcards/), [tipos raw y advertencias unchecked](https://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html) y [borrado de tipos en la especificación Java](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.6).
+
+**Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos. **Práctica:** agrega un segundo tipo de parámetro a `Caja<T>` (por ejemplo una etiqueta `Caja<T, E>`) y confirma con `instanceof Caja<?, ?>` que ambos parámetros siguen borrados en tiempo de ejecución.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** organizar guías por posición, eliminar duplicados, buscar por clave, ordenar entregas y conservar seguridad de tipos.
@@ -553,9 +553,9 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
 | 1 | Organizar guías con `List`, `Set` y `Map` | Ver Tema 1 | Conserva orden, deduplica y consulta estados |
-| 2 | Crear `Caja<T>` y procesar wildcards | Ver Tema 2 | Verifica tipos, límites `extends` y `super` |
-| 3 | Ordenar por código y destino | Ver Tema 3 | Compara orden natural y criterio alternativo |
-| 4 | Recorrer entradas y eliminar con `Iterator` | Ver Tema 3 | Evita modificar el mapa fuera del iterador |
+| 2 | Crear `Caja<T>` y procesar wildcards | Ver Tema 3 | Verifica tipos, límites `extends` y `super` |
+| 3 | Ordenar por código y destino | Ver Tema 2 | Compara orden natural y criterio alternativo |
+| 4 | Recorrer entradas y eliminar con `Iterator` | Ver Tema 2 | Evita modificar el mapa fuera del iterador |
 
 **Verificación:** el laboratorio se considera exitoso si las colecciones producen las salidas esperadas, el compilador rechaza un tipo incorrecto y el orden alternativo conserva la clase sin cambios.
 

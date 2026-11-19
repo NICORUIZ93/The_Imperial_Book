@@ -11,7 +11,7 @@ Java estándar incluye un cliente HTTP moderno, pero un cliente seguro no equiva
 
 La prueba real debe incluir timeout, límite de intentos, respuesta inválida y rechazo de destino no permitido. La autenticación del proveedor no autoriza por sí sola a un usuario de RutaFlow para consultar el envío de otro tenant.
 
-### Tema 1: HttpClient, REST, timeouts y fallos
+### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -305,7 +305,7 @@ Guarda secuencia de respuestas y cantidad de intentos.
 
 Entrega tests de éxito, 404, 503 y timeout con número de intentos comprobado para el proyecto integrador de RutaFlow, usando el cliente para consultar un proveedor externo; como siguiente paso transporta una credencial de forma segura sobre ese mismo cliente. Errores comunes: no fijar un timeout explícito y dejar que una API externa caída bloquee hilos indefinidamente, reintentar automáticamente un POST no idempotente ante una respuesta perdida, y cargar un cuerpo de respuesta potencialmente enorme completo en memoria sin un `BodyHandler` de streaming. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.net.http/java/net/http/HttpClient.html.
 
-### Tema 2: Tokens, validación y límites de seguridad
+### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

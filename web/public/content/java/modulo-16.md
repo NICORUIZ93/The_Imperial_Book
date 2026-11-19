@@ -11,7 +11,7 @@ En este módulo vas a persistir un modelo pequeño de pedidos y medir las consul
 
 La progresión importa: `EAGER` significa que la asociación debe estar disponible, no que Hibernate necesariamente use un `JOIN`. La evidencia del caso real es una prueba de integración con el número de filas y consultas observado, no solo una anotación en la entidad.
 
-### Tema 1: Entidades y relaciones JPA
+### Tema 1: Entidades y relaciones JPA · Intermedio · 35 min
 
 **¿Por qué es importante?** el mapeo conecta objetos con filas; el lado propietario escribe la clave foránea.
 
@@ -121,108 +121,11 @@ cd examples/java-jpa-lab
 
 Modifica `CascadeType.PERSIST` por `CascadeType.ALL` en `Cliente.java` (Subtema 1.3), añade un test que borre el cliente y ejecuta `./mvnw -q test` para ver qué pasa con sus pedidos.
 
-### Tema 2: FetchType.LAZY, EAGER y el problema N+1
-
-**¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
-
-#### Subtema 2.1: Accede a una relación lazy en su contexto · 10 min
-
-**1. Contexto**
-
-La pantalla necesita el nombre del cliente al presentar un pedido.
-
-**2. Hazlo tú**
-
-En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta ./mvnw -q test.
-
-**Resultado esperado:** Hibernate carga la asociación mientras la transacción está activa.
-
-**Fallo deliberado:** mueve el acceso después del cierre de sesión. **Diagnóstico:** consulta dentro de la transacción o devuelve un DTO con los campos necesarios.
-
-**3. Entiende**
-
-LAZY aplaza la carga; no mantiene viva una sesión cerrada.
-
-**4. Cierra**
-
-Conserva la prueba dentro y fuera del contexto.
-
-#### Subtema 2.2: Cuenta las consultas N+1 · 10 min
-
-**1. Contexto**
-
-Un listado carga N pedidos y luego consulta cada cliente por separado.
-
-**2. Hazlo tú**
-
-En **examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab y observa Hibernate Statistics.
-
-**Resultado esperado:** N+1 produce más sentencias que la lectura con EntityGraph.
-
-**Fallo deliberado:** prueba con un único pedido. **Diagnóstico:** usa varias filas representativas para hacer visible el crecimiento de consultas.
-
-**3. Entiende**
-
-N+1 combina una consulta inicial con consultas repetidas por resultado relacionado.
-
-**4. Cierra**
-
-Guarda el contador de ambos caminos.
-
-#### Subtema 2.3: Elige datos para cada pantalla · 10 min
-
-**1. Contexto**
-
-El listado necesita referencia y estado; el detalle muestra también el cliente.
-
-**2. Hazlo tú**
-
-Compara findAll y findAllWithClienteByOrderByReferenciaAsc en **PedidoRepository.java**. Añade una proyección para listado y ejecuta ./mvnw -q test.
-
-**Resultado esperado:** cada operación carga los campos que muestra.
-
-**Fallo deliberado:** cambia todo a EAGER. **Diagnóstico:** EAGER no garantiza JOIN; vuelve a contar sentencias y usa un fetch plan por caso.
-
-**3. Entiende**
-
-La consulta y su fetch plan se eligen según la operación, no para toda la aplicación.
-
-**4. Cierra**
-
-Anota campos de listado y de detalle.
-
-**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph.
-
-**Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
-
-#### Fragmento real
-
-```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java
-@EntityGraph(attributePaths = "cliente")
-List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
-```
-
-Ejecuta:
-
-```bash
-cd examples/java-jpa-lab
-./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
-```
-
-**Conexión con el proyecto integrador:** la pantalla paginada de envíos de tu proyecto integrador (referencia, estado, última parada) es exactamente el caso real descrito al inicio del módulo; sin `@EntityGraph` o una proyección DTO, listar N envíos dispara N consultas adicionales por el cliente de cada uno.
-
-**Límite:** `@EntityGraph` evita N+1 para la asociación declarada, pero no es gratis: trae esos datos siempre que se use ese método, aunque una pantalla distinta no los necesite; por eso conviene tener un método de repositorio por necesidad de pantalla, no uno genérico con todo `EAGER`.
-
-#### Practica
-
-Modifica el repositorio para usar `findAll()` simple en vez de `findAllWithClienteByOrderByReferenciaAsc()` dentro del mismo test y cuenta cuántas consultas SQL adicionales aparecen al acceder a `cliente` de cada pedido.
-
-### Tema 3: Relaciones uno a uno, muchos a muchos y herencia
+### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
 **¿Por qué es importante?** cardinalidad y herencia cambian claves, restricciones y consultas.
 
-#### Subtema 3.1: Impide dos perfiles para el mismo cliente · 10 min
+#### Subtema 2.1: Impide dos perfiles para el mismo cliente · 10 min
 
 **1. Contexto**
 
@@ -244,7 +147,7 @@ Uno-a-uno necesita una clave foránea y garantía única.
 
 Guarda el test que intenta duplicar el perfil.
 
-#### Subtema 3.2: Modela una línea como entidad · 10 min
+#### Subtema 2.2: Modela una línea como entidad · 10 min
 
 **1. Contexto**
 
@@ -266,7 +169,7 @@ ManyToMany simple sirve si la tabla intermedia no tiene información de negocio.
 
 Guarda el pedido y sus dos líneas.
 
-#### Subtema 3.3: Inspecciona una estrategia de herencia · 10 min
+#### Subtema 2.3: Inspecciona una estrategia de herencia · 10 min
 
 **1. Contexto**
 
@@ -320,13 +223,13 @@ cd examples/java-jpa-lab
 
 #### Practica
 
-Modifica `PerfilEntrega.java` para quitar `unique = true` de la columna, ejecuta el test de unicidad del Subtema 3.1 y confirma que ahora sí permite un segundo perfil para el mismo cliente.
+Modifica `PerfilEntrega.java` para quitar `unique = true` de la columna, ejecuta el test de unicidad del Subtema 2.1 y confirma que ahora sí permite un segundo perfil para el mismo cliente.
 
-### Tema 4: Ciclo de vida, EntityManager y consultas tipadas
+### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
 **¿Por qué es importante?** el estado administrado determina si JPA detecta un cambio.
 
-#### Subtema 4.1: Separa flush de clear · 10 min
+#### Subtema 3.1: Separa flush de clear · 10 min
 
 **1. Contexto**
 
@@ -348,7 +251,7 @@ persist administra, flush sincroniza, clear separa las instancias del contexto.
 
 Anota el estado del objeto después de cada llamada.
 
-#### Subtema 4.2: Consulta entidades con JPQL · 10 min
+#### Subtema 3.2: Consulta entidades con JPQL · 10 min
 
 **1. Contexto**
 
@@ -370,7 +273,7 @@ Hibernate traduce JPQL al SQL correspondiente al dialecto de base.
 
 Guarda la consulta y el resultado.
 
-#### Subtema 4.3: Reconoce una entidad separada · 10 min
+#### Subtema 3.3: Reconoce una entidad separada · 10 min
 
 **1. Contexto**
 
@@ -419,11 +322,11 @@ cd examples/java-jpa-lab
 
 **Límite:** `flush()` sincroniza SQL con la base, pero no confirma la transacción (eso lo hace el commit); un `flush()` dentro de una transacción que después hace rollback no deja ese cambio en la base, aunque el SQL sí se haya enviado.
 
-### Tema 5: Búsquedas dinámicas con Criteria y Querydsl
+### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
 **¿Por qué es importante?** filtros combinables requieren consultas seguras y mantenibles.
 
-#### Subtema 5.1: Busca por prefijo con Criteria · 10 min
+#### Subtema 4.1: Busca por prefijo con Criteria · 10 min
 
 **1. Contexto**
 
@@ -445,7 +348,7 @@ Criteria construye predicados desde la API; es verboso, pero facilita condicione
 
 Guarda la salida para prefijo RT- y OT-.
 
-#### Subtema 5.2: Combina filtros opcionales · 10 min
+#### Subtema 4.2: Combina filtros opcionales · 10 min
 
 **1. Contexto**
 
@@ -467,7 +370,7 @@ Consulta SQL generada y plan de ejecución cuando el filtro deja de ser pequeño
 
 Guarda dos combinaciones y su resultado.
 
-#### Subtema 5.3: Prueba Querydsl con Jakarta · 10 min
+#### Subtema 4.3: Prueba Querydsl con Jakarta · 10 min
 
 **1. Contexto**
 
@@ -520,7 +423,104 @@ cd examples/java-jpa-lab
 
 Modifica `BusquedaPedido.java` para tratar una cadena vacía como "sin filtro de prefijo" en vez de omitir el predicado solo cuando el valor es `null`, y prueba con `""` para confirmar que la combinación de filtros sigue siendo correcta.
 
-### Tema 6: EntityGraph y cachés de persistencia
+### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 50 min
+
+**¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
+
+#### Subtema 5.1: Accede a una relación lazy en su contexto · 10 min
+
+**1. Contexto**
+
+La pantalla necesita el nombre del cliente al presentar un pedido.
+
+**2. Hazlo tú**
+
+En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta ./mvnw -q test.
+
+**Resultado esperado:** Hibernate carga la asociación mientras la transacción está activa.
+
+**Fallo deliberado:** mueve el acceso después del cierre de sesión. **Diagnóstico:** consulta dentro de la transacción o devuelve un DTO con los campos necesarios.
+
+**3. Entiende**
+
+LAZY aplaza la carga; no mantiene viva una sesión cerrada.
+
+**4. Cierra**
+
+Conserva la prueba dentro y fuera del contexto.
+
+#### Subtema 5.2: Cuenta las consultas N+1 · 10 min
+
+**1. Contexto**
+
+Un listado carga N pedidos y luego consulta cada cliente por separado.
+
+**2. Hazlo tú**
+
+En **examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab y observa Hibernate Statistics.
+
+**Resultado esperado:** N+1 produce más sentencias que la lectura con EntityGraph.
+
+**Fallo deliberado:** prueba con un único pedido. **Diagnóstico:** usa varias filas representativas para hacer visible el crecimiento de consultas.
+
+**3. Entiende**
+
+N+1 combina una consulta inicial con consultas repetidas por resultado relacionado.
+
+**4. Cierra**
+
+Guarda el contador de ambos caminos.
+
+#### Subtema 5.3: Elige datos para cada pantalla · 10 min
+
+**1. Contexto**
+
+El listado necesita referencia y estado; el detalle muestra también el cliente.
+
+**2. Hazlo tú**
+
+Compara findAll y findAllWithClienteByOrderByReferenciaAsc en **PedidoRepository.java**. Añade una proyección para listado y ejecuta ./mvnw -q test.
+
+**Resultado esperado:** cada operación carga los campos que muestra.
+
+**Fallo deliberado:** cambia todo a EAGER. **Diagnóstico:** EAGER no garantiza JOIN; vuelve a contar sentencias y usa un fetch plan por caso.
+
+**3. Entiende**
+
+La consulta y su fetch plan se eligen según la operación, no para toda la aplicación.
+
+**4. Cierra**
+
+Anota campos de listado y de detalle.
+
+**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph.
+
+**Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
+
+#### Fragmento real
+
+```java
+// examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java
+@EntityGraph(attributePaths = "cliente")
+List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
+```
+
+Ejecuta:
+
+```bash
+cd examples/java-jpa-lab
+./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
+```
+
+**Conexión con el proyecto integrador:** la pantalla paginada de envíos de tu proyecto integrador (referencia, estado, última parada) es exactamente el caso real descrito al inicio del módulo; sin `@EntityGraph` o una proyección DTO, listar N envíos dispara N consultas adicionales por el cliente de cada uno.
+
+**Límite:** `@EntityGraph` evita N+1 para la asociación declarada, pero no es gratis: trae esos datos siempre que se use ese método, aunque una pantalla distinta no los necesite; por eso conviene tener un método de repositorio por necesidad de pantalla, no uno genérico con todo `EAGER`.
+
+#### Practica
+
+Modifica el repositorio para usar `findAll()` simple en vez de `findAllWithClienteByOrderByReferenciaAsc()` dentro del mismo test y cuenta cuántas consultas SQL adicionales aparecen al acceder a `cliente` de cada pedido.
+
+### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 50 min
 
 **¿Por qué es importante?** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
 
@@ -620,7 +620,7 @@ cd examples/java-jpa-lab
 
 Modifica el test de caché de primer nivel para llamar `entityManager.clear()` entre las dos lecturas del mismo pedido y confirma con `assertNotSame` que ahora son instancias distintas.
 
-### Tema 7: Concurrencia, transacciones y propagación
+### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
 **¿Por qué es importante?** dos operadores pueden cambiar el mismo envío; el sistema debe detectar conflicto y decidir rollback.
 
@@ -722,7 +722,7 @@ cd examples/java-jpa-lab
 
 Modifica `Pedido.java` para quitar `@Version` temporalmente, repite el test de actualización perdida y confirma que ahora la segunda escritura sobrescribe la primera sin avisar.
 
-### Tema 8: Migraciones y pruebas JPA con Testcontainers
+### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
 **¿Por qué es importante?** el esquema de producción debe cambiar con migraciones rastreables y pruebas del motor real.
 

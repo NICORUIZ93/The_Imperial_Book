@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: record — modelos inmutables sin boilerplate
+### Tema 1: record — modelos inmutables sin boilerplate · Intermedio · 35 min
 
 **¿Por qué es importante?** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
 
@@ -104,7 +104,7 @@ Entrega los dos valores y explica por qué elegiste record. Fuente: [records en 
 
 **Proyecto integrador:** el motor de asignación de entregas representa cada guía como un `record` inmutable, igual que en este tema, para poder comparar y compartir guías entre hilos sin riesgo de mutación. **Límite:** usa `record` para un valor que se describe completamente por sus componentes; si la guía necesita identidad propia que persiste aunque cambien sus datos (por ejemplo, un historial de estados a lo largo del tiempo), modélala como una clase tradicional con identidad, no como record.
 
-### Tema 2: sealed — jerarquías cerradas y exhaustividad
+### Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 40 min
 
 **¿Por qué es importante?** estados de negocio conocidos no deben quedar sin manejar cuando el dominio crece.
 
@@ -212,7 +212,7 @@ Escribe una frase que justifique la decisión de RutaFlow. Fuente: [JEP 409](htt
 
 **Proyecto integrador:** el motor de asignación de entregas modela sus estados de guía con esta misma jerarquía `sealed`, porque el equipo controla exactamente qué estados existen. **Práctica:** agrega un cuarto estado `Rechazada(String motivo)` a `permits`, declara su record y corrige el `switch` del Tema 3 hasta que vuelva a ser exhaustivo.
 
-### Tema 3: Pattern matching exhaustivo y para instanceof
+### Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 40 min
 
 **¿Por qué es importante?** manejar cada estado evita que una regla de negocio asigne un resultado incorrecto a un tipo nuevo.
 
@@ -314,7 +314,7 @@ Elige una forma para la regla completa y justifica tu elección. Fuente: [patter
 
 **Proyecto integrador:** la regla de reprogramación del motor de entregas usa exactamente este `switch` exhaustivo sobre `EstadoEntrega`, de modo que agregar un estado nuevo obliga a actualizar la regla en tiempo de compilación. **Límite:** usa `switch` con pattern matching cuando necesitas cubrir todos los subtipos de una jerarquía `sealed`; usa `instanceof` suelto solo para una comprobación puntual de un único tipo, no para clasificar varios casos a la vez. **Práctica:** agrega el estado `Rechazada` (del Tema 2) a `sePuedeReprogramar` y confirma que el compilador exige la rama nueva.
 
-### Tema 4: Unnamed variables y patterns (_, Java 22)
+### Tema 4: Unnamed variables y patterns (_, Java 22) · Intermedio · 35 min
 
 **¿Por qué es importante?** distinguir lo que se descarta intencionalmente de una variable olvidada reduce ruido y hace visibles errores reales.
 

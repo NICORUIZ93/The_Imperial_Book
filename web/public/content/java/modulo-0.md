@@ -100,9 +100,9 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Del código fuente a la JVM
+### Tema 1: Del código fuente a la JVM · Básico · 40 min
 
-**Duración estimada:** 30 min.
+**Duración estimada:** 40 min.
 **¿Por qué es importante?** Entender fuente, bytecode y classpath permite diagnosticar por qué un programa que compila no inicia.
 
 **Prerrequisitos:** ninguno. Proyecto continuo del track: construir un motor de asignación de entregas. Usa JDK 25 o posterior (el que instalaste en «Antes de comenzar») y ejecuta `java --version` y `javac --version` antes de comenzar.
@@ -243,13 +243,120 @@ Guarda ambas salidas lado a lado y explica con tus palabras en qué momento del 
 
 **Proyecto integrador:** el motor de asignación de entregas parte de esta misma pareja `javac`/`java`: cada módulo del motor se compila una vez y se ejecuta muchas veces con distintos datos de entrada. **Límite:** `javac` recompila cuando cambia el código; no necesitas recompilar solo porque cambien los argumentos de entrada, y volver a compilar sin cambios reales no diagnostica ningún error de ejecución.
 
-### Tema 2: public static void main — qué significa cada palabra
+### Tema 2: JDK, JRE y JVM · Básico · 30 min
 
-**Duración estimada:** 30 min.
+**¿Por qué es importante?** Saber qué herramienta compila y cuál ejecuta evita buscar un bug en el código cuando falta el JDK. **Modelo mental:** el compilador es el taller que fabrica el bytecode; la JVM es el motor que lo pone en marcha.
+
+**Proyecto integrador:** el motor de entregas se compila en desarrollo y CI, y se ejecuta en el servidor. **Límite:** no asumas que todas las distribuciones traen un JRE separado. **Práctica:** registra las versiones de java y javac para comparar equipos.
+
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
+
+#### Subtema 2.1: Comprueba qué herramientas instalaste · 10 min
+
+**1. Contexto**
+
+Para compilar necesitas el JDK. Comprobar los ejecutables evita confundir un problema de instalación con un error del programa.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/versiones.txt`. En una terminal ejecuta:
+
+```bash
+java --version
+javac --version
+```
+
+**Resultado esperado:** los dos comandos muestran la misma versión mayor.
+
+Registra en `java-motor/src/versiones.txt` la versión que imprimió cada comando.
+
+**Fallo deliberado:** escribe `javacc --version`. **Diagnóstico:** la terminal no encuentra el comando porque el nombre está mal; si solo falta `javac`, instala un JDK o corrige `PATH`.
+
+**3. Entiende**
+
+`java` ejecuta; `javac` compila. El JDK incluye herramientas de desarrollo y el entorno que necesita el programa para ejecutarse.
+
+**4. Cierra**
+
+Guarda las dos salidas e identifica cuál comando usarás para cada tarea.
+
+#### Subtema 2.2: Inspecciona la VM que ejecuta tu clase · 10 min
+
+**1. Contexto**
+
+El nombre de la máquina virtual y la versión activa ayudan a resolver diferencias entre equipos.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/Entorno.java`:
+
+```java
+public class Entorno {
+    public static void main(String[] args) {
+        System.out.println(System.getProperty("java.vm.name"));
+        System.out.println(System.getProperty("java.version"));
+    }
+}
+```
+
+Desde `java-motor` ejecuta:
+
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
+
+**Resultado esperado:** se imprimen el nombre de la VM y la versión de Java del proceso.
+
+**Fallo deliberado:** lanza `java -cp src Entorno`. **Diagnóstico:** la clase está en `out` porque la compilaste allí; corrige el classpath.
+
+**3. Entiende**
+
+La JVM carga y ejecuta bytecode. La propiedad consultada describe la VM activa; no es el compilador.
+
+**4. Cierra**
+
+Conserva archivo, comandos y las dos líneas de salida.
+
+#### Subtema 2.3: Separa desarrollo de ejecución · 10 min
+
+**1. Contexto**
+
+La computadora que compila y el servidor que ejecuta el resultado no necesariamente necesitan las mismas herramientas.
+
+**2. Hazlo tú**
+
+Desde `java-motor` usa el archivo anterior:
+
+```bash
+javac -d out src/Entorno.java
+java -cp out Entorno
+```
+
+Anota: en desarrollo y CI necesitas `javac`; el proceso de ejecución necesita una JVM y las clases de Java compatibles con la versión objetivo.
+
+**Resultado esperado:** `Entorno.class` aparece en `out` y se ejecuta con `java`.
+
+**Fallo deliberado:** intenta compilar en una máquina que solo ofrece el comando `java`. **Diagnóstico:** ese runtime ejecuta, pero no compila; lleva la compilación a CI o instala un JDK.
+
+**3. Entiende**
+
+“JRE” se usa para hablar del runtime necesario para ejecutar Java, pero las distribuciones actuales no siempre ofrecen un paquete separado con ese nombre. Revisa qué incluye el proveedor elegido.
+
+**4. Cierra**
+
+Escribe dónde compilas, qué artefacto despliegas y qué versión lo ejecutará. Consulta [la documentación del JDK](https://docs.oracle.com/en/java/javase/25/) para el proveedor de tu entorno.
+
+### Tema 3: public static void main — qué significa cada palabra · Intermedio · 40 min
+
+**Duración estimada:** 40 min.
 **¿Por qué es importante?** Este método conecta lo que escribes con el arranque del programa; entenderlo te permite recibir parámetros de ejecución y diagnosticar por qué el lanzador no encuentra la entrada.
 **Prerrequisitos:** M0 T1. Proyecto continuo: el motor de asignación de entregas recibirá origen y destino por terminal. Usa JDK 25 o posterior. Java 25 admite formas adicionales de métodos `main`; aquí practicarás primero la firma clásica, compatible con versiones anteriores.
 
-#### Subtema 2.1: Identifica cada parte de la firma clásica · 10 min
+#### Subtema 3.1: Identifica cada parte de la firma clásica · 10 min
 
 **1. Contexto**
 El lanzador necesita una entrada reconocible para iniciar el motor sin pedirle al usuario que cree objetos primero.
@@ -283,7 +390,7 @@ java -cp out PuntoEntrada
 **4. Cierra**
 Señala en el archivo qué palabra permite el acceso, cuál evita crear un objeto y dónde aparecen los argumentos.
 
-#### Subtema 2.2: Recibe argumentos sin recompilar · 10 min
+#### Subtema 3.2: Recibe argumentos sin recompilar · 10 min
 
 **1. Contexto**
 Una misma versión del motor debe poder asignar rutas distintas cambiando solo los datos de entrada.
@@ -324,7 +431,7 @@ Los argumentos llegan en el mismo orden en que aparecen después del nombre de l
 **4. Cierra**
 Guarda las dos salidas y explica por qué el programa maneja la entrada incompleta antes de acceder a `args[1]`.
 
-#### Subtema 2.3: Compara una forma abreviada de Java 25 · 10 min
+#### Subtema 3.3: Compara una forma abreviada de Java 25 · 10 min
 
 **1. Contexto**
 Al leer ejemplos nuevos puedes encontrar programas de archivo único con menos sintaxis; debes reconocer qué versión requiere cada forma.
@@ -354,7 +461,7 @@ Java 25 amplió las formas de entrada válidas para facilitar programas pequeño
 **4. Cierra**
 Anota las versiones con las que verificaste cada archivo y conserva las salidas. No cambies la firma clásica del motor por una forma que el JDK objetivo no soporte.
 
-#### Subtema 2.4: Separa la regla del archivo de la regla del método · 10 min
+#### Subtema 3.4: Separa la regla del archivo de la regla del método · 10 min
 
 **1. Contexto**
 El Subtema 1.1 mostró que el nombre del archivo debe coincidir con el de la clase pública. Esa regla es sobre `public class`, no sobre `main`. Vale la pena comprobar si el lanzador también exige que la clase sea pública para arrancarla.
@@ -399,116 +506,9 @@ Explica con tus palabras por qué el motor de entregas puede tener clases de ayu
 
 **Diagrama interactivo:** [La firma que la JVM busca](/visuals/temas/java/modulo-0-tema-2-main.html).
 
-**Proyecto integrador:** el motor de entregas recibirá origen y destino exactamente como en el Subtema 2.2, por terminal y sin recompilar entre rutas distintas. **Límite:** no conviene usar la forma compacta de Java 25 (`void main()`) en el motor real, porque el proyecto debe seguir compilando en JDK 21; úsala solo para scripts de un solo archivo que no se distribuyen. **Práctica:** modifica `PuntoEntrada.java` para aceptar un tercer argumento opcional con el peso del paquete y valida que `args.length` lo cubra antes de leerlo.
+**Proyecto integrador:** el motor de entregas recibirá origen y destino exactamente como en el Subtema 3.2, por terminal y sin recompilar entre rutas distintas. **Límite:** no conviene usar la forma compacta de Java 25 (`void main()`) en el motor real, porque el proyecto debe seguir compilando en JDK 21; úsala solo para scripts de un solo archivo que no se distribuyen. **Práctica:** modifica `PuntoEntrada.java` para aceptar un tercer argumento opcional con el peso del paquete y valida que `args.length` lo cubra antes de leerlo.
 
-### Tema 3: JDK, JRE y JVM
-
-**¿Por qué es importante?** Saber qué herramienta compila y cuál ejecuta evita buscar un bug en el código cuando falta el JDK. **Modelo mental:** el compilador es el taller que fabrica el bytecode; la JVM es el motor que lo pone en marcha.
-
-**Proyecto integrador:** el motor de entregas se compila en desarrollo y CI, y se ejecuta en el servidor. **Límite:** no asumas que todas las distribuciones traen un JRE separado. **Práctica:** registra las versiones de java y javac para comparar equipos.
-
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
-
-#### Subtema 3.1: Comprueba qué herramientas instalaste · 10 min
-
-**1. Contexto**
-
-Para compilar necesitas el JDK. Comprobar los ejecutables evita confundir un problema de instalación con un error del programa.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/versiones.txt`. En una terminal ejecuta:
-
-```bash
-java --version
-javac --version
-```
-
-**Resultado esperado:** los dos comandos muestran la misma versión mayor.
-
-Registra en `java-motor/src/versiones.txt` la versión que imprimió cada comando.
-
-**Fallo deliberado:** escribe `javacc --version`. **Diagnóstico:** la terminal no encuentra el comando porque el nombre está mal; si solo falta `javac`, instala un JDK o corrige `PATH`.
-
-**3. Entiende**
-
-`java` ejecuta; `javac` compila. El JDK incluye herramientas de desarrollo y el entorno que necesita el programa para ejecutarse.
-
-**4. Cierra**
-
-Guarda las dos salidas e identifica cuál comando usarás para cada tarea.
-
-#### Subtema 3.2: Inspecciona la VM que ejecuta tu clase · 10 min
-
-**1. Contexto**
-
-El nombre de la máquina virtual y la versión activa ayudan a resolver diferencias entre equipos.
-
-**2. Hazlo tú**
-
-Crea `java-motor/src/Entorno.java`:
-
-```java
-public class Entorno {
-    public static void main(String[] args) {
-        System.out.println(System.getProperty("java.vm.name"));
-        System.out.println(System.getProperty("java.version"));
-    }
-}
-```
-
-Desde `java-motor` ejecuta:
-
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
-
-**Resultado esperado:** se imprimen el nombre de la VM y la versión de Java del proceso.
-
-**Fallo deliberado:** lanza `java -cp src Entorno`. **Diagnóstico:** la clase está en `out` porque la compilaste allí; corrige el classpath.
-
-**3. Entiende**
-
-La JVM carga y ejecuta bytecode. La propiedad consultada describe la VM activa; no es el compilador.
-
-**4. Cierra**
-
-Conserva archivo, comandos y las dos líneas de salida.
-
-#### Subtema 3.3: Separa desarrollo de ejecución · 10 min
-
-**1. Contexto**
-
-La computadora que compila y el servidor que ejecuta el resultado no necesariamente necesitan las mismas herramientas.
-
-**2. Hazlo tú**
-
-Desde `java-motor` usa el archivo anterior:
-
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
-
-Anota: en desarrollo y CI necesitas `javac`; el proceso de ejecución necesita una JVM y las clases de Java compatibles con la versión objetivo.
-
-**Resultado esperado:** `Entorno.class` aparece en `out` y se ejecuta con `java`.
-
-**Fallo deliberado:** intenta compilar en una máquina que solo ofrece el comando `java`. **Diagnóstico:** ese runtime ejecuta, pero no compila; lleva la compilación a CI o instala un JDK.
-
-**3. Entiende**
-
-“JRE” se usa para hablar del runtime necesario para ejecutar Java, pero las distribuciones actuales no siempre ofrecen un paquete separado con ese nombre. Revisa qué incluye el proveedor elegido.
-
-**4. Cierra**
-
-Escribe dónde compilas, qué artefacto despliegas y qué versión lo ejecutará. Consulta [la documentación del JDK](https://docs.oracle.com/en/java/javase/25/) para el proveedor de tu entorno.
-
-### Tema 4: Tipos primitivos vs referencias
+### Tema 4: Tipos primitivos vs referencias · Intermedio · 40 min
 
 **¿Por qué es importante?** Distinguir valores y referencias ayuda a evitar nulos y comparaciones equivocadas en datos de RutaFlow. **Modelo mental:** un primitivo es el valor escrito en una tarjeta; una referencia es una dirección que apunta al objeto.
 
@@ -663,7 +663,7 @@ Anota qué pasaría si el motor de entregas comparara con `==` el código de gu�
 - [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
 - [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
 
-### Tema 5: Variables, conversiones y `String`
+### Tema 5: Variables, conversiones y `String` · Intermedio · 35 min
 
 **¿Por qué es importante?** La conversión incorrecta pierde peso o rechaza entradas válidas antes de cotizar un envío. **Modelo mental:** convertir double a int es recortar decimales, no redondear automáticamente.
 
@@ -781,7 +781,7 @@ Desde `java-motor` compila y ejecuta `javac -d out src/LeerPeso.java`, `java -cp
 
 Guarda las dos salidas y explica qué dato llegó originalmente como texto. Consulta [conversión de datos](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/converting.html).
 
-### Tema 6: Operadores, precedencia y control de flujo
+### Tema 6: Operadores, precedencia y control de flujo · Intermedio · 40 min
 
 **¿Por qué es importante?** Una condición mal agrupada puede aceptar un paquete inválido o detener todo el cálculo. **Modelo mental:** el cortocircuito revisa cada puerta y deja de avanzar cuando una ya está cerrada.
 
@@ -945,7 +945,7 @@ La precedencia decide qué operador "atrapa" a sus operandos vecinos antes que o
 **4. Cierra**
 Reescribe `sinParentesis` con paréntesis que hagan explícito el agrupamiento real que ya tiene (sin cambiar el resultado) y explica por qué ahora es más fácil de leer sin memorizar reglas de precedencia.
 
-### Tema 7: Arreglos, wrappers y paso de argumentos
+### Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 35 min
 
 **¿Por qué es importante?** Arreglos y wrappers aparecen al leer datos externos, pero un índice incorrecto o un wrapper nulo detiene la operación. **Modelo mental:** un arreglo es una fila con longitud fija y casillas numeradas desde cero.
 
@@ -1058,7 +1058,7 @@ Java siempre pasa una copia del argumento. En el caso de un objeto esa copia apu
 
 Dibuja las dos referencias antes y después de llamar a `cambiar`.
 
-### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
+### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 35 min
 
 **¿Por qué es importante?** Fechas y horas incorrectas cambian promesas de entrega y registros de auditoría. **Modelo mental:** LocalDate es una fecha del calendario; Instant es un momento único del reloj mundial.
 
@@ -1209,7 +1209,7 @@ Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, 
 | 1 | Escribir y compilar `Hola.java` | Ver Tema 1 | Observa el `.class` generado |
 | 2 | Declarar los 8 tipos primitivos y un `String` | Ver Tema 4 | Distingue primitivos de referencias |
 | 3 | Leer un número con `Scanner` y validar | — | Maneja el caso de entrada incorrecta |
-| 4 | Investigar JDK vs JRE vs JVM | Ver Tema 3 | Documenta cuál necesitas para cada caso |
+| 4 | Investigar JDK vs JRE vs JVM | Ver Tema 2 | Documenta cuál necesitas para cada caso |
 | 5 | Inspeccionar el bytecode con `javap -c` | Ver Tema 1 | Observa las instrucciones generadas |
 | 6 | Procesar cantidad y tarifa sin perder precisión | Ver Tema 5 | Compara `double` y `BigDecimal` construido desde texto |
 | 7 | Modelar estados del envío con `enum` y `switch` | Ver Tema 6 | Agrega un estado y observa la exhaustividad |

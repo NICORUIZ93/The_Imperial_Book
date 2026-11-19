@@ -4,7 +4,7 @@ Este capítulo endurece el proyecto multi-módulo que creaste en el [Módulo 8, 
 
 ## Aprende construyendo
 
-### Tema 1: Maven avanzado
+### Tema 1: Maven avanzado · Intermedio · 40 min
 
 **¿Por qué es importante?** el reactor y el control de versiones permiten fallar el build antes de que un módulo publique dependencias incompatibles.
 
@@ -92,100 +92,11 @@ mvn -pl app -am clean verify
 
 Modifica `ejemplo-maven-avanzado/pom.xml` para usar el rango `[99,)` en `requireJavaVersion` y ejecuta `mvn validate`; confirma que Enforcer rechaza el build antes de intentar compilar nada.
 
-### Tema 2: Gradle y builds reproducibles
-
-**¿Por qué es importante?** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
-
-#### Subtema 2.1: Genera y usa el Gradle Wrapper · 10 min
-
-**1. Contexto**
-
-El build no debe depender de la versión Gradle que cada persona instaló globalmente.
-
-**2. Hazlo tú**
-
-Desde la raíz copia `examples/java-gradle/build.gradle.kts` y los otros archivos de `examples/java-gradle` a `ejemplo-gradle-reproducible`, entra a la carpeta y corre `gradle wrapper --gradle-version 9.1.0`, `./gradlew --version` y `./gradlew clean build`.
-
-**Resultado esperado:** el wrapper informa Gradle 9.1.0 y el build ejecuta con esa versión.
-
-**Fallo deliberado:** ejecuta `gradle build` después de cambiar la versión global. **Diagnóstico:** usa `./gradlew` para el proyecto y evita depender de la instalación personal.
-
-**3. Entiende**
-
-El wrapper fija Gradle; la toolchain define el JDK usado para compilar. El JDK que ejecuta Gradle también debe ser compatible.
-
-**4. Cierra**
-
-Guarda salida del wrapper y resultado del build.
-
-#### Subtema 2.2: Repite el build y compara artefactos · 10 min
-
-**1. Contexto**
-
-Timestamps o contenido variable en el JAR hacen difícil verificar qué artefacto se desplegó.
-
-**2. Hazlo tú**
-
-En `ejemplo-gradle-reproducible/build.gradle.kts` comprueba que `isPreserveFileTimestamps = false` y `isReproducibleFileOrder = true`. Ejecuta dos veces `./gradlew clean build`; compara `shasum -a 256 build/libs/*.jar` en macOS o `sha256sum build/libs/*.jar` en Linux.
-
-**Resultado esperado:** ambos hashes coinciden para la misma fuente y configuración.
-
-**Fallo deliberado:** añade la hora actual al manifest y repite. **Diagnóstico:** elimina el timestamp o sustitúyelo por un valor estable.
-
-**3. Entiende**
-
-Reproducibilidad depende de entradas declaradas y pasos deterministas, no solo de activar la caché.
-
-**4. Cierra**
-
-Guarda hashes antes y después de quitar el dato variable.
-
-#### Subtema 2.3: Verifica dependencias descargadas · 10 min
-
-**1. Contexto**
-
-Una coordenada fija no detecta por sí sola que el archivo descargado cambió.
-
-**2. Hazlo tú**
-
-En `ejemplo-gradle-reproducible`, ejecuta `./gradlew --write-verification-metadata sha256 help`, conserva `gradle/verification-metadata.xml` y luego corre `./gradlew clean build`.
-
-**Resultado esperado:** el build compara checksums declarados con los artefactos resueltos.
-
-**Fallo deliberado:** edita un checksum en `gradle/verification-metadata.xml`. **Diagnóstico:** la verificación falla; restaura el valor obtenido de una fuente confiable.
-
-**3. Entiende**
-
-Dependency locking registra versiones; verification metadata controla integridad de los bytes. No subas credenciales al repositorio.
-
-**4. Cierra**
-
-Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [Gradle dependency verification](https://docs.gradle.org/current/userguide/dependency_verification.html).
-
-**Prueba dos entornos:** usa el Gradle Wrapper y ejecuta `./gradlew clean build` en un checkout limpio. Si difiere la salida, compara JDK, wrapper y `./gradlew dependencies --configuration runtimeClasspath`. El caché acelera descargas, pero no fija la versión resuelta. Declara versiones en catálogo o plataforma y comparte convenciones cuando los módulos repiten configuración. Guarda la tarea que produce el artefacto desplegado. Fuente: https://docs.gradle.org/current/userguide/declaring_configurations.html.
-
-#### Fragmento real
-
-```bash
-cp -R examples/java-gradle ejemplo-gradle-reproducible
-cd ejemplo-gradle-reproducible
-gradle wrapper --gradle-version 9.1.0
-./gradlew clean build
-```
-
-**Conexión con el proyecto integrador:** si distribuyes el proyecto integrador con Gradle, el wrapper versionado (y `isReproducibleFileOrder`/sin timestamps) es lo que garantiza que el JAR que construye tu compañero sea bit a bit igual al tuyo para el mismo commit.
-
-**Límite:** la reproducibilidad del artefacto (mismo hash) no certifica que el build sea correcto ni rápido; solo dice que, dado el mismo código y configuración, el resultado no varía por azar (timestamps, orden de archivos).
-
-#### Practica
-
-Modifica `build.gradle.kts` para incluir la hora actual (`System.currentTimeMillis()`) en el manifest del JAR, ejecuta `./gradlew clean build` dos veces y compara los hashes SHA-256 antes y después de revertir el cambio.
-
-### Tema 3: Proyectos multi-módulo sin ciclos
+### Tema 2: Proyectos multi-módulo sin ciclos · Intermedio · 40 min
 
 **¿Por qué es importante?** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
 
-#### Subtema 3.1: Escribe una regla de dependencias con ArchUnit · 10 min
+#### Subtema 2.1: Escribe una regla de dependencias con ArchUnit · 10 min
 
 **1. Contexto**
 
@@ -207,7 +118,7 @@ ArchUnit importa bytecode compilado y prueba reglas arquitectónicas con la mism
 
 Guarda el fallo y el test de arquitectura. Fuente: [ArchUnit](https://www.archunit.org/getting-started).
 
-#### Subtema 3.2: Detecta ciclos entre paquetes · 10 min
+#### Subtema 2.2: Detecta ciclos entre paquetes · 10 min
 
 **1. Contexto**
 
@@ -229,7 +140,7 @@ Un ciclo elimina un orden claro para compilar y cambiar módulos de forma indepe
 
 Guarda el grafo antes y después de romper el ciclo.
 
-#### Subtema 3.3: Comprueba el grafo del build · 10 min
+#### Subtema 2.3: Comprueba el grafo del build · 10 min
 
 **1. Contexto**
 
@@ -280,13 +191,13 @@ Ejecuta:
 
 Modifica una clase de `domain` para que importe algo de `infrastructure` a propósito, ejecuta `./gradlew test` y confirma que el mensaje de fallo señala exactamente el origen y destino de la dependencia prohibida.
 
-### Tema 4: JUnit 5, Mockito y assertions expresivas
+### Tema 3: JUnit 5, Mockito y assertions expresivas · Intermedio · 40 min
 
 **¿Por qué es importante?** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
 
 **Preparación:** usa JUnit `6.0.2` y Surefire/Gradle JUnit Platform como en el Módulo 9; para Mockito usa `mockito-junit-jupiter:5.24.0`. Consulta las [versiones de Mockito](https://github.com/mockito/mockito/releases).
 
-#### Subtema 4.1: Prueba un caso de uso real · 10 min
+#### Subtema 3.1: Prueba un caso de uso real · 10 min
 
 **1. Contexto**
 
@@ -308,7 +219,7 @@ Un fake sencillo es útil para datos; un mock demuestra una interacción solo si
 
 Conserva test, fallo y salida de Gradle.
 
-#### Subtema 4.2: Expresa el resultado sin atarte a llamadas internas · 10 min
+#### Subtema 3.2: Expresa el resultado sin atarte a llamadas internas · 10 min
 
 **1. Contexto**
 
@@ -330,7 +241,7 @@ Assertions de dominio suelen sobrevivir a refactors mejor que verificar cada int
 
 Anota cuándo una llamada extra sería un error observable para el usuario.
 
-#### Subtema 4.3: Aísla una excepción del colaborador · 10 min
+#### Subtema 3.3: Aísla una excepción del colaborador · 10 min
 
 **1. Contexto**
 
@@ -383,118 +294,13 @@ Ejecuta:
 
 Modifica el mock para que `notificacion.enviar(...)` también se llame una segunda vez dentro del caso de uso, y confirma con `verifyNoMoreInteractions` si tu prueba empieza a fallar aunque el comportamiento visible para el usuario no cambió.
 
-### Tema 5: Pruebas de integración reproducibles
-
-**¿Por qué es importante?** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
-
-**Preparación:** Testcontainers `2.0.5`; añade `testcontainers-junit-jupiter`, `testcontainers-postgresql`, pgJDBC `42.7.14` y JUnit a la configuración de test. Imagen fijada: `postgres:17.11-alpine3.24`. En `build.gradle.kts` crea el source set `integrationTest`, extiende su configuración desde `testImplementation` y registra su tarea:
-
-```kotlin
-val integrationTest by sourceSets.creating {
-    java.srcDir("src/integrationTest/java")
-    resources.srcDir("src/integrationTest/resources")
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += output + compileClasspath
-}
-configurations[integrationTest.implementationConfigurationName]
-    .extendsFrom(configurations.testImplementation.get())
-
-tasks.register<Test>("integrationTest") {
-    testClassesDirs = integrationTest.output.classesDirs
-    classpath = integrationTest.runtimeClasspath
-    useJUnitPlatform()
-}
-```
-
-Fuentes: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Jupiter](https://java.testcontainers.org/test_framework_integration/junit_5/).
-
-#### Subtema 5.1: Levanta PostgreSQL al ejecutar el test · 10 min
-
-**1. Contexto**
-
-El test debe iniciar una base conocida y cerrarla al finalizar.
-
-**2. Hazlo tú**
-
-Crea `src/integrationTest/java/RepositorioPostgresIT.java` con `@Testcontainers`, `@Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17.11-alpine3.24")` y un test que compruebe `db.isRunning()`. Ejecuta `./gradlew integrationTest` con Docker activo.
-
-**Resultado esperado:** Testcontainers inicia la imagen exacta durante el test y luego la elimina.
-
-**Fallo deliberado:** ejecuta el test con Docker apagado. **Diagnóstico:** comprueba el runtime de contenedores antes de interpretar el fallo como error de SQL.
-
-**3. Entiende**
-
-La prueba usa un servicio real en contenedor aislado, no un mock del driver.
-
-**4. Cierra**
-
-Guarda log de la versión de imagen y cierre del contenedor.
-
-#### Subtema 5.2: Prueba el SQL y la migración reales · 10 min
-
-**1. Contexto**
-
-Una columna decimal y una fecha deben conservar sus valores con PostgreSQL real.
-
-**2. Hazlo tú**
-
-En `src/integrationTest/resources/db/migration/V1__guias.sql` crea tabla `guias` con `monto NUMERIC(10,2)` y `fecha DATE`; en `src/integrationTest/java/RepositorioPostgresIT.java`, inserta y recupera `123.45` y una fecha fija mediante JDBC. Ejecuta `./gradlew integrationTest`.
-
-**Resultado esperado:** el monto y la fecha recuperados coinciden exactamente.
-
-**Fallo deliberado:** cambia `monto` por `montoo` en la consulta. **Diagnóstico:** el motor real informa la columna inexistente; corrige la consulta y conserva la migración.
-
-**3. Entiende**
-
-Una base real detecta diferencias de dialecto y tipos que no aparecen con una implementación simulada.
-
-**4. Cierra**
-
-Guarda el resultado antes y después de reparar el nombre de columna.
-
-#### Subtema 5.3: Repite la prueba sin compartir estado · 10 min
-
-**1. Contexto**
-
-Una prueba debe poder repetirse en CI sin depender de una base que quedó de la ejecución anterior.
-
-**2. Hazlo tú**
-
-En `src/integrationTest/java/RepositorioPostgresIT.java`, ejecuta dos veces `./gradlew clean integrationTest`; configura esquema y datos dentro del ciclo de test y no uses una base local persistente.
-
-**Resultado esperado:** ambas ejecuciones parten de PostgreSQL limpio y terminan con los mismos assertions.
-
-**Fallo deliberado:** deja una fila fija y ejecuta dos veces un test que asume tabla vacía. **Diagnóstico:** crea/reset el esquema por ejecución o diseña fixture aislado.
-
-**3. Entiende**
-
-Contenedores desechables y datos controlados eliminan dependencia del orden; en CI sigue siendo necesario Docker.
-
-**4. Cierra**
-
-Conserva los dos resultados y el comando usado.
-
-Ejecuta:
-
-```bash
-./gradlew integrationTest
-```
-
-**Conexión con el proyecto integrador:** si el proyecto integrador persiste en PostgreSQL (módulo 16), esta es la prueba que confirma que tus migraciones y consultas funcionan contra el motor real, no solo contra el fake en memoria del Tema 4.
-
-**Límite:** Testcontainers exige Docker disponible; en un entorno sin Docker (algunos runners de CI gratuitos) esta suite no puede correr y debe separarse de las pruebas unitarias rápidas, como ya hace el source set `integrationTest` distinto de `test`.
-
-#### Practica
-
-Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 5.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
-
-### Tema 6: SLF4J, Logback, MDC y logging estructurado
+### Tema 4: SLF4J, Logback, MDC y logging estructurado · Intermedio · 40 min
 
 **¿Por qué es importante?** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
 
 **Preparación:** añade `implementation("org.slf4j:slf4j-api:2.0.18")` y `runtimeOnly("ch.qos.logback:logback-classic:1.6.6")`. El ejemplo emite pares key-value con `%kvp`; no necesita un encoder JSON adicional. La versión de Logback contiene correcciones de seguridad recientes; revisa sus [notas oficiales](https://github.com/qos-ch/logback/releases).
 
-#### Subtema 6.1: Emite campos estructurados · 10 min
+#### Subtema 4.1: Emite campos estructurados · 10 min
 
 **1. Contexto**
 
@@ -516,7 +322,7 @@ SLF4J es la fachada; Logback produce los eventos y define su formato.
 
 Guarda una línea JSON de ejemplo sin secretos.
 
-#### Subtema 6.2: Correlaciona solicitudes con MDC · 10 min
+#### Subtema 4.2: Correlaciona solicitudes con MDC · 10 min
 
 **1. Contexto**
 
@@ -538,7 +344,7 @@ MDC normalmente asocia contexto al hilo. Para trabajo asíncrono hay que propaga
 
 Guarda dos eventos y confirma que no comparten el ID.
 
-#### Subtema 6.3: Evita registrar el mismo error en todas las capas · 10 min
+#### Subtema 4.3: Evita registrar el mismo error en todas las capas · 10 min
 
 **1. Contexto**
 
@@ -586,6 +392,200 @@ Modifica `ProcesarEntrega.java` para llamar `MDC.put("traceId", traceId)` sin el
 
 ---
 
+
+### Tema 5: Gradle y builds reproducibles · Avanzado · 45 min
+
+**¿Por qué es importante?** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
+
+#### Subtema 5.1: Genera y usa el Gradle Wrapper · 10 min
+
+**1. Contexto**
+
+El build no debe depender de la versión Gradle que cada persona instaló globalmente.
+
+**2. Hazlo tú**
+
+Desde la raíz copia `examples/java-gradle/build.gradle.kts` y los otros archivos de `examples/java-gradle` a `ejemplo-gradle-reproducible`, entra a la carpeta y corre `gradle wrapper --gradle-version 9.1.0`, `./gradlew --version` y `./gradlew clean build`.
+
+**Resultado esperado:** el wrapper informa Gradle 9.1.0 y el build ejecuta con esa versión.
+
+**Fallo deliberado:** ejecuta `gradle build` después de cambiar la versión global. **Diagnóstico:** usa `./gradlew` para el proyecto y evita depender de la instalación personal.
+
+**3. Entiende**
+
+El wrapper fija Gradle; la toolchain define el JDK usado para compilar. El JDK que ejecuta Gradle también debe ser compatible.
+
+**4. Cierra**
+
+Guarda salida del wrapper y resultado del build.
+
+#### Subtema 5.2: Repite el build y compara artefactos · 10 min
+
+**1. Contexto**
+
+Timestamps o contenido variable en el JAR hacen difícil verificar qué artefacto se desplegó.
+
+**2. Hazlo tú**
+
+En `ejemplo-gradle-reproducible/build.gradle.kts` comprueba que `isPreserveFileTimestamps = false` y `isReproducibleFileOrder = true`. Ejecuta dos veces `./gradlew clean build`; compara `shasum -a 256 build/libs/*.jar` en macOS o `sha256sum build/libs/*.jar` en Linux.
+
+**Resultado esperado:** ambos hashes coinciden para la misma fuente y configuración.
+
+**Fallo deliberado:** añade la hora actual al manifest y repite. **Diagnóstico:** elimina el timestamp o sustitúyelo por un valor estable.
+
+**3. Entiende**
+
+Reproducibilidad depende de entradas declaradas y pasos deterministas, no solo de activar la caché.
+
+**4. Cierra**
+
+Guarda hashes antes y después de quitar el dato variable.
+
+#### Subtema 5.3: Verifica dependencias descargadas · 10 min
+
+**1. Contexto**
+
+Una coordenada fija no detecta por sí sola que el archivo descargado cambió.
+
+**2. Hazlo tú**
+
+En `ejemplo-gradle-reproducible`, ejecuta `./gradlew --write-verification-metadata sha256 help`, conserva `gradle/verification-metadata.xml` y luego corre `./gradlew clean build`.
+
+**Resultado esperado:** el build compara checksums declarados con los artefactos resueltos.
+
+**Fallo deliberado:** edita un checksum en `gradle/verification-metadata.xml`. **Diagnóstico:** la verificación falla; restaura el valor obtenido de una fuente confiable.
+
+**3. Entiende**
+
+Dependency locking registra versiones; verification metadata controla integridad de los bytes. No subas credenciales al repositorio.
+
+**4. Cierra**
+
+Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [Gradle dependency verification](https://docs.gradle.org/current/userguide/dependency_verification.html).
+
+**Prueba dos entornos:** usa el Gradle Wrapper y ejecuta `./gradlew clean build` en un checkout limpio. Si difiere la salida, compara JDK, wrapper y `./gradlew dependencies --configuration runtimeClasspath`. El caché acelera descargas, pero no fija la versión resuelta. Declara versiones en catálogo o plataforma y comparte convenciones cuando los módulos repiten configuración. Guarda la tarea que produce el artefacto desplegado. Fuente: https://docs.gradle.org/current/userguide/declaring_configurations.html.
+
+#### Fragmento real
+
+```bash
+cp -R examples/java-gradle ejemplo-gradle-reproducible
+cd ejemplo-gradle-reproducible
+gradle wrapper --gradle-version 9.1.0
+./gradlew clean build
+```
+
+**Conexión con el proyecto integrador:** si distribuyes el proyecto integrador con Gradle, el wrapper versionado (y `isReproducibleFileOrder`/sin timestamps) es lo que garantiza que el JAR que construye tu compañero sea bit a bit igual al tuyo para el mismo commit.
+
+**Límite:** la reproducibilidad del artefacto (mismo hash) no certifica que el build sea correcto ni rápido; solo dice que, dado el mismo código y configuración, el resultado no varía por azar (timestamps, orden de archivos).
+
+#### Practica
+
+Modifica `build.gradle.kts` para incluir la hora actual (`System.currentTimeMillis()`) en el manifest del JAR, ejecuta `./gradlew clean build` dos veces y compara los hashes SHA-256 antes y después de revertir el cambio.
+
+### Tema 6: Pruebas de integración reproducibles · Avanzado · 45 min
+
+**¿Por qué es importante?** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
+
+**Preparación:** Testcontainers `2.0.5`; añade `testcontainers-junit-jupiter`, `testcontainers-postgresql`, pgJDBC `42.7.14` y JUnit a la configuración de test. Imagen fijada: `postgres:17.11-alpine3.24`. En `build.gradle.kts` crea el source set `integrationTest`, extiende su configuración desde `testImplementation` y registra su tarea:
+
+```kotlin
+val integrationTest by sourceSets.creating {
+    java.srcDir("src/integrationTest/java")
+    resources.srcDir("src/integrationTest/resources")
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += output + compileClasspath
+}
+configurations[integrationTest.implementationConfigurationName]
+    .extendsFrom(configurations.testImplementation.get())
+
+tasks.register<Test>("integrationTest") {
+    testClassesDirs = integrationTest.output.classesDirs
+    classpath = integrationTest.runtimeClasspath
+    useJUnitPlatform()
+}
+```
+
+Fuentes: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Jupiter](https://java.testcontainers.org/test_framework_integration/junit_5/).
+
+#### Subtema 6.1: Levanta PostgreSQL al ejecutar el test · 10 min
+
+**1. Contexto**
+
+El test debe iniciar una base conocida y cerrarla al finalizar.
+
+**2. Hazlo tú**
+
+Crea `src/integrationTest/java/RepositorioPostgresIT.java` con `@Testcontainers`, `@Container static PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:17.11-alpine3.24")` y un test que compruebe `db.isRunning()`. Ejecuta `./gradlew integrationTest` con Docker activo.
+
+**Resultado esperado:** Testcontainers inicia la imagen exacta durante el test y luego la elimina.
+
+**Fallo deliberado:** ejecuta el test con Docker apagado. **Diagnóstico:** comprueba el runtime de contenedores antes de interpretar el fallo como error de SQL.
+
+**3. Entiende**
+
+La prueba usa un servicio real en contenedor aislado, no un mock del driver.
+
+**4. Cierra**
+
+Guarda log de la versión de imagen y cierre del contenedor.
+
+#### Subtema 6.2: Prueba el SQL y la migración reales · 10 min
+
+**1. Contexto**
+
+Una columna decimal y una fecha deben conservar sus valores con PostgreSQL real.
+
+**2. Hazlo tú**
+
+En `src/integrationTest/resources/db/migration/V1__guias.sql` crea tabla `guias` con `monto NUMERIC(10,2)` y `fecha DATE`; en `src/integrationTest/java/RepositorioPostgresIT.java`, inserta y recupera `123.45` y una fecha fija mediante JDBC. Ejecuta `./gradlew integrationTest`.
+
+**Resultado esperado:** el monto y la fecha recuperados coinciden exactamente.
+
+**Fallo deliberado:** cambia `monto` por `montoo` en la consulta. **Diagnóstico:** el motor real informa la columna inexistente; corrige la consulta y conserva la migración.
+
+**3. Entiende**
+
+Una base real detecta diferencias de dialecto y tipos que no aparecen con una implementación simulada.
+
+**4. Cierra**
+
+Guarda el resultado antes y después de reparar el nombre de columna.
+
+#### Subtema 6.3: Repite la prueba sin compartir estado · 10 min
+
+**1. Contexto**
+
+Una prueba debe poder repetirse en CI sin depender de una base que quedó de la ejecución anterior.
+
+**2. Hazlo tú**
+
+En `src/integrationTest/java/RepositorioPostgresIT.java`, ejecuta dos veces `./gradlew clean integrationTest`; configura esquema y datos dentro del ciclo de test y no uses una base local persistente.
+
+**Resultado esperado:** ambas ejecuciones parten de PostgreSQL limpio y terminan con los mismos assertions.
+
+**Fallo deliberado:** deja una fila fija y ejecuta dos veces un test que asume tabla vacía. **Diagnóstico:** crea/reset el esquema por ejecución o diseña fixture aislado.
+
+**3. Entiende**
+
+Contenedores desechables y datos controlados eliminan dependencia del orden; en CI sigue siendo necesario Docker.
+
+**4. Cierra**
+
+Conserva los dos resultados y el comando usado.
+
+Ejecuta:
+
+```bash
+./gradlew integrationTest
+```
+
+**Conexión con el proyecto integrador:** si el proyecto integrador persiste en PostgreSQL (módulo 16), esta es la prueba que confirma que tus migraciones y consultas funcionan contra el motor real, no solo contra el fake en memoria del Tema 4.
+
+**Límite:** Testcontainers exige Docker disponible; en un entorno sin Docker (algunos runners de CI gratuitos) esta suite no puede correr y debe separarse de las pruebas unitarias rápidas, como ya hace el source set `integrationTest` distinto de `test`.
+
+#### Practica
+
+Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 6.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
 
 ## Construcción guiada del capítulo
 

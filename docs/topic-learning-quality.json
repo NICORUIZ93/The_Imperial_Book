@@ -18527,7 +18527,7 @@
     "java": [
       {
         "module": 0,
-        "topic": "Tema 1: Del código fuente a la JVM",
+        "topic": "Tema 1: Del código fuente a la JVM · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18549,7 +18549,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: public static void main — qué significa cada palabra",
+        "topic": "Tema 3: public static void main — qué significa cada palabra · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18571,7 +18571,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: JDK, JRE y JVM",
+        "topic": "Tema 2: JDK, JRE y JVM · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18593,7 +18593,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Tipos primitivos vs referencias",
+        "topic": "Tema 4: Tipos primitivos vs referencias · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18615,7 +18615,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 5: Variables, conversiones y `String`",
+        "topic": "Tema 5: Variables, conversiones y `String` · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18637,7 +18637,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 6: Operadores, precedencia y control de flujo",
+        "topic": "Tema 6: Operadores, precedencia y control de flujo · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18659,7 +18659,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 7: Arreglos, wrappers y paso de argumentos",
+        "topic": "Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18681,7 +18681,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
+        "topic": "Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18703,7 +18703,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: Clases, objetos, constructores y encapsulación",
+        "topic": "Tema 1: Clases, objetos, constructores y encapsulación · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18725,7 +18725,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Herencia y sobreescritura",
+        "topic": "Tema 2: Herencia y sobreescritura · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18747,7 +18747,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una",
+        "topic": "Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18769,7 +18769,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso",
+        "topic": "Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18791,7 +18791,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: module-info.java y encapsulación fuerte",
+        "topic": "Tema 1: module-info.java y encapsulación fuerte · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18813,7 +18813,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor",
+        "topic": "Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18835,7 +18835,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks",
+        "topic": "Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18857,7 +18857,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Generaciones de memoria y recolectores",
+        "topic": "Tema 1: Generaciones de memoria y recolectores · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18879,7 +18879,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Java Flight Recorder y JIT compilation",
+        "topic": "Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18901,7 +18901,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: Referencias especiales y heap dumps",
+        "topic": "Tema 3: Referencias especiales y heap dumps · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18923,7 +18923,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 4: Foreign Function & Memory API (Java 22)",
+        "topic": "Tema 4: Foreign Function & Memory API (Java 22) · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18945,7 +18945,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Builder — configuración paso a paso y validación",
+        "topic": "Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18967,7 +18967,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Factory Method y Strategy",
+        "topic": "Tema 2: Factory Method y Strategy · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18989,7 +18989,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 3: Abstract Factory y familias de productos compatibles",
+        "topic": "Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19011,7 +19011,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón",
+        "topic": "Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19033,7 +19033,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos",
+        "topic": "Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19055,7 +19055,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 6: Patrones estructurales para conectar piezas existentes",
+        "topic": "Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19077,7 +19077,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: Arquitectura por capas del proyecto integrador",
+        "topic": "Tema 1: Arquitectura por capas del proyecto integrador · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19099,7 +19099,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: Integrando concurrencia, modelado y testing",
+        "topic": "Tema 3: Integrando concurrencia, modelado y testing · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19121,7 +19121,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 3: Build reproducible y cierre del track",
+        "topic": "Tema 2: Build reproducible y cierre del track · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19143,7 +19143,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: Compartir memoria requiere orden y visibilidad",
+        "topic": "Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19165,7 +19165,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo",
+        "topic": "Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19187,7 +19187,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Deserializar es permitir construcción y comportamiento",
+        "topic": "Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19209,7 +19209,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida",
+        "topic": "Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19275,7 +19275,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 1: Maven avanzado",
+        "topic": "Tema 1: Maven avanzado · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19297,7 +19297,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 2: Gradle y builds reproducibles",
+        "topic": "Tema 3: JUnit 5, Mockito y assertions expresivas · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19319,7 +19319,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 3: Proyectos multi-módulo sin ciclos",
+        "topic": "Tema 4: SLF4J, Logback, MDC y logging estructurado · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19341,7 +19341,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 4: JUnit 5, Mockito y assertions expresivas",
+        "topic": "Tema 6: Pruebas de integración reproducibles · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19363,7 +19363,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 5: Pruebas de integración reproducibles",
+        "topic": "Tema 2: Proyectos multi-módulo sin ciclos · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19385,7 +19385,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 6: SLF4J, Logback, MDC y logging estructurado",
+        "topic": "Tema 5: Gradle y builds reproducibles · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19407,7 +19407,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 1: Entidades y relaciones JPA",
+        "topic": "Tema 1: Entidades y relaciones JPA · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19429,7 +19429,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 2: FetchType.LAZY, EAGER y el problema N+1",
+        "topic": "Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19451,7 +19451,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 3: Relaciones uno a uno, muchos a muchos y herencia",
+        "topic": "Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19473,7 +19473,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 4: Ciclo de vida, EntityManager y consultas tipadas",
+        "topic": "Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19495,7 +19495,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 5: Búsquedas dinámicas con Criteria y Querydsl",
+        "topic": "Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19517,7 +19517,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 6: EntityGraph y cachés de persistencia",
+        "topic": "Tema 6: EntityGraph y cachés de persistencia · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19539,7 +19539,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 7: Concurrencia, transacciones y propagación",
+        "topic": "Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19561,7 +19561,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers",
+        "topic": "Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19583,7 +19583,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 1: JDBC, PreparedStatement y DAO",
+        "topic": "Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19605,7 +19605,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 2: Transacciones, ACID y aislamiento",
+        "topic": "Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19627,7 +19627,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 1: HttpClient, REST, timeouts y fallos",
+        "topic": "Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19649,7 +19649,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 2: Tokens, validación y límites de seguridad",
+        "topic": "Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19693,7 +19693,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución",
+        "topic": "Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19715,7 +19715,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 2: Expresiones regulares con Pattern y Matcher",
+        "topic": "Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19737,7 +19737,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 3: Dinero exacto con BigDecimal",
+        "topic": "Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19759,7 +19759,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 4: Assertions y diseño por contrato",
+        "topic": "Tema 4: Assertions y diseño por contrato · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19781,7 +19781,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones",
+        "topic": "Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19803,7 +19803,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "topic": "Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19825,7 +19825,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 7: Internacionalización: números, monedas, fechas y orden de texto",
+        "topic": "Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19891,7 +19891,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: List, Set, Map y sus implementaciones",
+        "topic": "Tema 1: List, Set, Map y sus implementaciones · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19913,7 +19913,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: Genéricos, wildcards y type erasure",
+        "topic": "Tema 3: Genéricos, wildcards y type erasure · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19935,7 +19935,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Comparable vs Comparator, e iteración",
+        "topic": "Tema 2: Comparable vs Comparator, e iteración · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19957,7 +19957,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier",
+        "topic": "Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -19979,7 +19979,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas",
+        "topic": "Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20001,7 +20001,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: Streams como composición: pereza, orden y efectos que se esconden",
+        "topic": "Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20023,7 +20023,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 4: Function y BiFunction: transformar uno o dos datos",
+        "topic": "Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20045,7 +20045,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo",
+        "topic": "Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20067,7 +20067,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla",
+        "topic": "Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20089,7 +20089,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 7: Optional: buscar un envío que puede no existir",
+        "topic": "Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20111,7 +20111,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar",
+        "topic": "Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20133,7 +20133,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados",
+        "topic": "Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20155,7 +20155,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto",
+        "topic": "Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20177,7 +20177,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos",
+        "topic": "Tema 11: Streams paralelos: comparar antes de acelerarlos · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20199,7 +20199,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir",
+        "topic": "Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20221,7 +20221,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 13: Flow API: publicar datos con demanda y cierre",
+        "topic": "Tema 13: Flow API: publicar datos con demanda y cierre · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20463,7 +20463,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 1: Checked vs unchecked exceptions",
+        "topic": "Tema 1: Checked vs unchecked exceptions · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20485,7 +20485,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 2: try-with-resources",
+        "topic": "Tema 2: try-with-resources · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20507,7 +20507,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones",
+        "topic": "Tema 3: Excepciones personalizadas y no tragar excepciones · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20529,7 +20529,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: Stream API — map, filter, reduce, collect",
+        "topic": "Tema 1: Stream API — map, filter, reduce, collect · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20551,7 +20551,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Optional — evitar null explícitamente",
+        "topic": "Tema 2: Optional — evitar null explícitamente · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20573,7 +20573,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: Streams paralelos y referencias a métodos",
+        "topic": "Tema 4: Streams paralelos y referencias a métodos · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20595,7 +20595,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Stream Gatherers (Java 24)",
+        "topic": "Tema 3: Stream Gatherers (Java 24) · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20617,7 +20617,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 1: ExecutorService y gestión de hilos",
+        "topic": "Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20639,7 +20639,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: CompletableFuture",
+        "topic": "Tema 2: CompletableFuture · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20661,7 +20661,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 3: Virtual threads",
+        "topic": "Tema 3: Virtual threads · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20683,7 +20683,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 4: Condiciones de carrera y sincronización",
+        "topic": "Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20705,7 +20705,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)",
+        "topic": "Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20727,7 +20727,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25)",
+        "topic": "Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20749,7 +20749,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos",
+        "topic": "Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20771,7 +20771,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: NIO.2 — Path y Files",
+        "topic": "Tema 1: NIO.2 — Path y Files · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20793,7 +20793,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: Serialización con Jackson",
+        "topic": "Tema 2: Serialización con Jackson · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20815,7 +20815,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: Archivos grandes y recursos del classpath",
+        "topic": "Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20837,7 +20837,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: record — modelos inmutables sin boilerplate",
+        "topic": "Tema 1: record — modelos inmutables sin boilerplate · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20859,7 +20859,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad",
+        "topic": "Tema 2: sealed — jerarquías cerradas y exhaustividad · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20881,7 +20881,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Pattern matching exhaustivo y para instanceof",
+        "topic": "Tema 3: Pattern matching exhaustivo y para instanceof · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20903,7 +20903,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 4: Unnamed variables y patterns (_, Java 22)",
+        "topic": "Tema 4: Unnamed variables y patterns (_, Java 22) · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20925,7 +20925,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: pom.xml vs build.gradle.kts",
+        "topic": "Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20947,7 +20947,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Ciclo de vida de build y scopes",
+        "topic": "Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20969,7 +20969,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Proyectos multi-módulo",
+        "topic": "Tema 3: Proyectos multi-módulo · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -20991,7 +20991,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas",
+        "topic": "Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21013,7 +21013,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida",
+        "topic": "Tema 1: JUnit 5 — anotaciones y ciclo de vida · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21035,7 +21035,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Mockito — aislar dependencias",
+        "topic": "Tema 2: Mockito — aislar dependencias · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21057,7 +21057,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Tests parametrizados y cobertura",
+        "topic": "Tema 3: Tests parametrizados y cobertura · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: module-info.java y encapsulación fuerte
+### Tema 1: module-info.java y encapsulación fuerte · Básico · 40 min
 
 **¿Por qué es importante?** JPMS permite expresar dependencias y qué paquetes ofrece un componente; una clase pública no se vuelve API pública del módulo automáticamente.
 
@@ -97,7 +97,7 @@ java --module-path out -m academia.app/academia.app.Main
 
 Modifica `src/academia.rutas/module-info.java` para exportar `academia.rutas` (el paquete interno) en vez de `academia.rutas.api` y vuelve a compilar; confirma que `Main`, del módulo `academia.app`, deja de compilar aunque `Buscar` siga siendo `public`.
 
-### Tema 2: Migración incremental y cuándo JPMS aporta valor
+### Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 40 min
 
 **¿Por qué es importante?** un módulo explícito mejora límites, pero migrar una aplicación sin mapa de dependencias puede romper builds y librerías.
 
@@ -185,7 +185,7 @@ javac -d out --module-source-path src $(find src -name '*.java')
 
 Modifica el programa de una sola clase del Subtema 2.3 para que dependa de un paquete que no exportaste y confirma el error de compilación antes de decidir si vale la pena modularizarlo.
 
-### Tema 3: opens para acceso reflexivo controlado de frameworks
+### Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 45 min
 
 **¿Por qué es importante?** algunas librerías leen o escriben campos privados mediante reflexión; `opens` puede habilitar ese acceso de forma limitada.
 

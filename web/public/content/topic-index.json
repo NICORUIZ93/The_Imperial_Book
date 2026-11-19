@@ -3680,12 +3680,12 @@
         "fragment": "tema-1-del-codigo-fuente-a-la-jvm"
       },
       {
-        "title": "public static void main — qué significa cada palabra",
-        "fragment": "tema-2-public-static-void-main-que-significa-cada-palabra"
+        "title": "JDK, JRE y JVM",
+        "fragment": "tema-2-jdk-jre-y-jvm"
       },
       {
-        "title": "JDK, JRE y JVM",
-        "fragment": "tema-3-jdk-jre-y-jvm"
+        "title": "public static void main — qué significa cada palabra",
+        "fragment": "tema-3-public-static-void-main-que-significa-cada-palabra"
       },
       {
         "title": "Tipos primitivos vs referencias",
@@ -3790,12 +3790,12 @@
         "fragment": "tema-1-arquitectura-por-capas-del-proyecto-integrador"
       },
       {
-        "title": "Integrando concurrencia, modelado y testing",
-        "fragment": "tema-2-integrando-concurrencia-modelado-y-testing"
+        "title": "Build reproducible y cierre del track",
+        "fragment": "tema-2-build-reproducible-y-cierre-del-track"
       },
       {
-        "title": "Build reproducible y cierre del track",
-        "fragment": "tema-3-build-reproducible-y-cierre-del-track"
+        "title": "Integrando concurrencia, modelado y testing",
+        "fragment": "tema-3-integrando-concurrencia-modelado-y-testing"
       }
     ],
     "14": [
@@ -3830,24 +3830,24 @@
         "fragment": "tema-1-maven-avanzado"
       },
       {
-        "title": "Gradle y builds reproducibles",
-        "fragment": "tema-2-gradle-y-builds-reproducibles"
-      },
-      {
         "title": "Proyectos multi-módulo sin ciclos",
-        "fragment": "tema-3-proyectos-multi-modulo-sin-ciclos"
+        "fragment": "tema-2-proyectos-multi-modulo-sin-ciclos"
       },
       {
         "title": "JUnit 5, Mockito y assertions expresivas",
-        "fragment": "tema-4-junit-5-mockito-y-assertions-expresivas"
-      },
-      {
-        "title": "Pruebas de integración reproducibles",
-        "fragment": "tema-5-pruebas-de-integracion-reproducibles"
+        "fragment": "tema-3-junit-5-mockito-y-assertions-expresivas"
       },
       {
         "title": "SLF4J, Logback, MDC y logging estructurado",
-        "fragment": "tema-6-slf4j-logback-mdc-y-logging-estructurado"
+        "fragment": "tema-4-slf4j-logback-mdc-y-logging-estructurado"
+      },
+      {
+        "title": "Gradle y builds reproducibles",
+        "fragment": "tema-5-gradle-y-builds-reproducibles"
+      },
+      {
+        "title": "Pruebas de integración reproducibles",
+        "fragment": "tema-6-pruebas-de-integracion-reproducibles"
       }
     ],
     "16": [
@@ -3856,20 +3856,20 @@
         "fragment": "tema-1-entidades-y-relaciones-jpa"
       },
       {
-        "title": "FetchType.LAZY, EAGER y el problema N+1",
-        "fragment": "tema-2-fetchtype-lazy-eager-y-el-problema-n-1"
-      },
-      {
         "title": "Relaciones uno a uno, muchos a muchos y herencia",
-        "fragment": "tema-3-relaciones-uno-a-uno-muchos-a-muchos-y-herencia"
+        "fragment": "tema-2-relaciones-uno-a-uno-muchos-a-muchos-y-herencia"
       },
       {
         "title": "Ciclo de vida, EntityManager y consultas tipadas",
-        "fragment": "tema-4-ciclo-de-vida-entitymanager-y-consultas-tipadas"
+        "fragment": "tema-3-ciclo-de-vida-entitymanager-y-consultas-tipadas"
       },
       {
         "title": "Búsquedas dinámicas con Criteria y Querydsl",
-        "fragment": "tema-5-busquedas-dinamicas-con-criteria-y-querydsl"
+        "fragment": "tema-4-busquedas-dinamicas-con-criteria-y-querydsl"
+      },
+      {
+        "title": "FetchType.LAZY, EAGER y el problema N+1",
+        "fragment": "tema-5-fetchtype-lazy-eager-y-el-problema-n-1"
       },
       {
         "title": "EntityGraph y cachés de persistencia",
@@ -3930,12 +3930,12 @@
         "fragment": "tema-5-serviceloader-plugins-sin-acoplar-implementaciones"
       },
       {
-        "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "fragment": "tema-6-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
+        "title": "Internacionalización: números, monedas, fechas y orden de texto",
+        "fragment": "tema-6-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
       },
       {
-        "title": "Internacionalización: números, monedas, fechas y orden de texto",
-        "fragment": "tema-7-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
+        "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
+        "fragment": "tema-7-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
       },
       {
         "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader",
@@ -3952,12 +3952,12 @@
         "fragment": "tema-1-list-set-map-y-sus-implementaciones"
       },
       {
-        "title": "Genéricos, wildcards y type erasure",
-        "fragment": "tema-2-genericos-wildcards-y-type-erasure"
+        "title": "Comparable vs Comparator, e iteración",
+        "fragment": "tema-2-comparable-vs-comparator-e-iteracion"
       },
       {
-        "title": "Comparable vs Comparator, e iteración",
-        "fragment": "tema-3-comparable-vs-comparator-e-iteracion"
+        "title": "Genéricos, wildcards y type erasure",
+        "fragment": "tema-3-genericos-wildcards-y-type-erasure"
       }
     ],
     "20": [
@@ -3966,16 +3966,16 @@
         "fragment": "tema-1-las-cuatro-formas-predicate-function-consumer-y-supplier"
       },
       {
+        "title": "Function y BiFunction: transformar uno o dos datos",
+        "fragment": "tema-2-function-y-bifunction-transformar-uno-o-dos-datos"
+      },
+      {
         "title": "Componer sin anidar: andThen, compose, negate y reglas encadenadas",
-        "fragment": "tema-2-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
+        "fragment": "tema-3-componer-sin-anidar-andthen-compose-negate-y-reglas-encadenadas"
       },
       {
         "title": "Streams como composición: pereza, orden y efectos que se esconden",
-        "fragment": "tema-3-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
-      },
-      {
-        "title": "Function y BiFunction: transformar uno o dos datos",
-        "fragment": "tema-4-function-y-bifunction-transformar-uno-o-dos-datos"
+        "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       },
       {
         "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
@@ -4082,12 +4082,12 @@
         "fragment": "tema-2-optional-evitar-null-explicitamente"
       },
       {
-        "title": "Streams paralelos y referencias a métodos",
-        "fragment": "tema-3-streams-paralelos-y-referencias-a-metodos"
+        "title": "Stream Gatherers (Java 24)",
+        "fragment": "tema-3-stream-gatherers-java-24"
       },
       {
-        "title": "Stream Gatherers (Java 24)",
-        "fragment": "tema-4-stream-gatherers-java-24"
+        "title": "Streams paralelos y referencias a métodos",
+        "fragment": "tema-4-streams-paralelos-y-referencias-a-metodos"
       }
     ],
     "5": [

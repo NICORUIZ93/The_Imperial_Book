@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: NIO.2 — Path y Files
+### Tema 1: NIO.2 — Path y Files · Intermedio · 40 min
 
 **¿Por qué es importante?** Las rutas recibidas desde afuera pueden apuntar a archivos que la aplicación no debería leer.
 
@@ -138,7 +138,7 @@ Explica por qué este stream se cierra como un archivo. Fuente oficial: [Path y 
 
 **Proyecto integrador:** valida la carpeta de comprobantes y lista los archivos que puede procesar. **Límite:** la comprobación de ruta no sustituye los permisos del sistema operativo. **Práctica:** modifica `ComprobanteSeguro.java` para aceptar un segundo argumento con la carpeta base y confirma que sigue rechazando rutas que escapan de esa carpeta con `../`.
 
-### Tema 2: Serialización con Jackson
+### Tema 2: Serialización con Jackson · Intermedio · 40 min
 
 **¿Por qué es importante?** Los servicios intercambian JSON; convertirlo con tipos claros hace más fácil detectar datos inválidos.
 
@@ -275,7 +275,7 @@ Anota si el lector de RutaFlow debe ser estricto o tolerante. Fuentes oficiales:
 
 **Proyecto integrador:** el motor serializa cada guía de entrega a JSON para el API y la reconstruye con el mismo record al leer el cuerpo de la solicitud. **Práctica:** modifica `Envio` para agregar un campo `pesoKg` y confirma que la serialización y la deserialización siguen funcionando con el campo nuevo.
 
-### Tema 3: Archivos grandes y recursos del classpath
+### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
 
 **¿Por qué es importante?** Cargar un archivo enorme completo puede agotar la memoria; un recurso del classpath viaja junto al artefacto.
 
