@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { TRACKS } from './course-data';
+import { applyRenumberings, latestRenumberingVersion, RENUMBERING_VERSION_KEY } from './module-renumbering';
 
 export interface TrackProgress {
   completedModules: number[];
@@ -29,11 +30,22 @@ export class ProgressService {
   private loadInitialState(): ProgressState {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw) as ProgressState;
+      if (raw) return this.applyPendingRenumberings(JSON.parse(raw) as ProgressState);
     } catch {
       // localStorage corrupto: se ignora y se continúa con estado vacío
     }
     return this.migrateLegacyCloudProgress();
+  }
+
+  /** Traduce el progreso si algún curso renumeró módulos desde la última visita (specs/016). */
+  private applyPendingRenumberings(state: ProgressState): ProgressState {
+    const latest = latestRenumberingVersion();
+    const applied = Number(localStorage.getItem(RENUMBERING_VERSION_KEY) ?? '0') || 0;
+    if (applied >= latest) return state;
+    const translated = applyRenumberings(state, applied);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(translated));
+    localStorage.setItem(RENUMBERING_VERSION_KEY, String(latest));
+    return translated;
   }
 
   /** Migra una sola vez el progreso pre-existente (solo Cloud) al nuevo esquema multi-track. */
@@ -58,6 +70,8 @@ export class ProgressService {
 
   private persist(): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state()));
+    // Lo que se guarda ya está en la numeración vigente.
+    localStorage.setItem(RENUMBERING_VERSION_KEY, String(latestRenumberingVersion()));
   }
 
   exportProgress(): string {
@@ -65,6 +79,7 @@ export class ProgressService {
       format: BACKUP_FORMAT,
       version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
+      renumberingVersion: latestRenumberingVersion(),
       tracks: this.state(),
     }, null, 2);
   }
@@ -81,8 +96,10 @@ export class ProgressService {
       throw new Error('El archivo no contiene JSON válido.');
     }
 
-    const progress = this.validateBackup(parsed);
+    const fromVersion = Number((parsed as { renumberingVersion?: unknown }).renumberingVersion ?? 0) || 0;
+    const progress = applyRenumberings(this.validateBackup(parsed), fromVersion);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    localStorage.setItem(RENUMBERING_VERSION_KEY, String(latestRenumberingVersion()));
     this.state.set(progress);
   }
 

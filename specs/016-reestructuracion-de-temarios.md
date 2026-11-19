@@ -29,5 +29,5 @@ como backend de referencia de RutaFlow.
   Verificación: `grep -rqi "programación orientada a objetos" web/public/content/foundations && grep -rq "try/catch" web/public/content/javascript && grep -rq "Navigation 3" web/public/content/android && grep -rq "Signal Forms" web/public/content/angular && grep -rq "Nyquist" web/public/content/control-1`
 - **R5** `pendiente` — El backend de referencia de RutaFlow es Spring Boot.
   Verificación: `grep -rq "Spring Boot" web/public/content/rutaflow/modulo-0.md`
-- **R6** `pendiente` — El progreso de módulos renumerados se conserva.
+- **R6** `hecho` — El progreso de módulos renumerados se conserva.
   Verificación: `test -f web/src/app/module-renumbering.ts`
