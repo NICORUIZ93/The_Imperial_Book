@@ -31,3 +31,5 @@ como backend de referencia de RutaFlow.
   Verificación: `grep -rq "Spring Boot" web/public/content/rutaflow/modulo-0.md`
 - **R6** `hecho` — El progreso de módulos renumerados se conserva.
   Verificación: `test -f web/src/app/module-renumbering.ts`
+- **F1** `hecho` — Fundamentos: temas de clases y programación orientada a objetos (M1 T6–T7) antes del primer `class`, todo en Python 3.14 y duplicados internos fusionados (grafos en M2 T7, patrones en M14, refactoring en M15) sin borrar módulos.
+  Verificación: `grep -q "programación orientada a objetos" web/public/content/foundations/modulo-1.md && grep -q "abc" web/public/content/foundations/modulo-1.md && ! grep -rqE "Python 3\.(9|1[0-3])|python:3\.1[0-3]|python-version: '3\.1[0-3]'" web/public/content/foundations`

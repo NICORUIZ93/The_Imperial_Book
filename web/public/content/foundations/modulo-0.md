@@ -8,7 +8,7 @@ Una **carpeta** reúne archivos. Un **archivo** guarda contenido con un nombre, 
 
 ### Instala y comprueba
 
-1. Instala [Visual Studio Code](https://code.visualstudio.com/) y [Python 3](https://www.python.org/downloads/) desde sus sitios oficiales. En Windows, sigue las indicaciones del instalador para habilitar los comandos de Python. Git se usará más adelante; no hace falta para esta práctica.
+1. Instala [Visual Studio Code](https://code.visualstudio.com/) y [Python 3.14](https://www.python.org/downloads/) desde sus sitios oficiales (la línea de versiones de la academia fija Python 3.14 para todo el curso). En Windows, sigue las indicaciones del instalador para habilitar los comandos de Python. Git se usará más adelante; no hace falta para esta práctica.
 2. Abre VS Code. Elige **File → Open Folder** (Archivo → Abrir carpeta), crea una carpeta llamada `primera-sesion` dentro de Documentos y ábrela. Si VS Code pregunta por la confianza, confirma solo si es la carpeta que acabas de crear.
 3. Abre **Terminal → New Terminal** (Terminal → Nueva terminal). El panel inferior es donde escribirás los comandos. Pulsa Enter después de cada uno.
 4. Comprueba Python con el comando de tu sistema:
@@ -19,11 +19,11 @@ Una **carpeta** reúne archivos. Un **archivo** guarda contenido con un nombre, 
 | macOS / Terminal | `python3 --version` | `python3 saludo.py` |
 | Linux / terminal | `python3 --version` | `python3 saludo.py` |
 
-**Resultado esperado:** una línea que empieza por `Python 3.`. Los ejemplos usan funciones básicas de Python 3 y no necesitan instalar paquetes. En Ubuntu/Debian, si Python falta, puedes instalarlo con `sudo apt update` y después `sudo apt install python3`; son comandos del sistema y pueden pedir la contraseña de administrador.
+**Resultado esperado:** una línea que empieza por `Python 3.14` (por ejemplo, `Python 3.14.6`). Los ejemplos del curso se comprobaron con Python 3.14 y no necesitan instalar paquetes. Si ves una versión anterior, instala la 3.14 antes de seguir: algunos mensajes de error que el curso cita cambian entre versiones. En Ubuntu/Debian, si Python falta, puedes instalarlo con `sudo apt update` y después `sudo apt install python3`; son comandos del sistema y pueden pedir la contraseña de administrador. Comprueba después la versión: si tu distribución trae una anterior a la 3.14, instala la 3.14 desde python.org o con el gestor que use tu equipo.
 
 Si aparece «comando no encontrado» o «no se reconoce», cierra y vuelve a abrir la terminal después de instalar. En Windows prueba `python --version` si `py` no está disponible; si funciona, usa `python` en lugar de `py` durante el capítulo. Si aparece `>>>`, abriste Python en modo interactivo: escribe `exit()` y pulsa Enter para volver a la terminal. No avances hasta ver la versión.
 
-**Comprobación de esta edición (2026-11-01):** se verificó `Python 3.9.6` en macOS 27.2. Las instrucciones para PowerShell y Linux se contrastaron con la documentación oficial, pero no se ejecutaron en esos sistemas. Para una instalación nueva, usa la versión que Python.org indique como vigente y confirma el resultado con el comando de tu sistema.
+**Comprobación de esta edición (2026-11-18):** la línea de referencia es Python 3.14 (`docs/VERSIONES.md`). Los bloques Python del curso se ejecutaron con Python 3.14.6 en Linux. Las instrucciones para PowerShell y macOS se contrastaron con la documentación oficial, pero no se ejecutaron en esos sistemas con la 3.14.
 
 **Al terminar conservarás:** `saludo.py`, `presentacion.py` y un `README.md` con tus comandos, resultados y diagnóstico. Serán el primer registro de trabajo de tu futuro gestor de tareas por terminal. No necesitas construir ese gestor todavía.
 
@@ -165,7 +165,7 @@ Transfiere el modelo al **proyecto integrador**: dibuja qué partes de un futuro
 
 **Fuentes oficiales revisadas el 2026-11-01:** [Python `os`](https://docs.python.org/3/library/os.html), [Python `platform`](https://docs.python.org/3/library/platform.html), [Python `sys`](https://docs.python.org/3/library/sys.html) y [uso del intérprete](https://docs.python.org/3/tutorial/interpreter.html).
 
-**Registro de ejecución:** el 2026-11-18 se ejecutó `entorno.py` con Python 3.13 en Linux: imprimió las seis líneas, `echo $?` dio `0`, y con `os.getpid(1)` apareció `TypeError: posix.getpid() takes no arguments (1 given)` con código de salida `1`. No se ejecutó en Windows ni macOS.
+**Registro de ejecución:** el 2026-11-18 se ejecutó `entorno.py` con Python 3.14.6 en Linux: imprimió las seis líneas, `echo $?` dio `0`, y con `os.getpid(1)` apareció `TypeError: posix.getpid() takes no arguments (1 given)` con código de salida `1`. No se ejecutó en Windows ni macOS.
 
 ### Tema 2: Del archivo fuente al programa en ejecución
 

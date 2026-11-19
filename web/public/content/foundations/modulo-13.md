@@ -6,7 +6,7 @@
 ### Tema 1: Ordenamientos: insertion, merge y quick sort
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.10+.
+Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.14, la línea del curso.
 
 #### Paso 2 · Contexto y caso real
 En RutaFlow, antes de cargar un camión se ordenan los paquetes por peso para equilibrar la carga. Con 30 paquetes cualquier método sirve; con 30 000 la elección del algoritmo separa una respuesta instantánea de una pantalla congelada. `sorted()` de Python usa Timsort, una mezcla de merge sort e insertion sort: entender ambos explica por qué es tan rápido.

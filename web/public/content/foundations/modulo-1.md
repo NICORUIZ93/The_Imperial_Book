@@ -1,6 +1,6 @@
 # Módulo 1: Pensamiento computacional y programación
 
-**Entorno comprobado para esta revisión:** Python 3.9.6 en macOS 27.2. Los ejemplos no requieren paquetes externos. Las instrucciones para PowerShell y Linux no se ejecutaron en esos sistemas.
+**Entorno comprobado para esta revisión:** Python 3.14.6 en Linux (2026-11-18), la línea de referencia del curso. Los ejemplos no requieren paquetes externos. Las instrucciones para PowerShell y macOS no se ejecutaron en esos sistemas.
 
 
 ## Aprende construyendo
@@ -682,6 +682,570 @@ Escribe una función que reciba un texto y devuelva cuántos **bytes** ocupa en 
 
 #### Paso 7 · Cierre
 Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo de comparación de decimales. **¿Por qué es importante?** Casi todo principiante tropieza con el resultado visible de `0.1 + 0.2` y con el texto mal decodificado. Entender binario, UTF-8 y punto flotante ayuda a diagnosticar datos en archivos, bases de datos y redes. **Fuentes primarias consultadas el 2026-11-01:** [función `bin`](https://docs.python.org/3/library/functions.html#bin), [Unicode en Python](https://docs.python.org/3/howto/unicode.html), [aritmética de punto flotante](https://docs.python.org/3/tutorial/floatingpoint.html) y [aritmética decimal](https://docs.python.org/3/library/decimal.html).
+
+### Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min
+
+**Duración estimada:** 35 min (tres subtemas de 12, 13 y 10 min).
+**¿Por qué es importante?** Este tema abre la **programación orientada a objetos**: agrupar en un solo lugar los datos de una cosa y las reglas que los cambian. Desde el Módulo 2 el curso usa clases (el árbol binario de búsqueda, la tabla hash, los patrones del Módulo 14), así que aquí aprendes a leerlas y escribirlas.
+**Prerrequisitos:** Temas 2 a 4 de este módulo (variables, decisiones y funciones). Del Tema 1 basta recordar que `raise ValueError("mensaje")` detiene el programa con un error explicado. Línea de versiones: Python 3.14; los mensajes de error que se citan se obtuvieron con Python 3.14.6.
+
+**Mapa de subtemas críticos:** clase, objeto y `__init__` (núcleo, 6.1); métodos, `self` y reglas que protege el objeto (núcleo y diagnóstico, 6.2); identidad frente a igualdad y `__eq__` (límite y diagnóstico, 6.3). La herencia, la composición y las clases abstractas llegan en el Tema 7; `@dataclass`, que escribe `__init__` por ti, se usa desde el Módulo 8.
+
+#### Subtema 6.1: De un diccionario suelto a una clase · 12 min
+
+**1. Contexto**
+En el Tema 1 guardaste cada tarea del gestor como un diccionario (`{"titulo": ..., "estado": ...}`). Nada impide que otra parte del programa escriba `"estdo"` por error: aparece una clave nueva y la tarea queda a medias. Una **clase** declara en un solo lugar qué datos tiene toda tarea.
+
+**2. Hazlo tú**
+Crea la carpeta `ejemplo-clases` y entra en ella (`mkdir ejemplo-clases` y después `cd ejemplo-clases`). Crea `tarea.py`:
+
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+
+lavar = Tarea("Lavar la loza")
+pagar = Tarea("Pagar el arriendo", "hecha")
+
+print(lavar.titulo, "-", lavar.estado)
+print(pagar.titulo, "-", pagar.estado)
+print(type(lavar).__name__)
+print(lavar is pagar)
+```
+
+```bash
+python3 tarea.py
+```
+
+En Windows usa `py tarea.py`.
+
+**Resultado esperado:**
+
+```text
+Lavar la loza - pendiente
+Pagar el arriendo - hecha
+Tarea
+False
+```
+
+**Fallo deliberado:** cambia `Tarea("Lavar la loza")` por `Tarea()`. **Error esperado:** `TypeError: Tarea.__init__() missing 1 required positional argument: 'titulo'`. **Diagnóstico:** al escribir `Tarea(...)`, Python crea el objeto y llama a `__init__` con los argumentos que pasaste; `titulo` no tiene valor por defecto, así que es obligatorio. Restaura la línea y prueba ahora `print(lavar.estdo)`: Python 3.14 responde `AttributeError: 'Tarea' object has no attribute 'estdo'. Did you mean: 'estado'?`.
+
+**3. Entiende**
+Una **clase** es el molde; cada **objeto** (o instancia) es una tarea concreta creada con ese molde. `__init__` es el método que se ejecuta solo al crear el objeto, y `self` es el objeto que se está creando. Los **atributos** (`self.titulo`, `self.estado`) son variables que viven dentro de cada objeto: `lavar` y `pagar` tienen los suyos, por eso `lavar is pagar` es `False`. **Límite:** Python no prohíbe crear atributos nuevos después: `lavar.estdo = "hecha"` no da error, crea un tercer atributo y deja `estado` igual. La clase ordena el código, pero no reemplaza las pruebas.
+
+**4. Cierra**
+Agrega a `__init__` un parámetro `prioridad` con valor por defecto `2`, crea tres tareas y anota en tu cuaderno qué imprime `vars(lavar)` (la función `vars` muestra los atributos de un objeto como diccionario).
+
+#### Subtema 6.2: Métodos: el objeto protege sus propias reglas · 13 min
+
+**1. Contexto**
+Una tarea solo puede pasar de `pendiente` a `hecha`. Si cada parte del programa cambia `tarea.estado` a mano, la regla se repite (y se olvida) en muchos lugares. Un **método** pone la regla junto a los datos que protege.
+
+**2. Hazlo tú**
+Reemplaza `tarea.py`:
+
+```python
+class Tarea:
+    ESTADOS = ("pendiente", "hecha")
+
+    def __init__(self, titulo, estado="pendiente"):
+        if estado not in Tarea.ESTADOS:
+            raise ValueError(f"estado no admitido: {estado}")
+        self.titulo = titulo
+        self.estado = estado
+
+    def completar(self):
+        if self.estado == "hecha":
+            raise ValueError(f"'{self.titulo}' ya estaba hecha")
+        self.estado = "hecha"
+
+    def esta_pendiente(self):
+        return self.estado == "pendiente"
+
+    def __str__(self):
+        marca = " " if self.esta_pendiente() else "x"
+        return f"[{marca}] {self.titulo}"
+
+
+tareas = [Tarea("Lavar la loza"), Tarea("Pagar el arriendo"), Tarea("Estudiar", "hecha")]
+tareas[0].completar()
+
+pendientes = 0
+for tarea in tareas:
+    print(tarea)
+    if tarea.esta_pendiente():
+        pendientes += 1
+print("pendientes:", pendientes)
+```
+
+Ejecuta `python3 tarea.py`.
+
+**Resultado esperado:**
+
+```text
+[x] Lavar la loza
+[ ] Pagar el arriendo
+[x] Estudiar
+pendientes: 1
+```
+
+**Fallo deliberado 1:** duplica la línea `tareas[0].completar()`. **Error esperado:** `ValueError: 'Lavar la loza' ya estaba hecha`. **Diagnóstico:** el error lo lanza la regla del objeto, no un `if` repartido por el programa. Cambia también `"hecha"` por `"hcha"` en la tercera tarea: obtienes `ValueError: estado no admitido: hcha` al crearla.
+
+**Fallo deliberado 2:** borra `self` en `def esta_pendiente(self):`. **Error esperado:** `TypeError: Tarea.esta_pendiente() takes 0 positional arguments but 1 was given`. **Diagnóstico:** `tarea.esta_pendiente()` equivale a `Tarea.esta_pendiente(tarea)`; Python siempre pasa el objeto como primer argumento, y el método debe recibirlo.
+
+**3. Entiende**
+Un **método** es una función definida dentro de la clase; su primer parámetro, `self`, es el objeto sobre el que se llama. `ESTADOS` es un **atributo de clase**: lo comparten todas las tareas, mientras que `titulo` y `estado` son de cada objeto. `__str__` es un método especial: `print(tarea)` lo usa para mostrar el objeto; sin él verías algo como `<__main__.Tarea object at 0x...>`. **Límite:** Python no tiene atributos privados de verdad; `tareas[1].estado = "hcha"` sigue funcionando. La convención es nombrar con guion bajo (`_estado`) lo que no debe tocarse desde fuera, y cambiar el estado solo con métodos.
+
+**4. Cierra**
+Escribe qué línea del programa protege la regla «no se completa dos veces» y por qué ya no necesitas repetir esa comprobación en el bucle.
+
+#### Subtema 6.3: Identidad, igualdad y `__eq__` · 10 min
+
+**1. Contexto**
+El gestor va a evitar tareas repetidas. Antes de compararlas necesitas saber qué significa que dos objetos sean «el mismo» y qué significa que sean «iguales».
+
+**2. Hazlo tú**
+Crea `identidad.py`:
+
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+    def completar(self):
+        self.estado = "hecha"
+
+
+a = Tarea("Estudiar")
+b = Tarea("Estudiar")
+alias = a
+
+print("a == b:", a == b)
+print("a is alias:", a is alias)
+alias.completar()
+print("a.estado:", a.estado)
+print("b.estado:", b.estado)
+```
+
+Ejecuta `python3 identidad.py`.
+
+**Resultado esperado:**
+
+```text
+a == b: False
+a is alias: True
+a.estado: hecha
+b.estado: pendiente
+```
+
+Ahora agrega este método dentro de la clase, debajo de `completar`, y cambia el final del archivo:
+
+```python
+    def __eq__(self, otra):
+        if not isinstance(otra, Tarea):
+            return NotImplemented
+        return self.titulo == otra.titulo and self.estado == otra.estado
+```
+
+```python
+a = Tarea("Estudiar")
+b = Tarea("Estudiar")
+print("a == b:", a == b)
+print("a is b:", a is b)
+b.completar()
+print("tras completar b:", a == b)
+print("a == 'Estudiar':", a == "Estudiar")
+```
+
+**Resultado esperado:** `a == b: True`, `a is b: False`, `tras completar b: False` y `a == 'Estudiar': False`.
+
+**Fallo deliberado:** al final agrega `vistas = {a}` para guardar la tarea en un conjunto. **Error esperado en Python 3.14:** `TypeError: cannot use 'Tarea' as a set element (unhashable type: 'Tarea')`. **Diagnóstico:** al definir `__eq__`, Python desactiva el hash por defecto de la clase. Es lo correcto aquí: una tarea cambia de estado, y un objeto que cambia no debe servir de clave en un conjunto o diccionario. Usa como clave algo que no cambie, como el título: `vistas = {a.titulo}`.
+
+**3. Entiende**
+`is` pregunta por **identidad**: ¿son el mismo objeto en memoria? `==` pregunta por **igualdad**, y sin `__eq__` una clase compara por identidad. Una asignación como `alias = a` no copia el objeto: crea otro nombre para él, por eso completar `alias` cambia `a`. Devolver `NotImplemented` le dice a Python «no sé compararme con eso», y la comparación con un texto da `False` en vez de un error. **Límite:** decidir qué hace iguales a dos objetos es una decisión del dominio; aquí cuentan título y estado, en otro programa podría bastar un identificador. Las tablas hash del Módulo 2 (Tema 6) explican por qué el hash y la igualdad deben ir de acuerdo.
+
+**4. Cierra**
+Anota con tus palabras la diferencia entre `a is b` y `a == b`, y un caso del gestor en el que cada una sea la pregunta correcta.
+
+**Hito del tema:**
+
+- [ ] Creé objetos con `__init__` y leí sus atributos.
+- [ ] Provoqué y diagnostiqué un `TypeError` por olvidar `self`.
+- [ ] Hice que un método rechazara un cambio de estado inválido.
+- [ ] Expliqué con un ejemplo la diferencia entre identidad e igualdad.
+
+**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o el error que obtuviste.
+
+1. Agrega a la `Tarea` del subtema 6.2 un método `reabrir()` que pase de `hecha` a `pendiente` y lance `ValueError` si la tarea ya estaba pendiente. Pruébalo completando, reabriendo y volviendo a reabrir la misma tarea.
+
+<details>
+<summary>Solución del ejercicio 1</summary>
+
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+    def completar(self):
+        if self.estado == "hecha":
+            raise ValueError(f"'{self.titulo}' ya estaba hecha")
+        self.estado = "hecha"
+
+    def reabrir(self):
+        if self.estado == "pendiente":
+            raise ValueError(f"'{self.titulo}' ya estaba pendiente")
+        self.estado = "pendiente"
+
+
+tarea = Tarea("Estudiar")
+tarea.completar()
+tarea.reabrir()
+print(tarea.estado)
+tarea.reabrir()
+```
+
+Imprime `pendiente` y después termina con `ValueError: 'Estudiar' ya estaba pendiente`. La regla es simétrica a la de `completar`: cada método comprueba el estado de partida antes de cambiarlo.
+
+</details>
+
+2. Predice las tres líneas que imprime este programa y después ejecútalo:
+
+```python
+class Tarea:
+    def __init__(self, titulo):
+        self.titulo = titulo
+        self.estado = "pendiente"
+
+    def completar(self):
+        self.estado = "hecha"
+
+
+tareas = [Tarea("Lavar la loza"), Tarea("Estudiar")]
+mismo = tareas
+copia = list(tareas)
+
+copia.append(Tarea("Pagar el arriendo"))
+copia[0].completar()
+
+print(len(tareas), len(mismo), len(copia))
+print(tareas[0].estado)
+print(mismo is tareas, copia is tareas, copia[0] is tareas[0])
+```
+
+<details>
+<summary>Solución del ejercicio 2</summary>
+
+```text
+2 2 3
+hecha
+True False True
+```
+
+`mismo` es otro nombre para la misma lista. `list(tareas)` crea una lista nueva (por eso agregar a `copia` no cambia `tareas`), pero sus elementos son **los mismos objetos**: completar `copia[0]` cambia `tareas[0]`. Esto se llama copia superficial; el Módulo 14 (Memento) la vuelve a usar para explicar por qué deshacer exige copias que no compartan objetos mutables.
+
+</details>
+
+**Fuentes oficiales consultadas el 2026-11-18:** [Clases, en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html), [`object.__eq__` y `__hash__`](https://docs.python.org/3/reference/datamodel.html#object.__hash__) y [`__str__`](https://docs.python.org/3/reference/datamodel.html#object.__str__).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** convierte los diccionarios de tareas del Tema 1 en objetos `Tarea` con `completar()` y `esta_pendiente()`, y cuenta las pendientes llamando al método en vez de leer la clave `"estado"`.
+
+### Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min
+
+**Duración estimada:** 40 min (tres subtemas de 13, 14 y 13 min).
+**¿Por qué es importante?** Con varias clases aparece la pregunta de diseño central de la programación orientada a objetos: ¿una clase **es un** caso especial de otra (herencia) o **tiene** otra a la que le encarga trabajo (composición)? Los patrones del Módulo 14 (Decorator, State, Template Method) se construyen con estas tres herramientas.
+**Prerrequisitos:** Tema 6 de este módulo (clases, métodos y `self`). Línea de versiones: Python 3.14.
+
+**Mapa de subtemas críticos:** herencia, sobrescritura y `super()` (núcleo y diagnóstico, 7.1); composición y delegación (núcleo y decisión, 7.2); clases abstractas con `abc` como contrato comprobado (núcleo y límite, 7.3). Los decoradores (la línea con `@`) se explican a fondo en el Módulo 14, Tema 1; `typing.Protocol`, la alternativa sin herencia, aparece en el Módulo 7.
+
+#### Subtema 7.1: Herencia y `super()`: una tarea con fecha límite · 13 min
+
+**1. Contexto**
+Algunas tareas tienen fecha límite. Siguen siendo tareas (se completan igual), pero se describen distinto. Copiar la clase entera duplicaría `completar`; la **herencia** permite escribir solo lo que cambia.
+
+**2. Hazlo tú**
+En `ejemplo-clases`, crea `herencia.py`:
+
+```python
+class Tarea:
+    def __init__(self, titulo):
+        self.titulo = titulo
+        self.estado = "pendiente"
+
+    def completar(self):
+        self.estado = "hecha"
+
+    def describir(self):
+        return f"{self.titulo} ({self.estado})"
+
+
+class TareaConFecha(Tarea):
+    def __init__(self, titulo, fecha_limite):
+        super().__init__(titulo)
+        self.fecha_limite = fecha_limite
+
+    def describir(self):
+        return f"{super().describir()} vence {self.fecha_limite}"
+
+
+tareas = [Tarea("Lavar la loza"), TareaConFecha("Pagar el arriendo", "2026-12-05")]
+tareas[1].completar()
+for tarea in tareas:
+    print(tarea.describir())
+print("¿es una Tarea?", isinstance(tareas[1], Tarea))
+print("¿es una TareaConFecha?", isinstance(tareas[0], TareaConFecha))
+```
+
+Ejecuta `python3 herencia.py`.
+
+**Resultado esperado:**
+
+```text
+Lavar la loza (pendiente)
+Pagar el arriendo (hecha) vence 2026-12-05
+¿es una Tarea? True
+¿es una TareaConFecha? False
+```
+
+**Fallo deliberado:** borra la línea `super().__init__(titulo)`. **Error esperado:** después de imprimir la primera tarea, `AttributeError: 'TareaConFecha' object has no attribute 'titulo'`. **Diagnóstico:** al definir su propio `__init__`, la subclase reemplaza el de `Tarea`; si no lo llama con `super()`, los atributos que creaba la clase base nunca existen.
+
+**3. Entiende**
+`class TareaConFecha(Tarea)` declara que `TareaConFecha` **hereda** de `Tarea`: recibe `completar` sin escribirlo. Al definir otra vez `describir`, la **sobrescribe**, y `super().describir()` llama a la versión de la clase base para no repetirla. El bucle llama a `describir()` sin preguntar el tipo de cada tarea: cada objeto responde con su propia versión (eso se llama **polimorfismo**). **Límite:** la herencia ata la subclase a los detalles de la base; si `Tarea` cambia un atributo, todas las subclases pueden romperse. Úsala cuando la frase «X **es una** Y» sea cierta siempre, no solo para reutilizar código.
+
+**4. Cierra**
+Escribe en tu cuaderno qué métodos tiene `TareaConFecha` (heredados y propios) y cuál de ellos llama a `super()`.
+
+#### Subtema 7.2: Composición: la tarea *tiene* un aviso · 14 min
+
+**1. Contexto**
+Al completar una tarea quieres avisar: a veces por consola, a veces guardando el mensaje. Con herencia necesitarías `TareaConAvisoConsola`, `TareaConFechaYAvisoConsola`, `TareaConAvisoGuardado`… una clase por cada combinación. La **composición** separa las dos variaciones: la tarea guarda un objeto aviso y le encarga el envío.
+
+**2. Hazlo tú**
+Crea `composicion.py`:
+
+```python
+class AvisoConsola:
+    def enviar(self, mensaje):
+        print(f"[consola] {mensaje}")
+
+
+class AvisoMemoria:
+    def __init__(self):
+        self.mensajes = []
+
+    def enviar(self, mensaje):
+        self.mensajes.append(mensaje)
+
+
+class Tarea:
+    def __init__(self, titulo, aviso):
+        self.titulo = titulo
+        self.estado = "pendiente"
+        self.aviso = aviso              # la tarea TIENE un aviso
+
+    def completar(self):
+        self.estado = "hecha"
+        self.aviso.enviar(f"{self.titulo}: hecha")
+
+
+memoria = AvisoMemoria()
+Tarea("Lavar la loza", AvisoConsola()).completar()
+Tarea("Pagar el arriendo", memoria).completar()
+Tarea("Estudiar", memoria).completar()
+print("en memoria:", memoria.mensajes)
+```
+
+Ejecuta `python3 composicion.py`.
+
+**Resultado esperado:**
+
+```text
+[consola] Lavar la loza: hecha
+en memoria: ['Pagar el arriendo: hecha', 'Estudiar: hecha']
+```
+
+**Fallo deliberado:** cambia `Tarea("Estudiar", memoria)` por `Tarea("Estudiar", "correo")`. **Error esperado:** `AttributeError: 'str' object has no attribute 'enviar'`, y aparece al llamar a `completar()`, no al crear la tarea. **Diagnóstico:** la tarea confía en que su aviso tenga un método `enviar`, pero nada lo comprobó al construirla. El subtema 7.3 convierte esa promesa en un contrato que falla antes.
+
+**3. Entiende**
+**Composición** es guardar otro objeto como atributo; **delegación** es pedirle que haga parte del trabajo (`self.aviso.enviar(...)`). Ahora la tarea y el aviso cambian por separado: un aviso nuevo no obliga a crear otra subclase de `Tarea`, y puedes elegirlo al crear cada objeto. Python acepta cualquier objeto que tenga `enviar` (se le llama *duck typing*: «si hace cua como un pato…»). **Decisión:** prefiere composición cuando el comportamiento que varía es independiente de la identidad del objeto; reserva la herencia para relaciones «es un» estables. **Límite:** hay más objetos que conectar y el error de un aviso inválido aparece tarde.
+
+**4. Cierra**
+Dibuja dos cajas, `Tarea` y `AvisoMemoria`, con una flecha «tiene un», y escribe qué clase tendrías que tocar para agregar un aviso por correo.
+
+#### Subtema 7.3: Clases abstractas con `abc`: un contrato que se comprueba al crear el objeto · 13 min
+
+**1. Contexto**
+Todos los avisos deben tener `enviar`. Quieres que olvidarlo falle en cuanto alguien cree el aviso, no cuando una tarea por fin se complete. El módulo `abc` (*abstract base classes*) de la biblioteca estándar resuelve exactamente eso.
+
+**2. Hazlo tú**
+Crea `abstractas.py`:
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Aviso(ABC):
+    @abstractmethod
+    def enviar(self, mensaje):
+        """Entrega un mensaje por un canal concreto."""
+
+    def enviar_varios(self, mensajes):
+        for mensaje in mensajes:
+            self.enviar(mensaje)
+        return len(mensajes)
+
+
+class AvisoConsola(Aviso):
+    def enviar(self, mensaje):
+        print(f"[consola] {mensaje}")
+
+
+class AvisoMemoria(Aviso):
+    def __init__(self):
+        self.mensajes = []
+
+    def enviar(self, mensaje):
+        self.mensajes.append(mensaje)
+
+
+enviados = AvisoConsola().enviar_varios(["Lavar la loza: hecha", "Estudiar: hecha"])
+print("enviados:", enviados)
+memoria = AvisoMemoria()
+memoria.enviar_varios(["Pagar el arriendo: hecha"])
+print("en memoria:", memoria.mensajes)
+print("¿AvisoMemoria es un Aviso?", isinstance(memoria, Aviso))
+```
+
+Ejecuta `python3 abstractas.py`.
+
+**Resultado esperado:**
+
+```text
+[consola] Lavar la loza: hecha
+[consola] Estudiar: hecha
+enviados: 2
+en memoria: ['Pagar el arriendo: hecha']
+¿AvisoMemoria es un Aviso? True
+```
+
+**Fallo deliberado:** al final del archivo agrega una subclase que se equivoca de nombre y trata de crearla:
+
+```python
+class AvisoCorreo(Aviso):
+    def mandar(self, mensaje):
+        print(mensaje)
+
+
+AvisoCorreo()
+```
+
+**Error esperado en Python 3.14:** `TypeError: Can't instantiate abstract class AvisoCorreo without an implementation for abstract method 'enviar'`. Lo mismo ocurre con `Aviso()`. **Diagnóstico:** el error aparece al **crear** el objeto y nombra el método que falta; renombra `mandar` a `enviar` y el programa vuelve a funcionar.
+
+**3. Entiende**
+Una clase que hereda de `ABC` y marca métodos con `@abstractmethod` es una **clase abstracta**: no se puede instanciar, y sus subclases tampoco hasta que implementen todos los métodos abstractos. La línea `@abstractmethod` es un **decorador**: modifica la función que está debajo (verás cómo funcionan en el Módulo 14). La clase abstracta también puede traer métodos concretos que se heredan, como `enviar_varios`, que usa `enviar` sin saber qué subclase lo implementa: esa idea es el núcleo del patrón Template Method (Módulo 14, Tema 3). **Límite:** `abc` solo comprueba que el método exista; no revisa sus parámetros ni lo que hace. Eso sigue siendo trabajo de las pruebas (Módulo 5).
+
+**4. Cierra**
+En `composicion.py` (subtema 7.2), copia la clase `Aviso`, haz que `AvisoConsola` y `AvisoMemoria` hereden de ella y reemplaza `"correo"` por `AvisoCorreo()`. Anota en qué línea aparece ahora el error y compáralo con el `AttributeError` del subtema 7.2.
+
+**Hito del tema:**
+
+- [ ] Hice una subclase que reutiliza un método heredado y sobrescribe otro con `super()`.
+- [ ] Provoqué el `AttributeError` de olvidar `super().__init__` y lo expliqué.
+- [ ] Cambié el aviso de una tarea sin crear otra subclase.
+- [ ] Provoqué el `TypeError` de una clase abstracta incompleta y expliqué qué comprueba `abc` y qué no.
+
+**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o el error que obtuviste.
+
+1. Crea `TareaRecurrente`, subclase de la `Tarea` del subtema 7.1, con un atributo `cada_dias`. Al completarla no se cierra: cuenta cuántas veces se hizo y sigue pendiente. `describir()` debe terminar en `cada N días, hecha K veces`.
+
+<details>
+<summary>Solución del ejercicio 1</summary>
+
+```python
+class Tarea:
+    def __init__(self, titulo):
+        self.titulo = titulo
+        self.estado = "pendiente"
+
+    def completar(self):
+        self.estado = "hecha"
+
+    def describir(self):
+        return f"{self.titulo} ({self.estado})"
+
+
+class TareaRecurrente(Tarea):
+    def __init__(self, titulo, cada_dias):
+        super().__init__(titulo)
+        self.cada_dias = cada_dias
+        self.veces = 0
+
+    def completar(self):
+        self.veces += 1
+        # Una tarea recurrente no se cierra: vuelve a quedar pendiente.
+
+    def describir(self):
+        return f"{super().describir()} cada {self.cada_dias} días, hecha {self.veces} veces"
+
+
+regar = TareaRecurrente("Regar las plantas", 3)
+regar.completar()
+regar.completar()
+print(regar.describir())
+```
+
+Imprime `Regar las plantas (pendiente) cada 3 días, hecha 2 veces`. Fíjate en el riesgo: `TareaRecurrente` cambia el significado de `completar`. Si otra parte del programa supone que, tras `completar()`, toda `Tarea` queda `hecha`, esta subclase rompe esa suposición; es la señal de que quizá «tarea recurrente» debería ser una tarea que *tiene* una regla de repetición (composición).
+
+</details>
+
+2. Escribe `AvisoMayusculas`, subclase de `Aviso` (subtema 7.3), que reciba otro aviso al crearse y le reenvíe cada mensaje en mayúsculas. Pruébalo con un `AvisoMemoria`.
+
+<details>
+<summary>Solución del ejercicio 2</summary>
+
+```python
+from abc import ABC, abstractmethod
+
+
+class Aviso(ABC):
+    @abstractmethod
+    def enviar(self, mensaje):
+        """Entrega un mensaje por un canal concreto."""
+
+
+class AvisoMemoria(Aviso):
+    def __init__(self):
+        self.mensajes = []
+
+    def enviar(self, mensaje):
+        self.mensajes.append(mensaje)
+
+
+class AvisoMayusculas(Aviso):
+    def __init__(self, interno):
+        self.interno = interno          # compone otro Aviso
+
+    def enviar(self, mensaje):
+        self.interno.enviar(mensaje.upper())
+
+
+memoria = AvisoMemoria()
+urgente = AvisoMayusculas(memoria)
+urgente.enviar("pagar el arriendo hoy")
+memoria.enviar("estudiar")
+print(memoria.mensajes)
+```
+
+Imprime `['PAGAR EL ARRIENDO HOY', 'estudiar']`. `AvisoMayusculas` **es un** `Aviso` (herencia de la clase abstracta) y **tiene un** `Aviso` (composición): esa combinación es el patrón Decorator del Módulo 14, Tema 1.
+
+</details>
+
+**Fuentes oficiales consultadas el 2026-11-18:** [Herencia, en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html#inheritance), [`super()`](https://docs.python.org/3/library/functions.html#super) y [módulo `abc`](https://docs.python.org/3/library/abc.html).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** añade a la `Tarea` del Tema 6 un `Aviso` compuesto que informe cada tarea completada, y escribe en el README por qué elegiste composición y no una subclase por canal.
 
 ## Construcción guiada del capítulo
 

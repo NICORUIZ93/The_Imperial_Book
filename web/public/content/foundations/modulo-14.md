@@ -1,5 +1,10 @@
 # Módulo 14: Catálogo de patrones de diseño
 
+## Antes de empezar: cómo usar este catálogo
+
+Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo practica Repository y Adapter y remite aquí. Un patrón nombra una solución recurrente **con sus consecuencias**. No empieces eligiendo patrón: identifica el problema, las fuerzas que tiran en direcciones distintas y la alternativa más simple. Un patrón innecesario añade archivos, saltos y conceptos. **Analogía con límite:** un patrón es un plano reutilizable; usar el plano de un aeropuerto para una casa demuestra que conoces el plano, no que tengas buen juicio.
+
+**Prerrequisitos:** clases, métodos y `self` (Módulo 1, Tema 6); herencia, composición y `abc` (Módulo 1, Tema 7). La idea de Strategy, pasar un objeto o una función intercambiable, ya la usaste con los avisos del Módulo 1, Tema 7; aquí aparece como alternativa simple en los apartados «Cuándo no usarlo».
 
 ## Aprende construyendo
 
@@ -221,7 +226,7 @@ Guarda en el contexto un historial de transiciones con fecha y hora, e imprímel
 ### Tema 3: Template Method: un algoritmo fijo con pasos variables
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas (`abc`).
+Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con `abc` (Módulo 1, Tema 7).
 
 #### Paso 2 · Contexto y caso real
 RutaFlow genera varios reportes diarios: CSV para contabilidad y una lista de entregas fallidas para soporte. Todos siguen el mismo orden (filtrar, formatear, encabezado y pie); solo cambian algunos pasos. Es el caso real de los frameworks: `unittest.TestCase` llama a `setUp`, la prueba y `tearDown` en un orden fijo.
@@ -324,7 +329,7 @@ Total: 2
 
 `ReporteFallidas` solo cambió el encabezado y el filtro; el orden de los pasos lo sigue decidiendo la clase base.
 
-**Fallo deliberado:** Crea `class ReporteVacio(ReporteDiario): pass` e instancia `ReporteVacio()`. Python responde `TypeError: Can't instantiate abstract class ReporteVacio with abstract method formatear`: el paso obligatorio no está implementado y el error aparece al crear el objeto, no en producción.
+**Fallo deliberado:** Crea `class ReporteVacio(ReporteDiario): pass` e instancia `ReporteVacio()`. Python 3.14 responde `TypeError: Can't instantiate abstract class ReporteVacio without an implementation for abstract method 'formatear'`: el paso obligatorio no está implementado y el error aparece al crear el objeto, no en producción.
 
 #### Paso 5 · Práctica guiada
 Crea `ReporteJSON` que devuelva las entregas como JSON usando `json.dumps`. **Pista:** solo necesitas redefinir `formatear`; si el JSON no debe llevar encabezado ni pie, redefine también esos dos ganchos para que devuelvan una cadena vacía.

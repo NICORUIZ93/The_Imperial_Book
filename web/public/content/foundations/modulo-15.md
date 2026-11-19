@@ -6,13 +6,13 @@
 ### Tema 1: Nombres que revelan intención y funciones pequeñas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás renombrar variables y funciones para que expliquen su propósito, dividir una función que hace varias cosas en funciones de un solo nivel de abstracción, reemplazar números mágicos por constantes y eliminar argumentos bandera, sin cambiar el comportamiento. Prerrequisitos: Módulo 1, Tema 4 y Módulo 7, Tema 3.
+Al finalizar podrás renombrar variables y funciones para que expliquen su propósito, dividir una función que hace varias cosas en funciones de un solo nivel de abstracción, reemplazar números mágicos por constantes y eliminar argumentos bandera, sin cambiar el comportamiento. Prerrequisitos: Módulo 1, Tema 4 (funciones) y Módulo 7, Tema 3 (cohesión, acoplamiento y la primera prueba caracterizadora).
 
 #### Paso 2 · Contexto y caso real
 La función `calc` de RutaFlow calculaba lo facturable del día. Nadie se atrevía a tocarla: `l`, `f`, `x[2] == "E"` y `5000` no decían nada, y un cambio de tarifa se hizo en un lugar y se olvidó en otro. Es el caso real más común en código heredado, y el primer capítulo práctico de *Código limpio*.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un buen **nombre** responde por qué existe algo y cómo se usa (`total_facturable` en lugar de `calc`). Una **función** debe hacer una sola cosa y mantener un solo **nivel de abstracción**: o habla del negocio (facturar entregadas) o del detalle (sumar números), no de ambos. Los **números mágicos** se reemplazan por **constantes con nombre**, y un **argumento bandera** (`f=True`) indica que la función hace dos cosas: mejor dos funciones. Antes de refactorizar, una **verificación** (aquí, un `assert` de equivalencia) garantiza que el comportamiento no cambió.
+Un buen **nombre** responde por qué existe algo y cómo se usa (`total_facturable` en lugar de `calc`). Una **función** debe hacer una sola cosa y mantener un solo **nivel de abstracción**: o habla del negocio (facturar entregadas) o del detalle (sumar números), no de ambos. Los **números mágicos** se reemplazan por **constantes con nombre**, y un **argumento bandera** (`f=True`) indica que la función hace dos cosas: mejor dos funciones. Antes de refactorizar, una **verificación** (aquí, un `assert` de equivalencia) garantiza que el comportamiento no cambió. Este tema es la referencia de **refactoring** del curso: refactorizar es cambiar la estructura sin cambiar el comportamiento. Si el código heredado no tiene pruebas, primero escribe una **prueba caracterizadora** que documente lo que hace hoy, aunque no sea lo ideal; después avanza en pasos pequeños con la suite en verde (renombrar, extraer función, mover una responsabilidad, introducir una interfaz) y no mezcles en el mismo commit un refactor con un cambio funcional, para que la revisión pueda distinguirlos.
 
 **Analogía:** es ordenar un taller y rotular cada cajón: las herramientas son las mismas, pero cualquiera encuentra la que necesita sin preguntar.
 

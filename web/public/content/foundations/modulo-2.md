@@ -1,6 +1,6 @@
 # Módulo 2: Estructuras de datos, algoritmos y complejidad
 
-**Entorno comprobado:** Python 3.9.6 en macOS 27.2; se ejecutaron los ocho bloques Python de demostración. No se validaron los comandos de creación de carpetas ni las instrucciones para PowerShell/Linux.
+**Entorno comprobado:** Python 3.14.6 en Linux (2026-11-18), la línea de referencia del curso; se ejecutaron los bloques Python de demostración. No se validaron los comandos de creación de carpetas ni las instrucciones para PowerShell/macOS.
 
 ## Aprende construyendo
 
@@ -636,7 +636,7 @@ Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tam
 ### Tema 5: Árboles y árboles binarios de búsqueda (BST)
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad).
+Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad) y Módulo 1, Tema 6 (clases, `__init__` y `self`), porque el árbol se escribe con dos clases: `Nodo` y `BST`.
 
 #### Paso 2 · Contexto y caso real
 En el gestor de tareas, cuando tienes 10.000 tareas y necesitas encontrar una por su fecha de vencimiento, recorrer una lista entera (O(n)) es lento. Un árbol binario de búsqueda ordenado por fecha encuentra cualquier tarea en unos pocos saltos, el mismo principio que usan los índices de una base de datos (Módulo 4).
@@ -987,11 +987,11 @@ Entrega las dos versiones de Fibonacci con sus tiempos, el conteo de llamadas y 
 
 ### Proyecto 2: gestor de inventario con análisis de rendimiento
 
-Desde una carpeta vacía crea `inventario/`, inicializa Git y construye una aplicación de consola que permita agregar, actualizar, listar, buscar y eliminar productos por SKU. Persiste los productos en `inventario.json` usando la biblioteca estándar.
+Desde una carpeta vacía crea `inventario/` (guarda una copia de la carpeta al cerrar cada etapa, como en el Proyecto 1; Git llega en el Módulo 5) y construye una aplicación de consola que permita agregar, actualizar, listar, buscar y eliminar productos por SKU. Persiste los productos en `inventario.json` usando la biblioteca estándar.
 
-Fases y commits sugeridos:
+Fases sugeridas (una copia de la carpeta por fase):
 
-1. Modelo de producto y lista inicial.
+1. Clase `Producto` (Módulo 1, Tema 6) y lista inicial.
 2. CRUD en memoria con validaciones.
 3. Índice por SKU y justificación escrita.
 4. Guardado/carga JSON con manejo de archivo inexistente o corrupto.

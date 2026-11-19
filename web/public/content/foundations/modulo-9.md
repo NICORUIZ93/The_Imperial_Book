@@ -267,7 +267,7 @@ Entregá la salida de las tres propiedades del Paso 4, la relación rota del Pas
 ### Tema 3: Conteo, grafos y estructuras conectadas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a tratar `ALLOWED_TRANSITIONS` como el grafo dirigido que realmente es, y a confirmar con el `tiene_ciclo()` de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo.
+Al finalizar vas a tratar `ALLOWED_TRANSITIONS` como el grafo dirigido que realmente es, y a confirmar con el `tiene_ciclo()` de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (grafos, lista de adyacencia, BFS y DFS), que es la introducción única a grafos del curso; aquí no se vuelve a explicar.
 
 #### Paso 2 · Contexto y caso real
 Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo volver a `CREATED`), un envío podría quedar dando vueltas indefinidamente sin nunca completarse de forma predecible — por eso importa confirmar formalmente que es un DAG, no solo "parece que no tiene ciclos".
@@ -275,13 +275,13 @@ Si `ALLOWED_TRANSITIONS` tuviera un ciclo (por ejemplo, `DELIVERED` pudiendo vol
 #### Paso 3 · Teoría, modelo mental y analogía
 Un grafo dirigido sin ciclos (DAG) admite un orden topológico — como una lista de tareas donde cada una depende solo de las anteriores, nunca de una futura.
 
-**Conceptos clave:** regla de suma, regla de producto, permutación, combinación, principio del palomar, grafo, vértice, arista, grado, camino, ciclo, grafo dirigido, DAG, árbol, BFS, DFS y orden topológico.
+**Conceptos clave:** regla de suma, regla de producto, permutación, combinación, principio del palomar, grado, camino, ciclo, grafo dirigido, DAG y orden topológico. Vértice, arista, lista de adyacencia, BFS y DFS se dan por aprendidos en el Módulo 2, Tema 7.
 
 La combinatoria responde cuántas posibilidades existen sin enumerarlas. Si una API tiene 3 roles, 4 operaciones y 2 estados de cuenta, hay hasta `3 × 4 × 2 = 24` combinaciones de decisión. Esa cifra ayuda a diseñar particiones de prueba, aunque no obliga a ejecutar cada combinación si algunas son equivalentes.
 
 Una permutación considera orden; una combinación no. Elegir 3 revisores entre 10 produce `C(10,3)`, mientras asignarles tres turnos distintos introduce orden. El principio del palomar afirma que al colocar más objetos que contenedores, alguno contiene más de uno; explica por qué hashes finitos necesariamente tienen colisiones, aunque una función buena las haga poco probables.
 
-Un grafo representa entidades como vértices y relaciones como aristas. Las dependencias de módulos forman un grafo dirigido. Si no hay ciclos es un DAG y puede obtenerse un orden topológico de build o migración. DFS profundiza antes de retroceder; BFS explora por capas y encuentra caminos mínimos en grafos no ponderados.
+Sobre la base del Módulo 2, Tema 7 (si no recuerdas cómo DFS usa una pila o recursión y BFS una cola, repásalo allí antes de seguir), este tema añade la **dirección** de las aristas. Las dependencias de módulos forman un grafo dirigido. Si no hay ciclos es un DAG y puede obtenerse un orden topológico de build o migración. El DFS del Módulo 2 solo marcaba `visitados`; para detectar un ciclo dirigido necesita además saber qué nodos están en la ruta actual.
 
 ```python
 def tiene_ciclo(grafo: dict[str, set[str]]) -> bool:
@@ -440,7 +440,7 @@ p95 = quantiles(latencias, n=100)[94]
 print({"n": len(latencias), "media": round(mean(latencias), 1), "p50": round(p50, 1), "p95": round(p95, 1)})
 ```
 
-Este ejemplo simula las latencias para que puedas ejecutarlo solo; en el Paso 4 medirás tiempos reales. Con Python 3.13 imprime `{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}`: la media queda por encima de la mediana y el p95 duplica la mediana, la firma de una cola larga.
+Este ejemplo simula las latencias para que puedas ejecutarlo solo; en el Paso 4 medirás tiempos reales. Con Python 3.14 imprime `{'n': 100, 'media': 109.4, 'p50': 98.0, 'p95': 205.9}`: la media queda por encima de la mediana y el p95 duplica la mediana, la firma de una cola larga.
 
 Comparar dos versiones exige controlar calentamiento, carga, datos, hardware y orden; registrar semilla y ambiente; repetir; mostrar distribución y tamaño del efecto. Un valor p no mide importancia práctica ni probabilidad de que una hipótesis sea verdadera. Correlación tampoco prueba causalidad: una tercera variable puede explicar ambas.
 

@@ -374,7 +374,7 @@ Una máquina virtual incluye un sistema operativo invitado. Un contenedor es un 
 Docker mejora repetibilidad, pero no vuelve segura una aplicación. Dependencias sin fijar cambian entre builds; root aumenta impacto; copiar secretos los conserva en capas; guardar SQLite en la capa efímera pierde datos al recrear. Los datos durables pertenecen a un volumen.
 
 ```dockerfile
-FROM python:3.12-slim
+FROM python:3.14-slim
 WORKDIR /app
 RUN useradd --create-home --uid 10001 appuser
 COPY requirements.txt ./
@@ -444,7 +444,7 @@ def nearest_neighbor_route(origin: tuple[float, float], stops: list[Stop]) -> li
 Archivo `Dockerfile`:
 
 ```dockerfile
-FROM python:3.12-slim
+FROM python:3.14-slim
 WORKDIR /app
 RUN useradd --create-home --uid 10001 rutaflow
 COPY domain.py ./domain.py
@@ -583,7 +583,7 @@ Filósofos: rondas por mensajero=[50, 50, 50, 50, 50], hilos bloqueados=0
 Lectores simultáneos máximos: 8, estado final: entregado
 ```
 
-Todos completaron sus 50 rondas sin bloquearse. Los 8 lectores leyeron a la vez porque la lectura no excluye a otros lectores.
+Todos completaron sus 50 rondas sin bloquearse. El máximo de lectores simultáneos depende del planificador del sistema operativo: con Python 3.14.6 en Linux salió 7 u 8 según la ejecución. Lo que importa es que supere 1, porque la lectura no excluye a otros lectores; un escritor, en cambio, siempre escribe solo.
 
 **Fallo deliberado:** Cambia `primero, segundo = min(izquierda, derecha), max(izquierda, derecha)` por `primero, segundo = izquierda, derecha`. Ahora imprime `Filósofos: rondas por mensajero=[0, 0, 0, 0, 0], hilos bloqueados=5` y el programa **no termina**: cada hilo tiene una radio y espera la del vecino, formando un ciclo. Detenlo con Ctrl+C. El `sleep` dentro del primer bloqueo hace visible un error que, sin él, aparecería solo de vez en cuando.
 

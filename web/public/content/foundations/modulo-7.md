@@ -247,7 +247,7 @@ En esta práctica `DeliveryRepository` será una interfaz con dos operaciones (`
 #### Paso 3 · Teoría, modelo mental y analogía
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
 
-**Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, patrón, code smell, refactoring y prueba caracterizadora.
+**Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, puerto, Repository, Adapter y prueba caracterizadora (el catálogo de patrones está en el Módulo 14 y el refactoring en el Módulo 15).
 
 Alta cohesión significa que un módulo reúne responsabilidades relacionadas. Bajo acoplamiento significa que conoce poco de detalles externos. Encapsulación protege invariantes; abstracción presenta un contrato relevante y oculta detalles que pueden cambiar.
 
@@ -270,11 +270,11 @@ class RetirarStock:
 
 El caso de uso depende de capacidad, no SQLite. Responsabilidad única no significa “una función por línea”; significa una razón coherente de cambio. Inversión de dependencias no obliga a interfaz para todo; se aplica en límites que necesitan sustitución, prueba o aislamiento.
 
-Patrones nombran soluciones recurrentes con consecuencias: Strategy intercambia algoritmos; Adapter traduce interfaces; Repository separa acceso; Observer propaga eventos. No empieces eligiendo patrón: identifica problema, fuerzas y alternativas. Un patrón innecesario añade archivos, saltos y conceptos.
+En este tema practicas dos patrones porque el diseño los necesita: **Repository** (el puerto `DeliveryRepository`) y **Adapter** (cada implementación del puerto). El criterio para elegir cualquier otro patrón y el catálogo completo, con un requisito de RutaFlow y la alternativa más simple en cada caso, viven en el **Módulo 14**; no se repiten aquí.
 
-Refactoring cambia estructura preservando comportamiento. Antes de código heredado sin pruebas, escribe pruebas caracterizadoras que documenten lo que hace, incluso si no es ideal. Realiza pasos pequeños con suite verde: extraer función, mover responsabilidad, renombrar, introducir interfaz. Separar refactor y cambio funcional facilita revisión.
+Para el Paso 6 necesitas una idea de refactoring: antes de cambiar código que ya funciona, una **prueba caracterizadora** registra lo que hace hoy. La técnica completa (pasos pequeños con la suite en verde, nombres, funciones y commits que separan refactor de cambio funcional) es la referencia del **Módulo 15**, Tema 1 y Proyecto 15.
 
-**Analogía:** principios son criterios de diseño; patrones son planos reutilizables. Usar un plano de aeropuerto para una casa demuestra conocimiento del patrón, no buen juicio.
+**Analogía:** un puerto es un enchufe estándar en la pared; el adaptador es el cargador concreto que conectas. Cambias de cargador sin tocar la instalación eléctrica. **Límite:** si solo existe un cargador posible y nunca vas a probarlo aparte, el enchufe extra no aporta nada.
 
 **¿Por qué es importante?** Porque poder cambiar de un repositorio real a uno en memoria sin tocar una línea de `confirmDelivery` es la evidencia concreta de que el dominio no depende de cómo se guardan los datos, no solo una afirmación de buenas intenciones.
 
@@ -673,7 +673,7 @@ Entregá la salida del verificador con `C3` sin prueba, la salida corregida con 
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Python 3.10 o superior. Crea la carpeta `academia-labs/fundamentos/evaluar-skills` con una subcarpeta `skills/` que tenga una carpeta por skill y su `SKILL.md`.
+Usa Python 3.14, la línea del curso. Crea la carpeta `academia-labs/fundamentos/evaluar-skills` con una subcarpeta `skills/` que tenga una carpeta por skill y su `SKILL.md`.
 
 #### Paso 2 · Contexto y caso real
 
