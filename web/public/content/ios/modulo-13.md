@@ -7,7 +7,7 @@ Una app no termina cuando compila ni cuando pasa revisión. En producción recib
 
 ## Aprende construyendo
 
-### Tema 1: El sandbox reduce superficie, pero no valida intenciones
+### Tema 1: El sandbox reduce superficie, pero no valida intenciones · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a validar un Universal Link entrante de RutaFlow (`https://rutaflow.app/envios/<id>`) verificando esquema, host, estructura y autorización antes de abrir el envío correspondiente. Prerrequisitos: Módulo 5 completo.
@@ -100,7 +100,7 @@ Corregí el Paso 5 restaurando la verificación de `session.puedeLeer(id)`, y ag
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar que RutaFlow es la app asociada a `rutaflow.app` no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia cómo proteger los datos que esa función termina leyendo. Errores comunes: confundir verificación de dominio con autorización de recurso, validar solo la forma de la URL sin validar permisos, y asumir que un parámetro con formato correcto es automáticamente seguro. Fuente oficial: https://developer.apple.com/documentation/security.
 **Implicación práctica:** Una entrada válida técnicamente (una URL bien formada) puede intentar acceder a un recurso ajeno; validar estructura, autenticar y autorizar son tres pasos distintos.
 
-### Tema 2: Proteger datos es controlar todas sus copias
+### Tema 2: Proteger datos es controlar todas sus copias · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a guardar el token de sesión de un conductor en Keychain (no en `UserDefaults`), y a confirmar que ese token no queda expuesto en logs. Prerrequisitos: Módulo 5 completo.
@@ -192,218 +192,10 @@ Corregí el Paso 5 quitando el log del token, y agregá en su lugar un log que r
 **Proyecto integrador:** en el proyecto que comenzaste desde una carpeta vacía para este tema, completa `SesionVault.swift` con guardar, leer y borrar, y crea `SesionConductorView.swift` para iniciar y cerrar una sesión de muestra con el token ficticio `token-prueba-no-real`. Añade `RutaFlowAppTests/SesionVaultTests.swift`: tras guardar debe recuperarse ese valor, tras `cerrarSesion` la lectura debe ser `nil` y el log capturado solo debe contener «sesión guardada», nunca el token. Cambia de `conductor-A` a `conductor-B` y verifica que cerrar la primera cuenta no deja su credencial visible para la segunda.
 
 #### Paso 7 · Cierre
-Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: estudia cómo sincronizar datos offline sin perder ni duplicar efectos. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
+Entregá la función de guardado en Keychain del Paso 4, el token filtrado en logs detectado en el Paso 5, y la función de cierre de sesión del Paso 6; explicá por qué un almacén seguro (Keychain) no protege un secreto que se filtra por otra copia (logs, UI, pasteboard). Siguiente paso: guardá ese token con las llamadas concretas del Keychain. Errores comunes: guardar tokens en `UserDefaults`, registrar valores sensibles en logs "para depurar", y no borrar credenciales explícitamente al cerrar sesión. Fuente oficial: https://developer.apple.com/documentation/security/keychain-services.
 **Implicación práctica:** Las filtraciones suelen surgir de copias secundarias (logs, backups, pasteboard) y no del almacén principal, aunque ese almacén esté bien elegido.
 
-### Tema 3: Offline-first es un protocolo, no una caché
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
-#### Paso 2 · Contexto y caso real
-Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
-#### Paso 3 · Teoría, modelo mental y analogía
-Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
-**Conceptos clave:** source of truth, outbox, state machine, idempotency key, retry, exponential backoff, jitter, reachability, optimistic UI, version, conflict, tombstone, background task y cancellation.
-
-Leer una caché sin red es útil, pero offline-first exige definir qué ocurre con escrituras. Mantén una fuente local observable y una outbox persistente. Cada operación tiene identidad estable, payload, estado, intentos y próxima fecha. La interfaz confirma que el cambio está pendiente; un worker lo envía y reconcilia la respuesta.
-
-```swift
-struct PendingMutation: Codable, Identifiable {
-    enum State: String, Codable { case queued, sending, failed }
-    let id: UUID                 // también es clave de idempotencia
-    let taskID: UUID
-    let baseVersion: Int
-    let operation: Operation
-    var state: State
-    var attempts: Int
-    var nextAttemptAt: Date
-}
-
-actor SyncEngine {
-    func drain() async {
-        for mutation in await store.readyMutations() {
-            guard !Task.isCancelled else { return }
-            await sendAndReconcile(mutation)
-        }
-    }
-}
-```
-
-Reintentar no garantiza seguridad: si el servidor aplicó el cambio pero la respuesta se perdió, un POST nuevo puede duplicarlo. Envía la misma clave de idempotencia y exige que el servidor recuerde el resultado. Usa backoff con jitter para fallos transitorios, respeta `Retry-After` y no reintentes validación o autorización. `NWPathMonitor` ayuda a decidir cuándo probar, pero “hay red” no significa “el servicio funciona”.
-
-Los conflictos son requisito de dominio. Con versiones, el servidor puede rechazar una escritura sobre estado viejo. Elige política por campo: server-wins para autoridad, client-wins solo si es aceptable, merge para datos compatibles o resolución humana cuando perder una intención sería grave. Las eliminaciones necesitan tombstones para no resucitar registros. `BGTaskScheduler` ofrece oportunidades limitadas, no ejecución garantizada; el flujo debe progresar también al abrir la app.
-
-**Analogía:** la outbox es una oficina postal con comprobantes numerados. Puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
-
-**¿Por qué es importante?** porque conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden.
-
-**Casos de uso reales:** marcar tarea en metro, editar desde dos dispositivos, respuesta perdida después de crear, logout con cola pendiente y migración mientras existe trabajo offline.
-
-**Diagrama:**
-
-```text
-UI -> base local -> outbox(queued) -> API + idempotency-key
- ^                                      |
- |            reconciliar/version <-----+
- +-- estado pendiente/error/conflicto
-```
-
-**Diagrama: outbox con idempotencia estable**
-
-```mermaid
-sequenceDiagram
-    participant UI as Confirmar entrega
-    participant Outbox as ConfirmacionPendiente (id fijo)
-    participant API as Servidor
-    UI->>Outbox: encolar (id = UUID estable)
-    Outbox->>API: enviar con ese id
-    API--xOutbox: red perdida, sin respuesta
-    Outbox->>API: reintentar CON EL MISMO id
-    API-->>Outbox: reconoce el id, no duplica el efecto
-```
-
-En tu propio proyecto RutaFlow, crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, asígnalo al target de la app y escribe allí la implementación EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion`, incluyendo el almacén y las funciones que el fragmento del Paso 4 invoca.
-
-#### Paso 4 · Demostración guiada
-```swift
-struct ConfirmacionPendiente: Codable, Identifiable {
-    enum Estado: String, Codable { case encolada, enviando, fallida }
-    let id: UUID              // también es la clave de idempotencia
-    let envioID: String
-    let pin: String
-    var estado: Estado
-    var intentos: Int
-}
-
-actor MotorSincronizacion {
-    func vaciar() async {
-        for confirmacion in await almacen.pendientes() {
-            guard !Task.isCancelled else { return }
-            await enviarYReconciliar(confirmacion)
-        }
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
-#### Paso 5 · Práctica guiada
-Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
-
-**Proyecto integrador:** en el proyecto vacío de este tema, separa `ConfirmacionPendiente.swift`, `MotorSincronizacion.swift` y `ServidorConfirmacionesFalso.swift`. Haz que el servidor falso registre los IDs recibidos y simule «aplicó la confirmación, pero perdió la respuesta» en el primer envío. En `RutaFlowAppTests/OutboxTests.swift`, reintenta esa misma operación y verifica que ambos envíos llevan el mismo UUID pero el servidor contabiliza un solo efecto; añade un segundo caso que compruebe que el backoff queda dentro del intervalo elegido y que cancelar antes del próximo intento evita otra llamada.
-
-#### Paso 7 · Cierre
-Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
-**Implicación práctica:** La conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
-
-### Tema 4: Operar significa detectar, limitar y aprender del fallo
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 3) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 3 de este módulo.
-#### Paso 2 · Contexto y caso real
-"No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
-#### Paso 3 · Teoría, modelo mental y analogía
-MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
-**Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
-
-“No crashea en mi teléfono” no es evidencia. Define indicadores ligados a experiencia: sesiones sin crash, tasa de hangs, tiempo de arranque, éxito de sincronización y latencia percibida. MetricKit entrega diagnósticos agregados; Instruments permite investigar CPU, memoria, energía, red y bloqueos; signposts delimitan operaciones del dominio sin llenar logs de datos personales.
-
-```swift
-import OSLog
-
-let points = OSSignposter(subsystem: "com.example.tasks", category: "sync")
-
-func measuredSync() async throws {
-    let state = points.beginInterval("outbox-drain")
-    defer { points.endInterval("outbox-drain", state) }
-    try await syncEngine.sync()
-}
-```
-
-Evita trabajo pesado en `MainActor`; mide antes de optimizar y prueba con dispositivos/perfiles realistas. Un hang puede ser peor que un crash porque el usuario no recibe salida clara. Trata memoria y energía como presupuestos: imágenes dimensionadas, paginación, cancelación de tareas y trabajo de fondo limitado.
-
-Cada release necesita migración ensayada con datos de versiones anteriores, compatibilidad de API y plan de contención. TestFlight valida con grupos pequeños; un despliegue gradual reduce exposición, pero no reemplaza observabilidad. Feature flags deben tener propietario y fecha de retiro. Si la base migra de forma irreversible, “volver al binario anterior” puede no funcionar: diseña migraciones expand/contract o restauración explícita.
-
-**Analogía:** operar una app es pilotar con instrumentos. La vista por la ventana ayuda, pero las alarmas, métricas y listas de comprobación permiten reaccionar antes del accidente.
-
-**¿Por qué es importante?** porque todo software real falla; la calidad profesional depende del radio de impacto, detección y recuperación.
-
-**Casos de uso reales:** hang en arranque, fuga de imágenes, migración que falla con datos antiguos, API incompatible y release que aumenta errores de sincronización.
-
-**Diagrama:**
-
-```text
-TestFlight -> cohorte pequeña -> métricas sanas? -> despliegue gradual
-                                      no -> contener/flag/corregir
-producción -> MetricKit/signposts -> reproducir en Instruments -> aprendizaje
-```
-
-**Diagrama: ciclo de medición con umbral y acción**
-
-```mermaid
-flowchart TD
-    A["sincronizacionMedida()\ncon OSSignposter"] --> B["Instruments: intervalo outbox-drain"]
-    B --> C["Tasa de éxito de sincronización"]
-    C --> D{"¿< 95% por más de 1h?"}
-    D -->|Sí| E["Alerta: revertir / feature flag / investigar"]
-    D -->|No| F["Sano, seguir desplegando"]
-```
-
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. En el grupo de la app crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona únicamente el target `RutaFlowApp` y escribe manualmente tanto el motor mínimo como la instrumentación del Paso 4. Esta práctica no reutiliza el archivo del Tema 3 ni necesita ningún archivo externo.
-
-#### Paso 4 · Demostración guiada
-```swift
-import OSLog
-
-actor MotorSincronizacion {
-    func vaciar() async {
-        // Envía aquí las confirmaciones pendientes de esta práctica.
-    }
-}
-
-let motorSincronizacion = MotorSincronizacion()
-let puntos = OSSignposter(subsystem: "com.rutaflow.conductor", category: "sync")
-
-func sincronizacionMedida() async throws {
-    let estado = puntos.beginInterval("outbox-drain")
-    defer { puntos.endInterval("outbox-drain", estado) }
-    await motorSincronizacion.vaciar()
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-# una sola vez, fuera de RutaFlowApp:
-mkdir Practica && cd Practica
-swift package init --type executable
-rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main que choca con main.swift
-# pega el código en Sources/Practica/main.swift
-swift run
-```
-Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
-
-Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
-#### Paso 5 · Práctica guiada
-Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
-
-**Proyecto integrador:** en el proyecto independiente creado desde cero en este tema, implementa 20 sincronizaciones locales en `MotorSincronizacion.swift`, con 18 éxitos y 2 fallos controlados, y delimita cada lote con el signpost de `SincronizacionMedida.swift`. Graba el intervalo `outbox-drain` en Instruments y calcula la tasa resultante (90%). Escribe `RunbookSincronizacion.md` con el umbral «menos de 95% durante una hora», la evidencia que debes adjuntar y la acción de desactivar la sincronización automática mediante un flag antes de investigar; repite con 20 éxitos y registra por qué ese segundo lote no abre incidente.
-
-#### Paso 7 · Cierre
-Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
-**Implicación práctica:** Todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
-
-### Tema 5: Keychain — guardar secretos de forma segura
+### Tema 3: Keychain — guardar secretos de forma segura · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás guardar y leer un token de sesión en el **Keychain** de iOS, y explicar por qué nunca se guarda un secreto en `UserDefaults`. Prerrequisitos: Temas 1-2 de este módulo (seguridad y copias de datos).
@@ -477,7 +269,7 @@ Protege la lectura del token con `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` 
 #### Paso 7 · Cierre
 Entrega guardar/leer/borrar en Keychain y el contraste con `UserDefaults`. **¿Por qué es importante?** Toda app con login maneja un token, y dónde lo guardas es una decisión de seguridad real: el Keychain es el único lugar correcto en iOS. Equivocarse aquí es una de las fallas de seguridad móvil más comunes. Fuentes: [Apple — Keychain Services](https://developer.apple.com/documentation/security/keychain_services).
 
-### Tema 6: Permisos y privacidad — pedir acceso con criterio
+### Tema 4: Permisos y privacidad — pedir acceso con criterio · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás solicitar un permiso del sistema (ubicación) declarándolo en `Info.plist` y pidiéndolo en el momento correcto, y manejar el caso en que el usuario lo deniega. Prerrequisitos: Temas 1-2 de este módulo.
@@ -542,77 +334,7 @@ Añade el permiso de notificaciones (`UNUserNotificationCenter.requestAuthorizat
 #### Paso 7 · Cierre
 Entrega la solicitud de ubicación, el manejo de denegación y el crash por motivo faltante. **¿Por qué es importante?** Los permisos son la frontera de privacidad del usuario y un punto de revisión de la App Store. Pedirlos bien (con motivo claro, en el momento adecuado, manejando la negativa) es diferencia directa entre una app que se aprueba y una que se rechaza o se desinstala. Fuentes: [Apple — Requesting authorization](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
 
-### Tema 7: Notificaciones push con APNs
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación. Prerrequisitos: Tema 6 (permisos) de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Cuando se asigna una entrega a un repartidor, su app debe avisarle aunque esté cerrada. Eso solo es posible con push: el backend de RutaFlow (Módulo Spring/Node) envía la notificación a APNs, y APNs la entrega al dispositivo correcto usando su device token.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
-
-**Analogía:** el device token es como la dirección postal del dispositivo, y APNs es el servicio de correos oficial de Apple: tu backend no entrega la carta en mano, se la da a correos (APNs) con la dirección (token), y correos la entrega.
-
-**Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
-**Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
-
-**Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-**Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
-**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `Sources/RutaFlowApp/AppDelegate.swift`:
-
-```swift
-import SwiftUI
-import UserNotifications
-
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ app: UIApplication,
-                     didFinishLaunchingWithOptions opts: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { concedido, _ in
-            guard concedido else { return }
-            DispatchQueue.main.async { app.registerForRemoteNotifications() }  // pide el device token
-        }
-        return true
-    }
-
-    func application(_ app: UIApplication,
-                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
-        print("Device token APNs:", token)   // se enviaría al backend de RutaFlow
-    }
-}
-
-@main
-struct RutaFlowApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    var body: some Scene { WindowGroup { ContentView() } }
-}
-```
-
-**Ejecuta el ejemplo** (requiere capability "Push Notifications" en el target; en Simulador se puede probar con un archivo `.apns`):
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-
-**Resultado esperado:** al conceder el permiso, la consola imprime el device token (una cadena hex larga). En el Simulador, arrastrar un archivo `.apns` con el payload sobre la ventana muestra la notificación. **Fallo deliberado:** omite `registerForRemoteNotifications()`: nunca llega el device token, y aunque el permiso esté concedido, el backend no tiene a dónde enviar. Diagnostica por qué el permiso y el registro son dos pasos distintos y ambos necesarios.
-
-#### Paso 5 · Práctica guiada
-Maneja `didFailToRegisterForRemoteNotificationsWithError` para registrar (log) el caso en que el registro falla (por ejemplo, sin conexión o sin capability). Pista: es el callback hermano del de éxito.
-
-#### Paso 6 · Práctica independiente
-Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y almacena el device token por usuario, y explica por qué el token puede cambiar y hay que actualizarlo.
-
-#### Paso 7 · Cierre
-Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
-
-### Tema 8: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
+### Tema 5: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
 
 **Prerrequisito:** tema «Keychain — guardar secretos de forma segura» de este módulo.
 
@@ -755,6 +477,284 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reutilizar un `LACo
 **Transferencia al proyecto integrador «RutaFlow»:** exige Face ID o el código del dispositivo para confirmar cobros contra entrega en la app del conductor de RutaFlow.
 
 **Fuente oficial:** [Apple — Logging a user into your app with Face ID or Touch ID](https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id).
+
+### Tema 6: Notificaciones push con APNs · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás registrar la app para recibir notificaciones push vía APNs (Apple Push Notification service), obtener el device token y entender el flujo completo hasta mostrar una notificación. Prerrequisitos: Tema 4 (permisos) de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Cuando se asigna una entrega a un repartidor, su app debe avisarle aunque esté cerrada. Eso solo es posible con push: el backend de RutaFlow (Módulo Spring/Node) envía la notificación a APNs, y APNs la entrega al dispositivo correcto usando su device token.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El flujo: (1) la app pide permiso de notificaciones; (2) se registra con APNs y recibe un **device token** único; (3) la app envía ese token a tu backend; (4) cuando hay un evento, tu backend le pide a APNs que entregue una notificación a ese token. La app no "recibe" del backend directamente: APNs es el intermediario de confianza de Apple.
+
+**Analogía:** el device token es como la dirección postal del dispositivo, y APNs es el servicio de correos oficial de Apple: tu backend no entrega la carta en mano, se la da a correos (APNs) con la dirección (token), y correos la entrega.
+
+**Conceptos clave:** APNs como intermediario, device token, permiso vs registro, payload de notificación.
+**Cuándo no usarlo:** para comunicación en tiempo real mientras la app está abierta y en primer plano, un canal WebSocket/Socket.IO es más directo; push es para alcanzar al usuario con la app cerrada o en segundo plano.
+
+**Transferencia al proyecto integrador «RutaFlow»:** registra el device token del repartidor y envíalo al backend; define el evento "entrega asignada" que dispara una push desde el servidor.
+Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+**Errores comunes:** asumir que conceder el permiso de notificaciones ya registra el device token — son dos pasos independientes; sin llamar explícitamente a `registerForRemoteNotifications()` dentro del callback de `requestAuthorization`, el permiso queda concedido pero ningún token llega jamás al backend.
+**Fuente oficial:** [documentación de iOS](https://developer.apple.com/documentation/).
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea `Sources/RutaFlowApp/AppDelegate.swift`:
+
+```swift
+import SwiftUI
+import UserNotifications
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ app: UIApplication,
+                     didFinishLaunchingWithOptions opts: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { concedido, _ in
+            guard concedido else { return }
+            DispatchQueue.main.async { app.registerForRemoteNotifications() }  // pide el device token
+        }
+        return true
+    }
+
+    func application(_ app: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
+        print("Device token APNs:", token)   // se enviaría al backend de RutaFlow
+    }
+}
+
+@main
+struct RutaFlowApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    var body: some Scene { WindowGroup { ContentView() } }
+}
+```
+
+**Ejecuta el ejemplo** (requiere capability "Push Notifications" en el target; en Simulador se puede probar con un archivo `.apns`):
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+
+**Resultado esperado:** al conceder el permiso, la consola imprime el device token (una cadena hex larga). En el Simulador, arrastrar un archivo `.apns` con el payload sobre la ventana muestra la notificación. **Fallo deliberado:** omite `registerForRemoteNotifications()`: nunca llega el device token, y aunque el permiso esté concedido, el backend no tiene a dónde enviar. Diagnostica por qué el permiso y el registro son dos pasos distintos y ambos necesarios.
+
+#### Paso 5 · Práctica guiada
+Maneja `didFailToRegisterForRemoteNotificationsWithError` para registrar (log) el caso en que el registro falla (por ejemplo, sin conexión o sin capability). Pista: es el callback hermano del de éxito.
+
+#### Paso 6 · Práctica independiente
+Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y almacena el device token por usuario, y explica por qué el token puede cambiar y hay que actualizarlo.
+
+#### Paso 7 · Cierre
+Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
+
+### Tema 7: Offline-first es un protocolo, no una caché · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a construir una outbox persistente para `confirmarEntrega` (Módulo 5), de forma que un conductor sin señal pueda confirmar una entrega y que se sincronice sola cuando vuelva la red, sin duplicarse. Prerrequisitos: Módulo 5 completo.
+#### Paso 2 · Contexto y caso real
+Si `confirmarEntrega` falla porque el conductor está sin señal en un sótano, simplemente reintentar la misma llamada cuando vuelva la red puede duplicar el efecto si el servidor sí la había recibido pero la respuesta se perdió en el camino.
+#### Paso 3 · Teoría, modelo mental y analogía
+Offline-first exige una fuente local observable y una outbox persistente donde cada operación tiene una identidad estable (clave de idempotencia) — una oficina postal con comprobantes numerados: puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
+**Conceptos clave:** source of truth, outbox, state machine, idempotency key, retry, exponential backoff, jitter, reachability, optimistic UI, version, conflict, tombstone, background task y cancellation.
+
+Leer una caché sin red es útil, pero offline-first exige definir qué ocurre con escrituras. Mantén una fuente local observable y una outbox persistente. Cada operación tiene identidad estable, payload, estado, intentos y próxima fecha. La interfaz confirma que el cambio está pendiente; un worker lo envía y reconcilia la respuesta.
+
+```swift
+struct PendingMutation: Codable, Identifiable {
+    enum State: String, Codable { case queued, sending, failed }
+    let id: UUID                 // también es clave de idempotencia
+    let taskID: UUID
+    let baseVersion: Int
+    let operation: Operation
+    var state: State
+    var attempts: Int
+    var nextAttemptAt: Date
+}
+
+actor SyncEngine {
+    func drain() async {
+        for mutation in await store.readyMutations() {
+            guard !Task.isCancelled else { return }
+            await sendAndReconcile(mutation)
+        }
+    }
+}
+```
+
+Reintentar no garantiza seguridad: si el servidor aplicó el cambio pero la respuesta se perdió, un POST nuevo puede duplicarlo. Envía la misma clave de idempotencia y exige que el servidor recuerde el resultado. Usa backoff con jitter para fallos transitorios, respeta `Retry-After` y no reintentes validación o autorización. `NWPathMonitor` ayuda a decidir cuándo probar, pero “hay red” no significa “el servicio funciona”.
+
+Los conflictos son requisito de dominio. Con versiones, el servidor puede rechazar una escritura sobre estado viejo. Elige política por campo: server-wins para autoridad, client-wins solo si es aceptable, merge para datos compatibles o resolución humana cuando perder una intención sería grave. Las eliminaciones necesitan tombstones para no resucitar registros. `BGTaskScheduler` ofrece oportunidades limitadas, no ejecución garantizada; el flujo debe progresar también al abrir la app.
+
+**Analogía:** la outbox es una oficina postal con comprobantes numerados. Puede reenviar el mismo sobre, pero el receptor sabe que no debe cobrar dos veces.
+
+**¿Por qué es importante?** porque conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden.
+
+**Casos de uso reales:** marcar tarea en metro, editar desde dos dispositivos, respuesta perdida después de crear, logout con cola pendiente y migración mientras existe trabajo offline.
+
+**Diagrama:**
+
+```text
+UI -> base local -> outbox(queued) -> API + idempotency-key
+ ^                                      |
+ |            reconciliar/version <-----+
+ +-- estado pendiente/error/conflicto
+```
+
+**Diagrama: outbox con idempotencia estable**
+
+```mermaid
+sequenceDiagram
+    participant UI as Confirmar entrega
+    participant Outbox as ConfirmacionPendiente (id fijo)
+    participant API as Servidor
+    UI->>Outbox: encolar (id = UUID estable)
+    Outbox->>API: enviar con ese id
+    API--xOutbox: red perdida, sin respuesta
+    Outbox->>API: reintentar CON EL MISMO id
+    API-->>Outbox: reconoce el id, no duplica el efecto
+```
+
+En tu propio proyecto RutaFlow, crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, asígnalo al target de la app y escribe allí la implementación EN MEMORIA de `ConfirmacionPendiente` y `MotorSincronizacion`, incluyendo el almacén y las funciones que el fragmento del Paso 4 invoca.
+
+#### Paso 4 · Demostración guiada
+```swift
+struct ConfirmacionPendiente: Codable, Identifiable {
+    enum Estado: String, Codable { case encolada, enviando, fallida }
+    let id: UUID              // también es la clave de idempotencia
+    let envioID: String
+    let pin: String
+    var estado: Estado
+    var intentos: Int
+}
+
+actor MotorSincronizacion {
+    func vaciar() async {
+        for confirmacion in await almacen.pendientes() {
+            guard !Task.isCancelled else { return }
+            await enviarYReconciliar(confirmacion)
+        }
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: confirmar una entrega sin red encola una `ConfirmacionPendiente` con un `id` fijo; cuando vuelve la conectividad, `MotorSincronizacion.vaciar()` envía esa misma confirmación identificada por ese `id` — si el servidor ya la había procesado antes de que se perdiera la respuesta, reconoce el mismo `id` y no la aplica dos veces.
+#### Paso 5 · Práctica guiada
+Pista: en `enviarYReconciliar`, generá un `UUID()` nuevo cada vez que se reintenta la misma `ConfirmacionPendiente`, en vez de reusar su `id` original — ese es el fallo deliberado: ahora cada reintento llega al servidor como una confirmación distinta, y una entrega que en realidad se confirmó una sola vez queda registrada como confirmada dos o tres veces.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reusando siempre el `id` original de la `ConfirmacionPendiente` en cada reintento, y agregá backoff con jitter entre reintentos fallidos, en vez de reintentar inmediatamente en loop.
+
+**Proyecto integrador:** en el proyecto vacío de este tema, separa `ConfirmacionPendiente.swift`, `MotorSincronizacion.swift` y `ServidorConfirmacionesFalso.swift`. Haz que el servidor falso registre los IDs recibidos y simule «aplicó la confirmación, pero perdió la respuesta» en el primer envío. En `RutaFlowAppTests/OutboxTests.swift`, reintenta esa misma operación y verifica que ambos envíos llevan el mismo UUID pero el servidor contabiliza un solo efecto; añade un segundo caso que compruebe que el backoff queda dentro del intervalo elegido y que cancelar antes del próximo intento evita otra llamada.
+
+#### Paso 7 · Cierre
+Entregá la outbox del Paso 4, la duplicación provocada en el Paso 5, y el backoff del Paso 6; explicá por qué reintentar una operación de red no es seguro por sí solo sin una clave de idempotencia estable. Siguiente paso: estudia cómo medir y operar esta app en producción. Errores comunes: generar una nueva identidad en cada reintento, reintentar errores de validación o autorización (que nunca van a tener éxito), y no tener backoff entre reintentos. Fuente oficial: https://developer.apple.com/documentation/foundation/url_loading_system.
+**Implicación práctica:** La conectividad móvil parcial convierte operaciones aparentemente simples en efectos duplicados, perdidos o fuera de orden si no se diseñan con idempotencia explícita.
+
+### Tema 8: Operar significa detectar, limitar y aprender del fallo · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a instrumentar `MotorSincronizacion.vaciar()` (Tema 7) con un signpost, y a definir un indicador concreto ("tasa de éxito de sincronización") para decidir si una versión de RutaFlow está sana en producción. Prerrequisitos: Tema 7 de este módulo.
+#### Paso 2 · Contexto y caso real
+"No se traba en mi teléfono" no es evidencia de que la sincronización funcione para los conductores reales — necesitás una medición agregada, no una impresión personal.
+#### Paso 3 · Teoría, modelo mental y analogía
+MetricKit entrega diagnósticos agregados e Instruments permite investigar con signposts que delimitan operaciones del dominio sin llenar los logs de datos personales — un centro de control donde las métricas convierten señales en decisiones.
+**Conceptos clave:** crash, hang, launch time, memory pressure, MetricKit, Instruments, os_signpost, structured logging, SLI, release train, TestFlight, phased release, migration, feature flag y rollback.
+
+“No crashea en mi teléfono” no es evidencia. Define indicadores ligados a experiencia: sesiones sin crash, tasa de hangs, tiempo de arranque, éxito de sincronización y latencia percibida. MetricKit entrega diagnósticos agregados; Instruments permite investigar CPU, memoria, energía, red y bloqueos; signposts delimitan operaciones del dominio sin llenar logs de datos personales.
+
+```swift
+import OSLog
+
+let points = OSSignposter(subsystem: "com.example.tasks", category: "sync")
+
+func measuredSync() async throws {
+    let state = points.beginInterval("outbox-drain")
+    defer { points.endInterval("outbox-drain", state) }
+    try await syncEngine.sync()
+}
+```
+
+Evita trabajo pesado en `MainActor`; mide antes de optimizar y prueba con dispositivos/perfiles realistas. Un hang puede ser peor que un crash porque el usuario no recibe salida clara. Trata memoria y energía como presupuestos: imágenes dimensionadas, paginación, cancelación de tareas y trabajo de fondo limitado.
+
+Cada release necesita migración ensayada con datos de versiones anteriores, compatibilidad de API y plan de contención. TestFlight valida con grupos pequeños; un despliegue gradual reduce exposición, pero no reemplaza observabilidad. Feature flags deben tener propietario y fecha de retiro. Si la base migra de forma irreversible, “volver al binario anterior” puede no funcionar: diseña migraciones expand/contract o restauración explícita.
+
+**Analogía:** operar una app es pilotar con instrumentos. La vista por la ventana ayuda, pero las alarmas, métricas y listas de comprobación permiten reaccionar antes del accidente.
+
+**¿Por qué es importante?** porque todo software real falla; la calidad profesional depende del radio de impacto, detección y recuperación.
+
+**Casos de uso reales:** hang en arranque, fuga de imágenes, migración que falla con datos antiguos, API incompatible y release que aumenta errores de sincronización.
+
+**Diagrama:**
+
+```text
+TestFlight -> cohorte pequeña -> métricas sanas? -> despliegue gradual
+                                      no -> contener/flag/corregir
+producción -> MetricKit/signposts -> reproducir en Instruments -> aprendizaje
+```
+
+**Diagrama: ciclo de medición con umbral y acción**
+
+```mermaid
+flowchart TD
+    A["sincronizacionMedida()\ncon OSSignposter"] --> B["Instruments: intervalo outbox-drain"]
+    B --> C["Tasa de éxito de sincronización"]
+    C --> D{"¿< 95% por más de 1h?"}
+    D -->|Sí| E["Alerta: revertir / feature flag / investigar"]
+    D -->|No| F["Sano, seguir desplegando"]
+```
+
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. En el grupo de la app crea `MotorSincronizacion.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona únicamente el target `RutaFlowApp` y escribe manualmente tanto el motor mínimo como la instrumentación del Paso 4. Esta práctica no reutiliza el archivo del Tema 7 ni necesita ningún archivo externo.
+
+#### Paso 4 · Demostración guiada
+```swift
+import OSLog
+
+actor MotorSincronizacion {
+    func vaciar() async {
+        // Envía aquí las confirmaciones pendientes de esta práctica.
+    }
+}
+
+let motorSincronizacion = MotorSincronizacion()
+let puntos = OSSignposter(subsystem: "com.rutaflow.conductor", category: "sync")
+
+func sincronizacionMedida() async throws {
+    let estado = puntos.beginInterval("outbox-drain")
+    defer { puntos.endInterval("outbox-drain", estado) }
+    await motorSincronizacion.vaciar()
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+# una sola vez, fuera de RutaFlowApp:
+mkdir Practica && cd Practica
+swift package init --type executable
+rm Sources/Practica/Practica.swift   # la plantilla de Swift 6.2 trae un @main que choca con main.swift
+# pega el código en Sources/Practica/main.swift
+swift run
+```
+Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
+
+Resultado esperado: grabando una sesión de Instruments con la plantilla "os_signpost" mientras corrés `sincronizacionMedida()`, ves el intervalo "outbox-drain" con su duración real — una medición concreta, no una sensación de "tardó un poco".
+#### Paso 5 · Práctica guiada
+Pista: definí el indicador "tasa de éxito de sincronización" pero no estableciste ningún umbral que dispare una alerta ("lo vamos a mirar cuando se vea raro") — ese es el fallo deliberado: sin un umbral explícito, nadie sabe cuándo esa métrica indica un problema real versus variación normal, y una regresión real puede pasar inadvertida durante días.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 definiendo un umbral concreto (por ejemplo, si la tasa de éxito cae por debajo del 95% durante más de una hora, es una alerta), y escribí qué acción concreta se toma si se dispara: revertir la versión, activar un feature flag, o investigar con Instruments.
+
+**Proyecto integrador:** en el proyecto independiente creado desde cero en este tema, implementa 20 sincronizaciones locales en `MotorSincronizacion.swift`, con 18 éxitos y 2 fallos controlados, y delimita cada lote con el signpost de `SincronizacionMedida.swift`. Graba el intervalo `outbox-drain` en Instruments y calcula la tasa resultante (90%). Escribe `RunbookSincronizacion.md` con el umbral «menos de 95% durante una hora», la evidencia que debes adjuntar y la acción de desactivar la sincronización automática mediante un flag antes de investigar; repite con 20 éxitos y registra por qué ese segundo lote no abre incidente.
+
+#### Paso 7 · Cierre
+Entregá el signpost instrumentado del Paso 4, la métrica sin umbral detectada en el Paso 5, y el umbral con acción concreta del Paso 6; explicá por qué una métrica sin un umbral de acción asociado no sirve para operar, solo para "mirar". Siguiente paso: aplicá esta misma disciplina de medición al resto de RutaFlow antes de cada release. Errores comunes: alertas sin ninguna acción definida, confiar en "no crashea en mi teléfono" como evidencia, y no ensayar la migración de datos con una versión anterior antes de un release. Fuente oficial: https://developer.apple.com/documentation/metrickit.
+**Implicación práctica:** Todo software real falla; la calidad profesional depende de detectar, limitar el radio de impacto y aprender del fallo con métricas y umbrales concretos, no con impresiones subjetivas.
 
 ### Tema 9: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min
 
@@ -1016,7 +1016,7 @@ Guarda en `UserDefaults` la hora de la última sincronización exitosa y muéstr
 - [ ] Reprodujiste el error de identificador no permitido.
 - [ ] Tu tarea respeta la cancelación.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** el tema siguiente protege con Face ID las acciones sensibles de la app.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** en el módulo 14, «WidgetKit» muestra las entregas pendientes del día sin abrir la app y «App Intents» expone esas acciones a Siri y a los Atajos.
 
 **Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow y muestra la hora de la última sincronización.
 

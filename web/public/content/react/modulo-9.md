@@ -203,7 +203,7 @@ Entregá `EncabezadoPanel` memoizado del Paso 4, el memo desperdiciado en `Boton
 ### Tema 3: Suspense y React.lazy — carga diferida del lado cliente · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás dividir el bundle con `React.lazy` para que un componente pesado se descargue solo cuando se necesita, mostrando un `fallback` con `<Suspense>` mientras llega. Prerrequisitos: tema «Virtualización y code-splitting» de este módulo.
+Al finalizar podrás dividir el bundle con `React.lazy` para que un componente pesado se descargue solo cuando se necesita, mostrando un `fallback` con `<Suspense>` mientras llega. Prerrequisitos: tema «Medir antes de optimizar» de este módulo: separas el chunk que la medición señaló.
 
 #### Paso 2 · Contexto y caso real
 En RutaFlow, el panel de analítica (gráficos pesados, con una librería grande) solo lo abre el administrador de vez en cuando. Si se incluye en el bundle inicial, TODOS los usuarios descargan ese peso al entrar, aunque nunca abran analítica. Con `React.lazy`, ese código se descarga solo cuando el admin abre el panel — el resto de usuarios arranca más rápido.
@@ -261,7 +261,7 @@ npm run dev
 Envuelve el `<Suspense>` en un Error Boundary (Módulo 2, Tema 5) para manejar el caso en que el chunk falle al descargarse (red caída). Pista: `lazy` puede rechazar la promesa de import; el boundary captura ese error.
 
 #### Paso 6 · Práctica independiente
-Divide por ruta: carga de forma diferida un componente de página completa en una ruta poco visitada (usa el code-splitting por ruta del Tema 4 de este módulo y del Módulo 5). Entrega la comparación de tamaño del bundle inicial antes y después con `npm run build`.
+Divide por ruta: carga de forma diferida un componente de página completa en una ruta poco visitada (usa el `React.lazy` que acabas de escribir aquí y el code-splitting por ruta del Módulo 5). Entrega la comparación de tamaño del bundle inicial antes y después con `npm run build`.
 
 #### Paso 7 · Cierre
 Entrega la analítica diferida, la comparación de bundles y el boundary sobre el Suspense. **¿Por qué es importante?** El tamaño del bundle inicial es uno de los factores que más afecta el tiempo de carga (y las Core Web Vitals, Tema 1). `React.lazy` + `Suspense` es la herramienta estándar para que el usuario descargue solo lo que usa, clave en apps grandes donde el 80% del código corresponde a pantallas que la mayoría nunca visita. Fuentes: [React — lazy](https://react.dev/reference/react/lazy) y [React — Suspense](https://react.dev/reference/react/Suspense).
@@ -438,7 +438,7 @@ Entregá la transición correctamente dividida del Paso 4, el bloqueo del input 
 
 ### Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min
 
-**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado del cliente» de este módulo.
+**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado cliente» de este módulo.
 
 **Al finalizar podrás:** leer el resultado de una promesa con `use` dentro de un límite de `Suspense` y un límite de errores, y leer un contexto dentro de un `if`.
 

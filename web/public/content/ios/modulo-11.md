@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Certificados y provisioning profiles
+### Tema 1: Certificados y provisioning profiles · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar firma automática para la app de RutaFlow (`com.rutaflow.conductor`) y a generar un Archive válido con un certificado de distribución. Prerrequisitos: cuenta de Apple Developer, Módulo 10 completo.
@@ -75,7 +75,7 @@ Corrige el Paso 5 reactivando **Automatically manage signing** y repitiendo el A
 #### Paso 7 · Cierre
 Entregá el Archive válido del Paso 4, el error de firma del Paso 5, y la capability agregada del Paso 6; explicá con tus propias palabras qué vincula exactamente un provisioning profile (certificado + App ID + capacidades, y en desarrollo, dispositivos). Siguiente paso: estudia cómo archivar y subir a TestFlight. Errores comunes: compartir certificados entre proyectos sin necesidad, cambiar el Bundle Identifier sin crear el App ID correspondiente, y versionar certificados o perfiles en el repositorio. Fuentes oficiales: https://developer.apple.com/help/account/ y https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases.
 
-### Tema 2: Archivar, subir y TestFlight
+### Tema 2: Archivar, subir y TestFlight · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a subir el Archive de RutaFlow a App Store Connect y a agregarte como tester interno en TestFlight. Prerrequisitos: Tema 1 de este módulo.
@@ -150,7 +150,7 @@ Corregí el Paso 5 incrementando `CFBundleVersion`, generando un nuevo Archive y
 #### Paso 7 · Cierre
 Entregá el build disponible en TestFlight del Paso 4, el rechazo por versión duplicada del Paso 5, y el segundo tester agregado del Paso 6; explicá por qué probar con TestFlight antes de enviar a revisión de la App Store reduce el riesgo de que un conductor real sea el primero en encontrar un bug grave. Siguiente paso: estudia qué metadata necesita completarse antes de la revisión. Errores comunes: subir sin incrementar el número de build, no probar el build subido antes de promoverlo a revisión, y agregar testers externos sin completar antes la revisión beta que Apple exige para ese grupo. Fuentes oficiales: https://developer.apple.com/testflight/ y https://developer.apple.com/help/app-store-connect/.
 
-### Tema 3: Metadata y versionado
+### Tema 3: Metadata y versionado · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a completar la metadata obligatoria de RutaFlow en App Store Connect (descripción, capturas, política de privacidad) e incrementar correctamente su versionado. Prerrequisitos: Tema 2 de este módulo.

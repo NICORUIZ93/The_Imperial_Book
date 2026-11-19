@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: XCTest clásico y Swift Testing
+### Tema 1: XCTest clásico y Swift Testing · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir el mismo test para `EsEnvioAtrasado` (Módulo 8) dos veces: una con XCTest clásico y otra con Swift Testing, para comparar su sintaxis sobre el mismo caso real. Prerrequisitos: Módulo 8 completo.
@@ -109,7 +109,7 @@ Corregí el Paso 5 devolviendo `-3600`, y agregá un segundo test (en Swift Test
 #### Paso 7 · Cierre
 Entregá los dos tests equivalentes del Paso 4, el fallo por fecha invertida del Paso 5, y el test del caso contrario del Paso 6; explicá con tus propias palabras qué gana Swift Testing frente a XCTest clásico en este caso, y qué NO cambia entre ambos (la regla de negocio verificada es idéntica). Siguiente paso: estudia cómo testear código async. Errores comunes: nombre de test que no coincide con lo que realmente verifica, elegir el `XCTAssert` incorrecto, y mezclar XCTest y Swift Testing sin un criterio claro de cuándo usar cada uno. Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/xctest.
 
-### Tema 2: Testing de código async
+### Tema 2: Testing de código async · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a testear `confirmarEntrega` (Módulo 5) con Swift Testing, marcando el test mismo como `async` en vez de usar una `XCTestExpectation` manual. Prerrequisitos: Módulo 5 completo, Tema 1 de este módulo.
@@ -179,7 +179,7 @@ Corregí el Paso 5 restaurando `async`, y agregá un segundo test que llame a `c
 #### Paso 7 · Cierre
 Entregá el test async del Paso 4, el error de compilación del Paso 5, y el test del PIN incorrecto del Paso 6; explicá por qué testear una función `async throws` con `await` directo en el test es más simple que el modelo de callbacks + `XCTestExpectation`. Siguiente paso: estudia UI Tests con XCUITest. Errores comunes: olvidar `async` en la firma del test, testear solo el camino feliz sin el camino de error, y usar timeouts arbitrariamente largos "por si acaso". Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/swift/concurrency.
 
-### Tema 3: UI Tests con XCUITest
+### Tema 3: UI Tests con XCUITest · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada". Prerrequisitos: Tema 2 de este módulo.

@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: NavigationStack y NavigationPath
+### Tema 1: NavigationStack y NavigationPath · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a navegar programáticamente de la lista de envíos al `DetalleEnvio` (Módulo 2) usando `NavigationPath`, sin depender de que el usuario toque una fila. Prerrequisitos: Módulo 2 completo.
@@ -81,7 +81,7 @@ Corregí el Paso 5 agregando el `.navigationDestination(for: EnvioUrgente.self)`
 #### Paso 7 · Cierre
 Entregá la navegación programática funcionando del Paso 4, el destino sin registrar del Paso 5, y el reseteo completo del stack del Paso 6; explicá por qué esto sería difícil de lograr con `NavigationLink` anidados puros, sin `NavigationPath`. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 
-### Tema 2: Sheets, full screen covers y TabView
+### Tema 2: Sheets, full screen covers y TabView · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir, para dos flujos reales de RutaFlow, si necesitan un `.sheet()` o un `.fullScreenCover()`, y a darle a cada pestaña su propio historial con `TabView`. Prerrequisitos: Tema 1 de este módulo.
@@ -150,7 +150,7 @@ Corregí el Paso 5 volviendo a `.fullScreenCover`, y navegá a `DetalleEnvio` de
 #### Paso 7 · Cierre
 Entregá la elección correcta de sheet/fullScreenCover del Paso 4, el onboarding descartable por error del Paso 5, y el historial de navegación preservado por pestaña del Paso 6; explicá qué comunica cada nivel de presentación modal sobre qué tan obligatoria es la acción. Siguiente paso: estudia persistencia. Errores comunes: rutas sin tipo, sheets anidadas, deep links no validados y estado de navegación duplicado. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/navigationstack y https://developer.apple.com/documentation/swiftui.
 
-### Tema 3: Deep linking y controles de formulario
+### Tema 3: Deep linking y controles de formulario · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a abrir `DetalleEnvio` directamente desde un deep link real (`rutaflow://envio/RF-4471`), validando el formato antes de navegar. Prerrequisitos: Tema 1 de este módulo.

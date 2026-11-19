@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El protocolo View y composición
+### Tema 1: El protocolo View y composición · Básico · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `TarjetaEnvio`, una vista propia que muestra un envío de RutaFlow, y a componerla dentro de otra vista como si fuera nativa. Prerrequisitos: macOS, Xcode y Swift; verifica `xcodebuild -version`.
@@ -185,7 +185,7 @@ Extraé ese tercer envío de vuelta a una instancia de `TarjetaEnvio`, y agregal
 
 Ya componés `TarjetaEnvio` como cualquier vista nativa y comprobás que cambiar el color en la tarjeta no alcanza al envío duplicado. El siguiente tema explica por qué el orden de `.padding()` y `.background()` cambia el resultado.
 
-### Tema 2: Orden de modificadores y layout con stacks
+### Tema 2: Orden de modificadores y layout con stacks · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a ver con tus propios ojos por qué `.padding().background()` y `.background().padding()` se ven distinto en `TarjetaEnvio` (Tema 1). Prerrequisitos: Tema 1 de este módulo.
@@ -322,7 +322,7 @@ Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **Implicación práctica:** Cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
 
-### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers
+### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers · Intermedio · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con `LazyVGrid` dentro de un `ScrollView`, e iterar su diseño con Previews sin correr la app. Prerrequisitos: Temas 1-2 de este módulo.

@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Publishers y Subscribers
+### Tema 1: Publishers y Subscribers · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar el campo de búsqueda de guía de RutaFlow a un `Publisher`, confirmando que cada letra tecleada emite un nuevo valor. Prerrequisitos: Módulo 6 completo.
@@ -81,7 +81,7 @@ Corregí el Paso 5 restaurando `.store(in:)`, y agregá un segundo `sink` sobre 
 #### Paso 7 · Cierre
 Entregá el Publisher emitiendo por cada letra del Paso 4, la suscripción perdida del Paso 5, y los dos `sink` independientes del Paso 6; explicá por qué una búsqueda en tiempo de escritura necesita un flujo continuo, no una función `async` puntual. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 
-### Tema 2: Operadores: debounce y combineLatest
+### Tema 2: Operadores: debounce y combineLatest · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar `debounce` a la búsqueda de guía de RutaFlow (Tema 1) y a combinar texto + filtro de zona con `combineLatest`. Prerrequisitos: Tema 1 de este módulo.
@@ -138,7 +138,7 @@ Corregí el Paso 5 restaurando `debounce`, y medí cuánto tiempo real pasa entr
 #### Paso 7 · Cierre
 Entregá el debounce funcionando del Paso 4, la sobrecarga sin debounce del Paso 5, y la medición de tiempo del Paso 6; explicá por qué `combineLatest` no necesita que ambas fuentes cambien al mismo tiempo para producir un valor combinado útil. Siguiente paso: estudia testing. Errores comunes: AnyCancellable perdido, debounce mal ubicado, errores ignorados y mezclar paradigmas sin frontera. Fuentes oficiales: https://developer.apple.com/documentation/combine y https://developer.apple.com/documentation/swift/concurrency.
 
-### Tema 3: Combine vs async/await
+### Tema 3: Combine vs async/await · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir, para dos operaciones reales de RutaFlow, cuál necesita Combine y cuál debería ser simplemente `async`/`await`. Prerrequisitos: Tema 2 de este módulo, Módulo 4 completo.

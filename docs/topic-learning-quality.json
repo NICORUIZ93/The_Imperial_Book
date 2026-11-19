@@ -17007,7 +17007,7 @@
     "ios": [
       {
         "module": 0,
-        "topic": "Tema 1: Optionals y unwrapping seguro",
+        "topic": "Tema 1: Optionals y unwrapping seguro · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17029,7 +17029,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: struct vs class",
+        "topic": "Tema 2: struct vs class · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17051,7 +17051,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Protocolos y enums con valores asociados",
+        "topic": "Tema 3: Protocolos y enums con valores asociados · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17073,7 +17073,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Closures, colecciones y genéricos con propósito",
+        "topic": "Tema 4: Closures, colecciones y genéricos con propósito · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17117,7 +17117,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: El protocolo View y composición",
+        "topic": "Tema 1: El protocolo View y composición · Básico · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17139,7 +17139,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Orden de modificadores y layout con stacks",
+        "topic": "Tema 2: Orden de modificadores y layout con stacks · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17161,7 +17161,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Previews, LazyVGrid/ScrollView y property wrappers",
+        "topic": "Tema 3: Previews, LazyVGrid/ScrollView y property wrappers · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17183,7 +17183,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: Instruments",
+        "topic": "Tema 1: Instruments · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17205,7 +17205,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 2: Accesibilidad con VoiceOver",
+        "topic": "Tema 2: Accesibilidad con VoiceOver · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17227,7 +17227,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit",
+        "topic": "Tema 3: Human Interface Guidelines, Dynamic Type e interop con UIKit · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17249,7 +17249,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 4: UIKit desde cero para mantener aplicaciones reales",
+        "topic": "Tema 5: UIKit desde cero para mantener aplicaciones reales · Avanzado · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17271,7 +17271,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 5: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
+        "topic": "Tema 4: Localización con String Catalogs: textos, plurales y formatos por idioma · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17293,7 +17293,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Certificados y provisioning profiles",
+        "topic": "Tema 1: Certificados y provisioning profiles · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17315,7 +17315,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Archivar, subir y TestFlight",
+        "topic": "Tema 2: Archivar, subir y TestFlight · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17337,7 +17337,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: Metadata y versionado",
+        "topic": "Tema 3: Metadata y versionado · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17359,7 +17359,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Arquitectura del proyecto integrador",
+        "topic": "Tema 1: Arquitectura del proyecto integrador · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17381,7 +17381,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Sincronización entre red y persistencia local",
+        "topic": "Tema 2: Sincronización entre red y persistencia local · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17403,7 +17403,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 3: Cierre del track",
+        "topic": "Tema 4: Cierre del track · Experto · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17425,7 +17425,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
+        "topic": "Tema 3: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17447,7 +17447,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: El sandbox reduce superficie, pero no valida intenciones",
+        "topic": "Tema 1: El sandbox reduce superficie, pero no valida intenciones · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17469,7 +17469,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: Proteger datos es controlar todas sus copias",
+        "topic": "Tema 2: Proteger datos es controlar todas sus copias · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17491,7 +17491,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 3: Offline-first es un protocolo, no una caché",
+        "topic": "Tema 5: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17513,7 +17513,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 4: Operar significa detectar, limitar y aprender del fallo",
+        "topic": "Tema 6: Notificaciones push con APNs · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17535,7 +17535,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 5: Keychain — guardar secretos de forma segura",
+        "topic": "Tema 8: Operar significa detectar, limitar y aprender del fallo · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17557,7 +17557,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 6: Permisos y privacidad — pedir acceso con criterio",
+        "topic": "Tema 7: Offline-first es un protocolo, no una caché · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17579,7 +17579,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 7: Notificaciones push con APNs",
+        "topic": "Tema 3: Keychain — guardar secretos de forma segura · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17623,7 +17623,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 8: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+        "topic": "Tema 4: Permisos y privacidad — pedir acceso con criterio · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17667,7 +17667,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: Swift Testing y pruebas asíncronas",
+        "topic": "Tema 4: ViewInspector con criterio · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17689,7 +17689,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: ViewInspector con criterio",
+        "topic": "Tema 8: Core ML y Vision — inferencia en el dispositivo · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17711,7 +17711,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Combine avanzado",
+        "topic": "Tema 1: Animaciones y matchedGeometryEffect · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17733,7 +17733,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: Animaciones y matchedGeometryEffect",
+        "topic": "Tema 2: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17755,7 +17755,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: UIViewRepresentable",
+        "topic": "Tema 3: Swift Testing y pruebas asíncronas · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17777,7 +17777,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: UIViewControllerRepresentable y Coordinator",
+        "topic": "Tema 5: Combine avanzado · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17799,7 +17799,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 7: Core ML y Vision — inferencia en el dispositivo",
+        "topic": "Tema 6: UIViewRepresentable · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17821,7 +17821,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min",
+        "topic": "Tema 7: UIViewControllerRepresentable y Coordinator · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17887,7 +17887,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: @State y @Binding",
+        "topic": "Tema 1: @State y @Binding · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17909,7 +17909,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: @Observable",
+        "topic": "Tema 2: @Observable · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17931,7 +17931,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: @Environment y identidad vs valor",
+        "topic": "Tema 3: @Environment y identidad vs valor · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17953,7 +17953,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 1: NavigationStack y NavigationPath",
+        "topic": "Tema 1: NavigationStack y NavigationPath · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17975,7 +17975,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 2: Sheets, full screen covers y TabView",
+        "topic": "Tema 2: Sheets, full screen covers y TabView · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17997,7 +17997,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 3: Deep linking y controles de formulario",
+        "topic": "Tema 3: Deep linking y controles de formulario · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18019,7 +18019,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: async/await y Task",
+        "topic": "Tema 1: async/await y Task · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18041,7 +18041,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Actors para estado mutable seguro",
+        "topic": "Tema 2: Actors para estado mutable seguro · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18063,7 +18063,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: TaskGroup y MainActor",
+        "topic": "Tema 3: TaskGroup y MainActor · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18085,7 +18085,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red",
+        "topic": "Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18151,7 +18151,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 1: URLSession con async/await y Codable",
+        "topic": "Tema 1: URLSession con async/await y Codable · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18173,7 +18173,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: Errores tipados",
+        "topic": "Tema 2: Errores tipados · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18195,7 +18195,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 3: Reintentos y cancelación",
+        "topic": "Tema 3: Reintentos y cancelación · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18217,7 +18217,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: @Model y ModelContainer",
+        "topic": "Tema 1: @Model y ModelContainer · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18239,7 +18239,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: @Query y operaciones de escritura",
+        "topic": "Tema 2: @Query y operaciones de escritura · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18261,7 +18261,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: Migraciones y SwiftData vs Core Data",
+        "topic": "Tema 3: Migraciones y SwiftData vs Core Data · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18327,7 +18327,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: Publishers y Subscribers",
+        "topic": "Tema 1: Publishers y Subscribers · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18349,7 +18349,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: Operadores: debounce y combineLatest",
+        "topic": "Tema 2: Operadores: debounce y combineLatest · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18371,7 +18371,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Combine vs async/await",
+        "topic": "Tema 3: Combine vs async/await · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18393,7 +18393,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: De una vista \"gorda\" a MVVM",
+        "topic": "Tema 1: De una vista \"gorda\" a MVVM · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18415,7 +18415,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Capas del proyecto e inyección por inicializador",
+        "topic": "Tema 2: Capas del proyecto e inyección por inicializador · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18437,7 +18437,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Cuándo MVVM no alcanza",
+        "topic": "Tema 3: Cuándo MVVM no alcanza · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18459,7 +18459,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: XCTest clásico y Swift Testing",
+        "topic": "Tema 1: XCTest clásico y Swift Testing · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18481,7 +18481,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Testing de código async",
+        "topic": "Tema 2: Testing de código async · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18503,7 +18503,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: UI Tests con XCUITest",
+        "topic": "Tema 3: UI Tests con XCUITest · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,

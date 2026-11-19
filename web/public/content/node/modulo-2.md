@@ -451,7 +451,7 @@ Repite la prueba con chunks de 8 bytes, incluye una última fila sin salto de l�
 
 ### Tema 4: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min
 
-**Prerrequisito:** tema «pipeline() para componer streams de forma segura» de este módulo.
+**Prerrequisito:** tema «Streams básicos: Readable, Writable y Transform» de este módulo. La composición segura de `pipeline(...)` se explica más adelante en el tema «pipeline() para componer streams de forma segura» de este módulo.
 
 **Al finalizar podrás:** comprimir y descomprimir archivos grandes por streams con `zlib`, comparar gzip y Brotli y comprobar que la copia es idéntica.
 

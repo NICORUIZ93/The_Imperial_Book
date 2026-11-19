@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: De una vista "gorda" a MVVM
+### Tema 1: De una vista "gorda" a MVVM · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a extraer la lógica de carga de `ListaEnvios` (que hoy llama a `ServicioAPI` y decide qué hacer con la respuesta directamente en su `body`) hacia un `EnviosViewModel` dedicado. Prerrequisitos: Módulo 2 completo (`@Observable`, `@Environment`).
@@ -87,7 +87,7 @@ Corregí el Paso 5 quitando la referencia a `UIApplication`, y escribí una prue
 #### Paso 7 · Cierre
 Entregá el ViewModel extraído del Paso 4, el acoplamiento a UIKit detectado en el Paso 5, y la prueba sin SwiftUI del Paso 6; explicá por qué una vista que decide qué hacer con el resultado de una llamada de red es tan difícil de testear como un ViewModel que importa UIKit en su lógica de negocio. Siguiente paso: estudia cómo organizar las carpetas del proyecto por capa. Errores comunes: ViewModel que importa SwiftUI, lógica de negocio en el `body`, y pruebas que necesitan renderizar la vista completa. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/observation.
 
-### Tema 2: Capas del proyecto e inyección por inicializador
+### Tema 2: Capas del proyecto e inyección por inicializador · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a organizar `EnviosViewModel` y `ServicioAPI` en carpetas por capa, e inyectar `ServicioAPI` por el inicializador del ViewModel en vez de crearlo adentro. Prerrequisitos: Tema 1 de este módulo.
@@ -155,7 +155,7 @@ Corregí el Paso 5 devolviendo el parámetro al inicializador, y movés `Servici
 #### Paso 7 · Cierre
 Entregá el inicializador con valor por defecto del Paso 4, la dependencia fija detectada en el Paso 5, y la estructura de carpetas del Paso 6; explicá por qué un valor por defecto en el inicializador (`servicio: ServicioAPI = ServicioAPI()`) no es lo mismo que un singleton global, aunque en producción ambos acaben usando "la misma" implementación real. Siguiente paso: estudia cuándo esta arquitectura simple no alcanza. Errores comunes: servicio creado dentro del ViewModel sin parámetro, carpetas organizadas por pantalla en vez de por capa, y Dominio que importa Servicios. Fuentes oficiales: https://developer.apple.com/documentation/swift y https://developer.apple.com/tutorials/swiftui.
 
-### Tema 3: Cuándo MVVM no alcanza
+### Tema 3: Cuándo MVVM no alcanza · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a identificar en qué momento `EnviosViewModel` empieza a necesitar algo más que MVVM simple, usando como ejemplo una regla de negocio que se repite entre varios ViewModels de RutaFlow. Prerrequisitos: Temas 1 y 2 de este módulo.

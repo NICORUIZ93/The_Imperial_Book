@@ -29,6 +29,9 @@ python3 scripts/build_curriculum_catalog.py --check
 echo "== Orden pedagógico de los temas (numeración continua y nivel no decreciente)"
 python3 scripts/audit_topic_order.py --check
 
+echo "== Citas numéricas entre temas (existen, no se auto-citan, miran hacia atrás)"
+python3 scripts/audit_topic_citations.py --check
+
 echo "== Laboratorios citados por las lecciones"
 python3 scripts/validate_lesson_labs.py
 

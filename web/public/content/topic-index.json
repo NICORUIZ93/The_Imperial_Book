@@ -3416,12 +3416,12 @@
         "fragment": "tema-3-human-interface-guidelines-dynamic-type-e-interop-con-uikit"
       },
       {
-        "title": "UIKit desde cero para mantener aplicaciones reales",
-        "fragment": "tema-4-uikit-desde-cero-para-mantener-aplicaciones-reales"
+        "title": "Localización con String Catalogs: textos, plurales y formatos por idioma",
+        "fragment": "tema-4-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
       },
       {
-        "title": "Localización con String Catalogs: textos, plurales y formatos por idioma",
-        "fragment": "tema-5-localizacion-con-string-catalogs-textos-plurales-y-formatos-por-idioma"
+        "title": "UIKit desde cero para mantener aplicaciones reales",
+        "fragment": "tema-5-uikit-desde-cero-para-mantener-aplicaciones-reales"
       }
     ],
     "11": [
@@ -3448,12 +3448,12 @@
         "fragment": "tema-2-sincronizacion-entre-red-y-persistencia-local"
       },
       {
-        "title": "Cierre del track",
-        "fragment": "tema-3-cierre-del-track"
+        "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
+        "fragment": "tema-3-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
       },
       {
-        "title": "Swift Package Manager: separar la app en paquetes locales y declarar dependencias",
-        "fragment": "tema-4-swift-package-manager-separar-la-app-en-paquetes-locales-y-declarar-dependencias"
+        "title": "Cierre del track",
+        "fragment": "tema-4-cierre-del-track"
       }
     ],
     "13": [
@@ -3466,28 +3466,28 @@
         "fragment": "tema-2-proteger-datos-es-controlar-todas-sus-copias"
       },
       {
-        "title": "Offline-first es un protocolo, no una caché",
-        "fragment": "tema-3-offline-first-es-un-protocolo-no-una-cache"
-      },
-      {
-        "title": "Operar significa detectar, limitar y aprender del fallo",
-        "fragment": "tema-4-operar-significa-detectar-limitar-y-aprender-del-fallo"
-      },
-      {
         "title": "Keychain — guardar secretos de forma segura",
-        "fragment": "tema-5-keychain-guardar-secretos-de-forma-segura"
+        "fragment": "tema-3-keychain-guardar-secretos-de-forma-segura"
       },
       {
         "title": "Permisos y privacidad — pedir acceso con criterio",
-        "fragment": "tema-6-permisos-y-privacidad-pedir-acceso-con-criterio"
-      },
-      {
-        "title": "Notificaciones push con APNs",
-        "fragment": "tema-7-notificaciones-push-con-apns"
+        "fragment": "tema-4-permisos-y-privacidad-pedir-acceso-con-criterio"
       },
       {
         "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
-        "fragment": "tema-8-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+        "fragment": "tema-5-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+      },
+      {
+        "title": "Notificaciones push con APNs",
+        "fragment": "tema-6-notificaciones-push-con-apns"
+      },
+      {
+        "title": "Offline-first es un protocolo, no una caché",
+        "fragment": "tema-7-offline-first-es-un-protocolo-no-una-cache"
+      },
+      {
+        "title": "Operar significa detectar, limitar y aprender del fallo",
+        "fragment": "tema-8-operar-significa-detectar-limitar-y-aprender-del-fallo"
       },
       {
         "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
@@ -3500,36 +3500,36 @@
     ],
     "14": [
       {
-        "title": "Swift Testing y pruebas asíncronas",
-        "fragment": "tema-1-swift-testing-y-pruebas-asincronas"
-      },
-      {
-        "title": "ViewInspector con criterio",
-        "fragment": "tema-2-viewinspector-con-criterio"
-      },
-      {
-        "title": "Combine avanzado",
-        "fragment": "tema-3-combine-avanzado"
-      },
-      {
         "title": "Animaciones y matchedGeometryEffect",
-        "fragment": "tema-4-animaciones-y-matchedgeometryeffect"
-      },
-      {
-        "title": "UIViewRepresentable",
-        "fragment": "tema-5-uiviewrepresentable"
-      },
-      {
-        "title": "UIViewControllerRepresentable y Coordinator",
-        "fragment": "tema-6-uiviewcontrollerrepresentable-y-coordinator"
-      },
-      {
-        "title": "Core ML y Vision — inferencia en el dispositivo",
-        "fragment": "tema-7-core-ml-y-vision-inferencia-en-el-dispositivo"
+        "fragment": "tema-1-animaciones-y-matchedgeometryeffect"
       },
       {
         "title": "Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos",
-        "fragment": "tema-8-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+        "fragment": "tema-2-gestos-en-swiftui-arrastrar-mantener-presionado-y-combinar-gestos"
+      },
+      {
+        "title": "Swift Testing y pruebas asíncronas",
+        "fragment": "tema-3-swift-testing-y-pruebas-asincronas"
+      },
+      {
+        "title": "ViewInspector con criterio",
+        "fragment": "tema-4-viewinspector-con-criterio"
+      },
+      {
+        "title": "Combine avanzado",
+        "fragment": "tema-5-combine-avanzado"
+      },
+      {
+        "title": "UIViewRepresentable",
+        "fragment": "tema-6-uiviewrepresentable"
+      },
+      {
+        "title": "UIViewControllerRepresentable y Coordinator",
+        "fragment": "tema-7-uiviewcontrollerrepresentable-y-coordinator"
+      },
+      {
+        "title": "Core ML y Vision — inferencia en el dispositivo",
+        "fragment": "tema-8-core-ml-y-vision-inferencia-en-el-dispositivo"
       },
       {
         "title": "WidgetKit: un widget con las entregas pendientes del día",

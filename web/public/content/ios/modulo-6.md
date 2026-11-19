@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: @Model y ModelContainer
+### Tema 1: @Model y ModelContainer · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar `EnvioLocal` con `@Model` para guardar confirmaciones de entrega mientras el conductor está sin señal, listas para sincronizar después. Prerrequisitos: Módulo 5 de este track.
@@ -79,7 +79,7 @@ Agregá una relación `Conductor` → `[EnvioLocal]` (un conductor con varias co
 #### Paso 7 · Cierre
 Entregá `EnvioLocal` declarado y configurado en el `ModelContainer` del Paso 4, el objeto nunca insertado del Paso 5, y la relación Conductor-EnvioLocal del Paso 6; explicá qué código de infraestructura te ahorró la macro `@Model` frente a Core Data manual. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 
-### Tema 2: @Query y operaciones de escritura
+### Tema 2: @Query y operaciones de escritura · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mostrar con `@Query` la lista de `EnvioLocal` pendientes de sincronizar (Tema 1), actualizándose sola cuando el conductor confirma una nueva. Prerrequisitos: Tema 1 de este módulo.
@@ -154,7 +154,7 @@ Corregí el Paso 5 agregando `try? context.save()` después de marcar `sincroniz
 #### Paso 7 · Cierre
 Entregá la lista reactiva del Paso 4, el guardado no persistido del Paso 5, y la sincronización real agregada del Paso 6; explicá por qué `@Query` resuelve el mismo problema que un `Flow` reactivo de Room en Android. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 
-### Tema 3: Migraciones y SwiftData vs Core Data
+### Tema 3: Migraciones y SwiftData vs Core Data · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregarle un campo nuevo a `EnvioLocal` (Tema 1) sin perder las confirmaciones pendientes que ya estaban guardadas en el dispositivo. Prerrequisitos: Temas 1-2 de este módulo.
