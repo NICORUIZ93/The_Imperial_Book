@@ -456,3 +456,30 @@
 @media(prefers-reduced-motion:reduce) {
   .lesson-layout.book-reading .chapter-topic-strip-list a { transition:none; }
 }
+
+// ── FLUID READER · evita recortes con el índice visible ──────────────────
+:host(.book-reading-host) { width:100%; min-width:0; box-sizing:border-box; }
+.lesson-layout.book-reading { width:100%; max-width:1080px; grid-template-columns:minmax(0,1fr); }
+.lesson-layout.book-reading .lesson { width:100%; min-width:0; box-sizing:border-box; }
+.book-chapter-opener h1 { max-width:19ch; font-size:clamp(32px,4vw,48px); overflow-wrap:normal; word-break:normal; }
+.book-chapter-description { max-width:58ch; }
+.lesson-layout.book-reading .chapter-topic-strip-list { grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
+.lesson-layout.book-reading .chapter-topic-strip-list a { min-width:0; }
+.lesson-layout.book-reading .chapter-topic-strip-list a app-topic-title { min-width:0; overflow-wrap:anywhere; }
+
+@media(max-width:1280px) and (min-width:861px) {
+  :host(.book-reading-host) { padding:22px; }
+  .lesson-layout.book-reading .lesson { padding:38px clamp(30px,4vw,48px) 56px; }
+  .book-pagebar { margin:-38px calc(-1 * clamp(30px,4vw,48px)) 34px; }
+  .book-running-head { display:none; }
+  .book-page-select { max-width:220px; }
+}
+
+@media(max-width:1020px) and (min-width:861px) {
+  :host(.book-reading-host) { padding:14px; }
+  .lesson-layout.book-reading .lesson { padding:30px 26px 48px; border-radius:16px; }
+  .book-pagebar { top:78px; margin:-30px -26px 30px; border-radius:16px 16px 0 0; }
+  .book-home,.book-exit { display:none; }
+  .book-chapter-opener h1 { font-size:34px; }
+  .lesson-layout.book-reading .chapter-topic-strip { padding:18px; }
+}

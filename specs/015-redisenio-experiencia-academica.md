@@ -5,9 +5,10 @@
 
 ## Objetivo
 
-Convertir el lector de capítulos en una experiencia de estudio clara y contemporánea sin perder contenido,
-progreso, navegación, modo oscuro ni accesibilidad. El sistema debe funcionar primero en la lección extensa
-`/curso/microservices/0` y, por estar construido sobre componentes compartidos, beneficiar todos los tracks.
+Convertir toda la academia —catálogo, biblioteca curricular, portada de ruta, índice lateral y lector de
+capítulos— en una experiencia de estudio clara y contemporánea sin perder contenido, progreso, navegación,
+modo oscuro ni accesibilidad. El sistema se comprueba en módulos distintos de Microservicios y, por estar
+construido sobre componentes compartidos, beneficia todos los tracks.
 
 ## Sistema visual
 
@@ -31,3 +32,7 @@ progreso, navegación, modo oscuro ni accesibilidad. El sistema debe funcionar p
   Verificación: `cd web && npm test -- --watch=false`
 - **U6** `hecho` — La lección de Microservicios se inspecciona visualmente en escritorio y móvil sin errores de consola.
   Verificación: `python3 scripts/build_web_topic_index.py --check`
+- **U7** `hecho` — Catálogo, biblioteca curricular, portada de ruta, índice y lector comparten superficies, controles y estados.
+  Verificación: `grep -q "ACADEMY CATALOG" web/src/app/catalog/course-catalog.scss && grep -q "ROUTE HOME" web/src/app/course/track-overview.scss`
+- **U8** `hecho` — El lector es fluido con el índice visible y no recorta capítulos extensos en ventanas intermedias.
+  Verificación: `grep -q "FLUID READER" web/src/app/course/lesson-viewer.book.scss`

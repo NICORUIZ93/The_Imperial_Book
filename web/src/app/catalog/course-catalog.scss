@@ -234,3 +234,89 @@ h1 { margin:0; font:700 clamp(34px,3.6vw,50px)/1.1 $sans; letter-spacing:-.035em
   .resume-list, .starter { grid-template-columns:1fr; }
   .skill-list li + li::before { margin-right:10px; }
 }
+
+// ── ACADEMY CATALOG · biblioteca visual compartida ───────────────────────
+.topbar {
+  min-height:72px; padding-inline:clamp(16px,3vw,40px); border-bottom:1px solid $bd;
+  background:color-mix(in srgb,var(--bg-elevated) 90%,transparent); backdrop-filter:blur(18px); box-shadow:$sh;
+}
+.brand-mark { width:38px; height:38px; border:0; border-radius:11px; color:#fff; background:$p; }
+.brand-text strong { font-size:16px; }
+.top-links a { min-height:44px; display:flex; align-items:center; padding:0 4px; }
+.global-search { min-height:40px; padding:0 12px; border:1px solid $bd; border-radius:10px; background:$bg2; }
+.theme-toggle { width:40px; height:40px; border-radius:10px; }
+.theme-toggle:hover { color:$p; background:$pl; }
+.workspace { max-width:none; grid-template-columns:260px minmax(0,1fr); }
+.catalog-sidebar { top:72px; height:calc(100vh - 72px); padding:32px 18px; border-right:1px solid $bd; background:$wh; }
+.catalog-sidebar > button { min-height:42px; padding:8px 11px; border:1px solid transparent; border-radius:9px; }
+.catalog-sidebar > button:hover { background:$bg2; }
+.catalog-sidebar > button.selected { border-color:color-mix(in srgb,var(--accent) 20%,var(--border)); border-left-color:$p; color:$p; background:$pl; }
+.sidebar-note { padding:16px; border:1px solid $bd; border-radius:14px; background:$bg2; }
+main { max-width:1240px; padding:clamp(36px,5vw,72px) clamp(22px,5vw,70px) 0; }
+.hero {
+  gap:28px; padding:0; border:1px solid $bd; border-radius:24px; background:$wh; box-shadow:$shm;
+}
+.hero-intro { padding:clamp(30px,5vw,58px); }
+.hero h1 { max-width:14ch; font-size:clamp(42px,5.2vw,68px); line-height:1.02; }
+.hero h1 span { color:$p; }
+.hero-copy { font-size:17px; }
+.btn { min-height:46px; border-radius:11px; }
+.btn-primary { border-color:$p; background:$p; }
+.btn-primary:hover { background:color-mix(in srgb,var(--accent) 84%,#000); }
+.hero-secondary { text-decoration:none; color:$i3; }
+.hero-secondary:hover { color:$p; }
+.first-session { align-self:stretch; padding:32px; border:0; border-radius:0 24px 24px 0; background:#111827; }
+.first-session h2 { color:#fff; font-size:24px; }
+.first-session p,.session-label { color:#a9b4c5; }
+.session-example { border-color:#263247; border-radius:12px; background:#182235; }
+.session-example pre,.session-example > span,.session-example small { color:#dce7f5; }
+.first-session > a { color:#fff; text-decoration:none; }
+.hero-stats { grid-column:1/-1; gap:0; margin:0; padding:0 28px 26px; border:0; }
+.hero-stats div { min-width:170px; padding:12px 22px; border-left:1px solid $bd; }
+.continue-study,.tracks,.starter,.backup { margin-top:64px; padding-top:0; border-top:0; }
+.section-heading h2 { font-size:clamp(28px,3vw,38px); }
+.catalog-tools { padding:14px; border:1px solid $bd; border-radius:14px; background:$wh; box-shadow:$sh; }
+.course-search { padding-inline:10px; border:0; border-radius:10px; background:$bg2; }
+.category-tabs { gap:8px; }
+.category-tabs button { padding:7px 12px; border:1px solid transparent; border-radius:999px; }
+.category-tabs button.active { border-color:color-mix(in srgb,var(--accent) 20%,var(--border)); color:$p; background:$pl; }
+.group-title { margin:30px 0 14px; border:0; color:$i3; font-weight:800; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.card {
+  display:flex; flex-direction:column; gap:0; padding:22px; border:1px solid $bd; border-radius:16px;
+  background:$wh; box-shadow:$sh; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.card::before { display:none; }
+.card > * { grid-column:auto; }
+.card:hover { transform:translateY(-2px); border-color:$bd2; background:$wh; box-shadow:$shm; }
+.card-top { justify-content:space-between; }
+.card-icon { width:40px; height:40px; display:grid; place-items:center; border:1px solid $bd; border-radius:11px; background:$bg2; }
+.card-name { margin-top:12px; font-size:23px; }
+.card-head:hover .card-name { color:$p; text-decoration:none; }
+.card-tagline { min-height:3.3em; }
+.card-meta { margin-top:auto; padding-top:8px; }
+.card-progress { max-width:none; height:5px; border-radius:999px; background:$bg2; }
+.card-progress > span { border-radius:inherit; background:$g; }
+.card-cta { padding:6px 10px; border-radius:8px; color:$p; text-decoration:none; background:$pl; }
+.resume-list { gap:14px; }
+.resume-list a { padding:18px; border:1px solid $bd; border-radius:14px; background:$wh; box-shadow:$sh; }
+.starter,.backup { padding:28px; border:1px solid $bd; border-radius:18px; background:$wh; box-shadow:$sh; }
+
+@media(max-width:1100px) { .workspace { grid-template-columns:220px minmax(0,1fr); } }
+@media(max-width:960px) {
+  .workspace { grid-template-columns:1fr; }
+  .hero { grid-template-columns:1fr; }
+  .first-session { max-width:none; border-radius:0 0 24px 24px; }
+}
+@media(max-width:700px) {
+  main { padding:24px 12px 0; }
+  .hero { border-radius:18px; }
+  .hero-intro { padding:28px 22px; }
+  .hero h1 { font-size:40px; }
+  .first-session { padding:24px 22px; border-radius:0 0 18px 18px; }
+  .hero-stats { display:grid; grid-template-columns:repeat(3,1fr); padding:0 12px 20px; }
+  .hero-stats div { min-width:0; padding:10px; }
+  .grid,.resume-list { grid-template-columns:1fr; }
+  .card { padding:18px; }
+  .starter,.backup { padding:22px; }
+}

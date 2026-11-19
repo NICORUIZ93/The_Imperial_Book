@@ -85,6 +85,27 @@
 }
 .official-source { margin:0 8px 18px; padding:12px; border:1px solid $bd; border-radius:12px; background:$bg2; }
 
+// ── ACADEMY SHELL · sistema compartido ───────────────────────────────────
+.shell-body { width:100%; min-width:0; background:$bg; }
+.shell-main { width:calc(100% - 286px); min-width:0; overflow:clip; }
+.shell-topbar {
+  gap:12px; padding-inline:clamp(14px,2.2vw,28px);
+  border-bottom-color:$bd; box-shadow:0 8px 24px rgba(15,23,42,.04);
+}
+.back-link { padding:0 10px; border-radius:9px; }
+.back-link:hover { color:$p; background:$pl; }
+.shell-title { max-width:340px; }
+.shell-sidebar { scrollbar-width:thin; scrollbar-color:$bd2 transparent; }
+.official-source { color:$i3; line-height:1.55; }
+.official-source a { color:$p; }
+
+@media (max-width:1180px) and (min-width:861px) {
+  .shell-sidebar { width:248px; }
+  .shell-main { width:calc(100% - 248px); }
+  .search-trigger span,.search-trigger kbd { display:none; }
+  .search-trigger { width:40px; justify-content:center; padding:0; }
+}
+
 @media (max-width: 860px) {
   .mobile-only { display:grid; }
   .shell-sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:4px 6px 14px; border-bottom:1px solid $bd; }
@@ -99,6 +120,7 @@
   .search-trigger span { display:none; }
   .shell-topbar { min-height:64px; padding-inline:12px; gap:8px; }
   .shell-sidebar { width:min(320px,86vw); }
+  .shell-main { width:100%; }
   .shell-track-logo { display:none; }
   .search-trigger { width:34px; justify-content:center; padding:0; border-bottom:0; }
   .search-trigger kbd { display:none; }
