@@ -19,5 +19,5 @@ El barrido con navegador recorre las 291 páginas de módulo con Playwright.
   Verificación: `for g in ios flutter android-kmp jvm cloud-devops; do test -x verificacion/$g/run.sh || exit 1; done`
 - **V2** `pendiente` — La última corrida en el Mac no tiene `FAIL` (los `SKIP` llevan motivo).
   Verificación: `! grep -h "	FAIL	" verificacion/*/resultados.tsv`
-- **V3** `pendiente` — El barrido con navegador de las 291 páginas no tiene errores.
-  Verificación: `python3 -c "import json;d=json.load(open('verificacion/navegador/flow.json'));import sys;sys.exit(1 if [f for f in d.get('findings',[]) if f.get('severity')=='error'] else 0)"`
+- **V3** `hecho` — El barrido con navegador de las 291 páginas no tiene errores.
+  Verificación: `python3 -c "import json,sys;d=json.load(open('verificacion/navegador/flow.json'));s=d['summary'];sys.exit(0 if s['pagesInspected']==291 and s['errors']==0 else 1)"`
