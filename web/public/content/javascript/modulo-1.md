@@ -551,6 +551,313 @@ Toma una respuesta de una API pública de tu elección y extrae con una sola des
 #### Paso 7 · Cierre
 
 
+### Tema 7: Errores síncronos: `throw`, `try/catch/finally`, subclases de `Error` y `cause`
+
+**Duración estimada:** 40 min (4 subtemas de 10 min).
+**¿Por qué es importante?** Una función que recibe datos malos tiene dos opciones: devolver un valor falso que alguien olvidará revisar o **detenerse y avisar**. `throw` y `try/catch` son ese aviso, y todo lo que verás después (promesas que rechazan, `await` dentro de `try/catch`, middleware de errores en Node, fronteras de error en React) se apoya en este tema.
+
+**Prerrequisitos:** Tema 1 de este módulo (funciones), Tema 4 (control de flujo) y Módulo 0 Tema 2 (`typeof`). Necesitas Node 24 LTS (`node --version` debe mostrar `v24.x`). Proyecto continuo: el validador de guías y pesos de RutaFlow que usarás en el resto del curso.
+
+Crea la carpeta del tema:
+
+```bash
+mkdir -p academia-labs/javascript/errores && cd academia-labs/javascript/errores
+```
+
+#### Subtema 7.1: Lanza un error con `throw` · 10 min
+
+**1. Contexto**
+`cotizar(kilos)` del Tema 2 acepta `-2` o `'cinco'` y devuelve un precio absurdo sin quejarse. Un dato inválido debe frenar la ejecución en el punto donde se detecta, no tres funciones después.
+
+**2. Hazlo tú**
+Crea `lanzar.js`:
+
+```javascript
+function validarPeso(kilos) {
+  if (typeof kilos !== 'number' || Number.isNaN(kilos)) {
+    throw new TypeError(`kilos debe ser un número, llegó ${JSON.stringify(kilos)}`);
+  }
+  if (kilos <= 0) {
+    throw new RangeError(`kilos debe ser mayor que 0, llegó ${kilos}`);
+  }
+  return kilos;
+}
+
+console.log(validarPeso(3));
+console.log('antes del fallo');
+validarPeso(-2);
+console.log('esta línea nunca se imprime');
+```
+
+```bash
+node lanzar.js
+echo "código de salida: $?"
+```
+
+**Resultado esperado** (las rutas cambian en tu equipo):
+
+```text
+3
+antes del fallo
+/…/errores/lanzar.js:6
+    throw new RangeError(`kilos debe ser mayor que 0, llegó ${kilos}`);
+    ^
+
+RangeError: kilos debe ser mayor que 0, llegó -2
+    at validarPeso (/…/errores/lanzar.js:6:11)
+    at Object.<anonymous> (/…/errores/lanzar.js:13:1)
+    …
+código de salida: 1
+```
+
+**Fallo deliberado:** cambia `throw new RangeError(...)` por `throw 'kilos inválidos'`. **Resultado:** Node imprime solo `kilos inválidos` y la sugerencia ``(Use `node --trace-uncaught ...` to show where the exception was thrown)``, sin ninguna línea `at …`. **Diagnóstico:** un string no es un `Error`, así que no tiene `stack` ni `name`; lanza siempre instancias de `Error` (o de sus subclases) y restaura la línea.
+
+**3. Entiende**
+`throw` detiene la función en esa línea y sube por la pila de llamadas buscando un `try/catch`. Si no lo encuentra, Node imprime el error con su **stack trace** (la lista de funciones `at …` desde la más interna) y termina con código 1. El motor ya trae tipos según la causa: `TypeError` para un tipo equivocado, `RangeError` para un valor fuera de rango, `SyntaxError` para texto que no se puede interpretar (por ejemplo, `JSON.parse('{roto')`) y `ReferenceError` para una variable que no existe. **Límite:** `throw` puede lanzar cualquier valor, pero solo un `Error` trae `stack`, `name` y `message`.
+
+**4. Cierra**
+Guarda la salida y señala en el stack la línea de `validarPeso` y la línea que la llamó. Queda lista una función que se niega a seguir con datos inválidos.
+
+#### Subtema 7.2: Captura con `try/catch` y limpia con `finally` · 10 min
+
+**1. Contexto**
+El validador no debe tumbar todo el lote: si una de tres entregas trae un peso malo, quieres registrar el problema y seguir con las demás.
+
+**2. Hazlo tú**
+Crea `capturar.js` (copia `validarPeso` del subtema anterior al inicio del archivo):
+
+```javascript
+// pega aquí validarPeso del subtema 7.1
+
+const entradas = [3, -2, 'cinco'];
+for (const entrada of entradas) {
+  try {
+    const kilos = validarPeso(entrada);
+    console.log(`ok: ${kilos} kg`);
+  } catch (error) {
+    if (error instanceof RangeError) {
+      console.log(`fuera de rango -> ${error.message}`);
+    } else if (error instanceof TypeError) {
+      console.log(`tipo inválido -> ${error.message}`);
+    } else {
+      throw error; // no es un error que sepamos tratar: que siga subiendo
+    }
+  } finally {
+    console.log(`  revisada: ${JSON.stringify(entrada)}`);
+  }
+}
+
+function leerConfig(texto) {
+  try {
+    return JSON.parse(texto);
+  } catch {
+    return {};
+  } finally {
+    console.log('finally corre incluso después de return');
+  }
+}
+console.log(leerConfig('{"zona":"Norte"}'), leerConfig('{roto'));
+```
+
+```bash
+node capturar.js
+```
+
+**Resultado esperado:**
+
+```text
+ok: 3 kg
+  revisada: 3
+fuera de rango -> kilos debe ser mayor que 0, llegó -2
+  revisada: -2
+tipo inválido -> kilos debe ser un número, llegó "cinco"
+  revisada: "cinco"
+finally corre incluso después de return
+finally corre incluso después de return
+{ zona: 'Norte' } {}
+```
+
+**Fallo deliberado:** dentro del `try` escribe `validarPezo(entrada)` (con z). **Resultado:** el programa termina con `ReferenceError: validarPezo is not defined` después de imprimir `revisada: 3`. **Diagnóstico:** el `catch` solo trata `RangeError` y `TypeError`; el `else { throw error; }` deja pasar el error de programación en vez de esconderlo como «dato inválido». Corrige el nombre.
+
+**3. Entiende**
+`try` ejecuta el bloque; si algo dentro lanza, salta al `catch` con el valor lanzado; `finally` corre **siempre**, haya error, `return` o ninguno de los dos, por eso es el sitio para cerrar o registrar. `catch` sin paréntesis (`catch {`) sirve cuando no usas el error. Comprobar el tipo con `instanceof` y relanzar lo desconocido evita el antipatrón de tragarse cualquier fallo. **Límite:** `try/catch` solo captura lo que ocurre **mientras** se ejecuta el bloque; un error dentro de un `setTimeout` o de una promesa ocurre después y se trata en el Módulo 6 con `await` dentro de `try/catch`.
+
+**4. Cierra**
+Anota qué imprimió `finally` para cada entrada. El lote ya procesa entradas malas sin detenerse.
+
+#### Subtema 7.3: Crea errores propios con `extends Error` · 10 min
+
+**1. Contexto**
+`RangeError` no dice «guía inválida de RutaFlow». Quien llama necesita distinguir los errores del dominio (que se muestran al usuario) de los fallos de programación (que se corrigen en el código).
+
+**2. Hazlo tú**
+Crea `propios.js`:
+
+```javascript
+class EntregaError extends Error {
+  constructor(message, options) {
+    super(message, options);
+    this.name = this.constructor.name;
+  }
+}
+
+class GuiaInvalidaError extends EntregaError {
+  constructor(guia, options) {
+    super(`guía inválida: ${guia}`, options);
+    this.guia = guia;
+  }
+}
+
+function validarGuia(guia) {
+  if (!/^[A-Z]{2}-\d{6}$/.test(guia)) {
+    throw new GuiaInvalidaError(guia);
+  }
+  return guia;
+}
+
+for (const guia of ['BO-004512', 'x1']) {
+  try {
+    console.log('válida', validarGuia(guia));
+  } catch (error) {
+    console.log(`${error.name}: ${error.message}`);
+    console.log('  ¿es EntregaError?', error instanceof EntregaError);
+    console.log('  guía recibida:', error.guia);
+  }
+}
+```
+
+```bash
+node propios.js
+```
+
+**Resultado esperado:**
+
+```text
+válida BO-004512
+GuiaInvalidaError: guía inválida: x1
+  ¿es EntregaError? true
+  guía recibida: x1
+```
+
+**Fallo deliberado:** en `GuiaInvalidaError` mueve `this.guia = guia;` **antes** de `super(...)`. **Error esperado:** `ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor`. **Diagnóstico:** en una subclase, `this` no existe hasta que `super()` construye el `Error`; llama a `super` primero. Prueba también a borrar `this.name = this.constructor.name`: la salida cambia a `Error: guía inválida: x1` y pierdes el nombre útil.
+
+**3. Entiende**
+`extends Error` hereda `message` y `stack`, e `instanceof` funciona con toda la jerarquía: un `GuiaInvalidaError` también es `EntregaError` y `Error`. Asignar `name` hace que el stack y los registros muestren la clase real. Añade campos propios (`guia`) en lugar de esconder datos dentro del texto del mensaje. La expresión regular `/^[A-Z]{2}-\d{6}$/` se explica en el Módulo 4; aquí solo valida el formato. **Límite:** no crees una clase por cada `if`; una jerarquía corta (error base del dominio y dos o tres casos que quien llama trata distinto) basta.
+
+**4. Cierra**
+Guarda la salida. El proyecto ya tiene un error base de dominio y un caso concreto.
+
+#### Subtema 7.4: Encadena la causa con `{ cause }` · 10 min
+
+**1. Contexto**
+Cuando `JSON.parse` falla al leer una entrega, el mensaje «Expected property name…» no dice **qué** se estaba haciendo; y si lo reemplazas por «no se pudo leer la entrega», pierdes el detalle técnico.
+
+**2. Hazlo tú**
+Agrega a `propios.js`, debajo del bucle:
+
+```javascript
+function cargarEntrega(json) {
+  let datos;
+  try {
+    datos = JSON.parse(json);
+  } catch (error) {
+    throw new EntregaError('no se pudo leer la entrega', { cause: error });
+  }
+  return { guia: validarGuia(datos.guia), destino: datos.destino };
+}
+
+for (const json of ['{"guia":"BO-004512","destino":"Chapinero"}', '{roto']) {
+  try {
+    console.log('cargada', cargarEntrega(json));
+  } catch (error) {
+    console.log(`${error.name}: ${error.message}`);
+    console.log('  causa:', error.cause.name, '-', error.cause.message);
+  }
+}
+```
+
+```bash
+node propios.js
+```
+
+**Resultado esperado** (las cuatro primeras líneas son las del subtema anterior):
+
+```text
+cargada { guia: 'BO-004512', destino: 'Chapinero' }
+EntregaError: no se pudo leer la entrega
+  causa: SyntaxError - Expected property name or '}' in JSON at position 1 (line 1 column 2)
+```
+
+**Fallo deliberado:** en el `constructor` de `EntregaError` cambia `super(message, options)` por `super(message)`. **Error esperado:** `TypeError: Cannot read properties of undefined (reading 'name')` en la línea de `causa`. **Diagnóstico:** la opción `cause` solo llega a `Error` si la subclase reenvía `options` a `super`; restaura el segundo argumento.
+
+**3. Entiende**
+`new Error(mensaje, { cause })` (ES2022) guarda el error original en la propiedad `cause` sin mezclarlo en el texto. Cada capa añade **qué estaba haciendo** y conserva **por qué falló**; si imprimes el error con `console.log(error)`, Node muestra también `[cause]`. **Límite:** `cause` no viaja solo al navegador ni a un registro remoto: en el Módulo 13 aprenderás a decidir qué detalles se registran y cuáles nunca se muestran al usuario.
+
+**4. Cierra**
+Guarda la salida con la causa. El validador de RutaFlow ya distingue errores de dominio, errores de formato y fallos de programación.
+
+**Hito del tema:**
+
+- [ ] Ejecuté `lanzar.js` y señalé en el stack trace la función que lanzó.
+- [ ] `capturar.js` procesa las tres entradas y relanza un error que no sabe tratar.
+- [ ] Provoqué el `ReferenceError` de `super` y expliqué por qué ocurre.
+- [ ] Expliqué con mis palabras qué aporta `cause` frente a reescribir el mensaje.
+
+**Ejercicio:** escribe `parsearPeso(texto)` que reciba un string como `'2.5kg'`, devuelva el número `2.5` y lance `PesoInvalidoError` (subclase de `EntregaError`, con un campo `texto`) cuando el formato no termine en `kg` o el número no sea positivo. Si `Number(...)` produce `NaN`, el error debe llevar como `cause` un `TypeError` con el detalle. Antes de abrir la solución, escribe qué imprime `parsearPeso('abckg')`.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+```javascript
+class EntregaError extends Error {
+  constructor(message, options) {
+    super(message, options);
+    this.name = this.constructor.name;
+  }
+}
+
+class PesoInvalidoError extends EntregaError {
+  constructor(texto, options) {
+    super(`peso inválido: ${texto}`, options);
+    this.texto = texto;
+  }
+}
+
+function parsearPeso(texto) {
+  if (!texto.endsWith('kg')) throw new PesoInvalidoError(texto);
+  const kilos = Number(texto.slice(0, -2));
+  if (Number.isNaN(kilos)) {
+    throw new PesoInvalidoError(texto, { cause: new TypeError(`"${texto.slice(0, -2)}" no es un número`) });
+  }
+  if (kilos <= 0) throw new PesoInvalidoError(texto);
+  return kilos;
+}
+
+for (const t of ['2.5kg', '3lb', 'abckg', '-1kg']) {
+  try {
+    console.log(t, '->', parsearPeso(t));
+  } catch (error) {
+    console.log(t, '->', `${error.name}: ${error.message}`, error.cause ? `(causa: ${error.cause.message})` : '');
+  }
+}
+```
+
+Salida:
+
+```text
+2.5kg -> 2.5
+3lb -> PesoInvalidoError: peso inválido: 3lb 
+abckg -> PesoInvalidoError: peso inválido: abckg (causa: "abc" no es un número)
+-1kg -> PesoInvalidoError: peso inválido: -1kg 
+```
+
+Compara: si tu versión devolvía `NaN` o `null` en vez de lanzar, quien llama debía acordarse de revisarlo; con el error, olvidarlo es imposible.
+
+</details>
+
+**Fuentes oficiales:** [MDN: Control flow and error handling](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling), [MDN: `Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) y [MDN: `Error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause).
+
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir una pequeña biblioteca de funciones utilitarias de orden superior, aplicando las tres formas de función, parámetros modernos y composición.

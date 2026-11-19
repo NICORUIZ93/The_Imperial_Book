@@ -10,7 +10,7 @@ Cada tema comienza en una carpeta vacía y constituye un proyecto independiente.
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, JavaScript básico y conocimiento elemental de TypeScript. Comprueba `node --version`; no necesitas una base de datos ni un framework HTTP.
+**Prerrequisitos:** Node.js 24 LTS, npm, JavaScript básico y conocimiento elemental de TypeScript. Comprueba `node --version`; no necesitas una base de datos ni un framework HTTP.
 
 **Al terminar podrás:** validar como `unknown` el body de `POST /envios`, obtener un DTO tipado con zod, demostrar que `strict` y un cast no validan datos de red y traducir mediante una unión discriminada todos los resultados esperados de un caso de uso.
 
@@ -197,9 +197,11 @@ flowchart LR
 
 **Fuentes oficiales:** [zod](https://zod.dev/) y [TypeScript: uso de `unknown` en variables `catch`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables).
 
-### Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min
+### Tema 2: Contratos HTTP: comportamiento verificable y OpenAPI ejecutable · Avanzado · 190 min
 
-#### Aprende
+#### Primera parte: un contrato HTTP es comportamiento, no solo documentación · 90 min
+
+##### Aprende
 
 **Prerrequisitos:** HTTP JSON, módulos ESM, `fetch` y pruebas básicas con Node. Este proyecto no usa el parser ni ningún archivo del ejercicio anterior.
 
@@ -219,7 +221,7 @@ Agregar un campo opcional suele ser compatible, pero no siempre: un parser estri
 
 **Analogía:** el contrato de un enchufe incluye forma y voltaje. El dibujo ayuda, pero solo una prueba con ambos extremos demuestra que funcionan juntos; cambiar el voltaje sin cambiar la forma es especialmente peligroso porque parece compatible.
 
-#### Practica
+##### Practica
 
 Crea un proyecto nuevo, sin abrir proyectos de otros temas:
 
@@ -466,7 +468,7 @@ npm test
 
 **Ejercicio independiente:** crea `contracts/almacen.contract.json` y su prueba. El almacén solo necesita `id` y `guia`, y debe ignorar campos adicionales. Demuestra que eliminar `id` rompe ese contrato, mientras añadir un campo `nota` no lo rompe. Explica por qué este resultado no prueba que todos los demás consumidores toleren `nota`.
 
-#### Aplica
+##### Aplica
 
 Para una operación real de creación de entregas, escribe una matriz con método, request, status, content type, campos imprescindibles, errores y significado. Añade pruebas del proveedor y un archivo de expectativas por consumidor conocido. La evidencia debe incluir una divergencia de status y otra de semántica corregidas; un documento que describe `201` mientras la API devuelve `200` no es un contrato verificado.
 
@@ -496,6 +498,327 @@ flowchart LR
 **Proyecto integrador:** en la API de entregas conserva las expectativas reales de la app móvil y de un socio como fixtures versionados; ejecuta ambos contra el servidor local y revisa una falla de compatibilidad antes de aprobar cambios.
 
 **Fuentes oficiales:** [OpenAPI Specification](https://swagger.io/specification/) y [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).
+
+#### Segunda parte: OpenAPI como contrato ejecutable · 100 min
+
+**Antes en el Tema 5 de este módulo.** La primera parte probó el comportamiento; esta lo describe en un documento OpenAPI que se valida contra respuestas reales. Juntas forman un solo tema sobre contratos HTTP.
+
+
+##### Aprende
+
+**Prerrequisitos:** YAML, JSON Schema básico, HTTP y pruebas con `fetch`. Usa otra carpeta vacía: la primera parte fijó **qué** promete `POST /envios` con pruebas; esta parte **describe** una consulta en OpenAPI y comprueba que la implementación la cumple.
+
+**Al terminar podrás:** escribir un documento OpenAPI 3.1 completo para una consulta de entregas, ejecutar lint, validar responses reales contra sus schemas y conservar una comprobación local de compatibilidad para las expectativas declaradas de un consumidor.
+
+**Por qué importa:** web, Flutter y socios externos pueden generar clientes a partir del mismo archivo. Cambiar `trackingCode` por `tracking_code` puede romperlos aunque el lint siga verde. OpenAPI se vuelve útil cuando el documento es sintácticamente válido, la implementación lo cumple y los cambios se comparan con expectativas previas.
+
+OpenAPI describe operaciones, parámetros, seguridad, cuerpos, respuestas y schemas. `operationId` da una identidad estable a la operación; `schema` define forma y restricciones; las respuestas de error evitan que cada cliente improvise. Swagger UI puede presentar el documento, pero una interfaz visual no es validación.
+
+Un contrato ejecutable necesita tres controles distintos:
+
+1. **Lint:** detecta documentos inválidos o problemas de estructura OpenAPI.
+2. **Pruebas de implementación:** comparan responses reales con los schemas y content types publicados.
+3. **Compatibilidad:** compara la versión nueva con expectativas anteriores o de consumidores. Un documento distinto puede seguir siendo lint-valid y aun ser incompatible.
+
+La dirección del dato importa. En una respuesta, retirar un campo usado, cambiar su tipo o agregar un valor de enum puede romper un consumidor exhaustivo. En un request, exigir de pronto un campo nuevo suele ser incompatible. Añadir un campo opcional de respuesta solo es compatible si los consumidores toleran propiedades desconocidas; `additionalProperties: false` muestra que no todos lo hacen. No existe una regla universal separada de esos consumidores.
+
+El comprobador de compatibilidad de esta práctica es deliberadamente limitado: conserva campos de respuesta que un consumidor declaró y exige estabilidad del enum `status`. No sustituye una herramienta completa de diff ni pruebas con todos los clientes.
+
+**Analogía:** OpenAPI es el plano firmado de un edificio. Swagger UI es una vista del plano; el lint revisa que el plano esté bien formado, las pruebas inspeccionan la construcción y la comparación de versiones pregunta si una reforma bloquea una puerta que alguien ya usa.
+
+##### Practica
+
+Crea el proyecto independiente:
+
+```bash
+mkdir openapi-entregas
+cd openapi-entregas
+mkdir src test contracts
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "openapi-entregas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "redocly lint src/openapi.yaml",
+    "test": "node --test test/*.test.js",
+    "check": "npm run lint && npm test"
+  }
+}
+```
+
+Instala las herramientas:
+
+```bash
+npm install ajv ajv-formats yaml
+npm install --save-dev @redocly/cli
+```
+
+Crea `src/openapi.yaml`:
+
+```yaml
+openapi: 3.1.0
+info:
+  title: Delivery API
+  version: 1.0.0
+paths:
+  /deliveries/{id}:
+    get:
+      operationId: getDelivery
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Entrega encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+        "404":
+          description: Entrega inexistente
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    Delivery:
+      type: object
+      additionalProperties: false
+      required: [id, trackingCode, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        trackingCode:
+          type: string
+          minLength: 6
+        status:
+          type: string
+          enum: [created, assigned, in_transit, delivered]
+    Problem:
+      type: object
+      additionalProperties: false
+      required: [type, title, status, detail, instance]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+```
+
+Crea `src/server.js`:
+
+```javascript
+import { createServer } from "node:http";
+
+const delivery = Object.freeze({
+  id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+  trackingCode: "RF-9000",
+  status: "created",
+});
+
+function responder(res, status, body, contentType) {
+  res.writeHead(status, { "Content-Type": `${contentType}; charset=utf-8` });
+  res.end(JSON.stringify(body));
+}
+
+export function createApp() {
+  return createServer((req, res) => {
+    const match = req.method === "GET" && req.url?.match(/^\/deliveries\/([^/]+)$/);
+    if (!match) {
+      return responder(res, 404, {
+        type: "about:blank",
+        title: "Entrega inexistente",
+        status: 404,
+        detail: "No existe la entrega solicitada",
+        instance: req.url ?? "/deliveries",
+      }, "application/problem+json");
+    }
+
+    if (match[1] !== delivery.id) {
+      return responder(res, 404, {
+        type: "about:blank",
+        title: "Entrega inexistente",
+        status: 404,
+        detail: "No existe la entrega solicitada",
+        instance: req.url,
+      }, "application/problem+json");
+    }
+
+    return responder(res, 200, delivery, "application/json");
+  });
+}
+```
+
+Crea `test/openapi.test.js`:
+
+```javascript
+import test, { after, before } from "node:test";
+import assert from "node:assert/strict";
+import { once } from "node:events";
+import { readFile } from "node:fs/promises";
+import YAML from "yaml";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
+import { createApp } from "../src/server.js";
+
+const document = YAML.parse(await readFile(
+  new URL("../src/openapi.yaml", import.meta.url),
+  "utf8",
+));
+const ajv = new Ajv2020({ allErrors: true, strict: true });
+addFormats(ajv);
+const validateDelivery = ajv.compile(document.components.schemas.Delivery);
+const validateProblem = ajv.compile(document.components.schemas.Problem);
+
+let server;
+let baseUrl;
+
+before(async () => {
+  server = createApp();
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  baseUrl = `http://127.0.0.1:${server.address().port}`;
+});
+
+after(async () => {
+  server.close();
+  await once(server, "close");
+});
+
+test("el 200 real cumple Delivery y su content type", async () => {
+  const id = "7c9e6679-7425-40de-944b-e07fc1f90ae7";
+  const response = await fetch(`${baseUrl}/deliveries/${id}`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /^application\/json/);
+  const body = await response.json();
+  assert.equal(validateDelivery(body), true, JSON.stringify(validateDelivery.errors));
+});
+
+test("el 404 real cumple Problem", async () => {
+  const id = "00000000-0000-4000-8000-000000000000";
+  const response = await fetch(`${baseUrl}/deliveries/${id}`);
+  assert.equal(response.status, 404);
+  assert.match(response.headers.get("content-type"), /^application\/problem\+json/);
+  const body = await response.json();
+  assert.equal(validateProblem(body), true, JSON.stringify(validateProblem.errors));
+});
+```
+
+Crea `contracts/consumidor-base.json`:
+
+```json
+{
+  "consumer": "portal-de-seguimiento",
+  "operationId": "getDelivery",
+  "successStatus": "200",
+  "requiredFields": ["id", "trackingCode", "status"],
+  "knownFields": ["id", "trackingCode", "status"],
+  "statusEnum": ["created", "assigned", "in_transit", "delivered"]
+}
+```
+
+Crea `test/compatibilidad.test.js`:
+
+```javascript
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import YAML from "yaml";
+
+const document = YAML.parse(await readFile(
+  new URL("../src/openapi.yaml", import.meta.url),
+  "utf8",
+));
+const baseline = JSON.parse(await readFile(
+  new URL("../contracts/consumidor-base.json", import.meta.url),
+  "utf8",
+));
+
+test("conserva la respuesta que el portal declaró consumir", () => {
+  const operation = document.paths["/deliveries/{id}"].get;
+  assert.equal(operation.operationId, baseline.operationId);
+  const response = operation.responses[baseline.successStatus];
+  assert.ok(response, "desapareció el status usado por el consumidor");
+  assert.ok(operation.responses["404"], "desapareció el error documentado");
+  assert.equal(response.content["application/json"].schema.$ref, "#/components/schemas/Delivery");
+
+  const schema = document.components.schemas.Delivery;
+  for (const field of baseline.requiredFields) {
+    assert.ok(schema.required.includes(field), `${field} dejó de ser requerido`);
+  }
+  for (const field of baseline.knownFields) {
+    assert.ok(schema.properties[field], `${field} desapareció o fue renombrado`);
+  }
+  assert.deepEqual(
+    schema.properties.status.enum,
+    baseline.statusEnum,
+    "el enum observable cambió y requiere revisar consumidores exhaustivos",
+  );
+});
+```
+
+Ejecuta los tres controles locales:
+
+```bash
+npm run check
+```
+
+**Resultado esperado:** Redocly no reporta errores de lint y Node reporta tres pruebas superadas: dos responses reales válidas y una comparación con la línea base del portal. Este comando local no afirma que se haya ejecutado CI ni que la API se haya desplegado.
+
+**Fallo deliberado y corrección:** en `src/openapi.yaml`, renombra temporalmente `trackingCode` a `tracking_code` tanto en `required` como en `properties`, sin tocar el servidor. El lint puede seguir aceptando el documento, pero `compatibilidad.test.js` falla porque el campo consumido desapareció. Restaura el nombre. Después añade una propiedad `interno` al JSON del servidor sin declararla: la prueba del `200` falla porque `additionalProperties: false`; retírala y vuelve a ejecutar `npm run check`.
+
+**Práctica guiada:** añade un ejemplo completo de `Delivery` dentro del schema y valida ese ejemplo con Ajv en una prueba nueva. Incluye un `404` de ejemplo y comprueba también que ninguno tenga propiedades internas. El objetivo es que ejemplos, documento e implementación no evolucionen por caminos separados.
+
+**Ejercicio independiente:** documenta e implementa `POST /deliveries` en este mismo proyecto, con `201`, `400`, `409`, Problem Details y cabecera `Idempotency-Key`. Añade pruebas reales para cada respuesta. Clasifica por escrito estos cambios: eliminar `trackingCode`, hacer obligatorio un nuevo campo de request, añadir un valor a `status`, añadir una propiedad opcional de respuesta y corregir una descripción. Justifica la dirección del dato y qué consumidor podría romperse en cada caso.
+
+##### Aplica
+
+Para una consulta pública de entregas, versiona el archivo OpenAPI junto con la implementación y conserva tres evidencias locales: lint, responses válidas y compatibilidad con una línea base de consumidor. No generes un SDK hasta que esas comprobaciones pasen. Si ya generas schemas desde una única fuente de verdad, evita mantener una segunda descripción manual divergente.
+
+**Checklist de salida**
+
+- [ ] Creaste OpenAPI, servidor, pruebas y línea base desde una carpeta vacía.
+- [ ] `operationId`, parámetros, content types, éxito y errores están declarados.
+- [ ] El lint y las pruebas de responses son controles separados.
+- [ ] Ajv valida el JSON real y los formatos usados por el schema.
+- [ ] La prueba de compatibilidad conserva campos y enum observados por un consumidor.
+- [ ] El fallo deliberado demostró que lint-valid no significa compatible.
+- [ ] Distingues cambios de request y response y no prometes compatibilidad universal.
+- [ ] No expones campos internos por reutilizar directamente una entidad de persistencia.
+
+**Cuándo no añadirlo:** para un endpoint interno con un solo consumidor que cambia y se despliega junto con el servidor, un contrato formal puede aportar menos que una prueba compartida. El coste cambia cuando existen consumidores independientes o versiones móviles antiguas.
+
+```mermaid
+flowchart LR
+  Contract[OpenAPI versionado] --> Lint[Lint del documento]
+  Server[Servidor local] --> Traffic[Requests y responses reales]
+  Contract --> Schema[Validar tráfico con schemas]
+  Traffic --> Schema
+  Consumer[Baseline de consumidor] --> Diff[Comparación de compatibilidad]
+  Schema --> Gate[Gate de release]
+  Diff --> Gate
+```
+
+**Proyecto real:** versiona el contrato de la API de entregas junto con la implementación, valida responses reales y conserva una baseline del cliente móvil. Si un cambio rompe un campo o enum usado, detén la publicación hasta acordar migración y evidencia de consumidores.
+
+**Fuentes oficiales:** [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html), [OpenAPI Specification, versión vigente](https://spec.openapis.org/oas/latest.html) y [Redocly CLI](https://redocly.com/docs/cli/).
 
 ### Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min
 
@@ -1087,329 +1410,11 @@ flowchart LR
 
 **Fuentes oficiales:** [Node.js: `crypto.timingSafeEqual`](https://nodejs.org/api/crypto.html#cryptotimingsafeequala-b) y [GitHub: validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries).
 
-### Tema 5: OpenAPI como contrato ejecutable · Avanzado · 100 min
-
-#### Aprende
-
-**Prerrequisitos:** YAML, JSON Schema básico, HTTP y pruebas con `fetch`. Este proyecto parte de otra carpeta vacía; no reutiliza el servidor ni los contratos de comportamiento anteriores.
-
-**Al terminar podrás:** escribir un documento OpenAPI 3.1 completo para una consulta de entregas, ejecutar lint, validar responses reales contra sus schemas y conservar una comprobación local de compatibilidad para las expectativas declaradas de un consumidor.
-
-**Por qué importa:** web, Flutter y socios externos pueden generar clientes a partir del mismo archivo. Cambiar `trackingCode` por `tracking_code` puede romperlos aunque el lint siga verde. OpenAPI se vuelve útil cuando el documento es sintácticamente válido, la implementación lo cumple y los cambios se comparan con expectativas previas.
-
-OpenAPI describe operaciones, parámetros, seguridad, cuerpos, respuestas y schemas. `operationId` da una identidad estable a la operación; `schema` define forma y restricciones; las respuestas de error evitan que cada cliente improvise. Swagger UI puede presentar el documento, pero una interfaz visual no es validación.
-
-Un contrato ejecutable necesita tres controles distintos:
-
-1. **Lint:** detecta documentos inválidos o problemas de estructura OpenAPI.
-2. **Pruebas de implementación:** comparan responses reales con los schemas y content types publicados.
-3. **Compatibilidad:** compara la versión nueva con expectativas anteriores o de consumidores. Un documento distinto puede seguir siendo lint-valid y aun ser incompatible.
-
-La dirección del dato importa. En una respuesta, retirar un campo usado, cambiar su tipo o agregar un valor de enum puede romper un consumidor exhaustivo. En un request, exigir de pronto un campo nuevo suele ser incompatible. Añadir un campo opcional de respuesta solo es compatible si los consumidores toleran propiedades desconocidas; `additionalProperties: false` muestra que no todos lo hacen. No existe una regla universal separada de esos consumidores.
-
-El comprobador de compatibilidad de esta práctica es deliberadamente limitado: conserva campos de respuesta que un consumidor declaró y exige estabilidad del enum `status`. No sustituye una herramienta completa de diff ni pruebas con todos los clientes.
-
-**Analogía:** OpenAPI es el plano firmado de un edificio. Swagger UI es una vista del plano; el lint revisa que el plano esté bien formado, las pruebas inspeccionan la construcción y la comparación de versiones pregunta si una reforma bloquea una puerta que alguien ya usa.
-
-#### Practica
-
-Crea el proyecto independiente:
-
-```bash
-mkdir openapi-entregas
-cd openapi-entregas
-mkdir src test contracts
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "openapi-entregas",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "lint": "redocly lint src/openapi.yaml",
-    "test": "node --test test/*.test.js",
-    "check": "npm run lint && npm test"
-  }
-}
-```
-
-Instala las herramientas:
-
-```bash
-npm install ajv ajv-formats yaml
-npm install --save-dev @redocly/cli
-```
-
-Crea `src/openapi.yaml`:
-
-```yaml
-openapi: 3.1.0
-info:
-  title: Delivery API
-  version: 1.0.0
-paths:
-  /deliveries/{id}:
-    get:
-      operationId: getDelivery
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        "200":
-          description: Entrega encontrada
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Delivery"
-        "404":
-          description: Entrega inexistente
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-components:
-  schemas:
-    Delivery:
-      type: object
-      additionalProperties: false
-      required: [id, trackingCode, status]
-      properties:
-        id:
-          type: string
-          format: uuid
-        trackingCode:
-          type: string
-          minLength: 6
-        status:
-          type: string
-          enum: [created, assigned, in_transit, delivered]
-    Problem:
-      type: object
-      additionalProperties: false
-      required: [type, title, status, detail, instance]
-      properties:
-        type:
-          type: string
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
-          type: string
-        instance:
-          type: string
-```
-
-Crea `src/server.js`:
-
-```javascript
-import { createServer } from "node:http";
-
-const delivery = Object.freeze({
-  id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-  trackingCode: "RF-9000",
-  status: "created",
-});
-
-function responder(res, status, body, contentType) {
-  res.writeHead(status, { "Content-Type": `${contentType}; charset=utf-8` });
-  res.end(JSON.stringify(body));
-}
-
-export function createApp() {
-  return createServer((req, res) => {
-    const match = req.method === "GET" && req.url?.match(/^\/deliveries\/([^/]+)$/);
-    if (!match) {
-      return responder(res, 404, {
-        type: "about:blank",
-        title: "Entrega inexistente",
-        status: 404,
-        detail: "No existe la entrega solicitada",
-        instance: req.url ?? "/deliveries",
-      }, "application/problem+json");
-    }
-
-    if (match[1] !== delivery.id) {
-      return responder(res, 404, {
-        type: "about:blank",
-        title: "Entrega inexistente",
-        status: 404,
-        detail: "No existe la entrega solicitada",
-        instance: req.url,
-      }, "application/problem+json");
-    }
-
-    return responder(res, 200, delivery, "application/json");
-  });
-}
-```
-
-Crea `test/openapi.test.js`:
-
-```javascript
-import test, { after, before } from "node:test";
-import assert from "node:assert/strict";
-import { once } from "node:events";
-import { readFile } from "node:fs/promises";
-import YAML from "yaml";
-import Ajv2020 from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
-import { createApp } from "../src/server.js";
-
-const document = YAML.parse(await readFile(
-  new URL("../src/openapi.yaml", import.meta.url),
-  "utf8",
-));
-const ajv = new Ajv2020({ allErrors: true, strict: true });
-addFormats(ajv);
-const validateDelivery = ajv.compile(document.components.schemas.Delivery);
-const validateProblem = ajv.compile(document.components.schemas.Problem);
-
-let server;
-let baseUrl;
-
-before(async () => {
-  server = createApp();
-  server.listen(0, "127.0.0.1");
-  await once(server, "listening");
-  baseUrl = `http://127.0.0.1:${server.address().port}`;
-});
-
-after(async () => {
-  server.close();
-  await once(server, "close");
-});
-
-test("el 200 real cumple Delivery y su content type", async () => {
-  const id = "7c9e6679-7425-40de-944b-e07fc1f90ae7";
-  const response = await fetch(`${baseUrl}/deliveries/${id}`);
-  assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type"), /^application\/json/);
-  const body = await response.json();
-  assert.equal(validateDelivery(body), true, JSON.stringify(validateDelivery.errors));
-});
-
-test("el 404 real cumple Problem", async () => {
-  const id = "00000000-0000-4000-8000-000000000000";
-  const response = await fetch(`${baseUrl}/deliveries/${id}`);
-  assert.equal(response.status, 404);
-  assert.match(response.headers.get("content-type"), /^application\/problem\+json/);
-  const body = await response.json();
-  assert.equal(validateProblem(body), true, JSON.stringify(validateProblem.errors));
-});
-```
-
-Crea `contracts/consumidor-base.json`:
-
-```json
-{
-  "consumer": "portal-de-seguimiento",
-  "operationId": "getDelivery",
-  "successStatus": "200",
-  "requiredFields": ["id", "trackingCode", "status"],
-  "knownFields": ["id", "trackingCode", "status"],
-  "statusEnum": ["created", "assigned", "in_transit", "delivered"]
-}
-```
-
-Crea `test/compatibilidad.test.js`:
-
-```javascript
-import test from "node:test";
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import YAML from "yaml";
-
-const document = YAML.parse(await readFile(
-  new URL("../src/openapi.yaml", import.meta.url),
-  "utf8",
-));
-const baseline = JSON.parse(await readFile(
-  new URL("../contracts/consumidor-base.json", import.meta.url),
-  "utf8",
-));
-
-test("conserva la respuesta que el portal declaró consumir", () => {
-  const operation = document.paths["/deliveries/{id}"].get;
-  assert.equal(operation.operationId, baseline.operationId);
-  const response = operation.responses[baseline.successStatus];
-  assert.ok(response, "desapareció el status usado por el consumidor");
-  assert.ok(operation.responses["404"], "desapareció el error documentado");
-  assert.equal(response.content["application/json"].schema.$ref, "#/components/schemas/Delivery");
-
-  const schema = document.components.schemas.Delivery;
-  for (const field of baseline.requiredFields) {
-    assert.ok(schema.required.includes(field), `${field} dejó de ser requerido`);
-  }
-  for (const field of baseline.knownFields) {
-    assert.ok(schema.properties[field], `${field} desapareció o fue renombrado`);
-  }
-  assert.deepEqual(
-    schema.properties.status.enum,
-    baseline.statusEnum,
-    "el enum observable cambió y requiere revisar consumidores exhaustivos",
-  );
-});
-```
-
-Ejecuta los tres controles locales:
-
-```bash
-npm run check
-```
-
-**Resultado esperado:** Redocly no reporta errores de lint y Node reporta tres pruebas superadas: dos responses reales válidas y una comparación con la línea base del portal. Este comando local no afirma que se haya ejecutado CI ni que la API se haya desplegado.
-
-**Fallo deliberado y corrección:** en `src/openapi.yaml`, renombra temporalmente `trackingCode` a `tracking_code` tanto en `required` como en `properties`, sin tocar el servidor. El lint puede seguir aceptando el documento, pero `compatibilidad.test.js` falla porque el campo consumido desapareció. Restaura el nombre. Después añade una propiedad `interno` al JSON del servidor sin declararla: la prueba del `200` falla porque `additionalProperties: false`; retírala y vuelve a ejecutar `npm run check`.
-
-**Práctica guiada:** añade un ejemplo completo de `Delivery` dentro del schema y valida ese ejemplo con Ajv en una prueba nueva. Incluye un `404` de ejemplo y comprueba también que ninguno tenga propiedades internas. El objetivo es que ejemplos, documento e implementación no evolucionen por caminos separados.
-
-**Ejercicio independiente:** documenta e implementa `POST /deliveries` en este mismo proyecto, con `201`, `400`, `409`, Problem Details y cabecera `Idempotency-Key`. Añade pruebas reales para cada respuesta. Clasifica por escrito estos cambios: eliminar `trackingCode`, hacer obligatorio un nuevo campo de request, añadir un valor a `status`, añadir una propiedad opcional de respuesta y corregir una descripción. Justifica la dirección del dato y qué consumidor podría romperse en cada caso.
-
-#### Aplica
-
-Para una consulta pública de entregas, versiona el archivo OpenAPI junto con la implementación y conserva tres evidencias locales: lint, responses válidas y compatibilidad con una línea base de consumidor. No generes un SDK hasta que esas comprobaciones pasen. Si ya generas schemas desde una única fuente de verdad, evita mantener una segunda descripción manual divergente.
-
-**Checklist de salida**
-
-- [ ] Creaste OpenAPI, servidor, pruebas y línea base desde una carpeta vacía.
-- [ ] `operationId`, parámetros, content types, éxito y errores están declarados.
-- [ ] El lint y las pruebas de responses son controles separados.
-- [ ] Ajv valida el JSON real y los formatos usados por el schema.
-- [ ] La prueba de compatibilidad conserva campos y enum observados por un consumidor.
-- [ ] El fallo deliberado demostró que lint-valid no significa compatible.
-- [ ] Distingues cambios de request y response y no prometes compatibilidad universal.
-- [ ] No expones campos internos por reutilizar directamente una entidad de persistencia.
-
-**Cuándo no añadirlo:** para un endpoint interno con un solo consumidor que cambia y se despliega junto con el servidor, un contrato formal puede aportar menos que una prueba compartida. El coste cambia cuando existen consumidores independientes o versiones móviles antiguas.
-
-```mermaid
-flowchart LR
-  Contract[OpenAPI versionado] --> Lint[Lint del documento]
-  Server[Servidor local] --> Traffic[Requests y responses reales]
-  Contract --> Schema[Validar tráfico con schemas]
-  Traffic --> Schema
-  Consumer[Baseline de consumidor] --> Diff[Comparación de compatibilidad]
-  Schema --> Gate[Gate de release]
-  Diff --> Gate
-```
-
-**Proyecto real:** versiona el contrato de la API de entregas junto con la implementación, valida responses reales y conserva una baseline del cliente móvil. Si un cambio rompe un campo o enum usado, detén la publicación hasta acordar migración y evidencia de consumidores.
-
-**Fuentes oficiales:** [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html), [OpenAPI Specification, versión vigente](https://spec.openapis.org/oas/latest.html) y [Redocly CLI](https://redocly.com/docs/cli/).
-
 ## Laboratorio práctico
 
 ### Proyecto: API contractual con efectos recuperables
 
-Construye desde una carpeta vacía `rutaflow-confiable/`, sin copiar archivos de los proyectos anteriores ni de ejemplos de la academia. La vertical será «crear una tarea de entrega y notificarla». Usa Node.js LTS, TypeScript estricto, zod, PostgreSQL local, Redocly y `node:test`; todos los requests, webhooks, consumidores y experimentos concurrentes se ejecutan localmente. No uses credenciales reales ni endpoints de terceros.
+Construye desde una carpeta vacía `rutaflow-confiable/`, sin copiar archivos de los proyectos anteriores ni de ejemplos de la academia. La vertical será «crear una tarea de entrega y notificarla». Usa Node.js 24 LTS, TypeScript estricto, zod, PostgreSQL local, Redocly y `node:test`; todos los requests, webhooks, consumidores y experimentos concurrentes se ejecutan localmente. No uses credenciales reales ni endpoints de terceros.
 
 Crea manualmente esta estructura y completa cada archivo con la responsabilidad indicada:
 

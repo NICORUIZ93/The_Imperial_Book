@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados: no copies ejemplos de la academia ni reutilices archivos de otros temas. `npm init -y` genera el `package.json` inicial y cada proyecto instala sus propias dependencias.
+El proyecto del Tema 2 es la **base del laboratorio final**: consérvalo, porque el Proyecto 12 lo amplía en lugar de empezar de cero. Los Temas 3 a 6 son laboratorios de mecanismos concretos en su propia carpeta. Escribe manualmente todos los archivos indicados. El módulo solo usa herramientas ya enseñadas en el curso (Express, Prisma 7, `jose`, `bcrypt`, Pino, Supertest, Testcontainers, Docker) o enseñadas aquí mismo antes del laboratorio (Socket.IO en el Tema 5, validación de archivos y notificaciones con un doble en el Tema 6).
 
 Los laboratorios permiten comprobar mecanismos concretos en local. **Una demostración que responde correctamente no es por ello una API productiva.** Esa afirmación exige evidencia adicional de seguridad, capacidad, recuperación, observabilidad y operación, además de revisión humana.
 
@@ -10,7 +10,7 @@ Los laboratorios permiten comprobar mecanismos concretos en local. **Una demostr
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, módulos ES, `async`/`await` y HTTP básico. El proyecto empieza en una carpeta vacía y no depende de ningún otro laboratorio.
+**Prerrequisitos:** Node.js 24 LTS, npm, módulos ES, `async`/`await` y HTTP básico. El proyecto empieza en una carpeta vacía y no depende de ningún otro laboratorio.
 
 **Al terminar podrás:** construir una API pequeña donde HTTP, aplicación e infraestructura se comuniquen mediante contratos, inyectar el repositorio en el caso de uso y probar una regla de negocio sin arrancar el servidor.
 
@@ -261,7 +261,7 @@ En el proyecto integrador independiente del final, crea los puertos `Repositorio
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, Express, Prisma, JWT, pruebas HTTP y Docker. Debes tener un daemon de Docker disponible para Testcontainers. El proyecto crea su esquema, sus usuarios de prueba y todos sus archivos desde cero.
+**Prerrequisitos:** Node.js 24 LTS, npm, Express (Módulo 4), Prisma 7 con driver adapter (Módulo 5 Tema 2), PostgreSQL con `pg` (Módulo 5 Tema 1), JWT con `jose` y `bcrypt` (Módulo 6), Supertest y Testcontainers (Módulo 7), Pino (Módulo 9) y Docker (Módulo 11). Debes tener un daemon de Docker disponible para Testcontainers. Este proyecto es la base del laboratorio final del módulo: consérvalo.
 
 **Al terminar podrás:** integrar configuración, Express, una relación real de Prisma, access y refresh tokens, pruebas contra PostgreSQL efímero, logs con correlación y una imagen Docker multi-stage.
 
@@ -269,7 +269,7 @@ En el proyecto integrador independiente del final, crea los puertos `Repositorio
 
 La integración conserva las fronteras del tema anterior. Express traduce HTTP; Prisma implementa persistencia; `jose` firma y verifica tokens; Pino registra hechos sin credenciales. La relación `User 1—N Delivery` se comprueba leyendo la entrega con su propietario. El refresh token contiene un `jti` que también existe en la base: una firma válida no basta si el identificador fue revocado o expiró.
 
-Testcontainers levanta PostgreSQL para la prueba y `prisma db push` crea el esquema de ese laboratorio. Esto es apropiado para una prueba de integración, no una estrategia de migración de producción. Supertest usa la aplicación sin depender de un puerto fijo. El Dockerfile empaqueta el resultado, pero construir una imagen tampoco demuestra que el servicio esté listo para tráfico real.
+Prisma se configura exactamente como en el Módulo 5 Tema 2 (Prisma 7: `prisma.config.ts`, generador `prisma-client` y cliente creado con un *driver adapter*), cambiando SQLite por PostgreSQL con `@prisma/adapter-pg`. Testcontainers levanta PostgreSQL para la prueba y `prisma db push` crea el esquema de ese laboratorio. Esto es apropiado para una prueba de integración, no una estrategia de migración de producción. Supertest usa la aplicación sin depender de un puerto fijo. El Dockerfile empaqueta el resultado, pero construir una imagen tampoco demuestra que el servicio esté listo para tráfico real.
 
 ```text
 Supertest → Express + correlación → JWT → Prisma → PostgreSQL efímero
@@ -284,22 +284,55 @@ Desde una carpeta vacía:
 mkdir ejemplo-integracion-track
 cd ejemplo-integracion-track
 npm init -y
-npm pkg set type=module scripts.start="node src/server.js" scripts.test="node --test --test-concurrency=1"
-npm install express jose pino bcrypt @prisma/client
-npm install --save-dev prisma supertest testcontainers
+npm pkg set type=module scripts.start="node --import tsx src/server.js" scripts.test="node --import tsx --test --test-concurrency=1" scripts.db:generate="prisma generate"
+npm install express@5 jose pino bcrypt @prisma/client@7 @prisma/adapter-pg@7 dotenv tsx
+npm install --save-dev prisma@7 supertest testcontainers
 mkdir -p prisma src test
 ```
 
-Crea `prisma/schema.prisma`:
+Las versiones mayores de Prisma quedan fijadas (`@7`): la etiqueta `latest` de npm puede apuntar a otra mayor con una API distinta. `prisma`, `@prisma/client` y `@prisma/adapter-pg` deben compartir la misma versión; compruébalo con `npm ls prisma @prisma/client @prisma/adapter-pg`. `tsx` es dependencia de ejecución porque el cliente que genera Prisma 7 es TypeScript (Módulo 5 Tema 2); `node --import tsx` lo carga desde los archivos `.js` del proyecto.
+
+Crea `.env` (solo para tu máquina; la prueba define su propia URL):
+
+```text
+DATABASE_URL="postgresql://entregas:entregas@127.0.0.1:5432/entregas"
+```
+
+Crea `.gitignore`:
+
+```text
+.env
+node_modules/
+generated/
+```
+
+Crea `prisma.config.ts`, igual que en el Módulo 5:
+
+```ts
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  migrations: {
+    path: "prisma/migrations",
+  },
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
+});
+```
+
+Crea `prisma/schema.prisma`. Como en Prisma 7, el `datasource` ya no lleva `url` (la aporta `prisma.config.ts`) y el generador escribe el cliente en una carpeta propia:
 
 ```prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -324,6 +357,26 @@ model RefreshToken {
   user      User      @relation(fields: [userId], references: [id])
   expiresAt DateTime
   revokedAt DateTime?
+}
+```
+
+Genera el cliente. En Prisma 7, `db push` y `migrate dev` ya no lo generan solos, así que este paso se repite cada vez que cambies el schema:
+
+```bash
+npx prisma generate
+```
+
+**Resultado esperado:** aparece la carpeta `generated/prisma` con `client.ts`.
+
+Crea `src/db.js`, el único archivo que sabe cómo se construye el cliente:
+
+```js
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../generated/prisma/client.ts";
+
+// Prisma 7 se conecta mediante un driver adapter; aquí, el driver pg del Módulo 5.
+export function crearPrisma(databaseUrl) {
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString: databaseUrl }) });
 }
 ```
 
@@ -509,13 +562,13 @@ export function crearApp({ prisma, logger, jwtSecret }) {
 Crea `src/server.js`:
 
 ```js
-import { PrismaClient } from "@prisma/client";
 import pino from "pino";
 import { cargarConfiguracion } from "./config.js";
 import { crearApp } from "./app.js";
+import { crearPrisma } from "./db.js";
 
 const config = cargarConfiguracion();
-const prisma = new PrismaClient({ datasources: { db: { url: config.databaseUrl } } });
+const prisma = crearPrisma(config.databaseUrl);
 const logger = pino({ level: process.env.LOG_LEVEL ?? "info" });
 const app = crearApp({ prisma, logger, jwtSecret: config.jwtSecret });
 const server = app.listen(config.port, () => logger.info({ port: config.port }, "API lista"));
@@ -540,6 +593,7 @@ import bcrypt from "bcrypt";
 import pino from "pino";
 import supertest from "supertest";
 import { GenericContainer } from "testcontainers";
+import { crearPrisma } from "../src/db.js";
 
 let container;
 let prisma;
@@ -558,12 +612,13 @@ before(async () => {
     .start();
 
   process.env.DATABASE_URL = `postgresql://test:test@${container.getHost()}:${container.getMappedPort(5432)}/entregas`;
-  execFileSync("npx", ["prisma", "db", "push", "--skip-generate"], {
+  // Prisma 7 eliminó --skip-generate: db push ya no genera el cliente (lo generaste antes con npx prisma generate).
+  execFileSync("npx", ["prisma", "db", "push"], {
     env: process.env,
     stdio: "inherit",
   });
 
-  prisma = new PrismaClient();
+  prisma = crearPrisma(process.env.DATABASE_URL);
   const { crearApp } = await import("../src/app.js");
   app = crearApp({ prisma, logger: pino({ enabled: false }), jwtSecret });
   user = await prisma.user.create({
@@ -612,36 +667,38 @@ test("login, operación protegida, relación y refresh funcionan juntos", async 
 Crea `Dockerfile`:
 
 ```dockerfile
-FROM node:lts-bookworm-slim AS build
+FROM node:24-bookworm-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
+COPY prisma.config.ts ./
 COPY prisma ./prisma
 RUN npx prisma generate
 
-FROM node:lts-bookworm-slim AS runtime
+FROM node:24-bookworm-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
-COPY prisma ./prisma
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY --from=build /app/generated ./generated
 COPY src ./src
 USER node
 EXPOSE 3000
-CMD ["node", "src/server.js"]
+CMD ["node", "--import", "tsx", "src/server.js"]
 ```
 
 Crea `.dockerignore`:
 
 ```text
 node_modules
+generated
 npm-debug.log
 test
 .git
 .env
 ```
+
+La imagen usa la etiqueta `node:24-bookworm-slim` (Node 24 LTS fijo), no `lts`, que cambia de mayor sin avisar. El cliente se genera dentro de la etapa `build` a partir del schema; la carpeta `generated` local no entra en el contexto.
 
 Ejecuta la prueba de integración y construye la imagen:
 
@@ -672,21 +729,21 @@ En el proyecto integrador independiente del final, conecta registro, login, refr
 - [ ] Los logs incluyen correlación y excluyen contraseñas y tokens.
 - [ ] La prueba usa PostgreSQL real y la imagen se construye sin secretos incorporados.
 
-**Si falla:** si Prisma no encuentra tablas, revisa que `db push` se ejecute con la misma `DATABASE_URL` que usa el test. Si el login funciona y la ruta protegida no, compara issuer, audience, algoritmo y `type` al firmar y verificar. Si Docker no encuentra el cliente generado, comprueba que el esquema y los artefactos de Prisma se copien antes de `CMD`.
+**Si falla:** si aparece `Cannot find module '../generated/prisma/client.ts'`, ejecuta `npx prisma generate`. Si `tsx` informa `Cannot find module './internal/class.js'`, la documentación de Prisma indica añadir `importFileExtension = "ts"` al generador y volver a generar. Si `db push` rechaza la opción `--skip-generate`, copiaste un comando de Prisma 6: Prisma 7 la eliminó; quítala. Si Prisma no encuentra tablas, revisa que `db push` se ejecute con la misma `DATABASE_URL` que usa el test. Si el login funciona y la ruta protegida no, compara issuer, audience, algoritmo y `type` al firmar y verificar. Si Docker no encuentra el cliente generado, comprueba que el esquema y los artefactos de Prisma se copien antes de `CMD`.
 
-**Errores comunes:** afirmar integración con mocks en todas las capas, compartir una base entre pruebas, aceptar refresh como access, devolver hashes, registrar credenciales, usar `prisma db push` como migración productiva o meter secretos en la imagen.
+**Errores comunes:** mezclar la API de Prisma 6 (`prisma-client-js`, `url` en el schema, `new PrismaClient({ datasources })`) con la de Prisma 7; instalar Prisma sin fijar la mayor; afirmar integración con mocks en todas las capas, compartir una base entre pruebas, aceptar refresh como access, devolver hashes, registrar credenciales, usar `prisma db push` como migración productiva o meter secretos en la imagen.
 
 **Modelo mental:** trata el sistema como un recorrido vertical, no como una colección de carpetas: una petición atraviesa el límite HTTP, una regla de aplicación, persistencia y una respuesta. Cada frontera traduce su contrato; si el fallo aparece solo al unir capas, reduce el recorrido hasta la primera entrada cuya salida ya no cumple ese contrato.
 
 **Cuándo integrar:** construye esta vertical cuando las piezas tienen contratos locales comprobados; conserva pruebas unitarias para reglas y de integración para sus uniones. No reemplaces las pruebas pequeñas con un único test end-to-end: cuando falla un recorrido enorme, cuesta separar configuración, autenticación, consulta y serialización.
 
-**Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/docs), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
+**Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma — actualizar a Prisma 7](https://www.prisma.io/docs/orm/more/upgrade-guides/upgrading-versions/upgrading-to-prisma-7), [Prisma — generadores](https://www.prisma.io/docs/orm/prisma-schema/overview/generators), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
 
 ### Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, JSON, HTTP y conceptos de seguridad y operación. Este proyecto evalúa evidencia escrita; no necesita ni reutiliza una API anterior.
+**Prerrequisitos:** Node.js 24 LTS, npm, JSON, HTTP y conceptos de seguridad y operación. Este proyecto evalúa evidencia escrita; no necesita ni reutiliza una API anterior.
 
 **Al terminar podrás:** elaborar una evaluación de preparación que distinga «verificado», «pendiente» y «no aplica», rechace afirmaciones sin evidencia y produzca una lista honesta de trabajo restante.
 
@@ -850,7 +907,7 @@ En el proyecto integrador independiente del final, entrega una matriz de prepara
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, JSON y arquitectura por capas. El proyecto toma una decisión sobre un caso propio y no reutiliza código de otros temas.
+**Prerrequisitos:** Node.js 24 LTS, npm, JSON y arquitectura por capas. El proyecto toma una decisión sobre un caso propio y no reutiliza código de otros temas.
 
 **Al terminar podrás:** justificar si conviene conservar un monolito modular, separar un servicio, introducir una cola o adoptar TypeScript a partir de restricciones y evidencia, incluyendo coste y reversa.
 
@@ -998,7 +1055,7 @@ En el proyecto integrador independiente del final, conserva inicialmente un mono
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
+**Prerrequisitos:** Node.js 24 LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
 
 **Al terminar podrás:** validar coordenadas y antigüedad, autenticar un canal, autorizar cada jornada, asignar secuencias en el servidor, publicar después de persistir y recuperar un intervalo acotado con una señal de reinicio cuando el historial ya no baste.
 
@@ -1006,7 +1063,7 @@ En el proyecto integrador independiente del final, conserva inicialmente un mono
 
 Latitud pertenece a `[-90, 90]`, longitud a `[-180, 180]` y la precisión no puede ser negativa. `capturedAt` representa cuándo se tomó la muestra; el servidor aplica una política de antigüedad y margen de futuro. La **secuencia** la asigna el servidor por jornada después de aceptar el comando. Una restricción única como `(journey_id, sequence_number)` evita duplicar el efecto al reintentar en una base durable.
 
-En PostgreSQL con PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
+**Para leer, no para instalar en este curso:** en PostgreSQL con la extensión PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
 
 ```sql
 ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
@@ -1317,7 +1374,7 @@ En PowerShell, asigna `$env:LAB_TOKEN="token-local-de-laboratorio-con-mas-de-32-
 
 #### Aplica
 
-En el proyecto integrador independiente del final, almacena posiciones en PostGIS con longitud y latitud en el orden correcto, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
+En el proyecto integrador del final (que parte del Tema 2), almacena posiciones con Prisma en columnas de latitud y longitud validadas y con secuencia única por jornada, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
 
 **Checklist de salida.**
 
@@ -1341,7 +1398,7 @@ En el proyecto integrador independiente del final, almacena posiciones en PostGI
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
+**Prerrequisitos:** Node.js 24 LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
 
 **Al terminar podrás:** validar una imagen por su contenido, limitar tamaño y dimensiones, guardarla con un nombre generado por el servidor en cuarentena, impedir cargas en entregas ajenas y confirmar una entrega aunque falle la notificación posterior.
 
@@ -1632,19 +1689,24 @@ En el proyecto integrador independiente del final, incorpora evidencias PNG con 
 
 **Objetivo del laboratorio:** construir en una carpeta nueva una API de entregas con arquitectura por capas, autenticación, persistencia, pruebas, observabilidad, posiciones recuperables, evidencias en cuarentena y notificaciones posteriores. El resultado es un prototipo integrable y desplegable en un entorno controlado; solo podrá evaluarse como candidato productivo cuando exista evidencia de los controles operativos pendientes.
 
-**Requisitos previos:** competencias de los Módulos 0–11, Node.js LTS, npm y Docker. No uses código, datos ni configuración de los laboratorios anteriores: escribe este proyecto desde cero y crea sus propias pruebas y secretos locales.
+**Requisitos previos:** competencias de los Módulos 0–11, los Temas 1, 2, 5 y 6 de este módulo, Node.js 24 LTS, npm y Docker. El punto de partida es el proyecto del Tema 2 (`ejemplo-integracion-track`): ya tiene configuración validada, Express, Prisma 7 con `@prisma/adapter-pg`, login con access y refresh, Pino, una prueba con Testcontainers y el Dockerfile. Crea tus propias pruebas y secretos locales; no copies los de otros laboratorios.
 
-Inicia el proyecto independiente:
+Copia el proyecto del Tema 2 a una carpeta nueva para conservar el original y reorganízalo en capas (Tema 1):
 
 ```bash
-mkdir api-entregas-integrador
+cp -R ejemplo-integracion-track api-entregas-integrador
 cd api-entregas-integrador
-npm init -y
-npm pkg set type=module scripts.start="node src/server.js" scripts.test="node --test --test-concurrency=1"
-mkdir -p src/application src/domain src/http src/infrastructure prisma test quarantine
+rm -rf node_modules generated
+npm ci
+npm ls prisma @prisma/client @prisma/adapter-pg
+npm install socket.io socket.io-client
+npx prisma generate
+mkdir -p src/application src/domain src/http src/infrastructure quarantine
 ```
 
-Crea manualmente, como mínimo, estos archivos y contenidos dentro del proyecto:
+**Resultado esperado:** `npm ls` muestra las tres dependencias de Prisma en la misma versión `7.x`. Si aparece otra mayor, reinstala con `@7` antes de seguir: el resto del laboratorio usa la API de Prisma 7 del Módulo 5 (`prisma.config.ts`, generador `prisma-client`, `new PrismaClient({ adapter })`).
+
+Mueve `src/app.js` a `src/http/app.js` y `src/db.js` a `src/infrastructure/db.js`, y crea como mínimo estos archivos y contenidos:
 
 | Archivo | Contenido requerido |
 |---|---|
@@ -1655,11 +1717,12 @@ Crea manualmente, como mínimo, estos archivos y contenidos dentro del proyecto:
 | `src/domain/errores.js` | Errores de validación, autenticación, autorización, conflicto y recurso ausente |
 | `src/http/app.js` | Express, límites de cuerpo, correlación, login, refresh, rutas protegidas y traducción de errores |
 | `src/http/realtime.js` | Origen explícito, autenticación, autorización por jornada, límites, secuencia y reanudación |
-| `src/infrastructure/prisma-repositorios.js` | Adaptadores transaccionales, relación usuario–entregas, posiciones y outbox |
+| `src/infrastructure/db.js` | `crearPrisma(databaseUrl)` con `PrismaPg`, como en el Tema 2; ningún otro archivo construye el cliente |
+| `src/infrastructure/prisma-repositorios.js` | Adaptadores transaccionales con `prisma.$transaction`, relación usuario–entregas, posiciones y outbox |
 | `src/infrastructure/almacen-evidencias.js` | Claves UUID, escritura exclusiva, cuarentena no pública y metadatos mínimos |
-| `src/infrastructure/push.js` | Adaptador Firebase Admin o doble explícito, payload mínimo e invalidación de instalaciones |
+| `src/infrastructure/push.js` | Puerto de notificaciones con el doble explícito del Tema 6, payload mínimo e invalidación de instalaciones; un proveedor real (FCM, APNs) queda fuera del alcance del curso |
 | `src/server.js` | Configuración validada, composición e inyección de adaptadores y apagado ordenado |
-| `prisma/schema.prisma` | Usuario, entrega, refresh, posición con unicidad, evidencia y outbox; PostgreSQL/PostGIS para posiciones |
+| `prisma.config.ts` y `prisma/schema.prisma` | Los del Tema 2 ampliados con posición (`latitud` y `longitud` `Float`, `@@unique([journeyId, sequenceNumber])`), evidencia y outbox; generador `prisma-client` y `datasource` sin `url` |
 | `test/contratos.test.js` | Reglas y puertos con dobles que conservan las mismas formas de entrada y salida |
 | `test/integracion.test.js` | Flujo crítico con Supertest, PostgreSQL efímero y dos usuarios |
 | `test/realtime.test.js` | Duplicados, reconexión, hueco fuera de retención, posición antigua y acceso cruzado |
@@ -1672,14 +1735,14 @@ Crea manualmente, como mínimo, estos archivos y contenidos dentro del proyecto:
 Implementa y verifica estos hitos en orden:
 
 1. **Dominio y contratos.** Una entrega pertenece a un repartidor y solo puede confirmarse con evidencia disponible. Prueba una transición válida, una inválida y acceso cruzado sin levantar HTTP.
-2. **Persistencia real.** Crea la relación uno-a-muchos, refresh revocable, posiciones con `(journey_id, sequence_number)` único y punto `geography(Point, 4326)`. Usa longitud antes que latitud y consultas parametrizadas.
+2. **Persistencia real.** Amplía el schema del Tema 2 con posiciones (`@@unique([journeyId, sequenceNumber])` y coordenadas validadas en rango), evidencias y outbox. Después de cada cambio ejecuta `npx prisma generate`; en la prueba, `npx prisma db push` crea el esquema en el PostgreSQL efímero. Si necesitas SQL que Prisma no modela, usa `prisma.$queryRaw` con plantilla (parámetros, no concatenación). PostGIS (Tema 5) queda como lectura: este laboratorio no lo instala.
 3. **Acceso completo.** Registro con contraseña derivada, login, access de corta duración y refresh con `jti` almacenado. Un refresh no funciona como access y un refresh revocado recibe `401`.
 4. **Operación protegida.** Crear y consultar entregas exige access; dos repartidores con el mismo rol no pueden leer ni modificar recursos ajenos. Los cuerpos tienen límite y las respuestas no exponen hashes ni tokens.
 5. **Observabilidad.** Cada respuesta contiene un identificador de correlación y cada log de petición incluye método, ruta, estado y correlación, sin cuerpos sensibles. `/health` distingue proceso disponible de base inaccesible.
 6. **Posiciones y recuperación.** Persiste antes de emitir. Prueba coordenadas inválidas, muestras antiguas, duplicados, orden lógico y recuperación desde la última secuencia. Un hueco fuera de retención exige instantánea; el canal no es almacenamiento durable.
 7. **Evidencia y push.** Rechaza un archivo que solo declara ser PNG, uno excedido y una entrega ajena. La evidencia queda en cuarentena hasta un análisis autorizado. El fallo push no revierte la confirmación y el outbox permite reintentos acotados.
-8. **Pruebas de integración.** Testcontainers crea una base limpia para login → refresh → alta protegida → posición → evidencia → confirmación. Los dobles quedan en pruebas unitarias; no sustituyen la verificación del esquema y las transacciones reales.
-9. **Empaquetado y configuración.** Un puerto, URL o secreto inválido impide arrancar. Construye la imagen sin `.env`, con usuario no root y apagado ordenado. Las migraciones de un entorno compartido se diseñan como expansión y contracción, no como `db push` improvisado.
+8. **Pruebas de integración.** Amplía `test/integracion.test.js` del Tema 2: Testcontainers crea una base limpia para login → refresh → alta protegida → posición → evidencia → confirmación. Los dobles quedan en pruebas unitarias; no sustituyen la verificación del esquema y las transacciones reales.
+9. **Empaquetado y configuración.** Un puerto, URL o secreto inválido impide arrancar. Reutiliza el Dockerfile del Tema 2 (`node:24-bookworm-slim`, `prisma generate` en la etapa de build, `CMD ["node", "--import", "tsx", "src/server.js"]`) con usuario no root y apagado ordenado; la imagen no lleva `.env`. Las migraciones de un entorno compartido se diseñan como expansión y contracción, no como `db push` improvisado.
 10. **Revisión de preparación.** Registra pendientes de alertas, restauración, carga, secretos, rollback y retención. Conserva el monolito modular salvo evidencia que justifique otra decisión.
 
 Ejecuta las comprobaciones del proyecto:
@@ -1687,7 +1750,7 @@ Ejecuta las comprobaciones del proyecto:
 ```bash
 npm test
 docker build -t api-entregas-integrador:local .
-node src/server.js
+npm start
 ```
 
 Para el último comando, define antes una `DATABASE_URL` de laboratorio, `JWT_SECRET`, el origen del cliente y las credenciales estrictamente necesarias. Detén el proceso con `Ctrl+C` y comprueba el cierre de conexiones.
@@ -1698,7 +1761,7 @@ Para el último comando, define antes una `DATABASE_URL` de laboratorio, `JWT_SE
 
 **Verificación de salida.**
 
-- [ ] Todos los archivos del proyecto se escribieron en una carpeta nueva, sin importar laboratorios anteriores.
+- [ ] El proyecto parte del Tema 2 y conserva Prisma 7 con `@prisma/adapter-pg` en una sola versión mayor fijada.
 - [ ] Las capas se conectan por contratos e inyección y las pruebas de dominio no requieren HTTP ni base.
 - [ ] Registro, login, refresh, revocación y operación protegida funcionan de principio a fin.
 - [ ] Dos usuarios del mismo rol no pueden acceder a recursos ajenos.

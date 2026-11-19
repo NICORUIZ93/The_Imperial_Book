@@ -36,7 +36,7 @@ Definir tipos precisos para las estructuras de datos centrales de una aplicació
 Instala TypeScript e inicializa configuración:
 
 ```bash
-npm install --save-dev typescript
+npm install --save-dev typescript@7
 npx tsc --init
 ```
 
@@ -48,7 +48,7 @@ Desde una carpeta vacía crea `ejemplo-typescript-basico`, instala TypeScript y 
 mkdir ejemplo-typescript-basico
 cd ejemplo-typescript-basico
 npm init -y
-npm install -D typescript
+npm install -D typescript@7
 mkdir src
 ```
 
@@ -141,7 +141,7 @@ Desde una carpeta vacía crea `ejemplo-generics-ts`, instala TypeScript y crea `
 mkdir ejemplo-generics-ts
 cd ejemplo-generics-ts
 npm init -y
-npm install -D typescript
+npm install -D typescript@7
 mkdir src
 ```
 
@@ -231,7 +231,7 @@ Desde una carpeta vacía crea `ejemplo-unions-ts`, instala TypeScript y crea `sr
 mkdir ejemplo-unions-ts
 cd ejemplo-unions-ts
 npm init -y
-npm install -D typescript
+npm install -D typescript@7
 mkdir src
 ```
 
@@ -307,6 +307,8 @@ La API puede devolver un número como `7` o eliminar `estado` aunque la interfac
 
 `noImplicitAny`, incluida dentro de `strict`, exige que cada parámetro y variable tenga un tipo explícito o inferible; sin esta opción, TypeScript permitiría silenciosamente que una variable sin anotación de tipo explícita se trate implícitamente como `any` (el tipo que desactiva completamente la verificación de tipos, aceptando cualquier valor y cualquier operación sobre él sin ninguna comprobación), socavando silenciosamente gran parte del valor real que TypeScript ofrece. `strictNullChecks`, otra verificación clave incluida en `strict`, obliga a manejar explícitamente los casos donde un valor podría ser `null` o `undefined`, en vez de asumir implícitamente (y con frecuencia incorrectamente) que un valor siempre está presente, una fuente extremadamente común de errores en tiempo de ejecución en JavaScript puro sin esta protección adicional del compilador.
 
+**Qué cambió en TypeScript 7** (la versión de referencia del curso, `npm install -D typescript@7`): `strict` viene **activado por defecto**, así que un proyecto sin la opción ya rechaza un parámetro sin tipo con `error TS7006: Parameter 'x' implicitly has an 'any' type.`; aun así la escribimos explícita para que se lea en el archivo. Además se **eliminaron** `"target": "es5"`, `"moduleResolution": "node10"` y `baseUrl`: si los copias de un tutorial antiguo, `tsc` se detiene con `error TS5108: Option 'target=ES5' has been removed` o `error TS5102: Option 'baseUrl' has been removed` y sugiere usar `paths`. Solo si una herramienta todavía exige la API anterior, instala en paralelo el paquete de compatibilidad que indique su documentación y anótalo como deuda.
+
 `noUncheckedIndexedAccess`, una opción adicional recomendada más allá del propio `strict`, hace que acceder a un array o a un objeto mediante un índice (`array[i]`) devuelva un tipo que incluye explícitamente `undefined` en su unión, reflejando con precisión la realidad de que ese índice específico podría estar fuera de rango, en vez de asumir optimistamente (y de forma potencialmente incorrecta) que el acceso siempre produce un valor válido del tipo esperado del array.
 
 Es fundamental entender un límite real e importante de TypeScript, incluso en su configuración más estricta posible: todas estas verificaciones ocurren exclusivamente en tiempo de compilación, sobre el código fuente tal como está escrito; TypeScript no tiene ninguna forma de verificar en tiempo de ejecución que datos provenientes de una fuente externa (como la respuesta JSON de una API, vista en el Módulo 6) realmente cumplen la forma declarada por una `interface`. Si una API cambia su formato de respuesta sin que el código TypeScript se actualice para reflejarlo, TypeScript confiará ciegamente en la anotación de tipo declarada (`interface Usuario`), sin verificar en absoluto que los datos reales recibidos en tiempo de ejecución realmente tengan esa forma exacta, un desajuste que solo una biblioteca de validación en tiempo de ejecución (como Zod) puede detectar de forma efectiva, verificando explícitamente la forma real de los datos externos en el momento en que se reciben, más allá de lo que TypeScript puede garantizar únicamente en tiempo de compilación.
@@ -323,7 +325,7 @@ Desde una carpeta vacía crea `ejemplo-strict-ts`, instala TypeScript y crea `sr
 mkdir ejemplo-strict-ts
 cd ejemplo-strict-ts
 npm init -y
-npm install -D typescript
+npm install -D typescript@7
 mkdir src
 ```
 
@@ -457,7 +459,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 
 ```bash
 mkdir ts-avanzado && cd ts-avanzado
-npm init -y && npm install -D typescript@5
+npm init -y && npm install -D typescript@7
 mkdir src
 ```
 
@@ -546,19 +548,24 @@ Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `n
 #### Paso 6 · Práctica independiente
 Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
 
+**Ampliación (fusionada desde el antiguo Tema 1 del Módulo 14):** deriva tipos de la unión discriminada `EventoGuia` del Tema 3. Con `type Tipo = EventoGuia["tipo"]` obtienes la unión de discriminantes, y un `Record<Tipo, string>` de iconos obliga a completar cada variante. Compruébalo con TypeScript 7: si añades una variante `{ tipo: "ENTREGA_CANCELADA"; motivo: string }` a la unión y no al `Record`, `npx tsc` responde `error TS2741: Property 'ENTREGA_CANCELADA' is missing in type ...`. Combínalo con `Pick<Extract<EventoGuia, { tipo: "ENTREGA_CONFIRMADA" }>, "receptor">` para describir el resumen de una sola variante sin copiar campos.
+
 #### Paso 7 · Cierre
 
+Ya derivas tipos en lugar de copiarlos: `Omit`/`Pick`, tipos mapeados, condicionales, de plantilla, `satisfies` y `Record` sobre el discriminante de una unión. Este es el único tema de TypeScript avanzado del curso; el Módulo 14 ya no lo repite. El siguiente tema muestra los decoradores estándar.
 
-### Tema 6: Decoradores estándar de TypeScript 5
+
+
+### Tema 6: Decoradores estándar de TC39 en TypeScript
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
+Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar (TC39) que TypeScript implementa desde la 5.0 y mantiene en la 7, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 En RutaFlow se quería registrar cada cotización y validar configuraciones sin repetir código en cada clase. Angular y NestJS usan decoradores todo el tiempo (`@Component`, `@Injectable`), y el capítulo de estructura de proyecto del libro de TypeScript los presenta como herramienta de productividad: un caso real de cualquier framework.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un **decorador** es una función que recibe la clase, el método o el campo que decora y un **objeto de contexto** (`ClassMethodDecoratorContext`, `ClassFieldDecoratorContext`…) con su nombre y tipo. Un decorador de método puede devolver una función que reemplaza al método; uno de campo puede devolver un inicializador que transforma el valor inicial; uno de clase puede registrar o reemplazar la clase. TypeScript 5 implementa la **propuesta estándar de TC39**. Los frameworks que usan `"experimentalDecorators": true` siguen la versión antigua, con otra firma y metadatos de reflexión: no se mezclan.
+Un **decorador** es una función que recibe la clase, el método o el campo que decora y un **objeto de contexto** (`ClassMethodDecoratorContext`, `ClassFieldDecoratorContext`…) con su nombre y tipo. Un decorador de método puede devolver una función que reemplaza al método; uno de campo puede devolver un inicializador que transforma el valor inicial; uno de clase puede registrar o reemplazar la clase. TypeScript implementa la **propuesta estándar de TC39** desde la versión 5.0; TypeScript 7, la versión de referencia del curso, la conserva sin cambios. Los frameworks que usan `"experimentalDecorators": true` siguen la versión antigua, con otra firma y metadatos de reflexión: no se mezclan.
 
 **Analogía:** un decorador es un sello que se estampa en un documento: el documento es el mismo, pero el sello agrega una regla ("revisado", "registrar en el archivo").
 
@@ -579,14 +586,14 @@ flowchart LR
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar de TypeScript 5, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
+**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
 mkdir ts-decoradores && cd ts-decoradores
-npm init -y && npm install -D typescript@5
+npm init -y && npm install -D typescript@7
 mkdir src
 ```
 
@@ -607,7 +614,7 @@ Crea `tsconfig.json`:
 Crea `src/decoradores.ts`:
 
 ```typescript
-// Decoradores estándar de TypeScript 5 (propuesta TC39), sin experimentalDecorators
+// Decoradores estándar (propuesta TC39), sin experimentalDecorators
 
 // Decorador de método: mide y registra cada llamada
 function registrar<This, Args extends unknown[], R>(
@@ -683,7 +690,7 @@ Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y e
 
 **Objetivo del laboratorio:** migrar un módulo JavaScript existente (la biblioteca de funciones del Módulo 1) a TypeScript estricto, sin usar `any` en ningún punto.
 
-**Requisitos previos:** Módulos 0-10 completados, TypeScript instalado (`npm install -D typescript`).
+**Requisitos previos:** Módulos 0-10 completados, TypeScript 7 instalado (`npm install -D typescript@7`).
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|

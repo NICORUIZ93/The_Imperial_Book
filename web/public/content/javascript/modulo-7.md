@@ -9,7 +9,7 @@
 
 Al finalizar podrás crear y ejecutar un proyecto modular con ESM, reconocer un módulo CommonJS y diagnosticar el error que aparece al mezclar ambos formatos. Separarás el dominio de entregas del proyecto de su punto de entrada mediante exports nombrados.
 
-**Conocimiento previo:** funciones, objetos, rutas relativas y uso básico de la terminal. Necesitas Node.js 20 o posterior; compruébalo con `node --version`. Si el comando no existe, instala la versión LTS desde la fuente oficial antes de continuar.
+**Conocimiento previo:** funciones, objetos, rutas relativas y uso básico de la terminal. Necesitas Node.js 24 LTS; compruébalo con `node --version` (debe empezar por `v24`). Si el comando no existe, instálalo desde la fuente oficial antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 
@@ -145,7 +145,7 @@ Un ejemplo concreto ilustra el impacto real: importar `import { debounce } from 
 
 Code-splitting es una técnica complementaria pero conceptualmente distinta: en vez de (o además de) eliminar código no usado, divide el bundle final en múltiples archivos ("chunks") más pequeños, que se cargan bajo demanda solo cuando efectivamente se necesitan, en vez de cargar toda la aplicación de una sola vez al inicio. Un caso típico es dividir el código específico de cada ruta de una aplicación (usando `import()` dinámico, visto en el Tema 5) en su propio chunk, de modo que un usuario que solo visita la página de inicio no descarga el código de páginas que nunca visitó en esa sesión, mejorando directamente el tiempo de carga inicial de la aplicación.
 
-Vite (Tema 3), en su modo de producción, aplica ambas técnicas de forma automática usando Rollup internamente: tree-shaking elimina código verdaderamente no usado, y code-splitting divide el resultado en chunks razonables según los puntos de importación dinámica presentes en el código, sin que el desarrollador necesite configurar manualmente ninguna de las dos técnicas en la mayoría de casos comunes.
+Vite (Tema 3), en su modo de producción, aplica ambas técnicas de forma automática usando Rolldown internamente (desde Vite 8; hasta Vite 7 usaba Rollup con la misma idea): tree-shaking elimina código verdaderamente no usado, y code-splitting divide el resultado en chunks razonables según los puntos de importación dinámica presentes en el código, sin que el desarrollador necesite configurar manualmente ninguna de las dos técnicas en la mayoría de casos comunes.
 
 **Analogía:** tree-shaking es como empacar una maleta de viaje llevando únicamente la ropa que realmente vas a usar en el viaje específico, en vez de empacar el armario completo "por si acaso"; code-splitting es como dividir el equipaje en varias maletas más pequeñas organizadas por actividad (una para la playa, otra para la ciudad), de modo que solo cargas la maleta correspondiente cuando efectivamente vas a esa actividad específica, no todo el equipaje completo todo el tiempo.
 
@@ -173,7 +173,7 @@ mkdir src
 Instala Vite en el proyecto existente y añade los scripts de construcción:
 
 ```bash
-npm install --save-dev vite
+npm install --save-dev vite@8
 npm pkg set scripts.dev="vite" scripts.build="vite build"
 ```
 
@@ -188,7 +188,7 @@ export function resumenDiario(entregas) {
 }
 
 export function reporteNuncaUsado() {
-  // Al no importarse y no tener efectos laterales, Rollup puede eliminarlo.
+  // Al no importarse y no tener efectos laterales, el bundler puede eliminarlo.
   return "MARCADOR_ELIMINADO";
 }
 ```
@@ -227,6 +227,8 @@ grep -R "MARCADOR_ELIMINADO\|AUDITORIA_CARGADA" dist/assets
 
 **Fallo deliberado:** añade `console.log("efecto")` en el nivel superior de `reportes.js` y vuelve a construir. Aunque un export no se use, el módulo con efectos laterales puede tener que conservarse. El diagnóstico no es “Vite falló”: el código dejó de ser eliminable con seguridad.
 
+**Fallo deliberado 2 (importación ansiosa):** quita el `console.log` anterior y añade al inicio de `main.js` `import { abrirAuditoria as precargada } from "./auditoria.js";` y, debajo, `window.precargada = precargada;`. Al construir, Vite 8 avisa `[INEFFECTIVE_DYNAMIC_IMPORT] src/auditoria.js is dynamically imported by src/main.js but also statically imported by src/main.js, dynamic import will not move module into another chunk.`, desaparece el archivo `auditoria-<hash>.js` y `grep` encuentra `AUDITORIA_CARGADA` dentro del chunk `index-<hash>.js`. **Diagnóstico:** basta **un** import estático del mismo módulo, en cualquier archivo, para anular la división; busca y elimina la importación ansiosa antes de medir.
+
 #### Paso 5 · Práctica guiada
 
 Abre las herramientas de red del navegador, recarga y verifica que el chunk de auditoría no se descarga hasta pulsar el botón. **Pista:** filtra por `JS`, conserva el registro y compara las solicitudes antes y después del clic.
@@ -237,21 +239,21 @@ Mide tamaño del chunk inicial, cantidad de solicitudes y tiempo de carga antes 
 
 #### Paso 7 · Cierre
 
-Ahora diferencias quitar código imposible de alcanzar de aplazar código que sí se utilizará. El siguiente tema explica cómo Vite sirve módulos en desarrollo y cómo produce estos artefactos con Rollup.
+Ahora diferencias quitar código imposible de alcanzar de aplazar código que sí se utilizará. El siguiente tema explica cómo Vite sirve módulos en desarrollo y cómo produce estos artefactos con Rolldown.
 
 **Errores comunes:** creer que minificación y tree-shaking son lo mismo; esperar eliminación fiable de CommonJS dinámico; introducir efectos laterales al importar; dividir funciones diminutas sin medir; validar solo el servidor de desarrollo y no el build.
 
-**Fuentes oficiales:** [Vite — Features: dynamic import](https://vite.dev/guide/features.html#dynamic-import) y [Rollup — Tree-shaking](https://rollupjs.org/introduction/#tree-shaking).
+**Fuentes oficiales:** [Vite — Features: dynamic import](https://vite.dev/guide/features.html#dynamic-import) y [Rollup — Tree-shaking](https://rollupjs.org/introduction/#tree-shaking) (el concepto es el mismo en Rolldown) y [Anuncio de Vite 8](https://vite.dev/blog/announcing-vite8).
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa utilidades puras del módulo que monta el DOM. Comprueba el bundle de un consumidor que solo usa el cliente y confirma que no incluye la interfaz completa.
 
-### Tema 3: Vite y esbuild
+### Tema 3: Vite 8: desarrollo con ESM nativo y build con Rolldown
 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar podrás crear desde una carpeta vacía una aplicación con Vite, explicar qué ocurre durante desarrollo y producción, ejecutar ambos modos e interpretar un error de resolución. El resultado será la primera interfaz web ejecutable del proyecto.
 
-**Conocimiento previo:** ESM, terminal, HTML básico y los conceptos de tree-shaking y code-splitting. Comprueba `node --version` y `npm --version`; usa una versión LTS activa de Node.js para evitar incompatibilidades con la versión actual de Vite.
+**Conocimiento previo:** ESM, terminal, HTML básico y los conceptos de tree-shaking y code-splitting. Comprueba `node --version` y `npm --version`; usa Node.js 24 LTS para evitar incompatibilidades con Vite 8.
 
 #### Paso 2 · Contexto y caso real
 
@@ -259,26 +261,26 @@ El proyecto necesita ciclos de desarrollo rápidos, pero también artefactos opt
 
 #### Paso 3 · Teoría, modelo mental y analogía
 
-**Conceptos clave:** servidor de desarrollo con ESM nativo, esbuild, build de producción con Rollup.
+**Conceptos clave:** servidor de desarrollo con ESM nativo, transformaciones con Oxc, build de producción con Rolldown.
 
 Vite representa un cambio de enfoque significativo frente a bundlers anteriores como Webpack en cómo funciona el servidor de desarrollo: en vez de empaquetar toda la aplicación completa antes de servirla (un proceso que puede tardar considerablemente en proyectos grandes y que debe repetirse en cada cambio de código), Vite sirve los módulos ESM directamente al navegador sin empaquetarlos durante el desarrollo, aprovechando que los navegadores modernos soportan `import`/`export` de forma nativa. Esto permite que el servidor de desarrollo arranque casi instantáneamente, independientemente del tamaño total del proyecto, porque no necesita procesar y empaquetar todo el código de antemano.
 
-Para el código que sí necesita transformación antes de poder ejecutarse en el navegador (TypeScript, JSX), Vite usa esbuild, un compilador escrito en Go extremadamente rápido comparado con transformadores basados en JavaScript puro como Babel, procesando archivos individuales bajo demanda según el navegador los solicita durante el desarrollo, en vez de procesar el proyecto completo de una sola vez por adelantado.
+Para el código que sí necesita transformación antes de poder ejecutarse en el navegador (TypeScript, JSX), Vite 8 usa Oxc, un compilador escrito en Rust mucho más rápido que transformadores escritos en JavaScript como Babel (hasta Vite 7 ese papel lo cumplía esbuild, escrito en Go), procesando archivos individuales bajo demanda según el navegador los solicita durante el desarrollo, en vez de procesar el proyecto completo de una sola vez por adelantado.
 
-Para el build de producción (`npm run build`), Vite cambia de estrategia y usa Rollup internamente, un bundler especializado en producir bundles optimizados y pequeños mediante tree-shaking agresivo y code-splitting inteligente (Tema 2), aceptando un tiempo de procesamiento mayor que el servidor de desarrollo a cambio de un resultado final más pequeño y eficiente para servir a usuarios reales, una decisión de diseño razonable dado que el build de producción se ejecuta una vez por despliegue, mientras que el servidor de desarrollo se reinicia y recarga constantemente durante la sesión de trabajo diaria de un desarrollador.
+Para el build de producción (`npm run build`), Vite cambia de estrategia y empaqueta con Rolldown, el bundler en Rust que Vite 8 adoptó en lugar de la pareja esbuild + Rollup y que admite la misma API de plugins que Rollup; es un bundler especializado en producir bundles optimizados y pequeños mediante tree-shaking agresivo y code-splitting inteligente (Tema 2), aceptando un tiempo de procesamiento mayor que el servidor de desarrollo a cambio de un resultado final más pequeño y eficiente para servir a usuarios reales, una decisión de diseño razonable dado que el build de producción se ejecuta una vez por despliegue, mientras que el servidor de desarrollo se reinicia y recarga constantemente durante la sesión de trabajo diaria de un desarrollador.
 
 Inspeccionar el resultado de `npm run build` —abriendo los archivos generados en la carpeta de salida— revela directamente los efectos de la minificación (eliminación de espacios y renombrado de variables para reducir tamaño) y el hashing de nombres de archivo (incluir un hash del contenido en el nombre del archivo, como `main.a3f8c2.js`, permitiendo cachear agresivamente ese archivo en el navegador del usuario mientras su contenido no cambie, e invalidando automáticamente la caché con un nombre distinto en cuanto el contenido sí cambia en un despliegue posterior).
 
-**Analogía:** el servidor de desarrollo de Vite es como un restaurante que prepara cada plato individual bajo demanda, exactamente cuando el cliente lo pide, permitiendo empezar a servir casi instantáneamente sin preparar el menú completo de antemano; el build de producción con Rollup es como preparar con antelación un banquete completo cuidadosamente optimizado para servir eficientemente a muchos comensales simultáneos, aceptando más tiempo de preparación previa a cambio de una entrega final más eficiente.
+**Analogía:** el servidor de desarrollo de Vite es como un restaurante que prepara cada plato individual bajo demanda, exactamente cuando el cliente lo pide, permitiendo empezar a servir casi instantáneamente sin preparar el menú completo de antemano; el build de producción con Rolldown es como preparar con antelación un banquete completo cuidadosamente optimizado para servir eficientemente a muchos comensales simultáneos, aceptando más tiempo de preparación previa a cambio de una entrega final más eficiente.
 
-**¿Por qué es importante?** Entender esta diferencia de estrategia entre desarrollo (ESM nativo sin empaquetar, esbuild bajo demanda) y producción (Rollup, tree-shaking y code-splitting completos) explica por qué el comportamiento y el rendimiento observado durante el desarrollo puede diferir del comportamiento en producción, y por qué siempre conviene probar el build de producción real antes de desplegar.
+**¿Por qué es importante?** Entender esta diferencia de estrategia entre desarrollo (ESM nativo sin empaquetar, Oxc bajo demanda) y producción (Rolldown, tree-shaking y code-splitting completos) explica por qué el comportamiento y el rendimiento observado durante el desarrollo puede diferir del comportamiento en producción, y por qué siempre conviene probar el build de producción real antes de desplegar.
 
 **Diagrama:**
 
 ```mermaid
 flowchart LR
-    DEV["npm run dev"] --> NATIVE["ESM nativo + transformaciones esbuild"]
-    BUILD["npm run build"] --> ROLLUP["Rollup"] --> DIST["dist: chunks, hash y minificación"]
+    DEV["npm run dev"] --> NATIVE["ESM nativo + transformaciones Oxc"]
+    BUILD["npm run build"] --> ROLLDOWN["Rolldown"] --> DIST["dist: chunks, hash y minificación"]
 ```
 
 #### Paso 4 · Demostración guiada desde cero
@@ -289,7 +291,7 @@ Desde una carpeta vacía crea `ejemplo-vite`:
 mkdir ejemplo-vite
 cd ejemplo-vite
 npm init -y
-npm install -D vite
+npm install -D vite@8
 mkdir src
 ```
 
@@ -358,9 +360,9 @@ Mide cuánto tarda el arranque de desarrollo y cuánto ocupa `dist/assets`. Camb
 
 Ya puedes distinguir el servidor ágil de desarrollo del artefacto optimizado de producción. El siguiente tema formaliza formato de módulos, API pública y comandos repetibles en `package.json`.
 
-**Errores comunes:** ejecutar Vite con una versión de Node incompatible; editar archivos dentro de `dist`; desplegar el servidor de desarrollo; ignorar errores del build porque desarrollo funciona; asumir que esbuild produce el bundle final de Vite.
+**Errores comunes:** ejecutar Vite con una versión de Node incompatible; editar archivos dentro de `dist`; desplegar el servidor de desarrollo; ignorar errores del build porque desarrollo funciona; copiar configuración de `esbuild` o `build.rollupOptions` de un tutorial de Vite 7 sin revisar su equivalente en Vite 8.
 
-**Fuentes oficiales:** [Vite — Getting Started](https://vite.dev/guide/) y [Vite — Why Vite](https://vite.dev/guide/why.html).
+**Fuentes oficiales:** [Vite — Getting Started](https://vite.dev/guide/), [Vite — Why Vite](https://vite.dev/guide/why.html) y [Anuncio de Vite 8](https://vite.dev/blog/announcing-vite8).
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Arranca el widget con Vite y genera su build. Prueba el resultado servido como archivos estáticos, verificando rutas de recursos cuando se integra bajo un subdirectorio.
 
@@ -589,7 +591,7 @@ El equipo del proyecto propone migrar porque otra herramienta “es más rápida
 
 Webpack fue, durante buena parte de la década pasada, el bundler dominante del ecosistema JavaScript, con un modelo de configuración extremadamente flexible y potente (capaz de manejar prácticamente cualquier tipo de asset mediante "loaders" configurables), a costa de una configuración inicial considerablemente más compleja y verbosa que las alternativas más modernas como Vite. Webpack sigue siendo ampliamente usado en proyectos existentes de gran escala y en algunos frameworks específicos que lo integran internamente, aunque para proyectos nuevos, Vite (con Rollup para producción) ha ganado adopción significativa precisamente por su configuración considerablemente más simple y su servidor de desarrollo más rápido.
 
-Rollup, el bundler que Vite usa internamente para producción, está optimizado específicamente para producir bundles pequeños mediante tree-shaking de alta calidad, y es particularmente popular como herramienta de build para bibliotecas (en contraste con aplicaciones completas), donde producir un output limpio, pequeño y bien tree-shaken es la prioridad principal por encima de otras capacidades más orientadas a aplicaciones, como el hot module replacement durante desarrollo.
+Rollup, el bundler que Vite usó para producción hasta la versión 7 (Vite 8 lo sustituyó por Rolldown, que conserva su API de plugins), está optimizado específicamente para producir bundles pequeños mediante tree-shaking de alta calidad, y es particularmente popular como herramienta de build para bibliotecas (en contraste con aplicaciones completas), donde producir un output limpio, pequeño y bien tree-shaken es la prioridad principal por encima de otras capacidades más orientadas a aplicaciones, como el hot module replacement durante desarrollo.
 
 Babel fue, durante años, la herramienta estándar para transformar sintaxis moderna de JavaScript (o JSX, o TypeScript) a una versión compatible con navegadores más antiguos que no soportaban esa sintaxis nativamente, mediante un sistema de plugins altamente configurable escrito en JavaScript puro. SWC (Speedy Web Compiler) y esbuild son alternativas más recientes que realizan transformaciones similares pero escritas en lenguajes compilados (Rust y Go respectivamente), ofreciendo mejoras de velocidad de un orden de magnitud frente a Babel para las transformaciones más comunes, siendo la razón técnica concreta detrás de la velocidad notablemente mayor de herramientas modernas como Vite (que usa esbuild) frente a configuraciones tradicionales basadas puramente en Babel y Webpack.
 
@@ -699,7 +701,7 @@ Ahora puedes distinguir bundling de transformación y defender una herramienta m
 
 #### Paso 1 · Objetivo y preparación
 
-Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 22 o superior. Crea la carpeta `academia-labs/javascript/esm-a-fondo`. Todos los archivos usan la extensión `.mjs`, así Node los trata como módulos ES sin tocar `package.json`.
+Vas a crear cinco archivos pequeños y ejecutarlos con Node.js 24 LTS. Crea la carpeta `academia-labs/javascript/esm-a-fondo`. Todos los archivos usan la extensión `.mjs`, así Node los trata como módulos ES sin tocar `package.json`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -855,7 +857,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** leer variables de u
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Node.js 18 o superior y una terminal. Crea la carpeta `academia-labs/javascript/cadena-suministro`. El ejemplo simula la publicación y la instalación sin descargar nada, así puedes alterar un paquete sin riesgo.
+Usa Node.js 24 LTS y una terminal. Crea la carpeta `academia-labs/javascript/cadena-suministro`. El ejemplo simula la publicación y la instalación sin descargar nada, así puedes alterar un paquete sin riesgo.
 
 #### Paso 2 · Contexto y caso real
 

@@ -2,13 +2,13 @@
 
 ## Aprende construyendo
 
-Cada tema comienza en una carpeta vacía y usa únicamente Node.js LTS y `curl`. Escribe manualmente los archivos indicados; no necesitas Express, código prefabricado de la academia ni archivos de otros temas.
+Cada tema comienza en una carpeta vacía y usa únicamente Node.js 24 LTS y `curl`. Escribe manualmente los archivos indicados; no necesitas Express, código prefabricado de la academia ni archivos de otros temas.
 
 ### Tema 1: El modelo request/response · Básico · 60 min
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS y terminal; no necesitas Express.
+**Prerrequisitos:** Node.js 24 LTS y terminal; no necesitas Express.
 
 **Al terminar podrás:** crear, arrancar y detener un servidor HTTP que responda JSON, elegir explícitamente estado y cabeceras y diagnosticar una ruta desconocida o un puerto ocupado.
 
@@ -94,7 +94,7 @@ En el **[Proyecto integrador: API nativa de tareas](#proyecto-3-api-http-nativa-
 
 #### Aprende
 
-**Prerrequisitos:** Node LTS, JSON básico y `curl`. Este proyecto no reutiliza el servidor anterior.
+**Prerrequisitos:** Node 24 LTS, JSON básico y `curl`. Este proyecto no reutiliza el servidor anterior.
 
 **Al terminar podrás:** implementar rutas `GET` y `POST` sin framework, leer un body JSON, devolver `201`, `400` y `404` de forma consistente y explicar los límites del estado en memoria.
 
@@ -203,7 +203,7 @@ En el **[Proyecto integrador: routing de tareas](#proyecto-3-api-http-nativa-de-
 
 #### Aprende
 
-**Prerrequisitos:** Node LTS, streams básicos y JSON. Comienza otro proyecto vacío.
+**Prerrequisitos:** Node 24 LTS, streams básicos y JSON. Comienza otro proyecto vacío.
 
 **Al terminar podrás:** leer un body JSON mediante iteración asíncrona, validar `Content-Type`, limitar bytes y traducir errores de cliente sin derribar el proceso.
 
@@ -313,7 +313,7 @@ En el **[Proyecto integrador: entrada acotada](#proyecto-3-api-http-nativa-de-ta
 
 #### Aprende
 
-**Prerrequisitos:** Node LTS y cabeceras HTTP básicas. Este ejemplo es independiente.
+**Prerrequisitos:** Node 24 LTS y cabeceras HTTP básicas. Este ejemplo es independiente.
 
 **Al terminar podrás:** elegir estados HTTP coherentes, servir JSON o texto según `Accept`, declarar `Content-Type` y `Vary`, y distinguir `406` de `404`.
 
@@ -510,7 +510,7 @@ Lleva el cursor al **[Proyecto integrador: listado acotado](#proyecto-3-api-http
 
 **Objetivo y preparación.**
 
-Usa una versión LTS con soporte de Node.js (22 o 24) y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
+Usa Node.js 24 LTS y `openssl`, que viene en macOS y Linux (en Windows, con Git Bash). Crea la carpeta `academia-labs/node/http2-tls`.
 
 **Contexto y caso real.**
 
@@ -650,7 +650,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** desacti
 
 **Objetivo y preparación.**
 
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
+Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
 
 **Contexto y caso real.**
 
@@ -770,6 +770,266 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** suponer
 **Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, documenta en un diagrama qué viaja por TCP (API, base de datos) y qué podría viajar por UDP (posiciones), y agrega a la guía de soporte la tabla de errores de red.
 
 **Fuente oficial:** [Node.js — net](https://nodejs.org/api/net.html) y [Node.js — dgram](https://nodejs.org/api/dgram.html) y [Node.js — dns](https://nodejs.org/api/dns.html).
+
+### Tema 8: Consumir APIs desde Node con `fetch`: timeouts, errores HTTP y reintentos · Intermedio · 40 min
+
+**Duración estimada:** 40 min (3 subtemas de 10–15 min).
+**¿Por qué es importante?** Hasta ahora tu servidor **responde**; en RutaFlow también **pregunta**: tarifas de una transportadora, geocodificación, pagos. Un servicio externo que tarda o falla no debe colgar tu API. Node 24 trae `fetch` global (implementado con undici), así que el cliente HTTP no requiere dependencias; lo que sí requiere es decidir cuánto esperar, qué contar como error y cuándo reintentar.
+
+**Prerrequisitos:** Temas 1, 2 y 4 de este módulo (servidor con `node:http` y códigos de estado), JS Módulo 6 Temas 3 y 4 (`fetch`, `AbortController` y reintentos en el navegador) y JS Módulo 1 Tema 7 (`Error` con `cause`). Node 24 LTS. Todo ocurre en `localhost`.
+
+```bash
+mkdir -p academia-labs/node/cliente-fetch && cd academia-labs/node/cliente-fetch
+npm init -y
+npm pkg set type=module
+```
+
+Crea `servidor-tarifas.js`, un proveedor simulado con una ruta normal, una lenta (3 s) y una inestable (falla dos de cada tres llamadas):
+
+```javascript
+import { createServer } from 'node:http';
+
+let llamadasInestable = 0;
+
+const servidor = createServer((req, res) => {
+  const url = new URL(req.url, 'http://localhost');
+
+  if (url.pathname === '/tarifas/lenta') {
+    setTimeout(() => res.end(JSON.stringify({ ciudad: 'Cali', tarifa: 9000 })), 3000);
+    return;
+  }
+  if (url.pathname === '/tarifas/inestable' && ++llamadasInestable % 3 !== 0) {
+    res.writeHead(503, { 'content-type': 'application/json', 'retry-after': '0' });
+    res.end(JSON.stringify({ error: 'mantenimiento' }));
+    return;
+  }
+  if (url.pathname.startsWith('/tarifas/')) {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ ciudad: 'Bogotá', tarifa: 5000 }));
+    return;
+  }
+  res.writeHead(404, { 'content-type': 'application/json' });
+  res.end(JSON.stringify({ error: 'no existe' }));
+});
+
+servidor.listen(4010, () => console.log('tarifas en http://localhost:4010'));
+```
+
+Arráncalo en una terminal aparte y déjalo abierto durante el tema:
+
+```bash
+node servidor-tarifas.js
+```
+
+#### Subtema 8.1: Convierte cada fallo en un error con contexto · 15 min
+
+**1. Contexto**
+`fetch` solo rechaza la promesa cuando **no hay respuesta** (red caída, DNS, cancelación). Un `404` o un `503` llegan como respuesta «exitosa» con `ok: false`. Si no lo revisas, tratarás `{ error: 'no existe' }` como si fuera una tarifa.
+
+**2. Hazlo tú**
+Crea `cliente.js`:
+
+```javascript
+const BASE = 'http://localhost:4010';
+
+export class TarifaError extends Error {
+  constructor(message, { status, cause } = {}) {
+    super(message, { cause });
+    this.name = 'TarifaError';
+    this.status = status;
+  }
+}
+
+export async function obtenerTarifa(ruta, { timeoutMs = 1000 } = {}) {
+  let respuesta;
+  try {
+    respuesta = await fetch(`${BASE}${ruta}`, {
+      headers: { accept: 'application/json' },
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (error) {
+    throw new TarifaError(`sin respuesta de ${ruta}`, { cause: error });
+  }
+  if (!respuesta.ok) {
+    throw new TarifaError(`HTTP ${respuesta.status} en ${ruta}`, { status: respuesta.status });
+  }
+  return respuesta.json();
+}
+```
+
+Y `probar-cliente.js`:
+
+```javascript
+import { obtenerTarifa } from './cliente.js';
+
+for (const ruta of ['/tarifas/bogota', '/otra', '/tarifas/lenta']) {
+  try {
+    console.log(ruta, '→', await obtenerTarifa(ruta));
+  } catch (error) {
+    console.log(ruta, '→', `${error.name}: ${error.message}`, error.cause ? `(causa: ${error.cause.name})` : '');
+  }
+}
+```
+
+```bash
+node probar-cliente.js
+```
+
+**Resultado esperado** (la tercera línea tarda un segundo):
+
+```text
+/tarifas/bogota → { ciudad: 'Bogotá', tarifa: 5000 }
+/otra → TarifaError: HTTP 404 en /otra 
+/tarifas/lenta → TarifaError: sin respuesta de /tarifas/lenta (causa: TimeoutError)
+```
+
+**Fallo deliberado:** borra el bloque `if (!respuesta.ok) { ... }`. **Resultado:** `/otra → { error: 'no existe' }`: el cuerpo del 404 pasa como dato válido. **Diagnóstico:** revisa siempre `respuesta.ok` (o `respuesta.status`) antes de leer el cuerpo; restaura el bloque. Prueba también a detener el servidor y ejecutar de nuevo: las tres líneas dicen `sin respuesta` con `causa: TypeError` (el `fetch failed` de undici, cuyo propio `cause` contiene `ECONNREFUSED`).
+
+**3. Entiende**
+Hay dos familias de fallo: **sin respuesta** (la promesa de `fetch` rechaza) y **respuesta de error** (`ok` es `false` para estados fuera de 200–299). `TarifaError` las unifica para quien llama, guarda el `status` cuando existe y conserva el error original en `cause`. **Límite:** `respuesta.json()` también puede fallar si el proveedor devuelve HTML; en producción valida el cuerpo igual que validas un body entrante (Tema 3).
+
+**4. Cierra**
+Guarda la salida. Tienes un cliente que nunca confunde un error con un dato.
+
+#### Subtema 8.2: Pon un límite de tiempo con `AbortSignal.timeout` · 10 min
+
+**1. Contexto**
+Sin límite, una llamada a `/tarifas/lenta` retiene la petición de tu propio cliente todo lo que el proveedor quiera. Si el proveedor se cuelga, tu API se cuelga con él.
+
+**2. Hazlo tú**
+En `probar-cliente.js`, cambia la llamada por `obtenerTarifa(ruta, { timeoutMs: 5000 })` y ejecuta de nuevo:
+
+```bash
+node probar-cliente.js
+```
+
+**Resultado esperado:** la tercera línea tarda unos 3 segundos y ahora es `/tarifas/lenta → { ciudad: 'Cali', tarifa: 9000 }`. Vuelve a dejar el valor por defecto (1000 ms).
+
+**Fallo deliberado:** quita la línea `signal: AbortSignal.timeout(timeoutMs),` de `cliente.js` y cambia en el servidor el retraso de `3000` a `60000`. **Resultado:** `probar-cliente.js` se queda esperando un minuto en la tercera ruta. **Diagnóstico:** `fetch` no tiene un límite corto por defecto; cada llamada saliente necesita su propio `signal`. Restaura ambos valores.
+
+**3. Entiende**
+`AbortSignal.timeout(ms)` crea una señal que se cancela sola pasado el tiempo; `fetch` rechaza entonces con un `DOMException` de nombre `TimeoutError` (si cancelas tú con un `AbortController`, el nombre es `AbortError`). El tiempo límite es una decisión de negocio: el que elijas debe ser menor que el que tu propio cliente está dispuesto a esperarte. **Límite:** cancelar del lado del cliente no detiene el trabajo en el proveedor; la petición puede haberse procesado igual.
+
+**4. Cierra**
+Anota qué tiempo límite elegirías para tarifas y por qué.
+
+#### Subtema 8.3: Reintenta solo lo que tiene sentido reintentar · 15 min
+
+**1. Contexto**
+Un `503` («vuelve en un momento») o una red que se cortó suelen resolverse solos. Un `404` no: reintentarlo solo multiplica la carga sobre un proveedor que ya respondió con claridad.
+
+**2. Hazlo tú**
+Crea `reintentos.js`:
+
+```javascript
+import { setTimeout as esperar } from 'node:timers/promises';
+import { obtenerTarifa } from './cliente.js';
+
+const REINTENTABLES = new Set([429, 502, 503, 504]);
+
+function esReintentable(error) {
+  return error.status === undefined || REINTENTABLES.has(error.status);
+}
+
+export async function conReintentos(operacion, { intentos = 4, baseMs = 100 } = {}) {
+  for (let intento = 1; ; intento++) {
+    try {
+      return await operacion();
+    } catch (error) {
+      if (intento >= intentos || !esReintentable(error)) throw error;
+      const espera = baseMs * 2 ** (intento - 1) + Math.floor(Math.random() * baseMs);
+      console.log(`  intento ${intento} falló (${error.message}); espero ${espera} ms`);
+      await esperar(espera);
+    }
+  }
+}
+
+for (const ruta of ['/tarifas/inestable', '/otra']) {
+  try {
+    console.log(ruta, '→', await conReintentos(() => obtenerTarifa(ruta)));
+  } catch (error) {
+    console.log(ruta, '→ falló definitivamente:', error.message);
+  }
+}
+```
+
+```bash
+node reintentos.js
+```
+
+**Resultado esperado** (los milisegundos varían por el componente aleatorio):
+
+```text
+  intento 1 falló (HTTP 503 en /tarifas/inestable); espero 169 ms
+  intento 2 falló (HTTP 503 en /tarifas/inestable); espero 253 ms
+/tarifas/inestable → { ciudad: 'Bogotá', tarifa: 5000 }
+/otra → falló definitivamente: HTTP 404 en /otra
+```
+
+**Fallo deliberado:** cambia la condición por `if (intento >= intentos) throw error;` (sin `esReintentable`). **Resultado:** aparecen tres líneas `intento N falló (HTTP 404 en /otra)` antes del fallo definitivo. **Diagnóstico:** reintentaste un error permanente; el 404 no cambiará. Restaura la comprobación.
+
+**3. Entiende**
+Se reintenta ante **ausencia de respuesta** (sin `status`) y ante estados transitorios (429, 502, 503, 504). La espera crece de forma **exponencial** (100, 200, 400 ms…) y suma un componente aleatorio (*jitter*) para que muchos clientes no reintenten a la vez. `setTimeout` de `node:timers/promises` devuelve una promesa, así que se puede esperar con `await`. **Límite:** reintentar es seguro solo si la operación es **idempotente**: un `GET` de tarifa sí; un `POST` que cobra no, salvo que el proveedor acepte una clave de idempotencia (Módulo 13).
+
+**4. Cierra**
+Guarda la salida. El cliente de tarifas ya tiene tiempo límite, errores con contexto y reintentos acotados.
+
+**Hito del tema:**
+
+- [ ] `probar-cliente.js` distingue respuesta correcta, 404 y timeout.
+- [ ] Reproduje un `fetch` sin `signal` que espera indefinidamente y lo corregí.
+- [ ] `reintentos.js` recupera `/tarifas/inestable` y no reintenta `/otra`.
+- [ ] Expliqué por qué no reintentaría un `POST` de cobro sin clave de idempotencia.
+
+**Ejercicio:** el proveedor envía la cabecera `retry-after` (en segundos) con el 503. Modifica `TarifaError` y `conReintentos` para que, si la cabecera existe, se espere `retry-after × 1000` ms en lugar del backoff calculado (con un máximo de 2000 ms). Antes de abrir la solución, escribe cuántos ms esperará con la cabecera `retry-after: 0` del servidor de prueba.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+En `cliente.js`, guarda la cabecera al construir el error:
+
+```javascript
+export class TarifaError extends Error {
+  constructor(message, { status, cause, retryAfter } = {}) {
+    super(message, { cause });
+    this.name = 'TarifaError';
+    this.status = status;
+    this.retryAfter = retryAfter;
+  }
+}
+
+// dentro de obtenerTarifa:
+if (!respuesta.ok) {
+  const cabecera = respuesta.headers.get('retry-after');
+  throw new TarifaError(`HTTP ${respuesta.status} en ${ruta}`, {
+    status: respuesta.status,
+    retryAfter: cabecera === null ? undefined : Number(cabecera),
+  });
+}
+```
+
+En `reintentos.js`, calcula la espera así:
+
+```javascript
+const espera = Number.isFinite(error.retryAfter)
+  ? Math.min(error.retryAfter * 1000, 2000)
+  : baseMs * 2 ** (intento - 1) + Math.floor(Math.random() * baseMs);
+```
+
+Salida con el servidor de prueba (`retry-after: 0`):
+
+```text
+  intento 1 falló (HTTP 503 en /tarifas/inestable); espero 0 ms
+  intento 2 falló (HTTP 503 en /tarifas/inestable); espero 0 ms
+/tarifas/inestable → { ciudad: 'Bogotá', tarifa: 5000 }
+/otra → falló definitivamente: HTTP 404 en /otra
+```
+
+El tope de 2000 ms protege tu API de un proveedor que pida esperar diez minutos; en ese caso es mejor fallar rápido y avisar.
+
+</details>
+
+**Fuentes oficiales:** [Node.js — `fetch`](https://nodejs.org/api/globals.html#fetch), [MDN — `AbortSignal.timeout()`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static), [Node.js — `timers/promises`](https://nodejs.org/api/timers.html#timers-promises-api) y [MDN — `Retry-After`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After).
 
 ## Laboratorio práctico
 

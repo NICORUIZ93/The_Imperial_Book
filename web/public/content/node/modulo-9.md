@@ -4,7 +4,7 @@
 
 ### Tema 1: Logging estructurado · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, terminal y nociones básicas de JavaScript. No necesitas archivos de otros temas.
+**Prerrequisito:** Node.js 24 LTS, terminal y nociones básicas de JavaScript. No necesitas archivos de otros temas.
 
 **Al terminar podrás:** emitir eventos JSON filtrables por nivel y comprobar que credenciales y campos no autorizados no llegan a la salida.
 
@@ -126,7 +126,7 @@ LOG_LEVEL=error npm start
 
 ### Tema 2: Correlation ID por request · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, HTTP básico, `curl` y el tema anterior como conocimiento conceptual; este ejercicio vuelve a empezar en una carpeta vacía.
+**Prerrequisito:** Node.js 24 LTS, HTTP básico, `curl` y el tema anterior como conocimiento conceptual; este ejercicio vuelve a empezar en una carpeta vacía.
 
 **Al terminar podrás:** propagar un `requestId` validado por eventos asíncronos y por la cabecera de respuesta, sin tratarlo como autenticación.
 
@@ -248,7 +248,7 @@ curl -s -H "x-request-id: $(node -e 'process.stdout.write("A".repeat(5000))')" h
 
 ### Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min
 
-**Prerrequisito:** Node.js LTS moderno, procesos, señales de terminal y HTTP básico. El servidor se crea desde cero y no depende de ejemplos anteriores.
+**Prerrequisito:** Node.js 24 LTS, procesos, señales de terminal y HTTP básico. El servidor se crea desde cero y no depende de ejemplos anteriores.
 
 **Al terminar podrás:** detener el proceso tras un fallo fatal y completar o interrumpir por plazo las solicitudes activas al recibir `SIGTERM`, cerrando también los recursos.
 
@@ -410,7 +410,7 @@ flowchart TD
 
 ### Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min
 
-**Prerrequisito:** Node.js LTS, JSON, HTTP y lectura básica de contratos. Crearás artefactos nuevos, no un servidor reutilizado.
+**Prerrequisito:** Node.js 24 LTS, JSON, HTTP y lectura básica de contratos. Crearás artefactos nuevos, no un servidor reutilizado.
 
 **Al terminar podrás:** representar una misma consulta en REST, GraphQL y Protocol Buffers, validar una consulta GraphQL real y justificar la elección sin confundir un endpoint de eco con GraphQL.
 
@@ -596,7 +596,7 @@ gRPC: RPC presente; compilación y servidor no ejecutados
 
 ### Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min
 
-**Prerrequisito:** Node.js LTS, Express básico, HTTP, métricas y promesas. El proyecto incluye sus propias dependencias y no importa archivos de otros temas.
+**Prerrequisito:** Node.js 24 LTS, Express básico, HTTP, métricas y promesas. El proyecto incluye sus propias dependencias y no importa archivos de otros temas.
 
 **Al terminar podrás:** exponer métricas con etiquetas acotadas y producir spans locales con OpenTelemetry, cargando la instrumentación antes de Express y cerrando cada span en `finally`.
 
@@ -798,7 +798,7 @@ curl -s http://127.0.0.1:3000/metrics
 
 **Objetivo y preparación.**
 
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
+Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
 
 **Contexto y caso real.**
 
@@ -928,7 +928,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** pasar e
 
 **Objetivo:** construir desde cero una API local que consulte entregas en memoria y reúna logging seguro, correlation ID, contratos, métricas, spans y apagado ordenado. No uses ni copies archivos de los cinco proyectos anteriores.
 
-**Prerrequisito:** haber comprendido los conceptos del módulo y disponer de Node.js LTS y `curl`.
+**Prerrequisito:** haber comprendido los conceptos del módulo y disponer de Node.js 24 LTS y `curl`.
 
 Crea la estructura vacía:
 

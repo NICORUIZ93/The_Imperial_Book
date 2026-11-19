@@ -102,7 +102,7 @@ La elección entre `Map` y un objeto plano para almacenar pares clave-valor depe
 
 `Set` y `Map` no reemplazan a `Array` y `Object` de forma universal; cada estructura tiene su lugar según la naturaleza del problema: `Array` para colecciones ordenadas donde el índice numérico importa y puede haber duplicados, `Object` para registros con forma fija y conocida, `Set` para colecciones donde la unicidad es la propiedad central, y `Map` para diccionarios verdaderamente dinámicos donde las claves no se conocen de antemano.
 
-Desde ECMAScript 2025 (disponible en Node.js 22 o superior), `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
+Desde ECMAScript 2025 (disponible en Node.js 24 LTS, la versión de referencia del curso), `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
 
 ```javascript
 const enRuta = new Set(['RF-101', 'RF-102', 'RF-103']);
@@ -388,6 +388,170 @@ Completaste colecciones funcionales conservando versiones auditables. El siguien
 ---
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Ordena una copia del historial para mostrar lo más reciente primero. Verifica que otra vista conserva el orden original recibido de la API y que la operación no altera su arreglo compartido.
+
+### Tema 6: Expresiones regulares básicas: validar, extraer y reemplazar
+
+**Duración estimada:** 35 min (3 subtemas de 10–15 min).
+**¿Por qué es importante?** Validar el formato de una guía, sacar los pesos de una nota escrita a mano o enmascarar un número son tareas de texto que con `slice` e `indexOf` se vuelven frágiles. Una expresión regular describe el **patrón** una sola vez. Este tema cubre lo básico; Unicode, `lookbehind` y el riesgo de ReDoS quedan para el Módulo 14.
+
+**Prerrequisitos:** Módulo 0 Tema 6 (métodos de string), Tema 1 de este módulo (`map`, `reduce`) y Módulo 1 Tema 7 (ya viste `/^[A-Z]{2}-\d{6}$/` sin explicarla). Node 24 LTS.
+
+```bash
+mkdir -p academia-labs/javascript/regex-basicas && cd academia-labs/javascript/regex-basicas
+```
+
+#### Subtema 6.1: Valida un formato completo con `test`, anclas y cuantificadores · 10 min
+
+**1. Contexto**
+Una guía de RutaFlow son dos letras mayúsculas, un guion y seis dígitos. Todo lo demás debe rechazarse, incluido un espacio al final.
+
+**2. Hazlo tú**
+Crea `validar.js`:
+
+```javascript
+const guiaValida = /^[A-Z]{2}-\d{6}$/;
+
+const candidatas = ['BO-004512', 'bo-004512', 'BO-4512', 'XBO-004512', 'BO-004512 '];
+for (const guia of candidatas) {
+  console.log(JSON.stringify(guia).padEnd(14), guiaValida.test(guia));
+}
+
+const sinMayusculas = /^[A-Z]{2}-\d{6}$/i;
+console.log('con flag i:', sinMayusculas.test('bo-004512'));
+```
+
+```bash
+node validar.js
+```
+
+**Resultado esperado:**
+
+```text
+"BO-004512"    true
+"bo-004512"    false
+"BO-4512"      false
+"XBO-004512"   false
+"BO-004512 "   false
+con flag i: true
+```
+
+**Fallo deliberado:** quita las anclas: `/[A-Z]{2}-\d{6}/`. **Resultado:** `"XBO-004512"` y `"BO-004512 "` pasan a `true`. **Diagnóstico:** sin `^` y `$`, `test` busca el patrón **en cualquier parte** del texto; para validar un valor completo, ancla el inicio y el final.
+
+**3. Entiende**
+Piezas de la expresión: `[A-Z]` es una **clase** (una letra de la A a la Z), `\d` un dígito, `{2}` y `{6}` **cuantificadores** exactos (`+` = uno o más, `*` = cero o más, `?` = opcional), `-` fuera de una clase es un carácter literal, `^` y `$` son **anclas** de inicio y fin. Las **banderas** van tras la última barra: `i` ignora mayúsculas, `g` busca todas las coincidencias. **Límite:** una regex valida **forma**, no significado: `ZZ-000000` pasa aunque no exista esa ciudad.
+
+**4. Cierra**
+Guarda la salida y anota qué candidata rechaza cada parte del patrón.
+
+#### Subtema 6.2: Extrae datos con grupos con nombre y `matchAll` · 15 min
+
+**1. Contexto**
+Un despachador deja notas como «Entregas BO-004512 (3.5 kg) y ME-000981 (12 kg)». Quieres la lista de guías y la suma de kilos sin recorrer el texto a mano.
+
+**2. Hazlo tú**
+Crea `extraer.js`:
+
+```javascript
+const nota = 'Entregas BO-004512 (3.5 kg) y ME-000981 (12 kg); revisar CA-77.';
+
+const guia = /(?<ciudad>[A-Z]{2})-(?<numero>\d{6})/;
+const primera = nota.match(guia);
+console.log(primera[0], primera.groups.ciudad, primera.groups.numero, primera.index);
+
+const todas = [...nota.matchAll(/(?<ciudad>[A-Z]{2})-(?<numero>\d{6})/g)].map(m => m.groups.ciudad + m.groups.numero);
+console.log(todas);
+
+const pesos = [...nota.matchAll(/(\d+(?:\.\d+)?) kg/g)].map(m => Number(m[1]));
+console.log(pesos, pesos.reduce((t, p) => t + p, 0));
+```
+
+```bash
+node extraer.js
+```
+
+**Resultado esperado:**
+
+```text
+BO-004512 BO 004512 9
+[ 'BO004512', 'ME000981' ]
+[ 3.5, 12 ] 15.5
+```
+
+**Fallo deliberado:** quita la bandera `g` del primer `matchAll`. **Error esperado:** `TypeError: String.prototype.matchAll called with a non-global RegExp argument`. **Diagnóstico:** `matchAll` recorre **todas** las coincidencias y exige `g` para que la intención sea explícita; vuelve a ponerla.
+
+**3. Entiende**
+`match` sin `g` devuelve la **primera** coincidencia: `[0]` es el texto completo, `.index` su posición y `.groups` los **grupos con nombre** `(?<nombre>…)`. `matchAll` con `g` devuelve un iterador de coincidencias; con `[...]` lo conviertes en array y sigues con `map`/`reduce` del Tema 1. `(?:…)` agrupa **sin capturar** (aquí, la parte decimal opcional) y `\.` escapa el punto, que sin barra significa «cualquier carácter». `CA-77` no aparece porque no tiene seis dígitos. **Límite:** si el texto viene de alguien externo y armas la regex con ese texto, debes escapar sus caracteres especiales (Módulo 14 Tema «Expresiones regulares avanzadas»).
+
+**4. Cierra**
+Guarda la salida. El proyecto ya extrae guías y kilos de texto libre.
+
+#### Subtema 6.3: Reemplaza y divide con patrones · 10 min
+
+**1. Contexto**
+En el seguimiento público no se debe mostrar el número completo de la guía, y las ciudades de una ruta llegan separadas a veces por `;` y a veces por `,` con espacios irregulares.
+
+**2. Hazlo tú**
+Agrega al final de `extraer.js`:
+
+```javascript
+console.log(nota.replace(/\d{6}/g, '******'));
+console.log(' Bogotá; Cali ,Medellín ;Pasto '.trim().split(/\s*[;,]\s*/));
+console.log('BO-004512'.replace(/(?<c>[A-Z]{2})-(?<n>\d+)/, '$<n>/$<c>'));
+```
+
+```bash
+node extraer.js
+```
+
+**Resultado esperado** (debajo de las tres líneas anteriores):
+
+```text
+Entregas BO-****** (3.5 kg) y ME-****** (12 kg); revisar CA-77.
+[ 'Bogotá', 'Cali', 'Medellín', 'Pasto' ]
+004512/BO
+```
+
+**Fallo deliberado:** quita la `g` de `/\d{6}/g`. **Resultado:** solo se enmascara `BO-******`; `ME-000981` queda visible. **Diagnóstico:** `replace` con una regex sin `g` cambia solo la primera coincidencia; para todas usa `g` (o `replaceAll`, que exige `g` si recibe regex).
+
+**3. Entiende**
+`replace` acepta una regex y, en el texto de reemplazo, `$<nombre>` inserta un grupo con nombre. `split` con regex parte por cualquier separador que encaje: `\s*` absorbe espacios a ambos lados y `[;,]` acepta los dos separadores. **Límite:** una regex con `g` guarda estado en `lastIndex`; si reutilizas la misma con `test` dos veces seguidas, la segunda puede dar `false`. Para validar, usa regex **sin** `g`.
+
+**4. Cierra**
+Guarda la salida completa de `extraer.js`.
+
+**Hito del tema:**
+
+- [ ] `validar.js` rechaza las cuatro guías mal formadas.
+- [ ] Reproduje el falso positivo al quitar `^` y `$` y lo expliqué.
+- [ ] `extraer.js` suma 15.5 kg a partir del texto libre.
+- [ ] Expliqué la diferencia entre `match` sin `g` y `matchAll` con `g`.
+
+**Ejercicio:** escribe `telefonos.js` que, a partir de `'Llamar a 300 123 4567 o al 3011234567; fijo 601-555-1234'`, devuelva los celulares colombianos (10 dígitos que empiezan por `3`, con o sin espacios entre bloques 3-3-4) normalizados sin espacios. El fijo no debe aparecer. Antes de abrir la solución, escribe tu patrón y qué devolvería para `'3001234567'` pegado a otra cifra (`'93001234567'`).
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+```javascript
+const texto = 'Llamar a 300 123 4567 o al 3011234567; fijo 601-555-1234';
+const celular = /\b(3\d{2}) ?(\d{3}) ?(\d{4})\b/g;
+
+const celulares = [...texto.matchAll(celular)].map(m => m[1] + m[2] + m[3]);
+console.log(celulares);
+console.log([...'93001234567'.matchAll(celular)].length);
+```
+
+Salida:
+
+```text
+[ '3001234567', '3011234567' ]
+0
+```
+
+`\b` (límite de palabra) impide encontrar un celular dentro de una cifra más larga, por eso `'93001234567'` da 0 coincidencias. ` ?` hace opcional cada espacio. Si tu patrón también aceptaba el fijo, revisa que exiges el `3` inicial.
+
+</details>
+
+**Fuentes oficiales:** [MDN: Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), [MDN: Named capturing group](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group) y [MDN: `String.prototype.matchAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/matchAll).
 
 ## Construcción guiada del capítulo
 

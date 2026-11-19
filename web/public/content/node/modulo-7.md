@@ -4,7 +4,7 @@
 
 ### Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min
 
-**Prerrequisito:** Node LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
+**Prerrequisito:** Node 24 LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
 
 **Al terminar podrás:** escribir y ejecutar pruebas que comprueben el estado y el cuerpo de respuestas HTTP de una aplicación Express, incluida una validación fallida, sin mantener un servidor escuchando en un puerto.
 
@@ -134,7 +134,7 @@ En este mismo proyecto, añade una ruta `GET /tareas/:id` que devuelva `404` y `
 
 ### Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min
 
-**Prerrequisito:** Node LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
+**Prerrequisito:** Node 24 LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
 
 **Al terminar podrás:** ejecutar una prueba de integración que cree una tabla, inserte y consulte datos en PostgreSQL real, con una imagen fijada y cierre del cliente y del contenedor en `afterAll`.
 
@@ -279,7 +279,7 @@ flowchart LR
 
 ### Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min
 
-**Prerrequisito:** Node LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
+**Prerrequisito:** Node 24 LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
 
 **Al terminar podrás:** probar el uso del contrato de un proveedor sin red, incluir respuestas de éxito y fallo, y definir un workflow de GitHub Actions que instale con `npm ci` y ejecute la suite.
 
@@ -384,13 +384,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm test
 ```
 
 El archivo local es solo la definición. Para verificar CI, crea o utiliza un repositorio remoto propio, envía esta rama y abre la ejecución en **Actions**. Comprueba allí los registros de `npm ci` y `npm test`; no presentes una lectura local del YAML como una ejecución remota.
+
+##### Ampliación: construir una vez y promover (antes Tema 6 del Módulo 14)
+
+Cuando el pipeline además publica una imagen, constrúyela **una sola vez** por commit, etiquétala con el SHA y promuévela a cada ambiente **re-etiquetando** ese mismo artefacto. Si cada ambiente vuelve a ejecutar `docker build`, una dependencia transitiva publicada entre medias puede producir una imagen distinta de la que se probó. Esquema de los jobs (el registro y el login dependen de tu proveedor):
+
+```yaml
+  imagen:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t registro.example/entregas:${{ github.sha }} .
+      - run: docker push registro.example/entregas:${{ github.sha }}
+  promover-staging:
+    needs: imagen
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker buildx imagetools create -t registro.example/entregas:staging registro.example/entregas:${{ github.sha }}
+      - run: docker buildx imagetools inspect registro.example/entregas:staging --format '{{json .Manifest.Digest}}'
+```
+
+`imagetools create` crea la nueva etiqueta en el registro apuntando al mismo manifiesto, sin descargar ni reconstruir. **Comprobación:** el digest que imprime `inspect` para `staging` debe ser idéntico al de la etiqueta del SHA. **Fallo deliberado:** sustituye el paso de `promover-staging` por otro `docker build`; aunque el código no cambie, en un runner nuevo y sin caché compara los dos digests: ya no tienes ninguna garantía de que coincidan (los metadatos de la imagen incluyen fechas de creación y, con rangos `^`, puede entrar una dependencia nueva). Restaura la promoción por etiqueta.
 
 ##### Práctica guiada
 
@@ -423,13 +445,13 @@ flowchart LR
 
 **Cuándo usar un mock:** sustituye un proveedor lento, costoso o inaccesible para fijar respuestas y verificar cómo lo usa tu código. No simules la función bajo prueba ni tomes el fake como prueba de que el proveedor real conserva su contrato; para eso necesitas una comprobación separada contra el contrato o un entorno de integración controlado.
 
-**Fuentes oficiales:** [Vitest: mocking](https://vitest.dev/guide/mocking), [GitHub Actions con Node.js](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs) y [Martin Fowler: Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html).
+**Fuentes oficiales:** [Vitest: mocking](https://vitest.dev/guide/mocking), [GitHub Actions con Node.js](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs), [Docker — `buildx imagetools create`](https://docs.docker.com/reference/cli/docker/buildx/imagetools/create/) y [Martin Fowler: Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html).
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** sustituye el notificador externo por un doble o servidor controlado en CI. Prueba timeout y respuesta inválida, y comprueba que el comportamiento propio no dependa de la disponibilidad del tercero.
 
 ### Tema 4: Alternativas de testing y debugging · Intermedio · 45 min
 
-**Prerrequisito:** Node LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
+**Prerrequisito:** Node 24 LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
 
 **Al terminar podrás:** clasificar riesgos entre pruebas unitarias, de integración y E2E, y usar `--inspect-brk` con un breakpoint para inspeccionar un fallo que después quedará cubierto por una prueba automatizada.
 
@@ -548,7 +570,7 @@ Clasifica estos tres riesgos de una tienda y justifica costo, velocidad y confia
 
 ### Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min
 
-**Prerrequisito:** Node LTS y JavaScript con módulos ES.
+**Prerrequisito:** Node 24 LTS y JavaScript con módulos ES.
 
 **Al terminar podrás:** ejecutar pruebas con `node:test` y `node:assert/strict`, sin dependencias de testing, y comprobar en el resumen que el número de pruebas descubiertas sea mayor que cero.
 
@@ -687,7 +709,7 @@ flowchart LR
 
 ### Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min
 
-**Prerrequisito:** Node LTS, aserciones básicas y capacidad para ejecutar `node --test`.
+**Prerrequisito:** Node 24 LTS, aserciones básicas y capacidad para ejecutar `node --test`.
 
 **Al terminar podrás:** desarrollar una regla de tarifas mediante ciclos observables rojo → verde → refactor, incluyendo el borde de diez envíos y validaciones de entrada, sin borrar trabajo para reiniciar el ejercicio.
 
@@ -868,7 +890,7 @@ npm test
 
 **Objetivo y preparación.**
 
-Usa Node.js 22 o superior (el umbral `--test-coverage-branches` llegó en Node 22.8). Crea la carpeta `academia-labs/node/cobertura`.
+Usa Node.js 24 LTS (el umbral `--test-coverage-branches` existe desde Node 22.8). Crea la carpeta `academia-labs/node/cobertura`.
 
 **Contexto y caso real.**
 
@@ -979,7 +1001,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** mirar s
 
 **Al terminar podrás:** construir desde cero una API pequeña con pruebas HTTP y PostgreSQL real, aislar un notificador externo, ejecutar además pruebas nativas y definir CI con evidencia de descubrimiento.
 
-**Prerrequisito:** Node 22 o una versión LTS compatible, npm, Git y Docker en ejecución. No abras ni copies archivos de los proyectos anteriores.
+**Prerrequisito:** Node 24 LTS, npm, Git y Docker en ejecución. No abras ni copies archivos de los proyectos anteriores.
 
 ### Proyecto y configuración
 
@@ -1341,7 +1363,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run test:native

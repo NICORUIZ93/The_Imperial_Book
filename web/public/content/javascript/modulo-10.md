@@ -229,20 +229,35 @@ Identificar correctamente qué trabajo es apropiado para mover a un Worker —c�
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-web-worker`, ejecuta `npm init -y`, crea `src` y después `src/optimizar.worker.js`:
+Desde una carpeta vacía crea `ejemplo-web-worker` con Vite 8 (el servidor de desarrollo del Módulo 7):
 
 ```bash
 mkdir ejemplo-web-worker
 cd ejemplo-web-worker
 npm init -y
+npm install -D vite@8
+npm pkg set scripts.dev=vite scripts.build="vite build"
 mkdir src
 ```
 
+Crea `src/optimizar-ruta.worker.js`. Además de ordenar, el worker **valida** lo que recibe: lo que cruza `postMessage` es una copia sin garantías, así que se comprueba igual que un JSON externo:
+
 ```js
+// El worker recibe una copia estructurada, valida su forma y nunca toca el DOM.
+function esSolicitudValida(data) {
+  return typeof data === "object" && data !== null &&
+    Number.isInteger(data.solicitudId) &&
+    Array.isArray(data.distancias) &&
+    data.distancias.every((d) => typeof d === "number" && Number.isFinite(d));
+}
+
 self.onmessage = ({ data }) => {
-  // El worker recibe una copia estructurada y nunca toca el DOM.
+  if (!esSolicitudValida(data)) {
+    self.postMessage({ tipo: "error", solicitudId: data?.solicitudId, mensaje: "Solicitud inválida" });
+    return;
+  }
   const ordenadas = [...data.distancias].sort((a, b) => a - b);
-  self.postMessage({ solicitudId: data.solicitudId, ordenadas });
+  self.postMessage({ tipo: "ok", solicitudId: data.solicitudId, ordenadas });
 };
 ```
 
@@ -265,15 +280,57 @@ export function optimizarRuta(distancias, solicitudId) {
 }
 ```
 
-Invoca la función desde un botón, conserva otro botón que incremente un contador y ejecuta:
+Crea `src/main.js` con un botón que lanza el cálculo y otro que demuestra que la interfaz sigue respondiendo:
+
+```js
+import { optimizarRuta } from "./cliente-optimizacion.js";
+
+const salida = document.querySelector("#salida");
+const pulso = document.querySelector("#pulso");
+let clics = 0;
+let solicitud = 0;
+
+pulso.addEventListener("click", () => { pulso.textContent = `Comprobar UI: ${++clics}`; });
+
+document.querySelector("#ordenar").addEventListener("click", async () => {
+  const distancias = Array.from({ length: 2_000_000 }, () => Math.random() * 100);
+  salida.textContent = "Ordenando…";
+  const { resultado } = optimizarRuta(distancias, ++solicitud);
+  const respuesta = await resultado;
+  salida.textContent = respuesta.tipo === "ok"
+    ? `Solicitud ${respuesta.solicitudId}: ${respuesta.ordenadas.length} distancias, mínima ${respuesta.ordenadas[0].toFixed(3)}`
+    : respuesta.mensaje;
+});
+```
+
+Crea `index.html`:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head><meta charset="utf-8"><title>Worker de rutas</title></head>
+  <body>
+    <button id="ordenar">Ordenar 2 millones de distancias</button>
+    <button id="pulso">Comprobar UI: 0</button>
+    <p id="salida" role="status"></p>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+Ejecuta:
 
 ```bash
 npm run dev
 ```
 
-**Resultado esperado:** el contador sigue respondiendo mientras se ordena un lote grande; al finalizar se recibe el mismo `solicitudId` y distancias ascendentes.
+Abre la URL que imprime Vite, pulsa **Ordenar 2 millones de distancias** e inmediatamente pulsa varias veces **Comprobar UI**.
 
-**Fallo deliberado:** escribe `document.body.textContent = "listo"` dentro del worker. Aparece `ReferenceError: document is not defined`; elimina el acceso y actualiza DOM solo tras recibir `message` en el hilo principal.
+**Resultado esperado:** el contador aumenta mientras se lee `Ordenando…`; al terminar aparece `Solicitud 1: 2000000 distancias, mínima 0.000` (el último número cambia porque los datos son aleatorios). `npm run build` genera un archivo aparte `dist/assets/optimizar-ruta.worker-<hash>.js`: Vite detecta el patrón `new Worker(new URL(...), import.meta.url)`.
+
+**Fallo deliberado 1:** escribe `document.body.textContent = "listo"` dentro de `self.onmessage`. La consola del navegador muestra `ReferenceError: document is not defined` y la respuesta nunca llega; elimina el acceso y actualiza el DOM solo al recibir `message` en el hilo principal.
+
+**Fallo deliberado 2:** en `main.js` envía `optimizarRuta([2, "3"], ++solicitud)`. El worker responde `Solicitud inválida`: aunque un tipo de TypeScript prometiera `number[]`, ese tipo no viaja con el mensaje. Conserva la validación en la frontera.
 
 #### Paso 5 · Práctica guiada
 
@@ -281,11 +338,11 @@ Cancela la solicitud anterior al iniciar una nueva y descarta mensajes con id ob
 
 #### Paso 6 · Práctica independiente
 
-Compara duración y responsividad con cálculo principal y worker, incluyendo coste de copiar datos. Prueba mensaje válido, error, cancelación y payload no clonable; decide el tamaño mínimo que justifica el worker.
+Compara duración y responsividad con cálculo principal y worker, incluyendo el coste de copiar datos; luego envía las distancias en un `Float64Array` y transfiere su `buffer` con `worker.postMessage(datos, [datos.buffer])` y mide la diferencia. Ojo: `Array.isArray` da `false` para un `Float64Array`; adapta `esSolicitudValida` antes de medir. Prueba mensaje válido, error, cancelación y payload no clonable; decide el tamaño mínimo que justifica el worker.
 
 #### Paso 7 · Cierre
 
-Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo. El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello.
+Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo, validar el protocolo de mensajes y descartar respuestas obsoletas. Este es el tema de Web Workers del curso (el Módulo 14 ya no lo repite; allí solo quedan los Service Workers para modo offline). El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello.
 
 **Errores comunes:** acceder al DOM; crear un worker por elemento pequeño; no terminarlo; enviar funciones o nodos no clonables; ignorar respuestas obsoletas y errores.
 

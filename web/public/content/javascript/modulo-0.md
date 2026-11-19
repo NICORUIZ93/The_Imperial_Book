@@ -33,7 +33,7 @@ flowchart LR
 | 11 | Experto | [TypeScript esencial para devs de JavaScript](/curso/javascript/11) |
 | 12 | Experto | [Proyecto integrador: SPA sin framework](/curso/javascript/12) |
 | 13 | Experto | [JavaScript en producción: seguridad, memoria y compatibilidad](/curso/javascript/13) |
-| 14 | Experto | [JavaScript Master: TypeScript, WASM y cómputo emergente](/curso/javascript/14) |
+| 14 | Experto | [JavaScript Master: APIs avanzadas del navegador, WASM y cómputo emergente](/curso/javascript/14) |
 
 ## Aprende construyendo
 
@@ -41,7 +41,7 @@ Cada tema se estudia en su propia carpeta y termina con una comprobación ejecut
 
 ## Antes de comenzar: preparación del entorno
 
-Instala [Node.js LTS](https://nodejs.org/en/download), [Visual Studio Code](https://code.visualstudio.com/) y [Git](https://git-scm.com/downloads). En Windows abre PowerShell; en macOS o Linux abre Terminal. Verifica:
+Instala [Node.js 24 LTS](https://nodejs.org/en/download) (la versión de referencia de la academia, ver `docs/VERSIONES.md`), [Visual Studio Code](https://code.visualstudio.com/) y [Git](https://git-scm.com/downloads). En Windows abre PowerShell; en macOS o Linux abre Terminal. Verifica:
 
 ```bash
 node --version
@@ -49,7 +49,7 @@ npm --version
 git --version
 ```
 
-Las tres instrucciones deben mostrar una versión. Si `node` no se reconoce, cierra y abre la terminal; si continúa, reinstala Node.js LTS y permite que el instalador actualice `PATH`.
+Las tres instrucciones deben mostrar una versión; `node --version` debe empezar por `v24`. Todo el curso usa Node 24 LTS y solo indica otra versión cuando un tema lo justifica. Si `node` no se reconoce, cierra y abre la terminal; si continúa, reinstala Node.js LTS y permite que el instalador actualice `PATH`.
 
 Crea el proyecto exactamente así:
 
@@ -460,6 +460,211 @@ Completaste un primer incremento del proyecto ejecutable en dos entornos. El sig
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa el renderizado del widget de la transformación de datos. Ejecuta esa transformación en Node y en el navegador con la misma entrada; solo la capa visual debe depender de document.
 
 **Límites y decisión de uso:** Compartir lenguaje no implica compartir APIs: document pertenece al navegador y los módulos de archivos al entorno que los proporciona. Aísla dependencias de plataforma y prueba cada destino que anuncie soportar el paquete.
+
+### Tema 6: Números, strings y fechas con la biblioteca estándar
+
+**Duración estimada:** 40 min (3 subtemas de 10–15 min).
+**¿Por qué es importante?** Casi todo dato de RutaFlow es un precio, un texto que alguien escribió o una hora de entrega. Los tres tienen trampas conocidas: `0.1 + 0.2` no da `0.3`, los strings no cambian aunque llames `toUpperCase()` y los meses de `Date` empiezan en 0. Aprenderlas aquí evita errores que después parecen «bugs raros».
+
+**Prerrequisitos:** Temas 2 (tipos primitivos), 3 (conversión) y 4 (template literals) de este módulo. Node 24 LTS. Proyecto continuo: la etiqueta de entrega de RutaFlow que luego validarás (Módulo 1) y transformarás en lote (Módulo 4).
+
+```bash
+mkdir -p academia-labs/javascript/numeros-strings-fechas && cd academia-labs/javascript/numeros-strings-fechas
+```
+
+#### Subtema 6.1: Números: precisión, conversión y `Math` · 15 min
+
+**1. Contexto**
+La tarifa de una entrega suma tres montos con decimales. Si sumas `number` con decimales y comparas, el total puede quedar a un pelo del valor correcto.
+
+**2. Hazlo tú**
+Crea `numeros.js`:
+
+```javascript
+console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 === 0.3);
+
+const tarifaBase = 19.99;
+const recargo = 5.01;
+const seguro = 0.1;
+const totalCentavos = Math.round(tarifaBase * 100) + Math.round(recargo * 100) + Math.round(seguro * 100);
+console.log(totalCentavos, (totalCentavos / 100).toFixed(2));
+
+console.log(Number('12.5'), Number('12.5kg'), Number.parseFloat('12.5kg'), Number(''));
+console.log(Number.isNaN(Number('abc')), Number.isInteger(4.0), Number.isSafeInteger(2 ** 53));
+console.log(Math.round(2.5), Math.round(-2.5), Math.floor(-2.5), Math.trunc(-2.5), Math.ceil(2.1));
+console.log(Math.max(3, 9, 4), 7 % 3, 2 ** 10);
+```
+
+```bash
+node numeros.js
+```
+
+**Resultado esperado:**
+
+```text
+0.30000000000000004
+false
+2510 25.10
+12.5 NaN 12.5 0
+true true false
+3 -2 -3 -2 3
+9 1 1024
+```
+
+**Fallo deliberado:** cambia `Math.round(tarifaBase * 100)` por `Math.trunc(tarifaBase * 100)`. **Resultado:** `2509 25.09`, un centavo menos. **Diagnóstico:** ejecuta `node -p "19.99 * 100"`: da `1998.9999999999998`; `trunc` corta los decimales y pierde el centavo. Para pasar a centavos, redondea; restaura `Math.round`.
+
+**3. Entiende**
+`number` es un decimal binario de 64 bits (IEEE 754): `0.1` no tiene representación exacta, igual que 1/3 no la tiene en decimal. Para dinero, trabaja en **enteros de centavos** y convierte a texto solo al mostrar con `toFixed(2)` (que devuelve un **string**). `Number(texto)` exige que todo el texto sea número (`'12.5kg'` → `NaN`; `''` → `0`, cuidado), mientras `Number.parseFloat` lee hasta donde puede. Comprueba `NaN` con `Number.isNaN`, porque `NaN === NaN` es `false`. `Math.round` redondea hacia +∞ en los empates (`-2.5` → `-2`); `Math.trunc` corta hacia cero. **Límite:** por encima de `Number.MAX_SAFE_INTEGER` (2⁵³ − 1) los enteros pierden exactitud; para identificadores enormes usa `bigint` (Tema 2) o string.
+
+**4. Cierra**
+Guarda la salida y anota por qué `Number('')` es una trampa al leer formularios.
+
+#### Subtema 6.2: Strings: limpiar, cortar y buscar · 10 min
+
+**1. Contexto**
+Una persona escribe la etiqueta a mano con espacios y minúsculas: `'  bo-004512 | Calle 45 # 12-30 | chapinero  '`. Antes de guardarla hay que normalizarla.
+
+**2. Hazlo tú**
+Crea `strings.js`:
+
+```javascript
+const crudo = '  bo-004512 | Calle 45 # 12-30 | chapinero  ';
+const limpio = crudo.trim();
+console.log(limpio.length, JSON.stringify(limpio));
+
+const partes = limpio.split(' | ');
+const guia = partes[0].toUpperCase();
+const direccion = partes[1];
+const barrio = partes[2][0].toUpperCase() + partes[2].slice(1);
+console.log(guia, '/', direccion, '/', barrio);
+
+console.log(guia.startsWith('BO-'), direccion.includes('#'), guia.at(-1), guia.slice(3), guia.slice(-3));
+console.log(String(7).padStart(4, '0'), 'a-b-c'.replaceAll('-', '/'), 'Zona Norte'.indexOf('Sur'));
+
+const etiqueta = 'bo-004512';
+etiqueta.toUpperCase();
+console.log(etiqueta);
+```
+
+```bash
+node strings.js
+```
+
+**Resultado esperado:**
+
+```text
+40 "bo-004512 | Calle 45 # 12-30 | chapinero"
+BO-004512 / Calle 45 # 12-30 / Chapinero
+true true 2 004512 512
+0007 a/b/c -1
+bo-004512
+```
+
+**Fallo deliberado:** cambia el separador de `split(' | ')` por `split(',')`. **Error esperado:** `TypeError: Cannot read properties of undefined (reading '0')`. **Diagnóstico:** sin comas, `split` devuelve un array de **un** elemento y `partes[2]` es `undefined`; imprime `partes` y usa el separador real del texto.
+
+**3. Entiende**
+Los strings son **inmutables**: cada método (`trim`, `toUpperCase`, `slice`, `replaceAll`, `padStart`) devuelve un string **nuevo**; por eso la última línea imprime `bo-004512` sin cambios: el resultado se descartó. `slice` admite índices negativos para contar desde el final, igual que `at(-1)`. `indexOf` devuelve `-1` si no encuentra, mientras `includes`/`startsWith` devuelven booleanos y se leen mejor en un `if`. **Límite:** `length` cuenta unidades UTF-16, no letras que ves: algunos emoji ocupan 2; si necesitas contar caracteres visibles para un límite de interfaz, usa `Intl.Segmenter` (Módulo 13).
+
+**4. Cierra**
+Guarda la salida. La etiqueta queda normalizada en tres partes listas para validar.
+
+#### Subtema 6.3: Fechas: instantes, zonas horarias y aritmética · 15 min
+
+**1. Contexto**
+RutaFlow guarda la salida y la llegada de cada entrega, calcula cuánto tardó y muestra la hora al cliente en Bogotá y al socio en Madrid.
+
+**2. Hazlo tú**
+Crea `fechas.js`:
+
+```javascript
+const salida = new Date('2026-11-18T08:30:00Z');
+const llegada = new Date('2026-11-18T14:05:00Z');
+console.log(salida.toISOString());
+console.log(salida.getUTCFullYear(), salida.getUTCMonth(), salida.getUTCDate());
+
+const minutos = (llegada.getTime() - salida.getTime()) / 60_000;
+console.log(`duración: ${minutos} min`);
+
+console.log(salida.toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium', timeStyle: 'short' }));
+console.log(salida.toLocaleString('es-ES', { timeZone: 'Europe/Madrid', dateStyle: 'medium', timeStyle: 'short' }));
+
+const manana = new Date(salida);
+manana.setUTCDate(manana.getUTCDate() + 1);
+console.log(salida.toISOString().slice(0, 10), manana.toISOString().slice(0, 10));
+
+console.log(new Date(Date.UTC(2026, 0, 31)).toISOString().slice(0, 10));
+console.log(String(new Date('ayer')), Number.isNaN(new Date('ayer').getTime()));
+```
+
+```bash
+node fechas.js
+```
+
+**Resultado esperado** (el formato local puede variar un poco según la versión de ICU de tu Node):
+
+```text
+2026-11-18T08:30:00.000Z
+2026 10 18
+duración: 335 min
+18/11/2026, 3:30 a. m.
+18 nov 2026, 9:30
+2026-11-18 2026-11-19
+2026-01-31
+Invalid Date true
+```
+
+**Fallo deliberado:** cambia `Date.UTC(2026, 0, 31)` por `Date.UTC(2026, 1, 31)` creyendo que `1` es enero. **Resultado:** `2026-03-03`. **Diagnóstico:** los meses de `Date` van de 0 (enero) a 11 (diciembre), y un día fuera de rango no lanza error: «31 de febrero» se desborda a marzo. Valida rangos tú mismo y restaura el `0`.
+
+**3. Entiende**
+Un `Date` es un **instante**: milisegundos desde 1970-01-01 UTC (`getTime()`). Restar dos instantes da milisegundos; divide entre `60_000` para minutos (el `_` solo separa dígitos). La zona horaria aparece **al mostrar**: `toLocaleString` con `timeZone` traduce el mismo instante a la hora de Bogotá (UTC−5) o de Madrid (UTC+1 en noviembre). Usa siempre texto ISO con `Z` u offset al crear fechas; `new Date('2026-11-18')` se interpreta como medianoche UTC y en Bogotá `getDate()` da `17`. `setUTCDate` **muta** el objeto, por eso se copia antes con `new Date(salida)`. **Límite:** `Date` no representa «solo una fecha» ni «una hora en una zona» y es mutable; la API `Temporal` resuelve esos casos y la verás en el Módulo 13 con detección de soporte.
+
+**4. Cierra**
+Guarda la salida y escribe en una línea qué hora verá un cliente de Bogotá si la entrega sale a las `08:30Z`.
+
+**Hito del tema:**
+
+- [ ] Ejecuté los tres archivos y obtuve las salidas esperadas.
+- [ ] Reproduje el centavo perdido con `Math.trunc` y lo expliqué con `19.99 * 100`.
+- [ ] Demostré que `toUpperCase()` no cambia el string original.
+- [ ] Expliqué por qué `Date.UTC(2026, 1, 31)` da 3 de marzo y no un error.
+
+**Ejercicio:** escribe `etiqueta.js` que, a partir de `const linea = ' bo-77 | 2026-11-18T16:45:00Z | 12.5 ';`, imprima exactamente `BO-000077 · 18/11/26, 11:45 a. m. · $12.50`. La guía lleva el prefijo y el número rellenado a 6 cifras; la hora se muestra en Bogotá; el monto con dos decimales. Escribe tu predicción de la hora de Bogotá antes de ejecutar.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+```javascript
+const linea = ' bo-77 | 2026-11-18T16:45:00Z | 12.5 ';
+const partes = linea.trim().split(' | ');
+
+const prefijo = partes[0].slice(0, 2).toUpperCase();
+const numero = partes[0].slice(3);
+const guia = `${prefijo}-${numero.padStart(6, '0')}`;
+
+const hora = new Date(partes[1]).toLocaleString('es-CO', {
+  timeZone: 'America/Bogota',
+  dateStyle: 'short',
+  timeStyle: 'short',
+});
+
+const centavos = Math.round(Number(partes[2]) * 100);
+const monto = `$${(centavos / 100).toFixed(2)}`;
+
+console.log(`${guia} · ${hora} · ${monto}`);
+```
+
+Salida:
+
+```text
+BO-000077 · 18/11/26, 11:45 a. m. · $12.50
+```
+
+Si tu hora salió `4:45 p. m.` en un equipo configurado en UTC, mostraste la hora sin convertir: falta `timeZone`. Si usaste `Number(partes[2]).toFixed(2)` directamente también funciona aquí; pasar a centavos importa cuando además sumas montos.
+
+</details>
+
+**Fuentes oficiales:** [MDN: Numbers and strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Numbers_and_strings), [MDN: Representing dates & times](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Representing_dates_times) y [MDN: `Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date).
 
 ## Ruta de proyecto progresivo desde carpeta vacía
 

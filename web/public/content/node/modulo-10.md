@@ -4,7 +4,7 @@
 
 ### Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min
 
-**Prerrequisito:** Node LTS, npm, fundamentos de Express y uso básico de `curl`. No necesitas archivos de otros temas.
+**Prerrequisito:** Node 24 LTS, npm, fundamentos de Express y uso básico de `curl`. No necesitas archivos de otros temas.
 
 **Al terminar podrás:** configurar Helmet en una aplicación Express, identificar las cabeceras observadas en una respuesta y explicar qué riesgos mitigan sin presentarlas como sustituto de otros controles.
 
@@ -102,7 +102,7 @@ Crea `cabeceras.md` y registra tres cabeceras observadas, el riesgo que mitiga c
 
 ### Tema 2: Rate limiting · Intermedio · 55 min
 
-**Prerrequisito:** Node LTS, npm, middleware de Express y lectura de códigos de estado HTTP. El proyecto es independiente del tema anterior.
+**Prerrequisito:** Node 24 LTS, npm, middleware de Express y lectura de códigos de estado HTTP. El proyecto es independiente del tema anterior.
 
 **Al terminar podrás:** aplicar un límite por ruta, producir un `429` con una prueba local acotada y justificar una configuración de proxy y almacenamiento para varias instancias.
 
@@ -200,7 +200,7 @@ Crea `politica-limites.md`. Documenta por separado una política para `/acceso` 
 
 ### Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min
 
-**Prerrequisito:** Node LTS, npm, SQL básico y distinción entre texto y HTML. No necesitas una base de datos ni archivos de otros temas para la práctica.
+**Prerrequisito:** Node 24 LTS, npm, SQL básico y distinción entre texto y HTML. No necesitas una base de datos ni archivos de otros temas para la práctica.
 
 **Al terminar podrás:** construir una llamada `pg` con SQL y valores separados, validar un identificador sin sustituir los parámetros y seleccionar una defensa de salida acorde al contexto HTML.
 
@@ -312,7 +312,7 @@ Crea `contextos-salida.md` con una tabla para texto HTML, atributo, URL y JavaSc
 
 ### Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min
 
-**Prerrequisito:** Node LTS, npm, pruebas básicas con `node:test` y lectura de `package.json`. El ejercicio no reutiliza proyectos anteriores.
+**Prerrequisito:** Node 24 LTS, npm, pruebas básicas con `node:test` y lectura de `package.json`. El ejercicio no reutiliza proyectos anteriores.
 
 **Al terminar podrás:** construir una matriz de riesgos con evidencia, comprobar una denegación de autorización por objeto e interpretar un reporte actual de `npm audit` sin convertirlo en una garantía de seguridad.
 
@@ -452,7 +452,7 @@ Ejecuta `npm test` y actualiza la matriz con ambas evidencias. Después elige un
 
 ### Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min
 
-**Prerrequisito:** Node LTS, npm, lectura del Tema 4 y fundamentos de integración continua. Se creará otro proyecto desde cero.
+**Prerrequisito:** Node 24 LTS, npm, lectura del Tema 4 y fundamentos de integración continua. Se creará otro proyecto desde cero.
 
 **Al terminar podrás:** distinguir CVE, CWE y GHSA, procesar de forma robusta el JSON de `npm audit`, interpretar sus códigos de salida y aplicar un umbral explícito en un pipeline.
 
@@ -606,7 +606,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: node auditar.js
@@ -643,7 +643,7 @@ El umbral es `high` al publicar en `main` y `critical` en otras ramas. Crea `pol
 
 **Objetivo y preparación.**
 
-Usa Node.js 22.13 o superior (en Node 20 la opción se llama `--experimental-permission`). Crea la carpeta `academia-labs/node/permisos` y dentro `datos/envios.csv` con la línea `ENV-1,EN_RUTA`.
+Usa Node.js 24 LTS (el modelo de permisos es estable con la opción `--permission`; en tutoriales antiguos verás `--experimental-permission`). Crea la carpeta `academia-labs/node/permisos` y dentro `datos/envios.csv` con la línea `ENV-1,EN_RUTA`.
 
 **Contexto y caso real.**
 

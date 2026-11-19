@@ -5,7 +5,7 @@
 
 ### Tema 1: fs/promises frente a callbacks · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, `async`/`await` básico y comprensión de qué representa una ruta. Comprueba la instalación con `node --version` y `npm --version`.
+**Prerrequisito:** Node.js 24 LTS, `async`/`await` básico y comprensión de qué representa una ruta. Comprueba la instalación con `node --version` y `npm --version`.
 
 **Al terminar podrás:** leer y validar JSON con `fs/promises`, diagnosticar por separado un archivo ausente, un JSON inválido y un dato con tipo incorrecto, y reconocer código de callbacks sin mezclar ambos estilos.
 
@@ -157,7 +157,7 @@ Modifica `src/cargar-config.js` para cargarlo junto con `config.json` mediante `
 
 ### Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min
 
-**Prerrequisito:** Node.js LTS y capacidad para reconocer una función callback. Comprueba `node --version`; no necesitas archivos del tema anterior.
+**Prerrequisito:** Node.js 24 LTS y capacidad para reconocer una función callback. Comprueba `node --version`; no necesitas archivos del tema anterior.
 
 **Al terminar podrás:** conectar `Readable`, `Transform` y `Writable` con `pipeline()`, procesar datos por fragmentos sin cargar el archivo completo y conservar el resto de una línea partida entre chunks.
 
@@ -322,7 +322,7 @@ Repite la prueba con chunks de 8 bytes, incluye una última fila sin salto de l�
 
 ### Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min
 
-**Prerrequisito:** Node.js LTS y conocimiento básico de `Writable`. El laboratorio crea su propio destino y no reutiliza streams de otros temas.
+**Prerrequisito:** Node.js 24 LTS y conocimiento básico de `Writable`. El laboratorio crea su propio destino y no reutiliza streams de otros temas.
 
 **Al terminar podrás:** detectar backpressure, respetar el valor booleano de `write()`, esperar `drain` y medir pausas, longitud del búfer, duración y memoria antes de cambiar `highWaterMark`.
 
@@ -474,7 +474,7 @@ Ejecuta esta versión con `highWaterMark: 12` y compárala con `highWaterMark: 4
 
 ### Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min
 
-**Prerrequisito:** Node.js LTS y conocimiento básico de `Readable`, `Transform` y `Writable`. Crearás una entrada, una transformación y una salida nuevas en este tema.
+**Prerrequisito:** Node.js 24 LTS y conocimiento básico de `Readable`, `Transform` y `Writable`. Crearás una entrada, una transformación y una salida nuevas en este tema.
 
 **Al terminar podrás:** componer streams con `pipeline()`, propagar un error a mitad de la cadena, limpiar la salida parcial, cancelar con `AbortController` y publicar un archivo solo después del éxito.
 
@@ -570,7 +570,7 @@ import { rm } from "node:fs/promises";
 }
 ```
 
-Repite el fallo con `ERROR` y confirma que desaparece `salida.txt`. Después usa la clase global `AbortController` disponible en Node LTS:
+Repite el fallo con `ERROR` y confirma que desaparece `salida.txt`. Después usa la clase global `AbortController` disponible en Node 24 LTS:
 
 ```js
 const controller = new AbortController();
@@ -642,7 +642,7 @@ flowchart LR
 
 **Objetivo y preparación.**
 
-Usa Node.js 22 o superior. Crea la carpeta `academia-labs/node/buffers`. No necesitas instalar paquetes: `Buffer`, `Blob` y `Response` vienen con Node.
+Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/buffers`. No necesitas instalar paquetes: `Buffer`, `Blob` y `Response` vienen con Node.
 
 **Contexto y caso real.**
 
@@ -771,7 +771,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** cortar 
 
 **Objetivo y preparación.**
 
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
+Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
 
 **Contexto y caso real.**
 

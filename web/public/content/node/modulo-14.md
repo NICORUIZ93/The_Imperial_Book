@@ -2,6 +2,8 @@
 
 ## Aprende construyendo
 
+Este módulo conserva solo lo que no se enseña antes: TypeScript nativo en Node, Federation, sagas y brokers. Serverless está en el Módulo 11 Tema 4, el Docker productivo y las señales en el Módulo 11 Tema 1, la promoción de imágenes en CI en el Módulo 7 Tema 3 y los fundamentos de GraphQL en el Módulo 9 Tema 4.
+
 Cada tema es independiente y comienza en una carpeta vacía. Excepción a la regla del Módulo 0: los temas de Federation, sagas, Kafka y RabbitMQ parten de laboratorios de la carpeta `examples/` del repositorio de la academia. Para ellos clona el repositorio una vez (`git clone https://github.com/NICORUIZ93/the_imperial_book.git`) y ejecuta los comandos `cp` y `cd examples/...` desde su raíz.
 
 ### Tema 1: TypeScript en Node.js
@@ -83,11 +85,11 @@ Corrige el Paso 5: instala el compilador con `npm install -D typescript` (sin é
 
 Entrega la ejecución directa del `.ts` del Paso 4, el error de tipos no detectado en ejecución del Paso 5, y el chequeo separado con `tsc --noEmit` del Paso 6; explica por qué el soporte nativo de tipos de Node acelera el desarrollo local pero no reemplaza un chequeo de tipos explícito en CI. Siguiente paso: aplica GraphQL Federation para componer varios subgrafos de este mismo dominio. Errores comunes: asumir que `node archivo.ts` valida tipos (solo los borra), omitir `tsc --noEmit` en el pipeline de CI confiando solo en la ejecución nativa, y mezclar sintaxis de TypeScript que requiere transformación real (cualquier `enum`, incluso `enum E { A = 1 }`, `namespace` con código, parameter properties, decoradores) que el borrado de tipos simple no soporta: `node` responde `SyntaxError [ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX]: TypeScript enum is not supported in strip-only mode`. Fuentes oficiales: [Node.js — TypeScript](https://nodejs.org/en/learn/typescript/run-natively) y [TypeScript — tsc CLI](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
 
-### Tema 2: GraphQL avanzado y Federation
+### Tema 2: GraphQL Federation: componer subgrafos de equipos distintos
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás componer dos subgrafos GraphQL independientes (Pedidos y Conductores) en un único supergrafo con Apollo Federation, resolviendo una referencia entre ellos sin que ningún subgrafo conozca los detalles internos del otro. Prerrequisitos: Módulo 5 de este track (bases de datos).
+Al finalizar podrás componer dos subgrafos GraphQL independientes (Pedidos y Conductores) en un único supergrafo con Apollo Federation, resolviendo una referencia entre ellos sin que ningún subgrafo conozca los detalles internos del otro. Prerrequisitos: Módulo 9 Tema 4 (esquema, consultas y validación GraphQL con el paquete `graphql`); este tema no repite esos fundamentos y se concentra en la composición entre servicios.
 
 #### Paso 2 · Contexto y caso real
 
@@ -112,12 +114,12 @@ flowchart LR
   G --> M["Respuesta combinada"]
 ```
 
-Levanta ambos subgrafos con `node src/conductores/index.js` y `node src/pedidos/index.js`, y el gateway con `npx rover dev`. Esta misma composición es la que usarás para el proyecto propio que integre Pedidos y Conductores como servicios independientes; **cuándo no usarlo:** para un dominio chico con un único equipo y una sola base de datos, Federation agrega infraestructura (gateway, registro de esquemas) sin ningún beneficio frente a un esquema GraphQL monolítico simple.
+En el laboratorio, `server.mjs` levanta los dos subgrafos y el gateway en un solo proceso. Esta misma composición es la que usarás para el proyecto propio que integre Pedidos y Conductores como servicios independientes; **cuándo no usarlo:** para un dominio chico con un único equipo y una sola base de datos, Federation agrega infraestructura (gateway, registro de esquemas) sin ningún beneficio frente a un esquema GraphQL monolítico simple.
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** Divide Conductores y Pedidos en subgrafos Federation propios, cada uno con su propio despliegue, y compón el supergrafo que el panel del operador consulta como si fuera un único servicio.
 
 #### Paso 4 · Demostración guiada desde cero
-**Monta** el laboratorio completo en una carpeta nueva y revisa `server.mjs`, que orquesta los subgrafos `src/conductores/index.js` y `src/pedidos/index.js` junto con el gateway, antes de ejecutarlo.
+**Monta** el laboratorio completo en una carpeta nueva y revisa `server.mjs`, que define los subgrafos de Conductores y Pedidos con `buildSubgraphSchema` y los compone con `ApolloGateway`, antes de ejecutarlo.
 
 Desde la raíz del repositorio prepara una copia independiente del laboratorio completo:
 ```bash
@@ -219,267 +221,14 @@ sequenceDiagram
 #### Paso 7 · Cierre y evidencia
 Entrega las dos salidas del Paso 4, el fallo diagnosticado y tu explicación de cuándo se ejecutan las compensaciones. En un sistema real, cada servicio conserva sus propios datos y el proceso puede reiniciarse a mitad de la operación: harían falta almacenamiento duradero, reintentos, idempotencia y alertas. La demostración actual solo enseña la secuencia en memoria. **Proyecto integrador RutaFlow:** si el flujo pasa a microservicios, persiste el estado de la saga para que sobreviva a reinicios. **Errores comunes:** compensar en orden de avance, dar por hecho que una compensación siempre tendrá éxito y usar este ejemplo en memoria como si fuera persistente. **Fuentes oficiales:** [Node.js: ejecución de programas](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line) y [patrón Saga](https://microservices.io/patterns/data/saga.html). Próximo paso: escoger un broker para transportar eventos entre servicios.
 
-### Tema 4: Serverless multi-cloud
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás escribir una función que calcula el costo de un envío y adaptarla para correr sin cambios de lógica en AWS Lambda y en Azure Functions, aislando las diferencias de "handler" de cada proveedor. Prerrequisitos: Módulo 4 del track de Cloud (Serverless con Lambda).
-
-#### Paso 2 · Contexto y caso real
-
-El equipo escribió la función de cálculo de costos directamente acoplada a la firma específica del handler de AWS Lambda; cuando la empresa decide evaluar Azure por un acuerdo comercial, migrar esa función obliga a reescribir toda la lógica de negocio mezclada con el código específico de AWS.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Aislar la lógica de negocio pura (una función normal de JavaScript, sin ningún detalle de un proveedor cloud específico) detrás de un adaptador delgado por proveedor permite migrar o correr en múltiples nubes sin tocar la lógica real, solo el adaptador. La analogía: un electrodoméstico con un enchufe universal removible — el aparato (la lógica) no cambia, solo el adaptador de enchufe según el país (el proveedor cloud).
-
-**¿Por qué es importante?** Aislar la lógica de negocio detrás de un adaptador delgado por proveedor permite migrar o correr en múltiples nubes sin duplicar ni reescribir la lógica real en cada una.
-
-**Conceptos clave:** adaptador por proveedor, lógica de negocio pura, handler específico de AWS/Azure/GCP, portabilidad multi-cloud.
-
-**Diagrama:**
-
-```mermaid
-flowchart TB
-  L["calcularCosto.js (lógica pura)"] --> A[adaptador AWS]
-  L --> Z[adaptador Azure]
-  L --> G[adaptador GCP]
-```
-
-Esta misma separación lógica/adaptador es la que mantendrá portable el cálculo de costos del proyecto propio frente a cualquier proveedor cloud que el equipo decida evaluar después.
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Extrae el cálculo de la tarifa de envío a una función pura, y despliégala primero en AWS Lambda y luego como una Azure Function sin tocar la fórmula, solo el adaptador del handler.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `src/logica/calcularCosto.js` (lógica pura, sin ningún import de AWS o Azure):
-
-```js
-export function calcularCosto({ distanciaKm, pesoKg }) {
-  return distanciaKm * 1500 + pesoKg * 200;
-}
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-
-Y dos adaptadores delgados:
-
-```js
-// src/aws/handler.js
-import { calcularCosto } from "../logica/calcularCosto.js";
-export const handler = async (event) => {
-  const body = JSON.parse(event.body);
-  return { statusCode: 200, body: JSON.stringify({ costo: calcularCosto(body) }) };
-};
-```
-
-```js
-// src/azure/handler.js
-import { calcularCosto } from "../logica/calcularCosto.js";
-export default async function (context, req) {
-  context.res = { body: { costo: calcularCosto(req.body) } };
-}
-```
-
-**Resultado esperado:** la misma función `calcularCosto` (sin ningún cambio) produce el resultado correcto invocada desde el handler de AWS y desde el handler de Azure, confirmando que la lógica de negocio nunca dependió de ningún detalle específico de un proveedor.
-
-#### Paso 5 · Práctica guiada
-
-Pista: movés el cálculo directamente dentro de `src/aws/handler.js`, eliminando `calcularCosto.js` "para simplificar". Ese es el fallo deliberado: al crear el adaptador equivalente de Azure hay que copiar y pegar la misma fórmula, y el día que la fórmula cambie (por ejemplo, un recargo por zona), alguien actualiza un archivo y olvida el otro, dejando ambos proveedores calculando costos distintos para el mismo pedido.
-
-#### Paso 6 · Práctica independiente
-
-Corrige el Paso 5 extrayendo de nuevo la lógica a `calcularCosto.js`, y agrega un tercer adaptador para GCP Cloud Functions, confirmando que los tres adaptadores producen el mismo resultado sin duplicar la fórmula en ningún lugar.
-
-**Evidencia de aprendizaje:** entrega la lógica aislada funcionando en dos adaptadores, la duplicación de fórmula reproducida y el tercer adaptador agregado sin duplicar lógica.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega la lógica aislada con dos adaptadores del Paso 4, la duplicación de fórmula del Paso 5, y el tercer adaptador agregado del Paso 6; explica por qué acoplar lógica de negocio a la firma específica de un handler cloud hace que cada proveedor nuevo duplique esa lógica en vez de reusarla. Siguiente paso: empaqueta la misma lógica en un contenedor productivo para los casos donde no se usa serverless. Errores comunes: mezclar lógica de negocio con el formato específico de evento/respuesta de un proveedor, duplicar la misma fórmula en cada adaptador en vez de extraerla una sola vez, y no probar la lógica pura de forma aislada de ningún handler cloud. Fuentes oficiales: [AWS Lambda — Handler en Node.js](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) y [Azure Functions — Node.js](https://learn.microsoft.com/azure/azure-functions/functions-reference-node).
-
-### Tema 5: Docker productivo con Node
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar vas a construir una imagen Docker multi-stage para un servicio Node que corre como usuario no-root y responde correctamente a `SIGTERM` con un apagado ordenado. Prerrequisitos: Módulo 11 de este track (Despliegue y contenedores).
-
-#### Paso 2 · Contexto y caso real
-
-La imagen actual del servicio de pedidos corre como `root` dentro del contenedor e ignora las señales del sistema operativo durante un despliegue; cuando Kubernetes intenta terminar el pod de forma ordenada, el proceso Node no libera sus conexiones activas y las peticiones en curso se cortan abruptamente.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Un build multi-stage separa la etapa de instalación de dependencias (que necesita herramientas de build) de la imagen final de ejecución (mínima, sin esas herramientas); correr como un usuario no-root limita el daño si el proceso es comprometido; manejar `SIGTERM` explícitamente permite terminar las conexiones en curso antes de salir. La analogía: cerrar un restaurante ordenadamente (dejar de recibir clientes nuevos, pero terminar de atender a los que ya están sentados) frente a apagar las luces de golpe con gente todavía comiendo.
-
-**¿Por qué es importante?** Un contenedor que corre como root y no maneja señales de apagado ordenado convierte cada despliegue rutinario en una fuente de errores para los clientes con peticiones en curso.
-
-**Conceptos clave:** multi-stage build, usuario no-root, SIGTERM, apagado ordenado (graceful shutdown), timeout de apagado forzado.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  B["FROM node:24-alpine AS build"] --> F["FROM node:24-alpine (final)"]
-  F --> U["USER app (no-root)"]
-  U --> SIG["SIGTERM → cierra conexiones → exit 0"]
-```
-
-Esta misma imagen endurecida es la que empaquetará el servicio del proyecto propio para un despliegue real en Kubernetes.
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Construye la imagen multi-stage no-root del servicio de entregas y verifica que, al recibir `SIGTERM` durante un despliegue, termina de responder las peticiones en curso antes de salir, sin cortar a un conductor que está confirmando una entrega en ese momento.
-
-#### Paso 4 · Demostración guiada desde cero
-**Crea** el archivo `src/servidor.js` y pega en él el código mostrado a continuación; guárdalo antes de ejecutarlo.
-
-
-Crea `Dockerfile`:
-
-```dockerfile
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-FROM node:24-alpine
-RUN addgroup -S app && adduser -S app -G app
-WORKDIR /app
-COPY --from=build /app/node_modules ./node_modules
-COPY . .
-USER app
-CMD ["node", "src/servidor.js"]
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-
-Y en `src/servidor.js`, el manejo explícito de la señal:
-
-```js
-const servidor = app.listen(3000);
-process.on("SIGTERM", () => {
-  servidor.close(() => process.exit(0));
-});
-```
-
-**Resultado esperado:** `docker run` del contenedor muestra el proceso corriendo como el usuario `app` (no `root`, verificable con `docker exec <id> whoami`), y al enviar `docker stop` (que envía `SIGTERM`), el servidor termina las conexiones en curso antes de salir con código 0, en vez de cortarse abruptamente.
-
-#### Paso 5 · Práctica guiada
-
-Pista: quita el bloque `process.on("SIGTERM", ...)` del servidor y haz una petición lenta justo antes de `docker stop`. Ese es el fallo deliberado: el proceso termina inmediatamente al recibir `SIGTERM` sin esperar a que la conexión en curso complete, y el cliente de esa petición recibe una conexión cortada abruptamente en vez de una respuesta completa.
-
-#### Paso 6 · Práctica independiente
-
-Corrige el Paso 5 restaurando el manejo de `SIGTERM`, y agrega un timeout máximo de apagado ordenado (por ejemplo, 10 segundos) después del cual el proceso fuerza la salida aunque queden conexiones sin cerrar, documentando por qué un apagado ordenado sin límite de tiempo también es riesgoso.
-
-**Evidencia de aprendizaje:** entrega la imagen multi-stage no-root funcionando, la conexión cortada abruptamente reproducida y el timeout de apagado forzado documentado.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega la imagen multi-stage con usuario no-root del Paso 4, la conexión cortada abruptamente del Paso 5, y el timeout de apagado forzado del Paso 6; explica por qué un contenedor que ignora `SIGTERM` convierte cada despliegue en una fuente de errores para los clientes con peticiones en curso. Siguiente paso: automatiza este mismo build dentro de un pipeline de CI/CD con promoción de artefactos. Errores comunes: correr el proceso como `root` dentro del contenedor, ignorar `SIGTERM` dejando que Kubernetes mate el proceso con `SIGKILL` tras el timeout de gracia, y no limitar con un timeout máximo el apagado ordenado. Fuentes oficiales: [Docker — Multi-stage builds](https://docs.docker.com/build/building/multi-stage/) y [Node.js — Process signal events](https://nodejs.org/api/process.html#signal-events).
-
-### Tema 6: CI/CD y promoción de artefactos
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar vas a construir una imagen Docker UNA sola vez por commit y promoverla (retaguearla) a través de dev, staging y producción, en vez de reconstruirla en cada etapa. Prerrequisitos: Tema 5 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-
-El pipeline actual ejecuta `docker build` por separado en cada etapa (dev, staging, producción); dos builds del mismo commit, ejecutados en momentos distintos, pueden producir binarios ligeramente distintos (una dependencia transitiva se actualizó entre medio), rompiendo la garantía de que "lo que se probó en staging es exactamente lo que llega a producción".
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-El principio "build once, promote many" construye el artefacto UNA sola vez, lo etiqueta con un identificador inmutable (el hash del commit), y cada etapa posterior simplemente lo re-etiqueta y lo despliega, sin reconstruirlo. La analogía: un mismo lote de producción de una fábrica que se distribuye a distintas tiendas, en vez de fabricar un lote nuevo (con el riesgo de pequeñas variaciones) para cada tienda.
-
-**¿Por qué es importante?** Construir una vez y promover el mismo artefacto a través de los entornos es la única forma de garantizar que lo que se validó en staging es exactamente lo mismo que llega a producción.
-
-**Conceptos clave:** build once promote many, tag inmutable por commit, digest de imagen, versiones exactas vs rangos semánticos abiertos.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  B["docker build (una vez)"] --> T["tag: sha del commit"]
-  T --> S["re-tag: staging"]
-  T --> P["re-tag: production"]
-  S --> D["mismo digest SHA256"]
-  P --> D
-```
-
-Guarda este workflow como `.github/workflows/promocion.yml`; es el mismo patrón que usarás para desplegar el proyecto propio con la garantía de que staging y producción corren bit por bit el mismo artefacto. **Cuándo no usarlo:** para un script interno de un solo uso, sin ambiente de staging real, la ceremonia de promoción por re-tag agrega pasos sin ningún beneficio frente a un build directo.
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** Promueve la misma imagen Docker del servicio de entregas, construida una sola vez, de staging a producción por re-tag, y verifica el digest antes de aceptar el despliegue como válido.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea el workflow de CI:
-
-```yaml
-jobs:
-  build:
-    steps:
-      - run: docker build -t registro/pedidos:${{ github.sha }} .
-      - run: docker push registro/pedidos:${{ github.sha }}
-  promover-a-staging:
-    needs: build
-    steps:
-      - run: docker pull registro/pedidos:${{ github.sha }}
-      - run: docker tag registro/pedidos:${{ github.sha }} registro/pedidos:staging
-      - run: docker push registro/pedidos:staging
-  promover-a-produccion:
-    needs: promover-a-staging
-    steps:
-      - run: docker pull registro/pedidos:${{ github.sha }}
-      - run: docker tag registro/pedidos:${{ github.sha }} registro/pedidos:production
-      - run: docker push registro/pedidos:production
-```
-
-**Ejecuta el ejemplo** (monta el proyecto Node y córrelo):
-
-```bash
-npm init -y && npm install
-node index.js
-```
-Para las pruebas: `npm test`.
-
-
-**Resultado esperado:** la imagen se construye una única vez con el tag inmutable `${{ github.sha }}`; tanto `staging` como `production` son simplemente ese mismo artefacto re-etiquetado, nunca reconstruido, garantizando bit por bit el mismo binario en ambos entornos.
-
-#### Paso 5 · Práctica guiada
-
-Pista: reemplaza los jobs `promover-a-staging` y `promover-a-produccion` por un `docker build` independiente en cada uno. Ese es el fallo deliberado: si una dependencia sin versión fijada (`^4.2.0` en vez de `4.2.1` exacto) publica una nueva versión menor entre el build de staging y el de producción, ambos binarios ya no son idénticos, aunque el código fuente no cambió.
-
-#### Paso 6 · Práctica independiente
-
-Corrige el Paso 5 restaurando el patrón de build único + promoción por re-tag, y agrega un paso de verificación que compare el digest SHA256 de la imagen en staging contra el digest en producción, confirmando que son bit por bit idénticos antes de considerar el despliegue exitoso.
-
-**Evidencia de aprendizaje:** entrega el pipeline de build único funcionando, la divergencia de binarios por reconstrucción reproducida y la verificación de digest idéntico confirmada.
-
-#### Paso 7 · Cierre y evidencia
-
-Entrega el pipeline de build único y promoción del Paso 4, la divergencia de binarios por reconstrucción del Paso 5, y la verificación de digest idéntico del Paso 6; explica por qué reconstruir en cada etapa rompe la garantía central que la promoción de artefactos existe para dar. Siguiente paso: con esto cierras el módulo avanzado de Node, listo para operar en producción real. Errores comunes: reconstruir la imagen en cada etapa del pipeline en vez de promover el mismo artefacto, fijar dependencias con rangos semánticos abiertos (`^`) en vez de versiones exactas para un build reproducible, y no verificar el digest de la imagen antes de confirmar que staging y producción corren el mismo binario. Fuentes oficiales: [GitHub Actions — Environments](https://docs.github.com/actions/deployment/targeting-different-environments/using-environments-for-deployment) y [Docker — Image digests](https://docs.docker.com/engine/reference/commandline/images/#digests).
-
-### Tema 7: Kafka desde Node: clave, grupo consumidor y offset
+### Tema 4: Kafka desde Node: clave, grupo consumidor y offset
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** La key mantiene orden por pedido y el grupo registra el avance de cada proyector.
 
 **Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas y workers). Proyecto continuo: RutaFlow produce cambios de pedidos para proyecciones independientes.
 
-#### Subtema 7.1: Envía un evento con la clave del pedido · 10 min
+#### Subtema 4.1: Envía un evento con la clave del pedido · 10 min
 
 **1. Contexto**
 La clave `pedidoId` mantiene los eventos de un pedido en la misma partición; no evita duplicados.
@@ -502,7 +251,7 @@ Kafka asigna cada clave a una partición. El orden que protege la clave es local
 **4. Cierra**
 Anota el tópico, la key y la partición observada en la práctica con broker.
 
-#### Subtema 7.2: Reparte particiones con un grupo · 10 min
+#### Subtema 4.2: Reparte particiones con un grupo · 10 min
 
 **1. Contexto**
 Las instancias del mismo proyector comparten el trabajo; otro servicio necesita su propio grupo para leer el flujo completo.
@@ -526,7 +275,7 @@ Dentro de un grupo, Kafka asigna particiones disponibles a sus miembros. Dos mie
 **4. Cierra**
 Registra el `groupId` y cuántas particiones leyó cada instancia.
 
-#### Subtema 7.3: Reconoce redelivery e idempotencia · 15 min
+#### Subtema 4.3: Reconoce redelivery e idempotencia · 15 min
 
 **1. Contexto**
 El offset identifica el avance del grupo; no confirma por sí solo que la base de datos guardó el efecto de negocio.
@@ -559,14 +308,14 @@ Guarda la salida del test y explica qué estado comparte Kafka y cuál protege l
 
 **Proyecto integrador:** el productor y el consumidor de `examples/node-messaging/kafka/` alimentan directamente la inbox de `examples/spring-kafka-rutaflow/`, el proyector real de pedidos de RutaFlow. **Límite:** usa Kafka cuando necesitas conservar el historial completo del flujo y varios consumidores independientes lean el mismo tópico a su propio ritmo; si solo necesitas repartir tareas una vez entre workers sin retener el historial, una cola de trabajo (RabbitMQ) es más simple que un log particionado.
 
-### Tema 8: RabbitMQ desde Node: exchange, cola y confirmaciones
+### Tema 5: RabbitMQ desde Node: exchange, cola y confirmaciones
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Las confirmaciones y la DLQ evitan perder trabajo o esconder mensajes que requieren diagnóstico.
 
 **Prerrequisitos:** Node M0 T2 (módulos) y Node M8 T3 (promesas). Proyecto continuo: RutaFlow distribuye tareas para generar etiquetas.
 
-#### Subtema 8.1: Enruta una etiqueta con exchange y binding · 10 min
+#### Subtema 5.1: Enruta una etiqueta con exchange y binding · 10 min
 
 **1. Contexto**
 RabbitMQ separa el destino lógico (exchange) de la cola que guarda trabajo pendiente.
@@ -589,7 +338,7 @@ El exchange no almacena mensajes. Enruta según tipo y binding key; la cola los 
 **4. Cierra**
 Dibuja `producer → exchange → binding → queue` y guarda el test verde.
 
-#### Subtema 8.2: Confirma una publicación y un procesamiento · 10 min
+#### Subtema 5.2: Confirma una publicación y un procesamiento · 10 min
 
 **1. Contexto**
 La confirmación del productor y el `ack` del consumidor hablan de dos etapas diferentes.
@@ -614,7 +363,7 @@ Publisher confirm muestra aceptación del broker. Consumer ack permite retirar u
 **4. Cierra**
 Registra dos evidencias separadas: confirm del productor y ack del worker.
 
-#### Subtema 8.3: Rechaza y enruta un mensaje inválido a la DLQ · 15 min
+#### Subtema 5.3: Rechaza y enruta un mensaje inválido a la DLQ · 15 min
 
 **1. Contexto**
 Un mensaje sin `eventId` no puede deduplicarse ni procesarse con seguridad.

@@ -4,7 +4,7 @@
 
 ### Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, módulos ES y manejo básico de la terminal.
+**Prerrequisito:** Node.js 24 LTS, módulos ES y manejo básico de la terminal.
 
 **Al terminar podrás:** ejecutar un cálculo intensivo en un Worker Thread, comprobar que un temporizador del hilo principal sigue respondiendo y limitar la cantidad de cálculos simultáneos.
 
@@ -114,7 +114,7 @@ node src/calcular.js
 
 ### Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min
 
-**Prerrequisito:** Node.js LTS, HTTP básico y comprensión de procesos y puertos locales.
+**Prerrequisito:** Node.js 24 LTS, HTTP básico y comprensión de procesos y puertos locales.
 
 **Al terminar podrás:** iniciar dos procesos con `cluster`, identificar qué PID atiende cada respuesta y demostrar que su estado en memoria no se comparte.
 
@@ -231,7 +231,7 @@ Sustituye el texto por ese número, verifica que corresponde a esta práctica y 
 
 ### Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min
 
-**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
+**Prerrequisito:** Node.js 24 LTS, Docker, Redis básico y funciones asíncronas.
 
 **Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
 
@@ -370,7 +370,7 @@ docker rm -f redis-practica-bullmq
 
 ### Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min
 
-**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
+**Prerrequisito:** Node.js 24 LTS, procesos locales y Chrome DevTools para la inspección visual.
 
 **Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
 
@@ -494,7 +494,7 @@ npx pm2 delete memoria-academia
 
 ### Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min
 
-**Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
+**Prerrequisito:** Node.js 24 LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
 
 **Al terminar podrás:** implementar una lectura cache-aside con TTL, comprobar una reserva atómica con `SET NX EX` y demostrar que Pub/Sub pierde mensajes cuando no hay suscriptores conectados.
 
@@ -644,13 +644,261 @@ docker rm -f redis-practica-patrones
 
 **Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
 
+### Tema 6: Perfilar CPU con `--cpu-prof` y encontrar lo que bloquea el event loop · Intermedio · 40 min
+
+**Duración estimada:** 40 min (3 subtemas de 10–15 min).
+**¿Por qué es importante?** En el Tema 1 moviste trabajo a un Worker porque **sabías** que era pesado. En producción lo habitual es lo contrario: la API «a veces va lenta» y nadie sabe qué función es la culpable. Un perfil de CPU muestra en qué funciones se fue el tiempo del hilo principal, para optimizar con datos en vez de intuición.
+
+**Prerrequisitos:** Tema 1 de este módulo (Worker Threads), Tema 4 (heap snapshots) y Módulo 3 (servidor con `node:http`). Node 24 LTS y `curl`. Guía oficial de referencia: «Don't Block the Event Loop».
+
+```bash
+mkdir -p academia-labs/node/perfil-cpu && cd academia-labs/node/perfil-cpu
+npm init -y
+npm pkg set type=module
+```
+
+#### Subtema 6.1: Demuestra que una ruta bloquea a las demás · 10 min
+
+**1. Contexto**
+RutaFlow calcula la ruta más corta entre 11 paradas probando todas las permutaciones. Mientras calcula, ¿puede responder `/salud`?
+
+**2. Hazlo tú**
+Crea `servidor.js`:
+
+```javascript
+import { createServer } from 'node:http';
+
+function distanciaKm(a, b) {
+  const rad = (g) => (g * Math.PI) / 180;
+  const dLat = rad(b.lat - a.lat);
+  const dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+function rutaMasCorta(paradas) {
+  let mejor = Infinity;
+  const permutar = (resto, actual, recorrido) => {
+    if (resto.length === 0) { mejor = Math.min(mejor, recorrido); return; }
+    for (let i = 0; i < resto.length; i++) {
+      const siguiente = resto[i];
+      permutar(resto.toSpliced(i, 1), siguiente, recorrido + distanciaKm(actual, siguiente));
+    }
+  };
+  permutar(paradas.slice(1), paradas[0], 0);
+  return mejor;
+}
+
+const paradas = Array.from({ length: 11 }, (_, i) => ({ lat: 4.6 + i * 0.01, lon: -74.08 + ((i * 7) % 10) * 0.01 }));
+
+createServer((req, res) => {
+  if (req.url === '/ruta') {
+    const km = rutaMasCorta(paradas);
+    res.end(JSON.stringify({ km: Number(km.toFixed(2)) }));
+  } else if (req.url === '/salud') {
+    res.end(JSON.stringify({ ok: true }));
+  } else {
+    res.statusCode = 404;
+    res.end();
+  }
+}).listen(4020, () => console.log('escuchando en 4020'));
+
+// Ctrl+C debe terminar con process.exit para que Node escriba el perfil de --cpu-prof.
+process.on('SIGINT', () => process.exit(0));
+```
+
+```bash
+node servidor.js
+```
+
+En otra terminal, lanza `/ruta` y, 0,1 s después, `/salud`:
+
+```bash
+curl -s -o /dev/null -w "ruta %{time_total}s\n" localhost:4020/ruta & sleep 0.1; curl -s -w "  salud %{time_total}s\n" localhost:4020/salud; wait
+```
+
+**Resultado esperado** (los tiempos dependen de tu equipo):
+
+```text
+{"ok":true}  salud 0.590935s
+ruta 0.689719s
+```
+
+**Fallo deliberado:** sube las paradas de `11` a `12` en `Array.from({ length: 11 }, …)` y repite. **Resultado:** `/salud` tarda ahora varios segundos (12 paradas son 11 veces más permutaciones). **Diagnóstico:** `/salud` no hace nada costoso; espera porque el único hilo de JavaScript está ocupado en `/ruta`. Vuelve a `11`.
+
+**3. Entiende**
+Node atiende todas las peticiones en un hilo. Una función síncrona larga no «ralentiza su ruta»: **congela todas**. Por eso el síntoma aparece en endpoints inocentes. **Límite:** medir con `curl` dice **que** algo bloquea, no **qué** función; para eso necesitas el perfil.
+
+**4. Cierra**
+Anota el tiempo de `/salud` con 11 paradas. Es la línea base.
+
+#### Subtema 6.2: Graba y lee un perfil con `--cpu-prof` · 15 min
+
+**1. Contexto**
+Necesitas la lista de funciones ordenada por tiempo de CPU propio, sin instalar herramientas.
+
+**2. Hazlo tú**
+Arranca el servidor con el perfilador, llama tres veces a `/ruta` y detén con `Ctrl+C`:
+
+```bash
+node --cpu-prof --cpu-prof-dir=perfiles servidor.js
+# en la otra terminal:
+for i in 1 2 3; do curl -s localhost:4020/ruta; echo; done
+```
+
+Al terminar aparece `perfiles/CPU.<fecha>.<hora>.<pid>.0.001.cpuprofile`. Es JSON: ábrelo en Chrome DevTools (**Performance → Load profile**) para verlo como gráfico de llamas, o resúmelo con este script `analizar-perfil.js`:
+
+```javascript
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+const carpeta = process.argv[2] ?? 'perfiles';
+const archivo = readdirSync(carpeta).filter((f) => f.endsWith('.cpuprofile')).sort().at(-1);
+const perfil = JSON.parse(readFileSync(join(carpeta, archivo), 'utf8'));
+
+const nodos = new Map(perfil.nodes.map((n) => [n.id, n]));
+const propioMs = new Map();
+perfil.samples.forEach((id, i) => {
+  const { functionName, url, lineNumber } = nodos.get(id).callFrame;
+  const nombre = `${functionName || '(anónima)'} ${url.split('/').at(-1)}:${lineNumber + 1}`;
+  propioMs.set(nombre, (propioMs.get(nombre) ?? 0) + perfil.timeDeltas[i] / 1000);
+});
+
+const total = [...propioMs.values()].reduce((a, b) => a + b, 0);
+console.log(`perfil: ${archivo} · ${total.toFixed(0)} ms muestreados`);
+for (const [nombre, ms] of [...propioMs].sort((a, b) => b[1] - a[1]).slice(0, 5)) {
+  console.log(`${(100 * ms / total).toFixed(1).padStart(5)}%  ${ms.toFixed(0).padStart(6)} ms  ${nombre}`);
+}
+```
+
+```bash
+node analizar-perfil.js
+```
+
+**Resultado esperado** (los porcentajes varían, el orden no):
+
+```text
+perfil: CPU.20261118.201319.28874.0.001.cpuprofile · 3266 ms muestreados
+ 38.5%    1259 ms  permutar servidor.js:13
+ 29.6%     966 ms  (idle) :0
+ 26.5%     867 ms  distanciaKm servidor.js:3
+  3.3%     109 ms  (garbage collector) :0
+  0.4%      13 ms  (program) :0
+```
+
+**Fallo deliberado:** borra la última línea de `servidor.js` (`process.on('SIGINT', …)`), repite la grabación y detén con `Ctrl+C`. **Resultado:** la carpeta `perfiles` no se crea. **Diagnóstico:** Node escribe el perfil al **salir** normalmente; si la señal mata el proceso, no hay salida ordenada y el perfil se pierde. Restaura el manejador.
+
+**3. Entiende**
+`--cpu-prof` activa el muestreador de V8: cada pocos microsegundos anota qué función estaba ejecutándose. El **tiempo propio** de una función es el de las muestras en que estaba en la cima de la pila. `(idle)` es el hilo esperando I/O (bueno); `(garbage collector)` es memoria que se libera. Aquí casi todo el trabajo útil está en `permutar` y `distanciaKm`, y `distanciaKm` hace trigonometría que se repite millones de veces con los mismos pares de paradas. **Límite:** el muestreo es estadístico; funciones muy cortas pueden no aparecer, y perfilar añade algo de sobrecarga, así que compara perfiles grabados igual.
+
+**4. Cierra**
+Guarda el resumen. Ya sabes qué función atacar primero.
+
+#### Subtema 6.3: Optimiza lo que el perfil señala y vuelve a medir · 15 min
+
+**1. Contexto**
+El perfil dice que una cuarta parte del tiempo se va en recalcular distancias entre las mismas 11 paradas.
+
+**2. Hazlo tú**
+Reemplaza `rutaMasCorta` en `servidor.js` por esta versión que calcula cada distancia una sola vez:
+
+```javascript
+function rutaMasCorta(paradas) {
+  // Cada distancia se calcula una sola vez: n² llamadas en vez de una por paso de cada permutación.
+  const matriz = paradas.map((a) => paradas.map((b) => distanciaKm(a, b)));
+  let mejor = Infinity;
+  const permutar = (resto, actual, recorrido) => {
+    if (resto.length === 0) { mejor = Math.min(mejor, recorrido); return; }
+    for (let i = 0; i < resto.length; i++) {
+      const siguiente = resto[i];
+      permutar(resto.toSpliced(i, 1), siguiente, recorrido + matriz[actual][siguiente]);
+    }
+  };
+  permutar(paradas.map((_, i) => i).slice(1), 0, 0);
+  return mejor;
+}
+```
+
+Graba otro perfil igual que antes y mide:
+
+```bash
+node --cpu-prof --cpu-prof-dir=perfiles servidor.js
+# en la otra terminal:
+for i in 1 2 3; do curl -s -o /dev/null -w "%{time_total}\n" localhost:4020/ruta; done
+curl -s localhost:4020/ruta; echo
+# Ctrl+C en la primera terminal y luego:
+node analizar-perfil.js
+```
+
+**Resultado esperado** (en el equipo de referencia, de unos 0,72 s a unos 0,38 s por cálculo):
+
+```text
+0.402091
+0.371007
+0.373698
+{"km":35.1}
+perfil: CPU.20261118.201340.29454.0.001.cpuprofile · 2639 ms muestreados
+ 55.3%    1461 ms  permutar servidor.js:15
+ 36.5%     962 ms  (idle) :0
+  4.7%     124 ms  (garbage collector) :0
+```
+
+**Fallo deliberado:** en la nueva versión, cambia `permutar(paradas.map((_, i) => i).slice(1), 0, 0)` por `permutar(paradas.slice(1), paradas[0], 0)`. **Resultado:** `curl` no recibe respuesta y el servidor termina con `TypeError: Cannot read properties of undefined (reading '#<Object>')` en la línea de `matriz[actual][siguiente]`. **Diagnóstico:** la nueva `permutar` trabaja con **índices**; con objetos, `matriz[objeto]` es `undefined`. Restaura la llamada y comprueba siempre que el resultado optimizado es **igual** al original (`35.1`).
+
+**3. Entiende**
+`distanciaKm` desapareció del perfil y el tiempo bajó a la mitad: optimizaste lo que los datos señalaban. Pero `permutar` sigue ocupando el hilo cientos de milisegundos, así que `/salud` aún espera. Optimizar reduce el bloqueo; **no** lo elimina. Para trabajo que sigue siendo largo, la salida es el Worker del Tema 1 o un algoritmo distinto. **Límite:** no optimices sin perfil «antes» y «después» grabados de la misma forma; sin ellos no sabes si mejoraste.
+
+**4. Cierra**
+Guarda los dos resúmenes de perfil y los tiempos. El cálculo de rutas queda medido y documentado.
+
+**Hito del tema:**
+
+- [ ] Demostré con `curl` que `/ruta` retrasa a `/salud`.
+- [ ] Grabé un `.cpuprofile` y lo resumí con `analizar-perfil.js` (o lo abrí en DevTools).
+- [ ] Reproduje la pérdida del perfil sin manejador de `SIGINT` y expliqué la causa.
+- [ ] Comparé perfiles antes y después, con el mismo resultado `35.1`, y expliqué por qué `/salud` todavía espera.
+
+**Ejercicio:** mueve `rutaMasCorta` a un Worker (Tema 1) para que `/salud` responda en milisegundos mientras `/ruta` calcula. Antes de abrir la solución, escribe qué tiempo esperas para `/salud` con la prueba del subtema 6.1 y si `/ruta` será más rápida o no.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+Crea `ruta.worker.js` con `distanciaKm` y la versión optimizada de `rutaMasCorta` (cópialas tal cual) y al final:
+
+```javascript
+import { parentPort, workerData } from 'node:worker_threads';
+
+// ... distanciaKm y rutaMasCorta aquí ...
+
+parentPort.postMessage(rutaMasCorta(workerData));
+```
+
+En `servidor.js`, sustituye la rama de `/ruta`:
+
+```javascript
+import { Worker } from 'node:worker_threads';
+
+// dentro del manejador:
+if (req.url === '/ruta') {
+  const worker = new Worker(new URL('./ruta.worker.js', import.meta.url), { workerData: paradas });
+  worker.once('message', (km) => res.end(JSON.stringify({ km: Number(km.toFixed(2)) })));
+  worker.once('error', (error) => { res.statusCode = 500; res.end(JSON.stringify({ error: error.message })); });
+}
+```
+
+Con la prueba del subtema 6.1, `/salud` responde en unos milisegundos y `/ruta` tarda lo mismo o un poco más (arrancar el Worker cuesta). El Worker no acelera el cálculo: libera el hilo principal. En producción usarías un pool de Workers acotado, como en el Tema 1, en lugar de crear uno por petición.
+
+</details>
+
+**Fuentes oficiales:** [Node.js Learn — Profiling Node.js Applications](https://nodejs.org/en/learn/getting-started/profiling), [Node.js — CLI `--cpu-prof`](https://nodejs.org/api/cli.html#--cpu-prof) y [Node.js Learn — Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+
 ## Laboratorio práctico
 
 Construye una API de asignación y etiquetas desde una carpeta vacía. El laboratorio no reutiliza archivos de los temas ni ejemplos del repositorio. Comprobarás CPU fuera del hilo principal, dos procesos con memoria aislada, concurrencia acotada y una cola con reintentos.
 
 **Al terminar podrás:** mientras dos procesos atienden HTTP, una petición de cálculo se ejecuta en un Worker Thread sin impedir `/salud`; otra petición encola una etiqueta cuyo primer intento falla y cuyo segundo se completa.
 
-**Prerrequisitos:** Node.js LTS, Docker y tres terminales.
+**Prerrequisitos:** Node.js 24 LTS, Docker y tres terminales.
 
 ### 1. Crea el proyecto y Redis
 

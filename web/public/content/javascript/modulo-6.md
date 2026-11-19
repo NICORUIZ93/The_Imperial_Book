@@ -546,7 +546,7 @@ Ahora distingues una intercepción transversal de una regla de dominio y sabes d
 
 #### Paso 1 · Objetivo y preparación
 
-Usa Node.js 22 o superior, que trae `fetch` y los streams web sin instalar nada. Crea la carpeta `academia-labs/javascript/streams-web`. El ejemplo levanta su propio servidor local, así que no necesitas internet.
+Usa Node.js 24 LTS, que trae `fetch` y los streams web sin instalar nada. Crea la carpeta `academia-labs/javascript/streams-web`. El ejemplo levanta su propio servidor local, así que no necesitas internet.
 
 #### Paso 2 · Contexto y caso real
 

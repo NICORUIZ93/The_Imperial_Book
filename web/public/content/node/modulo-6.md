@@ -10,7 +10,7 @@ Los ejemplos son laboratorios locales. Las claves de firma y de sesión se leen 
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, terminal y JavaScript con `async`/`await`. El proyecto es independiente y empieza en una carpeta vacía.
+**Prerrequisitos:** Node.js 24 LTS, npm, terminal y JavaScript con `async`/`await`. El proyecto es independiente y empieza en una carpeta vacía.
 
 **Al terminar podrás:** almacenar una contraseña como sal aleatoria más derivación, verificar un intento de inicio de sesión sin guardar el texto original y comparar las claves derivadas con `timingSafeEqual`.
 
@@ -126,7 +126,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm y nociones de JSON. Este ejemplo empieza en una carpeta vacía y no usa archivos del tema anterior.
+**Prerrequisitos:** Node.js 24 LTS, npm y nociones de JSON. Este ejemplo empieza en una carpeta vacía y no usa archivos del tema anterior.
 
 **Al terminar podrás:** emitir y verificar un access token firmado con expiración, exigiendo explícitamente algoritmo, issuer y audience, y explicar el papel de un refresh token revocable.
 
@@ -234,7 +234,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, HTTP, Express y nociones de JWT. El ejemplo crea sus propios archivos y emite sus propios tokens; no depende de los proyectos anteriores.
+**Prerrequisitos:** Node.js 24 LTS, HTTP, Express y nociones de JWT. El ejemplo crea sus propios archivos y emite sus propios tokens; no depende de los proyectos anteriores.
 
 **Al terminar podrás:** rechazar una petición sin credenciales válidas, autorizar por rol y añadir una comprobación de propiedad o pertenencia del objeto antes de modificarlo.
 
@@ -427,7 +427,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, HTTP y redirecciones. Este experimento no requiere credenciales reales ni archivos de otros temas.
+**Prerrequisitos:** Node.js 24 LTS, HTTP y redirecciones. Este experimento no requiere credenciales reales ni archivos de otros temas.
 
 **Al terminar podrás:** explicar authorization code con PKCE, generar un `code_verifier` y su challenge `S256`, distinguir cliente, proveedor y API, y comprobar `state` en el callback.
 
@@ -525,7 +525,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, Express y HTTP. El laboratorio comienza en una carpeta vacía y contiene su propia aplicación y pruebas.
+**Prerrequisitos:** Node.js 24 LTS, npm, Express y HTTP. El laboratorio comienza en una carpeta vacía y contiene su propia aplicación y pruebas.
 
 **Al terminar podrás:** crear una sesión almacenada en el servidor, regenerarla después del login, conservar su cookie con un agente de pruebas y rechazar una mutación sin token CSRF válido.
 
@@ -762,7 +762,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js LTS, npm, HTTP y conceptos básicos de hashing y JWT. El proyecto implementa todas sus piezas en archivos propios y no reutiliza código de otros temas.
+**Prerrequisitos:** Node.js 24 LTS, npm, HTTP y conceptos básicos de hashing y JWT. El proyecto implementa todas sus piezas en archivos propios y no reutiliza código de otros temas.
 
 **Al terminar podrás:** construir un endpoint de login que verifica una contraseña hasheada y emite un JWT estrictamente validado, y consumir una ruta protegida mediante `Authorization: Bearer`, con respuestas diferenciadas para credenciales inválidas y tokens ausentes o inválidos.
 
