@@ -1,76 +1,73 @@
-// Identidad de academia: página impresa. Papel cálido, tinta negra y un único
-// acento óxido para lo que hay que mirar. Nada de azul de aplicación.
+// Identidad de academia: superficies calmadas, lectura nítida y color semántico.
 :root,
 :root[data-theme='light'] {
-  --bg: #e7e4dd;               /* mesa: gris papel detrás de la hoja */
-  --bg-elevated: #fbfaf6;      /* la hoja */
-  --bg-subtle: #f1efe9;        /* filetes y recuadros */
-  --bg-instrument: #ececec;    /* listados de código, como en el libro */
-  --text: #1a1a1a;             /* tinta */
-  --text-secondary: #4d4a45;
-  --text-faint: #726d64;       /* cabeceras corridas y folios */
-  --accent: #8f2f2a;           /* óxido de las ilustraciones del libro */
-  --accent-hover: #6d211d;
-  --accent-soft: rgba(143, 47, 42, .07);
-  --accent-2: #8f2f2a;
-  --success: #2f6b45;
-  --success-soft: rgba(47, 107, 69, .08);
-  --warning: #8a5a12;
-  --warning-soft: rgba(138, 90, 18, .08);
-  --error: #a12222;
-  --error-soft: rgba(161, 34, 34, .07);
-  --border: #d8d3c8;
-  --border-strong: #b5ae9f;
-  --shadow-sm: 0 1px 0 rgba(26, 26, 26, .04);
-  --shadow-md: 0 0 0 1px rgba(26, 26, 26, .04);
-  --shadow-lg: 0 24px 48px -34px rgba(26, 26, 26, .38);
-  --glow: 0 0 0 1px rgba(143, 47, 42, .22);
-  --transition: .18s ease;
-  --code-bg: #ececec;
-  --code-text: #1a1a1a;
-  --grad: #8f2f2a;
-  --font-display: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
-  --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --bg: #f3f6fb;
+  --bg-elevated: #ffffff;
+  --bg-subtle: #eef2f8;
+  --bg-instrument: #111827;
+  --text: #172033;
+  --text-secondary: #5f6b7c;
+  --text-faint: #8893a4;
+  --accent: #4f46e5;
+  --accent-hover: #3730a3;
+  --accent-soft: rgba(79, 70, 229, .09);
+  --accent-2: #0891b2;
+  --success: #15803d;
+  --success-soft: rgba(21, 128, 61, .09);
+  --warning: #b45309;
+  --warning-soft: rgba(180, 83, 9, .09);
+  --error: #dc2626;
+  --error-soft: rgba(220, 38, 38, .08);
+  --border: #dfe5ef;
+  --border-strong: #c7d0df;
+  --shadow-sm: 0 1px 2px rgba(23, 32, 51, .05), 0 1px 3px rgba(23, 32, 51, .04);
+  --shadow-md: 0 10px 30px -18px rgba(23, 32, 51, .3), 0 2px 8px rgba(23, 32, 51, .05);
+  --shadow-lg: 0 28px 70px -32px rgba(23, 32, 51, .38);
+  --glow: 0 0 0 4px rgba(79, 70, 229, .13);
+  --transition: .2s ease;
+  --code-bg: #111827;
+  --code-text: #e5edf8;
+  --grad: #4f46e5;
+  --font-display: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace;
-  /* El libro de Marcombo compone el cuerpo en sans, no en serif. */
-  --font-reading: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-reading: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-// Tema oscuro = "lectura nocturna": la misma página, en papel carbón.
 :root[data-theme='dark'] {
-  --bg: #141311;
-  --bg-elevated: #1d1c19;
-  --bg-subtle: #262420;
-  --bg-instrument: #2b2925;
-  --text: #ece8df;
-  --text-secondary: #bdb7ab;
-  --text-faint: #968f83;
-  --accent: #d99a95;
-  --accent-hover: #e9b3af;
-  --accent-soft: rgba(217, 154, 149, .10);
-  --accent-2: #d99a95;
-  --success: #7fbd97;
-  --success-soft: rgba(127, 189, 151, .10);
-  --warning: #d6ab6a;
-  --warning-soft: rgba(214, 171, 106, .10);
-  --error: #e59494;
-  --error-soft: rgba(229, 148, 148, .10);
-  --border: #3b3833;
-  --border-strong: #5a554d;
-  --shadow-sm: 0 1px 0 rgba(0, 0, 0, .35);
-  --shadow-md: 0 0 0 1px rgba(0, 0, 0, .3);
-  --shadow-lg: 0 28px 54px -34px rgba(0, 0, 0, .7);
-  --glow: 0 0 0 1px rgba(217, 154, 149, .28);
-  --transition: .18s ease;
-  --code-bg: #2b2925;
-  --code-text: #ece8df;
-  --grad: #d99a95;
-  --font-display: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
-  --font-sans: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --bg: #0b1120;
+  --bg-elevated: #111827;
+  --bg-subtle: #182235;
+  --bg-instrument: #070b14;
+  --text: #edf2f9;
+  --text-secondary: #a9b4c5;
+  --text-faint: #7d899c;
+  --accent: #8b83ff;
+  --accent-hover: #aaa5ff;
+  --accent-soft: rgba(139, 131, 255, .12);
+  --accent-2: #22d3ee;
+  --success: #4ade80;
+  --success-soft: rgba(74, 222, 128, .1);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, .1);
+  --error: #fb7185;
+  --error-soft: rgba(251, 113, 133, .1);
+  --border: #263247;
+  --border-strong: #3b4a63;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .3);
+  --shadow-md: 0 16px 36px -20px rgba(0, 0, 0, .7);
+  --shadow-lg: 0 30px 70px -28px rgba(0, 0, 0, .82);
+  --glow: 0 0 0 4px rgba(139, 131, 255, .14);
+  --transition: .2s ease;
+  --code-bg: #070b14;
+  --code-text: #dce7f5;
+  --grad: #8b83ff;
+  --font-display: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Fira Mono', ui-monospace, Menlo, Consolas, monospace;
-  --font-reading: 'Fira Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-reading: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 :root {
@@ -112,10 +109,11 @@ button, a, input, summary, textarea { -webkit-tap-highlight-color: transparent; 
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
 
-p, li, td, th, blockquote, figcaption {
+p, li, blockquote, figcaption {
   overflow-wrap: break-word;
-  word-break: break-word;
+  word-break: normal;
 }
+td, th { overflow-wrap:normal; word-break:normal; }
 img, video, svg { max-width: 100%; height: auto; display: block; }
 .skip-link {
   position: fixed; z-index: 1000; top: 12px; left: 12px; padding: 10px 14px;
