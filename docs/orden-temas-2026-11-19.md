@@ -141,9 +141,9 @@ Comprobado después: de las **25 citas internas por número** que hay en los die
 
 ## Lo que nota el lector en este lote
 
-- **22 de los 78 temas tocados cambian de enlace** (el fragmento lleva el número y el nivel, así que reetiquetar también cambia la URL: 1 en DevOps 2 y 1 en Flutter 1 vienen de la etiqueta, no del movimiento). Los otros 56 conservan su enlace.
+- **20 de los 78 temas tocados cambian de enlace.** El fragmento se calcula sobre el título **sin** el sufijo ` · Nivel · XX min` (`scripts/build_web_topic_index.py:63`, que llama a `TOPIC_META.sub("", title)`; en la app, el mismo recorte en `web/src/app/course/lesson-viewer.ts:84`), así que etiquetar no mueve ninguna URL: solo cambian de enlace los temas que el reordenado renumeró — 3 en Android 15, 2 en Angular 14, 2 en Flutter 7, 2 en iOS 4, 2 en iOS 6, 3 en iOS 13, 3 en Kotlin Multiplatform 7 y 3 en Microservicios 1. Los otros 58 conservan su enlace, incluidos los 14 temas de DevOps 2 y Flutter 1 que solo se reetiquetaron.
 - Un enlace antiguo **no rompe**: abre la portada del capítulo, igual que en el lote de Node.
-- La marca «tema leído» se pierde en esos 22 temas para quien los tuviera leídos; el progreso de capítulo no se toca.
+- La marca «tema leído» se pierde en esos 20 temas para quien los tuviera leídos; el progreso de capítulo no se toca.
 
 ## Verificación del segundo lote
 
@@ -214,9 +214,9 @@ Recomprobado después sobre los 15 capítulos: ningún `«título» … de este 
 
 ## Lo que nota el lector con JavaScript etiquetado
 
-- **90 de los 92 enlaces de temas cambian**, y no por el reordenado: el nivel y la duración viven dentro de la cabecera, que es de donde se calcula el fragmento. Etiquetar un tema cambia su URL y su clave de «tema leído» aunque no se mueva. Solo conservan enlace los dos temas que ya venían etiquetados igual (capítulo 7, temas 7 y 8).
-- Consecuencia directa: **quien tuviera marcado un tema de JavaScript como leído pierde esa marca** en 90 de los 92. El progreso de capítulo no se toca.
-- Esto es un coste del programa, no de este lote: repetir la operación en los otros 13 cursos sin etiquetar (1.122 temas) cambiaría prácticamente todos sus enlaces. La alternativa es sacar el nivel y la duración de la cabecera —que el fragmento y la clave de progreso se calculen sobre el título sin etiqueta— y entonces etiquetar sin penalizar a nadie. Queda como decisión del dueño del proyecto antes de seguir.
+- **31 de los 92 enlaces cambian, y todos por el reordenado, no por etiquetar.** Las 89 etiquetas nuevas no movieron ni una URL: el índice y el lector recortan el sufijo ` · Nivel · XX min` antes de calcular el fragmento (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84`). Cambian enlace solo los temas renumerados en los seis capítulos movidos — 6 en el capítulo 1, 2 en el 4, 4 en el 8, 3 en el 9, 5 en el 11 y 11 en el 14 —, medido como diferencia de fragmentos entre `topic-index.json` de antes y de después del lote. Los otros 61 conservan su enlace, incluidos los temas de los 9 capítulos que solo se etiquetaron.
+- Consecuencia directa: **quien tuviera marcado como leído uno de esos 31 temas pierde esa marca**. El progreso de capítulo no se toca.
+- Corrección de esta cifra: aquí estaba escrito «90 de los 92», medido sobre la cabecera completa sin quitarle el sufijo de nivel y duración. La regla real es la de la app, y con ella el impacto es 31. Reetiquetar un tema **no** cambia su enlace ni borra su marca de leído.
 
 ## Verificación del tercer lote
 
@@ -238,7 +238,7 @@ Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la n
 ## Deuda que queda
 
 - **1.122 de los 1.420 temas (79 %) siguen sin nivel ni duración declarados.** Tras JavaScript, solo tres cursos están completos: Node.js (78/78), Microservicios (24/24) y JavaScript (92/92). Los demás andan entre 0 y 16 etiquetas: React 6/64, iOS 13/69, Java 16/117, Kotlin Multiplatform 10/66, control-1 0/70, rutaflow 0/29.
-- El patrón de este lote es el que queda para los 13 cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. Antes de repetirlo 13 veces conviene decidir lo del enlace: mientras el nivel esté dentro de la cabecera, etiquetar cambia la URL del tema y borra su marca de leído.
+- El patrón de este lote es el que queda para los 13 cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. No hay ninguna decisión pendiente sobre los enlaces: como el fragmento se calcula sin el sufijo de nivel y duración, **etiquetar un curso entero no cambia ni un enlace ni borra ninguna marca de leído**. Lo único que mueve URLs es renumerar, y eso pasa solo en los capítulos que de verdad hace falta reordenar.
 - Los dos cursos ya completos del todo (Node y Microservicios) y JavaScript no tienen incidencias declaradas: sus capítulos cumplen las dos reglas.
 
 
