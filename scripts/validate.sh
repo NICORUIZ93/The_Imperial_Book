@@ -29,6 +29,16 @@ python3 scripts/build_curriculum_catalog.py --check
 echo "== Laboratorios citados por las lecciones"
 python3 scripts/validate_lesson_labs.py
 
+echo "== Capturas y ayudas de código de los temas en alcance (specs/002)"
+python3 scripts/audit_visual_aids.py
+
+echo "== Recursos enlazados por las lecciones y conteos declarados (specs/001)"
+python3 scripts/audit_lesson_assets.py
+
+echo "== Reportes del prompt maestro al día (specs/003 y specs/004)"
+python3 scripts/build_zero_to_master_report.py --check
+python3 scripts/audit_track_master_prompt.py --check
+
 echo "== Specs"
 python3 scripts/validate_specs.py
 

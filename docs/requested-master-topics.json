@@ -1,0 +1,188 @@
+{
+  "source": "auditoría adjunta de 74 temas",
+  "tracks": [
+    {
+      "track": "cloud",
+      "module": 33,
+      "title": "Cloud Master: plataforma, seguridad, datos y FinOps",
+      "requestedTopics": [
+        "Terraform Avanzado",
+        "Kubernetes en Cloud",
+        "CI/CD en Cloud",
+        "Observabilidad Avanzada",
+        "Seguridad Avanzada",
+        "FinOps",
+        "Serverless Avanzado",
+        "Microservicios",
+        "Big Data",
+        "AI/ML en Cloud",
+        "Multi-Cloud",
+        "EC2 Avanzado",
+        "VPC Avanzado",
+        "RDS Avanzado",
+        "ECS/EKS Avanzado",
+        "CloudWatch",
+        "CloudTrail",
+        "S3 Avanzado",
+        "DynamoDB Avanzado",
+        "Lambda Avanzado",
+        "API Gateway Avanzado",
+        "IAM Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/cloud/modulo-33.md"
+    },
+    {
+      "track": "devops",
+      "module": 15,
+      "title": "DevOps Master: GitOps, Service Mesh y DevSecOps",
+      "requestedTopics": [
+        "Service Mesh",
+        "GitOps",
+        "Ansible",
+        "DevSecOps",
+        "Métricas DORA",
+        "Docker Avanzado",
+        "Docker Compose Avanzado",
+        "Kubernetes Avanzado",
+        "Helm Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/devops/modulo-15.md"
+    },
+    {
+      "track": "javascript",
+      "module": 14,
+      "title": "JavaScript Master: TypeScript, WASM y cómputo emergente",
+      "requestedTopics": [
+        "TypeScript",
+        "WebAssembly",
+        "Web3",
+        "Machine Learning en navegador",
+        "Web Workers",
+        "Bundlers",
+        "Accessibility (a11y)"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/javascript/modulo-14.md"
+    },
+    {
+      "track": "node",
+      "module": 14,
+      "title": "Node.js Master: GraphQL, eventos y entrega",
+      "requestedTopics": [
+        "TypeScript en Node.js",
+        "Serverless con Node.js",
+        "Docker con Node.js",
+        "CI/CD con Node.js",
+        "GraphQL Avanzado",
+        "Microservicios Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/node/modulo-14.md"
+    },
+    {
+      "track": "java",
+      "module": 15,
+      "title": "Java Master: builds, testing y logging operacional",
+      "requestedTopics": [
+        "Maven/Gradle",
+        "Testing",
+        "Logging"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/java/modulo-15.md"
+    },
+    {
+      "track": "spring-boot",
+      "module": 15,
+      "title": "Spring Master: hexagonal, reactivo y microservicios",
+      "requestedTopics": [
+        "Spring WebFlux",
+        "Testing Avanzado",
+        "Arquitectura Hexagonal",
+        "Microservicios Avanzado",
+        "Spring Cloud Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/spring-boot/modulo-15.md"
+    },
+    {
+      "track": "angular",
+      "module": 15,
+      "title": "Angular Master: pruebas, animación y SSR",
+      "requestedTopics": [
+        "Pruebas Unitarias",
+        "Pruebas E2E",
+        "Animaciones",
+        "Angular Universal (SSR)"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/angular/modulo-15.md"
+    },
+    {
+      "track": "react",
+      "module": 14,
+      "title": "React Master: servidor, Next.js, a11y e i18n",
+      "requestedTopics": [
+        "Accessibility (a11y)",
+        "Internationalization (i18n)",
+        "Server Components Avanzado",
+        "Next.js Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/react/modulo-14.md"
+    },
+    {
+      "track": "kotlin-multiplatform",
+      "module": 13,
+      "title": "KMP Master: Native, Swift Export y publicación",
+      "requestedTopics": [
+        "Kotlin Native",
+        "Publicación de Librerías",
+        "Kotlin-to-Swift Export"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/kotlin-multiplatform/modulo-13.md"
+    },
+    {
+      "track": "android",
+      "module": 14,
+      "title": "Compose Master: pruebas, accesibilidad y animación",
+      "requestedTopics": [
+        "Pruebas en Compose",
+        "Accesibilidad en Compose",
+        "Animaciones en Compose"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/android/modulo-14.md"
+    },
+    {
+      "track": "ios",
+      "module": 14,
+      "title": "SwiftUI Master: pruebas, animación e interoperabilidad",
+      "requestedTopics": [
+        "Pruebas en SwiftUI",
+        "Animaciones en SwiftUI",
+        "Interoperabilidad con UIKit",
+        "Combine Avanzado"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/ios/modulo-14.md"
+    },
+    {
+      "track": "flutter",
+      "module": 15,
+      "title": "Flutter Master: calidad, arquitectura y despliegue",
+      "requestedTopics": [
+        "Pruebas en Flutter",
+        "Rendimiento en Flutter",
+        "Clean Architecture",
+        "Internacionalización",
+        "Despliegue"
+      ],
+      "status": "visible-and-assessed",
+      "content": "web/public/content/flutter/modulo-15.md"
+    }
+  ]
+}

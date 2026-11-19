@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 313" width="794" height="313" role="img" aria-label="Captura de terminal: el lockfile rancio bloquea la instalacion y no toca nada">
+<title>Captura de terminal: el lockfile rancio bloquea la instalacion y no toca nada</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea se ejecuto en la imagen oficial del runtime (oven/bun:1, node:24, denoland/deno:2.9.8, rabbitmq:4-management) montando la carpeta del laboratorio en /app con NO_COLOR=1. Comandos en orden: npm pkg set dependencies.zod=3.25.76 ; bun install --frozen-lockfile ; echo "codigo=$?" ; node -p 'require("zod/package.json").version'. Codigo de salida final: 0.</desc>
+<rect width="794" height="313" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">el lockfile rancio bloquea la instalacion y no toca nada</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">npm pkg set dependencies.zod=3.25.76</tspan></text>
+<text x="18" y="80" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">bun install --frozen-lockfile</tspan></text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">bun install v1.4.5 (a7733435c)</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">Resolving dependencies</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">Resolved, downloaded and extracted [4]</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">error: lockfile had changes, but lockfile is frozen</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">note: dependencies in package.json changed since bun.lock was saved: zod changed from ^3.24.1 to</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6"> 3.25.76</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">note: try re-running without --frozen-lockfile and commit the updated lockfile</text>
+<text x="18" y="232" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">echo "codigo=$?"</tspan></text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">codigo=1</text>
+<text x="18" y="270" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node -p 'require("zod/package.json").version'</tspan></text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">3.24.1</text>
+</g>
+</svg>

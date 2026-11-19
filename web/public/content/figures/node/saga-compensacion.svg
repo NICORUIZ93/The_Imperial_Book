@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 454 332" width="454" height="332" role="img" aria-label="Captura de terminal: saga en memoria: camino feliz y compensacion">
+<title>Captura de terminal: saga en memoria: camino feliz y compensacion</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos capturados en orden: node saga.mjs ; node saga.mjs --fail-payment ; echo "codigo=$?". Código de salida final: 0.</desc>
+<rect width="454" height="332" rx="8" fill="#1e1f24"/>
+<rect width="454" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="454" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="227.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">saga en memoria: camino feliz y compensacion</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node saga.mjs</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">pedido=CREADO</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">conductor=RESERVADO</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">pago=APROBADO</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">final pedido:CREADO,conductor:RESERVADO,pago:APROBADO</text>
+<text x="18" y="156" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node saga.mjs --fail-payment</tspan></text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">pedido=CREADO</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">conductor=RESERVADO</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">fallo=pago rechazado: tarjeta vencida</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">compensado conductor=LIBRE</text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">compensado pedido=CANCELADO</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">final pedido:CANCELADO,conductor:LIBRE,pago:NONE</text>
+<text x="18" y="289" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">echo "codigo=$?"</tspan></text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">codigo=1</text>
+</g>
+</svg>

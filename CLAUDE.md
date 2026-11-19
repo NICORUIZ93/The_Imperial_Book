@@ -7,7 +7,9 @@ Guía para Claude Code en este repositorio.
 The_Imperial_Book es una academia en español: una app Angular (`web/`) que renderiza lecciones Markdown
 de `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se definen en
 `web/src/app/tracks/<curso>.track.ts` y se agregan en `web/src/app/course-data.ts`. El progreso vive en
-`localStorage`.
+`localStorage`. The app renders 16 curriculum tracks (289 modules, 1420 topics); la cifra la mide
+`scripts/build_web_topic_index.py` sobre `web/public/content/topic-index.json` y
+`scripts/audit_lesson_assets.py --docs-counts` exige que este archivo la declare.
 
 ## Cómo se trabaja
 

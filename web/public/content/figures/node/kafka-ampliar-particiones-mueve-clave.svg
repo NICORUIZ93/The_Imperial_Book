@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 351" width="794" height="351" role="img" aria-label="Captura de terminal: ampliar particiones muda la clave de particion y rompe el orden">
+<title>Captura de terminal: ampliar particiones muda la clave de particion y rompe el orden</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Comandos capturados en orden: node producir.mjs ; docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9093 --describe --topic pedidos | head -1 ; docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9093 --alter --topic pedidos --partitions 6 ; node reintentar.mjs. Codigo de salida final: 0.</desc>
+<rect width="794" height="351" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">ampliar particiones muda la clave de particion y rompe el orden</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node producir.mjs</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">enviado clave=1 pedido=1 tipo=CREADO particion=0 offset=0</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">enviado clave=1 pedido=1 tipo=ASIGNADO particion=0 offset=1</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">enviado clave=2 pedido=2 tipo=CREADO particion=2 offset=0</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">enviado clave=1 pedido=1 tipo=ENTREGADO particion=0 offset=2</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">enviado clave=4 pedido=4 tipo=CREADO particion=1 offset=0</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">total=5 clave=pedidoId</text>
+<text x="18" y="194" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9093 --describe </tspan></text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">--topic pedidos | head -1</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">Topic: pedidos    TopicId: cpmI-VcmT22dV0HHeOORMQ    PartitionCount: 3    ReplicationFactor: 1  </text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">  Configs: min.insync.replicas=1</text>
+<text x="18" y="270" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9093 --alter --t</tspan></text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">opic pedidos --partitions 6</text>
+<text x="18" y="308" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node reintentar.mjs</tspan></text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">reenviado clave=1 eventId=e-1 particion=3 offset=0</text>
+</g>
+</svg>

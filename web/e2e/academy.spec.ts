@@ -32,7 +32,9 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   await page.goto('/temario');
 
   await expect(page.getByRole('heading', { name: /Todos los temas, cada uno con su lección/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText('1432');
+  const index = await (await page.request.get('/content/topic-index.json')).json();
+  const total = Object.values(index).flatMap(track => Object.values(track as Record<string, unknown[]>)).reduce((sum, topics) => sum + topics.length, 0);
+  await expect(page.locator('.curriculum-stats')).toContainText(String(total));
   await expect(page.locator('.stack-row')).toHaveCount(16);
   await expect(page.locator('body')).not.toContainText('candidato');
 
@@ -147,13 +149,13 @@ test('ruta: presenta los niveles como orientación, no como certificación', asy
     'Los niveles describen la progresión prevista; no son una evaluación ni una certificación de dominio.',
   );
   await expect(
-    page.locator('.module-group .group-heading').filter({ hasText: 'Especialización (objetivo)' }),
+    page.locator('.module-group .group-heading').filter({ hasText: '4 · Diagnóstico y decisión profesional' }),
   ).toHaveCount(1);
   await expect(page.locator('.overview-page')).not.toContainText('Experto');
 
   await page.goto('/curso/javascript/14');
   const eyebrow = page.locator('.lesson-eyebrow');
-  await expect(eyebrow).toContainText('Especialización (objetivo)');
+  await expect(eyebrow).toContainText('4 · Diagnóstico y decisión profesional');
   await expect(eyebrow).not.toContainText('Experto');
 });
 

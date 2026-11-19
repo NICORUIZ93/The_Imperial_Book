@@ -16,14 +16,14 @@ En Windows puedes usar PowerShell; los tres comandos son iguales. Debes ver una 
 
 ## Mapa de la ruta
 
-«Node.js: fundamentos de backend» tiene 16 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+«Node.js: fundamentos de backend» tiene 14 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
 
 ```mermaid
 flowchart LR
     E0["Fundamentos<br/>módulos 0–2"]
     E1["Aplicación<br/>módulos 3–5"]
     E2["Integración<br/>módulos 6–7"]
-    E3["Experto<br/>módulos 8–15"]
+    E3["Experto<br/>módulos 8–13"]
     E0 --> E1
     E1 --> E2
     E2 --> E3
@@ -45,8 +45,6 @@ flowchart LR
 | 11 | Experto | [Despliegue y contenedores](/curso/node/11) |
 | 12 | Experto | [Proyecto integrador: API productiva](/curso/node/12) |
 | 13 | Experto | [TypeScript, contratos e integraciones confiables](/curso/node/13) |
-| 14 | Experto | [Node.js avanzado: GraphQL, sagas y mensajería](/curso/node/14) |
-| 15 | Experto | [Deno y Bun: permisos, compatibilidad y decisión](/curso/node/15) |
 
 ## Aprende construyendo
 
