@@ -251,6 +251,8 @@ java -cp out MedirCohesion
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** empieza por el motivo de cambio y úsalo sólo como hipótesis; confirma con invariante y vocabulario.
+
 1. **Reproducción:** explica por qué las dos clases de Envíos forman candidato, no límite probado.
 2. **Variación:** añade `NotificarEntrega` con motivo `regla-envio` y discute si pertenece al núcleo o a integración.
 3. **Diagnóstico:** identifica un commit masivo de formato como falso indicio de cohesión.
@@ -271,7 +273,7 @@ Clasifica doce clases de RutaFlow en capacidades. Defiende dos decisiones difíc
 - [ ] Distingo evidencia histórica de coincidencia accidental.
 - [ ] Puedo justificar y refutar un límite.
 
-Si fallas 2 o más puntos, repite el inventario. **Siguiente tema:** «Proteger la API pública de un módulo» (referencia interna M1 T4). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+Si fallas 2 o más puntos, repite el inventario. **Siguiente tema:** «Proteger la API pública de un módulo» (referencia interna M1 T4). **Errores comunes:** agrupar por capa, autor o tabla sin comprobar una capacidad. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 ### Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min
 
@@ -335,6 +337,8 @@ java -cp out ProtegerApiModulo
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** empieza por el caso de uso completo y elimina del contrato todo detalle de persistencia.
+
 1. **Reproducción:** señala contrato, comando, resultado e internal.
 2. **Variación:** cambia el algoritmo interno sin modificar ni recompilar conceptualmente al consumidor.
 3. **Diagnóstico:** rechaza devolver una entidad JPA con relaciones perezosas.
@@ -342,6 +346,8 @@ java -cp out ProtegerApiModulo
 5. **Diseño:** convierte tres getters conversacionales en una operación coherente de negocio.
 
 **Límite profesional:** `private` o un `grep` no detectan reflexión, SQL compartido ni acoplamiento temporal; se necesitan fitness functions y pruebas operativas.
+
+**Conexión con el proyecto integrador:** este contrato será la única entrada permitida desde Facturación hacia Envíos.
 
 #### Paso 6 · Práctica independiente
 
@@ -355,7 +361,7 @@ Diseña la API de Facturación con dos casos de uso. Explica qué campos no expo
 - [ ] Evito el modelo corporativo universal.
 - [ ] Equilibro API estable y conversación excesiva.
 
-Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener reglas de dominio libres de frameworks» (referencia interna M1 T5). **Fuentes:** [Spring Modulith — módulos e interfaces](https://docs.spring.io/spring-modulith/reference/fundamentals.html).
+Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener reglas de dominio libres de frameworks» (referencia interna M1 T5). **Errores comunes:** exponer entidades, repositorios o un DTO universal. **Fuentes oficiales:** [Spring Modulith — módulos e interfaces](https://docs.spring.io/spring-modulith/reference/fundamentals.html).
 
 **Conexión con el proyecto integrador:** `RegistrarEnvio` es el contrato que el módulo Envíos de RutaFlow expone a Facturación; ningún otro módulo debe depender de `ServicioEnvios` ni de su entidad JPA.
 
@@ -416,6 +422,8 @@ java -cp out CalcularTarifaPura
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** escribe primero los casos válidos e inválidos y luego separa cualquier import externo.
+
 1. **Reproducción:** calcula manualmente 2040.
 2. **Variación:** crea un tipo `Kilometros` que rechace negativos al construirse.
 3. **Diagnóstico:** identifica por qué `@Service` en la regla invierte la dirección deseada.
@@ -436,7 +444,7 @@ Implementa recargo por zona con tabla de casos, límites y errores. Demuestra qu
 - [ ] Hago deterministas reloj y aleatoriedad.
 - [ ] Pruebo error y camino feliz.
 
-**Siguiente tema:** «Sustituir adaptadores mediante puertos» (referencia interna M1 T6). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+**Siguiente tema:** «Sustituir adaptadores mediante puertos» (referencia interna M1 T6). **Errores comunes:** colocar validaciones de negocio en controladores o entidades JPA. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 ### Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min
 
@@ -496,6 +504,8 @@ cd academia-labs/microservices/puertos && javac --release 27 -d out src/Sustitui
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** localiza primero quién necesita la capacidad; ese lado debe poseer el puerto.
+
 1. **Reproducción:** marca puerto, adaptador y punto de composición.
 2. **Variación:** implementa un segundo adaptador que registre llamadas.
 3. **Diagnóstico:** reemplaza `guardar` por CRUD genérico y detecta la filtración de persistencia.
@@ -506,6 +516,8 @@ cd academia-labs/microservices/puertos && javac --release 27 -d out src/Sustitui
 
 Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba contractual para ambos. Justifica por qué el puerto pertenece a Envíos.
 
+**Conexión con el proyecto integrador:** sustituirás memoria por persistencia sin modificar el caso de uso.
+
 #### Paso 7 · Cierre
 
 - [ ] Distingo entrada, salida y adaptador.
@@ -514,7 +526,7 @@ Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba
 - [ ] No creo interfaces ceremoniales.
 - [ ] Conservo semántica de fallos remotos.
 
-**Siguiente tema:** «Representar dependencias de módulos como un grafo» (referencia interna M1 T7). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+**Siguiente tema:** «Representar dependencias de módulos como un grafo» (referencia interna M1 T7). **Errores comunes:** una interfaz por clase o tratar una llamada remota como local. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 **Conexión con el proyecto integrador:** `RegistrarEnvio` del módulo Envíos recibe su puerto `GuardarEnvio` desde la composición de RutaFlow, no lo instancia; así la prueba del caso de uso usa `Memoria` y producción usa el adaptador JPA real.
 
@@ -563,6 +575,8 @@ java -cp out DetectarCiclo
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** registra cada arista desde el consumidor hacia lo que necesita y conserva la prueba que la respalda.
+
 1. Reproduce el ciclo y enumera su camino.
 2. Añade una arista sin ciclo y explica por qué no basta contar aristas.
 3. Diagnostica una tabla compartida invisible para imports.
@@ -575,6 +589,8 @@ java -cp out DetectarCiclo
 
 Modela cinco módulos, incluye un ciclo transitivo y demuestra el camino. Propón la prueba que mantendrá actualizada cada clase de arista.
 
+**Conexión con el proyecto integrador:** el grafo será la línea base antes y después de romper el ciclo.
+
 #### Paso 7 · Cierre
 
 - [ ] Distingo nodo, dirección y tipo de arista.
@@ -583,7 +599,7 @@ Modela cinco módulos, incluye un ciclo transitivo y demuestra el camino. Propó
 - [ ] Incluyo datos y runtime.
 - [ ] No confundo DAG con buen diseño.
 
-**Siguiente tema:** «Romper ciclos según el tipo de acoplamiento» (referencia interna M1 T8). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
+**Siguiente tema:** «Romper ciclos según el tipo de acoplamiento» (referencia interna M1 T8). **Errores comunes:** omitir datos o dibujar relaciones sin evidencia. **Fuentes oficiales:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
 
 **Conexión con el proyecto integrador:** el ciclo Envíos→Facturación→Notificaciones→Envíos es exactamente el riesgo que este grafo debe exponer antes de que RutaFlow extraiga cualquiera de esos tres módulos a un proceso independiente.
 
@@ -630,6 +646,8 @@ javac --release 27 -d out src/RomperCiclo.java && java -cp out RomperCiclo
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** decide primero dónde vive la invariante; elige evento sólo si la respuesta puede ser asíncrona.
+
 1. Reproduce el hecho `EnvioConfirmado`.
 2. Añade identificador para deduplicación.
 3. Diagnostica un evento imperativo llamado `ConfirmarEnvio`.
@@ -640,6 +658,8 @@ javac --release 27 -d out src/RomperCiclo.java && java -cp out RomperCiclo
 
 Rompe dos ciclos distintos: uno de código y otro de datos. Justifica estrategias diferentes, riesgos y evidencia de reducción de coordinación.
 
+**Conexión con el proyecto integrador:** RutaFlow debe conservar el comportamiento mientras reduce cambios y releases coordinados.
+
 #### Paso 7 · Cierre
 
 - [ ] Sitúo la decisión con su invariante.
@@ -648,7 +668,7 @@ Rompe dos ciclos distintos: uno de código y otro de datos. Justifica estrategia
 - [ ] Reviso datos y disponibilidad.
 - [ ] Mido coordinación antes y después.
 
-**Siguiente tema:** «Bloquear accesos a internals con ArchUnit» (referencia interna M1 T9). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
+**Siguiente tema:** «Bloquear accesos a internals con ArchUnit» (referencia interna M1 T9). **Errores comunes:** usar un evento como llamada diferida o conservar una tabla compartida. **Fuentes oficiales:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
 
 **Conexión con el proyecto integrador:** reemplazar la llamada síncrona `notificaciones -> envios` por el evento `EnvioConfirmado` es la ruptura concreta que RutaFlow necesita antes de poder desplegar Notificaciones como proceso independiente.
 
@@ -683,6 +703,8 @@ ArchUnit inspecciona dependencias del bytecode compilado. La selección `resideI
 
 #### Paso 4 · Demostración guiada desde cero
 
+Crea `src/test/java/academia/rutaflow/modules/RutaflowModulesArchitectureTest.java` en una copia independiente de `examples/archunit-hexagonal-rutaflow` y guarda esta regla:
+
 ```java
 package academia.rutaflow.modules;
 
@@ -716,6 +738,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** provoca primero la importación prohibida y lee origen y destino antes de corregir.
+
 1. Identifica clases importadas y regla evaluada.
 2. Protege también `facturacion.internal`.
 3. Provoca una violación y conserva el fragmento del reporte.
@@ -726,6 +750,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 Protege internals de tres módulos y redacta mensajes accionables. Documenta una dependencia que ArchUnit no pueda detectar y su fitness function complementaria.
 
+**Conexión con el proyecto integrador:** la regla impedirá que RutaFlow erosione sus fronteras después del refactor.
+
 #### Paso 7 · Cierre
 
 - [ ] Sé qué bytecode importa ArchUnit.
@@ -734,7 +760,7 @@ Protege internals de tres módulos y redacta mensajes accionables. Documenta una
 - [ ] No silencio deuda con exclusiones.
 - [ ] Reconozco límites de inspección estática.
 
-**Siguiente tema:** «Detectar ciclos de paquetes con ArchUnit» (referencia interna M1 T10). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+**Siguiente tema:** «Detectar ciclos de paquetes con ArchUnit» (referencia interna M1 T10). **Errores comunes:** probar el paquete equivocado o silenciar una violación. **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
 **Conexión con el proyecto integrador:** esta prueba vive en `examples/archunit-hexagonal-rutaflow` y corre en cada pull request de RutaFlow; es la fitness function que convierte en fallo reproducible el límite que el Tema 4 solo describió en prosa.
 
@@ -758,7 +784,11 @@ Una regla de internals puede quedar verde aunque Envíos, Facturación y Notific
 
 `slices().matching("academia.rutaflow.modules.(*)..")` captura el segmento que sigue a `modules` como nombre del slice, así que `academia.rutaflow.modules.envios.api` y `academia.rutaflow.modules.envios.internal` cuentan como el mismo módulo `envios`. Un ciclo directo es A→B→A; uno transitivo atraviesa un tercer módulo, como A→B→C→A, y es más fácil de introducir sin notarlo porque ningún par de módulos se llama directamente entre sí. Si el patrón no captura ninguna clase (por ejemplo, por un typo en el paquete raíz) o agrupa capas técnicas como si fueran módulos de negocio, la regla pasa en verde sin haber evaluado nada real: el Tema 11 construye precisamente la defensa contra ese escenario. Spring Modulith ofrece `ApplicationModules.of(...).verify()` como alternativa declarativa para proyectos que ya siguen su convención de paquetes, pero delegar en ella tampoco exime de confirmar que detectó los módulos esperados.
 
+**Analogía:** un detector en la habitación equivocada puede permanecer verde durante un incendio. **Límite:** esta regla ve bytecode, no ciclos de datos o disponibilidad.
+
 #### Paso 4 · Demostración guiada desde cero
+
+Crea el método `losModulosEstanLibresDeCiclos` dentro de `RutaflowModulesArchitectureTest.java`:
 
 ```java
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -781,6 +811,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** confirma primero cuántos slices y qué nombres capturó el patrón.
+
 1. Explica qué captura `(*)`.
 2. Provoca ciclo directo y transitivo.
 3. Cambia a un patrón incorrecto y observa el falso verde.
@@ -791,6 +823,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 Adapta el patrón a una estructura con prefijo `rutaflow.modulos.<nombre>`. Demuestra rojo, corrige el ciclo y vuelve a verde sin ignorar paquetes.
 
+**Conexión con el proyecto integrador:** compara el ciclo reportado con el grafo de código, datos y runtime.
+
 #### Paso 7 · Cierre
 
 - [ ] El patrón representa módulos reales.
@@ -799,7 +833,7 @@ Adapta el patrón a una estructura con prefijo `rutaflow.modulos.<nombre>`. Demu
 - [ ] Leo el camino completo.
 - [ ] No confundo API pública con ausencia de ciclo.
 
-**Siguiente tema:** «Evitar falsos verdes en fitness functions» (referencia interna M1 T11). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+**Siguiente tema:** «Evitar falsos verdes en fitness functions» (referencia interna M1 T11). **Errores comunes:** patrón vacío o capas técnicas tratadas como módulos. **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
 **Conexión con el proyecto integrador:** este `beFreeOfCycles()` sobre `academia.rutaflow.modules` es la regla que RutaFlow necesita en verde antes de prometer que Envíos, Facturación y Notificaciones pueden desplegarse en un orden independiente. **Límite:** la regla solo cubre el ciclo que el patrón `slices().matching(...)` logra capturar; si el patrón tiene un error tipográfico o agrupa capas técnicas en vez de módulos de negocio, la prueba pasa en verde sin haber evaluado nada real — confirma siempre que el conteo de clases importadas no sea cero.
 
@@ -823,7 +857,11 @@ Una reorganización movió clases a `com.rutaflow`; la regla aún busca `academi
 
 Una alarma debe probarse con humo controlado, no asumiendo que suena porque nunca se escuchó lo contrario. Verificado con el proyecto real: deshabilitar la importación (apuntar a un paquete inexistente) hace que las reglas de internals y de ciclos fallen explícitamente con el mensaje "failed to check any classes", exactamente el comportamiento por defecto que protege contra el falso verde. Aun así, una aserción propia que confirme que el conjunto de clases importado no está vacío documenta esa garantía en el código mismo, en vez de depender silenciosamente de una opción de configuración que un cambio futuro podría desactivar. Una exclusión documentada necesita razón de negocio, dueño identificable y fecha de vencimiento; sin esos tres datos, la lista de exclusiones se convierte en el lugar donde la deuda arquitectónica se esconde en vez de resolverse. El bytecode que ArchUnit inspecciona se complementa con pruebas de contrato entre servicios, ownership explícito de migraciones de esquema y pruebas de degradación ante fallos parciales: ninguna herramienta individual cubre todas las formas en que un sistema distribuido puede acoplarse.
 
+**Analogía:** probar una alarma no demuestra que todo el edificio sea seguro; confirma el alcance y sensibilidad de ese control.
+
 #### Paso 4 · Demostración guiada desde cero
+
+Crea el método `laImportacionRealmenteEncontroClases` en `src/test/java/academia/rutaflow/modules/RutaflowModulesArchitectureTest.java`:
 
 ```java
 @Test
@@ -841,6 +879,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** cambia una sola condición y exige observar rojo antes de aceptar verde.
+
 1. Aserta alcance no vacío.
 2. Siembra una dependencia prohibida y exige rojo.
 3. Registra una excepción temporal con vencimiento.
@@ -851,6 +891,8 @@ cd examples/archunit-hexagonal-rutaflow
 
 Construye una matriz `riesgo → señal → fitness function → límite`. Incluye reflexión, SQL compartido, contrato incompatible y dependencia temporal, y anota para cada fila qué tipo de evidencia adicional (contrato, migración, degradación) cubre lo que ArchUnit no puede ver.
 
+**Conexión con el proyecto integrador:** la matriz impedirá presentar una sola regla estática como verificación total.
+
 #### Paso 7 · Cierre
 
 - [ ] Pruebo alcance y sensibilidad.
@@ -859,7 +901,7 @@ Construye una matriz `riesgo → señal → fitness function → límite`. Inclu
 - [ ] Combino controles heterogéneos.
 - [ ] No presento ArchUnit como verificación total.
 
-**Siguiente tema:** «Medir señales que justifican una extracción» (referencia interna M1 T12). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+**Siguiente tema:** «Medir señales que justifican una extracción» (referencia interna M1 T12). **Errores comunes:** suite vacía o exclusiones sin vencimiento. **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
 ### Tema 12: Medir señales que justifican una extracción · Experto · 40 min
 
@@ -891,6 +933,8 @@ Facturación consume CPU alta durante cierres, pero comparte equipo, tabla y tra
 
 Una señal es una pista, no un veredicto. Como separar una línea de producción, la inversión sólo se justifica si el cuello está localizado y el nuevo equipo puede operar la línea completa, no solo el fragmento de código que motivó la conversación. Combinar varias señales débiles en un umbral explícito (por ejemplo, CPU atribuible sostenido más incidentes de aislamiento más un equipo dispuesto a asumir on-call) produce una decisión más defendible que cualquier métrica aislada.
 
+**Límite profesional:** ninguna métrica aislada prueba una frontera de dominio; contrasta capacidad, coordinación, datos y operación.
+
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
@@ -904,6 +948,8 @@ javac --release 27 -d out src/EvaluarExtraccion.java && java -cp out EvaluarExtr
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** exige fuente, ventana y propietario antes de comparar un umbral.
+
 1. Reproduce ambas decisiones.
 2. Cambia una señal por vez.
 3. Diagnostica un promedio que oculta picos.
@@ -914,6 +960,8 @@ javac --release 27 -d out src/EvaluarExtraccion.java && java -cp out EvaluarExtr
 
 Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesis favorable y otra contraria a extraer; declara evidencia faltante.
 
+**Conexión con el proyecto integrador:** la matriz será la evidencia de entrada del ADR final.
+
 #### Paso 7 · Cierre
 
 - [ ] Atribuyo métricas al módulo.
@@ -922,7 +970,7 @@ Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesi
 - [ ] Uso ventanas y umbrales.
 - [ ] Puedo concluir «mantener modular».
 
-**Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T13). **Fuente:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+**Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T13). **Errores comunes:** CPU global, pico aislado u ownership parcial. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 **Conexión con el proyecto integrador:** `EvaluarExtraccion` reproduce la pregunta real sobre Facturación en RutaFlow; el Tema 13 convierte su salida (`MANTENER_MODULAR` o `REVISAR_EXTRACCION`) en el ADR que documenta la decisión.
 
@@ -946,7 +994,11 @@ RutaFlow decide mantener Facturación modular. La decisión es profesional porqu
 
 Un ADR incluye contexto verificable, al menos dos opciones —incluido no cambiar—, decisión, consecuencias positivas y negativas, estado, dueño y condición de revisión. La reversibilidad exige saber qué preservar y qué costo dispara rollback. «Microservicios escalan» no es evidencia ni alternativa: es una afirmación general que no cita ninguna señal concreta del Tema 12 ni compromete a nadie a revisarla cuando las condiciones cambien.
 
+**Analogía:** el ADR es un cuaderno de navegación: registra por qué se tomó una ruta y qué cambio obliga a corregirla. **Límite:** no reemplaza mediciones ni garantiza vigencia eterna.
+
 #### Paso 4 · Demostración guiada desde cero
+
+Crea el ejemplo independiente `academia-labs/microservices/adr/docs/adr/0001-extraer-facturacion.md` con este contenido:
 
 ```markdown
 # ADR-0001: mantener Facturación en el monolito modular
@@ -965,6 +1017,7 @@ Si la extracción aumenta incidentes sin reducir coordinación, volver al módul
 ```
 
 ```bash
+mkdir -p academia-labs/microservices/adr/docs/adr
 cd academia-labs/microservices/adr
 test -s docs/adr/0001-extraer-facturacion.md
 grep -q 'Opciones' docs/adr/0001-extraer-facturacion.md
@@ -976,6 +1029,8 @@ grep -q 'Reversión' docs/adr/0001-extraer-facturacion.md
 
 #### Paso 5 · Práctica guiada
 
+**Pista:** cada frase causal debe apuntar a una evidencia, una consecuencia o una incertidumbre.
+
 1. Vincula cada afirmación a una evidencia.
 2. Añade consecuencias negativas.
 3. Detecta lenguaje absoluto sin medida.
@@ -985,6 +1040,8 @@ grep -q 'Reversión' docs/adr/0001-extraer-facturacion.md
 #### Paso 6 · Práctica independiente
 
 Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias distintas. Explica qué señal cambia racionalmente la decisión.
+
+**Conexión con el proyecto integrador:** este ADR cierra la entrega y puede decidir legítimamente mantener el monolito modular.
 
 #### Paso 7 · Cierre
 
@@ -996,7 +1053,7 @@ Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias d
 
 **Conexión con el proyecto integrador:** `ADR-0001` es el registro final del módulo Facturación de RutaFlow; cierra el módulo con una decisión auditable en vez de dejarla como una preferencia sin evidencia.
 
-**Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+**Siguiente tema:** «Separar mitos y verdades de Domain-Driven Design» (referencia interna M1 T14). **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes oficiales:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
 
 
 ### Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min

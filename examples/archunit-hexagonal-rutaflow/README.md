@@ -1,6 +1,6 @@
 # Arquitectura hexagonal verificada con ArchUnit
 
-Ejemplo mínimo con Java 25 y ArchUnit 1.5.1. El dominio declara el puerto
+Ejemplo mínimo con Java 27 y ArchUnit 1.5.1. El dominio declara el puerto
 `DeliveryRepository`, el caso de uso depende del puerto y el adaptador de
 infraestructura lo implementa. Las reglas inspeccionan bytecode compilado,
 prohíben que domain o application dependan de infrastructure y comprueban el
@@ -27,7 +27,7 @@ de una arquitectura. Las reglas solo cubren las clases incluidas en el import.
 
 ## Alternativa Gradle
 
-Desde esta misma carpeta, con JDK 25:
+Desde esta misma carpeta, con JDK 27:
 
 ```bash
 ./gradlew clean classes test
