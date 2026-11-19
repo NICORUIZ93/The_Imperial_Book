@@ -30,7 +30,7 @@
     {
       "track": "microservices",
       "module": 1,
-      "topic": 14,
+      "topic": 12,
       "capture": "requerida"
     },
     {
@@ -159,14 +159,14 @@
     {
       "track": "angular",
       "module": 14,
-      "topic": 5,
+      "topic": 6,
       "capture": "pendiente",
       "reason": "Necesita un proyecto Angular 20 con dependencias de npm y un navegador; el entorno de generación no compila Angular. Capturar `ng serve` o `ng build` y la pantalla del navegador en la Mac del proyecto."
     },
     {
       "track": "angular",
       "module": 14,
-      "topic": 6,
+      "topic": 5,
       "capture": "pendiente",
       "reason": "Necesita un navegador con la extensión Angular DevTools y un proyecto Angular en ejecución; capturar el flame graph antes y después del cambio a computed."
     },
@@ -321,13 +321,6 @@
     {
       "track": "android",
       "module": 15,
-      "topic": 6,
-      "capture": "pendiente",
-      "reason": "Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto."
-    },
-    {
-      "track": "android",
-      "module": 15,
       "topic": 7,
       "capture": "pendiente",
       "reason": "Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto."
@@ -336,6 +329,13 @@
       "track": "android",
       "module": 15,
       "topic": 8,
+      "capture": "pendiente",
+      "reason": "Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto."
+    },
+    {
+      "track": "android",
+      "module": 15,
+      "topic": 6,
       "capture": "pendiente",
       "reason": "Necesita Android Studio, el SDK de Android y un emulador o dispositivo; el entorno de generación no los tiene. Capturar la app en ejecución y la salida de Logcat en la Mac del proyecto."
     },
@@ -391,14 +391,21 @@
     {
       "track": "ios",
       "module": 4,
-      "topic": 5,
+      "topic": 6,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
     {
       "track": "ios",
       "module": 4,
-      "topic": 6,
+      "topic": 5,
+      "capture": "pendiente",
+      "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
+    },
+    {
+      "track": "ios",
+      "module": 6,
+      "topic": 5,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
@@ -406,20 +413,6 @@
       "track": "ios",
       "module": 6,
       "topic": 4,
-      "capture": "pendiente",
-      "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
-    },
-    {
-      "track": "ios",
-      "module": 6,
-      "topic": 5,
-      "capture": "pendiente",
-      "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
-    },
-    {
-      "track": "ios",
-      "module": 13,
-      "topic": 8,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
@@ -434,6 +427,13 @@
       "track": "ios",
       "module": 13,
       "topic": 10,
+      "capture": "pendiente",
+      "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
+    },
+    {
+      "track": "ios",
+      "module": 13,
+      "topic": 8,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
@@ -503,14 +503,14 @@
     {
       "track": "flutter",
       "module": 7,
-      "topic": 5,
+      "topic": 6,
       "capture": "pendiente",
       "reason": "El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto."
     },
     {
       "track": "flutter",
       "module": 7,
-      "topic": 6,
+      "topic": 5,
       "capture": "pendiente",
       "reason": "El entorno de generación no tiene el SDK de Dart ni de Flutter. Capturar `dart run` o `flutter run` en la Mac del proyecto."
     },
@@ -552,14 +552,14 @@
     {
       "track": "kotlin-multiplatform",
       "module": 7,
-      "topic": 6,
+      "topic": 8,
       "capture": "pendiente",
       "reason": "Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto."
     },
     {
       "track": "kotlin-multiplatform",
       "module": 7,
-      "topic": 7,
+      "topic": 6,
       "capture": "pendiente",
       "reason": "Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto."
     },
@@ -573,7 +573,7 @@
     {
       "track": "kotlin-multiplatform",
       "module": 7,
-      "topic": 8,
+      "topic": 7,
       "capture": "pendiente",
       "reason": "Necesita Gradle con acceso a Maven Central (bloqueado en el entorno de generación) y, para iOS, macOS con Xcode. Capturar los comandos de Gradle y la app en ejecución en la Mac del proyecto."
     },

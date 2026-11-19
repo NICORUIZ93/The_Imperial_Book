@@ -520,7 +520,140 @@ Ya confirmas en código, con la API oficial de test de bloques diferidos, que `@
 
 **Cuándo no usarlo:** para contenido pequeño y crítico para la primera impresión del usuario (por ejemplo, el encabezado principal de la página), diferir su renderizado empeoraría la experiencia en vez de mejorarla.
 
-### Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min
+### Tema 5: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min
+
+**Prerrequisito:** temas «Hacia zoneless change detection» (módulo 2) y «Rendimiento y actualización son contratos de experiencia» de este módulo.
+
+**Al finalizar podrás:** grabar una sesión con el Profiler de Angular DevTools, encontrar el componente que más tiempo consume en cada detección de cambios y confirmar la mejora con una segunda medición.
+
+**¿Por qué es importante?** Optimizar sin medir lleva a cambiar el código equivocado. El Profiler de Angular muestra cuánto tarda cada componente y por qué se actualizó, que es justo lo que el panel genérico del navegador no sabe.
+
+#### Paso 1 · Objetivo y preparación
+
+Instala la extensión **Angular DevTools** en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (`ng serve`): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar `enableProfiling()` para ver los eventos de Angular en el panel Performance de Chrome.
+
+#### Paso 2 · Contexto y caso real
+
+La lista de envíos del panel de RutaFlow se trababa al escribir en el buscador. El equipo sospechaba del servicio HTTP, pero el Profiler mostró que cada tecla volvía a calcular una función costosa en la plantilla de 500 filas.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** detección de cambios, ciclo, Profiler, gráfico de llamas (*flame graph*), método en plantilla, `computed`, `enableProfiling`.
+
+Cada vez que algo puede haber cambiado (un evento, una respuesta, una señal), Angular hace un **ciclo de detección de cambios** y revisa las plantillas. El **Profiler** de Angular DevTools graba esos ciclos:
+
+- La barra superior muestra un bloque por ciclo; su altura es el tiempo total.
+- Al elegir un ciclo, el **gráfico de llamas** muestra cada componente: el ancho es el tiempo que tardó.
+- El panel lateral dice qué disparó el ciclo (un evento, un temporizador).
+
+Una causa típica de lentitud es llamar un **método en la plantilla** (`{{ calcular(envio) }}`): se ejecuta en cada ciclo para cada fila. Moverlo a un `computed` hace que se calcule solo cuando cambian sus señales.
+
+**Analogía:** el Profiler es el cronómetro de una carrera de relevos por tramo: no te dice solo que el equipo tardó, sino qué corredor se demoró. La analogía falla en que el «corredor» lento puede ser lento porque lo llaman demasiadas veces, no porque corra mal.
+
+**Límite de uso:** mide en modo desarrollo, que es más lento que producción; compara mediciones entre sí, no contra números absolutos. Para el tiempo de carga y la red, usa Lighthouse o el panel Performance, no el Profiler.
+
+```mermaid
+flowchart LR
+    G["Grabar en Profiler"] --> C["Elegir el ciclo más alto"]
+    C --> F["Flame graph: componente más ancho"]
+    F --> H["Hipótesis: método en plantilla"]
+    H --> X["Cambiar a computed"]
+    X --> G2["Grabar otra vez y comparar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `src/app/envios/lista-envios.ts`:
+
+```ts
+import { Component, computed, signal } from '@angular/core';
+
+interface Envio { codigo: string; paradas: number[]; }
+
+@Component({
+  selector: 'app-lista-envios',
+  template: `
+    <input (input)="filtro.set($any($event.target).value)" placeholder="Buscar" />
+    <!-- ANTES: puntaje(envio) corría en cada ciclo, para cada fila -->
+    @for (fila of filas(); track fila.codigo) {
+      <p>{{ fila.codigo }} · puntaje {{ fila.puntaje }}</p>
+    }
+  `,
+})
+export class ListaEnvios {
+  readonly filtro = signal('');
+  private readonly envios = signal<Envio[]>(
+    Array.from({ length: 500 }, (_, i) => ({ codigo: `ENV-${i}`, paradas: Array.from({ length: 200 }, (_, j) => j * i) })),
+  );
+  // DESPUÉS: el cálculo se hace una vez por cambio de filtro, no en cada ciclo.
+  readonly filas = computed(() =>
+    this.envios()
+      .filter((e) => e.codigo.includes(this.filtro().toUpperCase()))
+      .map((e) => ({ codigo: e.codigo, puntaje: e.paradas.reduce((a, b) => a + Math.sqrt(b), 0).toFixed(0) })),
+  );
+}
+```
+
+Archivo `src/main.ts`:
+
+```ts
+import { enableProfiling } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
+
+enableProfiling(); // Angular 20+: eventos de Angular en el panel Performance de Chrome
+bootstrapApplication(App, appConfig);
+```
+
+Ejecútalo:
+
+```bash
+ng serve
+# 1) abre Angular DevTools > Profiler > Start recording
+# 2) escribe "ENV-1" en el buscador y detén la grabación
+# 3) elige el ciclo más alto y busca ListaEnvios en el flame graph
+```
+
+**Explicación por bloques:** La versión lenta tenía en la plantilla `{{ puntaje(envio) }}`, un método que suma raíces de 200 números; con 500 filas, cada tecla hacía 100 000 operaciones por ciclo. La versión del archivo usa `filas`, un `computed` que depende de `envios` y `filtro`: solo se recalcula cuando cambia alguna de las dos señales, y la plantilla lee valores ya calculados. `enableProfiling()` agrega una pista de Angular en el panel Performance para ver la misma información junto a la red y el pintado.
+
+**Resultado esperado:**
+
+```text
+Antes: el flame graph muestra ListaEnvios como el bloque más ancho de cada ciclo al escribir.
+Después: el ciclo al escribir baja de forma visible y ListaEnvios deja de ser el bloque dominante.
+```
+
+**Fallo deliberado:** graba el Profiler con un build de producción (`ng build` y un servidor estático). **Error esperado:** Angular DevTools muestra que la aplicación está en modo producción y el Profiler no graba. **Diagnóstico:** el Profiler depende de información de depuración que el build de producción quita. Perfila en `ng serve` y valida el resultado final con Lighthouse en producción.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** escribe una versión con el método en la plantilla y graba cinco teclas.
+2. **Variación:** cambia a la versión con `computed` y graba otra vez; compara la altura de los ciclos.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el aviso de DevTools.
+4. **Integración:** activa `enableProfiling()` y encuentra la pista de Angular en el panel Performance de Chrome.
+5. **Diseño:** escribe en una línea la regla de plantillas que adoptarías en RutaFlow después de esta medición.
+
+**Pista:** primero encuentra el ciclo más alto; después el componente más ancho de ese ciclo. Optimiza solo eso.
+
+#### Paso 6 · Práctica independiente
+
+Perfila la pantalla más usada de tu proyecto, guarda una captura del flame graph antes y después de un cambio, y escribe qué medición confirma la mejora.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un ciclo de detección de cambios.
+- [ ] Encontraste el componente más costoso en el flame graph.
+- [ ] Confirmaste la mejora con una segunda grabación.
+- [ ] Sabes que el Profiler solo funciona en desarrollo.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** optimizar sin grabar antes, llamar métodos costosos en las plantillas y comparar mediciones de desarrollo con producción. **Siguiente paso:** el tema «Zoneless» del módulo 11 reduce la cantidad de ciclos que el Profiler tiene que mostrar.
+
+**Transferencia al proyecto integrador «RutaFlow»:** perfila la lista de envíos del panel de RutaFlow, reemplaza los métodos de plantilla por `computed` y adjunta las capturas antes y después al pull request.
+
+**Fuente oficial:** [Angular — DevTools: Profiler](https://angular.dev/tools/devtools/profiler) y [Angular — enableProfiling](https://angular.dev/api/core/enableProfiling).
+
+### Tema 6: CSP con nonce y Trusted Types en Angular · Experto · 45 min
 
 **Prerrequisito:** tema «La seguridad automática tiene fronteras explícitas» de este módulo.
 
@@ -656,139 +789,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar un nonce fijo,
 **Transferencia al proyecto integrador «RutaFlow»:** sirve el panel de RutaFlow con CSP basada en nonce y Trusted Types, primero en modo `Report-Only` y después en bloqueo.
 
 **Fuente oficial:** [Angular — Security: Content security policy](https://angular.dev/best-practices/security#content-security-policy) y [MDN — Content Security Policy](https://developer.mozilla.org/es/docs/Web/HTTP/CSP).
-
-### Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min
-
-**Prerrequisito:** temas «Hacia zoneless change detection» (módulo 2) y «Rendimiento y actualización son contratos de experiencia» de este módulo.
-
-**Al finalizar podrás:** grabar una sesión con el Profiler de Angular DevTools, encontrar el componente que más tiempo consume en cada detección de cambios y confirmar la mejora con una segunda medición.
-
-**¿Por qué es importante?** Optimizar sin medir lleva a cambiar el código equivocado. El Profiler de Angular muestra cuánto tarda cada componente y por qué se actualizó, que es justo lo que el panel genérico del navegador no sabe.
-
-#### Paso 1 · Objetivo y preparación
-
-Instala la extensión **Angular DevTools** en Chrome o Firefox. Ejecuta tu aplicación en modo desarrollo (`ng serve`): el Profiler no funciona sobre un build de producción. Si usas Angular 20 o superior, también puedes llamar `enableProfiling()` para ver los eventos de Angular en el panel Performance de Chrome.
-
-#### Paso 2 · Contexto y caso real
-
-La lista de envíos del panel de RutaFlow se trababa al escribir en el buscador. El equipo sospechaba del servicio HTTP, pero el Profiler mostró que cada tecla volvía a calcular una función costosa en la plantilla de 500 filas.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** detección de cambios, ciclo, Profiler, gráfico de llamas (*flame graph*), método en plantilla, `computed`, `enableProfiling`.
-
-Cada vez que algo puede haber cambiado (un evento, una respuesta, una señal), Angular hace un **ciclo de detección de cambios** y revisa las plantillas. El **Profiler** de Angular DevTools graba esos ciclos:
-
-- La barra superior muestra un bloque por ciclo; su altura es el tiempo total.
-- Al elegir un ciclo, el **gráfico de llamas** muestra cada componente: el ancho es el tiempo que tardó.
-- El panel lateral dice qué disparó el ciclo (un evento, un temporizador).
-
-Una causa típica de lentitud es llamar un **método en la plantilla** (`{{ calcular(envio) }}`): se ejecuta en cada ciclo para cada fila. Moverlo a un `computed` hace que se calcule solo cuando cambian sus señales.
-
-**Analogía:** el Profiler es el cronómetro de una carrera de relevos por tramo: no te dice solo que el equipo tardó, sino qué corredor se demoró. La analogía falla en que el «corredor» lento puede ser lento porque lo llaman demasiadas veces, no porque corra mal.
-
-**Límite de uso:** mide en modo desarrollo, que es más lento que producción; compara mediciones entre sí, no contra números absolutos. Para el tiempo de carga y la red, usa Lighthouse o el panel Performance, no el Profiler.
-
-```mermaid
-flowchart LR
-    G["Grabar en Profiler"] --> C["Elegir el ciclo más alto"]
-    C --> F["Flame graph: componente más ancho"]
-    F --> H["Hipótesis: método en plantilla"]
-    H --> X["Cambiar a computed"]
-    X --> G2["Grabar otra vez y comparar"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `src/app/envios/lista-envios.ts`:
-
-```ts
-import { Component, computed, signal } from '@angular/core';
-
-interface Envio { codigo: string; paradas: number[]; }
-
-@Component({
-  selector: 'app-lista-envios',
-  template: `
-    <input (input)="filtro.set($any($event.target).value)" placeholder="Buscar" />
-    <!-- ANTES: puntaje(envio) corría en cada ciclo, para cada fila -->
-    @for (fila of filas(); track fila.codigo) {
-      <p>{{ fila.codigo }} · puntaje {{ fila.puntaje }}</p>
-    }
-  `,
-})
-export class ListaEnvios {
-  readonly filtro = signal('');
-  private readonly envios = signal<Envio[]>(
-    Array.from({ length: 500 }, (_, i) => ({ codigo: `ENV-${i}`, paradas: Array.from({ length: 200 }, (_, j) => j * i) })),
-  );
-  // DESPUÉS: el cálculo se hace una vez por cambio de filtro, no en cada ciclo.
-  readonly filas = computed(() =>
-    this.envios()
-      .filter((e) => e.codigo.includes(this.filtro().toUpperCase()))
-      .map((e) => ({ codigo: e.codigo, puntaje: e.paradas.reduce((a, b) => a + Math.sqrt(b), 0).toFixed(0) })),
-  );
-}
-```
-
-Archivo `src/main.ts`:
-
-```ts
-import { enableProfiling } from '@angular/core';
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { App } from './app/app';
-
-enableProfiling(); // Angular 20+: eventos de Angular en el panel Performance de Chrome
-bootstrapApplication(App, appConfig);
-```
-
-Ejecútalo:
-
-```bash
-ng serve
-# 1) abre Angular DevTools > Profiler > Start recording
-# 2) escribe "ENV-1" en el buscador y detén la grabación
-# 3) elige el ciclo más alto y busca ListaEnvios en el flame graph
-```
-
-**Explicación por bloques:** La versión lenta tenía en la plantilla `{{ puntaje(envio) }}`, un método que suma raíces de 200 números; con 500 filas, cada tecla hacía 100 000 operaciones por ciclo. La versión del archivo usa `filas`, un `computed` que depende de `envios` y `filtro`: solo se recalcula cuando cambia alguna de las dos señales, y la plantilla lee valores ya calculados. `enableProfiling()` agrega una pista de Angular en el panel Performance para ver la misma información junto a la red y el pintado.
-
-**Resultado esperado:**
-
-```text
-Antes: el flame graph muestra ListaEnvios como el bloque más ancho de cada ciclo al escribir.
-Después: el ciclo al escribir baja de forma visible y ListaEnvios deja de ser el bloque dominante.
-```
-
-**Fallo deliberado:** graba el Profiler con un build de producción (`ng build` y un servidor estático). **Error esperado:** Angular DevTools muestra que la aplicación está en modo producción y el Profiler no graba. **Diagnóstico:** el Profiler depende de información de depuración que el build de producción quita. Perfila en `ng serve` y valida el resultado final con Lighthouse en producción.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** escribe una versión con el método en la plantilla y graba cinco teclas.
-2. **Variación:** cambia a la versión con `computed` y graba otra vez; compara la altura de los ciclos.
-3. **Diagnóstico:** reproduce el fallo deliberado y lee el aviso de DevTools.
-4. **Integración:** activa `enableProfiling()` y encuentra la pista de Angular en el panel Performance de Chrome.
-5. **Diseño:** escribe en una línea la regla de plantillas que adoptarías en RutaFlow después de esta medición.
-
-**Pista:** primero encuentra el ciclo más alto; después el componente más ancho de ese ciclo. Optimiza solo eso.
-
-#### Paso 6 · Práctica independiente
-
-Perfila la pantalla más usada de tu proyecto, guarda una captura del flame graph antes y después de un cambio, y escribe qué medición confirma la mejora.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué es un ciclo de detección de cambios.
-- [ ] Encontraste el componente más costoso en el flame graph.
-- [ ] Confirmaste la mejora con una segunda grabación.
-- [ ] Sabes que el Profiler solo funciona en desarrollo.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** optimizar sin grabar antes, llamar métodos costosos en las plantillas y comparar mediciones de desarrollo con producción. **Siguiente paso:** el tema «Zoneless» del módulo 11 reduce la cantidad de ciclos que el Profiler tiene que mostrar.
-
-**Transferencia al proyecto integrador «RutaFlow»:** perfila la lista de envíos del panel de RutaFlow, reemplaza los métodos de plantilla por `computed` y adjunta las capturas antes y después al pull request.
-
-**Fuente oficial:** [Angular — DevTools: Profiler](https://angular.dev/tools/devtools/profiler) y [Angular — enableProfiling](https://angular.dev/api/core/enableProfiling).
 
 ## Revisión oficial de plataforma
 

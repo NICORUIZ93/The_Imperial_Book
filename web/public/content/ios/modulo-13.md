@@ -612,273 +612,7 @@ Diseña (en un diagrama o pseudo-código) el endpoint del backend que recibe y a
 #### Paso 7 · Cierre
 Entrega el registro con device token impreso, el manejo de fallo y el diseño del endpoint. **¿Por qué es importante?** Las notificaciones push son el canal para reenganchar al usuario y para eventos en tiempo real (entrega asignada, pedido en camino). Entender el flujo app→APNs→dispositivo y el rol del device token es imprescindible para cualquier app con backend. Fuentes: [Apple — Registering for remote notifications](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
 
-### Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min
-
-**Prerrequisito:** tema «Permisos y privacidad — pedir acceso con criterio» de este módulo y «AsyncSequence y AsyncStream» (módulo 4).
-
-**Al finalizar podrás:** pedir permiso de ubicación con el texto adecuado, recibir posiciones con `CLLocationUpdate.liveUpdates()` en un bucle `for await` y manejar la precisión aproximada que el usuario puede elegir.
-
-**¿Por qué es importante?** La ubicación es uno de los permisos más sensibles. Pedirlo mal hace que el usuario lo niegue, y usarlo mal agota la batería. La API moderna reduce el código y se detiene sola al cancelar la tarea.
-
-#### Paso 1 · Objetivo y preparación
-
-Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y `authorizationDenied`, que solo existen desde iOS 18. En la pestaña **Info** del target (los proyectos nuevos de Xcode no traen un archivo `Info.plist` aparte) agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
-
-#### Paso 2 · Contexto y caso real
-
-Muchos conductores de RutaFlow negaban la ubicación porque el mensaje decía solo «La app usa tu ubicación». Al explicar el beneficio («para ordenar tus paradas por cercanía») y pedirla al abrir la pantalla de ruta, la aceptación subió.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `CLLocationUpdate`, `liveUpdates`, `CLServiceSession`, autorización «al usar la app», precisión aproximada, `isStationary`, texto de propósito.
-
-Desde iOS 17, `CLLocationUpdate.liveUpdates()` es una `AsyncSequence` de ubicaciones: la recorres con `for await` y se detiene al cancelar la tarea. Desde iOS 18, una **`CLServiceSession`** declara cuánto acceso necesitas mientras exista, y el sistema muestra el permiso cuando hace falta.
-
-- **Al usar la app** (*when in use*) basta para navegación con la app abierta.
-- El usuario puede elegir **ubicación aproximada**: recibes posiciones con error de varios kilómetros. Si la necesitas precisa para una tarea, pide precisión temporal con un texto propio (`NSLocationTemporaryUsageDescriptionDictionary`).
-- Cada actualización indica si el dispositivo está **quieto** (`isStationary`): no proceses posiciones repetidas.
-
-El texto del permiso debe decir el **beneficio para el usuario**, no solo que la app usa la ubicación.
-
-**Analogía:** pedir ubicación es pedir prestado un mapa: si explicas para qué lo quieres y lo devuelves al terminar, te lo prestan. La analogía falla en que el usuario puede prestarte un mapa borroso (aproximado) y debes funcionar igual.
-
-**Límite de uso:** la ubicación en segundo plano exige otra autorización y una justificación fuerte ante App Review; no la pidas si no la necesitas. El simulador no reproduce la precisión ni el consumo real.
-
-```mermaid
-sequenceDiagram
-    participant V as RutaView (.task)
-    participant S as CLServiceSession
-    participant L as CLLocationUpdate.liveUpdates
-    V->>S: sesión whenInUse
-    S-->>V: el sistema muestra el permiso
-    V->>L: for await update
-    L-->>V: ubicación, isStationary
-    V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaView.swift`:
-
-```swift
-import CoreLocation
-import SwiftUI
-
-struct RutaView: View {
-    @State private var texto = "Buscando tu ubicación…"
-
-    var body: some View {
-        Text(texto)
-            .task {
-                let sesion = CLServiceSession(authorization: .whenInUse) // iOS 18+
-                defer { sesion.invalidate() }
-                do {
-                    for try await actualizacion in CLLocationUpdate.liveUpdates() {
-                        if actualizacion.authorizationDenied { texto = "Activa la ubicación en Ajustes"; break }
-                        guard let ubicacion = actualizacion.location, !actualizacion.isStationary else { continue }
-                        let precision = Int(ubicacion.horizontalAccuracy)
-                        texto = String(format: "%.4f, %.4f (±%d m)", ubicacion.coordinate.latitude, ubicacion.coordinate.longitude, precision)
-                    }
-                } catch {
-                    texto = "Ubicación no disponible"
-                }
-            }
-    }
-}
-```
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/Info.plist`:
-
-```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>Usamos tu ubicación para ordenar tus paradas por cercanía y avisar al cliente cuando estás llegando.</string>
-```
-
-Compila, ejecuta y activa una ruta simulada:
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-# en el simulador: Features > Location > City Run
-```
-
-**Explicación por bloques:** La vista empieza a escuchar en `.task`, que se cancela sola al cerrar la vista. `CLServiceSession` declara que la app necesita ubicación al usarla; el sistema muestra el permiso con el texto de `Info.plist`. `liveUpdates()` entrega actualizaciones: si el permiso fue negado, se muestra cómo activarlo; si el dispositivo está quieto o no hay ubicación, se salta. La precisión horizontal dice cuánto confiar en el punto: con ubicación aproximada será de miles de metros.
-
-**Resultado esperado:**
-
-```text
-Primera vez: aparece el permiso con «Usamos tu ubicación para ordenar tus paradas…».
-Con City Run activo: el texto cambia cada segundo, por ejemplo «37.3349, -122.0090 (±5 m)».
-Con ubicación aproximada elegida por el usuario: la precisión pasa a miles de metros.
-```
-
-**Fallo deliberado:** borra `NSLocationWhenInUseUsageDescription` de `Info.plist`. **Error esperado:** no aparece ningún permiso, la vista se queda en «Buscando tu ubicación…» y la consola avisa que falta la clave de descripción. **Diagnóstico:** iOS no pide un permiso sin explicación. Agrega el texto con el beneficio para el usuario.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta con City Run y observa la precisión.
-2. **Variación:** elige «Ubicación aproximada» en Ajustes y explica cómo debería adaptarse la app.
-3. **Diagnóstico:** reproduce el fallo deliberado sin la clave de `Info.plist`.
-4. **Integración:** deja de procesar posiciones mientras `isStationary` sea verdadero y mide cuántas actualizaciones ahorras.
-5. **Diseño:** reescribe el texto del permiso para el caso de uso de RutaFlow y pídele a alguien que lo lea sin contexto.
-
-**Pista:** si no llegan ubicaciones, revisa el texto de `Info.plist`, el estado del permiso y la ruta simulada.
-
-#### Paso 6 · Práctica independiente
-
-Muestra un aviso con un botón que abra Ajustes (`UIApplication.openSettingsURLString`) cuando el permiso esté negado, en lugar de solo un texto.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas la diferencia entre «al usar» y «siempre».
-- [ ] La vista muestra posiciones con su precisión.
-- [ ] Reprodujiste el permiso que no aparece sin texto.
-- [ ] Tu app funciona con ubicación aproximada.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** pedir ubicación «siempre» sin necesitarla, escribir textos de permiso vagos y no manejar la ubicación aproximada. **Siguiente paso:** el tema siguiente programa trabajo en segundo plano sin mantener la ubicación encendida.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la pantalla de ruta de RutaFlow, muestra la posición con `liveUpdates()` y un texto de permiso que explique el beneficio para el conductor.
-
-**Fuente oficial:** [Apple — CLLocationUpdate](https://developer.apple.com/documentation/corelocation/cllocationupdate) y [Apple — Requesting authorization to use location services](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
-
-### Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min
-
-**Prerrequisito:** tema «Offline-first es un protocolo, no una caché» de este módulo.
-
-**Al finalizar podrás:** registrar una tarea de actualización en segundo plano con `BGTaskScheduler` y el modificador `.backgroundTask` de SwiftUI, programarla y forzarla desde el depurador para probarla.
-
-**¿Por qué es importante?** Las entregas confirmadas sin señal deben subirse cuando vuelva la conexión, aunque el conductor no abra la app. iOS no deja correr código en segundo plano a voluntad: hay que pedirle tiempo y aceptar que decide cuándo.
-
-#### Paso 1 · Objetivo y preparación
-
-En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo plano, y allí `submit` lanza `BGTaskScheduler.Error.unavailable`.
-
-#### Paso 2 · Contexto y caso real
-
-Algunos conductores de RutaFlow terminaban el día con entregas sin subir porque nunca volvían a abrir la app con señal. El equipo de soporte llamaba uno por uno. Una tarea en segundo plano sube lo pendiente cuando el sistema lo permite.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `BGTaskScheduler`, `BGAppRefreshTaskRequest`, `BGProcessingTaskRequest`, identificador permitido, `.backgroundTask(.appRefresh)`, `earliestBeginDate`, tiempo límite.
-
-iOS ofrece dos tipos principales:
-
-| Tipo | Duración | Para |
-|---|---|---|
-| `BGAppRefreshTaskRequest` | unos 30 segundos | refrescar datos pequeños, subir pendientes |
-| `BGProcessingTaskRequest` | minutos, a menudo con el teléfono cargando | tareas largas: limpiar, reindexar |
-
-Pasos: declarar el identificador en `Info.plist`, **programar** una solicitud con `earliestBeginDate` (el sistema decide el momento real, nunca antes) y **atenderla** con `.backgroundTask(.appRefresh("id"))` en la escena. Dentro de la tarea, vuelve a programar la siguiente.
-
-Si se acaba el tiempo, el sistema cancela la tarea: tu código debe respetar la cancelación de Swift y dejar los datos consistentes.
-
-**Analogía:** pedir una tarea en segundo plano es pedir un turno en una ventanilla que abre cuando quiere: dejas tu número y te llaman, pero no sabes a qué hora. La analogía falla en que, si el usuario casi no usa la app, el sistema te llama aún menos.
-
-**Límite de uso:** no hay garantía de ejecución ni de horario. No uses estas tareas para nada que deba pasar a una hora exacta: para eso están las notificaciones del servidor (push silenciosas, con sus propios límites).
-
-```mermaid
-sequenceDiagram
-    participant A as App
-    participant S as BGTaskScheduler
-    participant T as .backgroundTask
-    A->>S: submit(appRefresh, earliestBeginDate: +15 min)
-    Note over S: el sistema decide el momento
-    S->>T: ejecuta co.rutaflow.sincronizar
-    T->>T: sube entregas pendientes
-    T->>S: programa la siguiente
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaFlowApp.swift`:
-
-```swift
-import BackgroundTasks
-import SwiftUI
-
-@main
-struct RutaFlowApp: App {
-    @Environment(\.scenePhase) private var fase
-
-    var body: some Scene {
-        WindowGroup { ContentView() }
-            .onChange(of: fase) { _, nueva in
-                if nueva == .background { programarSincronizacion() }
-            }
-            .backgroundTask(.appRefresh("co.rutaflow.sincronizar")) {
-                programarSincronizacion() // la siguiente, antes de trabajar
-                await Sincronizador.subirPendientes()
-            }
-    }
-}
-
-func programarSincronizacion() {
-    let solicitud = BGAppRefreshTaskRequest(identifier: "co.rutaflow.sincronizar")
-    solicitud.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // no antes de 15 min
-    try? BGTaskScheduler.shared.submit(solicitud)
-}
-
-enum Sincronizador {
-    static func subirPendientes() async {
-        for codigo in ["ENV-42", "ENV-43"] {
-            if Task.isCancelled { return } // el sistema puede cortar el tiempo
-            print("subiendo \(codigo)")
-            try? await Task.sleep(for: .seconds(1))
-        }
-        print("sincronización completa")
-    }
-}
-```
-
-Fuerza la tarea desde el depurador de Xcode:
-
-```bash
-cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS' build
-# 1) elige tu iPhone conectado como destino, ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
-# 2) en la consola lldb:
-e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"co.rutaflow.sincronizar"]
-# 3) continúa la ejecución
-```
-
-**Explicación por bloques:** Al pasar a segundo plano, la app programa una actualización que no debe empezar antes de 15 minutos. El modificador `.backgroundTask(.appRefresh(...))` es el manejador: cuando el sistema lo ejecuta, primero programa la siguiente y luego sube los pendientes. `subirPendientes` revisa `Task.isCancelled` en cada paso para salir limpio si se acaba el tiempo. El comando de lldb pide al sistema que lance la tarea ya, solo para probar.
-
-**Resultado esperado:**
-
-```text
-subiendo ENV-42
-subiendo ENV-43
-sincronización completa
-```
-
-**Fallo deliberado:** quita `co.rutaflow.sincronizar` de `BGTaskSchedulerPermittedIdentifiers`. **Error esperado:** `submit` lanza `BGTaskSchedulerErrorDomain Code=3` (identificador no permitido) y la tarea nunca corre. **Diagnóstico:** el sistema solo acepta identificadores declarados. Agrégalo a `Info.plist` exactamente igual.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** fuerza la tarea con lldb y lee la consola.
-2. **Variación:** agrega más pendientes y simula la expiración con `_simulateExpirationForTaskWithIdentifier`; comprueba que sales limpio.
-3. **Diagnóstico:** reproduce el fallo deliberado sin el identificador en `Info.plist` (usa `do/catch` en lugar de `try?` para ver el error).
-4. **Integración:** cambia a `BGProcessingTaskRequest` con `requiresExternalPower = true` para la limpieza de fotos antiguas.
-5. **Diseño:** escribe qué le dirías a soporte sobre cuándo se suben las entregas y por qué no hay hora exacta.
-
-**Pista:** si la tarea no corre, revisa el identificador en `Info.plist`, el modo de fondo activado y que hayas programado una solicitud.
-
-#### Paso 6 · Práctica independiente
-
-Guarda en `UserDefaults` la hora de la última sincronización exitosa y muéstrala en la pantalla de ajustes como «Última sincronización: hace 12 min».
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas la diferencia entre app refresh y processing.
-- [ ] Forzaste la tarea y viste la sincronización.
-- [ ] Reprodujiste el error de identificador no permitido.
-- [ ] Tu tarea respeta la cancelación.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** el tema siguiente protege con Face ID las acciones sensibles de la app.
-
-**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow y muestra la hora de la última sincronización.
-
-**Fuente oficial:** [Apple — BackgroundTasks](https://developer.apple.com/documentation/backgroundtasks) y [Apple — Starting and terminating tasks during development](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development).
-
-### Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
+### Tema 8: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min
 
 **Prerrequisito:** tema «Keychain — guardar secretos de forma segura» de este módulo.
 
@@ -1021,6 +755,272 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** reutilizar un `LACo
 **Transferencia al proyecto integrador «RutaFlow»:** exige Face ID o el código del dispositivo para confirmar cobros contra entrega en la app del conductor de RutaFlow.
 
 **Fuente oficial:** [Apple — Logging a user into your app with Face ID or Touch ID](https://developer.apple.com/documentation/localauthentication/logging-a-user-into-your-app-with-face-id-or-touch-id).
+
+### Tema 9: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min
+
+**Prerrequisito:** tema «Permisos y privacidad — pedir acceso con criterio» de este módulo y «AsyncSequence y AsyncStream» (módulo 4).
+
+**Al finalizar podrás:** pedir permiso de ubicación con el texto adecuado, recibir posiciones con `CLLocationUpdate.liveUpdates()` en un bucle `for await` y manejar la precisión aproximada que el usuario puede elegir.
+
+**¿Por qué es importante?** La ubicación es uno de los permisos más sensibles. Pedirlo mal hace que el usuario lo niegue, y usarlo mal agota la batería. La API moderna reduce el código y se detiene sola al cancelar la tarea.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 26 o superior con destino iOS 18+: el código usa `CLServiceSession` y `authorizationDenied`, que solo existen desde iOS 18. En la pestaña **Info** del target (los proyectos nuevos de Xcode no traen un archivo `Info.plist` aparte) agrega `NSLocationWhenInUseUsageDescription` con un texto que explique para qué. En el simulador usa **Features > Location > City Run**.
+
+#### Paso 2 · Contexto y caso real
+
+Muchos conductores de RutaFlow negaban la ubicación porque el mensaje decía solo «La app usa tu ubicación». Al explicar el beneficio («para ordenar tus paradas por cercanía») y pedirla al abrir la pantalla de ruta, la aceptación subió.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `CLLocationUpdate`, `liveUpdates`, `CLServiceSession`, autorización «al usar la app», precisión aproximada, `isStationary`, texto de propósito.
+
+Desde iOS 17, `CLLocationUpdate.liveUpdates()` es una `AsyncSequence` de ubicaciones: la recorres con `for await` y se detiene al cancelar la tarea. Desde iOS 18, una **`CLServiceSession`** declara cuánto acceso necesitas mientras exista, y el sistema muestra el permiso cuando hace falta.
+
+- **Al usar la app** (*when in use*) basta para navegación con la app abierta.
+- El usuario puede elegir **ubicación aproximada**: recibes posiciones con error de varios kilómetros. Si la necesitas precisa para una tarea, pide precisión temporal con un texto propio (`NSLocationTemporaryUsageDescriptionDictionary`).
+- Cada actualización indica si el dispositivo está **quieto** (`isStationary`): no proceses posiciones repetidas.
+
+El texto del permiso debe decir el **beneficio para el usuario**, no solo que la app usa la ubicación.
+
+**Analogía:** pedir ubicación es pedir prestado un mapa: si explicas para qué lo quieres y lo devuelves al terminar, te lo prestan. La analogía falla en que el usuario puede prestarte un mapa borroso (aproximado) y debes funcionar igual.
+
+**Límite de uso:** la ubicación en segundo plano exige otra autorización y una justificación fuerte ante App Review; no la pidas si no la necesitas. El simulador no reproduce la precisión ni el consumo real.
+
+```mermaid
+sequenceDiagram
+    participant V as RutaView (.task)
+    participant S as CLServiceSession
+    participant L as CLLocationUpdate.liveUpdates
+    V->>S: sesión whenInUse
+    S-->>V: el sistema muestra el permiso
+    V->>L: for await update
+    L-->>V: ubicación, isStationary
+    V->>V: al cerrar la vista, la tarea se cancela y todo se detiene
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaView.swift`:
+
+```swift
+import CoreLocation
+import SwiftUI
+
+struct RutaView: View {
+    @State private var texto = "Buscando tu ubicación…"
+
+    var body: some View {
+        Text(texto)
+            .task {
+                let sesion = CLServiceSession(authorization: .whenInUse) // iOS 18+
+                defer { sesion.invalidate() }
+                do {
+                    for try await actualizacion in CLLocationUpdate.liveUpdates() {
+                        if actualizacion.authorizationDenied { texto = "Activa la ubicación en Ajustes"; break }
+                        guard let ubicacion = actualizacion.location, !actualizacion.isStationary else { continue }
+                        let precision = Int(ubicacion.horizontalAccuracy)
+                        texto = String(format: "%.4f, %.4f (±%d m)", ubicacion.coordinate.latitude, ubicacion.coordinate.longitude, precision)
+                    }
+                } catch {
+                    texto = "Ubicación no disponible"
+                }
+            }
+    }
+}
+```
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/Info.plist`:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Usamos tu ubicación para ordenar tus paradas por cercanía y avisar al cliente cuando estás llegando.</string>
+```
+
+Compila, ejecuta y activa una ruta simulada:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# en el simulador: Features > Location > City Run
+```
+
+**Explicación por bloques:** La vista empieza a escuchar en `.task`, que se cancela sola al cerrar la vista. `CLServiceSession` declara que la app necesita ubicación al usarla; el sistema muestra el permiso con el texto de `Info.plist`. `liveUpdates()` entrega actualizaciones: si el permiso fue negado, se muestra cómo activarlo; si el dispositivo está quieto o no hay ubicación, se salta. La precisión horizontal dice cuánto confiar en el punto: con ubicación aproximada será de miles de metros.
+
+**Resultado esperado:**
+
+```text
+Primera vez: aparece el permiso con «Usamos tu ubicación para ordenar tus paradas…».
+Con City Run activo: el texto cambia cada segundo, por ejemplo «37.3349, -122.0090 (±5 m)».
+Con ubicación aproximada elegida por el usuario: la precisión pasa a miles de metros.
+```
+
+**Fallo deliberado:** borra `NSLocationWhenInUseUsageDescription` de `Info.plist`. **Error esperado:** no aparece ningún permiso, la vista se queda en «Buscando tu ubicación…» y la consola avisa que falta la clave de descripción. **Diagnóstico:** iOS no pide un permiso sin explicación. Agrega el texto con el beneficio para el usuario.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta con City Run y observa la precisión.
+2. **Variación:** elige «Ubicación aproximada» en Ajustes y explica cómo debería adaptarse la app.
+3. **Diagnóstico:** reproduce el fallo deliberado sin la clave de `Info.plist`.
+4. **Integración:** deja de procesar posiciones mientras `isStationary` sea verdadero y mide cuántas actualizaciones ahorras.
+5. **Diseño:** reescribe el texto del permiso para el caso de uso de RutaFlow y pídele a alguien que lo lea sin contexto.
+
+**Pista:** si no llegan ubicaciones, revisa el texto de `Info.plist`, el estado del permiso y la ruta simulada.
+
+#### Paso 6 · Práctica independiente
+
+Muestra un aviso con un botón que abra Ajustes (`UIApplication.openSettingsURLString`) cuando el permiso esté negado, en lugar de solo un texto.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre «al usar» y «siempre».
+- [ ] La vista muestra posiciones con su precisión.
+- [ ] Reprodujiste el permiso que no aparece sin texto.
+- [ ] Tu app funciona con ubicación aproximada.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** pedir ubicación «siempre» sin necesitarla, escribir textos de permiso vagos y no manejar la ubicación aproximada. **Siguiente paso:** el tema siguiente programa trabajo en segundo plano sin mantener la ubicación encendida.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la pantalla de ruta de RutaFlow, muestra la posición con `liveUpdates()` y un texto de permiso que explique el beneficio para el conductor.
+
+**Fuente oficial:** [Apple — CLLocationUpdate](https://developer.apple.com/documentation/corelocation/cllocationupdate) y [Apple — Requesting authorization to use location services](https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services).
+
+### Tema 10: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min
+
+**Prerrequisito:** tema «Offline-first es un protocolo, no una caché» de este módulo.
+
+**Al finalizar podrás:** registrar una tarea de actualización en segundo plano con `BGTaskScheduler` y el modificador `.backgroundTask` de SwiftUI, programarla y forzarla desde el depurador para probarla.
+
+**¿Por qué es importante?** Las entregas confirmadas sin señal deben subirse cuando vuelva la conexión, aunque el conductor no abra la app. iOS no deja correr código en segundo plano a voluntad: hay que pedirle tiempo y aceptar que decide cuándo.
+
+#### Paso 1 · Objetivo y preparación
+
+En el target, activa **Background Modes > Background fetch** y agrega a `Info.plist` la clave `BGTaskSchedulerPermittedIdentifiers` con `co.rutaflow.sincronizar`. Necesitas un iPhone físico conectado y el depurador de Xcode para forzar la tarea: Simulator no admite procesamiento en segundo plano, y allí `submit` lanza `BGTaskScheduler.Error.unavailable`.
+
+#### Paso 2 · Contexto y caso real
+
+Algunos conductores de RutaFlow terminaban el día con entregas sin subir porque nunca volvían a abrir la app con señal. El equipo de soporte llamaba uno por uno. Una tarea en segundo plano sube lo pendiente cuando el sistema lo permite.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `BGTaskScheduler`, `BGAppRefreshTaskRequest`, `BGProcessingTaskRequest`, identificador permitido, `.backgroundTask(.appRefresh)`, `earliestBeginDate`, tiempo límite.
+
+iOS ofrece dos tipos principales:
+
+| Tipo | Duración | Para |
+|---|---|---|
+| `BGAppRefreshTaskRequest` | unos 30 segundos | refrescar datos pequeños, subir pendientes |
+| `BGProcessingTaskRequest` | minutos, a menudo con el teléfono cargando | tareas largas: limpiar, reindexar |
+
+Pasos: declarar el identificador en `Info.plist`, **programar** una solicitud con `earliestBeginDate` (el sistema decide el momento real, nunca antes) y **atenderla** con `.backgroundTask(.appRefresh("id"))` en la escena. Dentro de la tarea, vuelve a programar la siguiente.
+
+Si se acaba el tiempo, el sistema cancela la tarea: tu código debe respetar la cancelación de Swift y dejar los datos consistentes.
+
+**Analogía:** pedir una tarea en segundo plano es pedir un turno en una ventanilla que abre cuando quiere: dejas tu número y te llaman, pero no sabes a qué hora. La analogía falla en que, si el usuario casi no usa la app, el sistema te llama aún menos.
+
+**Límite de uso:** no hay garantía de ejecución ni de horario. No uses estas tareas para nada que deba pasar a una hora exacta: para eso están las notificaciones del servidor (push silenciosas, con sus propios límites).
+
+```mermaid
+sequenceDiagram
+    participant A as App
+    participant S as BGTaskScheduler
+    participant T as .backgroundTask
+    A->>S: submit(appRefresh, earliestBeginDate: +15 min)
+    Note over S: el sistema decide el momento
+    S->>T: ejecuta co.rutaflow.sincronizar
+    T->>T: sube entregas pendientes
+    T->>S: programa la siguiente
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/RutaFlowApp.swift`:
+
+```swift
+import BackgroundTasks
+import SwiftUI
+
+@main
+struct RutaFlowApp: App {
+    @Environment(\.scenePhase) private var fase
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+            .onChange(of: fase) { _, nueva in
+                if nueva == .background { programarSincronizacion() }
+            }
+            .backgroundTask(.appRefresh("co.rutaflow.sincronizar")) {
+                programarSincronizacion() // la siguiente, antes de trabajar
+                await Sincronizador.subirPendientes()
+            }
+    }
+}
+
+func programarSincronizacion() {
+    let solicitud = BGAppRefreshTaskRequest(identifier: "co.rutaflow.sincronizar")
+    solicitud.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // no antes de 15 min
+    try? BGTaskScheduler.shared.submit(solicitud)
+}
+
+enum Sincronizador {
+    static func subirPendientes() async {
+        for codigo in ["ENV-42", "ENV-43"] {
+            if Task.isCancelled { return } // el sistema puede cortar el tiempo
+            print("subiendo \(codigo)")
+            try? await Task.sleep(for: .seconds(1))
+        }
+        print("sincronización completa")
+    }
+}
+```
+
+Fuerza la tarea desde el depurador de Xcode:
+
+```bash
+cd academia-ios/RutaFlowApp && xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS' build
+# 1) elige tu iPhone conectado como destino, ejecuta la app con ⌘R, envíala a segundo plano y pausa en el depurador
+# 2) en la consola lldb:
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"co.rutaflow.sincronizar"]
+# 3) continúa la ejecución
+```
+
+**Explicación por bloques:** Al pasar a segundo plano, la app programa una actualización que no debe empezar antes de 15 minutos. El modificador `.backgroundTask(.appRefresh(...))` es el manejador: cuando el sistema lo ejecuta, primero programa la siguiente y luego sube los pendientes. `subirPendientes` revisa `Task.isCancelled` en cada paso para salir limpio si se acaba el tiempo. El comando de lldb pide al sistema que lance la tarea ya, solo para probar.
+
+**Resultado esperado:**
+
+```text
+subiendo ENV-42
+subiendo ENV-43
+sincronización completa
+```
+
+**Fallo deliberado:** quita `co.rutaflow.sincronizar` de `BGTaskSchedulerPermittedIdentifiers`. **Error esperado:** `submit` lanza `BGTaskSchedulerErrorDomain Code=3` (identificador no permitido) y la tarea nunca corre. **Diagnóstico:** el sistema solo acepta identificadores declarados. Agrégalo a `Info.plist` exactamente igual.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** fuerza la tarea con lldb y lee la consola.
+2. **Variación:** agrega más pendientes y simula la expiración con `_simulateExpirationForTaskWithIdentifier`; comprueba que sales limpio.
+3. **Diagnóstico:** reproduce el fallo deliberado sin el identificador en `Info.plist` (usa `do/catch` en lugar de `try?` para ver el error).
+4. **Integración:** cambia a `BGProcessingTaskRequest` con `requiresExternalPower = true` para la limpieza de fotos antiguas.
+5. **Diseño:** escribe qué le dirías a soporte sobre cuándo se suben las entregas y por qué no hay hora exacta.
+
+**Pista:** si la tarea no corre, revisa el identificador en `Info.plist`, el modo de fondo activado y que hayas programado una solicitud.
+
+#### Paso 6 · Práctica independiente
+
+Guarda en `UserDefaults` la hora de la última sincronización exitosa y muéstrala en la pantalla de ajustes como «Última sincronización: hace 12 min».
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas la diferencia entre app refresh y processing.
+- [ ] Forzaste la tarea y viste la sincronización.
+- [ ] Reprodujiste el error de identificador no permitido.
+- [ ] Tu tarea respeta la cancelación.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, olvidar reprogramar la siguiente tarea e ignorar la cancelación. **Siguiente paso:** el tema siguiente protege con Face ID las acciones sensibles de la app.
+
+**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow y muestra la hora de la última sincronización.
+
+**Fuente oficial:** [Apple — BackgroundTasks](https://developer.apple.com/documentation/backgroundtasks) y [Apple — Starting and terminating tasks during development](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development).
 
 ## Revisión oficial de plataforma — julio de 2026
 

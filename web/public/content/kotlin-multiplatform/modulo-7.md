@@ -737,7 +737,284 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** duplicar textos por
 
 **Fuente oficial:** [Kotlin — Multiplatform resources](https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources.html).
 
-### Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min
+### Tema 6: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min
+
+**Prerrequisito:** tema «Estado y recomposición» de este módulo.
+
+**Al finalizar podrás:** dar descripciones, roles y estados a los componentes con `Modifier.semantics`, agrupar elementos para que se lean como una unidad y comprobarlo con TalkBack, VoiceOver y una prueba común.
+
+**¿Por qué es importante?** Compose Multiplatform traduce la semántica de Compose a las APIs de accesibilidad de cada sistema. Si la semántica está mal en el código común, está mal en todas las plataformas a la vez.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable). Activa TalkBack en el emulador de Android y VoiceOver en el simulador de iOS (Accessibility Inspector en Xcode).
+
+#### Paso 2 · Contexto y caso real
+
+Un conductor de RutaFlow con baja visión usaba VoiceOver. En la tarjeta de envío, VoiceOver leía «botón» sin decir para qué, y el ícono de estado no se leía. El arreglo en el código común sirvió también para TalkBack.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** árbol de semántica, `contentDescription`, `Modifier.semantics`, `mergeDescendants`, `role`, `stateDescription`, `heading`, `onClickLabel`.
+
+Compose arma un **árbol de semántica** paralelo a la interfaz. Los lectores de pantalla leen ese árbol, no los píxeles.
+
+- Las imágenes con significado necesitan `contentDescription`; las decorativas, `null`.
+- `Modifier.semantics(mergeDescendants = true)` junta un grupo (código, estado y botón) para leerlo como una unidad.
+- `role` dice qué es (botón, casilla); `stateDescription` dice su estado («entregado»); `heading()` marca títulos para navegar entre ellos.
+- `onClickLabel` en `clickable` describe la acción («marcar como entregado»), no solo «botón».
+
+Las pruebas comunes (`runComposeUiTest`) buscan nodos por su semántica: si la prueba encuentra el texto o la descripción, el lector de pantalla también.
+
+**Analogía:** el árbol de semántica es la versión en braille de la pantalla: si no escribes el braille, el usuario que no ve no tiene nada que leer. La analogía falla en que aquí el «braille» también lo usan las pruebas automáticas.
+
+**Límite de uso:** no pongas `contentDescription` que repite el texto visible: el lector lo dirá dos veces. La semántica no reemplaza el contraste de colores ni los tamaños táctiles mínimos (48 dp).
+
+```mermaid
+flowchart TB
+    C["TarjetaEnvio (mergeDescendants)"] --> T["Text: ENV-42 (heading)"]
+    C --> I["Icon: estado (stateDescription)"]
+    C --> B["clickable: onClickLabel 'marcar como entregado'"]
+    C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/TarjetaEnvio.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaEnvio(codigo: String, entregado: Boolean, alMarcar: () -> Unit) {
+    val estado = if (entregado) "entregado" else "en ruta"
+    Row(
+        Modifier
+            .clickable(onClickLabel = "marcar como entregado", role = Role.Button, onClick = alMarcar)
+            .semantics(mergeDescendants = true) { stateDescription = estado } // una sola lectura
+            .padding(16.dp),
+    ) {
+        Icon(if (entregado) Icons.Default.CheckCircle else Icons.Default.LocalShipping, contentDescription = null) // el estado ya se dice
+        Text(codigo, Modifier.semantics { heading() })
+    }
+}
+```
+
+Archivo `composeApp/src/commonTest/kotlin/co/rutaflow/ui/TarjetaEnvioTest.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.*
+import kotlin.test.Test
+
+class TarjetaEnvioTest {
+    @OptIn(ExperimentalTestApi::class)
+    @Test fun seLeeComoUnaUnidadConEstado() = runComposeUiTest {
+        setContent { TarjetaEnvio("ENV-42", entregado = false) {} }
+        onNode(hasStateDescription("en ruta") and hasClickAction())
+            .assertTextContains("ENV-42")
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Role))
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:jvmTest
+./gradlew :composeApp:installDebug   # luego activa TalkBack y toca la tarjeta
+```
+
+**Explicación por bloques:** La fila completa es clicable con una etiqueta de acción y el rol de botón. `mergeDescendants = true` une el ícono y el texto en un solo nodo, con el estado como `stateDescription`. El ícono tiene `contentDescription = null` porque el estado ya se dice: así no se repite. El código se marca como encabezado para que el usuario salte entre tarjetas. La prueba común busca un nodo con ese estado y acción de clic, y comprueba el texto y el rol: si la prueba lo encuentra, el lector también.
+
+**Resultado esperado:**
+
+```text
+./gradlew :composeApp:jvmTest pasa la prueba seLeeComoUnaUnidadConEstado.
+TalkBack lee: «ENV-42, en ruta, botón. Toca dos veces para marcar como entregado».
+VoiceOver lee una frase equivalente en iOS.
+```
+
+**Fallo deliberado:** quita `mergeDescendants = true`. **Error esperado:** la prueba falla con «Failed: assertTextContains... no node found», y TalkBack recorre el ícono, el texto y la fila por separado. **Diagnóstico:** sin agrupar, la información queda repartida en tres nodos. Agrupa lo que el usuario entiende como una unidad.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la prueba común y luego recorre la tarjeta con TalkBack.
+2. **Variación:** cambia `entregado` a `true` y comprueba que el lector dice «entregado».
+3. **Diagnóstico:** reproduce el fallo deliberado sin agrupar.
+4. **Integración:** revisa la pantalla con el Accessibility Scanner de Android y corrige lo que reporte.
+5. **Diseño:** escribe tres reglas de accesibilidad para todas las tarjetas de RutaFlow.
+
+**Pista:** escucha la pantalla con el lector antes de mirarla: si no entiendes qué hacer, falta semántica.
+
+#### Paso 6 · Práctica independiente
+
+Agrega una acción personalizada «reportar problema» con `customActions` en la semántica de la tarjeta y pruébala con TalkBack y VoiceOver.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas el árbol de semántica.
+- [ ] La prueba común pasa.
+- [ ] Reprodujiste la lectura repartida sin `mergeDescendants`.
+- [ ] El lector dice el estado y la acción.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** describir íconos decorativos, repetir el texto visible en la descripción y no agrupar elementos relacionados. **Siguiente paso:** el módulo 8 muestra estas pantallas dentro de una app SwiftUI existente.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega semántica de estado y acción a las tarjetas de envío de RutaFlow y pruébala en `commonTest`.
+
+**Fuente oficial:** [Kotlin — Accessibility in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-accessibility.html) y [Android Developers — Semantics in Compose](https://developer.android.com/develop/ui/compose/accessibility/semantics).
+
+### Tema 7: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min
+
+**Prerrequisito:** tema «Compose Multiplatform vs Jetpack Compose» de este módulo.
+
+**Al finalizar podrás:** activar Compose Hot Reload en el target de escritorio, cambiar textos, colores y diseño mientras la app corre sin perder el estado, y saber qué cambios exigen reiniciar.
+
+**¿Por qué es importante?** Ajustar una pantalla con ciclos de compilar y reiniciar de un minuto hace que se pruebe menos. Con Hot Reload el cambio aparece en segundos y conservas el estado (por ejemplo, el formulario ya llenado).
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin. Necesitas el target `jvm()` (escritorio): Hot Reload funciona sobre la JVM. Instala el plugin de Kotlin Multiplatform en IntelliJ IDEA o Android Studio.
+
+#### Paso 2 · Contexto y caso real
+
+El diseñador de RutaFlow ajustaba el espaciado de la tarjeta de envío con el equipo de desarrollo. Cada cambio pedía reiniciar la app y volver a llenar el formulario de prueba. Con Hot Reload, revisaron diez variantes en cinco minutos.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** recarga en caliente, estado preservado, target JVM de escritorio, tarea `hotRun`, cambios compatibles e incompatibles.
+
+Compose Hot Reload recompila solo lo que cambió y **reemplaza el código en la JVM en ejecución**. Luego Compose recompone la pantalla y **mantiene el estado** de `remember`.
+
+- Se ejecuta con la tarea `hotRun` del target de escritorio o con el botón de Hot Reload del IDE.
+- Al guardar el archivo, la app se actualiza.
+
+| Cambio | ¿Recarga en caliente? |
+|---|---|
+| textos, colores, modificadores, nuevos composables | sí |
+| cuerpo de funciones | sí |
+| nuevas dependencias de Gradle, cambios en `main` | no: reinicia |
+
+Aunque se ejecuta en escritorio, el código común es el mismo que corre en Android e iOS: lo que ves es lo que se compila para ellos.
+
+**Analogía:** es cambiar la decoración de una habitación con la gente adentro: nadie tiene que salir y volver a entrar. La analogía falla en que, si cambias los cimientos (dependencias), hay que desalojar y reconstruir.
+
+**Límite de uso:** no todos los cambios se pueden aplicar en caliente; si el estado se ve raro después de un cambio grande, reinicia. Revisa siempre el resultado final en Android e iOS: tipografía y densidad pueden variar.
+
+```mermaid
+flowchart LR
+    E["Editar TarjetaEnvio.kt"] --> G["Guardar"]
+    G --> C["Compilación incremental"]
+    C --> J["JVM en ejecución: código reemplazado"]
+    J --> R["Recomposición con estado preservado"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `composeApp/build.gradle.kts`:
+
+```kotlin
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose.hot.reload) // en versiones donde no viene incluido
+}
+
+kotlin {
+    jvm("desktop")
+    // ... targets de Android e iOS
+}
+```
+
+Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/Formulario.kt`:
+
+```kotlin
+package co.rutaflow.ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun FormularioNota() {
+    var nota by remember { mutableStateOf("") } // este estado sobrevive a la recarga
+    Column(Modifier.padding(16.dp)) {             // cambia 16 por 32 y guarda
+        Text("Nota para el cliente")              // cambia el texto y guarda
+        OutlinedTextField(value = nota, onValueChange = { nota = it })
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew :composeApp:hotRunDesktop --auto
+# escribe algo en el campo, cambia el padding o el texto en el código y guarda
+```
+
+**Explicación por bloques:** El target de escritorio se llama `desktop`; con el plugin de Hot Reload, Gradle agrega la tarea `hotRunDesktop`, y `--auto` recarga al guardar. `FormularioNota` guarda la nota en `remember`. Al cambiar el padding o el texto y guardar, la JVM recibe el código nuevo y Compose recompone: el diseño cambia y el texto que escribiste sigue en el campo.
+
+**Resultado esperado:**
+
+```text
+La ventana de escritorio se actualiza uno o dos segundos después de guardar, sin cerrarse.
+El texto escrito en el campo sigue ahí tras cambiar el padding de 16 a 32.
+Al agregar una dependencia nueva en Gradle, la herramienta pide reiniciar.
+```
+
+**Fallo deliberado:** cambia `remember { mutableStateOf("") }` por `remember { mutableStateOf(0) }` (otro tipo) y guarda. **Error esperado:** el estado se reinicia o la herramienta avisa que el cambio no es compatible y reinicia la composición. **Diagnóstico:** cambiar el tipo del estado no se puede aplicar conservando el valor anterior. Es normal: reinicia cuando cambies la forma del estado.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** arranca con `hotRunDesktop`, escribe una nota y cambia el padding.
+2. **Variación:** cambia el color del texto con `MaterialTheme.colorScheme.primary` y guarda.
+3. **Diagnóstico:** reproduce el fallo deliberado cambiando el tipo del estado.
+4. **Integración:** agrega un composable nuevo debajo del campo y guarda sin reiniciar.
+5. **Diseño:** escribe en el README del equipo qué cambios se prueban con Hot Reload y cuáles exigen reiniciar.
+
+**Pista:** si un cambio no aparece, revisa la consola de Hot Reload: dice si recargó o si necesita reiniciar.
+
+#### Paso 6 · Práctica independiente
+
+Usa Hot Reload para ajustar con el diseñador la tarjeta de envío y, al final, compara capturas del escritorio con Android e iOS.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué Hot Reload necesita la JVM.
+- [ ] Cambiaste el diseño sin perder el texto escrito.
+- [ ] Reprodujiste un cambio incompatible.
+- [ ] Verificas el resultado final en móvil.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** esperar que todo cambio se aplique en caliente, olvidar verificar en Android e iOS y no tener target de escritorio. **Siguiente paso:** el módulo 9 prueba estas mismas pantallas con `runComposeUiTest`.
+
+**Transferencia al proyecto integrador «RutaFlow»:** agrega el target de escritorio a la app de RutaFlow para ajustar pantallas con Hot Reload.
+
+**Fuente oficial:** [Kotlin — Compose Hot Reload](https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html) y [GitHub — JetBrains/compose-hot-reload](https://github.com/JetBrains/compose-hot-reload).
+
+### Tema 8: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min
 
 **Prerrequisito:** tema «Theming y navegación compartidos» de este módulo.
 
@@ -883,283 +1160,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar registrar e
 **Transferencia al proyecto integrador «RutaFlow»:** abre el detalle de envíos urgentes de RutaFlow desde el SMS con `rutaflow://envio/{codigo}` en Android e iOS.
 
 **Fuente oficial:** [Kotlin — Navigation and routing in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-navigation-routing.html) y [Kotlin — Deep links in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-navigation-deep-links.html).
-
-### Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min
-
-**Prerrequisito:** tema «Estado y recomposición» de este módulo.
-
-**Al finalizar podrás:** dar descripciones, roles y estados a los componentes con `Modifier.semantics`, agrupar elementos para que se lean como una unidad y comprobarlo con TalkBack, VoiceOver y una prueba común.
-
-**¿Por qué es importante?** Compose Multiplatform traduce la semántica de Compose a las APIs de accesibilidad de cada sistema. Si la semántica está mal en el código común, está mal en todas las plataformas a la vez.
-
-#### Paso 1 · Objetivo y preparación
-
-Usa Compose Multiplatform 1.7 o superior (accesibilidad en iOS estable). Activa TalkBack en el emulador de Android y VoiceOver en el simulador de iOS (Accessibility Inspector en Xcode).
-
-#### Paso 2 · Contexto y caso real
-
-Un conductor de RutaFlow con baja visión usaba VoiceOver. En la tarjeta de envío, VoiceOver leía «botón» sin decir para qué, y el ícono de estado no se leía. El arreglo en el código común sirvió también para TalkBack.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** árbol de semántica, `contentDescription`, `Modifier.semantics`, `mergeDescendants`, `role`, `stateDescription`, `heading`, `onClickLabel`.
-
-Compose arma un **árbol de semántica** paralelo a la interfaz. Los lectores de pantalla leen ese árbol, no los píxeles.
-
-- Las imágenes con significado necesitan `contentDescription`; las decorativas, `null`.
-- `Modifier.semantics(mergeDescendants = true)` junta un grupo (código, estado y botón) para leerlo como una unidad.
-- `role` dice qué es (botón, casilla); `stateDescription` dice su estado («entregado»); `heading()` marca títulos para navegar entre ellos.
-- `onClickLabel` en `clickable` describe la acción («marcar como entregado»), no solo «botón».
-
-Las pruebas comunes (`runComposeUiTest`) buscan nodos por su semántica: si la prueba encuentra el texto o la descripción, el lector de pantalla también.
-
-**Analogía:** el árbol de semántica es la versión en braille de la pantalla: si no escribes el braille, el usuario que no ve no tiene nada que leer. La analogía falla en que aquí el «braille» también lo usan las pruebas automáticas.
-
-**Límite de uso:** no pongas `contentDescription` que repite el texto visible: el lector lo dirá dos veces. La semántica no reemplaza el contraste de colores ni los tamaños táctiles mínimos (48 dp).
-
-```mermaid
-flowchart TB
-    C["TarjetaEnvio (mergeDescendants)"] --> T["Text: ENV-42 (heading)"]
-    C --> I["Icon: estado (stateDescription)"]
-    C --> B["clickable: onClickLabel 'marcar como entregado'"]
-    C -->|"TalkBack / VoiceOver"| L["'ENV-42, en ruta, marcar como entregado'"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/TarjetaEnvio.kt`:
-
-```kotlin
-package co.rutaflow.ui
-
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.unit.dp
-
-@Composable
-fun TarjetaEnvio(codigo: String, entregado: Boolean, alMarcar: () -> Unit) {
-    val estado = if (entregado) "entregado" else "en ruta"
-    Row(
-        Modifier
-            .clickable(onClickLabel = "marcar como entregado", role = Role.Button, onClick = alMarcar)
-            .semantics(mergeDescendants = true) { stateDescription = estado } // una sola lectura
-            .padding(16.dp),
-    ) {
-        Icon(if (entregado) Icons.Default.CheckCircle else Icons.Default.LocalShipping, contentDescription = null) // el estado ya se dice
-        Text(codigo, Modifier.semantics { heading() })
-    }
-}
-```
-
-Archivo `composeApp/src/commonTest/kotlin/co/rutaflow/ui/TarjetaEnvioTest.kt`:
-
-```kotlin
-package co.rutaflow.ui
-
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.*
-import kotlin.test.Test
-
-class TarjetaEnvioTest {
-    @OptIn(ExperimentalTestApi::class)
-    @Test fun seLeeComoUnaUnidadConEstado() = runComposeUiTest {
-        setContent { TarjetaEnvio("ENV-42", entregado = false) {} }
-        onNode(hasStateDescription("en ruta") and hasClickAction())
-            .assertTextContains("ENV-42")
-            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Role))
-    }
-}
-```
-
-Ejecútalo:
-
-```bash
-./gradlew :composeApp:jvmTest
-./gradlew :composeApp:installDebug   # luego activa TalkBack y toca la tarjeta
-```
-
-**Explicación por bloques:** La fila completa es clicable con una etiqueta de acción y el rol de botón. `mergeDescendants = true` une el ícono y el texto en un solo nodo, con el estado como `stateDescription`. El ícono tiene `contentDescription = null` porque el estado ya se dice: así no se repite. El código se marca como encabezado para que el usuario salte entre tarjetas. La prueba común busca un nodo con ese estado y acción de clic, y comprueba el texto y el rol: si la prueba lo encuentra, el lector también.
-
-**Resultado esperado:**
-
-```text
-./gradlew :composeApp:jvmTest pasa la prueba seLeeComoUnaUnidadConEstado.
-TalkBack lee: «ENV-42, en ruta, botón. Toca dos veces para marcar como entregado».
-VoiceOver lee una frase equivalente en iOS.
-```
-
-**Fallo deliberado:** quita `mergeDescendants = true`. **Error esperado:** la prueba falla con «Failed: assertTextContains... no node found», y TalkBack recorre el ícono, el texto y la fila por separado. **Diagnóstico:** sin agrupar, la información queda repartida en tres nodos. Agrupa lo que el usuario entiende como una unidad.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta la prueba común y luego recorre la tarjeta con TalkBack.
-2. **Variación:** cambia `entregado` a `true` y comprueba que el lector dice «entregado».
-3. **Diagnóstico:** reproduce el fallo deliberado sin agrupar.
-4. **Integración:** revisa la pantalla con el Accessibility Scanner de Android y corrige lo que reporte.
-5. **Diseño:** escribe tres reglas de accesibilidad para todas las tarjetas de RutaFlow.
-
-**Pista:** escucha la pantalla con el lector antes de mirarla: si no entiendes qué hacer, falta semántica.
-
-#### Paso 6 · Práctica independiente
-
-Agrega una acción personalizada «reportar problema» con `customActions` en la semántica de la tarjeta y pruébala con TalkBack y VoiceOver.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas el árbol de semántica.
-- [ ] La prueba común pasa.
-- [ ] Reprodujiste la lectura repartida sin `mergeDescendants`.
-- [ ] El lector dice el estado y la acción.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** describir íconos decorativos, repetir el texto visible en la descripción y no agrupar elementos relacionados. **Siguiente paso:** el módulo 8 muestra estas pantallas dentro de una app SwiftUI existente.
-
-**Transferencia al proyecto integrador «RutaFlow»:** agrega semántica de estado y acción a las tarjetas de envío de RutaFlow y pruébala en `commonTest`.
-
-**Fuente oficial:** [Kotlin — Accessibility in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-accessibility.html) y [Android Developers — Semantics in Compose](https://developer.android.com/develop/ui/compose/accessibility/semantics).
-
-### Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min
-
-**Prerrequisito:** tema «Compose Multiplatform vs Jetpack Compose» de este módulo.
-
-**Al finalizar podrás:** activar Compose Hot Reload en el target de escritorio, cambiar textos, colores y diseño mientras la app corre sin perder el estado, y saber qué cambios exigen reiniciar.
-
-**¿Por qué es importante?** Ajustar una pantalla con ciclos de compilar y reiniciar de un minuto hace que se pruebe menos. Con Hot Reload el cambio aparece en segundos y conservas el estado (por ejemplo, el formulario ya llenado).
-
-#### Paso 1 · Objetivo y preparación
-
-Usa Compose Multiplatform 1.10 o superior, donde Hot Reload viene incluido en el plugin. Necesitas el target `jvm()` (escritorio): Hot Reload funciona sobre la JVM. Instala el plugin de Kotlin Multiplatform en IntelliJ IDEA o Android Studio.
-
-#### Paso 2 · Contexto y caso real
-
-El diseñador de RutaFlow ajustaba el espaciado de la tarjeta de envío con el equipo de desarrollo. Cada cambio pedía reiniciar la app y volver a llenar el formulario de prueba. Con Hot Reload, revisaron diez variantes en cinco minutos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** recarga en caliente, estado preservado, target JVM de escritorio, tarea `hotRun`, cambios compatibles e incompatibles.
-
-Compose Hot Reload recompila solo lo que cambió y **reemplaza el código en la JVM en ejecución**. Luego Compose recompone la pantalla y **mantiene el estado** de `remember`.
-
-- Se ejecuta con la tarea `hotRun` del target de escritorio o con el botón de Hot Reload del IDE.
-- Al guardar el archivo, la app se actualiza.
-
-| Cambio | ¿Recarga en caliente? |
-|---|---|
-| textos, colores, modificadores, nuevos composables | sí |
-| cuerpo de funciones | sí |
-| nuevas dependencias de Gradle, cambios en `main` | no: reinicia |
-
-Aunque se ejecuta en escritorio, el código común es el mismo que corre en Android e iOS: lo que ves es lo que se compila para ellos.
-
-**Analogía:** es cambiar la decoración de una habitación con la gente adentro: nadie tiene que salir y volver a entrar. La analogía falla en que, si cambias los cimientos (dependencias), hay que desalojar y reconstruir.
-
-**Límite de uso:** no todos los cambios se pueden aplicar en caliente; si el estado se ve raro después de un cambio grande, reinicia. Revisa siempre el resultado final en Android e iOS: tipografía y densidad pueden variar.
-
-```mermaid
-flowchart LR
-    E["Editar TarjetaEnvio.kt"] --> G["Guardar"]
-    G --> C["Compilación incremental"]
-    C --> J["JVM en ejecución: código reemplazado"]
-    J --> R["Recomposición con estado preservado"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `composeApp/build.gradle.kts`:
-
-```kotlin
-plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.compose.multiplatform)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.compose.hot.reload) // en versiones donde no viene incluido
-}
-
-kotlin {
-    jvm("desktop")
-    // ... targets de Android e iOS
-}
-```
-
-Archivo `composeApp/src/commonMain/kotlin/co/rutaflow/ui/Formulario.kt`:
-
-```kotlin
-package co.rutaflow.ui
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-
-@Composable
-fun FormularioNota() {
-    var nota by remember { mutableStateOf("") } // este estado sobrevive a la recarga
-    Column(Modifier.padding(16.dp)) {             // cambia 16 por 32 y guarda
-        Text("Nota para el cliente")              // cambia el texto y guarda
-        OutlinedTextField(value = nota, onValueChange = { nota = it })
-    }
-}
-```
-
-Ejecútalo:
-
-```bash
-./gradlew :composeApp:hotRunDesktop --auto
-# escribe algo en el campo, cambia el padding o el texto en el código y guarda
-```
-
-**Explicación por bloques:** El target de escritorio se llama `desktop`; con el plugin de Hot Reload, Gradle agrega la tarea `hotRunDesktop`, y `--auto` recarga al guardar. `FormularioNota` guarda la nota en `remember`. Al cambiar el padding o el texto y guardar, la JVM recibe el código nuevo y Compose recompone: el diseño cambia y el texto que escribiste sigue en el campo.
-
-**Resultado esperado:**
-
-```text
-La ventana de escritorio se actualiza uno o dos segundos después de guardar, sin cerrarse.
-El texto escrito en el campo sigue ahí tras cambiar el padding de 16 a 32.
-Al agregar una dependencia nueva en Gradle, la herramienta pide reiniciar.
-```
-
-**Fallo deliberado:** cambia `remember { mutableStateOf("") }` por `remember { mutableStateOf(0) }` (otro tipo) y guarda. **Error esperado:** el estado se reinicia o la herramienta avisa que el cambio no es compatible y reinicia la composición. **Diagnóstico:** cambiar el tipo del estado no se puede aplicar conservando el valor anterior. Es normal: reinicia cuando cambies la forma del estado.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** arranca con `hotRunDesktop`, escribe una nota y cambia el padding.
-2. **Variación:** cambia el color del texto con `MaterialTheme.colorScheme.primary` y guarda.
-3. **Diagnóstico:** reproduce el fallo deliberado cambiando el tipo del estado.
-4. **Integración:** agrega un composable nuevo debajo del campo y guarda sin reiniciar.
-5. **Diseño:** escribe en el README del equipo qué cambios se prueban con Hot Reload y cuáles exigen reiniciar.
-
-**Pista:** si un cambio no aparece, revisa la consola de Hot Reload: dice si recargó o si necesita reiniciar.
-
-#### Paso 6 · Práctica independiente
-
-Usa Hot Reload para ajustar con el diseñador la tarjeta de envío y, al final, compara capturas del escritorio con Android e iOS.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué Hot Reload necesita la JVM.
-- [ ] Cambiaste el diseño sin perder el texto escrito.
-- [ ] Reprodujiste un cambio incompatible.
-- [ ] Verificas el resultado final en móvil.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** esperar que todo cambio se aplique en caliente, olvidar verificar en Android e iOS y no tener target de escritorio. **Siguiente paso:** el módulo 9 prueba estas mismas pantallas con `runComposeUiTest`.
-
-**Transferencia al proyecto integrador «RutaFlow»:** agrega el target de escritorio a la app de RutaFlow para ajustar pantallas con Hot Reload.
-
-**Fuente oficial:** [Kotlin — Compose Hot Reload](https://kotlinlang.org/docs/multiplatform/compose-hot-reload.html) y [GitHub — JetBrains/compose-hot-reload](https://github.com/JetBrains/compose-hot-reload).
 
 ## Laboratorio práctico
 

@@ -901,162 +901,9 @@ Construye una matriz `riesgo → señal → fitness function → límite`. Inclu
 - [ ] Combino controles heterogéneos.
 - [ ] No presento ArchUnit como verificación total.
 
-**Siguiente tema:** «Medir señales que justifican una extracción» (referencia interna M1 T12). **Errores comunes:** suite vacía o exclusiones sin vencimiento. **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
+**Siguiente tema:** «Separar mitos y verdades de Domain-Driven Design» (referencia interna M1 T12). **Errores comunes:** suite vacía o exclusiones sin vencimiento. **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
 
-### Tema 12: Medir señales que justifican una extracción · Experto · 40 min
-
-**Prerrequisito:** tema «Evitar falsos verdes en fitness functions» de este módulo (referencia interna M1 T11).
-
-**Al finalizar podrás:** reunir evidencia de cadencia, capacidad, aislamiento, ownership y datos, y separar una señal útil de una conclusión prematura.
-
-**¿Por qué es importante?** Extraer un servicio sin evidencia atribuible cambia un cuello de botella técnico por costo de red, consistencia y operación distribuida, sin garantizar que el problema original se resuelva.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/senales/{src,out,evidence}` con **JDK 27.0.1** y copia `EvaluarExtraccion.java`.
-
-#### Paso 2 · Contexto y caso real
-
-Facturación consume CPU alta durante cierres, pero comparte equipo, tabla y transacción con Envíos. Escalarla por separado podría ayudar, aunque primero se necesita atribución sostenida y capacidad operativa; CPU global no prueba un límite de negocio. El mismo pico de CPU podría explicarse por un reporte mensual mal indexado, no por una carga que justifique su propio proceso y su propio equipo de guardia.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Cadencia de cambio | Núcleo | Releases distintos y conflictos muestran coordinación evitables |
-| Perfil de capacidad | Variante | CPU, memoria o I/O deben atribuirse al módulo y ventana |
-| Aislamiento de fallo | Variante | Incidentes demuestran radio de impacto reducible |
-| Ownership completo | Núcleo | Equipo posee código, datos, SLO, alertas y on-call |
-| Acoplamiento de datos | Diagnóstico | Join, transacción o migración compartida bloquea autonomía |
-| Costo distribuido | Límite | Red, consistencia, seguridad, pipeline y carga cognitiva se presupuestan |
-| Umbral de revisión | Decisión | Ventana y medida evitan decisiones por un pico aislado |
-
-Una señal es una pista, no un veredicto. Como separar una línea de producción, la inversión sólo se justifica si el cuello está localizado y el nuevo equipo puede operar la línea completa, no solo el fragmento de código que motivó la conversación. Combinar varias señales débiles en un umbral explícito (por ejemplo, CPU atribuible sostenido más incidentes de aislamiento más un equipo dispuesto a asumir on-call) produce una decisión más defendible que cualquier métrica aislada.
-
-**Límite profesional:** ninguna métrica aislada prueba una frontera de dominio; contrasta capacidad, coordinación, datos y operación.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir -p academia-labs/microservices/senales/{src,out,evidence}
-cp examples/professional-bridges/microservices/EvaluarExtraccion.java academia-labs/microservices/senales/src/
-cd academia-labs/microservices/senales
-javac --release 27 -d out src/EvaluarExtraccion.java && java -cp out EvaluarExtraccion
-```
-
-**Resultado esperado:** `MANTENER_MODULAR` y `REVISAR_EXTRACCION`. **Fallo deliberado:** decide sólo por CPU → **Error esperado:** un módulo sin datos ni on-call propios se marca candidato → **Diagnóstico:** confundiste cuello técnico con autonomía viable.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** exige fuente, ventana y propietario antes de comparar un umbral.
-
-1. Reproduce ambas decisiones.
-2. Cambia una señal por vez.
-3. Diagnostica un promedio que oculta picos.
-4. Registra fuente, ventana, dueño y limitación en CSV.
-5. Estima costo de pipeline, observabilidad e incidentes.
-
-#### Paso 6 · Práctica independiente
-
-Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesis favorable y otra contraria a extraer; declara evidencia faltante.
-
-**Conexión con el proyecto integrador:** la matriz será la evidencia de entrada del ADR final.
-
-#### Paso 7 · Cierre
-
-- [ ] Atribuyo métricas al módulo.
-- [ ] Exijo ownership de datos y operación.
-- [ ] Cuantifico costo distribuido.
-- [ ] Uso ventanas y umbrales.
-- [ ] Puedo concluir «mantener modular».
-
-**Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T13). **Errores comunes:** CPU global, pico aislado u ownership parcial. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-**Conexión con el proyecto integrador:** `EvaluarExtraccion` reproduce la pregunta real sobre Facturación en RutaFlow; el Tema 13 convierte su salida (`MANTENER_MODULAR` o `REVISAR_EXTRACCION`) en el ADR que documenta la decisión.
-
-### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min
-
-**Prerrequisito:** tema «Medir señales que justifican una extracción» de este módulo (referencia interna M1 T12).
-
-**Al finalizar podrás:** redactar un ADR que conecte contexto, opciones, evidencia, consecuencias, disparador de revisión y reversión.
-
-**¿Por qué es importante?** Una decisión sin alternativas registradas ni condición de revisión no puede evaluarse después con información nueva; queda como una preferencia, no como algo que otra persona pueda auditar o revertir.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/adr/docs/adr` y conserva las evidencias del tema anterior. Un ADR registra una decisión situada; no es una justificación retrospectiva.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow decide mantener Facturación modular. La decisión es profesional porque reconoce evidencia insuficiente y define cuándo volver a evaluarla, no porque prometa que nunca habrá extracción. Dentro de seis meses, otra persona del equipo debe poder leer el ADR y entender por qué se decidió así con la información disponible entonces, sin necesitar preguntarle a quien lo escribió.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Un ADR incluye contexto verificable, al menos dos opciones —incluido no cambiar—, decisión, consecuencias positivas y negativas, estado, dueño y condición de revisión. La reversibilidad exige saber qué preservar y qué costo dispara rollback. «Microservicios escalan» no es evidencia ni alternativa: es una afirmación general que no cita ninguna señal concreta del Tema 12 ni compromete a nadie a revisarla cuando las condiciones cambien.
-
-**Analogía:** el ADR es un cuaderno de navegación: registra por qué se tomó una ruta y qué cambio obliga a corregirla. **Límite:** no reemplaza mediciones ni garantiza vigencia eterna.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea el ejemplo independiente `academia-labs/microservices/adr/docs/adr/0001-extraer-facturacion.md` con este contenido:
-
-```markdown
-# ADR-0001: mantener Facturación en el monolito modular
-## Contexto
-Un equipo, una cadencia y transacción local; sin cuello atribuible sostenido.
-## Opciones
-1. Mantener el módulo protegido. 2. Extraer proceso y datos.
-## Decisión
-Mantener; hoy el costo distribuido supera el beneficio observado.
-## Consecuencias
-Conservamos transacción local; posponemos escalado independiente.
-## Revisar cuando
-Equipo propio o CPU atribuible >60% durante 30 días, con datos y on-call preparados.
-## Reversión
-Si la extracción aumenta incidentes sin reducir coordinación, volver al módulo conservando contrato.
-```
-
-```bash
-mkdir -p academia-labs/microservices/adr/docs/adr
-cd academia-labs/microservices/adr
-test -s docs/adr/0001-extraer-facturacion.md
-grep -q 'Opciones' docs/adr/0001-extraer-facturacion.md
-grep -q 'Revisar cuando' docs/adr/0001-extraer-facturacion.md
-grep -q 'Reversión' docs/adr/0001-extraer-facturacion.md
-```
-
-**Resultado esperado:** cuatro comandos con código `0`. **Fallo deliberado:** elimina opción de mantener y umbral → **Error esperado:** `grep` falla y la decisión no puede reevaluarse → **Diagnóstico:** escribiste una preferencia, no una decisión trazable.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** cada frase causal debe apuntar a una evidencia, una consecuencia o una incertidumbre.
-
-1. Vincula cada afirmación a una evidencia.
-2. Añade consecuencias negativas.
-3. Detecta lenguaje absoluto sin medida.
-4. Define dueño y fecha de revisión.
-5. Ensaya reversión y artefactos que deben conservarse.
-
-#### Paso 6 · Práctica independiente
-
-Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias distintas. Explica qué señal cambia racionalmente la decisión.
-
-**Conexión con el proyecto integrador:** este ADR cierra la entrega y puede decidir legítimamente mantener el monolito modular.
-
-#### Paso 7 · Cierre
-
-- [ ] Incluyo mantener como opción.
-- [ ] Cito evidencia y límites.
-- [ ] Registro consecuencias negativas.
-- [ ] Defino umbral, ventana y dueño.
-- [ ] Diseño reversión verificable.
-
-**Conexión con el proyecto integrador:** `ADR-0001` es el registro final del módulo Facturación de RutaFlow; cierra el módulo con una decisión auditable en vez de dejarla como una preferencia sin evidencia.
-
-**Siguiente tema:** «Separar mitos y verdades de Domain-Driven Design» (referencia interna M1 T14). **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes oficiales:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-
-### Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min
+### Tema 12: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min
 
 **Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
 
@@ -1189,6 +1036,159 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confundir contexto 
 **Transferencia al proyecto integrador «RutaFlow»:** documenta los contextos Ventas y Operación del monolito modular y protege su frontera con las pruebas de ArchUnit de los temas anteriores.
 
 **Fuente oficial:** [Martin Fowler — Bounded Context](https://martinfowler.com/bliki/BoundedContext.html) y [Domain-Driven Design Reference de Eric Evans](https://www.domainlanguage.com/ddd/reference/).
+
+### Tema 13: Medir señales que justifican una extracción · Experto · 40 min
+
+**Prerrequisito:** tema «Evitar falsos verdes en fitness functions» de este módulo (referencia interna M1 T11).
+
+**Al finalizar podrás:** reunir evidencia de cadencia, capacidad, aislamiento, ownership y datos, y separar una señal útil de una conclusión prematura.
+
+**¿Por qué es importante?** Extraer un servicio sin evidencia atribuible cambia un cuello de botella técnico por costo de red, consistencia y operación distribuida, sin garantizar que el problema original se resuelva.
+
+#### Paso 1 · Objetivo y preparación
+
+Crea `academia-labs/microservices/senales/{src,out,evidence}` con **JDK 27.0.1** y copia `EvaluarExtraccion.java`.
+
+#### Paso 2 · Contexto y caso real
+
+Facturación consume CPU alta durante cierres, pero comparte equipo, tabla y transacción con Envíos. Escalarla por separado podría ayudar, aunque primero se necesita atribución sostenida y capacidad operativa; CPU global no prueba un límite de negocio. El mismo pico de CPU podría explicarse por un reporte mensual mal indexado, no por una carga que justifique su propio proceso y su propio equipo de guardia.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+| Subtema crítico | Papel | Explicación y evidencia |
+|---|---|---|
+| Cadencia de cambio | Núcleo | Releases distintos y conflictos muestran coordinación evitables |
+| Perfil de capacidad | Variante | CPU, memoria o I/O deben atribuirse al módulo y ventana |
+| Aislamiento de fallo | Variante | Incidentes demuestran radio de impacto reducible |
+| Ownership completo | Núcleo | Equipo posee código, datos, SLO, alertas y on-call |
+| Acoplamiento de datos | Diagnóstico | Join, transacción o migración compartida bloquea autonomía |
+| Costo distribuido | Límite | Red, consistencia, seguridad, pipeline y carga cognitiva se presupuestan |
+| Umbral de revisión | Decisión | Ventana y medida evitan decisiones por un pico aislado |
+
+Una señal es una pista, no un veredicto. Como separar una línea de producción, la inversión sólo se justifica si el cuello está localizado y el nuevo equipo puede operar la línea completa, no solo el fragmento de código que motivó la conversación. Combinar varias señales débiles en un umbral explícito (por ejemplo, CPU atribuible sostenido más incidentes de aislamiento más un equipo dispuesto a asumir on-call) produce una decisión más defendible que cualquier métrica aislada.
+
+**Límite profesional:** ninguna métrica aislada prueba una frontera de dominio; contrasta capacidad, coordinación, datos y operación.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir -p academia-labs/microservices/senales/{src,out,evidence}
+cp examples/professional-bridges/microservices/EvaluarExtraccion.java academia-labs/microservices/senales/src/
+cd academia-labs/microservices/senales
+javac --release 27 -d out src/EvaluarExtraccion.java && java -cp out EvaluarExtraccion
+```
+
+**Resultado esperado:** `MANTENER_MODULAR` y `REVISAR_EXTRACCION`. **Fallo deliberado:** decide sólo por CPU → **Error esperado:** un módulo sin datos ni on-call propios se marca candidato → **Diagnóstico:** confundiste cuello técnico con autonomía viable.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** exige fuente, ventana y propietario antes de comparar un umbral.
+
+1. Reproduce ambas decisiones.
+2. Cambia una señal por vez.
+3. Diagnostica un promedio que oculta picos.
+4. Registra fuente, ventana, dueño y limitación en CSV.
+5. Estima costo de pipeline, observabilidad e incidentes.
+
+#### Paso 6 · Práctica independiente
+
+Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesis favorable y otra contraria a extraer; declara evidencia faltante.
+
+**Conexión con el proyecto integrador:** la matriz será la evidencia de entrada del ADR final.
+
+#### Paso 7 · Cierre
+
+- [ ] Atribuyo métricas al módulo.
+- [ ] Exijo ownership de datos y operación.
+- [ ] Cuantifico costo distribuido.
+- [ ] Uso ventanas y umbrales.
+- [ ] Puedo concluir «mantener modular».
+
+**Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T14). **Errores comunes:** CPU global, pico aislado u ownership parcial. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+
+**Conexión con el proyecto integrador:** `EvaluarExtraccion` reproduce la pregunta real sobre Facturación en RutaFlow; el Tema 14 convierte su salida (`MANTENER_MODULAR` o `REVISAR_EXTRACCION`) en el ADR que documenta la decisión.
+
+### Tema 14: Registrar una decisión reversible en un ADR · Experto · 40 min
+
+**Prerrequisito:** tema «Medir señales que justifican una extracción» de este módulo (referencia interna M1 T13).
+
+**Al finalizar podrás:** redactar un ADR que conecte contexto, opciones, evidencia, consecuencias, disparador de revisión y reversión.
+
+**¿Por qué es importante?** Una decisión sin alternativas registradas ni condición de revisión no puede evaluarse después con información nueva; queda como una preferencia, no como algo que otra persona pueda auditar o revertir.
+
+#### Paso 1 · Objetivo y preparación
+
+Crea `academia-labs/microservices/adr/docs/adr` y conserva las evidencias del tema anterior. Un ADR registra una decisión situada; no es una justificación retrospectiva.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow decide mantener Facturación modular. La decisión es profesional porque reconoce evidencia insuficiente y define cuándo volver a evaluarla, no porque prometa que nunca habrá extracción. Dentro de seis meses, otra persona del equipo debe poder leer el ADR y entender por qué se decidió así con la información disponible entonces, sin necesitar preguntarle a quien lo escribió.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+Un ADR incluye contexto verificable, al menos dos opciones —incluido no cambiar—, decisión, consecuencias positivas y negativas, estado, dueño y condición de revisión. La reversibilidad exige saber qué preservar y qué costo dispara rollback. «Microservicios escalan» no es evidencia ni alternativa: es una afirmación general que no cita ninguna señal concreta del Tema 13 ni compromete a nadie a revisarla cuando las condiciones cambien.
+
+**Analogía:** el ADR es un cuaderno de navegación: registra por qué se tomó una ruta y qué cambio obliga a corregirla. **Límite:** no reemplaza mediciones ni garantiza vigencia eterna.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Crea el ejemplo independiente `academia-labs/microservices/adr/docs/adr/0001-extraer-facturacion.md` con este contenido:
+
+```markdown
+# ADR-0001: mantener Facturación en el monolito modular
+## Contexto
+Un equipo, una cadencia y transacción local; sin cuello atribuible sostenido.
+## Opciones
+1. Mantener el módulo protegido. 2. Extraer proceso y datos.
+## Decisión
+Mantener; hoy el costo distribuido supera el beneficio observado.
+## Consecuencias
+Conservamos transacción local; posponemos escalado independiente.
+## Revisar cuando
+Equipo propio o CPU atribuible >60% durante 30 días, con datos y on-call preparados.
+## Reversión
+Si la extracción aumenta incidentes sin reducir coordinación, volver al módulo conservando contrato.
+```
+
+```bash
+mkdir -p academia-labs/microservices/adr/docs/adr
+cd academia-labs/microservices/adr
+test -s docs/adr/0001-extraer-facturacion.md
+grep -q 'Opciones' docs/adr/0001-extraer-facturacion.md
+grep -q 'Revisar cuando' docs/adr/0001-extraer-facturacion.md
+grep -q 'Reversión' docs/adr/0001-extraer-facturacion.md
+```
+
+**Resultado esperado:** cuatro comandos con código `0`. **Fallo deliberado:** elimina opción de mantener y umbral → **Error esperado:** `grep` falla y la decisión no puede reevaluarse → **Diagnóstico:** escribiste una preferencia, no una decisión trazable.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** cada frase causal debe apuntar a una evidencia, una consecuencia o una incertidumbre.
+
+1. Vincula cada afirmación a una evidencia.
+2. Añade consecuencias negativas.
+3. Detecta lenguaje absoluto sin medida.
+4. Define dueño y fecha de revisión.
+5. Ensaya reversión y artefactos que deben conservarse.
+
+#### Paso 6 · Práctica independiente
+
+Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias distintas. Explica qué señal cambia racionalmente la decisión.
+
+**Conexión con el proyecto integrador:** este ADR cierra la entrega y puede decidir legítimamente mantener el monolito modular.
+
+#### Paso 7 · Cierre
+
+- [ ] Incluyo mantener como opción.
+- [ ] Cito evidencia y límites.
+- [ ] Registro consecuencias negativas.
+- [ ] Defino umbral, ventana y dueño.
+- [ ] Diseño reversión verificable.
+
+**Conexión con el proyecto integrador:** `ADR-0001` es el registro final del módulo Facturación de RutaFlow; cierra el módulo con una decisión auditable en vez de dejarla como una preferencia sin evidencia.
+
+**Siguiente:** el proyecto integrador «Defender el monolito modular de RutaFlow», que entrega como cierre la matriz de señales del Tema 13 y el ADR de este tema. **Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes oficiales:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
+
 
 ## Proyecto integrador · Defender el monolito modular de RutaFlow · 3 h
 

@@ -156,16 +156,16 @@
         "fragment": "tema-5-mapas-con-maps-compose-marcadores-camara-y-ruta"
       },
       {
+        "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
+        "fragment": "tema-6-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+      },
+      {
         "title": "Geofencing: avisar al entrar en la zona de una parada",
-        "fragment": "tema-6-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
+        "fragment": "tema-7-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
       },
       {
         "title": "CameraX y ML Kit: foto de entrega y escaneo de códigos de barras",
-        "fragment": "tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
-      },
-      {
-        "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
-        "fragment": "tema-8-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+        "fragment": "tema-8-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
       },
       {
         "title": "Bluetooth LE: buscar y leer una báscula del vehículo",
@@ -510,12 +510,12 @@
         "fragment": "tema-4-rendimiento-y-actualizacion-son-contratos-de-experiencia"
       },
       {
-        "title": "CSP con nonce y Trusted Types en Angular",
-        "fragment": "tema-5-csp-con-nonce-y-trusted-types-en-angular"
+        "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
+        "fragment": "tema-5-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
       },
       {
-        "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
-        "fragment": "tema-6-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
+        "title": "CSP con nonce y Trusted Types en Angular",
+        "fragment": "tema-6-csp-con-nonce-y-trusted-types-en-angular"
       }
     ],
     "15": [
@@ -2874,12 +2874,12 @@
         "fragment": "tema-4-camara-galeria-y-carga-multipart-de-una-evidencia"
       },
       {
-        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
-        "fragment": "tema-5-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
+        "fragment": "tema-5-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
       },
       {
-        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
-        "fragment": "tema-6-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
+        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
+        "fragment": "tema-6-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
       }
     ],
     "8": [
@@ -3486,16 +3486,16 @@
         "fragment": "tema-7-notificaciones-push-con-apns"
       },
       {
+        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
+        "fragment": "tema-8-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+      },
+      {
         "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
-        "fragment": "tema-8-core-location-moderno-cllocationupdate-permisos-y-precision"
+        "fragment": "tema-9-core-location-moderno-cllocationupdate-permisos-y-precision"
       },
       {
         "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
-        "fragment": "tema-9-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
-      },
-      {
-        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
-        "fragment": "tema-10-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+        "fragment": "tema-10-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
       }
     ],
     "14": [
@@ -3586,12 +3586,12 @@
         "fragment": "tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red"
       },
       {
-        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
-        "fragment": "tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
+        "fragment": "tema-5-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
       },
       {
-        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
-        "fragment": "tema-6-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
+        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
+        "fragment": "tema-6-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
       }
     ],
     "5": [
@@ -3622,12 +3622,12 @@
         "fragment": "tema-3-migraciones-y-swiftdata-vs-core-data"
       },
       {
-        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
-        "fragment": "tema-4-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
+        "fragment": "tema-4-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
       },
       {
-        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
-        "fragment": "tema-5-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
+        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
+        "fragment": "tema-5-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
       }
     ],
     "7": [
@@ -4834,16 +4834,16 @@
         "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
       },
       {
-        "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
-        "fragment": "tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
-      },
-      {
         "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver",
-        "fragment": "tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+        "fragment": "tema-6-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
       },
       {
         "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app",
-        "fragment": "tema-8-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+        "fragment": "tema-7-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+      },
+      {
+        "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
+        "fragment": "tema-8-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
       }
     ],
     "8": [
@@ -4972,16 +4972,16 @@
         "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions"
       },
       {
+        "title": "Separar mitos y verdades de Domain-Driven Design",
+        "fragment": "tema-12-separar-mitos-y-verdades-de-domain-driven-design"
+      },
+      {
         "title": "Medir señales que justifican una extracción",
-        "fragment": "tema-12-medir-senales-que-justifican-una-extraccion"
+        "fragment": "tema-13-medir-senales-que-justifican-una-extraccion"
       },
       {
         "title": "Registrar una decisión reversible en un ADR",
-        "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
-      },
-      {
-        "title": "Separar mitos y verdades de Domain-Driven Design",
-        "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
+        "fragment": "tema-14-registrar-una-decision-reversible-en-un-adr"
       }
     ]
   },

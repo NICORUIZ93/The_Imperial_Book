@@ -489,7 +489,141 @@ Corregí confirmando que la implementación reutiliza la misma `idempotencyKey` 
 #### Paso 7 · Cierre
 Entregá el dominio con validación del Paso 4, el riesgo de evidencia duplicada del Paso 5, y la confirmación de idempotencia del Paso 6; explicá por qué separar selección, validación y transferencia permite probar las reglas de validación sin necesitar una cámara real. Siguiente paso: cerrá el módulo integrando permisos, MethodChannel y carga de evidencia en el flujo completo. Errores comunes: confiar únicamente en la extensión del archivo para validar el tipo, marcar la entrega como completa antes de la confirmación del servidor, y generar una nueva clave de idempotencia en cada reintento. Fuentes oficiales: https://pub.dev/packages/image_picker y https://pub.dev/packages/dio.
 
-### Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min
+### Tema 5: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min
+
+**Prerrequisito:** temas «Permisos de plataforma y cuándo escribir un plugin propio» de este módulo y «Offline-first y Firebase» (módulo 6).
+
+**Al finalizar podrás:** programar una tarea periódica con el paquete `workmanager` que suba entregas pendientes con restricciones de red, y entender qué permite cada sistema operativo.
+
+**¿Por qué es importante?** El conductor no vuelve a abrir la app para sincronizar. Con trabajo en segundo plano, las entregas pendientes se suben cuando hay red. Pero Android e iOS limitan mucho este trabajo, y hay que diseñar con esos límites.
+
+#### Paso 1 · Objetivo y preparación
+
+Agrega `workmanager` con `flutter pub add workmanager`. En iOS, sigue la configuración del paquete (Background Modes y `BGTaskSchedulerPermittedIdentifiers`). Prueba primero en Android, donde es más predecible.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía conductores que terminaban la jornada con entregas sin subir, porque confirmaban sin señal y no volvían a abrir la app. La tarea periódica las sube cuando el teléfono recupera red.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** isolate en segundo plano, `callbackDispatcher`, `@pragma('vm:entry-point')`, tarea periódica, restricciones, WorkManager (Android), BGTaskScheduler (iOS).
+
+El paquete `workmanager` usa **WorkManager** en Android y **BGTaskScheduler** en iOS.
+
+- La tarea corre en un **isolate nuevo**, sin la UI ni el estado de la app: debe abrir de nuevo lo que necesite (base, cliente HTTP).
+- El punto de entrada es una función de nivel superior marcada con `@pragma('vm:entry-point')`, para que el compilador no la elimine.
+- Las **restricciones** (red conectada, batería no baja) le dicen al sistema cuándo conviene correr.
+
+| | Android | iOS |
+|---|---|---|
+| Periodo mínimo | 15 minutos | el sistema decide, sin garantía |
+| Fiabilidad | alta, sobrevive reinicios | depende del uso de la app |
+
+Diseña la sincronización para que sea **idempotente**: si la tarea corre dos veces, no debe duplicar nada.
+
+**Analogía:** la tarea en segundo plano es un mensajero que pasa a recoger paquetes cuando el sistema lo deja salir: en Android pasa con horario aproximado; en iOS, cuando el portero quiere. La analogía falla en que el mensajero no recuerda nada de la visita anterior: cada vez arranca de cero.
+
+**Límite de uso:** no prometas horarios exactos. No hagas trabajo pesado: Android da unos 10 minutos e iOS unos 30 segundos para una actualización. Para avisos inmediatos usa notificaciones push desde el servidor.
+
+```mermaid
+flowchart LR
+    A["main: Workmanager.initialize"] --> R["registerPeriodicTask<br/>15 min, red conectada"]
+    R --> S{"Sistema: hay red y es buen momento"}
+    S --> I["isolate nuevo: callbackDispatcher"]
+    I --> U["sube pendientes (idempotente)"]
+    U -->|"true / false"| S
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `lib/main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
+
+const tareaSincronizar = 'co.rutaflow.sincronizar';
+
+@pragma('vm:entry-point') // evita que el compilador quite esta función
+void callbackDispatcher() {
+  Workmanager().executeTask((tarea, datos) async {
+    if (tarea != tareaSincronizar) return true;
+    try {
+      // Isolate nuevo: abre de nuevo la base y el cliente HTTP aquí.
+      final pendientes = ['ENV-42', 'ENV-43'];
+      for (final codigo in pendientes) {
+        debugPrint('subiendo $codigo'); // el servidor ignora repetidos por código
+      }
+      return true; // éxito
+    } catch (_) {
+      return false; // el sistema reintenta más tarde
+    }
+  });
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Workmanager().initialize(callbackDispatcher);
+  await Workmanager().registerPeriodicTask(
+    'sincronizacion-entregas', tareaSincronizar,
+    frequency: const Duration(minutes: 15),
+    constraints: Constraints(networkType: NetworkType.connected),
+    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep, // no duplicar al reabrir la app
+  );
+  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
+}
+```
+
+Ejecútalo:
+
+```bash
+flutter run
+# Android: fuerza la tarea sin esperar 15 minutos
+adb shell cmd jobscheduler run -f co.rutaflow.app 1
+adb logcat -s flutter
+```
+
+**Explicación por bloques:** `callbackDispatcher` es el punto de entrada del isolate en segundo plano: la anotación `@pragma` impide que el árbol de compilación la elimine. Dentro, `executeTask` recibe el nombre de la tarea y devuelve `true` si salió bien o `false` para que el sistema reintente. En `main`, `initialize` registra el despachador y `registerPeriodicTask` programa la tarea cada 15 minutos (el mínimo de Android) solo con red, sin duplicarla si ya existe. El comando de `adb` fuerza la ejecución para probar.
+
+**Resultado esperado:**
+
+```text
+Tras forzar el trabajo en Android, Logcat muestra:
+I flutter : subiendo ENV-42
+I flutter : subiendo ENV-43
+```
+
+**Fallo deliberado:** quita `@pragma('vm:entry-point')` y compila en modo release (`flutter run --release`). **Error esperado:** la tarea no corre y Logcat muestra un error de que no se encontró el punto de entrada del callback. **Diagnóstico:** en release, el compilador elimina funciones que no ve usadas. La anotación las conserva.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** fuerza la tarea con `adb` y lee Logcat.
+2. **Variación:** apaga la red del emulador, fuerza la tarea y explica por qué no corre.
+3. **Diagnóstico:** reproduce el fallo deliberado en release.
+4. **Integración:** registra una tarea de una sola vez (`registerOneOffTask`) al confirmar una entrega sin señal.
+5. **Diseño:** escribe qué diría la app al conductor sobre cuándo se suben sus entregas en iOS.
+
+**Pista:** si en iOS «nunca corre», recuerda que el sistema decide; prueba con el depurador de Xcode como en el track de iOS.
+
+#### Paso 6 · Práctica independiente
+
+Guarda en `SharedPreferences` (desde el isolate de fondo) la hora de la última sincronización exitosa y muéstrala en la app.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué la tarea corre en un isolate nuevo.
+- [ ] Forzaste la tarea y viste la subida.
+- [ ] Reprodujiste el fallo sin `@pragma` en release.
+- [ ] Tu sincronización es idempotente.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, usar estado de la UI dentro de la tarea y no hacer idempotente la subida. **Siguiente paso:** el módulo 11 prepara los builds de release donde este comportamiento importa.
+
+**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow, con restricción de red y subida idempotente.
+
+**Fuente oficial:** [pub.dev — workmanager](https://pub.dev/packages/workmanager) y [Flutter — Background processes](https://docs.flutter.dev/packages-and-plugins/background-processes).
+
+### Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min
 
 **Prerrequisito:** temas «MethodChannel» y «Plugins federados» de este módulo.
 
@@ -652,140 +786,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** crear un motor por 
 **Transferencia al proyecto integrador «RutaFlow»:** integra la pantalla de seguimiento de Flutter en la app nativa de clientes de RutaFlow con un motor precalentado.
 
 **Fuente oficial:** [Flutter — Add Flutter to an existing app](https://docs.flutter.dev/add-to-app) y [Flutter — Add a Flutter screen to an Android app](https://docs.flutter.dev/add-to-app/android/add-flutter-screen).
-
-### Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min
-
-**Prerrequisito:** temas «Permisos de plataforma y cuándo escribir un plugin propio» de este módulo y «Offline-first y Firebase» (módulo 6).
-
-**Al finalizar podrás:** programar una tarea periódica con el paquete `workmanager` que suba entregas pendientes con restricciones de red, y entender qué permite cada sistema operativo.
-
-**¿Por qué es importante?** El conductor no vuelve a abrir la app para sincronizar. Con trabajo en segundo plano, las entregas pendientes se suben cuando hay red. Pero Android e iOS limitan mucho este trabajo, y hay que diseñar con esos límites.
-
-#### Paso 1 · Objetivo y preparación
-
-Agrega `workmanager` con `flutter pub add workmanager`. En iOS, sigue la configuración del paquete (Background Modes y `BGTaskSchedulerPermittedIdentifiers`). Prueba primero en Android, donde es más predecible.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow tenía conductores que terminaban la jornada con entregas sin subir, porque confirmaban sin señal y no volvían a abrir la app. La tarea periódica las sube cuando el teléfono recupera red.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** isolate en segundo plano, `callbackDispatcher`, `@pragma('vm:entry-point')`, tarea periódica, restricciones, WorkManager (Android), BGTaskScheduler (iOS).
-
-El paquete `workmanager` usa **WorkManager** en Android y **BGTaskScheduler** en iOS.
-
-- La tarea corre en un **isolate nuevo**, sin la UI ni el estado de la app: debe abrir de nuevo lo que necesite (base, cliente HTTP).
-- El punto de entrada es una función de nivel superior marcada con `@pragma('vm:entry-point')`, para que el compilador no la elimine.
-- Las **restricciones** (red conectada, batería no baja) le dicen al sistema cuándo conviene correr.
-
-| | Android | iOS |
-|---|---|---|
-| Periodo mínimo | 15 minutos | el sistema decide, sin garantía |
-| Fiabilidad | alta, sobrevive reinicios | depende del uso de la app |
-
-Diseña la sincronización para que sea **idempotente**: si la tarea corre dos veces, no debe duplicar nada.
-
-**Analogía:** la tarea en segundo plano es un mensajero que pasa a recoger paquetes cuando el sistema lo deja salir: en Android pasa con horario aproximado; en iOS, cuando el portero quiere. La analogía falla en que el mensajero no recuerda nada de la visita anterior: cada vez arranca de cero.
-
-**Límite de uso:** no prometas horarios exactos. No hagas trabajo pesado: Android da unos 10 minutos e iOS unos 30 segundos para una actualización. Para avisos inmediatos usa notificaciones push desde el servidor.
-
-```mermaid
-flowchart LR
-    A["main: Workmanager.initialize"] --> R["registerPeriodicTask<br/>15 min, red conectada"]
-    R --> S{"Sistema: hay red y es buen momento"}
-    S --> I["isolate nuevo: callbackDispatcher"]
-    I --> U["sube pendientes (idempotente)"]
-    U -->|"true / false"| S
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `lib/main.dart`:
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:workmanager/workmanager.dart';
-
-const tareaSincronizar = 'co.rutaflow.sincronizar';
-
-@pragma('vm:entry-point') // evita que el compilador quite esta función
-void callbackDispatcher() {
-  Workmanager().executeTask((tarea, datos) async {
-    if (tarea != tareaSincronizar) return true;
-    try {
-      // Isolate nuevo: abre de nuevo la base y el cliente HTTP aquí.
-      final pendientes = ['ENV-42', 'ENV-43'];
-      for (final codigo in pendientes) {
-        debugPrint('subiendo $codigo'); // el servidor ignora repetidos por código
-      }
-      return true; // éxito
-    } catch (_) {
-      return false; // el sistema reintenta más tarde
-    }
-  });
-}
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Workmanager().initialize(callbackDispatcher);
-  await Workmanager().registerPeriodicTask(
-    'sincronizacion-entregas', tareaSincronizar,
-    frequency: const Duration(minutes: 15),
-    constraints: Constraints(networkType: NetworkType.connected),
-    existingWorkPolicy: ExistingPeriodicWorkPolicy.keep, // no duplicar al reabrir la app
-  );
-  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
-}
-```
-
-Ejecútalo:
-
-```bash
-flutter run
-# Android: fuerza la tarea sin esperar 15 minutos
-adb shell cmd jobscheduler run -f co.rutaflow.app 1
-adb logcat -s flutter
-```
-
-**Explicación por bloques:** `callbackDispatcher` es el punto de entrada del isolate en segundo plano: la anotación `@pragma` impide que el árbol de compilación la elimine. Dentro, `executeTask` recibe el nombre de la tarea y devuelve `true` si salió bien o `false` para que el sistema reintente. En `main`, `initialize` registra el despachador y `registerPeriodicTask` programa la tarea cada 15 minutos (el mínimo de Android) solo con red, sin duplicarla si ya existe. El comando de `adb` fuerza la ejecución para probar.
-
-**Resultado esperado:**
-
-```text
-Tras forzar el trabajo en Android, Logcat muestra:
-I flutter : subiendo ENV-42
-I flutter : subiendo ENV-43
-```
-
-**Fallo deliberado:** quita `@pragma('vm:entry-point')` y compila en modo release (`flutter run --release`). **Error esperado:** la tarea no corre y Logcat muestra un error de que no se encontró el punto de entrada del callback. **Diagnóstico:** en release, el compilador elimina funciones que no ve usadas. La anotación las conserva.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** fuerza la tarea con `adb` y lee Logcat.
-2. **Variación:** apaga la red del emulador, fuerza la tarea y explica por qué no corre.
-3. **Diagnóstico:** reproduce el fallo deliberado en release.
-4. **Integración:** registra una tarea de una sola vez (`registerOneOffTask`) al confirmar una entrega sin señal.
-5. **Diseño:** escribe qué diría la app al conductor sobre cuándo se suben sus entregas en iOS.
-
-**Pista:** si en iOS «nunca corre», recuerda que el sistema decide; prueba con el depurador de Xcode como en el track de iOS.
-
-#### Paso 6 · Práctica independiente
-
-Guarda en `SharedPreferences` (desde el isolate de fondo) la hora de la última sincronización exitosa y muéstrala en la app.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué la tarea corre en un isolate nuevo.
-- [ ] Forzaste la tarea y viste la subida.
-- [ ] Reprodujiste el fallo sin `@pragma` en release.
-- [ ] Tu sincronización es idempotente.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios exactos, usar estado de la UI dentro de la tarea y no hacer idempotente la subida. **Siguiente paso:** el módulo 11 prepara los builds de release donde este comportamiento importa.
-
-**Transferencia al proyecto integrador «RutaFlow»:** sube en segundo plano las entregas confirmadas sin señal en la app del conductor de RutaFlow, con restricción de red y subida idempotente.
-
-**Fuente oficial:** [pub.dev — workmanager](https://pub.dev/packages/workmanager) y [Flutter — Background processes](https://docs.flutter.dev/packages-and-plugins/background-processes).
 
 ## Laboratorio práctico
 

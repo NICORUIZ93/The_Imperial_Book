@@ -226,7 +226,156 @@ Corregí el Paso 5 volviendo a `fotoPath` opcional, y documentá en qué escenar
 Entregá la migración liviana del Paso 4, el campo requerido que rompe datos existentes del Paso 5, y el escenario de Core Data del Paso 6; explicá por qué un campo opcional es casi siempre más seguro que uno requerido al evolucionar un modelo con datos reales ya guardados. Siguiente paso: estudia notificaciones. Errores comunes: guardar UI en modelo, cambios destructivos, contexto en hilo incorrecto y no probar datos antiguos. Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/coredata.
 **Implicación práctica:** Un campo opcional permite una migración liviana que preserva los datos ya guardados en el dispositivo, mientras que un campo requerido sin valor por defecto rompe la lectura de los registros existentes.
 
-### Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min
+### Tema 4: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min
+
+**Prerrequisito:** tema «@Model y ModelContainer» de este módulo.
+
+**Al finalizar podrás:** guardar una foto de entrega en la carpeta correcta del contenedor de la app, excluirla del respaldo si se puede regenerar y permitir al usuario importar un PDF con `fileImporter`.
+
+**¿Por qué es importante?** Guardar archivos en el lugar equivocado tiene consecuencias: en `Caches` el sistema los borra, en `Documents` se ven en la app Archivos y ocupan respaldo de iCloud. Elegir bien evita perder evidencia o llenar el iCloud del usuario.
+
+#### Paso 1 · Objetivo y preparación
+
+Continúa `RutaFlowApp`. Crea `AlmacenArchivos.swift`. Para importar, necesitas un PDF de prueba en la app Archivos del simulador (arrastra uno a la ventana del simulador).
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow guardaba las fotos de entrega en `Caches`. Cuando el teléfono se quedaba sin espacio, iOS las borraba antes de subirlas al servidor y se perdía la evidencia.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** sandbox, `Documents`, `Application Support`, `Caches`, `tmp`, `URL.applicationSupportDirectory`, `isExcludedFromBackup`, acceso con ámbito de seguridad, `fileImporter`.
+
+Cada app vive en su **sandbox**. Sus carpetas principales:
+
+| Carpeta | Para | Respaldo | ¿El sistema la borra? |
+|---|---|---|---|
+| `Documents` | archivos del usuario, visibles en Archivos si lo habilitas | sí | no |
+| `Application Support` | datos internos de la app | sí | no |
+| `Caches` | lo que se puede volver a descargar | no | sí, con poco espacio |
+| `tmp` | archivos de un momento | no | sí |
+
+Las fotos pendientes de subir van en `Application Support`, no en `Caches`. Si un archivo se puede regenerar, márcalo con `isExcludedFromBackup`.
+
+Para abrir archivos **fuera** del sandbox, `fileImporter` muestra el selector del sistema. La URL recibida requiere `startAccessingSecurityScopedResource()` antes de leerla y `stop...` al terminar.
+
+**Analogía:** las carpetas son cajones de un escritorio: uno para papeles importantes, otro para borradores que el conserje puede tirar. La analogía falla en que el conserje (iOS) no avisa antes de vaciar el cajón de `Caches`.
+
+**Límite de uso:** no guardes archivos grandes en SwiftData o `UserDefaults`: guarda el archivo en disco y en la base solo su ruta. No guardes rutas absolutas: el contenedor puede cambiar de ruta entre instalaciones; guarda la ruta relativa.
+
+```mermaid
+flowchart TB
+    F["foto de entrega"] -->|"pendiente de subir"| AS["Application Support"]
+    AS -->|"subida confirmada"| C["Caches (miniatura)"]
+    U["usuario elige PDF"] -->|"fileImporter"| S["URL con ámbito de seguridad"]
+    S -->|"copiar"| AS
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/AlmacenArchivos.swift`:
+
+```swift
+import Foundation
+
+struct AlmacenArchivos {
+    private let base = URL.applicationSupportDirectory.appending(path: "entregas", directoryHint: .isDirectory)
+
+    func guardarFoto(_ datos: Data, codigo: String) throws -> URL {
+        try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        var destino = base.appending(path: "\(codigo).jpg")
+        try datos.write(to: destino, options: [.atomic, .completeFileProtection])
+        var valores = URLResourceValues()
+        valores.isExcludedFromBackup = false // es evidencia: debe respaldarse
+        try destino.setResourceValues(valores)
+        return destino
+    }
+
+    func importar(_ externo: URL) throws -> URL {
+        guard externo.startAccessingSecurityScopedResource() else { throw CocoaError(.fileReadNoPermission) }
+        defer { externo.stopAccessingSecurityScopedResource() }
+        let copia = base.appending(path: externo.lastPathComponent)
+        try? FileManager.default.removeItem(at: copia)
+        try FileManager.default.copyItem(at: externo, to: copia)
+        return copia
+    }
+}
+```
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/AdjuntarPDF.swift`:
+
+```swift
+import SwiftUI
+import UniformTypeIdentifiers
+
+struct AdjuntarPDF: View {
+    @State private var mostrando = false
+    @State private var mensaje = "Sin adjunto"
+
+    var body: some View {
+        VStack {
+            Text(mensaje)
+            Button("Adjuntar remisión (PDF)") { mostrando = true }
+        }
+        .fileImporter(isPresented: $mostrando, allowedContentTypes: [.pdf]) { resultado in
+            do {
+                let copia = try AlmacenArchivos().importar(try resultado.get())
+                mensaje = "Adjuntado: \(copia.lastPathComponent)"
+            } catch {
+                mensaje = "No se pudo adjuntar: \(error.localizedDescription)"
+            }
+        }
+    }
+}
+```
+
+Compila, ejecuta en el simulador y revisa el contenedor:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+# tras guardar una foto, revisa la carpeta del contenedor:
+xcrun simctl get_app_container booted co.rutaflow.app data
+```
+
+**Explicación por bloques:** `AlmacenArchivos` usa `URL.applicationSupportDirectory` y una subcarpeta `entregas`. `guardarFoto` escribe de forma atómica (no deja archivos a medias) y con protección completa (cifrado mientras el teléfono está bloqueado), y deja el archivo en el respaldo porque es evidencia. `importar` abre el acceso con ámbito de seguridad, copia el PDF al sandbox y cierra el acceso con `defer`. `AdjuntarPDF` muestra el selector limitado a PDF.
+
+**Resultado esperado:**
+
+```text
+Tras guardar la foto de ENV-42, existe Library/Application Support/entregas/ENV-42.jpg dentro del contenedor de la app.
+Al adjuntar un PDF desde Archivos, la vista muestra «Adjuntado: remision.pdf».
+```
+
+**Fallo deliberado:** quita `startAccessingSecurityScopedResource()` de `importar`. **Error esperado:** «No se pudo adjuntar» con un error de permiso (`NSCocoaErrorDomain Code=257`). **Diagnóstico:** la URL apunta fuera del sandbox y necesita abrir su acceso de forma explícita. Ábrelo y ciérralo con `defer`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** guarda una foto y encuentra el archivo con `simctl get_app_container`.
+2. **Variación:** guarda una miniatura en `Caches` y márcala excluida del respaldo.
+3. **Diagnóstico:** reproduce el fallo deliberado sin acceso con ámbito de seguridad.
+4. **Integración:** guarda en SwiftData solo la ruta relativa (`entregas/ENV-42.jpg`) y reconstruye la URL al leerla.
+5. **Diseño:** escribe la tabla de carpetas de RutaFlow: qué archivo va en cuál y por qué.
+
+**Pista:** si un archivo desaparece solo, revisa si estaba en `Caches` o `tmp`.
+
+#### Paso 6 · Práctica independiente
+
+Borra automáticamente de `Application Support` las fotos cuya subida el servidor confirmó hace más de siete días, y registra cuántos bytes liberaste.
+
+#### Paso 7 · Cierre
+
+- [ ] Eliges la carpeta correcta para cada tipo de archivo.
+- [ ] La foto queda en `Application Support/entregas`.
+- [ ] Reprodujiste el error de permiso al importar.
+- [ ] Guardas rutas relativas, no absolutas.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** guardar evidencia en `Caches`, guardar rutas absolutas y olvidar cerrar el acceso con ámbito de seguridad. **Siguiente paso:** el módulo 13 protege estos archivos con las clases de protección de datos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda las fotos de entrega de RutaFlow en `Application Support` con protección completa y bórralas solo cuando el servidor confirme la subida.
+
+**Fuente oficial:** [Apple — File System Programming Guide: File system basics](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html) y [Apple — fileImporter](https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:allowsmultipleselection:oncompletion:)).
+
+### Tema 5: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min
 
 **Prerrequisito:** temas «@Model y ModelContainer» y «Migraciones y SwiftData vs Core Data» de este módulo.
 
@@ -386,155 +535,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar CloudKit para 
 **Transferencia al proyecto integrador «RutaFlow»:** sincroniza con CloudKit las notas privadas del conductor de RutaFlow y mantén las entregas en la API.
 
 **Fuente oficial:** [Apple — Syncing model data across a person’s devices](https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices).
-
-### Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min
-
-**Prerrequisito:** tema «@Model y ModelContainer» de este módulo.
-
-**Al finalizar podrás:** guardar una foto de entrega en la carpeta correcta del contenedor de la app, excluirla del respaldo si se puede regenerar y permitir al usuario importar un PDF con `fileImporter`.
-
-**¿Por qué es importante?** Guardar archivos en el lugar equivocado tiene consecuencias: en `Caches` el sistema los borra, en `Documents` se ven en la app Archivos y ocupan respaldo de iCloud. Elegir bien evita perder evidencia o llenar el iCloud del usuario.
-
-#### Paso 1 · Objetivo y preparación
-
-Continúa `RutaFlowApp`. Crea `AlmacenArchivos.swift`. Para importar, necesitas un PDF de prueba en la app Archivos del simulador (arrastra uno a la ventana del simulador).
-
-#### Paso 2 · Contexto y caso real
-
-La app de RutaFlow guardaba las fotos de entrega en `Caches`. Cuando el teléfono se quedaba sin espacio, iOS las borraba antes de subirlas al servidor y se perdía la evidencia.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** sandbox, `Documents`, `Application Support`, `Caches`, `tmp`, `URL.applicationSupportDirectory`, `isExcludedFromBackup`, acceso con ámbito de seguridad, `fileImporter`.
-
-Cada app vive en su **sandbox**. Sus carpetas principales:
-
-| Carpeta | Para | Respaldo | ¿El sistema la borra? |
-|---|---|---|---|
-| `Documents` | archivos del usuario, visibles en Archivos si lo habilitas | sí | no |
-| `Application Support` | datos internos de la app | sí | no |
-| `Caches` | lo que se puede volver a descargar | no | sí, con poco espacio |
-| `tmp` | archivos de un momento | no | sí |
-
-Las fotos pendientes de subir van en `Application Support`, no en `Caches`. Si un archivo se puede regenerar, márcalo con `isExcludedFromBackup`.
-
-Para abrir archivos **fuera** del sandbox, `fileImporter` muestra el selector del sistema. La URL recibida requiere `startAccessingSecurityScopedResource()` antes de leerla y `stop...` al terminar.
-
-**Analogía:** las carpetas son cajones de un escritorio: uno para papeles importantes, otro para borradores que el conserje puede tirar. La analogía falla en que el conserje (iOS) no avisa antes de vaciar el cajón de `Caches`.
-
-**Límite de uso:** no guardes archivos grandes en SwiftData o `UserDefaults`: guarda el archivo en disco y en la base solo su ruta. No guardes rutas absolutas: el contenedor puede cambiar de ruta entre instalaciones; guarda la ruta relativa.
-
-```mermaid
-flowchart TB
-    F["foto de entrega"] -->|"pendiente de subir"| AS["Application Support"]
-    AS -->|"subida confirmada"| C["Caches (miniatura)"]
-    U["usuario elige PDF"] -->|"fileImporter"| S["URL con ámbito de seguridad"]
-    S -->|"copiar"| AS
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/AlmacenArchivos.swift`:
-
-```swift
-import Foundation
-
-struct AlmacenArchivos {
-    private let base = URL.applicationSupportDirectory.appending(path: "entregas", directoryHint: .isDirectory)
-
-    func guardarFoto(_ datos: Data, codigo: String) throws -> URL {
-        try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
-        var destino = base.appending(path: "\(codigo).jpg")
-        try datos.write(to: destino, options: [.atomic, .completeFileProtection])
-        var valores = URLResourceValues()
-        valores.isExcludedFromBackup = false // es evidencia: debe respaldarse
-        try destino.setResourceValues(valores)
-        return destino
-    }
-
-    func importar(_ externo: URL) throws -> URL {
-        guard externo.startAccessingSecurityScopedResource() else { throw CocoaError(.fileReadNoPermission) }
-        defer { externo.stopAccessingSecurityScopedResource() }
-        let copia = base.appending(path: externo.lastPathComponent)
-        try? FileManager.default.removeItem(at: copia)
-        try FileManager.default.copyItem(at: externo, to: copia)
-        return copia
-    }
-}
-```
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/AdjuntarPDF.swift`:
-
-```swift
-import SwiftUI
-import UniformTypeIdentifiers
-
-struct AdjuntarPDF: View {
-    @State private var mostrando = false
-    @State private var mensaje = "Sin adjunto"
-
-    var body: some View {
-        VStack {
-            Text(mensaje)
-            Button("Adjuntar remisión (PDF)") { mostrando = true }
-        }
-        .fileImporter(isPresented: $mostrando, allowedContentTypes: [.pdf]) { resultado in
-            do {
-                let copia = try AlmacenArchivos().importar(try resultado.get())
-                mensaje = "Adjuntado: \(copia.lastPathComponent)"
-            } catch {
-                mensaje = "No se pudo adjuntar: \(error.localizedDescription)"
-            }
-        }
-    }
-}
-```
-
-Compila, ejecuta en el simulador y revisa el contenedor:
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-# tras guardar una foto, revisa la carpeta del contenedor:
-xcrun simctl get_app_container booted co.rutaflow.app data
-```
-
-**Explicación por bloques:** `AlmacenArchivos` usa `URL.applicationSupportDirectory` y una subcarpeta `entregas`. `guardarFoto` escribe de forma atómica (no deja archivos a medias) y con protección completa (cifrado mientras el teléfono está bloqueado), y deja el archivo en el respaldo porque es evidencia. `importar` abre el acceso con ámbito de seguridad, copia el PDF al sandbox y cierra el acceso con `defer`. `AdjuntarPDF` muestra el selector limitado a PDF.
-
-**Resultado esperado:**
-
-```text
-Tras guardar la foto de ENV-42, existe Library/Application Support/entregas/ENV-42.jpg dentro del contenedor de la app.
-Al adjuntar un PDF desde Archivos, la vista muestra «Adjuntado: remision.pdf».
-```
-
-**Fallo deliberado:** quita `startAccessingSecurityScopedResource()` de `importar`. **Error esperado:** «No se pudo adjuntar» con un error de permiso (`NSCocoaErrorDomain Code=257`). **Diagnóstico:** la URL apunta fuera del sandbox y necesita abrir su acceso de forma explícita. Ábrelo y ciérralo con `defer`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** guarda una foto y encuentra el archivo con `simctl get_app_container`.
-2. **Variación:** guarda una miniatura en `Caches` y márcala excluida del respaldo.
-3. **Diagnóstico:** reproduce el fallo deliberado sin acceso con ámbito de seguridad.
-4. **Integración:** guarda en SwiftData solo la ruta relativa (`entregas/ENV-42.jpg`) y reconstruye la URL al leerla.
-5. **Diseño:** escribe la tabla de carpetas de RutaFlow: qué archivo va en cuál y por qué.
-
-**Pista:** si un archivo desaparece solo, revisa si estaba en `Caches` o `tmp`.
-
-#### Paso 6 · Práctica independiente
-
-Borra automáticamente de `Application Support` las fotos cuya subida el servidor confirmó hace más de siete días, y registra cuántos bytes liberaste.
-
-#### Paso 7 · Cierre
-
-- [ ] Eliges la carpeta correcta para cada tipo de archivo.
-- [ ] La foto queda en `Application Support/entregas`.
-- [ ] Reprodujiste el error de permiso al importar.
-- [ ] Guardas rutas relativas, no absolutas.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** guardar evidencia en `Caches`, guardar rutas absolutas y olvidar cerrar el acceso con ámbito de seguridad. **Siguiente paso:** el módulo 13 protege estos archivos con las clases de protección de datos.
-
-**Transferencia al proyecto integrador «RutaFlow»:** guarda las fotos de entrega de RutaFlow en `Application Support` con protección completa y bórralas solo cuando el servidor confirme la subida.
-
-**Fuente oficial:** [Apple — File System Programming Guide: File system basics](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html) y [Apple — fileImporter](https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:allowsmultipleselection:oncompletion:)).
 
 ## Laboratorio práctico
 

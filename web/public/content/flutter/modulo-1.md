@@ -504,7 +504,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** cambiar el tipo de 
 
 **Fuente oficial:** [Flutter — Architectural overview](https://docs.flutter.dev/resources/architectural-overview) y [Flutter — Widget.canUpdate](https://api.flutter.dev/flutter/widgets/Widget/canUpdate.html).
 
-### Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min
+### Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Avanzado · 40 min
 
 **Prerrequisito:** tema «Los tres árboles de Flutter» de este módulo.
 

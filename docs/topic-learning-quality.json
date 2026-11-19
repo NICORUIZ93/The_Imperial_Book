@@ -1043,7 +1043,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
+        "topic": "Tema 8: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -1065,7 +1065,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min",
+        "topic": "Tema 6: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -1087,7 +1087,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min",
+        "topic": "Tema 7: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -2783,7 +2783,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
+        "topic": "Tema 6: CSP con nonce y Trusted Types en Angular · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -2805,7 +2805,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
+        "topic": "Tema 5: Perfilar con Angular DevTools y el panel Performance de Chrome · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14517,7 +14517,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 5: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
+        "topic": "Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14539,7 +14539,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 6: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
+        "topic": "Tema 5: Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17601,7 +17601,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 8: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
+        "topic": "Tema 10: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17623,7 +17623,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 9: BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite · Avanzado · 45 min",
+        "topic": "Tema 8: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -17645,7 +17645,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 10: Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles · Intermedio · 35 min",
+        "topic": "Tema 9: Core Location moderno: CLLocationUpdate, permisos y precisión · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18107,7 +18107,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
+        "topic": "Tema 6: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18129,7 +18129,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
+        "topic": "Tema 5: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18283,7 +18283,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 4: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
+        "topic": "Tema 5: CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -18305,7 +18305,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 5: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
+        "topic": "Tema 4: Archivos en iOS: FileManager, carpetas de la app y fileImporter · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24339,7 +24339,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 6: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
+        "topic": "Tema 7: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24361,7 +24361,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 7: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
+        "topic": "Tema 8: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -24383,7 +24383,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 8: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min",
+        "topic": "Tema 6: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25045,7 +25045,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 12: Medir señales que justifican una extracción · Experto · 40 min",
+        "topic": "Tema 14: Registrar una decisión reversible en un ADR · Experto · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25067,7 +25067,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min",
+        "topic": "Tema 12: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -25089,7 +25089,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min",
+        "topic": "Tema 13: Medir señales que justifican una extracción · Experto · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
