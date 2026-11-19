@@ -229,270 +229,7 @@ Sustituye el texto por ese número, verifica que corresponde a esta práctica y 
 
 **Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
 
-### Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min
-
-**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
-
-**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
-
-#### Aprende
-
-**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
-
-**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
-
-Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
-
-**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
-
-**Conceptos clave:**
-
-- Productor, cola, consumidor y estado en Redis.
-- `attempts`, backoff, `jobId` y concurrencia acotada.
-- Reintentos ante fallos transitorios e idempotencia del efecto.
-- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
-
-#### Practica
-
-Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
-
-```bash
-mkdir practica-bullmq
-cd practica-bullmq
-mkdir src
-docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
-```
-
-Crea manualmente `package.json`:
-
-```json
-{
-  "name": "practica-bullmq",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "bullmq": "^5.0.0"
-  }
-}
-```
-
-Instala la dependencia declarada:
-
-```bash
-npm install
-```
-
-Crea `src/cola.js`:
-
-```js
-import { Queue, Worker } from "bullmq";
-
-const connection = { host: "127.0.0.1", port: 6379 };
-const queue = new Queue("etiquetas", { connection });
-const efectosLocales = new Set();
-
-const worker = new Worker(
-  "etiquetas",
-  async (job) => {
-    console.log(`intento=${job.attemptsMade + 1} guia=${job.data.guia}`);
-    if (job.attemptsMade === 0) throw new Error("fallo transitorio simulado");
-    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
-    efectosLocales.add(job.data.guia);
-    return { guia: job.data.guia };
-  },
-  { connection, concurrency: 2 },
-);
-
-worker.on("failed", (job, error) => {
-  console.log(`falló job=${job?.id}: ${error.message}`);
-});
-worker.on("error", (error) => console.error("worker_error", error.message));
-
-let timeout;
-const completado = new Promise((resolve, reject) => {
-  worker.once("completed", (job) => resolve(job.id));
-  timeout = setTimeout(() => reject(new Error("tiempo de espera agotado")), 10000);
-});
-
-try {
-  const opciones = {
-    jobId: "etiqueta-RF-100",
-    attempts: 3,
-    backoff: { type: "exponential", delay: 100 },
-  };
-  const original = await queue.add("generar", { guia: "RF-100" }, opciones);
-  const idCompletado = await completado;
-  const duplicado = await queue.add("generar", { guia: "RF-100" }, opciones);
-  console.log({ original: original.id, idCompletado, duplicado: duplicado.id });
-} finally {
-  clearTimeout(timeout);
-  await worker.close();
-  await queue.close();
-}
-```
-
-Ejecuta:
-
-```bash
-node src/cola.js
-```
-
-**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
-
-**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
-
-**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
-
-**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
-
-Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
-
-```bash
-docker rm -f redis-practica-bullmq
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
-
-**Checklist de salida:**
-
-- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
-- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
-- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
-- [ ] Un fallo permanente se detiene después del número configurado de intentos.
-- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
-- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
-
-**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
-
-**Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
-
-### Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min
-
-**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
-
-**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
-
-#### Aprende
-
-**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
-
-**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
-
-`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
-
-PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
-
-**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
-
-**Conceptos clave:**
-
-- Referencias vivas, garbage collection y comparación de snapshots.
-- RSS, `heapUsed` y `external` como métricas diferentes.
-- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
-- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
-
-#### Practica
-
-Empieza en una carpeta vacía:
-
-```bash
-mkdir practica-memoria
-cd practica-memoria
-mkdir src
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "practica-memoria",
-  "private": true,
-  "type": "module",
-  "devDependencies": {
-    "pm2": "^5.4.3"
-  }
-}
-```
-
-Instala la dependencia de desarrollo:
-
-```bash
-npm install
-```
-
-Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
-
-```js
-const retenidos = [];
-let solicitud = 0;
-
-setInterval(() => {
-  for (let i = 0; i < 100; i += 1) {
-    solicitud += 1;
-    retenidos.push({ solicitud, payload: "x".repeat(1024) });
-  }
-  const { rss, heapUsed, external } = process.memoryUsage();
-  const mb = (bytes) => Math.round(bytes / 1024 / 1024);
-  console.log({ objetos: retenidos.length, rssMB: mb(rss), heapUsedMB: mb(heapUsed), externalMB: mb(external) });
-}, 500);
-```
-
-Ejecuta el inspector únicamente en loopback:
-
-```bash
-node --inspect=127.0.0.1:9229 src/leak.js
-```
-
-Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
-
-**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
-
-**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
-
-**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
-
-**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
-
-```js
-module.exports = {
-  apps: [{ name: "memoria-academia", script: "src/cache-limitada.js", instances: 1 }],
-};
-```
-
-Arranca y observa la versión corregida con:
-
-```bash
-npx pm2 start ecosystem.config.cjs
-npx pm2 logs memoria-academia
-```
-
-Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
-
-```bash
-npx pm2 stop memoria-academia
-npx pm2 delete memoria-academia
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
-
-**Checklist de salida:**
-
-- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
-- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
-- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
-- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
-- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
-- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
-
-**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
-
-**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
-
-### Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min
+### Tema 3: Redis para caché, idempotencia y Pub/Sub · Avanzado · 50 min
 
 **Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
 
@@ -643,6 +380,269 @@ docker rm -f redis-practica-patrones
 **Errores comunes:** cachear sin TTL; no invalidar después de escribir; omitir `NX`; guardar secretos en URLs; no cerrar clientes; tratar Redis como única fuente de verdad sin estrategia adecuada; usar Pub/Sub para pagos o contabilidad.
 
 **Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
+
+### Tema 4: Colas de trabajo con BullMQ · Avanzado · 50 min
+
+**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
+
+**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
+
+#### Aprende
+
+**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
+
+**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
+
+Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
+
+**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
+
+**Conceptos clave:**
+
+- Productor, cola, consumidor y estado en Redis.
+- `attempts`, backoff, `jobId` y concurrencia acotada.
+- Reintentos ante fallos transitorios e idempotencia del efecto.
+- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
+
+#### Practica
+
+Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
+
+```bash
+mkdir practica-bullmq
+cd practica-bullmq
+mkdir src
+docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
+```
+
+Crea manualmente `package.json`:
+
+```json
+{
+  "name": "practica-bullmq",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bullmq": "^5.0.0"
+  }
+}
+```
+
+Instala la dependencia declarada:
+
+```bash
+npm install
+```
+
+Crea `src/cola.js`:
+
+```js
+import { Queue, Worker } from "bullmq";
+
+const connection = { host: "127.0.0.1", port: 6379 };
+const queue = new Queue("etiquetas", { connection });
+const efectosLocales = new Set();
+
+const worker = new Worker(
+  "etiquetas",
+  async (job) => {
+    console.log(`intento=${job.attemptsMade + 1} guia=${job.data.guia}`);
+    if (job.attemptsMade === 0) throw new Error("fallo transitorio simulado");
+    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
+    efectosLocales.add(job.data.guia);
+    return { guia: job.data.guia };
+  },
+  { connection, concurrency: 2 },
+);
+
+worker.on("failed", (job, error) => {
+  console.log(`falló job=${job?.id}: ${error.message}`);
+});
+worker.on("error", (error) => console.error("worker_error", error.message));
+
+let timeout;
+const completado = new Promise((resolve, reject) => {
+  worker.once("completed", (job) => resolve(job.id));
+  timeout = setTimeout(() => reject(new Error("tiempo de espera agotado")), 10000);
+});
+
+try {
+  const opciones = {
+    jobId: "etiqueta-RF-100",
+    attempts: 3,
+    backoff: { type: "exponential", delay: 100 },
+  };
+  const original = await queue.add("generar", { guia: "RF-100" }, opciones);
+  const idCompletado = await completado;
+  const duplicado = await queue.add("generar", { guia: "RF-100" }, opciones);
+  console.log({ original: original.id, idCompletado, duplicado: duplicado.id });
+} finally {
+  clearTimeout(timeout);
+  await worker.close();
+  await queue.close();
+}
+```
+
+Ejecuta:
+
+```bash
+node src/cola.js
+```
+
+**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
+
+**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
+
+**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
+
+**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
+
+Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
+
+```bash
+docker rm -f redis-practica-bullmq
+```
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
+
+**Checklist de salida:**
+
+- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
+- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
+- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
+- [ ] Un fallo permanente se detiene después del número configurado de intentos.
+- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
+- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
+
+**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
+
+**Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
+
+### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 50 min
+
+**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
+
+**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
+
+#### Aprende
+
+**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
+
+**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
+
+`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
+
+PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
+
+**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
+
+**Conceptos clave:**
+
+- Referencias vivas, garbage collection y comparación de snapshots.
+- RSS, `heapUsed` y `external` como métricas diferentes.
+- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
+- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
+
+#### Practica
+
+Empieza en una carpeta vacía:
+
+```bash
+mkdir practica-memoria
+cd practica-memoria
+mkdir src
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-memoria",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "pm2": "^5.4.3"
+  }
+}
+```
+
+Instala la dependencia de desarrollo:
+
+```bash
+npm install
+```
+
+Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
+
+```js
+const retenidos = [];
+let solicitud = 0;
+
+setInterval(() => {
+  for (let i = 0; i < 100; i += 1) {
+    solicitud += 1;
+    retenidos.push({ solicitud, payload: "x".repeat(1024) });
+  }
+  const { rss, heapUsed, external } = process.memoryUsage();
+  const mb = (bytes) => Math.round(bytes / 1024 / 1024);
+  console.log({ objetos: retenidos.length, rssMB: mb(rss), heapUsedMB: mb(heapUsed), externalMB: mb(external) });
+}, 500);
+```
+
+Ejecuta el inspector únicamente en loopback:
+
+```bash
+node --inspect=127.0.0.1:9229 src/leak.js
+```
+
+Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
+
+**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
+
+**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
+
+**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
+
+**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
+
+```js
+module.exports = {
+  apps: [{ name: "memoria-academia", script: "src/cache-limitada.js", instances: 1 }],
+};
+```
+
+Arranca y observa la versión corregida con:
+
+```bash
+npx pm2 start ecosystem.config.cjs
+npx pm2 logs memoria-academia
+```
+
+Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
+
+```bash
+npx pm2 stop memoria-academia
+npx pm2 delete memoria-academia
+```
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
+
+**Checklist de salida:**
+
+- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
+- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
+- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
+- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
+- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
+- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
+
+**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
+
+**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
 
 ## Laboratorio práctico
 

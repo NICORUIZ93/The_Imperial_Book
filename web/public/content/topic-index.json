@@ -4992,12 +4992,12 @@
         "fragment": "tema-1-node-no-es-javascript-en-el-servidor-sin-mas"
       },
       {
-        "title": "Fases del Event Loop de Node",
-        "fragment": "tema-2-fases-del-event-loop-de-node"
+        "title": "process, global y módulos core",
+        "fragment": "tema-2-process-global-y-modulos-core"
       },
       {
-        "title": "process, global y módulos core",
-        "fragment": "tema-3-process-global-y-modulos-core"
+        "title": "Fases del Event Loop de Node",
+        "fragment": "tema-3-fases-del-event-loop-de-node"
       },
       {
         "title": "Event-driven architecture y non-blocking I/O",
@@ -5014,20 +5014,20 @@
         "fragment": "tema-2-lockfiles-e-instalacion-reproducible"
       },
       {
-        "title": "Workspaces — monorepos con npm/pnpm",
-        "fragment": "tema-3-workspaces-monorepos-con-npm-pnpm"
+        "title": "ESM y CommonJS en el mismo proyecto",
+        "fragment": "tema-3-esm-y-commonjs-en-el-mismo-proyecto"
       },
       {
         "title": "Scripts de ciclo de vida",
         "fragment": "tema-4-scripts-de-ciclo-de-vida"
       },
       {
-        "title": "Publicar y versionar un paquete npm (público o privado)",
-        "fragment": "tema-5-publicar-y-versionar-un-paquete-npm-publico-o-privado"
+        "title": "Workspaces — monorepos con npm/pnpm",
+        "fragment": "tema-5-workspaces-monorepos-con-npm-pnpm"
       },
       {
-        "title": "ESM y CommonJS en el mismo proyecto",
-        "fragment": "tema-6-esm-y-commonjs-en-el-mismo-proyecto"
+        "title": "Publicar y versionar un paquete npm (público o privado)",
+        "fragment": "tema-6-publicar-y-versionar-un-paquete-npm-publico-o-privado"
       }
     ],
     "10": [
@@ -5080,24 +5080,24 @@
         "fragment": "tema-1-arquitectura-por-capas"
       },
       {
-        "title": "Uniendo cada módulo del track",
-        "fragment": "tema-2-uniendo-cada-modulo-del-track"
-      },
-      {
-        "title": "Qué le falta a esta API para producción real",
-        "fragment": "tema-3-que-le-falta-a-esta-api-para-produccion-real"
-      },
-      {
-        "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
-        "fragment": "tema-4-proximos-pasos-microservicios-colas-de-mensajes-y-typescript"
-      },
-      {
         "title": "Posiciones espaciales y Socket.IO con orden recuperable",
-        "fragment": "tema-5-posiciones-espaciales-y-socket-io-con-orden-recuperable"
+        "fragment": "tema-2-posiciones-espaciales-y-socket-io-con-orden-recuperable"
       },
       {
         "title": "Archivos y notificaciones push sin convertirlos en autorización",
-        "fragment": "tema-6-archivos-y-notificaciones-push-sin-convertirlos-en-autorizacion"
+        "fragment": "tema-3-archivos-y-notificaciones-push-sin-convertirlos-en-autorizacion"
+      },
+      {
+        "title": "Uniendo cada módulo del track",
+        "fragment": "tema-4-uniendo-cada-modulo-del-track"
+      },
+      {
+        "title": "Qué le falta a esta API para producción real",
+        "fragment": "tema-5-que-le-falta-a-esta-api-para-produccion-real"
+      },
+      {
+        "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
+        "fragment": "tema-6-proximos-pasos-microservicios-colas-de-mensajes-y-typescript"
       }
     ],
     "13": [
@@ -5110,16 +5110,16 @@
         "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
       },
       {
+        "title": "OpenAPI como contrato ejecutable",
+        "fragment": "tema-3-openapi-como-contrato-ejecutable"
+      },
+      {
         "title": "Reintentar sin duplicar el efecto",
-        "fragment": "tema-3-reintentar-sin-duplicar-el-efecto"
+        "fragment": "tema-4-reintentar-sin-duplicar-el-efecto"
       },
       {
         "title": "Webhooks verificables y recuperación por reconciliación",
-        "fragment": "tema-4-webhooks-verificables-y-recuperacion-por-reconciliacion"
-      },
-      {
-        "title": "OpenAPI como contrato ejecutable",
-        "fragment": "tema-5-openapi-como-contrato-ejecutable"
+        "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
       }
     ],
     "2": [
@@ -5128,24 +5128,24 @@
         "fragment": "tema-1-fs-promises-frente-a-callbacks"
       },
       {
-        "title": "Streams básicos: Readable, Writable y Transform",
-        "fragment": "tema-2-streams-basicos-readable-writable-y-transform"
-      },
-      {
-        "title": "Backpressure: write() y el evento drain",
-        "fragment": "tema-3-backpressure-write-y-el-evento-drain"
-      },
-      {
-        "title": "pipeline() para componer streams de forma segura",
-        "fragment": "tema-4-pipeline-para-componer-streams-de-forma-segura"
-      },
-      {
         "title": "Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador",
-        "fragment": "tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+        "fragment": "tema-2-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      },
+      {
+        "title": "Streams básicos: Readable, Writable y Transform",
+        "fragment": "tema-3-streams-basicos-readable-writable-y-transform"
       },
       {
         "title": "Compresión con zlib: gzip y Brotli por streams",
-        "fragment": "tema-6-compresion-con-zlib-gzip-y-brotli-por-streams"
+        "fragment": "tema-4-compresion-con-zlib-gzip-y-brotli-por-streams"
+      },
+      {
+        "title": "Backpressure: write() y el evento drain",
+        "fragment": "tema-5-backpressure-write-y-el-evento-drain"
+      },
+      {
+        "title": "pipeline() para componer streams de forma segura",
+        "fragment": "tema-6-pipeline-para-componer-streams-de-forma-segura"
       }
     ],
     "3": [
@@ -5170,12 +5170,12 @@
         "fragment": "tema-5-paginacion-por-cursor-y-limites-de-entrada-comprobables"
       },
       {
-        "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
-        "fragment": "tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
+        "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
+        "fragment": "tema-6-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
       },
       {
-        "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
-        "fragment": "tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
+        "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
+        "fragment": "tema-7-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
       }
     ],
     "4": [
@@ -5250,32 +5250,32 @@
     ],
     "7": [
       {
-        "title": "Vitest y Supertest — pruebas de integración HTTP reales",
-        "fragment": "tema-1-vitest-y-supertest-pruebas-de-integracion-http-reales"
-      },
-      {
-        "title": "Testcontainers — bases de datos de prueba reales y efímeras",
-        "fragment": "tema-2-testcontainers-bases-de-datos-de-prueba-reales-y-efimeras"
-      },
-      {
-        "title": "Mocks de servicios externos y CI",
-        "fragment": "tema-3-mocks-de-servicios-externos-y-ci"
-      },
-      {
-        "title": "Alternativas de testing y debugging",
-        "fragment": "tema-4-alternativas-de-testing-y-debugging"
-      },
-      {
         "title": "node:test — test runner nativo sin dependencias",
-        "fragment": "tema-5-node-test-test-runner-nativo-sin-dependencias"
+        "fragment": "tema-1-node-test-test-runner-nativo-sin-dependencias"
       },
       {
         "title": "TDD práctico: rojo, verde y refactor con node:test",
-        "fragment": "tema-6-tdd-practico-rojo-verde-y-refactor-con-node-test"
+        "fragment": "tema-2-tdd-practico-rojo-verde-y-refactor-con-node-test"
       },
       {
         "title": "Cobertura de pruebas con node:test: líneas, ramas y umbrales",
-        "fragment": "tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+        "fragment": "tema-3-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+      },
+      {
+        "title": "Vitest y Supertest — pruebas de integración HTTP reales",
+        "fragment": "tema-4-vitest-y-supertest-pruebas-de-integracion-http-reales"
+      },
+      {
+        "title": "Testcontainers — bases de datos de prueba reales y efímeras",
+        "fragment": "tema-5-testcontainers-bases-de-datos-de-prueba-reales-y-efimeras"
+      },
+      {
+        "title": "Mocks de servicios externos y CI",
+        "fragment": "tema-6-mocks-de-servicios-externos-y-ci"
+      },
+      {
+        "title": "Alternativas de testing y debugging",
+        "fragment": "tema-7-alternativas-de-testing-y-debugging"
       }
     ],
     "8": [
@@ -5288,16 +5288,16 @@
         "fragment": "tema-2-cluster-module-y-balanceo-entre-procesos"
       },
       {
+        "title": "Redis para caché, idempotencia y Pub/Sub",
+        "fragment": "tema-3-redis-para-cache-idempotencia-y-pub-sub"
+      },
+      {
         "title": "Colas de trabajo con BullMQ",
-        "fragment": "tema-3-colas-de-trabajo-con-bullmq"
+        "fragment": "tema-4-colas-de-trabajo-con-bullmq"
       },
       {
         "title": "PM2, memory leaks y heap snapshots",
-        "fragment": "tema-4-pm2-memory-leaks-y-heap-snapshots"
-      },
-      {
-        "title": "Redis para caché, idempotencia y Pub/Sub",
-        "fragment": "tema-5-redis-para-cache-idempotencia-y-pub-sub"
+        "fragment": "tema-5-pm2-memory-leaks-y-heap-snapshots"
       }
     ],
     "9": [
@@ -5310,20 +5310,20 @@
         "fragment": "tema-2-correlation-id-por-request"
       },
       {
-        "title": "Excepciones no capturadas y graceful shutdown",
-        "fragment": "tema-3-excepciones-no-capturadas-y-graceful-shutdown"
-      },
-      {
         "title": "REST, GraphQL y gRPC",
-        "fragment": "tema-4-rest-graphql-y-grpc"
+        "fragment": "tema-3-rest-graphql-y-grpc"
       },
       {
-        "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
-        "fragment": "tema-5-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
+        "title": "Excepciones no capturadas y graceful shutdown",
+        "fragment": "tema-4-excepciones-no-capturadas-y-graceful-shutdown"
       },
       {
         "title": "Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel",
-        "fragment": "tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+        "fragment": "tema-5-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+      },
+      {
+        "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
+        "fragment": "tema-6-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
       }
     ]
   },

@@ -498,7 +498,140 @@ Lleva el cursor al **[Proyecto integrador: listado acotado](#proyecto-3-api-http
 
 **Fuente oficial:** [Node test runner](https://nodejs.org/api/test.html).
 
-### Tema 6: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min
+### Tema 6: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min
+
+**Prerrequisito:** tema «El modelo request/response» de este módulo.
+
+**Al finalizar podrás:** resolver un nombre con `dns`, intercambiar un mensaje por TCP con `net` y enviar un datagrama UDP con `dgram`, y explicar cuándo conviene cada protocolo.
+
+**¿Por qué es importante?** HTTP corre sobre TCP, y TCP necesita DNS para encontrar al servidor. Cuando una conexión falla con `ENOTFOUND`, `ECONNREFUSED` o `ETIMEDOUT`, entender estas capas te dice dónde buscar.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
+
+**Contexto y caso real.**
+
+Los mensajeros de RutaFlow envían su posición cada pocos segundos. Si una posición se pierde no pasa nada, porque llega otra. En cambio, la confirmación de entrega no puede perderse. La primera encaja con UDP; la segunda con TCP.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** DNS, dirección IP, puerto, TCP (conexión, orden, entrega garantizada), UDP (datagrama, sin conexión), `ENOTFOUND`, `ECONNREFUSED`.
+
+- **DNS** traduce un nombre (`api.rutaflow.co`) a una dirección IP. `dns.lookup` usa el resolvedor del sistema operativo, el mismo que usa `fetch`. Si el nombre no existe, el error es `ENOTFOUND`.
+- **TCP** abre una conexión, entrega los bytes en orden y reenvía lo que se pierde. Si nadie escucha en el puerto, el error es `ECONNREFUSED`. HTTP/1.1 y HTTP/2 viajan sobre TCP.
+- **UDP** envía **datagramas** sueltos: sin conexión, sin orden y sin garantía de entrega. Es más ligero y sirve cuando un dato viejo ya no importa (posiciones, video en vivo, DNS mismo).
+
+| Necesitas | Usa |
+|---|---|
+| que todo llegue y en orden | TCP |
+| lo más reciente, rápido, y tolerar pérdidas | UDP |
+
+**Analogía:** TCP es una llamada telefónica: marcas, la otra persona contesta y conversan en orden. UDP es lanzar postales: cada una va sola y alguna puede perderse. DNS es la guía telefónica. La analogía falla en que TCP no «escucha» palabras, sino bytes: tu programa debe saber dónde termina cada mensaje.
+
+**Límite de uso:** no construyas tu propio protocolo sobre TCP o UDP si HTTP, WebSocket o un broker de mensajes resuelven el problema: tendrías que diseñar reintentos, formatos y seguridad. Los datagramas UDP grandes pueden fragmentarse y perderse.
+
+```mermaid
+flowchart LR
+    N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
+    IP --> T["TCP: conexión<br/>orden y entrega"]
+    IP --> U["UDP: datagrama<br/>sin garantía"]
+    T --> H["HTTP, WebSocket, bases de datos"]
+    U --> P["posiciones, video, DNS"]
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/redes/redes.mjs`:
+
+```js
+import { createServer, connect } from 'node:net';
+import { createSocket } from 'node:dgram';
+import { lookup } from 'node:dns/promises';
+
+// DNS: el sistema traduce un nombre a una dirección IP.
+const { address, family } = await lookup('localhost', { family: 4 });
+console.log(`DNS: localhost -> ${address} (IPv${family})`);
+
+// TCP: conexión con orden y entrega garantizados.
+const servidorTcp = createServer((socket) => {
+  socket.on('data', (datos) => socket.end(`recibido ${datos.toString().trim()}`));
+});
+await new Promise((listo) => servidorTcp.listen(0, address, listo));
+const respuestaTcp = await new Promise((resolver) => {
+  const cliente = connect(servidorTcp.address().port, address, () => cliente.write('ENV-42\n'));
+  cliente.on('data', (datos) => resolver(datos.toString()));
+});
+console.log(`TCP: ${respuestaTcp}`);
+servidorTcp.close();
+
+// UDP: datagramas sueltos, sin conexión ni garantía de entrega.
+const servidorUdp = createSocket('udp4');
+const llegada = new Promise((resolver) =>
+  servidorUdp.once('message', (mensaje) => resolver(mensaje.toString())));
+await new Promise((listo) => servidorUdp.bind(0, address, listo));
+const clienteUdp = createSocket('udp4');
+clienteUdp.send('posicion 4.65,-74.05', servidorUdp.address().port, address);
+console.log(`UDP: ${await llegada}`);
+clienteUdp.close();
+servidorUdp.close();
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/redes
+node redes.mjs
+```
+
+**Explicación por bloques:** `lookup` pide al sistema la IP de `localhost`. El servidor TCP responde a cada mensaje y cierra con `socket.end`; el cliente se conecta, escribe y espera la respuesta. El servidor UDP no acepta conexiones: solo recibe datagramas con el evento `message`. El cliente UDP envía uno sin saber si alguien lo recibe. Ambos servidores usan el puerto `0` para que el sistema elija uno libre.
+
+![Captura de terminal: node redes.mjs resuelve localhost a 127.0.0.1, recibe la respuesta TCP de ENV-42 y el datagrama UDP de posición](content/figures/node/net-dgram-dns.svg)
+
+**Resultado esperado:**
+
+```text
+DNS: localhost -> 127.0.0.1 (IPv4)
+TCP: recibido ENV-42
+UDP: posicion 4.65,-74.05
+```
+
+**Fallo deliberado:** cambia `lookup('localhost', ...)` por `lookup('api.rutaflow.invalid', ...)`. **Error esperado:** `Error: getaddrinfo ENOTFOUND api.rutaflow.invalid`. **Diagnóstico:** el fallo ocurre antes de abrir cualquier conexión: el nombre no existe. Revisa DNS antes de culpar al servidor o al firewall.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el ejemplo y explica qué línea usa cada protocolo.
+2. **Variación:** conecta el cliente TCP a un puerto donde nadie escucha y anota el error (`ECONNREFUSED`).
+3. **Diagnóstico:** reproduce el fallo deliberado de DNS y compáralo con el de la variación.
+4. **Integración:** envía diez datagramas UDP seguidos y cuenta cuántos llegan; repite enviando 60 000 bytes en uno solo.
+5. **Diseño:** decide si las confirmaciones de entrega de RutaFlow pueden ir por UDP y justifica.
+
+**Pista:** lee el código de error: `ENOTFOUND` es DNS, `ECONNREFUSED` es que nadie escucha y `ETIMEDOUT` es que nadie responde.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Escribe un servidor TCP de eco que responda en mayúsculas, línea por línea, aunque el cliente envíe varias líneas en un solo `write`. Pruébalo con `nc localhost <puerto>`.
+
+**Checklist de salida.**
+
+- [ ] Explicas qué hace DNS antes de una petición HTTP.
+- [ ] El script imprime las tres líneas esperadas.
+- [ ] Distingues `ENOTFOUND`, `ECONNREFUSED` y `ETIMEDOUT`.
+- [ ] Eliges TCP o UDP con un criterio, no por costumbre.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** suponer que cada `data` de TCP es un mensaje completo, usar UDP para datos que no pueden perderse y diagnosticar un `ENOTFOUND` como problema del servidor. **Siguiente paso:** el tema «Códigos de estado y content negotiation» vuelve a HTTP, ahora sabiendo qué hay debajo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, documenta en un diagrama qué viaja por TCP (API, base de datos) y qué podría viajar por UDP (posiciones), y agrega a la guía de soporte la tabla de errores de red.
+
+**Fuente oficial:** [Node.js — net](https://nodejs.org/api/net.html) y [Node.js — dgram](https://nodejs.org/api/dgram.html) y [Node.js — dns](https://nodejs.org/api/dns.html).
+
+### Tema 7: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min
 
 **Prerrequisito:** tema «El modelo request/response» de este módulo.
 
@@ -637,139 +770,6 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** desacti
 **Transferencia al proyecto integrador «RutaFlow»:** en el entorno local de RutaFlow, sirve la API con HTTP/2 y un certificado de desarrollo, y documenta en el README cómo confiar en él sin desactivar la verificación.
 
 **Fuente oficial:** [Node.js — HTTP/2](https://nodejs.org/api/http2.html) y [Node.js — TLS (SSL)](https://nodejs.org/api/tls.html).
-
-### Tema 7: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min
-
-**Prerrequisito:** tema «El modelo request/response» de este módulo.
-
-**Al finalizar podrás:** resolver un nombre con `dns`, intercambiar un mensaje por TCP con `net` y enviar un datagrama UDP con `dgram`, y explicar cuándo conviene cada protocolo.
-
-**¿Por qué es importante?** HTTP corre sobre TCP, y TCP necesita DNS para encontrar al servidor. Cuando una conexión falla con `ENOTFOUND`, `ECONNREFUSED` o `ETIMEDOUT`, entender estas capas te dice dónde buscar.
-
-#### Aprende
-
-**Objetivo y preparación.**
-
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/redes`. Todo ocurre en tu máquina (`localhost`), no necesitas internet.
-
-**Contexto y caso real.**
-
-Los mensajeros de RutaFlow envían su posición cada pocos segundos. Si una posición se pierde no pasa nada, porque llega otra. En cambio, la confirmación de entrega no puede perderse. La primera encaja con UDP; la segunda con TCP.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** DNS, dirección IP, puerto, TCP (conexión, orden, entrega garantizada), UDP (datagrama, sin conexión), `ENOTFOUND`, `ECONNREFUSED`.
-
-- **DNS** traduce un nombre (`api.rutaflow.co`) a una dirección IP. `dns.lookup` usa el resolvedor del sistema operativo, el mismo que usa `fetch`. Si el nombre no existe, el error es `ENOTFOUND`.
-- **TCP** abre una conexión, entrega los bytes en orden y reenvía lo que se pierde. Si nadie escucha en el puerto, el error es `ECONNREFUSED`. HTTP/1.1 y HTTP/2 viajan sobre TCP.
-- **UDP** envía **datagramas** sueltos: sin conexión, sin orden y sin garantía de entrega. Es más ligero y sirve cuando un dato viejo ya no importa (posiciones, video en vivo, DNS mismo).
-
-| Necesitas | Usa |
-|---|---|
-| que todo llegue y en orden | TCP |
-| lo más reciente, rápido, y tolerar pérdidas | UDP |
-
-**Analogía:** TCP es una llamada telefónica: marcas, la otra persona contesta y conversan en orden. UDP es lanzar postales: cada una va sola y alguna puede perderse. DNS es la guía telefónica. La analogía falla en que TCP no «escucha» palabras, sino bytes: tu programa debe saber dónde termina cada mensaje.
-
-**Límite de uso:** no construyas tu propio protocolo sobre TCP o UDP si HTTP, WebSocket o un broker de mensajes resuelven el problema: tendrías que diseñar reintentos, formatos y seguridad. Los datagramas UDP grandes pueden fragmentarse y perderse.
-
-```mermaid
-flowchart LR
-    N["nombre: localhost"] -->|"dns.lookup"| IP["127.0.0.1"]
-    IP --> T["TCP: conexión<br/>orden y entrega"]
-    IP --> U["UDP: datagrama<br/>sin garantía"]
-    T --> H["HTTP, WebSocket, bases de datos"]
-    U --> P["posiciones, video, DNS"]
-```
-
-#### Practica
-
-**Demostración guiada desde cero.**
-
-Archivo `academia-labs/node/redes/redes.mjs`:
-
-```js
-import { createServer, connect } from 'node:net';
-import { createSocket } from 'node:dgram';
-import { lookup } from 'node:dns/promises';
-
-// DNS: el sistema traduce un nombre a una dirección IP.
-const { address, family } = await lookup('localhost', { family: 4 });
-console.log(`DNS: localhost -> ${address} (IPv${family})`);
-
-// TCP: conexión con orden y entrega garantizados.
-const servidorTcp = createServer((socket) => {
-  socket.on('data', (datos) => socket.end(`recibido ${datos.toString().trim()}`));
-});
-await new Promise((listo) => servidorTcp.listen(0, address, listo));
-const respuestaTcp = await new Promise((resolver) => {
-  const cliente = connect(servidorTcp.address().port, address, () => cliente.write('ENV-42\n'));
-  cliente.on('data', (datos) => resolver(datos.toString()));
-});
-console.log(`TCP: ${respuestaTcp}`);
-servidorTcp.close();
-
-// UDP: datagramas sueltos, sin conexión ni garantía de entrega.
-const servidorUdp = createSocket('udp4');
-const llegada = new Promise((resolver) =>
-  servidorUdp.once('message', (mensaje) => resolver(mensaje.toString())));
-await new Promise((listo) => servidorUdp.bind(0, address, listo));
-const clienteUdp = createSocket('udp4');
-clienteUdp.send('posicion 4.65,-74.05', servidorUdp.address().port, address);
-console.log(`UDP: ${await llegada}`);
-clienteUdp.close();
-servidorUdp.close();
-```
-
-Ejecútalo:
-
-```bash
-cd academia-labs/node/redes
-node redes.mjs
-```
-
-**Explicación por bloques:** `lookup` pide al sistema la IP de `localhost`. El servidor TCP responde a cada mensaje y cierra con `socket.end`; el cliente se conecta, escribe y espera la respuesta. El servidor UDP no acepta conexiones: solo recibe datagramas con el evento `message`. El cliente UDP envía uno sin saber si alguien lo recibe. Ambos servidores usan el puerto `0` para que el sistema elija uno libre.
-
-![Captura de terminal: node redes.mjs resuelve localhost a 127.0.0.1, recibe la respuesta TCP de ENV-42 y el datagrama UDP de posición](content/figures/node/net-dgram-dns.svg)
-
-**Resultado esperado:**
-
-```text
-DNS: localhost -> 127.0.0.1 (IPv4)
-TCP: recibido ENV-42
-UDP: posicion 4.65,-74.05
-```
-
-**Fallo deliberado:** cambia `lookup('localhost', ...)` por `lookup('api.rutaflow.invalid', ...)`. **Error esperado:** `Error: getaddrinfo ENOTFOUND api.rutaflow.invalid`. **Diagnóstico:** el fallo ocurre antes de abrir cualquier conexión: el nombre no existe. Revisa DNS antes de culpar al servidor o al firewall.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el ejemplo y explica qué línea usa cada protocolo.
-2. **Variación:** conecta el cliente TCP a un puerto donde nadie escucha y anota el error (`ECONNREFUSED`).
-3. **Diagnóstico:** reproduce el fallo deliberado de DNS y compáralo con el de la variación.
-4. **Integración:** envía diez datagramas UDP seguidos y cuenta cuántos llegan; repite enviando 60 000 bytes en uno solo.
-5. **Diseño:** decide si las confirmaciones de entrega de RutaFlow pueden ir por UDP y justifica.
-
-**Pista:** lee el código de error: `ENOTFOUND` es DNS, `ECONNREFUSED` es que nadie escucha y `ETIMEDOUT` es que nadie responde.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Escribe un servidor TCP de eco que responda en mayúsculas, línea por línea, aunque el cliente envíe varias líneas en un solo `write`. Pruébalo con `nc localhost <puerto>`.
-
-**Checklist de salida.**
-
-- [ ] Explicas qué hace DNS antes de una petición HTTP.
-- [ ] El script imprime las tres líneas esperadas.
-- [ ] Distingues `ENOTFOUND`, `ECONNREFUSED` y `ETIMEDOUT`.
-- [ ] Eliges TCP o UDP con un criterio, no por costumbre.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** suponer que cada `data` de TCP es un mensaje completo, usar UDP para datos que no pueden perderse y diagnosticar un `ENOTFOUND` como problema del servidor. **Siguiente paso:** el tema «Códigos de estado y content negotiation» vuelve a HTTP, ahora sabiendo qué hay debajo.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, documenta en un diagrama qué viaja por TCP (API, base de datos) y qué podría viajar por UDP (posiciones), y agrega a la guía de soporte la tabla de errores de red.
-
-**Fuente oficial:** [Node.js — net](https://nodejs.org/api/net.html) y [Node.js — dgram](https://nodejs.org/api/dgram.html) y [Node.js — dns](https://nodejs.org/api/dns.html).
 
 ## Laboratorio práctico
 

@@ -147,98 +147,7 @@ En el **[Proyecto integrador: runtime observable de entregas](#proyecto-0-runtim
 
 **Fuentes oficiales:** [Node.js: Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`fs/promises`](https://nodejs.org/api/fs.html#promises-api).
 
-### Tema 2: Fases del Event Loop de Node · Intermedio · 75 min
-
-#### Aprende
-
-**Prerrequisitos:** callbacks, promesas y la distinción entre I/O y CPU del Tema 1. Este proyecto no reutiliza sus archivos.
-
-**Al terminar podrás:** predecir y verificar el orden entre código síncrono, `nextTick`, promesas, timers, I/O y `setImmediate`, separando garantías del runtime de órdenes accidentales.
-
-**Por qué importa:** un servidor combina reintentos, respuestas de base de datos y mensajes de red. Una suposición falsa sobre el orden produce errores intermitentes; una recursión de `nextTick` puede dejar el proceso activo pero incapaz de atender I/O.
-
-El Event Loop repite fases con responsabilidades concretas: **timers** ejecuta callbacks de `setTimeout` y `setInterval` vencidos; **pending callbacks** procesa ciertos callbacks del sistema diferidos; **poll** recupera eventos de I/O y ejecuta sus callbacks; **check** ejecuta `setImmediate`; y **close callbacks** gestiona cierres, como los de sockets.
-
-`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop. En CommonJS, y dentro de cualquier callback (por ejemplo, uno de I/O), la cola de `nextTick` se vacía antes que las microtareas de promesas. En el nivel superior de un módulo ESM ocurre lo contrario: Node ya está vaciando la cola de microtareas al evaluar el módulo, así que las promesas se ejecutan antes que `nextTick` (documentación oficial de `process`, sección «When to use `queueMicrotask()` vs. `process.nextTick()`»). Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
-
-Entre `setTimeout(fn, 0)` y `setImmediate(fn)` programados en el nivel superior no existe un ganador portable: influye la temporización de inicio. Dentro de un callback de I/O en `poll`, `setImmediate` se ejecuta antes del siguiente timer porque `check` sigue inmediatamente a esa fase.
-
-**Analogía:** las fases son estaciones de una ronda de inspección. `nextTick` es un aviso urgente atendido al terminar la tarea actual, antes de avanzar a la siguiente estación. Si los avisos urgentes generan otros avisos sin fin, la ronda nunca continúa.
-
-```mermaid
-flowchart LR
-    TIMER["timers"] --> PENDING["pending callbacks"] --> POLL["poll: I/O"] --> CHECK["check: setImmediate"] --> CLOSE["close callbacks"] --> TIMER
-    TICK["nextTick"] -. "antes de continuar" .-> TIMER
-```
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-event-loop
-cd ejemplo-event-loop
-npm init -y
-mkdir -p src/runtime
-```
-
-En PowerShell usa `New-Item -ItemType Directory -Force src/runtime`. Añade `"type": "module"` a `package.json` y crea `src/runtime/fases.js`:
-
-```js
-import { readFile } from "node:fs";
-
-console.log("1. síncrono");
-
-setTimeout(() => console.log("4/5. timer de nivel superior"), 0);
-setImmediate(() => console.log("4/5. immediate de nivel superior"));
-Promise.resolve().then(() => console.log("3. microtarea Promise"));
-process.nextTick(() => console.log("2. cola nextTick"));
-
-readFile(new URL("../../package.json", import.meta.url), () => {
-  console.log("6. callback de I/O (fase poll)");
-  process.nextTick(() => console.log("7. nextTick dentro de I/O"));
-  Promise.resolve().then(() => console.log("8. Promise dentro de I/O"));
-  setImmediate(() => console.log("9. immediate después de I/O"));
-  setTimeout(() => console.log("10. timer después de I/O"), 0);
-});
-```
-
-Ejecuta:
-
-```bash
-node src/runtime/fases.js
-```
-
-**Resultado esperado:** como `package.json` declara `"type": "module"`, el archivo es ESM y las tres primeras líneas salen como `1. síncrono`, `3. microtarea Promise`, `2. cola nextTick`: en el nivel superior de ESM la promesa gana a `nextTick`. Las líneas `4/5` no tienen orden garantizado entre sí ni respecto al bloque de I/O (en Node 22 el timer de nivel superior a veces sale después de `9`). Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden: dentro de un callback de I/O, `nextTick` sí va antes que la promesa.
-
-Compruébalo con CommonJS: copia el archivo a `src/runtime/fases.cjs`, cambia la primera línea por `const { readFile } = require("node:fs");` y la ruta por `require("node:path").join(__dirname, "../../package.json")`. Al ejecutar `node src/runtime/fases.cjs` las tres primeras líneas salen como `1`, `2`, `3`. El orden de `nextTick` frente a promesas depende del tipo de módulo; no es una regla universal.
-
-**Fallo deliberado y corrección:** añade temporalmente `const saturar = () => process.nextTick(saturar); saturar();`. El proceso no llega al I/O; deténlo con `Ctrl+C`. El diagnóstico es inanición del Event Loop, no lentitud del disco. Elimina esas líneas y verifica otra vez la traza completa.
-
-**Práctica guiada:** crea `src/runtime/tabla.js` con la misma instrumentación y una salida tabulada con columnas `mensaje`, `cola o fase` y `garantizado`. Clasifica `nextTick` y promesas aparte de `timers`, `poll` y `check`; no marques `4/5` como orden garantizado.
-
-**Ejercicio independiente:** crea manualmente `datos/a.txt` y `datos/b.txt`, y un programa `src/runtime/dos-lecturas.js` que lea ambos y registre sus callbacks. Ejecuta cinco veces. Explica qué orden observado puede variar y cuál está garantizado por el contexto.
-
-#### Aplica
-
-En el **[Proyecto integrador: traza de confirmación](#proyecto-0-runtime-observable-de-entregas)**, instrumenta una confirmación sin asumir orden entre timers independientes. Conserva una traza y separa las garantías del flujo de las coincidencias observadas.
-
-**Checklist de salida**
-
-- [ ] El proyecto fue escrito desde cero en una carpeta independiente.
-- [ ] La traza distingue código síncrono, `nextTick`, microtareas y fases.
-- [ ] No presentas como fijo el orden entre timer e immediate de nivel superior.
-- [ ] Dentro de I/O verificaste `nextTick`, promesa, immediate y timer en el orden documentado.
-- [ ] Detuviste y corregiste la recursión que producía inanición.
-- [ ] Tus conclusiones separan observación empírica de contrato del runtime.
-
-**Errores comunes:** asumir que `setTimeout(0)` significa ejecución inmediata, confundir microtareas con fases, bloquear un callback de I/O y enseñar un orden accidental como regla universal.
-
-**Cuándo asumir un orden:** dentro de una fase y en los casos documentados puedes apoyarte en el contrato de Node; el orden entre un timer y `setImmediate` creado desde el nivel superior puede variar. Si la corrección del programa depende de ese orden, coordina con una promesa explícita o una señal de I/O y prueba el contrato que realmente necesitas.
-
-**Fuentes oficiales:** [Event Loop, timers y `nextTick`](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`process.nextTick`](https://nodejs.org/api/process.html#processnexttickcallback-args).
-
-### Tema 3: process, global y módulos core · Básico · 75 min
+### Tema 2: process, global y módulos core · Básico · 75 min
 
 #### Aprende
 
@@ -366,6 +275,97 @@ Lleva esta frontera al **[Proyecto integrador: configuración de la API operativ
 **Cuándo no usarlo:** para configuración anidada o con muchos campos, una biblioteca dedicada como `zod`, `convict` o `envalid` puede comunicar mejor el esquema. Leer `process.env` sin validación solo es aceptable en scripts descartables, no en un servicio desplegado.
 
 **Fuentes oficiales:** [`process`](https://nodejs.org/api/process.html), [`os`](https://nodejs.org/api/os.html) y [`path`](https://nodejs.org/api/path.html).
+
+### Tema 3: Fases del Event Loop de Node · Intermedio · 75 min
+
+#### Aprende
+
+**Prerrequisitos:** callbacks, promesas y la distinción entre I/O y CPU del Tema 1. Este proyecto no reutiliza sus archivos.
+
+**Al terminar podrás:** predecir y verificar el orden entre código síncrono, `nextTick`, promesas, timers, I/O y `setImmediate`, separando garantías del runtime de órdenes accidentales.
+
+**Por qué importa:** un servidor combina reintentos, respuestas de base de datos y mensajes de red. Una suposición falsa sobre el orden produce errores intermitentes; una recursión de `nextTick` puede dejar el proceso activo pero incapaz de atender I/O.
+
+El Event Loop repite fases con responsabilidades concretas: **timers** ejecuta callbacks de `setTimeout` y `setInterval` vencidos; **pending callbacks** procesa ciertos callbacks del sistema diferidos; **poll** recupera eventos de I/O y ejecuta sus callbacks; **check** ejecuta `setImmediate`; y **close callbacks** gestiona cierres, como los de sockets.
+
+`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop. En CommonJS, y dentro de cualquier callback (por ejemplo, uno de I/O), la cola de `nextTick` se vacía antes que las microtareas de promesas. En el nivel superior de un módulo ESM ocurre lo contrario: Node ya está vaciando la cola de microtareas al evaluar el módulo, así que las promesas se ejecutan antes que `nextTick` (documentación oficial de `process`, sección «When to use `queueMicrotask()` vs. `process.nextTick()`»). Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
+
+Entre `setTimeout(fn, 0)` y `setImmediate(fn)` programados en el nivel superior no existe un ganador portable: influye la temporización de inicio. Dentro de un callback de I/O en `poll`, `setImmediate` se ejecuta antes del siguiente timer porque `check` sigue inmediatamente a esa fase.
+
+**Analogía:** las fases son estaciones de una ronda de inspección. `nextTick` es un aviso urgente atendido al terminar la tarea actual, antes de avanzar a la siguiente estación. Si los avisos urgentes generan otros avisos sin fin, la ronda nunca continúa.
+
+```mermaid
+flowchart LR
+    TIMER["timers"] --> PENDING["pending callbacks"] --> POLL["poll: I/O"] --> CHECK["check: setImmediate"] --> CLOSE["close callbacks"] --> TIMER
+    TICK["nextTick"] -. "antes de continuar" .-> TIMER
+```
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-event-loop
+cd ejemplo-event-loop
+npm init -y
+mkdir -p src/runtime
+```
+
+En PowerShell usa `New-Item -ItemType Directory -Force src/runtime`. Añade `"type": "module"` a `package.json` y crea `src/runtime/fases.js`:
+
+```js
+import { readFile } from "node:fs";
+
+console.log("1. síncrono");
+
+setTimeout(() => console.log("4/5. timer de nivel superior"), 0);
+setImmediate(() => console.log("4/5. immediate de nivel superior"));
+Promise.resolve().then(() => console.log("3. microtarea Promise"));
+process.nextTick(() => console.log("2. cola nextTick"));
+
+readFile(new URL("../../package.json", import.meta.url), () => {
+  console.log("6. callback de I/O (fase poll)");
+  process.nextTick(() => console.log("7. nextTick dentro de I/O"));
+  Promise.resolve().then(() => console.log("8. Promise dentro de I/O"));
+  setImmediate(() => console.log("9. immediate después de I/O"));
+  setTimeout(() => console.log("10. timer después de I/O"), 0);
+});
+```
+
+Ejecuta:
+
+```bash
+node src/runtime/fases.js
+```
+
+**Resultado esperado:** como `package.json` declara `"type": "module"`, el archivo es ESM y las tres primeras líneas salen como `1. síncrono`, `3. microtarea Promise`, `2. cola nextTick`: en el nivel superior de ESM la promesa gana a `nextTick`. Las líneas `4/5` no tienen orden garantizado entre sí ni respecto al bloque de I/O (en Node 22 el timer de nivel superior a veces sale después de `9`). Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden: dentro de un callback de I/O, `nextTick` sí va antes que la promesa.
+
+Compruébalo con CommonJS: copia el archivo a `src/runtime/fases.cjs`, cambia la primera línea por `const { readFile } = require("node:fs");` y la ruta por `require("node:path").join(__dirname, "../../package.json")`. Al ejecutar `node src/runtime/fases.cjs` las tres primeras líneas salen como `1`, `2`, `3`. El orden de `nextTick` frente a promesas depende del tipo de módulo; no es una regla universal.
+
+**Fallo deliberado y corrección:** añade temporalmente `const saturar = () => process.nextTick(saturar); saturar();`. El proceso no llega al I/O; deténlo con `Ctrl+C`. El diagnóstico es inanición del Event Loop, no lentitud del disco. Elimina esas líneas y verifica otra vez la traza completa.
+
+**Práctica guiada:** crea `src/runtime/tabla.js` con la misma instrumentación y una salida tabulada con columnas `mensaje`, `cola o fase` y `garantizado`. Clasifica `nextTick` y promesas aparte de `timers`, `poll` y `check`; no marques `4/5` como orden garantizado.
+
+**Ejercicio independiente:** crea manualmente `datos/a.txt` y `datos/b.txt`, y un programa `src/runtime/dos-lecturas.js` que lea ambos y registre sus callbacks. Ejecuta cinco veces. Explica qué orden observado puede variar y cuál está garantizado por el contexto.
+
+#### Aplica
+
+En el **[Proyecto integrador: traza de confirmación](#proyecto-0-runtime-observable-de-entregas)**, instrumenta una confirmación sin asumir orden entre timers independientes. Conserva una traza y separa las garantías del flujo de las coincidencias observadas.
+
+**Checklist de salida**
+
+- [ ] El proyecto fue escrito desde cero en una carpeta independiente.
+- [ ] La traza distingue código síncrono, `nextTick`, microtareas y fases.
+- [ ] No presentas como fijo el orden entre timer e immediate de nivel superior.
+- [ ] Dentro de I/O verificaste `nextTick`, promesa, immediate y timer en el orden documentado.
+- [ ] Detuviste y corregiste la recursión que producía inanición.
+- [ ] Tus conclusiones separan observación empírica de contrato del runtime.
+
+**Errores comunes:** asumir que `setTimeout(0)` significa ejecución inmediata, confundir microtareas con fases, bloquear un callback de I/O y enseñar un orden accidental como regla universal.
+
+**Cuándo asumir un orden:** dentro de una fase y en los casos documentados puedes apoyarte en el contrato de Node; el orden entre un timer y `setImmediate` creado desde el nivel superior puede variar. Si la corrección del programa depende de ese orden, coordina con una promesa explícita o una señal de I/O y prueba el contrato que realmente necesitas.
+
+**Fuentes oficiales:** [Event Loop, timers y `nextTick`](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`process.nextTick`](https://nodejs.org/api/process.html#processnexttickcallback-args).
 
 ### Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min
 

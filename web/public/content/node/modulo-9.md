@@ -246,169 +246,7 @@ curl -s -H "x-request-id: $(node -e 'process.stdout.write("A".repeat(5000))')" h
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** propaga el ID validado desde la confirmación hasta repositorio y notificaciones. Devuélvelo al cliente para soporte, pero conserva la autorización basada en la identidad autenticada.
 
-### Tema 3: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min
-
-**Prerrequisito:** Node.js LTS moderno, procesos, señales de terminal y HTTP básico. El servidor se crea desde cero y no depende de ejemplos anteriores.
-
-**Al terminar podrás:** detener el proceso tras un fallo fatal y completar o interrumpir por plazo las solicitudes activas al recibir `SIGTERM`, cerrando también los recursos.
-
-#### Aprende
-
-**Por qué importa:** un despliegue debe retirar una instancia sin cortar arbitrariamente solicitudes en curso. En cambio, después de una excepción no capturada, el proceso puede tener estado inconsistente y no debe seguir atendiendo como si nada hubiera ocurrido.
-
-En Node.js moderno, una promesa rechazada sin manejar se comporta por defecto como una excepción no capturada y puede terminar el proceso; no es correcto describir `unhandledRejection` como un evento que «solo muestra una advertencia». Registrar un manejador cambia esa red de seguridad, por lo que el manejador debe registrar y terminar con código distinto de cero, no mantener el servicio vivo. La solución primaria sigue siendo manejar los errores en su origen.
-
-Con `SIGTERM`, el servidor deja de aceptar conexiones nuevas, espera las activas y cierra recursos como temporizadores, pools o clientes. El cierre necesita un **plazo máximo**: pasado ese tiempo se fuerzan las conexiones restantes y el proceso sale con fallo. Un supervisor puede reemplazar la instancia; el manejador de señales no sustituye al supervisor.
-
-**Analogía:** el apagado ordenado es cerrar una tienda: dejas de admitir clientes nuevos, atiendes a quienes están dentro y cierras caja antes de apagar. Una excepción no capturada es una alarma estructural: evacuar es más prudente que seguir vendiendo. La analogía no elimina la necesidad de un plazo técnico.
-
-**Conceptos clave:** `uncaughtException`, `unhandledRejection`, `SIGTERM`, `SIGINT`, `server.close`, conexiones activas, cierre de recursos y deadline.
-
-#### Practica
-
-Crea otro proyecto vacío:
-
-```bash
-mkdir ejemplo-shutdown
-cd ejemplo-shutdown
-mkdir src
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "ejemplo-shutdown",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node src/server.js"
-  }
-}
-```
-
-Crea `src/server.js`:
-
-```js
-import http from "node:http";
-
-const server = http.createServer((req, res) => {
-  if (req.url === "/boom") {
-    setTimeout(() => {
-      throw new Error("fallo deliberado");
-    }, 20);
-    res.end("fallo programado\n");
-    return;
-  }
-
-  setTimeout(() => res.end("ok\n"), 1500);
-});
-
-// Representa un recurso que mantiene handles abiertos, como un pool.
-const recurso = setInterval(() => {}, 60_000);
-let cerrando = false;
-
-function cerrarRecursos() {
-  clearInterval(recurso);
-  console.log(JSON.stringify({ event: "resources.closed" }));
-}
-
-function apagar(signal) {
-  if (cerrando) return;
-  cerrando = true;
-  console.log(JSON.stringify({ event: "shutdown.started", signal }));
-
-  const plazo = setTimeout(() => {
-    console.error(JSON.stringify({ event: "shutdown.deadline" }));
-    server.closeAllConnections();
-    process.exitCode = 1;
-  }, 5000);
-  plazo.unref();
-
-  server.close((error) => {
-    clearTimeout(plazo);
-    cerrarRecursos();
-    if (error) {
-      console.error(JSON.stringify({ event: "shutdown.failed" }));
-      process.exitCode = 1;
-    } else {
-      console.log(JSON.stringify({ event: "shutdown.completed" }));
-    }
-  });
-  server.closeIdleConnections();
-}
-
-function fatal(tipo, error) {
-  console.error(JSON.stringify({
-    level: "fatal",
-    event: tipo,
-    name: error instanceof Error ? error.name : "Error",
-    message: error instanceof Error ? error.message : String(error),
-  }));
-  process.exit(1);
-}
-
-process.on("uncaughtException", (error) => fatal("uncaughtException", error));
-process.on("unhandledRejection", (error) => fatal("unhandledRejection", error));
-process.once("SIGTERM", () => apagar("SIGTERM"));
-process.once("SIGINT", () => apagar("SIGINT"));
-
-server.listen(3000, () => {
-  console.log(JSON.stringify({ event: "server.started", pid: process.pid }));
-});
-```
-
-Ejecuta `npm start` y anota el `pid` mostrado por **ese proceso local**. En otra terminal inicia una solicitud lenta:
-
-```bash
-curl http://127.0.0.1:3000/lenta
-```
-
-Mientras espera, envía la señal únicamente al PID anotado, sustituyendo el número de ejemplo:
-
-```bash
-kill -TERM 12345
-```
-
-No uses `pkill`, `killall` ni un PID sin identificar. **Salida esperada:** `curl` recibe `ok`; el servidor registra `shutdown.started`, `resources.closed` y `shutdown.completed`, y termina. Si una conexión no terminara, el plazo de cinco segundos la cerraría y dejaría código de salida distinto de cero.
-
-**Fallo deliberado y corrección:** primero ejecuta `npm start` y llama a `http://127.0.0.1:3000/boom`; el manejador registra `uncaughtException` y termina con código 1. Después reemplaza temporalmente `process.exit(1)` por otro log y repite: el proceso continúa en un estado no confiable. Restaura `process.exit(1)` y confirma de nuevo la terminación; no conviertas el manejador fatal en un mecanismo para seguir sirviendo.
-
-#### Aplica
-
-**Práctica guiada:** añade un contador `solicitudesActivas` que aumente al entrar y disminuya en `finally`. Regístralo al iniciar y completar el apagado. Después crea una ruta `/rechazo` que produzca una promesa rechazada sin `catch`; verifica por separado que el manejador termina el proceso y corrige la ruta con `try/catch` para ese error recuperable.
-
-**Práctica independiente:** añade una segunda respuesta que nunca termine y comprueba, en dos ejecuciones separadas, que `/lenta` finaliza antes del plazo mientras la conexión bloqueada se corta al llegar el deadline. Documenta los eventos y códigos de salida. Envía `SIGTERM` solo al PID local recién impreso y añade al cierre un recurso simulado con un método `close()` para demostrar que se invoca una sola vez.
-
-**Checklist de salida:**
-
-- [ ] `uncaughtException` registra el fallo y termina; el servidor no continúa atendiendo.
-- [ ] `unhandledRejection` no se describe como una simple advertencia en Node moderno y su manejador termina el proceso.
-- [ ] `SIGTERM` deja de aceptar conexiones y permite terminar una respuesta lenta dentro del plazo.
-- [ ] El deadline cierra conexiones restantes y produce salida con fallo.
-- [ ] Los recursos se cierran una sola vez y el PID utilizado en la prueba está identificado.
-
-**Errores comunes:** llamar `process.exit(0)` inmediatamente ante `SIGTERM`; ignorar conexiones; continuar tras una excepción fatal; no cerrar pools o temporizadores; no tener timeout; probar señales contra procesos no identificados.
-
-```mermaid
-flowchart TD
-  Running[Servidor atendiendo] --> Signal[Recibe SIGTERM]
-  Signal --> Stop[Deja de aceptar conexiones]
-  Stop --> Drain[Completa solicitudes activas]
-  Drain -->|antes del plazo| Close[Cierra recursos y sale]
-  Drain -->|vence el plazo| Force[Cierra conexiones restantes y falla]
-  Running --> Fatal[Excepción no capturada]
-  Fatal --> Log[Registra el fallo]
-  Log --> Exit[Termina para que el supervisor reinicie]
-```
-
-**Cuándo drenar:** usa apagado gradual para una terminación solicitada, como un reemplazo de despliegue; da un plazo finito y deja que el supervisor gestione el proceso siguiente. Una excepción no capturada es distinta: no continúes atendiendo con estado potencialmente inconsistente. Si el servicio no controla el ciclo del proceso, implementa esta política en su supervisor en vez de instalar manejadores globales que oculten fallos.
-
-**Fuentes oficiales:** [Node process signals](https://nodejs.org/api/process.html#signal-events), [`server.close`](https://nodejs.org/api/net.html#serverclosecallback) y [12-factor disposability](https://12factor.net/disposability).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** incorpora apagado con plazo a API y consumidores, cierra base de datos y colas, y deja que el supervisor reinicie únicamente los procesos que terminaron por un fallo fatal.
-
-### Tema 4: REST, GraphQL y gRPC · Intermedio · 55 min
+### Tema 3: REST, GraphQL y gRPC · Intermedio · 55 min
 
 **Prerrequisito:** Node.js LTS, JSON, HTTP y lectura básica de contratos. Crearás artefactos nuevos, no un servidor reutilizado.
 
@@ -594,7 +432,307 @@ gRPC: RPC presente; compilación y servidor no ejecutados
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** expón la consulta de guía con el contrato elegido y conserva errores y autorización equivalentes. Justifica la elección por los clientes reales, no por la cantidad de endpoints.
 
-### Tema 5: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min
+### Tema 4: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min
+
+**Prerrequisito:** Node.js LTS moderno, procesos, señales de terminal y HTTP básico. El servidor se crea desde cero y no depende de ejemplos anteriores.
+
+**Al terminar podrás:** detener el proceso tras un fallo fatal y completar o interrumpir por plazo las solicitudes activas al recibir `SIGTERM`, cerrando también los recursos.
+
+#### Aprende
+
+**Por qué importa:** un despliegue debe retirar una instancia sin cortar arbitrariamente solicitudes en curso. En cambio, después de una excepción no capturada, el proceso puede tener estado inconsistente y no debe seguir atendiendo como si nada hubiera ocurrido.
+
+En Node.js moderno, una promesa rechazada sin manejar se comporta por defecto como una excepción no capturada y puede terminar el proceso; no es correcto describir `unhandledRejection` como un evento que «solo muestra una advertencia». Registrar un manejador cambia esa red de seguridad, por lo que el manejador debe registrar y terminar con código distinto de cero, no mantener el servicio vivo. La solución primaria sigue siendo manejar los errores en su origen.
+
+Con `SIGTERM`, el servidor deja de aceptar conexiones nuevas, espera las activas y cierra recursos como temporizadores, pools o clientes. El cierre necesita un **plazo máximo**: pasado ese tiempo se fuerzan las conexiones restantes y el proceso sale con fallo. Un supervisor puede reemplazar la instancia; el manejador de señales no sustituye al supervisor.
+
+**Analogía:** el apagado ordenado es cerrar una tienda: dejas de admitir clientes nuevos, atiendes a quienes están dentro y cierras caja antes de apagar. Una excepción no capturada es una alarma estructural: evacuar es más prudente que seguir vendiendo. La analogía no elimina la necesidad de un plazo técnico.
+
+**Conceptos clave:** `uncaughtException`, `unhandledRejection`, `SIGTERM`, `SIGINT`, `server.close`, conexiones activas, cierre de recursos y deadline.
+
+#### Practica
+
+Crea otro proyecto vacío:
+
+```bash
+mkdir ejemplo-shutdown
+cd ejemplo-shutdown
+mkdir src
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "ejemplo-shutdown",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  }
+}
+```
+
+Crea `src/server.js`:
+
+```js
+import http from "node:http";
+
+const server = http.createServer((req, res) => {
+  if (req.url === "/boom") {
+    setTimeout(() => {
+      throw new Error("fallo deliberado");
+    }, 20);
+    res.end("fallo programado\n");
+    return;
+  }
+
+  setTimeout(() => res.end("ok\n"), 1500);
+});
+
+// Representa un recurso que mantiene handles abiertos, como un pool.
+const recurso = setInterval(() => {}, 60_000);
+let cerrando = false;
+
+function cerrarRecursos() {
+  clearInterval(recurso);
+  console.log(JSON.stringify({ event: "resources.closed" }));
+}
+
+function apagar(signal) {
+  if (cerrando) return;
+  cerrando = true;
+  console.log(JSON.stringify({ event: "shutdown.started", signal }));
+
+  const plazo = setTimeout(() => {
+    console.error(JSON.stringify({ event: "shutdown.deadline" }));
+    server.closeAllConnections();
+    process.exitCode = 1;
+  }, 5000);
+  plazo.unref();
+
+  server.close((error) => {
+    clearTimeout(plazo);
+    cerrarRecursos();
+    if (error) {
+      console.error(JSON.stringify({ event: "shutdown.failed" }));
+      process.exitCode = 1;
+    } else {
+      console.log(JSON.stringify({ event: "shutdown.completed" }));
+    }
+  });
+  server.closeIdleConnections();
+}
+
+function fatal(tipo, error) {
+  console.error(JSON.stringify({
+    level: "fatal",
+    event: tipo,
+    name: error instanceof Error ? error.name : "Error",
+    message: error instanceof Error ? error.message : String(error),
+  }));
+  process.exit(1);
+}
+
+process.on("uncaughtException", (error) => fatal("uncaughtException", error));
+process.on("unhandledRejection", (error) => fatal("unhandledRejection", error));
+process.once("SIGTERM", () => apagar("SIGTERM"));
+process.once("SIGINT", () => apagar("SIGINT"));
+
+server.listen(3000, () => {
+  console.log(JSON.stringify({ event: "server.started", pid: process.pid }));
+});
+```
+
+Ejecuta `npm start` y anota el `pid` mostrado por **ese proceso local**. En otra terminal inicia una solicitud lenta:
+
+```bash
+curl http://127.0.0.1:3000/lenta
+```
+
+Mientras espera, envía la señal únicamente al PID anotado, sustituyendo el número de ejemplo:
+
+```bash
+kill -TERM 12345
+```
+
+No uses `pkill`, `killall` ni un PID sin identificar. **Salida esperada:** `curl` recibe `ok`; el servidor registra `shutdown.started`, `resources.closed` y `shutdown.completed`, y termina. Si una conexión no terminara, el plazo de cinco segundos la cerraría y dejaría código de salida distinto de cero.
+
+**Fallo deliberado y corrección:** primero ejecuta `npm start` y llama a `http://127.0.0.1:3000/boom`; el manejador registra `uncaughtException` y termina con código 1. Después reemplaza temporalmente `process.exit(1)` por otro log y repite: el proceso continúa en un estado no confiable. Restaura `process.exit(1)` y confirma de nuevo la terminación; no conviertas el manejador fatal en un mecanismo para seguir sirviendo.
+
+#### Aplica
+
+**Práctica guiada:** añade un contador `solicitudesActivas` que aumente al entrar y disminuya en `finally`. Regístralo al iniciar y completar el apagado. Después crea una ruta `/rechazo` que produzca una promesa rechazada sin `catch`; verifica por separado que el manejador termina el proceso y corrige la ruta con `try/catch` para ese error recuperable.
+
+**Práctica independiente:** añade una segunda respuesta que nunca termine y comprueba, en dos ejecuciones separadas, que `/lenta` finaliza antes del plazo mientras la conexión bloqueada se corta al llegar el deadline. Documenta los eventos y códigos de salida. Envía `SIGTERM` solo al PID local recién impreso y añade al cierre un recurso simulado con un método `close()` para demostrar que se invoca una sola vez.
+
+**Checklist de salida:**
+
+- [ ] `uncaughtException` registra el fallo y termina; el servidor no continúa atendiendo.
+- [ ] `unhandledRejection` no se describe como una simple advertencia en Node moderno y su manejador termina el proceso.
+- [ ] `SIGTERM` deja de aceptar conexiones y permite terminar una respuesta lenta dentro del plazo.
+- [ ] El deadline cierra conexiones restantes y produce salida con fallo.
+- [ ] Los recursos se cierran una sola vez y el PID utilizado en la prueba está identificado.
+
+**Errores comunes:** llamar `process.exit(0)` inmediatamente ante `SIGTERM`; ignorar conexiones; continuar tras una excepción fatal; no cerrar pools o temporizadores; no tener timeout; probar señales contra procesos no identificados.
+
+```mermaid
+flowchart TD
+  Running[Servidor atendiendo] --> Signal[Recibe SIGTERM]
+  Signal --> Stop[Deja de aceptar conexiones]
+  Stop --> Drain[Completa solicitudes activas]
+  Drain -->|antes del plazo| Close[Cierra recursos y sale]
+  Drain -->|vence el plazo| Force[Cierra conexiones restantes y falla]
+  Running --> Fatal[Excepción no capturada]
+  Fatal --> Log[Registra el fallo]
+  Log --> Exit[Termina para que el supervisor reinicie]
+```
+
+**Cuándo drenar:** usa apagado gradual para una terminación solicitada, como un reemplazo de despliegue; da un plazo finito y deja que el supervisor gestione el proceso siguiente. Una excepción no capturada es distinta: no continúes atendiendo con estado potencialmente inconsistente. Si el servicio no controla el ciclo del proceso, implementa esta política en su supervisor en vez de instalar manejadores globales que oculten fallos.
+
+**Fuentes oficiales:** [Node process signals](https://nodejs.org/api/process.html#signal-events), [`server.close`](https://nodejs.org/api/net.html#serverclosecallback) y [12-factor disposability](https://12factor.net/disposability).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** incorpora apagado con plazo a API y consumidores, cierra base de datos y colas, y deja que el supervisor reinicie únicamente los procesos que terminaron por un fallo fatal.
+
+### Tema 5: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min
+
+**Prerrequisito:** tema «Correlation ID por request» de este módulo.
+
+**Al finalizar podrás:** guardar el id de cada petición en un contexto que sobrevive a los `await` sin pasarlo por parámetro, y publicar eventos de diagnóstico que otra parte del código puede escuchar.
+
+**¿Por qué es importante?** Cuando dos peticiones se atienden a la vez, sus logs se mezclan. Pasar el id de función en función ensucia todo el código. `AsyncLocalStorage` resuelve eso, y `diagnostics_channel` permite medir sin acoplar la lógica de negocio a la observabilidad.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
+
+**Contexto y caso real.**
+
+En RutaFlow, las peticiones `req-A` y `req-B` llegan casi al mismo tiempo. La segunda termina primero porque su consulta es más rápida. Sin contexto, el log «fin de la ruta» no dice de qué petición es, y diagnosticar un error lento se vuelve adivinanza.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** contexto asíncrono, `AsyncLocalStorage`, `run`, `getStore`, canal de diagnóstico, publicador y suscriptor.
+
+`AsyncLocalStorage` guarda un valor (el **store**) que acompaña a todo el trabajo asíncrono que empieza dentro de `contexto.run(store, fn)`. Aunque haya `await`, temporizadores o promesas en el medio, `contexto.getStore()` devuelve el store correcto. Fuera de `run`, devuelve `undefined`.
+
+`diagnostics_channel` es un sistema de eventos con nombre. La capa de datos **publica** (`canal.publish(datos)`) sin saber quién escucha; la observabilidad se **suscribe** desde otro módulo. Si nadie está suscrito, `hasSubscribers` es `false` y publicar no cuesta casi nada. Muchas librerías (por ejemplo `undici`, el cliente de `fetch`) ya publican en canales propios.
+
+**Analogía:** AsyncLocalStorage es la pulsera de un paciente en un hospital: va con él a cada sala, sin que cada médico tenga que preguntar su nombre. diagnostics_channel es la cartelera de avisos: quien quiera enterarse la mira. La analogía falla en que la pulsera no se pierde aunque el paciente salga y vuelva: eso lo garantiza el motor, no el hospital.
+
+**Límite de uso:** no guardes en el store objetos enormes ni datos que deban sobrevivir a la petición. El contexto se puede perder con librerías que usan colas propias de callbacks; en ese caso, envuélvelas con `AsyncResource.bind`.
+
+```mermaid
+sequenceDiagram
+    participant A as req-A
+    participant B as req-B
+    participant D as consultarRuta()
+    participant O as Observabilidad
+    A->>D: run(req-A): consulta ENV-1 (lenta)
+    B->>D: run(req-B): consulta ENV-2 (rápida)
+    D-->>O: publish(ENV-2) con contexto req-B
+    D-->>O: publish(ENV-1) con contexto req-A
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/contexto/contexto.mjs`:
+
+```js
+import { AsyncLocalStorage } from 'node:async_hooks';
+import diagnostics_channel from 'node:diagnostics_channel';
+
+const contexto = new AsyncLocalStorage();
+const canalConsultas = diagnostics_channel.channel('rutaflow:consulta');
+
+// Logger: no recibe el id por parámetro; lo lee del contexto actual.
+function log(mensaje) {
+  const id = contexto.getStore()?.requestId ?? 'sin-contexto';
+  console.log(`[${id}] ${mensaje}`);
+}
+
+// Capa de datos: publica un evento de diagnóstico sin saber quién escucha.
+async function consultarRuta(codigo, demoraMs) {
+  await new Promise((listo) => setTimeout(listo, demoraMs));
+  if (canalConsultas.hasSubscribers) canalConsultas.publish({ codigo, demoraMs });
+  return `ruta de ${codigo}`;
+}
+
+// Observabilidad: se suscribe desde afuera y hereda el contexto de la petición.
+diagnostics_channel.subscribe('rutaflow:consulta', ({ codigo }) => log(`métrica: consulta de ${codigo}`));
+
+// Cada "petición" corre dentro de su propio contexto.
+function atender(codigo, requestId, demoraMs) {
+  return contexto.run({ requestId }, async () => {
+    log(`inicio ${codigo}`);
+    const ruta = await consultarRuta(codigo, demoraMs);
+    log(`fin: ${ruta}`);
+  });
+}
+
+await Promise.all([atender('ENV-1', 'req-A', 40), atender('ENV-2', 'req-B', 5)]);
+log('fuera de cualquier petición');
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/contexto
+node contexto.mjs
+```
+
+**Explicación por bloques:** `atender` abre un contexto con `run` y todo lo que ocurre adentro, incluido el `await` y el temporizador, ve el mismo `requestId`. `req-B` termina primero porque su consulta tarda 5 ms, pero sus líneas conservan su id. La capa de datos publica en el canal `rutaflow:consulta`; el suscriptor llama `log` y también ve el contexto correcto, porque el evento se publica dentro de la petición. La última línea corre fuera de `run`, por eso dice `sin-contexto`.
+
+![Captura de terminal: los logs de req-A y req-B se intercalan pero cada uno conserva su id, y el log final aparece sin contexto](content/figures/node/asynclocalstorage-diagnostics.svg)
+
+**Resultado esperado:**
+
+```text
+[req-A] inicio ENV-1
+[req-B] inicio ENV-2
+[req-B] métrica: consulta de ENV-2
+[req-B] fin: ruta de ENV-2
+[req-A] métrica: consulta de ENV-1
+[req-A] fin: ruta de ENV-1
+[sin-contexto] fuera de cualquier petición
+```
+
+**Fallo deliberado:** reemplaza `contexto.run({ requestId }, async () => { ... })` por `contexto.enterWith({ requestId })` seguido del mismo código, sin `run`. **Error esperado:** ids cruzados o la última línea con `req-B` en lugar de `sin-contexto`. **Diagnóstico:** `enterWith` cambia el contexto de todo lo que sigue en esa ejecución, no solo de la petición. Usa `run` para delimitarlo.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el ejemplo y explica por qué `req-B` termina antes.
+2. **Variación:** agrega una tercera petición `req-C` con demora de 20 ms y predice el orden de las líneas.
+3. **Diagnóstico:** reproduce el fallo deliberado con `enterWith` y describe qué id quedó mal.
+4. **Integración:** en un servidor Express, crea un middleware que abra el contexto con el header `x-request-id` y úsalo desde el logger.
+5. **Diseño:** suscríbete al canal `undici:request:create` y registra cada `fetch` que haga la aplicación.
+
+**Pista:** todo lo que empieza dentro de `run` hereda el store; lo que empieza afuera, no.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Agrega al store un campo `inicio` con `performance.now()` y haz que `log` imprima los milisegundos transcurridos desde el inicio de la petición. Comprueba que cada petición mide su propio tiempo.
+
+**Checklist de salida.**
+
+- [ ] Explicas qué devuelve `getStore()` dentro y fuera de `run`.
+- [ ] El script imprime las siete líneas esperadas.
+- [ ] Reprodujiste el problema de `enterWith`.
+- [ ] Explicas por qué publicar en un canal no acopla la lógica a la observabilidad.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** pasar el id por parámetro en todas las funciones, usar `enterWith` sin entender su alcance y guardar objetos grandes en el store. **Siguiente paso:** el tema «Métricas Prometheus y trazas distribuidas con OpenTelemetry» usa este mismo mecanismo para propagar el contexto de trazas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la API de RutaFlow, agrega un middleware que abra un contexto por petición con el correlation id y haz que el logger lo lea de `AsyncLocalStorage` en lugar de recibirlo por parámetro.
+
+**Fuente oficial:** [Node.js — Asynchronous context tracking](https://nodejs.org/api/async_context.html) y [Node.js — Diagnostics Channel](https://nodejs.org/api/diagnostics_channel.html).
+
+### Tema 6: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min
 
 **Prerrequisito:** Node.js LTS, Express básico, HTTP, métricas y promesas. El proyecto incluye sus propias dependencias y no importa archivos de otros temas.
 
@@ -785,144 +923,6 @@ curl -s http://127.0.0.1:3000/metrics
 **Fuentes oficiales:** [prom-client](https://github.com/siimon/prom-client), [Prometheus data model](https://prometheus.io/docs/concepts/data_model/) y [OpenTelemetry Node](https://opentelemetry.io/docs/languages/js/).
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** instrumenta confirmaciones con conteos y duración, propaga contexto al consumidor y correlaciona por fuera de las etiquetas. Una carga de prueba debe producir métricas agregadas y spans cerrados sin una serie por guía.
-
-### Tema 6: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min
-
-**Prerrequisito:** tema «Correlation ID por request» de este módulo.
-
-**Al finalizar podrás:** guardar el id de cada petición en un contexto que sobrevive a los `await` sin pasarlo por parámetro, y publicar eventos de diagnóstico que otra parte del código puede escuchar.
-
-**¿Por qué es importante?** Cuando dos peticiones se atienden a la vez, sus logs se mezclan. Pasar el id de función en función ensucia todo el código. `AsyncLocalStorage` resuelve eso, y `diagnostics_channel` permite medir sin acoplar la lógica de negocio a la observabilidad.
-
-#### Aprende
-
-**Objetivo y preparación.**
-
-Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/contexto`. No se necesitan paquetes.
-
-**Contexto y caso real.**
-
-En RutaFlow, las peticiones `req-A` y `req-B` llegan casi al mismo tiempo. La segunda termina primero porque su consulta es más rápida. Sin contexto, el log «fin de la ruta» no dice de qué petición es, y diagnosticar un error lento se vuelve adivinanza.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** contexto asíncrono, `AsyncLocalStorage`, `run`, `getStore`, canal de diagnóstico, publicador y suscriptor.
-
-`AsyncLocalStorage` guarda un valor (el **store**) que acompaña a todo el trabajo asíncrono que empieza dentro de `contexto.run(store, fn)`. Aunque haya `await`, temporizadores o promesas en el medio, `contexto.getStore()` devuelve el store correcto. Fuera de `run`, devuelve `undefined`.
-
-`diagnostics_channel` es un sistema de eventos con nombre. La capa de datos **publica** (`canal.publish(datos)`) sin saber quién escucha; la observabilidad se **suscribe** desde otro módulo. Si nadie está suscrito, `hasSubscribers` es `false` y publicar no cuesta casi nada. Muchas librerías (por ejemplo `undici`, el cliente de `fetch`) ya publican en canales propios.
-
-**Analogía:** AsyncLocalStorage es la pulsera de un paciente en un hospital: va con él a cada sala, sin que cada médico tenga que preguntar su nombre. diagnostics_channel es la cartelera de avisos: quien quiera enterarse la mira. La analogía falla en que la pulsera no se pierde aunque el paciente salga y vuelva: eso lo garantiza el motor, no el hospital.
-
-**Límite de uso:** no guardes en el store objetos enormes ni datos que deban sobrevivir a la petición. El contexto se puede perder con librerías que usan colas propias de callbacks; en ese caso, envuélvelas con `AsyncResource.bind`.
-
-```mermaid
-sequenceDiagram
-    participant A as req-A
-    participant B as req-B
-    participant D as consultarRuta()
-    participant O as Observabilidad
-    A->>D: run(req-A): consulta ENV-1 (lenta)
-    B->>D: run(req-B): consulta ENV-2 (rápida)
-    D-->>O: publish(ENV-2) con contexto req-B
-    D-->>O: publish(ENV-1) con contexto req-A
-```
-
-#### Practica
-
-**Demostración guiada desde cero.**
-
-Archivo `academia-labs/node/contexto/contexto.mjs`:
-
-```js
-import { AsyncLocalStorage } from 'node:async_hooks';
-import diagnostics_channel from 'node:diagnostics_channel';
-
-const contexto = new AsyncLocalStorage();
-const canalConsultas = diagnostics_channel.channel('rutaflow:consulta');
-
-// Logger: no recibe el id por parámetro; lo lee del contexto actual.
-function log(mensaje) {
-  const id = contexto.getStore()?.requestId ?? 'sin-contexto';
-  console.log(`[${id}] ${mensaje}`);
-}
-
-// Capa de datos: publica un evento de diagnóstico sin saber quién escucha.
-async function consultarRuta(codigo, demoraMs) {
-  await new Promise((listo) => setTimeout(listo, demoraMs));
-  if (canalConsultas.hasSubscribers) canalConsultas.publish({ codigo, demoraMs });
-  return `ruta de ${codigo}`;
-}
-
-// Observabilidad: se suscribe desde afuera y hereda el contexto de la petición.
-diagnostics_channel.subscribe('rutaflow:consulta', ({ codigo }) => log(`métrica: consulta de ${codigo}`));
-
-// Cada "petición" corre dentro de su propio contexto.
-function atender(codigo, requestId, demoraMs) {
-  return contexto.run({ requestId }, async () => {
-    log(`inicio ${codigo}`);
-    const ruta = await consultarRuta(codigo, demoraMs);
-    log(`fin: ${ruta}`);
-  });
-}
-
-await Promise.all([atender('ENV-1', 'req-A', 40), atender('ENV-2', 'req-B', 5)]);
-log('fuera de cualquier petición');
-```
-
-Ejecútalo:
-
-```bash
-cd academia-labs/node/contexto
-node contexto.mjs
-```
-
-**Explicación por bloques:** `atender` abre un contexto con `run` y todo lo que ocurre adentro, incluido el `await` y el temporizador, ve el mismo `requestId`. `req-B` termina primero porque su consulta tarda 5 ms, pero sus líneas conservan su id. La capa de datos publica en el canal `rutaflow:consulta`; el suscriptor llama `log` y también ve el contexto correcto, porque el evento se publica dentro de la petición. La última línea corre fuera de `run`, por eso dice `sin-contexto`.
-
-![Captura de terminal: los logs de req-A y req-B se intercalan pero cada uno conserva su id, y el log final aparece sin contexto](content/figures/node/asynclocalstorage-diagnostics.svg)
-
-**Resultado esperado:**
-
-```text
-[req-A] inicio ENV-1
-[req-B] inicio ENV-2
-[req-B] métrica: consulta de ENV-2
-[req-B] fin: ruta de ENV-2
-[req-A] métrica: consulta de ENV-1
-[req-A] fin: ruta de ENV-1
-[sin-contexto] fuera de cualquier petición
-```
-
-**Fallo deliberado:** reemplaza `contexto.run({ requestId }, async () => { ... })` por `contexto.enterWith({ requestId })` seguido del mismo código, sin `run`. **Error esperado:** ids cruzados o la última línea con `req-B` en lugar de `sin-contexto`. **Diagnóstico:** `enterWith` cambia el contexto de todo lo que sigue en esa ejecución, no solo de la petición. Usa `run` para delimitarlo.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el ejemplo y explica por qué `req-B` termina antes.
-2. **Variación:** agrega una tercera petición `req-C` con demora de 20 ms y predice el orden de las líneas.
-3. **Diagnóstico:** reproduce el fallo deliberado con `enterWith` y describe qué id quedó mal.
-4. **Integración:** en un servidor Express, crea un middleware que abra el contexto con el header `x-request-id` y úsalo desde el logger.
-5. **Diseño:** suscríbete al canal `undici:request:create` y registra cada `fetch` que haga la aplicación.
-
-**Pista:** todo lo que empieza dentro de `run` hereda el store; lo que empieza afuera, no.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Agrega al store un campo `inicio` con `performance.now()` y haz que `log` imprima los milisegundos transcurridos desde el inicio de la petición. Comprueba que cada petición mide su propio tiempo.
-
-**Checklist de salida.**
-
-- [ ] Explicas qué devuelve `getStore()` dentro y fuera de `run`.
-- [ ] El script imprime las siete líneas esperadas.
-- [ ] Reprodujiste el problema de `enterWith`.
-- [ ] Explicas por qué publicar en un canal no acopla la lógica a la observabilidad.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** pasar el id por parámetro en todas las funciones, usar `enterWith` sin entender su alcance y guardar objetos grandes en el store. **Siguiente paso:** el tema «Métricas Prometheus y trazas distribuidas con OpenTelemetry» usa este mismo mecanismo para propagar el contexto de trazas.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la API de RutaFlow, agrega un middleware que abra un contexto por petición con el correlation id y haz que el logger lo lea de `AsyncLocalStorage` en lugar de recibirlo por parámetro.
-
-**Fuente oficial:** [Node.js — Asynchronous context tracking](https://nodejs.org/api/async_context.html) y [Node.js — Diagnostics Channel](https://nodejs.org/api/diagnostics_channel.html).
 
 ## Laboratorio práctico independiente: API local de entregas observable
 

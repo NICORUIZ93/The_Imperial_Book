@@ -2,551 +2,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min
-
-**Prerrequisito:** Node LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
-
-**Al terminar podrás:** escribir y ejecutar pruebas que comprueben el estado y el cuerpo de respuestas HTTP de una aplicación Express, incluida una validación fallida, sin mantener un servidor escuchando en un puerto.
-
-#### Aprende
-
-**Por qué importa:** una prueba de una función aislada no detecta necesariamente errores de routing, serialización JSON o middleware. Una prueba de integración HTTP ejercita esas piezas juntas y comprueba el contrato que recibirá un cliente.
-
-Supertest recibe la instancia de Express y ejecuta la petición contra ella. Para estas pruebas no hace falta llamar a `app.listen()` ni dejar un servidor permanente: `await request(app).get("/health")` permite comprobar la aplicación sin administrar un puerto abierto durante la suite. Vitest aporta el runner y las aserciones; Supertest aporta el cliente HTTP de prueba.
-
-El contrato observable incluye el código de estado, el cuerpo y, cuando sea relevante, las cabeceras. Conviene probar tanto el camino feliz como los errores esperados: una suite que solo comprueba respuestas `200` puede dejar sin cubrir validaciones y regresiones de manejo de errores. Cada prueba debe controlar sus datos y no depender del orden de ejecución.
-
-**Analogía:** probar funciones por separado es revisar los engranajes de un reloj; usar Supertest es dar cuerda al reloj ensamblado y comprobar la hora, sin abrir la relojería al público.
-
-**Conceptos clave:** integración HTTP, aplicación Express sin `listen` permanente, contrato observable, estado, cuerpo JSON, camino feliz y error esperado.
-
-#### Practica
-
-Empieza en una carpeta vacía. Este proyecto no utiliza archivos de otros temas ni ejemplos del repositorio.
-
-```bash
-mkdir practica-vitest-http
-cd practica-vitest-http
-mkdir src test
-```
-
-Crea manualmente `package.json`:
-
-```json
-{
-  "name": "practica-vitest-http",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "vitest run"
-  }
-}
-```
-
-Instala las dependencias y conserva el `package-lock.json` generado:
-
-```bash
-npm install express
-npm install --save-dev vitest supertest
-```
-
-Crea `src/app.js`. La aplicación se exporta sin llamar a `listen`:
-
-```js
-import express from "express";
-
-export const app = express();
-app.use(express.json());
-
-app.get("/health", (_req, res) => {
-  res.status(200).json({ status: "ok" });
-});
-
-app.post("/tareas", (req, res) => {
-  const { titulo } = req.body;
-  if (typeof titulo !== "string" || titulo.trim() === "") {
-    return res.status(400).json({ error: "titulo es obligatorio" });
-  }
-  return res.status(201).json({ id: 1, titulo: titulo.trim() });
-});
-```
-
-Crea `test/app.test.js`:
-
-```js
-import request from "supertest";
-import { describe, expect, it } from "vitest";
-import { app } from "../src/app.js";
-
-describe("contrato HTTP", () => {
-  it("GET /health devuelve 200 y el cuerpo esperado", async () => {
-    const response = await request(app).get("/health");
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
-  });
-
-  it("POST /tareas rechaza un título vacío", async () => {
-    const response = await request(app)
-      .post("/tareas")
-      .send({ titulo: "  " });
-
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "titulo es obligatorio" });
-  });
-});
-```
-
-Ejecuta:
-
-```bash
-npm test
-```
-
-**Resultado esperado:** Vitest informa dos pruebas aprobadas y ninguna fallida. No necesitas iniciar `node src/app.js` ni reservar un puerto.
-
-**Fallo deliberado y corrección:** en `src/app.js`, cambia temporalmente `{ status: "ok" }` por `{ status: "ready" }` y ejecuta `npm test`. Observa la diferencia entre el cuerpo esperado y el recibido. Después restaura `ok` y repite el comando hasta volver a verde; así compruebas que la aserción detecta una regresión real.
-
-##### Práctica guiada
-
-Añade a `test/app.test.js` una prueba para el alta válida. Debe enviar `{ "titulo": " Preparar pedido " }`, esperar `201` y comprobar exactamente `{ id: 1, titulo: "Preparar pedido" }`. La pista es verificar también que `express.json()` y el recorte del texto forman parte del contrato.
-
-##### Ejercicio independiente
-
-En este mismo proyecto, añade una ruta `GET /tareas/:id` que devuelva `404` y `{ "error": "tarea no encontrada" }` para un identificador desconocido. Escribe primero la prueba, implementa después la ruta y explica en una frase qué regresión detecta cada uno de los cuatro casos de la suite.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] `npm test` ejecuta al menos cuatro pruebas y termina sin fallos.
-- [ ] Las pruebas importan `app` y no requieren `app.listen()` ni un servidor permanente.
-- [ ] Hay aserciones específicas de estado y cuerpo para una respuesta válida y otra inválida.
-- [ ] El fallo deliberado produjo una diferencia legible y desapareció al corregir el código.
-- [ ] Ninguna prueba depende del resultado o del orden de otra.
-
-**Errores comunes:** abrir puertos innecesarios; compartir estado mutable; usar aserciones tan amplias que acepten cuerpos incorrectos; olvidar `await`; probar detalles privados en vez del contrato HTTP; probar únicamente el camino feliz.
-
-**Fuentes oficiales:** [Vitest](https://vitest.dev/guide/), [Supertest](https://github.com/ladjs/supertest) y [Express: Hello World](https://expressjs.com/en/starter/hello-world.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** prueba por HTTP el alta, la consulta y la confirmación de una entrega. Aísla los datos por caso y verifica tanto el cuerpo de confirmación como el efecto persistido.
-
-### Tema 2: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min
-
-**Prerrequisito:** Node LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
-
-**Al terminar podrás:** ejecutar una prueba de integración que cree una tabla, inserte y consulte datos en PostgreSQL real, con una imagen fijada y cierre del cliente y del contenedor en `afterAll`.
-
-#### Aprende
-
-**Por qué importa:** un mock de base de datos puede aceptar una consulta que el motor real rechaza. PostgreSQL aplica tipos, restricciones, transacciones y códigos de error concretos; probar contra él detecta incompatibilidades que una simulación puede ocultar.
-
-Testcontainers inicia infraestructura real con un ciclo de vida controlado por la suite. Una base efímera evita que una ejecución herede datos de otra y reduce la interferencia entre procesos. La imagen debe fijarse, por ejemplo `postgres:16-alpine`, para que una ejecución futura no cambie de motor por resolver `latest`.
-
-El contenedor se crea en `beforeAll`; la conexión y el contenedor se cierran con `await` en `afterAll`. El cierre condicional permite limpiar incluso cuando el arranque falló antes de asignar todas las variables. Esta técnica está destinada a pruebas que necesitan el motor real: para lógica pura sin persistencia, una función o un doble sencillo suele dar feedback más rápido.
-
-**Analogía:** es montar un laboratorio desechable para un experimento y desmontarlo al terminar, en lugar de compartir siempre un laboratorio cuyo estado desconoces.
-
-**Conceptos clave:** contenedor efímero, imagen fijada, PostgreSQL real, aislamiento, `beforeAll`, `afterAll`, conexión temporal y restricciones del motor.
-
-#### Practica
-
-Empieza en una carpeta vacía y crea un proyecto nuevo, sin reutilizar configuración de otros temas.
-
-```bash
-mkdir practica-testcontainers
-cd practica-testcontainers
-mkdir test
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "practica-testcontainers",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "vitest run"
-  }
-}
-```
-
-Instala las dependencias:
-
-```bash
-npm install pg
-npm install --save-dev vitest @testcontainers/postgresql
-```
-
-Comprueba que Docker responde antes de ejecutar las pruebas:
-
-```bash
-docker info
-```
-
-Crea `test/postgres.test.js`. La espera explícita del cierre y las guardas de `afterAll` son parte del ejemplo, no detalles opcionales:
-
-```js
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import pg from "pg";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-
-const { Client } = pg;
-let container;
-let client;
-
-beforeAll(async () => {
-  container = await new PostgreSqlContainer("postgres:16-alpine").start();
-  client = new Client({ connectionString: container.getConnectionUri() });
-  await client.connect();
-  await client.query(`
-    CREATE TABLE tareas (
-      id SERIAL PRIMARY KEY,
-      titulo TEXT NOT NULL UNIQUE
-    )
-  `);
-}, 120_000);
-
-afterAll(async () => {
-  try {
-    if (client) await client.end();
-  } finally {
-    if (container) await container.stop();
-  }
-});
-
-describe("PostgreSQL efímero", () => {
-  it("inserta y recupera una tarea con SQL real", async () => {
-    await client.query("INSERT INTO tareas(titulo) VALUES ($1)", ["Entregar"]);
-    const result = await client.query(
-      "SELECT titulo FROM tareas WHERE titulo = $1",
-      ["Entregar"],
-    );
-
-    expect(result.rows).toEqual([{ titulo: "Entregar" }]);
-    expect(container.getPort()).toBeGreaterThan(0);
-  });
-});
-```
-
-Ejecuta:
-
-```bash
-npm test
-```
-
-**Resultado esperado:** se descarga la imagen fijada si no estaba disponible, PostgreSQL inicia, una prueba pasa y el cliente y el contenedor se cierran. La primera descarga puede tardar más que las siguientes ejecuciones.
-
-**Fallo deliberado y corrección:** cambia temporalmente la imagen a `postgres:imagen-inexistente` y ejecuta `npm test`. El arranque fallará al resolver o descargar la imagen; no es un error de la consulta. Restaura exactamente `postgres:16-alpine` y repite la prueba. Las guardas de `afterAll` evitan que una variable sin inicializar provoque un segundo error de limpieza.
-
-##### Práctica guiada
-
-Añade una segunda prueba que inserte `{ titulo: "Recoger" }` y la recupere por `id`. Antes de cada prueba, limpia la tabla con un `beforeEach` que ejecute `TRUNCATE TABLE tareas RESTART IDENTITY`; importa `beforeEach` desde Vitest. Comprueba que el identificador de la primera fila vuelve a ser `1` y que las pruebas no dependen del orden.
-
-##### Ejercicio independiente
-
-Añade una prueba que inserte dos veces el mismo título. La segunda operación debe comprobarse con una aserción de rechazo cuyo error tenga la propiedad PostgreSQL `code: "23505"`. Después de la suite, usa `docker ps` para confirmar que el contenedor de prueba ya no está en ejecución; no detengas contenedores ajenos a este proyecto.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] La configuración usa `postgres:16-alpine`, no `latest` ni una etiqueta variable.
-- [ ] La prueba ejecuta `CREATE TABLE`, `INSERT` y `SELECT` contra PostgreSQL real.
-- [ ] `afterAll` espera el cierre del cliente y del contenedor y tolera un arranque incompleto.
-- [ ] La restricción `UNIQUE` produce una aserción sobre el error `23505`.
-- [ ] Dos ejecuciones sucesivas comienzan con datos limpios y no dejan el contenedor activo.
-
-**Errores comunes:** dejar clientes o contenedores vivos; usar `latest`; depender del orden de las pruebas; compartir volúmenes o bases persistentes; guardar credenciales en el repositorio; usar contenedores para lógica que no toca infraestructura.
-
-```mermaid
-flowchart LR
-  Test[Test de integración] --> Start[Iniciar PostgreSQL fijado]
-  Start --> Schema[Crear esquema limpio]
-  Schema --> Query[Probar restricciones y transacciones reales]
-  Query --> Assert[Verificar resultados]
-  Assert --> Finally[Cerrar cliente y contenedor]
-```
-
-**Cuándo usar Testcontainers:** elige una base real efímera cuando la conducta depende del dialecto, restricciones, transacciones o migraciones. Para una regla de dominio pura, no arranques PostgreSQL: prueba la regla aislada. Un contenedor local tampoco comprueba por sí solo la base administrada de producción, sus extensiones ni su configuración de red.
-
-**Fuentes oficiales:** [Testcontainers para Node](https://node.testcontainers.org/), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [API de Vitest](https://vitest.dev/api/).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta las migraciones y las consultas de entregas contra un PostgreSQL efímero en CI. Aísla cada corrida y verifica restricciones y transacciones que un mock no reproduce con fidelidad.
-
-### Tema 3: Mocks de servicios externos y CI · Intermedio · 50 min
-
-**Prerrequisito:** Node LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
-
-**Al terminar podrás:** probar el uso del contrato de un proveedor sin red, incluir respuestas de éxito y fallo, y definir un workflow de GitHub Actions que instale con `npm ci` y ejecute la suite.
-
-#### Aprende
-
-**Por qué importa:** una API de mapas, correo o pagos puede ser lenta, costosa o no estar disponible en CI. Una prueba del código propio no debe generar cargos ni depender de la conectividad de ese día.
-
-Un mock es un doble controlado: define la respuesta de la dependencia y permite verificar los argumentos con los que fue llamada. No demuestra que el proveedor real funcione. El doble debe respetar el contrato documentado y devolver datos posibles; las pruebas de contrato o integración con el proveedor son una capa distinta.
-
-En CI, `npm ci` instala exactamente el árbol descrito por el lockfile y `npm test` ejecuta la verificación. Un proyecto con pruebas de base real puede iniciar Testcontainers dentro de esa suite. Guardar un workflow en el disco o validar su YAML localmente **no publica el workflow ni demuestra que se haya ejecutado en GitHub**: solo después de enviarlo a un repositorio remoto y abrir la ejecución en Actions puedes comprobar el resultado de CI.
-
-**Analogía:** el mock es un simulador de vuelo para entrenar decisiones controladas; CI es la revisión repetible antes de autorizar el vuelo. Ninguno sustituye por sí solo una comprobación del sistema externo real cuando esa comprobación sea necesaria.
-
-**Conceptos clave:** `vi.fn`, contrato externo, determinismo, error y timeout simulados, `npm ci`, lockfile, GitHub Actions y evidencia de ejecución remota.
-
-#### Practica
-
-Crea un proyecto nuevo desde una carpeta vacía:
-
-```bash
-mkdir practica-mocks-ci
-cd practica-mocks-ci
-mkdir -p src test .github/workflows
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "practica-mocks-ci",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "vitest run"
-  }
-}
-```
-
-Instala Vitest para generar también el lockfile:
-
-```bash
-npm install --save-dev vitest
-```
-
-Crea `src/rutas.js`:
-
-```js
-export async function calcularRuta(cliente, origen, destino) {
-  const respuesta = await cliente.route(origen, destino);
-  if (!respuesta.ok) {
-    throw new Error("Proveedor de rutas no disponible");
-  }
-  return respuesta.distanceKm;
-}
-```
-
-Crea `test/rutas.test.js`:
-
-```js
-import { describe, expect, it, vi } from "vitest";
-import { calcularRuta } from "../src/rutas.js";
-
-describe("calcularRuta", () => {
-  it("usa el contrato del proveedor y devuelve la distancia", async () => {
-    const cliente = {
-      route: vi.fn().mockResolvedValue({ ok: true, distanceKm: 4.2 }),
-    };
-
-    await expect(calcularRuta(cliente, "A", "B")).resolves.toBe(4.2);
-    expect(cliente.route).toHaveBeenCalledWith("A", "B");
-    expect(cliente.route).toHaveBeenCalledTimes(1);
-  });
-
-  it("propaga un timeout sin inventar una distancia", async () => {
-    const cliente = {
-      route: vi.fn().mockRejectedValue(new Error("timeout")),
-    };
-
-    await expect(calcularRuta(cliente, "A", "B")).rejects.toThrow("timeout");
-  });
-});
-```
-
-Ejecuta `npm test`. **Resultado esperado:** dos pruebas aprobadas, sin acceso a red ni secretos del proveedor.
-
-**Fallo deliberado y corrección:** sustituye temporalmente el primer valor simulado por `{ ok: false, distanceKm: 4.2 }`. La primera prueba debe fallar porque el código propio rechaza la respuesta, no porque la red falle. Restaura `ok: true` y vuelve a ejecutar la suite. Si en cambio quisieras probar la rama de proveedor no disponible, conserva `ok: false` y cambia la expectativa a `rejects.toThrow("Proveedor de rutas no disponible")`; no ocultes el error devolviendo una distancia cero.
-
-Crea `.github/workflows/ci.yml`:
-
-```yaml
-name: CI
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test
-```
-
-El archivo local es solo la definición. Para verificar CI, crea o utiliza un repositorio remoto propio, envía esta rama y abre la ejecución en **Actions**. Comprueba allí los registros de `npm ci` y `npm test`; no presentes una lectura local del YAML como una ejecución remota.
-
-##### Práctica guiada
-
-Añade una prueba para `mockResolvedValue({ ok: false })` que espere el mensaje `Proveedor de rutas no disponible`. Después escribe una variante con `mockRejectedValue(new Error("ETIMEDOUT"))` y comprueba que el timeout se propaga. La política de reintento debe probarse aparte: si la implementas, verifica el número de llamadas sin esperar tiempos reales.
-
-##### Ejercicio independiente
-
-Implementa en `src/reintentos.js` una función `conUnReintento(operacion)` que ejecute la operación, repita una única vez si rechaza y devuelva el primer resultado válido. Añade pruebas para éxito al primer intento, éxito al segundo y doble fallo. Documenta por qué esta suite no necesita secretos y qué aspecto del proveedor real queda fuera de su alcance.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] Ninguna prueba unitaria accede a la red ni necesita credenciales externas.
-- [ ] Se verifican tanto los argumentos como el número de llamadas al mock.
-- [ ] Las ramas de éxito, respuesta no válida, timeout y reintento tienen expectativas explícitas.
-- [ ] `npm ci` dispone de un `package-lock.json` coherente y el workflow ejecuta `npm test`.
-- [ ] La evidencia de CI procede de una ejecución visible en GitHub Actions, no de la mera creación local del YAML.
-
-**Errores comunes:** simular la función propia que se quiere probar; inventar respuestas imposibles; no verificar argumentos; llamar a la red en pruebas unitarias; hacer CI dependiente de secretos innecesarios; confundir escribir o ejecutar herramientas locales con publicar y observar un workflow remoto.
-
-```mermaid
-flowchart LR
-  Test[Test de regla propia] --> Port[Puerto del proveedor]
-  Port --> Fake[Fake controlado sin red]
-  Fake -->|éxito, timeout o error| Result[Resultado observable]
-  Result --> Assert[Aserciones de argumentos y llamadas]
-  Assert --> CI[npm ci y suite en CI]
-```
-
-**Cuándo usar un mock:** sustituye un proveedor lento, costoso o inaccesible para fijar respuestas y verificar cómo lo usa tu código. No simules la función bajo prueba ni tomes el fake como prueba de que el proveedor real conserva su contrato; para eso necesitas una comprobación separada contra el contrato o un entorno de integración controlado.
-
-**Fuentes oficiales:** [Vitest: mocking](https://vitest.dev/guide/mocking), [GitHub Actions con Node.js](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs) y [Martin Fowler: Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** sustituye el notificador externo por un doble o servidor controlado en CI. Prueba timeout y respuesta inválida, y comprueba que el comportamiento propio no dependa de la disponibilidad del tercero.
-
-### Tema 4: Alternativas de testing y debugging · Intermedio · 45 min
-
-**Prerrequisito:** Node LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
-
-**Al terminar podrás:** clasificar riesgos entre pruebas unitarias, de integración y E2E, y usar `--inspect-brk` con un breakpoint para inspeccionar un fallo que después quedará cubierto por una prueba automatizada.
-
-#### Aprende
-
-**Por qué importa:** cada capa compra confianza a un costo distinto. Una suite compuesta solo por E2E suele ser lenta y difícil de diagnosticar; una compuesta solo por pruebas aisladas puede omitir fallos de composición.
-
-Las pruebas unitarias ejercitan una regla pequeña con feedback rápido. Las de integración comprueban límites reales, como HTTP o SQL. Las E2E recorren un flujo desde la interfaz o cliente hasta los sistemas que intervienen. La pirámide práctica recomienda muchas pruebas pequeñas, menos integraciones y pocas E2E, ajustada al riesgo y no a una cuota rígida.
-
-Vitest y Jest integran runner, aserciones y mocks. Mocha se centra en organizar y ejecutar, y suele combinarse con Chai y Sinon. Elegir una herramienta depende del ecosistema existente y de las necesidades del proyecto, no de moda. Para depurar, `--inspect` o `--inspect-brk` habilita el inspector de Node; Chrome DevTools permite breakpoints, inspección de variables y ejecución paso a paso. El debugger explica un estado puntual, pero no reemplaza una aserción repetible.
-
-**Analogía:** revisa las piezas de una bicicleta por separado, después el conjunto ensamblado y por último un recorrido en carretera. El inspector es el microscopio para examinar una pieza cuando algo no encaja.
-
-**Conceptos clave:** pirámide de pruebas, unitarias, integración, E2E, Jest, Mocha/Chai/Sinon, Vitest, `--inspect-brk`, Chrome DevTools y reproducción mínima.
-
-#### Practica
-
-Crea otro proyecto desde una carpeta vacía, sin copiar archivos anteriores:
-
-```bash
-mkdir practica-debug-testing
-cd practica-debug-testing
-mkdir src test
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "practica-debug-testing",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "vitest run"
-  }
-}
-```
-
-Instala el runner:
-
-```bash
-npm install --save-dev vitest
-```
-
-Crea `src/sumar.js`:
-
-```js
-export function sumar(a, b) {
-  return a + b;
-}
-```
-
-Crea `test/sumar.test.js`:
-
-```js
-import { expect, it } from "vitest";
-import { sumar } from "../src/sumar.js";
-
-it("suma dos valores", () => {
-  expect(sumar(2, 3)).toBe(5);
-});
-```
-
-Crea `src/debug.js`, un punto de entrada pequeño para observar el mismo comportamiento:
-
-```js
-import { sumar } from "./sumar.js";
-
-const a = 2;
-const b = 3;
-const resultado = sumar(a, b);
-debugger;
-console.log({ a, b, resultado });
-```
-
-Ejecuta primero la prueba:
-
-```bash
-npm test
-```
-
-Después inicia el proceso pausado antes de ejecutar el código:
-
-```bash
-node --inspect-brk src/debug.js
-```
-
-En Chrome abre `chrome://inspect`, selecciona **inspect** para ese proceso y continúa hasta el `debugger`. Inspecciona `a`, `b` y `resultado`; cierra el proceso al terminar. **Resultado esperado:** la prueba pasa y, con el inspector, puedes observar `resultado === 5` antes del `console.log`.
-
-**Fallo deliberado y corrección:** cambia temporalmente la expectativa de `5` a `6`. Vitest mostrará el valor esperado y el recibido. Usa el breakpoint si necesitas inspeccionar los operandos, restaura después la expectativa correcta `5` y elimina el archivo `src/debug.js` solo cuando ya no necesites esa reproducción manual; conserva la prueba automatizada.
-
-##### Práctica guiada
-
-Añade una prueba para `sumar(-4, 1)` con resultado `-3`. Reproduce primero la entrada en el inspector si lo necesitas y deja después el caso límite expresado como aserción. No dejes `debugger` en código de producción.
-
-##### Ejercicio independiente
-
-Clasifica estos tres riesgos de una tienda y justifica costo, velocidad y confianza: el cálculo de impuestos, la creación de un pedido mediante HTTP con PostgreSQL y la compra completa desde el navegador. Indica una prueba concreta para cada capa y qué fallo seguiría sin detectar si eliminaras las otras dos.
-
-#### Aplica
-
-**Checklist de salida:**
-
-- [ ] Cada riesgo clasificado tiene una razón de costo y confianza, no solo una etiqueta.
-- [ ] Existe al menos una aserción para el caso normal y otra para números negativos.
-- [ ] Pudiste pausar Node en un breakpoint e inspeccionar variables desde Chrome DevTools.
-- [ ] El fallo deliberado quedó corregido y la suite volvió a verde.
-- [ ] La reproducción manual se convirtió en una prueba repetible sin esperas humanas.
-
-**Errores comunes:** usar solo E2E; dejar `debugger` en producción; escribir aserciones frágiles; confundir cobertura con calidad; depurar sin una entrada mínima reproducible; sustituir pruebas por inspección manual.
-
-**Fuentes oficiales:** [Node.js: debugging](https://nodejs.org/en/learn/getting-started/debugging), [Vitest](https://vitest.dev/guide/) y [Martin Fowler: The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** reproduce un fallo de confirmación con una entrada mínima y un breakpoint. Conserva después una prueba automatizada que detecte la regresión sin inspector ni intervención manual.
-
-### Tema 5: node:test — test runner nativo sin dependencias · Intermedio · 40 min
+### Tema 1: node:test — test runner nativo sin dependencias · Intermedio · 40 min
 
 **Prerrequisito:** Node LTS y JavaScript con módulos ES.
 
@@ -685,7 +141,7 @@ flowchart LR
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** prueba una regla pura de envíos con `node:test` y haz que el pipeline falle si el reporte no demuestra que descubrió pruebas. Conserva Vitest donde sus capacidades aporten un beneficio concreto.
 
-### Tema 6: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min
+### Tema 2: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min
 
 **Prerrequisito:** Node LTS, aserciones básicas y capacidad para ejecutar `node --test`.
 
@@ -856,7 +312,7 @@ npm test
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas. Define primero los bordes y conserva las pruebas como especificación ejecutable mientras refactorizas.
 
-### Tema 7: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min
+### Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min
 
 **Prerrequisito:** tema «node:test — test runner nativo sin dependencias» de este módulo.
 
@@ -974,6 +430,550 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** mirar s
 **Transferencia al proyecto integrador «RutaFlow»:** en el CI de RutaFlow, ejecuta las pruebas con cobertura y un umbral de ramas de 80 % para el módulo de tarifas.
 
 **Fuente oficial:** [Node.js — Test runner: collecting code coverage](https://nodejs.org/api/test.html#collecting-code-coverage).
+
+### Tema 4: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min
+
+**Prerrequisito:** Node LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
+
+**Al terminar podrás:** escribir y ejecutar pruebas que comprueben el estado y el cuerpo de respuestas HTTP de una aplicación Express, incluida una validación fallida, sin mantener un servidor escuchando en un puerto.
+
+#### Aprende
+
+**Por qué importa:** una prueba de una función aislada no detecta necesariamente errores de routing, serialización JSON o middleware. Una prueba de integración HTTP ejercita esas piezas juntas y comprueba el contrato que recibirá un cliente.
+
+Supertest recibe la instancia de Express y ejecuta la petición contra ella. Para estas pruebas no hace falta llamar a `app.listen()` ni dejar un servidor permanente: `await request(app).get("/health")` permite comprobar la aplicación sin administrar un puerto abierto durante la suite. Vitest aporta el runner y las aserciones; Supertest aporta el cliente HTTP de prueba.
+
+El contrato observable incluye el código de estado, el cuerpo y, cuando sea relevante, las cabeceras. Conviene probar tanto el camino feliz como los errores esperados: una suite que solo comprueba respuestas `200` puede dejar sin cubrir validaciones y regresiones de manejo de errores. Cada prueba debe controlar sus datos y no depender del orden de ejecución.
+
+**Analogía:** probar funciones por separado es revisar los engranajes de un reloj; usar Supertest es dar cuerda al reloj ensamblado y comprobar la hora, sin abrir la relojería al público.
+
+**Conceptos clave:** integración HTTP, aplicación Express sin `listen` permanente, contrato observable, estado, cuerpo JSON, camino feliz y error esperado.
+
+#### Practica
+
+Empieza en una carpeta vacía. Este proyecto no utiliza archivos de otros temas ni ejemplos del repositorio.
+
+```bash
+mkdir practica-vitest-http
+cd practica-vitest-http
+mkdir src test
+```
+
+Crea manualmente `package.json`:
+
+```json
+{
+  "name": "practica-vitest-http",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  }
+}
+```
+
+Instala las dependencias y conserva el `package-lock.json` generado:
+
+```bash
+npm install express
+npm install --save-dev vitest supertest
+```
+
+Crea `src/app.js`. La aplicación se exporta sin llamar a `listen`:
+
+```js
+import express from "express";
+
+export const app = express();
+app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.post("/tareas", (req, res) => {
+  const { titulo } = req.body;
+  if (typeof titulo !== "string" || titulo.trim() === "") {
+    return res.status(400).json({ error: "titulo es obligatorio" });
+  }
+  return res.status(201).json({ id: 1, titulo: titulo.trim() });
+});
+```
+
+Crea `test/app.test.js`:
+
+```js
+import request from "supertest";
+import { describe, expect, it } from "vitest";
+import { app } from "../src/app.js";
+
+describe("contrato HTTP", () => {
+  it("GET /health devuelve 200 y el cuerpo esperado", async () => {
+    const response = await request(app).get("/health");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: "ok" });
+  });
+
+  it("POST /tareas rechaza un título vacío", async () => {
+    const response = await request(app)
+      .post("/tareas")
+      .send({ titulo: "  " });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "titulo es obligatorio" });
+  });
+});
+```
+
+Ejecuta:
+
+```bash
+npm test
+```
+
+**Resultado esperado:** Vitest informa dos pruebas aprobadas y ninguna fallida. No necesitas iniciar `node src/app.js` ni reservar un puerto.
+
+**Fallo deliberado y corrección:** en `src/app.js`, cambia temporalmente `{ status: "ok" }` por `{ status: "ready" }` y ejecuta `npm test`. Observa la diferencia entre el cuerpo esperado y el recibido. Después restaura `ok` y repite el comando hasta volver a verde; así compruebas que la aserción detecta una regresión real.
+
+##### Práctica guiada
+
+Añade a `test/app.test.js` una prueba para el alta válida. Debe enviar `{ "titulo": " Preparar pedido " }`, esperar `201` y comprobar exactamente `{ id: 1, titulo: "Preparar pedido" }`. La pista es verificar también que `express.json()` y el recorte del texto forman parte del contrato.
+
+##### Ejercicio independiente
+
+En este mismo proyecto, añade una ruta `GET /tareas/:id` que devuelva `404` y `{ "error": "tarea no encontrada" }` para un identificador desconocido. Escribe primero la prueba, implementa después la ruta y explica en una frase qué regresión detecta cada uno de los cuatro casos de la suite.
+
+#### Aplica
+
+**Checklist de salida:**
+
+- [ ] `npm test` ejecuta al menos cuatro pruebas y termina sin fallos.
+- [ ] Las pruebas importan `app` y no requieren `app.listen()` ni un servidor permanente.
+- [ ] Hay aserciones específicas de estado y cuerpo para una respuesta válida y otra inválida.
+- [ ] El fallo deliberado produjo una diferencia legible y desapareció al corregir el código.
+- [ ] Ninguna prueba depende del resultado o del orden de otra.
+
+**Errores comunes:** abrir puertos innecesarios; compartir estado mutable; usar aserciones tan amplias que acepten cuerpos incorrectos; olvidar `await`; probar detalles privados en vez del contrato HTTP; probar únicamente el camino feliz.
+
+**Fuentes oficiales:** [Vitest](https://vitest.dev/guide/), [Supertest](https://github.com/ladjs/supertest) y [Express: Hello World](https://expressjs.com/en/starter/hello-world.html).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** prueba por HTTP el alta, la consulta y la confirmación de una entrega. Aísla los datos por caso y verifica tanto el cuerpo de confirmación como el efecto persistido.
+
+### Tema 5: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min
+
+**Prerrequisito:** Node LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
+
+**Al terminar podrás:** ejecutar una prueba de integración que cree una tabla, inserte y consulte datos en PostgreSQL real, con una imagen fijada y cierre del cliente y del contenedor en `afterAll`.
+
+#### Aprende
+
+**Por qué importa:** un mock de base de datos puede aceptar una consulta que el motor real rechaza. PostgreSQL aplica tipos, restricciones, transacciones y códigos de error concretos; probar contra él detecta incompatibilidades que una simulación puede ocultar.
+
+Testcontainers inicia infraestructura real con un ciclo de vida controlado por la suite. Una base efímera evita que una ejecución herede datos de otra y reduce la interferencia entre procesos. La imagen debe fijarse, por ejemplo `postgres:16-alpine`, para que una ejecución futura no cambie de motor por resolver `latest`.
+
+El contenedor se crea en `beforeAll`; la conexión y el contenedor se cierran con `await` en `afterAll`. El cierre condicional permite limpiar incluso cuando el arranque falló antes de asignar todas las variables. Esta técnica está destinada a pruebas que necesitan el motor real: para lógica pura sin persistencia, una función o un doble sencillo suele dar feedback más rápido.
+
+**Analogía:** es montar un laboratorio desechable para un experimento y desmontarlo al terminar, en lugar de compartir siempre un laboratorio cuyo estado desconoces.
+
+**Conceptos clave:** contenedor efímero, imagen fijada, PostgreSQL real, aislamiento, `beforeAll`, `afterAll`, conexión temporal y restricciones del motor.
+
+#### Practica
+
+Empieza en una carpeta vacía y crea un proyecto nuevo, sin reutilizar configuración de otros temas.
+
+```bash
+mkdir practica-testcontainers
+cd practica-testcontainers
+mkdir test
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-testcontainers",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  }
+}
+```
+
+Instala las dependencias:
+
+```bash
+npm install pg
+npm install --save-dev vitest @testcontainers/postgresql
+```
+
+Comprueba que Docker responde antes de ejecutar las pruebas:
+
+```bash
+docker info
+```
+
+Crea `test/postgres.test.js`. La espera explícita del cierre y las guardas de `afterAll` son parte del ejemplo, no detalles opcionales:
+
+```js
+import { PostgreSqlContainer } from "@testcontainers/postgresql";
+import pg from "pg";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+const { Client } = pg;
+let container;
+let client;
+
+beforeAll(async () => {
+  container = await new PostgreSqlContainer("postgres:16-alpine").start();
+  client = new Client({ connectionString: container.getConnectionUri() });
+  await client.connect();
+  await client.query(`
+    CREATE TABLE tareas (
+      id SERIAL PRIMARY KEY,
+      titulo TEXT NOT NULL UNIQUE
+    )
+  `);
+}, 120_000);
+
+afterAll(async () => {
+  try {
+    if (client) await client.end();
+  } finally {
+    if (container) await container.stop();
+  }
+});
+
+describe("PostgreSQL efímero", () => {
+  it("inserta y recupera una tarea con SQL real", async () => {
+    await client.query("INSERT INTO tareas(titulo) VALUES ($1)", ["Entregar"]);
+    const result = await client.query(
+      "SELECT titulo FROM tareas WHERE titulo = $1",
+      ["Entregar"],
+    );
+
+    expect(result.rows).toEqual([{ titulo: "Entregar" }]);
+    expect(container.getPort()).toBeGreaterThan(0);
+  });
+});
+```
+
+Ejecuta:
+
+```bash
+npm test
+```
+
+**Resultado esperado:** se descarga la imagen fijada si no estaba disponible, PostgreSQL inicia, una prueba pasa y el cliente y el contenedor se cierran. La primera descarga puede tardar más que las siguientes ejecuciones.
+
+**Fallo deliberado y corrección:** cambia temporalmente la imagen a `postgres:imagen-inexistente` y ejecuta `npm test`. El arranque fallará al resolver o descargar la imagen; no es un error de la consulta. Restaura exactamente `postgres:16-alpine` y repite la prueba. Las guardas de `afterAll` evitan que una variable sin inicializar provoque un segundo error de limpieza.
+
+##### Práctica guiada
+
+Añade una segunda prueba que inserte `{ titulo: "Recoger" }` y la recupere por `id`. Antes de cada prueba, limpia la tabla con un `beforeEach` que ejecute `TRUNCATE TABLE tareas RESTART IDENTITY`; importa `beforeEach` desde Vitest. Comprueba que el identificador de la primera fila vuelve a ser `1` y que las pruebas no dependen del orden.
+
+##### Ejercicio independiente
+
+Añade una prueba que inserte dos veces el mismo título. La segunda operación debe comprobarse con una aserción de rechazo cuyo error tenga la propiedad PostgreSQL `code: "23505"`. Después de la suite, usa `docker ps` para confirmar que el contenedor de prueba ya no está en ejecución; no detengas contenedores ajenos a este proyecto.
+
+#### Aplica
+
+**Checklist de salida:**
+
+- [ ] La configuración usa `postgres:16-alpine`, no `latest` ni una etiqueta variable.
+- [ ] La prueba ejecuta `CREATE TABLE`, `INSERT` y `SELECT` contra PostgreSQL real.
+- [ ] `afterAll` espera el cierre del cliente y del contenedor y tolera un arranque incompleto.
+- [ ] La restricción `UNIQUE` produce una aserción sobre el error `23505`.
+- [ ] Dos ejecuciones sucesivas comienzan con datos limpios y no dejan el contenedor activo.
+
+**Errores comunes:** dejar clientes o contenedores vivos; usar `latest`; depender del orden de las pruebas; compartir volúmenes o bases persistentes; guardar credenciales en el repositorio; usar contenedores para lógica que no toca infraestructura.
+
+```mermaid
+flowchart LR
+  Test[Test de integración] --> Start[Iniciar PostgreSQL fijado]
+  Start --> Schema[Crear esquema limpio]
+  Schema --> Query[Probar restricciones y transacciones reales]
+  Query --> Assert[Verificar resultados]
+  Assert --> Finally[Cerrar cliente y contenedor]
+```
+
+**Cuándo usar Testcontainers:** elige una base real efímera cuando la conducta depende del dialecto, restricciones, transacciones o migraciones. Para una regla de dominio pura, no arranques PostgreSQL: prueba la regla aislada. Un contenedor local tampoco comprueba por sí solo la base administrada de producción, sus extensiones ni su configuración de red.
+
+**Fuentes oficiales:** [Testcontainers para Node](https://node.testcontainers.org/), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [API de Vitest](https://vitest.dev/api/).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta las migraciones y las consultas de entregas contra un PostgreSQL efímero en CI. Aísla cada corrida y verifica restricciones y transacciones que un mock no reproduce con fidelidad.
+
+### Tema 6: Mocks de servicios externos y CI · Intermedio · 50 min
+
+**Prerrequisito:** Node LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
+
+**Al terminar podrás:** probar el uso del contrato de un proveedor sin red, incluir respuestas de éxito y fallo, y definir un workflow de GitHub Actions que instale con `npm ci` y ejecute la suite.
+
+#### Aprende
+
+**Por qué importa:** una API de mapas, correo o pagos puede ser lenta, costosa o no estar disponible en CI. Una prueba del código propio no debe generar cargos ni depender de la conectividad de ese día.
+
+Un mock es un doble controlado: define la respuesta de la dependencia y permite verificar los argumentos con los que fue llamada. No demuestra que el proveedor real funcione. El doble debe respetar el contrato documentado y devolver datos posibles; las pruebas de contrato o integración con el proveedor son una capa distinta.
+
+En CI, `npm ci` instala exactamente el árbol descrito por el lockfile y `npm test` ejecuta la verificación. Un proyecto con pruebas de base real puede iniciar Testcontainers dentro de esa suite. Guardar un workflow en el disco o validar su YAML localmente **no publica el workflow ni demuestra que se haya ejecutado en GitHub**: solo después de enviarlo a un repositorio remoto y abrir la ejecución en Actions puedes comprobar el resultado de CI.
+
+**Analogía:** el mock es un simulador de vuelo para entrenar decisiones controladas; CI es la revisión repetible antes de autorizar el vuelo. Ninguno sustituye por sí solo una comprobación del sistema externo real cuando esa comprobación sea necesaria.
+
+**Conceptos clave:** `vi.fn`, contrato externo, determinismo, error y timeout simulados, `npm ci`, lockfile, GitHub Actions y evidencia de ejecución remota.
+
+#### Practica
+
+Crea un proyecto nuevo desde una carpeta vacía:
+
+```bash
+mkdir practica-mocks-ci
+cd practica-mocks-ci
+mkdir -p src test .github/workflows
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-mocks-ci",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  }
+}
+```
+
+Instala Vitest para generar también el lockfile:
+
+```bash
+npm install --save-dev vitest
+```
+
+Crea `src/rutas.js`:
+
+```js
+export async function calcularRuta(cliente, origen, destino) {
+  const respuesta = await cliente.route(origen, destino);
+  if (!respuesta.ok) {
+    throw new Error("Proveedor de rutas no disponible");
+  }
+  return respuesta.distanceKm;
+}
+```
+
+Crea `test/rutas.test.js`:
+
+```js
+import { describe, expect, it, vi } from "vitest";
+import { calcularRuta } from "../src/rutas.js";
+
+describe("calcularRuta", () => {
+  it("usa el contrato del proveedor y devuelve la distancia", async () => {
+    const cliente = {
+      route: vi.fn().mockResolvedValue({ ok: true, distanceKm: 4.2 }),
+    };
+
+    await expect(calcularRuta(cliente, "A", "B")).resolves.toBe(4.2);
+    expect(cliente.route).toHaveBeenCalledWith("A", "B");
+    expect(cliente.route).toHaveBeenCalledTimes(1);
+  });
+
+  it("propaga un timeout sin inventar una distancia", async () => {
+    const cliente = {
+      route: vi.fn().mockRejectedValue(new Error("timeout")),
+    };
+
+    await expect(calcularRuta(cliente, "A", "B")).rejects.toThrow("timeout");
+  });
+});
+```
+
+Ejecuta `npm test`. **Resultado esperado:** dos pruebas aprobadas, sin acceso a red ni secretos del proveedor.
+
+**Fallo deliberado y corrección:** sustituye temporalmente el primer valor simulado por `{ ok: false, distanceKm: 4.2 }`. La primera prueba debe fallar porque el código propio rechaza la respuesta, no porque la red falle. Restaura `ok: true` y vuelve a ejecutar la suite. Si en cambio quisieras probar la rama de proveedor no disponible, conserva `ok: false` y cambia la expectativa a `rejects.toThrow("Proveedor de rutas no disponible")`; no ocultes el error devolviendo una distancia cero.
+
+Crea `.github/workflows/ci.yml`:
+
+```yaml
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+```
+
+El archivo local es solo la definición. Para verificar CI, crea o utiliza un repositorio remoto propio, envía esta rama y abre la ejecución en **Actions**. Comprueba allí los registros de `npm ci` y `npm test`; no presentes una lectura local del YAML como una ejecución remota.
+
+##### Práctica guiada
+
+Añade una prueba para `mockResolvedValue({ ok: false })` que espere el mensaje `Proveedor de rutas no disponible`. Después escribe una variante con `mockRejectedValue(new Error("ETIMEDOUT"))` y comprueba que el timeout se propaga. La política de reintento debe probarse aparte: si la implementas, verifica el número de llamadas sin esperar tiempos reales.
+
+##### Ejercicio independiente
+
+Implementa en `src/reintentos.js` una función `conUnReintento(operacion)` que ejecute la operación, repita una única vez si rechaza y devuelva el primer resultado válido. Añade pruebas para éxito al primer intento, éxito al segundo y doble fallo. Documenta por qué esta suite no necesita secretos y qué aspecto del proveedor real queda fuera de su alcance.
+
+#### Aplica
+
+**Checklist de salida:**
+
+- [ ] Ninguna prueba unitaria accede a la red ni necesita credenciales externas.
+- [ ] Se verifican tanto los argumentos como el número de llamadas al mock.
+- [ ] Las ramas de éxito, respuesta no válida, timeout y reintento tienen expectativas explícitas.
+- [ ] `npm ci` dispone de un `package-lock.json` coherente y el workflow ejecuta `npm test`.
+- [ ] La evidencia de CI procede de una ejecución visible en GitHub Actions, no de la mera creación local del YAML.
+
+**Errores comunes:** simular la función propia que se quiere probar; inventar respuestas imposibles; no verificar argumentos; llamar a la red en pruebas unitarias; hacer CI dependiente de secretos innecesarios; confundir escribir o ejecutar herramientas locales con publicar y observar un workflow remoto.
+
+```mermaid
+flowchart LR
+  Test[Test de regla propia] --> Port[Puerto del proveedor]
+  Port --> Fake[Fake controlado sin red]
+  Fake -->|éxito, timeout o error| Result[Resultado observable]
+  Result --> Assert[Aserciones de argumentos y llamadas]
+  Assert --> CI[npm ci y suite en CI]
+```
+
+**Cuándo usar un mock:** sustituye un proveedor lento, costoso o inaccesible para fijar respuestas y verificar cómo lo usa tu código. No simules la función bajo prueba ni tomes el fake como prueba de que el proveedor real conserva su contrato; para eso necesitas una comprobación separada contra el contrato o un entorno de integración controlado.
+
+**Fuentes oficiales:** [Vitest: mocking](https://vitest.dev/guide/mocking), [GitHub Actions con Node.js](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs) y [Martin Fowler: Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** sustituye el notificador externo por un doble o servidor controlado en CI. Prueba timeout y respuesta inválida, y comprueba que el comportamiento propio no dependa de la disponibilidad del tercero.
+
+### Tema 7: Alternativas de testing y debugging · Intermedio · 45 min
+
+**Prerrequisito:** Node LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
+
+**Al terminar podrás:** clasificar riesgos entre pruebas unitarias, de integración y E2E, y usar `--inspect-brk` con un breakpoint para inspeccionar un fallo que después quedará cubierto por una prueba automatizada.
+
+#### Aprende
+
+**Por qué importa:** cada capa compra confianza a un costo distinto. Una suite compuesta solo por E2E suele ser lenta y difícil de diagnosticar; una compuesta solo por pruebas aisladas puede omitir fallos de composición.
+
+Las pruebas unitarias ejercitan una regla pequeña con feedback rápido. Las de integración comprueban límites reales, como HTTP o SQL. Las E2E recorren un flujo desde la interfaz o cliente hasta los sistemas que intervienen. La pirámide práctica recomienda muchas pruebas pequeñas, menos integraciones y pocas E2E, ajustada al riesgo y no a una cuota rígida.
+
+Vitest y Jest integran runner, aserciones y mocks. Mocha se centra en organizar y ejecutar, y suele combinarse con Chai y Sinon. Elegir una herramienta depende del ecosistema existente y de las necesidades del proyecto, no de moda. Para depurar, `--inspect` o `--inspect-brk` habilita el inspector de Node; Chrome DevTools permite breakpoints, inspección de variables y ejecución paso a paso. El debugger explica un estado puntual, pero no reemplaza una aserción repetible.
+
+**Analogía:** revisa las piezas de una bicicleta por separado, después el conjunto ensamblado y por último un recorrido en carretera. El inspector es el microscopio para examinar una pieza cuando algo no encaja.
+
+**Conceptos clave:** pirámide de pruebas, unitarias, integración, E2E, Jest, Mocha/Chai/Sinon, Vitest, `--inspect-brk`, Chrome DevTools y reproducción mínima.
+
+#### Practica
+
+Crea otro proyecto desde una carpeta vacía, sin copiar archivos anteriores:
+
+```bash
+mkdir practica-debug-testing
+cd practica-debug-testing
+mkdir src test
+```
+
+Crea `package.json`:
+
+```json
+{
+  "name": "practica-debug-testing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  }
+}
+```
+
+Instala el runner:
+
+```bash
+npm install --save-dev vitest
+```
+
+Crea `src/sumar.js`:
+
+```js
+export function sumar(a, b) {
+  return a + b;
+}
+```
+
+Crea `test/sumar.test.js`:
+
+```js
+import { expect, it } from "vitest";
+import { sumar } from "../src/sumar.js";
+
+it("suma dos valores", () => {
+  expect(sumar(2, 3)).toBe(5);
+});
+```
+
+Crea `src/debug.js`, un punto de entrada pequeño para observar el mismo comportamiento:
+
+```js
+import { sumar } from "./sumar.js";
+
+const a = 2;
+const b = 3;
+const resultado = sumar(a, b);
+debugger;
+console.log({ a, b, resultado });
+```
+
+Ejecuta primero la prueba:
+
+```bash
+npm test
+```
+
+Después inicia el proceso pausado antes de ejecutar el código:
+
+```bash
+node --inspect-brk src/debug.js
+```
+
+En Chrome abre `chrome://inspect`, selecciona **inspect** para ese proceso y continúa hasta el `debugger`. Inspecciona `a`, `b` y `resultado`; cierra el proceso al terminar. **Resultado esperado:** la prueba pasa y, con el inspector, puedes observar `resultado === 5` antes del `console.log`.
+
+**Fallo deliberado y corrección:** cambia temporalmente la expectativa de `5` a `6`. Vitest mostrará el valor esperado y el recibido. Usa el breakpoint si necesitas inspeccionar los operandos, restaura después la expectativa correcta `5` y elimina el archivo `src/debug.js` solo cuando ya no necesites esa reproducción manual; conserva la prueba automatizada.
+
+##### Práctica guiada
+
+Añade una prueba para `sumar(-4, 1)` con resultado `-3`. Reproduce primero la entrada en el inspector si lo necesitas y deja después el caso límite expresado como aserción. No dejes `debugger` en código de producción.
+
+##### Ejercicio independiente
+
+Clasifica estos tres riesgos de una tienda y justifica costo, velocidad y confianza: el cálculo de impuestos, la creación de un pedido mediante HTTP con PostgreSQL y la compra completa desde el navegador. Indica una prueba concreta para cada capa y qué fallo seguiría sin detectar si eliminaras las otras dos.
+
+#### Aplica
+
+**Checklist de salida:**
+
+- [ ] Cada riesgo clasificado tiene una razón de costo y confianza, no solo una etiqueta.
+- [ ] Existe al menos una aserción para el caso normal y otra para números negativos.
+- [ ] Pudiste pausar Node en un breakpoint e inspeccionar variables desde Chrome DevTools.
+- [ ] El fallo deliberado quedó corregido y la suite volvió a verde.
+- [ ] La reproducción manual se convirtió en una prueba repetible sin esperas humanas.
+
+**Errores comunes:** usar solo E2E; dejar `debugger` en producción; escribir aserciones frágiles; confundir cobertura con calidad; depurar sin una entrada mínima reproducible; sustituir pruebas por inspección manual.
+
+**Fuentes oficiales:** [Node.js: debugging](https://nodejs.org/en/learn/getting-started/debugging), [Vitest](https://vitest.dev/guide/) y [Martin Fowler: The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** reproduce un fallo de confirmación con una entrada mínima y un breakpoint. Conserva después una prueba automatizada que detecte la regresión sin inspector ni intervención manual.
 
 ## Laboratorio práctico: suite independiente para una API de entregas
 

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    "android/15",
+    "angular/14",
+    "devops/2",
+    "flutter/1",
+    "flutter/7",
+    "ios/13",
+    "ios/4",
+    "ios/6",
+    "kotlin-multiplatform/7",
+    "microservices/1"
+  ]
+}

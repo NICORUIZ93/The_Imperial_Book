@@ -257,7 +257,639 @@ En el proyecto integrador independiente del final, crea los puertos `Repositorio
 
 **Fuentes oficiales:** [Node.js — módulos ES](https://nodejs.org/api/esm.html), [Node.js — HTTP](https://nodejs.org/api/http.html) y [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
-### Tema 2: Uniendo cada módulo del track · Avanzado · 180 min
+### Tema 2: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
+
+**Al terminar podrás:** validar coordenadas y antigüedad, autenticar un canal, autorizar cada jornada, asignar secuencias en el servidor, publicar después de persistir y recuperar un intervalo acotado con una señal de reinicio cuando el historial ya no baste.
+
+**Por qué importa:** el GPS llega tarde, se duplica o se desconecta. El orden de llegada no es el orden de los hechos y un evento emitido antes de guardarse puede desaparecer si cae el proceso. Además, estar autenticado no autoriza a seguir la jornada de otro conductor.
+
+Latitud pertenece a `[-90, 90]`, longitud a `[-180, 180]` y la precisión no puede ser negativa. `capturedAt` representa cuándo se tomó la muestra; el servidor aplica una política de antigüedad y margen de futuro. La **secuencia** la asigna el servidor por jornada después de aceptar el comando. Una restricción única como `(journey_id, sequence_number)` evita duplicar el efecto al reintentar en una base durable.
+
+En PostgreSQL con PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
+
+```sql
+ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
+```
+
+La consulta debe parametrizarse y vivir en un repositorio. La aplicación no conoce SQL. Índice espacial, SRID y restricciones de unicidad resuelven problemas diferentes de los que resuelve Socket.IO.
+
+Socket.IO autentica el *handshake* y autoriza `journeyId` antes de unir a una sala. También vuelve a autorizar cada publicación: pertenecer antes a una sala no es una prueba permanente. El origen permitido se limita a un cliente explícito y el transporte tiene límites de mensaje y frecuencia. El servidor guarda primero y emite después; para no perder la publicación si el proceso cae entre base y canal se necesita un patrón outbox, que este laboratorio no implementa.
+
+La recuperación devuelve eventos posteriores a `lastSequence`. Si el hueco ya quedó fuera de las últimas 20 posiciones, responde `resetRequired` y una instantánea; no finge una recuperación completa. El cliente elimina duplicados por secuencia porque un evento en vivo puede cruzarse con la respuesta de recuperación. El almacén encapsulado de una sola instancia es volátil y **no sirve como estado compartido de producción**.
+
+```text
+validar → autenticar → autorizar jornada → persistir + secuencia → emitir
+reconectar → unir a sala autorizada → recuperar desde secuencia
+                              └─ hueco fuera de retención → instantánea/reset
+```
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-posiciones-recuperables
+cd ejemplo-posiciones-recuperables
+npm init -y
+npm pkg set type=module scripts.test="node --test"
+npm install socket.io socket.io-client
+mkdir src test
+```
+
+Crea `src/store.js`. El almacén se crea por instancia, limita el historial y comprueba propiedad en cada operación:
+
+```js
+const RETENCION = 20;
+
+export function crearAlmacenPosiciones() {
+  const jornadas = new Map([
+    ["journey-1", { driverId: "driver-1", sequence: 0, events: [] }],
+  ]);
+
+  function autorizar(identity, journeyId) {
+    const jornada = jornadas.get(journeyId);
+    if (!jornada) throw new Error("Jornada no encontrada");
+    if (jornada.driverId !== identity.subject) throw new Error("Jornada ajena");
+    return jornada;
+  }
+
+  return {
+    append(identity, journeyId, entrada) {
+      const jornada = autorizar(identity, journeyId);
+      const evento = {
+        journeyId,
+        sequence: ++jornada.sequence,
+        ...entrada,
+      };
+      jornada.events.push(evento);
+      if (jornada.events.length > RETENCION) jornada.events.shift();
+      return structuredClone(evento);
+    },
+
+    recover(identity, journeyId, lastSequence) {
+      const jornada = autorizar(identity, journeyId);
+      if (!Number.isInteger(lastSequence) || lastSequence < 0
+        || lastSequence > jornada.sequence) {
+        throw new Error("lastSequence fuera de rango");
+      }
+
+      const oldest = jornada.events[0]?.sequence ?? jornada.sequence;
+      const resetRequired = lastSequence < oldest - 1;
+      return {
+        resetRequired,
+        events: resetRequired
+          ? []
+          : jornada.events.filter((evento) => evento.sequence > lastSequence),
+        snapshot: resetRequired ? jornada.events.at(-1) ?? null : null,
+        latestSequence: jornada.sequence,
+      };
+    },
+  };
+}
+```
+
+Crea `src/server.js`:
+
+```js
+import { createServer } from "node:http";
+import { timingSafeEqual } from "node:crypto";
+import { Server } from "socket.io";
+import { crearAlmacenPosiciones } from "./store.js";
+
+const token = process.env.LAB_TOKEN ?? "";
+const clientOrigin = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
+if (Buffer.byteLength(token) < 32) {
+  throw new Error("Define LAB_TOKEN con al menos 32 bytes");
+}
+new URL(clientOrigin);
+
+const httpServer = createServer();
+const io = new Server(httpServer, {
+  cors: { origin: clientOrigin, methods: ["GET", "POST"] },
+  maxHttpBufferSize: 16_000,
+});
+const store = crearAlmacenPosiciones();
+
+function mismoSecreto(recibido) {
+  const actual = Buffer.from(recibido ?? "");
+  const esperado = Buffer.from(token);
+  return actual.length === esperado.length && timingSafeEqual(actual, esperado);
+}
+
+function validarPosicion(p) {
+  if (!p || typeof p !== "object" || Array.isArray(p)) return "Cuerpo inválido";
+  if (!Number.isFinite(p.lat) || p.lat < -90 || p.lat > 90) return "Latitud inválida";
+  if (!Number.isFinite(p.lng) || p.lng < -180 || p.lng > 180) return "Longitud inválida";
+  if (!Number.isFinite(p.accuracyMeters) || p.accuracyMeters < 0
+    || p.accuracyMeters > 5_000) return "Precisión inválida";
+
+  const capturedAt = Date.parse(p.capturedAt);
+  if (!Number.isFinite(capturedAt)) return "capturedAt inválido";
+  const ahora = Date.now();
+  if (capturedAt < ahora - 24 * 60 * 60 * 1000
+    || capturedAt > ahora + 5 * 60 * 1000) return "Muestra fuera de ventana";
+  return null;
+}
+
+io.use((socket, next) => {
+  if (!mismoSecreto(socket.handshake.auth.token)) {
+    return next(new Error("No autenticado"));
+  }
+  socket.data.identity = { subject: "driver-1" };
+  next();
+});
+
+io.on("connection", (socket) => {
+  let ventanaInicio = Date.now();
+  let mensajes = 0;
+
+  function admitirFrecuencia() {
+    const ahora = Date.now();
+    if (ahora - ventanaInicio >= 10_000) {
+      ventanaInicio = ahora;
+      mensajes = 0;
+    }
+    mensajes += 1;
+    return mensajes <= 20;
+  }
+
+  socket.on("journey:subscribe", async (mensaje, acknowledge) => {
+    const responder = typeof acknowledge === "function" ? acknowledge : () => {};
+    try {
+      await socket.join(`journey:${mensaje?.journeyId}`);
+      const recuperacion = store.recover(
+        socket.data.identity,
+        mensaje?.journeyId,
+        mensaje?.lastSequence,
+      );
+      responder({ ok: true, ...recuperacion });
+    } catch (error) {
+      responder({ ok: false, error: error.message });
+    }
+  });
+
+  socket.on("journey:position", (mensaje, acknowledge) => {
+    const responder = typeof acknowledge === "function" ? acknowledge : () => {};
+    if (!admitirFrecuencia()) return responder({ ok: false, error: "Límite de frecuencia" });
+
+    const invalido = validarPosicion(mensaje?.position);
+    if (invalido) return responder({ ok: false, error: invalido });
+
+    try {
+      const evento = store.append(socket.data.identity, mensaje?.journeyId, {
+        lat: mensaje.position.lat,
+        lng: mensaje.position.lng,
+        accuracyMeters: mensaje.position.accuracyMeters,
+        capturedAt: new Date(mensaje.position.capturedAt).toISOString(),
+      });
+      io.to(`journey:${evento.journeyId}`).emit("journey:position", evento);
+      responder({ ok: true, sequence: evento.sequence });
+    } catch (error) {
+      responder({ ok: false, error: error.message });
+    }
+  });
+});
+
+httpServer.listen(3000, "127.0.0.1", () => {
+  console.log("Canal local en http://127.0.0.1:3000");
+});
+```
+
+Crea `src/client.js`:
+
+```js
+import { io } from "socket.io-client";
+
+const token = process.env.LAB_TOKEN ?? "";
+const lastSequence = Number(process.argv[2] ?? 0);
+const socket = io("http://127.0.0.1:3000", {
+  auth: { token },
+  reconnection: false,
+});
+
+socket.on("journey:position", (evento) => {
+  console.log("evento", evento.sequence, evento.lat, evento.lng);
+});
+
+socket.on("connect", () => {
+  socket.emit(
+    "journey:subscribe",
+    { journeyId: "journey-1", lastSequence },
+    (recuperacion) => {
+      console.log("recuperación", recuperacion);
+      if (!recuperacion.ok) return socket.close();
+
+      socket.emit(
+        "journey:position",
+        {
+          journeyId: "journey-1",
+          position: {
+            lat: 40.4168,
+            lng: -3.7038,
+            accuracyMeters: 12,
+            capturedAt: new Date().toISOString(),
+          },
+        },
+        (respuesta) => {
+          console.log("publicación", respuesta);
+          socket.close();
+        },
+      );
+    },
+  );
+});
+
+socket.on("connect_error", (error) => {
+  console.error(error.message);
+  process.exitCode = 1;
+});
+```
+
+Crea `test/store.test.js`:
+
+```js
+import assert from "node:assert/strict";
+import test from "node:test";
+import { crearAlmacenPosiciones } from "../src/store.js";
+
+const identity = { subject: "driver-1" };
+const entrada = {
+  lat: 40.4,
+  lng: -3.7,
+  accuracyMeters: 10,
+  capturedAt: new Date().toISOString(),
+};
+
+test("asigna secuencia por jornada y recupera solo lo posterior", () => {
+  const store = crearAlmacenPosiciones();
+  store.append(identity, "journey-1", entrada);
+  store.append(identity, "journey-1", entrada);
+  const recuperado = store.recover(identity, "journey-1", 1);
+  assert.equal(recuperado.events.length, 1);
+  assert.equal(recuperado.events[0].sequence, 2);
+});
+
+test("marca reset cuando el hueco supera la retención", () => {
+  const store = crearAlmacenPosiciones();
+  for (let i = 0; i < 25; i += 1) store.append(identity, "journey-1", entrada);
+  const recuperado = store.recover(identity, "journey-1", 0);
+  assert.equal(recuperado.resetRequired, true);
+  assert.equal(recuperado.events.length, 0);
+  assert.equal(recuperado.snapshot.sequence, 25);
+});
+
+test("otro conductor no puede leer ni publicar", () => {
+  const store = crearAlmacenPosiciones();
+  assert.throws(() => store.recover({ subject: "driver-2" }, "journey-1", 0));
+  assert.throws(() => store.append({ subject: "driver-2" }, "journey-1", entrada));
+});
+```
+
+Ejecuta las pruebas y arranca el servidor en macOS o Linux:
+
+```bash
+npm test
+LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' npm run start --if-present
+```
+
+El último proyecto no define todavía `start`; para iniciar el servidor usa directamente:
+
+```bash
+LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' node src/server.js
+```
+
+En otra terminal:
+
+```bash
+LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' node src/client.js 0
+```
+
+En PowerShell, asigna `$env:LAB_TOKEN="token-local-de-laboratorio-con-mas-de-32-bytes"` antes de ejecutar servidor o cliente. El token es solo una credencial compartida de laboratorio; un sistema real debe verificar identidad por usuario y proteger su emisión y almacenamiento.
+
+**Resultado esperado:** las tres pruebas pasan. El cliente se autentica, recupera desde la secuencia indicada, publica una posición y recibe `sequence: 1` en la primera ejecución. Una segunda ejecución con `lastSequence` igual a la última confirmada no vuelve a entregar eventos antiguos.
+
+**Fallo deliberado y corrección:** cambia temporalmente `lat: 40.4168` por `lat: 200` en el cliente. La publicación debe responder `{ ok: false, error: 'Latitud inválida' }`, no emitirse y no consumir una secuencia. Restaura la coordenada y repite: obtiene la secuencia que habría seguido a la última válida. Después inicia el cliente con otro `LAB_TOKEN`; el *handshake* debe ser rechazado.
+
+**Práctica guiada:** ejecuta un cliente que escuche sin publicar y otro que envíe tres posiciones. Reinicia el primero y solicita desde la secuencia 1; comprueba que los duplicados se descartan por `sequence`. Después genera más de 20 posiciones y solicita desde cero: debes observar `resetRequired: true` y una instantánea, no una lista presentada como completa.
+
+**Ejercicio independiente:** añade una segunda jornada asignada a `driver-2` y credenciales de laboratorio distintas para cada conductor. Prueba suscripción y publicación cruzadas, mensajes fuera de orden y duplicados. Escribe el adaptador PostgreSQL con clave única `(journey_id, sequence_number)` y explica qué cambia al ejecutar dos instancias: el Map local deja de ser fuente compartida y hace falta persistencia transaccional más recuperación durable.
+
+#### Aplica
+
+En el proyecto integrador independiente del final, almacena posiciones en PostGIS con longitud y latitud en el orden correcto, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
+
+**Checklist de salida.**
+
+- [ ] Servidor, cliente, almacén y pruebas se crearon manualmente en una carpeta nueva.
+- [ ] El origen del canal está restringido y el *handshake* exige credencial.
+- [ ] Cada suscripción y publicación comprueba la jornada autorizada.
+- [ ] Coordenadas, precisión, fecha, tamaño y frecuencia tienen límites.
+- [ ] La secuencia se asigna al persistir y una posición inválida no la incrementa.
+- [ ] La recuperación está acotada y declara cuándo requiere reinicio desde instantánea.
+- [ ] El almacén local se identifica como volátil, no como arquitectura distribuida productiva.
+
+**Si falla:** si el navegador ni siquiera completa el *handshake*, revisa origen y credencial por separado. Si al reconectar faltan eventos dentro de la retención, comprueba que la suscripción use la última secuencia confirmada. Si aparecen duplicados al cruzarse recuperación y eventos en vivo, aplica cada secuencia una sola vez. Si dos instancias repiten secuencias, el Map local no es una fuente válida: usa una asignación transaccional compartida.
+
+**Errores comunes:** aceptar cualquier origen, confiar en el orden de llegada, usar una variable global como base durable, emitir antes de guardar, autorizar solo al conectar, historial infinito, recuperación sin límite o intercambiar latitud y longitud en PostGIS.
+
+**Modelo mental:** piensa en la posición aceptada como un registro con secuencia asignada por el servidor, no como «el último paquete que llegó». La hora del dispositivo ayuda a detectar antigüedad, pero no establece por sí sola el orden confiable; persistir antes de publicar permite recuperar lo confirmado tras una desconexión.
+
+**Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/), [RFC 7946 — GeoJSON](https://www.rfc-editor.org/rfc/rfc7946), [PostGIS — ST_MakePoint](https://postgis.net/docs/ST_MakePoint.html) y [PostgreSQL — unique constraints](https://www.postgresql.org/docs/current/ddl-constraints.html).
+
+### Tema 3: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
+
+**Al terminar podrás:** validar una imagen por su contenido, limitar tamaño y dimensiones, guardarla con un nombre generado por el servidor en cuarentena, impedir cargas en entregas ajenas y confirmar una entrega aunque falle la notificación posterior.
+
+**Por qué importa:** el nombre y el `Content-Type` enviados por el cliente son afirmaciones, no pruebas. Un archivo puede sobrescribir otro, contener datos distintos de los declarados o quedar expuesto antes del análisis. Por otro lado, un token FCM identifica una instalación; no demuestra identidad, propiedad ni permiso sobre una entrega.
+
+El adaptador HTTP debe aceptar `multipart/form-data` con límites de archivo, campos y tamaño antes de invocar al caso de uso. El servicio de este laboratorio recibe un `Buffer` ya limitado y vuelve a imponer su propio máximo: una defensa no presupone que todas las entradas futuras usarán el mismo adaptador. La firma PNG se comprueba primero, las dimensiones se leen antes de decodificar y `pngjs` decodifica la imagen completa. Extensión y firma solas no bastan para establecer que el contenido sea interpretable.
+
+El servidor genera la clave con `randomUUID()` y escribe con `flag: "wx"` para impedir sobrescritura. El directorio de cuarentena no es público ni se ejecuta como código. Los metadatos guardan propietario, entrega, hash, tamaño, clave y estado. El flujo es `QUARANTINED → AVAILABLE` o `REJECTED`: solo un trabajador interno con un escáner real puede promover el archivo. El escáner del laboratorio es un doble para probar transiciones, no una defensa antivirus.
+
+La descarga debe autorizar de nuevo la entrega y usar una URL temporal o una respuesta protegida. La confirmación exige evidencia `AVAILABLE`. Después de cambiar el estado de dominio se intenta el push con datos mínimos; si falla, la entrega permanece confirmada y el aviso queda pendiente de reintento. En un sistema durable se registra un outbox en la misma transacción del cambio, no una promesa en memoria. El cliente que recibe push vuelve a consultar la API autenticada: el mensaje no es fuente de verdad.
+
+**Analogía:** la cuarentena es una sala de inspección y el push es el timbre que avisa que hay novedades. Ni la etiqueta del paquete demuestra su contenido ni el timbre autoriza a abrir la puerta.
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-evidencia-push
+cd ejemplo-evidencia-push
+npm init -y
+npm pkg set type=module scripts.test="node --test"
+npm install pngjs
+mkdir src test quarantine
+```
+
+Crea `src/evidence.js`:
+
+```js
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { PNG } from "pngjs";
+
+const MAX_BYTES = 1_000_000;
+const MAX_DIMENSION = 4096;
+const FIRMA_PNG = "89504e470d0a1a0a";
+
+function validarPng(buffer, tipoDeclarado) {
+  if (!Buffer.isBuffer(buffer) || buffer.length === 0 || buffer.length > MAX_BYTES) {
+    throw new Error("Archivo vacío o mayor que el límite");
+  }
+  if (tipoDeclarado !== "image/png") throw new Error("Solo se admite image/png");
+  if (buffer.length < 24 || buffer.subarray(0, 8).toString("hex") !== FIRMA_PNG) {
+    throw new Error("El contenido no tiene firma PNG");
+  }
+
+  const width = buffer.readUInt32BE(16);
+  const height = buffer.readUInt32BE(20);
+  if (width < 1 || height < 1 || width > MAX_DIMENSION || height > MAX_DIMENSION) {
+    throw new Error("Dimensiones no permitidas");
+  }
+
+  const imagen = PNG.sync.read(buffer);
+  if (imagen.width !== width || imagen.height !== height) {
+    throw new Error("PNG inconsistente");
+  }
+}
+
+export function crearServicioEvidencias({ root, scanner, notifier }) {
+  const entregas = new Map([
+    ["delivery-1", {
+      id: "delivery-1",
+      driverId: "driver-1",
+      installationId: "installation-1",
+      estado: "pendiente",
+    }],
+  ]);
+  const archivos = new Map();
+
+  function autorizar(identity, deliveryId) {
+    const entrega = entregas.get(deliveryId);
+    if (!entrega) throw new Error("Entrega no encontrada");
+    if (entrega.driverId !== identity.subject) throw new Error("Entrega ajena");
+    return entrega;
+  }
+
+  async function subirEvidencia({ identity, deliveryId, buffer, tipoDeclarado }) {
+    autorizar(identity, deliveryId);
+    validarPng(buffer, tipoDeclarado);
+
+    const key = `${randomUUID()}.png`;
+    const destino = path.join(root, key);
+    await mkdir(root, { recursive: true });
+    await writeFile(destino, buffer, { flag: "wx", mode: 0o600 });
+
+    const metadata = {
+      id: randomUUID(),
+      key,
+      deliveryId,
+      ownerId: identity.subject,
+      sha256: createHash("sha256").update(buffer).digest("hex"),
+      bytes: buffer.length,
+      status: "QUARANTINED",
+    };
+    archivos.set(metadata.id, metadata);
+    return { ...metadata };
+  }
+
+  // Solo un trabajador interno debe invocar esta operación; no se expone como ruta.
+  async function ejecutarEscaneo(fileId) {
+    const archivo = archivos.get(fileId);
+    if (!archivo || archivo.status !== "QUARANTINED") throw new Error("No analizable");
+    const resultado = await scanner.scan(path.join(root, archivo.key));
+    archivo.status = resultado.clean === true ? "AVAILABLE" : "REJECTED";
+    return { ...archivo };
+  }
+
+  async function confirmarEntrega({ identity, deliveryId }) {
+    const entrega = autorizar(identity, deliveryId);
+    const disponible = [...archivos.values()].some((archivo) =>
+      archivo.deliveryId === deliveryId && archivo.status === "AVAILABLE");
+    if (!disponible) throw new Error("Falta evidencia disponible");
+
+    entrega.estado = "confirmada";
+    try {
+      await notifier.send({
+        installationId: entrega.installationId,
+        data: { type: "delivery.updated", deliveryId },
+      });
+      return { estado: entrega.estado, notificacion: "enviada" };
+    } catch {
+      return { estado: entrega.estado, notificacion: "pendiente" };
+    }
+  }
+
+  function consultarEntrega(identity, deliveryId) {
+    const entrega = autorizar(identity, deliveryId);
+    return { id: entrega.id, estado: entrega.estado };
+  }
+
+  return { subirEvidencia, ejecutarEscaneo, confirmarEntrega, consultarEntrega };
+}
+```
+
+Crea `src/demo.js`. El escáner y el proveedor son dobles deliberados para observar estados; no se presentan como servicios externos reales:
+
+```js
+import path from "node:path";
+import { crearServicioEvidencias } from "./evidence.js";
+
+const pngUnPixel = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+  "base64",
+);
+
+const servicio = crearServicioEvidencias({
+  root: path.resolve("quarantine"),
+  scanner: { async scan() { return { clean: true }; } },
+  notifier: { async send() { throw new Error("Proveedor no disponible"); } },
+});
+const identity = { subject: "driver-1" };
+
+const archivo = await servicio.subirEvidencia({
+  identity,
+  deliveryId: "delivery-1",
+  buffer: pngUnPixel,
+  tipoDeclarado: "image/png",
+});
+console.log("alta", { key: archivo.key, status: archivo.status });
+
+await servicio.ejecutarEscaneo(archivo.id);
+console.log("escaneo de laboratorio completado; no equivale a antivirus real");
+console.log(await servicio.confirmarEntrega({ identity, deliveryId: "delivery-1" }));
+console.log(servicio.consultarEntrega(identity, "delivery-1"));
+```
+
+Crea `test/evidence.test.js`:
+
+```js
+import assert from "node:assert/strict";
+import { mkdtemp, readdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import test from "node:test";
+import { crearServicioEvidencias } from "../src/evidence.js";
+
+const png = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+  "base64",
+);
+
+async function preparar(overrides = {}) {
+  const root = await mkdtemp(path.join(tmpdir(), "evidencia-"));
+  const servicio = crearServicioEvidencias({
+    root,
+    scanner: { async scan() { return { clean: true }; } },
+    notifier: { async send() { throw new Error("Push caído"); } },
+    ...overrides,
+  });
+  return { root, servicio };
+}
+
+test("genera la clave, cuarentena y confirma aunque el push falle", async () => {
+  const { root, servicio } = await preparar();
+  const identity = { subject: "driver-1" };
+  const archivo = await servicio.subirEvidencia({
+    identity,
+    deliveryId: "delivery-1",
+    buffer: png,
+    tipoDeclarado: "image/png",
+  });
+  assert.match(archivo.key, /^[0-9a-f-]+\.png$/);
+  assert.equal(archivo.status, "QUARANTINED");
+  assert.deepEqual(await readdir(root), [archivo.key]);
+
+  await servicio.ejecutarEscaneo(archivo.id);
+  assert.deepEqual(
+    await servicio.confirmarEntrega({ identity, deliveryId: "delivery-1" }),
+    { estado: "confirmada", notificacion: "pendiente" },
+  );
+  assert.equal(servicio.consultarEntrega(identity, "delivery-1").estado, "confirmada");
+});
+
+test("rechaza contenido que solo declara ser PNG", async () => {
+  const { servicio } = await preparar();
+  await assert.rejects(servicio.subirEvidencia({
+    identity: { subject: "driver-1" },
+    deliveryId: "delivery-1",
+    buffer: Buffer.from("<script>no soy png</script>"),
+    tipoDeclarado: "image/png",
+  }), /firma PNG/);
+});
+
+test("rechaza un archivo mayor al límite antes de escribir", async () => {
+  const { root, servicio } = await preparar();
+  await assert.rejects(servicio.subirEvidencia({
+    identity: { subject: "driver-1" },
+    deliveryId: "delivery-1",
+    buffer: Buffer.alloc(1_000_001),
+    tipoDeclarado: "image/png",
+  }), /límite/);
+  assert.deepEqual(await readdir(root), []);
+});
+
+test("otro repartidor no puede adjuntar ni consultar la entrega", async () => {
+  const { servicio } = await preparar();
+  const identity = { subject: "driver-2" };
+  await assert.rejects(servicio.subirEvidencia({
+    identity,
+    deliveryId: "delivery-1",
+    buffer: png,
+    tipoDeclarado: "image/png",
+  }), /Entrega ajena/);
+  assert.throws(() => servicio.consultarEntrega(identity, "delivery-1"), /Entrega ajena/);
+});
+```
+
+Ejecuta:
+
+```bash
+npm test
+node src/demo.js
+```
+
+**Resultado esperado:** las cuatro pruebas pasan. La demo crea un nombre UUID con extensión `.png`, muestra primero `QUARANTINED`, lo promueve mediante el doble de escáner y devuelve `{ estado: 'confirmada', notificacion: 'pendiente' }` cuando falla el push. La entrega sigue confirmada. Ningún archivo recibe un nombre elegido por el cliente.
+
+**Fallo deliberado y corrección:** en `src/demo.js`, cambia `identity` a `{ subject: "driver-2" }`. La carga debe fallar con `Entrega ajena` antes de escribir. Restaura `driver-1`. Después sustituye `pngUnPixel` por `Buffer.from("texto")`: debe fallar la firma aunque `tipoDeclarado` siga siendo `image/png`. Restaura los bytes válidos; no corrijas el fallo confiando en el tipo declarado.
+
+**Práctica guiada:** añade un adaptador HTTP multipart en un archivo propio, con límite de un archivo, 1 MB, pocos campos y tiempo de espera. Debe pasar al servicio el `Buffer`, el tipo declarado y una identidad previamente autenticada; nunca un propietario enviado en el formulario. Prueba cuerpo excedido, PNG falso, entrega ajena y descarga en cuarentena rechazada.
+
+**Ejercicio independiente:** implementa un outbox persistente local para la notificación y un trabajador con tres reintentos acotados, espera exponencial y estado final de fallo. Usa un `notificationId` idempotente y desactiva una instalación cuando el proveedor la declare inválida. Demuestra que reiniciar después de confirmar no pierde el aviso pendiente y que el payload solo contiene tipo e identificador de entrega.
+
+#### Aplica
+
+En el proyecto integrador independiente del final, incorpora evidencias PNG con nombre de servidor, límite de bytes y dimensiones, decodificación real, autorización por entrega, hash y cuarentena fuera del directorio público. Solo un trabajador autorizado puede cambiar el estado del análisis. Confirma primero el dominio y envía después un push mínimo mediante outbox; un token de instalación nunca decide permisos ni sustituye una consulta a la API.
+
+**Checklist de salida.**
+
+- [ ] Servicio, demo, pruebas y cuarentena se crearon manualmente en un proyecto nuevo.
+- [ ] El servidor genera nombres únicos y escribe sin sobrescribir.
+- [ ] Bytes, tipo declarado, firma, dimensiones y decodificación se comprueban.
+- [ ] Otro repartidor no puede cargar ni consultar el recurso.
+- [ ] El archivo nace en cuarentena y no es público antes del análisis.
+- [ ] El escáner de laboratorio no se presenta como antivirus real.
+- [ ] Un push fallido deja la entrega confirmada y la notificación pendiente.
+- [ ] El push contiene datos mínimos y no actúa como permiso ni fuente de verdad.
+
+**Si falla:** si un archivo válido se rechaza, comprueba que el adaptador multipart entregue bytes y no una ruta de texto. Si aparece `EEXIST`, conserva la escritura exclusiva y genera otra clave; no uses el nombre original. Si todos los archivos quedan disponibles sin análisis, separa el trabajador interno del endpoint de carga. Si el push revierte la entrega, mueve el efecto fuera de la transición y registra un reintento durable.
+
+**Errores comunes:** confiar en extensión o MIME, concatenar rutas del cliente, cargar sin límites, servir cuarentena como contenido estático, marcar disponible al terminar la transferencia, guardar tokens como permisos, incluir datos sensibles en push o deshacer el dominio por un fallo del proveedor.
+
+**Fuentes oficiales:** [Node.js — fs](https://nodejs.org/api/fs.html), [Node.js — crypto](https://nodejs.org/api/crypto.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), [Firebase Admin — mensajería](https://firebase.google.com/docs/cloud-messaging/send-message) y [pngjs](https://github.com/pngjs/pngjs).
+
+### Tema 4: Uniendo cada módulo del track · Avanzado · 180 min
 
 #### Aprende
 
@@ -682,7 +1314,7 @@ En el proyecto integrador independiente del final, conecta registro, login, refr
 
 **Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/docs), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
 
-### Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min
+### Tema 5: Qué le falta a esta API para producción real · Avanzado · 75 min
 
 #### Aprende
 
@@ -846,7 +1478,7 @@ En el proyecto integrador independiente del final, entrega una matriz de prepara
 
 **Fuentes oficiales:** [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE Workbook](https://sre.google/workbook/) y [The Twelve-Factor App](https://12factor.net/).
 
-### Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min
+### Tema 6: Próximos pasos — microservicios, colas de mensajes y TypeScript · Avanzado · 75 min
 
 #### Aprende
 
@@ -993,638 +1625,6 @@ En el proyecto integrador independiente del final, conserva inicialmente un mono
 **Errores comunes:** microservicios por moda, una base compartida sin propiedad clara, colas sin idempotencia, reintentos infinitos, Kafka para una tarea sin requisito de flujo retenido, TypeScript sin validación externa o métricas inventadas para justificar la decisión.
 
 **Fuentes oficiales:** [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html), [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html), [RabbitMQ — reliability](https://www.rabbitmq.com/docs/reliability) y [Apache Kafka — documentation](https://kafka.apache.org/documentation/).
-
-### Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min
-
-#### Aprende
-
-**Prerrequisitos:** Node.js LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
-
-**Al terminar podrás:** validar coordenadas y antigüedad, autenticar un canal, autorizar cada jornada, asignar secuencias en el servidor, publicar después de persistir y recuperar un intervalo acotado con una señal de reinicio cuando el historial ya no baste.
-
-**Por qué importa:** el GPS llega tarde, se duplica o se desconecta. El orden de llegada no es el orden de los hechos y un evento emitido antes de guardarse puede desaparecer si cae el proceso. Además, estar autenticado no autoriza a seguir la jornada de otro conductor.
-
-Latitud pertenece a `[-90, 90]`, longitud a `[-180, 180]` y la precisión no puede ser negativa. `capturedAt` representa cuándo se tomó la muestra; el servidor aplica una política de antigüedad y margen de futuro. La **secuencia** la asigna el servidor por jornada después de aceptar el comando. Una restricción única como `(journey_id, sequence_number)` evita duplicar el efecto al reintentar en una base durable.
-
-En PostgreSQL con PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
-
-```sql
-ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
-```
-
-La consulta debe parametrizarse y vivir en un repositorio. La aplicación no conoce SQL. Índice espacial, SRID y restricciones de unicidad resuelven problemas diferentes de los que resuelve Socket.IO.
-
-Socket.IO autentica el *handshake* y autoriza `journeyId` antes de unir a una sala. También vuelve a autorizar cada publicación: pertenecer antes a una sala no es una prueba permanente. El origen permitido se limita a un cliente explícito y el transporte tiene límites de mensaje y frecuencia. El servidor guarda primero y emite después; para no perder la publicación si el proceso cae entre base y canal se necesita un patrón outbox, que este laboratorio no implementa.
-
-La recuperación devuelve eventos posteriores a `lastSequence`. Si el hueco ya quedó fuera de las últimas 20 posiciones, responde `resetRequired` y una instantánea; no finge una recuperación completa. El cliente elimina duplicados por secuencia porque un evento en vivo puede cruzarse con la respuesta de recuperación. El almacén encapsulado de una sola instancia es volátil y **no sirve como estado compartido de producción**.
-
-```text
-validar → autenticar → autorizar jornada → persistir + secuencia → emitir
-reconectar → unir a sala autorizada → recuperar desde secuencia
-                              └─ hueco fuera de retención → instantánea/reset
-```
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-posiciones-recuperables
-cd ejemplo-posiciones-recuperables
-npm init -y
-npm pkg set type=module scripts.test="node --test"
-npm install socket.io socket.io-client
-mkdir src test
-```
-
-Crea `src/store.js`. El almacén se crea por instancia, limita el historial y comprueba propiedad en cada operación:
-
-```js
-const RETENCION = 20;
-
-export function crearAlmacenPosiciones() {
-  const jornadas = new Map([
-    ["journey-1", { driverId: "driver-1", sequence: 0, events: [] }],
-  ]);
-
-  function autorizar(identity, journeyId) {
-    const jornada = jornadas.get(journeyId);
-    if (!jornada) throw new Error("Jornada no encontrada");
-    if (jornada.driverId !== identity.subject) throw new Error("Jornada ajena");
-    return jornada;
-  }
-
-  return {
-    append(identity, journeyId, entrada) {
-      const jornada = autorizar(identity, journeyId);
-      const evento = {
-        journeyId,
-        sequence: ++jornada.sequence,
-        ...entrada,
-      };
-      jornada.events.push(evento);
-      if (jornada.events.length > RETENCION) jornada.events.shift();
-      return structuredClone(evento);
-    },
-
-    recover(identity, journeyId, lastSequence) {
-      const jornada = autorizar(identity, journeyId);
-      if (!Number.isInteger(lastSequence) || lastSequence < 0
-        || lastSequence > jornada.sequence) {
-        throw new Error("lastSequence fuera de rango");
-      }
-
-      const oldest = jornada.events[0]?.sequence ?? jornada.sequence;
-      const resetRequired = lastSequence < oldest - 1;
-      return {
-        resetRequired,
-        events: resetRequired
-          ? []
-          : jornada.events.filter((evento) => evento.sequence > lastSequence),
-        snapshot: resetRequired ? jornada.events.at(-1) ?? null : null,
-        latestSequence: jornada.sequence,
-      };
-    },
-  };
-}
-```
-
-Crea `src/server.js`:
-
-```js
-import { createServer } from "node:http";
-import { timingSafeEqual } from "node:crypto";
-import { Server } from "socket.io";
-import { crearAlmacenPosiciones } from "./store.js";
-
-const token = process.env.LAB_TOKEN ?? "";
-const clientOrigin = process.env.CLIENT_ORIGIN ?? "http://127.0.0.1:5173";
-if (Buffer.byteLength(token) < 32) {
-  throw new Error("Define LAB_TOKEN con al menos 32 bytes");
-}
-new URL(clientOrigin);
-
-const httpServer = createServer();
-const io = new Server(httpServer, {
-  cors: { origin: clientOrigin, methods: ["GET", "POST"] },
-  maxHttpBufferSize: 16_000,
-});
-const store = crearAlmacenPosiciones();
-
-function mismoSecreto(recibido) {
-  const actual = Buffer.from(recibido ?? "");
-  const esperado = Buffer.from(token);
-  return actual.length === esperado.length && timingSafeEqual(actual, esperado);
-}
-
-function validarPosicion(p) {
-  if (!p || typeof p !== "object" || Array.isArray(p)) return "Cuerpo inválido";
-  if (!Number.isFinite(p.lat) || p.lat < -90 || p.lat > 90) return "Latitud inválida";
-  if (!Number.isFinite(p.lng) || p.lng < -180 || p.lng > 180) return "Longitud inválida";
-  if (!Number.isFinite(p.accuracyMeters) || p.accuracyMeters < 0
-    || p.accuracyMeters > 5_000) return "Precisión inválida";
-
-  const capturedAt = Date.parse(p.capturedAt);
-  if (!Number.isFinite(capturedAt)) return "capturedAt inválido";
-  const ahora = Date.now();
-  if (capturedAt < ahora - 24 * 60 * 60 * 1000
-    || capturedAt > ahora + 5 * 60 * 1000) return "Muestra fuera de ventana";
-  return null;
-}
-
-io.use((socket, next) => {
-  if (!mismoSecreto(socket.handshake.auth.token)) {
-    return next(new Error("No autenticado"));
-  }
-  socket.data.identity = { subject: "driver-1" };
-  next();
-});
-
-io.on("connection", (socket) => {
-  let ventanaInicio = Date.now();
-  let mensajes = 0;
-
-  function admitirFrecuencia() {
-    const ahora = Date.now();
-    if (ahora - ventanaInicio >= 10_000) {
-      ventanaInicio = ahora;
-      mensajes = 0;
-    }
-    mensajes += 1;
-    return mensajes <= 20;
-  }
-
-  socket.on("journey:subscribe", async (mensaje, acknowledge) => {
-    const responder = typeof acknowledge === "function" ? acknowledge : () => {};
-    try {
-      await socket.join(`journey:${mensaje?.journeyId}`);
-      const recuperacion = store.recover(
-        socket.data.identity,
-        mensaje?.journeyId,
-        mensaje?.lastSequence,
-      );
-      responder({ ok: true, ...recuperacion });
-    } catch (error) {
-      responder({ ok: false, error: error.message });
-    }
-  });
-
-  socket.on("journey:position", (mensaje, acknowledge) => {
-    const responder = typeof acknowledge === "function" ? acknowledge : () => {};
-    if (!admitirFrecuencia()) return responder({ ok: false, error: "Límite de frecuencia" });
-
-    const invalido = validarPosicion(mensaje?.position);
-    if (invalido) return responder({ ok: false, error: invalido });
-
-    try {
-      const evento = store.append(socket.data.identity, mensaje?.journeyId, {
-        lat: mensaje.position.lat,
-        lng: mensaje.position.lng,
-        accuracyMeters: mensaje.position.accuracyMeters,
-        capturedAt: new Date(mensaje.position.capturedAt).toISOString(),
-      });
-      io.to(`journey:${evento.journeyId}`).emit("journey:position", evento);
-      responder({ ok: true, sequence: evento.sequence });
-    } catch (error) {
-      responder({ ok: false, error: error.message });
-    }
-  });
-});
-
-httpServer.listen(3000, "127.0.0.1", () => {
-  console.log("Canal local en http://127.0.0.1:3000");
-});
-```
-
-Crea `src/client.js`:
-
-```js
-import { io } from "socket.io-client";
-
-const token = process.env.LAB_TOKEN ?? "";
-const lastSequence = Number(process.argv[2] ?? 0);
-const socket = io("http://127.0.0.1:3000", {
-  auth: { token },
-  reconnection: false,
-});
-
-socket.on("journey:position", (evento) => {
-  console.log("evento", evento.sequence, evento.lat, evento.lng);
-});
-
-socket.on("connect", () => {
-  socket.emit(
-    "journey:subscribe",
-    { journeyId: "journey-1", lastSequence },
-    (recuperacion) => {
-      console.log("recuperación", recuperacion);
-      if (!recuperacion.ok) return socket.close();
-
-      socket.emit(
-        "journey:position",
-        {
-          journeyId: "journey-1",
-          position: {
-            lat: 40.4168,
-            lng: -3.7038,
-            accuracyMeters: 12,
-            capturedAt: new Date().toISOString(),
-          },
-        },
-        (respuesta) => {
-          console.log("publicación", respuesta);
-          socket.close();
-        },
-      );
-    },
-  );
-});
-
-socket.on("connect_error", (error) => {
-  console.error(error.message);
-  process.exitCode = 1;
-});
-```
-
-Crea `test/store.test.js`:
-
-```js
-import assert from "node:assert/strict";
-import test from "node:test";
-import { crearAlmacenPosiciones } from "../src/store.js";
-
-const identity = { subject: "driver-1" };
-const entrada = {
-  lat: 40.4,
-  lng: -3.7,
-  accuracyMeters: 10,
-  capturedAt: new Date().toISOString(),
-};
-
-test("asigna secuencia por jornada y recupera solo lo posterior", () => {
-  const store = crearAlmacenPosiciones();
-  store.append(identity, "journey-1", entrada);
-  store.append(identity, "journey-1", entrada);
-  const recuperado = store.recover(identity, "journey-1", 1);
-  assert.equal(recuperado.events.length, 1);
-  assert.equal(recuperado.events[0].sequence, 2);
-});
-
-test("marca reset cuando el hueco supera la retención", () => {
-  const store = crearAlmacenPosiciones();
-  for (let i = 0; i < 25; i += 1) store.append(identity, "journey-1", entrada);
-  const recuperado = store.recover(identity, "journey-1", 0);
-  assert.equal(recuperado.resetRequired, true);
-  assert.equal(recuperado.events.length, 0);
-  assert.equal(recuperado.snapshot.sequence, 25);
-});
-
-test("otro conductor no puede leer ni publicar", () => {
-  const store = crearAlmacenPosiciones();
-  assert.throws(() => store.recover({ subject: "driver-2" }, "journey-1", 0));
-  assert.throws(() => store.append({ subject: "driver-2" }, "journey-1", entrada));
-});
-```
-
-Ejecuta las pruebas y arranca el servidor en macOS o Linux:
-
-```bash
-npm test
-LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' npm run start --if-present
-```
-
-El último proyecto no define todavía `start`; para iniciar el servidor usa directamente:
-
-```bash
-LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' node src/server.js
-```
-
-En otra terminal:
-
-```bash
-LAB_TOKEN='token-local-de-laboratorio-con-mas-de-32-bytes' node src/client.js 0
-```
-
-En PowerShell, asigna `$env:LAB_TOKEN="token-local-de-laboratorio-con-mas-de-32-bytes"` antes de ejecutar servidor o cliente. El token es solo una credencial compartida de laboratorio; un sistema real debe verificar identidad por usuario y proteger su emisión y almacenamiento.
-
-**Resultado esperado:** las tres pruebas pasan. El cliente se autentica, recupera desde la secuencia indicada, publica una posición y recibe `sequence: 1` en la primera ejecución. Una segunda ejecución con `lastSequence` igual a la última confirmada no vuelve a entregar eventos antiguos.
-
-**Fallo deliberado y corrección:** cambia temporalmente `lat: 40.4168` por `lat: 200` en el cliente. La publicación debe responder `{ ok: false, error: 'Latitud inválida' }`, no emitirse y no consumir una secuencia. Restaura la coordenada y repite: obtiene la secuencia que habría seguido a la última válida. Después inicia el cliente con otro `LAB_TOKEN`; el *handshake* debe ser rechazado.
-
-**Práctica guiada:** ejecuta un cliente que escuche sin publicar y otro que envíe tres posiciones. Reinicia el primero y solicita desde la secuencia 1; comprueba que los duplicados se descartan por `sequence`. Después genera más de 20 posiciones y solicita desde cero: debes observar `resetRequired: true` y una instantánea, no una lista presentada como completa.
-
-**Ejercicio independiente:** añade una segunda jornada asignada a `driver-2` y credenciales de laboratorio distintas para cada conductor. Prueba suscripción y publicación cruzadas, mensajes fuera de orden y duplicados. Escribe el adaptador PostgreSQL con clave única `(journey_id, sequence_number)` y explica qué cambia al ejecutar dos instancias: el Map local deja de ser fuente compartida y hace falta persistencia transaccional más recuperación durable.
-
-#### Aplica
-
-En el proyecto integrador independiente del final, almacena posiciones en PostGIS con longitud y latitud en el orden correcto, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
-
-**Checklist de salida.**
-
-- [ ] Servidor, cliente, almacén y pruebas se crearon manualmente en una carpeta nueva.
-- [ ] El origen del canal está restringido y el *handshake* exige credencial.
-- [ ] Cada suscripción y publicación comprueba la jornada autorizada.
-- [ ] Coordenadas, precisión, fecha, tamaño y frecuencia tienen límites.
-- [ ] La secuencia se asigna al persistir y una posición inválida no la incrementa.
-- [ ] La recuperación está acotada y declara cuándo requiere reinicio desde instantánea.
-- [ ] El almacén local se identifica como volátil, no como arquitectura distribuida productiva.
-
-**Si falla:** si el navegador ni siquiera completa el *handshake*, revisa origen y credencial por separado. Si al reconectar faltan eventos dentro de la retención, comprueba que la suscripción use la última secuencia confirmada. Si aparecen duplicados al cruzarse recuperación y eventos en vivo, aplica cada secuencia una sola vez. Si dos instancias repiten secuencias, el Map local no es una fuente válida: usa una asignación transaccional compartida.
-
-**Errores comunes:** aceptar cualquier origen, confiar en el orden de llegada, usar una variable global como base durable, emitir antes de guardar, autorizar solo al conectar, historial infinito, recuperación sin límite o intercambiar latitud y longitud en PostGIS.
-
-**Modelo mental:** piensa en la posición aceptada como un registro con secuencia asignada por el servidor, no como «el último paquete que llegó». La hora del dispositivo ayuda a detectar antigüedad, pero no establece por sí sola el orden confiable; persistir antes de publicar permite recuperar lo confirmado tras una desconexión.
-
-**Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/), [RFC 7946 — GeoJSON](https://www.rfc-editor.org/rfc/rfc7946), [PostGIS — ST_MakePoint](https://postgis.net/docs/ST_MakePoint.html) y [PostgreSQL — unique constraints](https://www.postgresql.org/docs/current/ddl-constraints.html).
-
-### Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min
-
-#### Aprende
-
-**Prerrequisitos:** Node.js LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
-
-**Al terminar podrás:** validar una imagen por su contenido, limitar tamaño y dimensiones, guardarla con un nombre generado por el servidor en cuarentena, impedir cargas en entregas ajenas y confirmar una entrega aunque falle la notificación posterior.
-
-**Por qué importa:** el nombre y el `Content-Type` enviados por el cliente son afirmaciones, no pruebas. Un archivo puede sobrescribir otro, contener datos distintos de los declarados o quedar expuesto antes del análisis. Por otro lado, un token FCM identifica una instalación; no demuestra identidad, propiedad ni permiso sobre una entrega.
-
-El adaptador HTTP debe aceptar `multipart/form-data` con límites de archivo, campos y tamaño antes de invocar al caso de uso. El servicio de este laboratorio recibe un `Buffer` ya limitado y vuelve a imponer su propio máximo: una defensa no presupone que todas las entradas futuras usarán el mismo adaptador. La firma PNG se comprueba primero, las dimensiones se leen antes de decodificar y `pngjs` decodifica la imagen completa. Extensión y firma solas no bastan para establecer que el contenido sea interpretable.
-
-El servidor genera la clave con `randomUUID()` y escribe con `flag: "wx"` para impedir sobrescritura. El directorio de cuarentena no es público ni se ejecuta como código. Los metadatos guardan propietario, entrega, hash, tamaño, clave y estado. El flujo es `QUARANTINED → AVAILABLE` o `REJECTED`: solo un trabajador interno con un escáner real puede promover el archivo. El escáner del laboratorio es un doble para probar transiciones, no una defensa antivirus.
-
-La descarga debe autorizar de nuevo la entrega y usar una URL temporal o una respuesta protegida. La confirmación exige evidencia `AVAILABLE`. Después de cambiar el estado de dominio se intenta el push con datos mínimos; si falla, la entrega permanece confirmada y el aviso queda pendiente de reintento. En un sistema durable se registra un outbox en la misma transacción del cambio, no una promesa en memoria. El cliente que recibe push vuelve a consultar la API autenticada: el mensaje no es fuente de verdad.
-
-**Analogía:** la cuarentena es una sala de inspección y el push es el timbre que avisa que hay novedades. Ni la etiqueta del paquete demuestra su contenido ni el timbre autoriza a abrir la puerta.
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-evidencia-push
-cd ejemplo-evidencia-push
-npm init -y
-npm pkg set type=module scripts.test="node --test"
-npm install pngjs
-mkdir src test quarantine
-```
-
-Crea `src/evidence.js`:
-
-```js
-import { createHash, randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { PNG } from "pngjs";
-
-const MAX_BYTES = 1_000_000;
-const MAX_DIMENSION = 4096;
-const FIRMA_PNG = "89504e470d0a1a0a";
-
-function validarPng(buffer, tipoDeclarado) {
-  if (!Buffer.isBuffer(buffer) || buffer.length === 0 || buffer.length > MAX_BYTES) {
-    throw new Error("Archivo vacío o mayor que el límite");
-  }
-  if (tipoDeclarado !== "image/png") throw new Error("Solo se admite image/png");
-  if (buffer.length < 24 || buffer.subarray(0, 8).toString("hex") !== FIRMA_PNG) {
-    throw new Error("El contenido no tiene firma PNG");
-  }
-
-  const width = buffer.readUInt32BE(16);
-  const height = buffer.readUInt32BE(20);
-  if (width < 1 || height < 1 || width > MAX_DIMENSION || height > MAX_DIMENSION) {
-    throw new Error("Dimensiones no permitidas");
-  }
-
-  const imagen = PNG.sync.read(buffer);
-  if (imagen.width !== width || imagen.height !== height) {
-    throw new Error("PNG inconsistente");
-  }
-}
-
-export function crearServicioEvidencias({ root, scanner, notifier }) {
-  const entregas = new Map([
-    ["delivery-1", {
-      id: "delivery-1",
-      driverId: "driver-1",
-      installationId: "installation-1",
-      estado: "pendiente",
-    }],
-  ]);
-  const archivos = new Map();
-
-  function autorizar(identity, deliveryId) {
-    const entrega = entregas.get(deliveryId);
-    if (!entrega) throw new Error("Entrega no encontrada");
-    if (entrega.driverId !== identity.subject) throw new Error("Entrega ajena");
-    return entrega;
-  }
-
-  async function subirEvidencia({ identity, deliveryId, buffer, tipoDeclarado }) {
-    autorizar(identity, deliveryId);
-    validarPng(buffer, tipoDeclarado);
-
-    const key = `${randomUUID()}.png`;
-    const destino = path.join(root, key);
-    await mkdir(root, { recursive: true });
-    await writeFile(destino, buffer, { flag: "wx", mode: 0o600 });
-
-    const metadata = {
-      id: randomUUID(),
-      key,
-      deliveryId,
-      ownerId: identity.subject,
-      sha256: createHash("sha256").update(buffer).digest("hex"),
-      bytes: buffer.length,
-      status: "QUARANTINED",
-    };
-    archivos.set(metadata.id, metadata);
-    return { ...metadata };
-  }
-
-  // Solo un trabajador interno debe invocar esta operación; no se expone como ruta.
-  async function ejecutarEscaneo(fileId) {
-    const archivo = archivos.get(fileId);
-    if (!archivo || archivo.status !== "QUARANTINED") throw new Error("No analizable");
-    const resultado = await scanner.scan(path.join(root, archivo.key));
-    archivo.status = resultado.clean === true ? "AVAILABLE" : "REJECTED";
-    return { ...archivo };
-  }
-
-  async function confirmarEntrega({ identity, deliveryId }) {
-    const entrega = autorizar(identity, deliveryId);
-    const disponible = [...archivos.values()].some((archivo) =>
-      archivo.deliveryId === deliveryId && archivo.status === "AVAILABLE");
-    if (!disponible) throw new Error("Falta evidencia disponible");
-
-    entrega.estado = "confirmada";
-    try {
-      await notifier.send({
-        installationId: entrega.installationId,
-        data: { type: "delivery.updated", deliveryId },
-      });
-      return { estado: entrega.estado, notificacion: "enviada" };
-    } catch {
-      return { estado: entrega.estado, notificacion: "pendiente" };
-    }
-  }
-
-  function consultarEntrega(identity, deliveryId) {
-    const entrega = autorizar(identity, deliveryId);
-    return { id: entrega.id, estado: entrega.estado };
-  }
-
-  return { subirEvidencia, ejecutarEscaneo, confirmarEntrega, consultarEntrega };
-}
-```
-
-Crea `src/demo.js`. El escáner y el proveedor son dobles deliberados para observar estados; no se presentan como servicios externos reales:
-
-```js
-import path from "node:path";
-import { crearServicioEvidencias } from "./evidence.js";
-
-const pngUnPixel = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
-  "base64",
-);
-
-const servicio = crearServicioEvidencias({
-  root: path.resolve("quarantine"),
-  scanner: { async scan() { return { clean: true }; } },
-  notifier: { async send() { throw new Error("Proveedor no disponible"); } },
-});
-const identity = { subject: "driver-1" };
-
-const archivo = await servicio.subirEvidencia({
-  identity,
-  deliveryId: "delivery-1",
-  buffer: pngUnPixel,
-  tipoDeclarado: "image/png",
-});
-console.log("alta", { key: archivo.key, status: archivo.status });
-
-await servicio.ejecutarEscaneo(archivo.id);
-console.log("escaneo de laboratorio completado; no equivale a antivirus real");
-console.log(await servicio.confirmarEntrega({ identity, deliveryId: "delivery-1" }));
-console.log(servicio.consultarEntrega(identity, "delivery-1"));
-```
-
-Crea `test/evidence.test.js`:
-
-```js
-import assert from "node:assert/strict";
-import { mkdtemp, readdir } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
-import test from "node:test";
-import { crearServicioEvidencias } from "../src/evidence.js";
-
-const png = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
-  "base64",
-);
-
-async function preparar(overrides = {}) {
-  const root = await mkdtemp(path.join(tmpdir(), "evidencia-"));
-  const servicio = crearServicioEvidencias({
-    root,
-    scanner: { async scan() { return { clean: true }; } },
-    notifier: { async send() { throw new Error("Push caído"); } },
-    ...overrides,
-  });
-  return { root, servicio };
-}
-
-test("genera la clave, cuarentena y confirma aunque el push falle", async () => {
-  const { root, servicio } = await preparar();
-  const identity = { subject: "driver-1" };
-  const archivo = await servicio.subirEvidencia({
-    identity,
-    deliveryId: "delivery-1",
-    buffer: png,
-    tipoDeclarado: "image/png",
-  });
-  assert.match(archivo.key, /^[0-9a-f-]+\.png$/);
-  assert.equal(archivo.status, "QUARANTINED");
-  assert.deepEqual(await readdir(root), [archivo.key]);
-
-  await servicio.ejecutarEscaneo(archivo.id);
-  assert.deepEqual(
-    await servicio.confirmarEntrega({ identity, deliveryId: "delivery-1" }),
-    { estado: "confirmada", notificacion: "pendiente" },
-  );
-  assert.equal(servicio.consultarEntrega(identity, "delivery-1").estado, "confirmada");
-});
-
-test("rechaza contenido que solo declara ser PNG", async () => {
-  const { servicio } = await preparar();
-  await assert.rejects(servicio.subirEvidencia({
-    identity: { subject: "driver-1" },
-    deliveryId: "delivery-1",
-    buffer: Buffer.from("<script>no soy png</script>"),
-    tipoDeclarado: "image/png",
-  }), /firma PNG/);
-});
-
-test("rechaza un archivo mayor al límite antes de escribir", async () => {
-  const { root, servicio } = await preparar();
-  await assert.rejects(servicio.subirEvidencia({
-    identity: { subject: "driver-1" },
-    deliveryId: "delivery-1",
-    buffer: Buffer.alloc(1_000_001),
-    tipoDeclarado: "image/png",
-  }), /límite/);
-  assert.deepEqual(await readdir(root), []);
-});
-
-test("otro repartidor no puede adjuntar ni consultar la entrega", async () => {
-  const { servicio } = await preparar();
-  const identity = { subject: "driver-2" };
-  await assert.rejects(servicio.subirEvidencia({
-    identity,
-    deliveryId: "delivery-1",
-    buffer: png,
-    tipoDeclarado: "image/png",
-  }), /Entrega ajena/);
-  assert.throws(() => servicio.consultarEntrega(identity, "delivery-1"), /Entrega ajena/);
-});
-```
-
-Ejecuta:
-
-```bash
-npm test
-node src/demo.js
-```
-
-**Resultado esperado:** las cuatro pruebas pasan. La demo crea un nombre UUID con extensión `.png`, muestra primero `QUARANTINED`, lo promueve mediante el doble de escáner y devuelve `{ estado: 'confirmada', notificacion: 'pendiente' }` cuando falla el push. La entrega sigue confirmada. Ningún archivo recibe un nombre elegido por el cliente.
-
-**Fallo deliberado y corrección:** en `src/demo.js`, cambia `identity` a `{ subject: "driver-2" }`. La carga debe fallar con `Entrega ajena` antes de escribir. Restaura `driver-1`. Después sustituye `pngUnPixel` por `Buffer.from("texto")`: debe fallar la firma aunque `tipoDeclarado` siga siendo `image/png`. Restaura los bytes válidos; no corrijas el fallo confiando en el tipo declarado.
-
-**Práctica guiada:** añade un adaptador HTTP multipart en un archivo propio, con límite de un archivo, 1 MB, pocos campos y tiempo de espera. Debe pasar al servicio el `Buffer`, el tipo declarado y una identidad previamente autenticada; nunca un propietario enviado en el formulario. Prueba cuerpo excedido, PNG falso, entrega ajena y descarga en cuarentena rechazada.
-
-**Ejercicio independiente:** implementa un outbox persistente local para la notificación y un trabajador con tres reintentos acotados, espera exponencial y estado final de fallo. Usa un `notificationId` idempotente y desactiva una instalación cuando el proveedor la declare inválida. Demuestra que reiniciar después de confirmar no pierde el aviso pendiente y que el payload solo contiene tipo e identificador de entrega.
-
-#### Aplica
-
-En el proyecto integrador independiente del final, incorpora evidencias PNG con nombre de servidor, límite de bytes y dimensiones, decodificación real, autorización por entrega, hash y cuarentena fuera del directorio público. Solo un trabajador autorizado puede cambiar el estado del análisis. Confirma primero el dominio y envía después un push mínimo mediante outbox; un token de instalación nunca decide permisos ni sustituye una consulta a la API.
-
-**Checklist de salida.**
-
-- [ ] Servicio, demo, pruebas y cuarentena se crearon manualmente en un proyecto nuevo.
-- [ ] El servidor genera nombres únicos y escribe sin sobrescribir.
-- [ ] Bytes, tipo declarado, firma, dimensiones y decodificación se comprueban.
-- [ ] Otro repartidor no puede cargar ni consultar el recurso.
-- [ ] El archivo nace en cuarentena y no es público antes del análisis.
-- [ ] El escáner de laboratorio no se presenta como antivirus real.
-- [ ] Un push fallido deja la entrega confirmada y la notificación pendiente.
-- [ ] El push contiene datos mínimos y no actúa como permiso ni fuente de verdad.
-
-**Si falla:** si un archivo válido se rechaza, comprueba que el adaptador multipart entregue bytes y no una ruta de texto. Si aparece `EEXIST`, conserva la escritura exclusiva y genera otra clave; no uses el nombre original. Si todos los archivos quedan disponibles sin análisis, separa el trabajador interno del endpoint de carga. Si el push revierte la entrega, mueve el efecto fuera de la transición y registra un reintento durable.
-
-**Errores comunes:** confiar en extensión o MIME, concatenar rutas del cliente, cargar sin límites, servir cuarentena como contenido estático, marcar disponible al terminar la transferencia, guardar tokens como permisos, incluir datos sensibles en push o deshacer el dominio por un fallo del proveedor.
-
-**Fuentes oficiales:** [Node.js — fs](https://nodejs.org/api/fs.html), [Node.js — crypto](https://nodejs.org/api/crypto.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), [Firebase Admin — mensajería](https://firebase.google.com/docs/cloud-messaging/send-message) y [pngjs](https://github.com/pngjs/pngjs).
 
 ## Laboratorio práctico
 

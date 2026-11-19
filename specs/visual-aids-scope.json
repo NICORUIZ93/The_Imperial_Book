@@ -82,13 +82,13 @@
     {
       "track": "node",
       "module": 2,
-      "topic": 5,
+      "topic": 2,
       "capture": "requerida"
     },
     {
       "track": "node",
       "module": 2,
-      "topic": 6,
+      "topic": 4,
       "capture": "requerida"
     },
     {
@@ -100,25 +100,25 @@
     {
       "track": "node",
       "module": 3,
-      "topic": 6,
+      "topic": 7,
       "capture": "requerida"
     },
     {
       "track": "node",
       "module": 3,
-      "topic": 7,
+      "topic": 6,
       "capture": "requerida"
     },
     {
       "track": "node",
       "module": 7,
-      "topic": 7,
+      "topic": 3,
       "capture": "requerida"
     },
     {
       "track": "node",
       "module": 9,
-      "topic": 6,
+      "topic": 5,
       "capture": "requerida"
     },
     {
