@@ -1,9 +1,11 @@
-# Módulo 16: Angular Native — componentes Angular como vistas nativas reales
+# Módulo 16 (opcional): Angular Native — componentes Angular como vistas nativas reales
 
 
 ## Aprende construyendo
 
-Este módulo cierra el track explorando un proyecto experimental del ecosistema (no oficial de Google ni del equipo de Angular) que renderiza componentes Angular directamente como vistas nativas de iOS/Android sobre el renderer Fabric de React Native, sin que React participe en el render. Cada tema usa el código y los requisitos reales del proyecto (alpha, versión `0.x`), sin inflar su madurez ni ocultar sus límites: el objetivo es que evalúes la tecnología con el mismo criterio técnico con el que evaluarías cualquier dependencia nueva para un proyecto real.
+**Módulo opcional.** No forma parte de la ruta principal del curso: la ruta termina en el Módulo 15. Hazlo solo si te interesa evaluar esta tecnología; depende de un proyecto alpha que puede cambiar sin aviso.
+
+Este módulo explora un proyecto experimental del ecosistema (no oficial de Google ni del equipo de Angular) que renderiza componentes Angular directamente como vistas nativas de iOS/Android sobre el renderer Fabric de React Native, sin que React participe en el render. Cada tema usa el código y los requisitos reales del proyecto (alpha, versión `0.x`), sin inflar su madurez ni ocultar sus límites: el objetivo es que evalúes la tecnología con el mismo criterio técnico con el que evaluarías cualquier dependencia nueva para un proyecto real.
 
 ### Tema 1: Qué renderiza Angular Native y por qué no es un WebView
 

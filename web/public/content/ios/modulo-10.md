@@ -102,11 +102,26 @@ Image(systemName: "trash").accessibilityLabel("Eliminar tarea")
 **Límites y decisión de uso:** Escuchar una etiqueta correcta no demuestra que el recorrido completo sea accesible. Prueba orden de navegación, acciones y actualizaciones; no agrupes controles independientes en un elemento que impida ejecutarlos con VoiceOver.
 
 #### Paso 4 · Demostración guiada desde cero
+Crea `DetalleEntregaView.swift` en el target de la app:
+
 ```swift
-Button(action: confirmarEntrega) {
-    Image(systemName: "checkmark.circle")
+import SwiftUI
+
+struct DetalleEntregaView: View {
+    @State private var entregada = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(entregada ? "Entregada" : "Pendiente")
+            Button(action: confirmarEntrega) {
+                Image(systemName: "checkmark.circle") // sin texto visible
+            }
+            .accessibilityLabel("Confirmar entrega") // lo que VoiceOver lee
+        }
+    }
+
+    private func confirmarEntrega() { entregada = true }
 }
-.accessibilityLabel("Confirmar entrega")
 ```
 
 **Ejecuta el ejemplo:**
@@ -165,11 +180,30 @@ UIViewControllerRepresentable  → embebe un ViewController de UIKit DENTRO de S
 **¿Por qué es importante?** Porque seguir las HIG hace que una app se sienta nativa de forma genuina, un resultado que usar SwiftUI por sí solo no garantiza.
 
 #### Paso 4 · Demostración guiada desde cero
+Crea `TarjetaDireccion.swift` en el target de la app:
+
 ```swift
-Text(envio.direccion)
-    .font(.body) // escala automáticamente con la configuración de Dynamic Type
-Button(action: confirmarEntrega) {
-    Image(systemName: "checkmark.circle").frame(width: 44, height: 44)
+import SwiftUI
+
+struct TarjetaDireccion: View {
+    let direccion: String
+    let confirmarEntrega: () -> Void
+
+    var body: some View {
+        HStack {
+            Text(direccion)
+                .font(.body) // escala automáticamente con la configuración de Dynamic Type
+            Spacer()
+            Button(action: confirmarEntrega) {
+                Image(systemName: "checkmark.circle").frame(width: 44, height: 44) // área táctil mínima
+            }
+            .accessibilityLabel("Confirmar entrega")
+        }
+    }
+}
+
+#Preview {
+    TarjetaDireccion(direccion: "Calle 10 #5-20, Bogotá") {}
 }
 ```
 
@@ -336,7 +370,17 @@ flowchart LR
 **Transferencia al proyecto integrador «Aplicación del repartidor iOS»:** Integra una pantalla heredada UIKit de captura en el flujo de entrega. Prueba presentación, cancelación y retorno del resultado, manteniendo explícito quién administra su ciclo de vida.
 
 #### Paso 4 · Demostración guiada desde cero
+Crea `StopsViewController.swift` en el target de la app:
+
 ```swift
+import UIKit
+
+// ViewModel mínimo para este paso; la versión completa usa StopSummary y onChange.
+final class StopsViewModel {
+    private(set) var paradas: [String] = []
+    func load() async { paradas = ["Calle 10 #5-20", "Carrera 7 #45-10"] }
+}
+
 final class StopsViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let viewModel: StopsViewModel

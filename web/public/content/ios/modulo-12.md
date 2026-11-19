@@ -439,6 +439,20 @@ public struct Tarifa: Sendable {
 }
 ```
 
+Archivo `academia-ios/Paquetes/RutaFlowKit/Sources/Red/ColaDeTarifas.swift` (SwiftPM rechaza un target sin archivos, así que `Red` necesita al menos uno; este usa `Deque` de swift-collections):
+
+```swift
+import Collections
+import Dominio
+
+public struct ColaDeTarifas: Sendable {
+    private var pendientes = Deque<Int>()
+    public init() {}
+    public mutating func encolar(kilos: Int) { pendientes.append(Tarifa().centavos(kilos: kilos)) }
+    public var total: Int { pendientes.reduce(0, +) }
+}
+```
+
 Archivo `academia-ios/Paquetes/RutaFlowKit/Tests/DominioTests/TarifaTests.swift`:
 
 ```swift
@@ -470,7 +484,7 @@ Build complete!
 ✔ Test run with 1 test passed
 ```
 
-**Fallo deliberado:** en `Dominio/Tarifa.swift` agrega `import Collections`. **Error esperado:** `no such module 'Collections'`. **Diagnóstico:** `Dominio` no declara esa dependencia. El compilador hace cumplir la regla «el dominio no depende de librerías externas».
+**Fallo deliberado:** en `Dominio/Tarifa.swift` agrega `import Collections`. **Error esperado:** con Swift 6.4 / Xcode 27, `unable to resolve module dependency: 'Collections'` (versiones anteriores decían `no such module 'Collections'`). **Diagnóstico:** `Dominio` no declara esa dependencia. El compilador hace cumplir la regla «el dominio no depende de librerías externas».
 
 #### Paso 5 · Práctica guiada
 

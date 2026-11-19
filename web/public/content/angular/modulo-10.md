@@ -128,6 +128,22 @@ npx ng test --watch=false
 
 **Fallo deliberado:** quita el `await fixture.whenStable();` inmediatamente después de `fixture.componentRef.setInput('titulo', 'Hola mundo');` en el primer test, y ejecuta de nuevo. El test se vuelve intermitente/falla dependiendo del entorno porque la aserción sobre `fixture.nativeElement.textContent` puede ejecutarse ANTES de que Angular complete la detección de cambios que actualiza el DOM tras `setInput` — diagnosticando por qué la teoría insiste en `whenStable()` como paso obligatorio, no opcional. Restaura el `await` antes de continuar.
 
+**`detectChanges()` frente a `whenStable()` y prueba de un `output()`:** `fixture.detectChanges()` ejecuta la detección de cambios **en ese instante** y también funciona en un proyecto zoneless; `await fixture.whenStable()` espera a que Angular termine el trabajo que programó (detección, efectos, temporizadores internos). Usa `whenStable()` como regla y `detectChanges()` cuando quieras controlar paso a paso cuándo se repinta. Si no llamas a ninguno de los dos después de `setInput`, el `<p>` del componente sigue vacío cuando la aserción lo lee. Para un `output()`, suscríbete desde la prueba y dispara el evento real:
+
+```ts
+it('emite confirmar con la cantidad al pulsar el botón', async () => {
+  const fixture = TestBed.createComponent(ContadorEntregas);
+  fixture.componentRef.setInput('cantidad', 3);
+  await fixture.whenStable();
+  const spy = vi.fn();
+  fixture.componentInstance.confirmar.subscribe(spy);
+  fixture.nativeElement.querySelector('button').click();
+  expect(spy).toHaveBeenCalledWith(3);
+});
+```
+
+Aquí `ContadorEntregas` tiene `cantidad = input.required<number>()`, `confirmar = output<number>()` y el template `<p>Entregas pendientes: {{ cantidad() }}</p><button (click)="confirmar.emit(cantidad())">Confirmar</button>`.
+
 #### Paso 5 · Práctica guiada — repetición progresiva
 
 1. Agrega un segundo input opcional (`subtitulo = input<string>('')`) y confirma con un test que su valor por defecto se usa cuando `setInput` no lo asigna explícitamente.

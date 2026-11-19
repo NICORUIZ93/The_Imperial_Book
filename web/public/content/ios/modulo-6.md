@@ -47,6 +47,8 @@ WindowGroup { ContentView() }
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import SwiftData
+
 @Model
 class EnvioLocal {
     var guia: String
@@ -125,6 +127,9 @@ SwiftData datos cambian → @Query re-evalúa automáticamente → la vista se a
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import SwiftData
+import SwiftUI
+
 struct PendientesDeSincronizar: View {
     @Query(filter: #Predicate<EnvioLocal> { !$0.sincronizado }) private var pendientes: [EnvioLocal]
     @Environment(\.modelContext) private var context
@@ -195,6 +200,8 @@ En tu propio proyecto RutaFlow, crea `EnvioLocal.swift` con **File ▸ New ▸ F
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import SwiftData
+
 @Model
 class EnvioLocal {
     var guia: String

@@ -91,7 +91,7 @@ flowchart LR
 | 11 | Experto | [TypeScript con React](/curso/react/11) |
 | 12 | Experto | [Proyecto integrador: SPA con datos reales](/curso/react/12) |
 | 13 | Experto | [React en producción: resiliencia, accesibilidad y seguridad](/curso/react/13) |
-| 14 | Experto | [React Master: servidor, Next.js, a11y e i18n](/curso/react/14) |
+| 14 | Experto | [Next.js en producción: caché, Proxy, imágenes, React Aria e i18n](/curso/react/14) |
 
 ## Aprende construyendo
 
@@ -461,7 +461,7 @@ Agrega `import { Fragment } from 'react';` al inicio y reemplaza `<>...</>` por 
 Crea una versión incorrecta de `Tarjeta` que no use `children`: `function Tarjeta() { return <div>contenido fijo</div>; }`. Ahora usa `<Tarjeta><p>Esto se ignora</p></Tarjeta>` — el `<p>` simplemente desaparece, no se renderiza. Luego corrige a `function Tarjeta({ children })` para demostrar que `children` es un prop como cualquier otro, que debe ser recibido explícitamente.
 **Pista:** revierte cada fallo antes de probar el siguiente — el error de compilación del Fallo #1 es ruidoso y fácil de notar, pero el `<p>` que desaparece silenciosamente en el Fallo #3 solo se nota si comparas el DOM renderizado contra lo que esperabas.
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando el Fragment, y creá una segunda tarjeta (`ConductorCard`) que también use `Tarjeta` con contenido completamente distinto (nombre y vehículo del conductor) — confirmá que `Tarjeta` no necesitó ningún cambio para soportar este nuevo caso. En el proyecto integrador RutaFlow, aplica `Tarjeta` a la ficha del envío y a la del conductor sin duplicar estilos, y anota qué parte quedó compartida.
+Corrige el Paso 5 restaurando el Fragment, y crea una segunda tarjeta (`ConductorCard`) que también use `Tarjeta` con contenido completamente distinto (nombre y vehículo del conductor) — confirma que `Tarjeta` no necesitó ningún cambio para soportar este nuevo caso. En el proyecto integrador RutaFlow, aplica `Tarjeta` a la ficha del envío y a la del conductor sin duplicar estilos, y anota qué parte quedó compartida.
 
 #### Paso 7 · Cierre
 Entrega `Tarjeta` con `children` del Paso 4, el error de compilación del Paso 5, y `ConductorCard` del Paso 6; explica por qué `Tarjeta` pudo reutilizarse para un contenido completamente distinto sin ninguna modificación, algo que una jerarquía de herencia rígida no ofrece con la misma facilidad. Siguiente paso: estudia renderizado condicional y estilos. Errores comunes: hacer que un componente "contenedor" conozca detalles específicos del contenido que envuelve, olvidar que un componente debe devolver un único elemento raíz, y usar un `<div>` extra en vez de un Fragment cuando no se necesita ningún elemento real. Fuentes oficiales: https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children y https://react.dev/reference/react/Fragment.

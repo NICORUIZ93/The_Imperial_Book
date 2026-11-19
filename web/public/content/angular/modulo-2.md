@@ -614,7 +614,7 @@ Abre http://localhost:4200; corre las pruebas con `ng test`.
 2. Documenta, en un comentario, qué pasaría si `linkedSignal` NO existiera y tuvieras que mantener manualmente la sincronización entre el valor calculado y el override del usuario.
 3. Escribe de memoria (sin mirar) un `linkedSignal` derivado de otro signal, con su reseteo automático confirmado por un test. Compara después contra el Paso 4.
 
-**Pista:** `linkedSignal` resetea su valor completo (no lo combina) con el nuevo resultado calculado — si necesitás preservar parte del override anterior, tienes que escribir esa lógica explícitamente dentro de la función de cómputo.
+**Pista:** `linkedSignal` resetea su valor completo (no lo combina) con el nuevo resultado calculado — si necesitas preservar parte del override anterior, tienes que escribir esa lógica explícitamente dentro de la función de cómputo.
 
 #### Paso 6 · Práctica independiente
 
@@ -632,7 +632,7 @@ Ya usas `linkedSignal` para estado derivado pero sobrescribible, confirmado con 
 
 **Errores comunes:** usar `computed()` cuando el valor necesita ser sobrescribible por el usuario; sincronizar manualmente un signal derivado con un signal de "override" en vez de usar `linkedSignal`.
 
-**Cuándo no usarlo:** para un valor puramente derivado que nunca necesita sobrescritura manual del usuario, `computed()` sigue siendo la opción más simple; `linkedSignal` solo aporta valor cuando genuinamente necesitás esa escritura.
+**Cuándo no usarlo:** para un valor puramente derivado que nunca necesita sobrescritura manual del usuario, `computed()` sigue siendo la opción más simple; `linkedSignal` solo aporta valor cuando genuinamente necesitas esa escritura.
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Usa `linkedSignal` para la cantidad de paquetes asignados a una ruta, sugerida a partir de la capacidad del vehículo pero editable por el operador, y que se resetee automáticamente si la capacidad del vehículo asignado cambia.
 

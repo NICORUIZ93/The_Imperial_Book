@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: HttpClient con backend fetch
+### Tema 1: HttpClient (fetch por defecto) y peticiones tipadas
 
 #### Paso 1 · Objetivo y preparación
 
@@ -17,9 +17,9 @@ Al finalizar podrás confirmar, con `HttpTestingController` real (sin ningún se
 
 #### Paso 3 · Teoría con analogía
 
-**Conceptos clave:** `provideHttpClient(withFetch())`, peticiones tipadas, integración con signals.
+**Conceptos clave:** `provideHttpClient()`, backend `fetch` por defecto, peticiones tipadas, integración con signals.
 
-`HttpClient` es el servicio inyectable de Angular para realizar peticiones HTTP, devolviendo Observables (Módulo 6) por cada petición realizada, que se resuelven una única vez con la respuesta del servidor (o se rechazan con un error) y luego se completan automáticamente. Desde versiones recientes de Angular, `provideHttpClient(withFetch())` configura `HttpClient` para usar la API `fetch()` nativa del navegador como mecanismo de transporte subyacente en vez de `XMLHttpRequest` (el mecanismo tradicional), lo cual habilita mejor soporte de streaming de respuestas y es más compatible con entornos de ejecución modernos como Server-Side Rendering (Módulo 11), donde `fetch` está disponible de forma nativa sin polyfills adicionales.
+`HttpClient` es el servicio inyectable de Angular para realizar peticiones HTTP, devolviendo Observables (Módulo 6) por cada petición realizada, que se resuelven una única vez con la respuesta del servidor (o se rechazan con un error) y luego se completan automáticamente. En Angular 22, `HttpClient` usa por defecto la API `fetch()` nativa como transporte (`FetchBackend`), en vez de `XMLHttpRequest`, lo que encaja con Server-Side Rendering (Módulo 11), donde `fetch` existe sin polyfills. Por eso `withFetch()` ya no hace falta: la propia definición de tipos de Angular 22 lo marca `@deprecated`, con la nota «`withFetch` is not required anymore. `FetchBackend` is the default `HttpBackend`». Lo verás en tutoriales y proyectos anteriores; en código nuevo, `provideHttpClient()` basta, y solo hace falta declararlo para **configurarlo** con funciones como `withInterceptors()` (Tema 2).
 
 Tipar las respuestas HTTP con interfaces TypeScript (`interface Usuario { id: number; nombre: string; }`, y luego `this.http.get<Usuario[]>('/api/usuarios')`) no valida en tiempo de ejecución que la respuesta real del servidor efectivamente tenga esa forma (TypeScript se borra completamente al compilar, Módulo 0), pero sí proporciona autocompletado y verificación de tipos en tiempo de compilación sobre cómo el código consume esa respuesta, capturando errores comunes como acceder a una propiedad mal escrita o asumir un tipo incorrecto para un campo, exactamente en el momento de escribir el código, no en producción.
 
@@ -45,8 +45,8 @@ Combinar `HttpClient` con `toSignal()` (Módulo 6) convierte directamente el Obs
 **Código del ejemplo:**
 
 ```ts
-// app.config.ts
-providers: [provideHttpClient(withFetch())]
+// app.config.ts (Angular 22: fetch ya es el transporte por defecto)
+providers: [provideHttpClient()]
 
 interface Usuario { id: number; nombre: string; }
 private http = inject(HttpClient);
@@ -156,7 +156,7 @@ Ya confirmas, con `HttpTestingController` real, exactamente qué petición reali
 
 **Cuándo no usarlo:** para verificar el comportamiento end-to-end real contra un backend genuino (no solo la lógica del servicio Angular en aislamiento), un test end-to-end con Playwright (mencionado en el README del repositorio) es más apropiado que `HttpTestingController`, que deliberadamente nunca toca la red real.
 
-**Transferencia al proyecto integrador «Centro de control logístico»:** Consulta el detalle mediante HttpClient y el backend fetch configurado. Prueba éxito, 404 y cancelación; la plantilla debe mostrar estados separados sin convertir cualquier fallo en una lista vacía.
+**Transferencia al proyecto integrador «Centro de control logístico»:** Consulta el detalle mediante HttpClient (con su transporte fetch por defecto). Prueba éxito, 404 y cancelación; la plantilla debe mostrar estados separados sin convertir cualquier fallo en una lista vacía.
 
 ### Tema 2: Interceptores funcionales
 
@@ -457,7 +457,7 @@ Ya confirmas, con interceptores instrumentados y `HttpTestingController`, que `w
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Configurar `HttpClient` con fetch | `provideHttpClient(withFetch())` | Backend moderno de transporte |
+| 1 | Configurar `HttpClient` | `provideHttpClient()` | En Angular 22 el transporte ya es fetch; `withFetch()` está obsoleto |
 | 2 | Definir la interfaz de respuesta | Ver Tema 1 | Autocompletado y verificación de tipos |
 | 3 | Escribir `authInterceptor` | Ver Tema 2 | Agrega el header de autenticación automáticamente |
 | 4 | Escribir `errorInterceptor` | Ver Tema 2 | Redirige a login ante un 401 |

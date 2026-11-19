@@ -130,16 +130,319 @@ Pista: quita el `return () => controller.abort()` del efecto — ese es el fallo
 Corrige el Paso 5 restaurando la cancelación, y agrega un segundo `useEffect` separado que sincronice el título del documento (`document.title`) con la cantidad de envíos pendientes, confirmando que cada efecto tiene su propio array de dependencias independiente. En el proyecto integrador RutaFlow, limpia la suscripción de seguimiento al desmontar y confirma que no quedan listeners.
 
 #### Paso 7 · Cierre
-Entrega el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explica por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: estudia `useRef` para valores que no disparen un render. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
+Entrega el efecto con cancelación del Paso 4, la respuesta obsoleta provocada en el Paso 5, y el segundo efecto del Paso 6; explica por qué un efecto que hace fetch sin cancelar puede mostrar datos de una petición vieja, aunque esa petición ya no le interese a nadie. Siguiente paso: el Tema 2 enseña a reconocer los efectos que sobran. Errores comunes: un array de dependencias incompleto que omite `zona`, usar un efecto para calcular un dato derivado que podría calcularse directamente en el render, y olvidar la función de limpieza en cualquier efecto que se suscribe a algo. Fuentes oficiales: https://react.dev/reference/react/useEffect y https://react.dev/learn/synchronizing-with-effects.
 **Implicación práctica:** Los efectos son la frontera donde React toca red, DOM y recursos externos; sin limpieza, una respuesta obsoleta puede sobrescribir silenciosamente el estado actual.
 
-### Tema 2: useRef — valores mutables sin re-render
+### Tema 2: Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key` · Intermedio · 40 min
+
+**Duración estimada:** 40 min (4 subtemas de 10 min).
+
+**Al finalizar podrás:** reconocer los tres usos de `useEffect` que sobran (calcular un dato derivado, reaccionar a un clic a través del estado y reiniciar un estado cuando cambia una prop), reemplazarlos por cálculo en el render, código en el manejador del evento o una `key`, y medir con `<Profiler>` y pruebas que el reemplazo elimina renders y acciones repetidas.
+
+**¿Por qué es importante?** En el Tema 1 viste que un efecto sincroniza un componente con algo **externo** (red, DOM, suscripciones). Usarlo para cosas internas es el error más común de React: agrega un render extra con datos viejos, ejecuta acciones dos veces o en el momento equivocado y vuelve el código difícil de seguir. Quitar un efecto innecesario suele hacer el componente más corto, más rápido y más fácil de probar.
+
+**Prerrequisitos:** Tema 1 de este módulo (`useEffect`) y Módulo 1, Tema 6 (estado levantado y datos derivados). Trabajas en `mi-react`.
+
+Crea `src/SinEfectos.jsx` con todo el código del tema; cada subtema explica una parte:
+
+```jsx
+import { useEffect, useState } from 'react';
+
+const filtrar = (envios, zona) =>
+  zona === 'todas' ? envios : envios.filter((envio) => envio.zona === zona);
+
+// ❌ Antipatrón: copia un dato derivado en estado y lo sincroniza con un efecto.
+export function ListaConEfecto({ envios, zona }) {
+  const [visibles, setVisibles] = useState([]);
+  useEffect(() => {
+    setVisibles(filtrar(envios, zona));
+  }, [envios, zona]);
+  return <ul>{visibles.map((envio) => <li key={envio.id}>{envio.id}</li>)}</ul>;
+}
+
+// ✅ Se calcula durante el render: un dato, una fuente.
+export function ListaDerivada({ envios, zona }) {
+  const visibles = filtrar(envios, zona);
+  return <ul>{visibles.map((envio) => <li key={envio.id}>{envio.id}</li>)}</ul>;
+}
+
+// ❌ Antipatrón: reacciona a un estado para hacer algo que causó un clic.
+export function ConfirmarConEfecto({ guia, confirmadaInicial = false, notificar }) {
+  const [confirmada, setConfirmada] = useState(confirmadaInicial);
+  useEffect(() => {
+    if (confirmada) notificar(guia);
+  }, [confirmada, guia, notificar]);
+  return (
+    <button onClick={() => setConfirmada(true)} disabled={confirmada}>
+      Confirmar {guia}
+    </button>
+  );
+}
+
+// ✅ La acción vive en el manejador del evento que la provoca.
+export function ConfirmarEnEvento({ guia, confirmadaInicial = false, notificar }) {
+  const [confirmada, setConfirmada] = useState(confirmadaInicial);
+  function confirmar() {
+    setConfirmada(true);
+    notificar(guia);
+  }
+  return (
+    <button onClick={confirmar} disabled={confirmada}>
+      Confirmar {guia}
+    </button>
+  );
+}
+
+export function NotaEntrega({ guia }) {
+  const [nota, setNota] = useState('');
+  return (
+    <label>
+      Nota para {guia}{' '}
+      <input value={nota} onChange={(evento) => setNota(evento.target.value)} />
+    </label>
+  );
+}
+```
+
+#### Subtema 2.1: Calcula los datos derivados durante el render · 10 min
+
+**1. Contexto**
+`ListaConEfecto` guarda `visibles` en estado y lo actualiza con un efecto cada vez que cambian `envios` o `zona`. Funciona en pantalla, pero cada cambio de zona pinta primero la lista vieja y después la nueva.
+
+**2. Hazlo tú**
+Crea `src/SinEfectos.test.jsx` con esta primera prueba. `<Profiler>` llama a `onRender` una vez por cada *commit* (cada vez que React aplica cambios al DOM):
+
+```jsx
+import { Profiler, StrictMode } from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  ConfirmarConEfecto, ConfirmarEnEvento, ListaConEfecto, ListaDerivada, NotaEntrega,
+} from './SinEfectos.jsx';
+
+const ENVIOS = [
+  { id: 'RF-4471', zona: 'norte' },
+  { id: 'RF-5101', zona: 'sur' },
+];
+
+function contarCommits(Lista) {
+  const commits = [];
+  const ui = (zona) => (
+    <Profiler id="lista" onRender={(id, fase) => commits.push(fase)}>
+      <Lista envios={ENVIOS} zona={zona} />
+    </Profiler>
+  );
+  const { rerender } = render(ui('todas'));
+  commits.length = 0; // solo interesa el cambio de zona
+  rerender(ui('sur'));
+  return commits.length;
+}
+
+describe('estado derivado', () => {
+  it('con efecto, cambiar la zona cuesta dos commits; derivado, uno', () => {
+    expect(contarCommits(ListaConEfecto)).toBe(2);
+    expect(contarCommits(ListaDerivada)).toBe(1);
+  });
+});
+```
+
+```bash
+npm test
+```
+
+**Resultado esperado:** la prueba pasa: la versión con efecto hace **dos** commits por cada cambio de zona y la derivada, **uno**.
+
+**Fallo deliberado:** en `ListaConEfecto`, quita `zona` del array de dependencias (`[envios]`). **Error esperado:** la prueba sigue contando un solo commit para `ListaConEfecto` (el efecto ya no corre) y falla con `expected 1 to be 2`; en pantalla, cambiar la zona no filtra nada. **Diagnóstico:** copiar un dato derivado en estado te obliga a mantener a mano su sincronización, y una dependencia olvidada la rompe en silencio. La versión derivada no tiene array que olvidar. Restaura `[envios, zona]`.
+
+**3. Entiende**
+**Explicación paso a paso:** con el efecto, React renderiza con la zona nueva y el `visibles` viejo, hace commit (la lista vieja llega al DOM), ejecuta el efecto, `setVisibles` pide otro render y hay un segundo commit con la lista correcta. Calculando `visibles` en el cuerpo del componente, el primer render ya trae el valor correcto. Si el cálculo fuera costoso de verdad (lo mides en el Tema 4), la herramienta es `useMemo`, no un efecto.
+
+**Analogía:** el efecto es pedir a un mensajero que lleve una copia de la planilla al segundo piso cada vez que cambia el original; calcular en el render es que el segundo piso lea el original directamente.
+
+**4. Cierra**
+Guarda la prueba en verde. Regla: si un valor se puede calcular a partir de props o estado, no es estado.
+
+#### Subtema 2.2: La lógica de un evento va en su manejador · 10 min
+
+**1. Contexto**
+Confirmar una entrega debe notificar al cliente **porque el conductor pulsó el botón**, no porque el estado `confirmada` resulte ser `true`. `ConfirmarConEfecto` mezcla las dos cosas.
+
+**2. Hazlo tú**
+Agrega estas pruebas a `src/SinEfectos.test.jsx` y ejecuta `npm test`:
+
+```jsx
+describe('lógica de eventos', () => {
+  it('el efecto notifica al montar con un estado ya confirmado, sin clic', () => {
+    const notificar = vi.fn();
+    render(<ConfirmarConEfecto guia="RF-4471" confirmadaInicial notificar={notificar} />);
+    expect(notificar).toHaveBeenCalledTimes(1);
+  });
+
+  it('el manejador notifica una vez por clic, también en StrictMode', async () => {
+    const notificar = vi.fn();
+    render(<StrictMode><ConfirmarEnEvento guia="RF-4471" notificar={notificar} /></StrictMode>);
+    expect(notificar).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar RF-4471' }));
+    expect(notificar).toHaveBeenCalledTimes(1);
+    expect(notificar).toHaveBeenCalledWith('RF-4471');
+  });
+});
+```
+
+**Resultado esperado:** las dos pruebas pasan. La primera documenta el error: la versión con efecto envía una notificación **sin que nadie haga clic**, solo porque el componente se montó con una entrega ya confirmada (por ejemplo, al volver a la pantalla).
+
+**Fallo deliberado:** en la primera prueba, envuelve el componente en `<StrictMode>`. **Error esperado:** `expected "vi.fn()" to be called 1 times, but got 2 times`. **Diagnóstico:** en desarrollo, `StrictMode` monta, desmonta y vuelve a montar cada componente para destapar efectos que no son idempotentes; el cliente recibiría dos mensajes. La versión con la notificación en el manejador no depende de cuántas veces se monte. Quita el `<StrictMode>` de esa prueba.
+
+**3. Entiende**
+Pregúntate **por qué** debe ejecutarse el código. Si la respuesta es «porque el usuario hizo algo» (clic, envío de formulario), va en el manejador de ese evento. Si es «porque el componente está en pantalla y debe estar sincronizado con algo externo» (una conexión, una suscripción, el título del documento), va en un efecto con su limpieza. **Límite:** a veces hace falta una petición al montar, por ejemplo para cargar datos; eso sí es sincronización y la verás con cancelación en el Tema 7 (y con TanStack Query en el Módulo 6).
+
+**4. Cierra**
+Guarda las pruebas. Anota en un comentario de `ConfirmarConEfecto` por qué es un antipatrón.
+
+#### Subtema 2.3: Reinicia el estado con `key`, no con un efecto · 10 min
+
+**1. Contexto**
+La ficha de una entrega tiene un campo de nota. Al pasar de la guía `RF-4471` a `RF-5101`, la nota escrita para la primera aparece en la segunda: React conserva el estado porque el componente sigue en la misma posición del árbol.
+
+**2. Hazlo tú**
+Agrega estas pruebas y ejecuta `npm test`:
+
+```jsx
+describe('reiniciar con key', () => {
+  it('sin key, la nota de una guía aparece en la siguiente', async () => {
+    const { rerender } = render(<NotaEntrega guia="RF-4471" />);
+    await userEvent.type(screen.getByRole('textbox'), 'portería');
+    rerender(<NotaEntrega guia="RF-5101" />);
+    expect(screen.getByRole('textbox')).toHaveValue('portería');
+  });
+
+  it('con key={guia}, cada guía empieza con la nota vacía', async () => {
+    const { rerender } = render(<NotaEntrega key="RF-4471" guia="RF-4471" />);
+    await userEvent.type(screen.getByRole('textbox'), 'portería');
+    rerender(<NotaEntrega key="RF-5101" guia="RF-5101" />);
+    expect(screen.getByRole('textbox')).toHaveValue('');
+  });
+});
+```
+
+En tu app, úsalo así: `<NotaEntrega key={guiaActual} guia={guiaActual} />`.
+
+**Resultado esperado:** las dos pruebas pasan; la primera muestra el problema y la segunda, la solución.
+
+**Fallo deliberado:** quita la `key` de la segunda prueba e intenta arreglarlo dentro de `NotaEntrega` con `useEffect(() => setNota(''), [guia])`. **Resultado:** la prueba pasa, pero ahora hay un commit con la nota vieja visible antes de borrarla (compruébalo con `contarCommits` como en el Subtema 2.1) y cualquier otro estado del componente necesita su propio efecto. **Diagnóstico:** el efecto «limpia después»; la `key` le dice a React que es **otro** componente, así que crea su estado desde cero. Vuelve a la versión con `key`.
+
+**3. Entiende**
+React asocia el estado a la posición del componente en el árbol y a su `key`. Cambiar la `key` desmonta la instancia anterior y monta una nueva con estado inicial: es la misma regla que ya usas en las listas. **Límite:** `key` reinicia **todo** el estado del componente y de sus hijos; si solo quieres reiniciar una parte, calcula esa parte durante el render o guarda el id que la identifica, como en el ejercicio del Módulo 1, Tema 6.
+
+**4. Cierra**
+Busca en tu proyecto efectos cuyo único trabajo sea llamar a `setAlgo` con un valor inicial cuando cambia una prop, y reemplázalos por una `key`.
+
+#### Subtema 2.4: Una lista de preguntas antes de escribir un efecto · 10 min
+
+**1. Contexto**
+Los tres subtemas anteriores eliminan efectos. Aún quedan los legítimos: los que conectan el componente con algo fuera de React.
+
+**2. Hazlo tú**
+Abre el componente del Tema 1 (`PanelEnvios`, con `fetch` y `AbortController`) y tu `ConfirmarConEfecto`. Para cada efecto, responde por escrito las cuatro preguntas de la tabla.
+
+| Pregunta | Si la respuesta es sí… |
+|---|---|
+| ¿Calcula algo a partir de props o estado? | Calcúlalo en el render (y `useMemo` solo si mediste que es caro). |
+| ¿Responde a un evento concreto del usuario? | Muévelo al manejador de ese evento. |
+| ¿Solo reinicia estado cuando cambia una prop? | Usa una `key` en el componente. |
+| ¿Sincroniza con algo externo mientras el componente está visible? | Es un efecto legítimo: escríbelo con su limpieza. |
+
+**Resultado esperado:** el efecto de `PanelEnvios` queda como legítimo (sincroniza con la red y cancela con `AbortController`); el de `ConfirmarConEfecto`, como movible al manejador.
+
+**Fallo deliberado:** en el efecto de `PanelEnvios`, borra la función de limpieza y ejecuta `npm test`. **Diagnóstico:** la prueba puede seguir en verde, porque la respuesta obsoleta depende del orden en que llegan las peticiones; por eso el Tema 7 la prueba con respuestas controladas. Un efecto legítimo sin limpieza sigue siendo un error. Restaura el `return () => controller.abort()`.
+
+**3. Entiende**
+Un efecto es una salida de emergencia de React hacia el mundo exterior. Cuantos menos tenga un componente, más fácil es predecir qué muestra. El compilador de React (Módulo 9, Tema 7) y la regla `react-hooks` de ESLint te avisan de varios de estos patrones, pero la decisión de diseño sigue siendo tuya.
+
+**4. Cierra**
+Guarda la tabla respondida junto a tu código. El siguiente tema estudia `useRef`, otra forma de guardar valores sin provocar renders.
+
+**Hito del tema:**
+
+- [ ] `npm test` muestra en verde las cinco pruebas de `SinEfectos.test.jsx`.
+- [ ] Mide con `<Profiler>` que el estado derivado con efecto cuesta dos commits y el calculado, uno.
+- [ ] Reproduje la notificación doble con `StrictMode` y expliqué por qué el manejador no la sufre.
+- [ ] Clasifiqué cada efecto de mi proyecto con la tabla de cuatro preguntas.
+
+**Resumen:** los datos derivados se calculan en el render; la lógica de un evento va en su manejador; para empezar de cero cuando cambia una identidad se usa `key`; y `useEffect` se reserva para sincronizar con sistemas externos, siempre con limpieza.
+
+**Errores comunes:** guardar en estado algo que se puede calcular, encadenar efectos que se disparan unos a otros, enviar peticiones o notificaciones desde un efecto que observa un estado cambiado por un clic, y desactivar `StrictMode` para que «no se repita».
+
+**Transferencia al proyecto integrador «RutaFlow»:** revisa los efectos del panel de envíos y elimina los que solo derivan datos o reaccionan a clics; deja una prueba que lo demuestre.
+
+**Ejercicio:** este componente calcula el total de kilos con un efecto y además registra en consola «filtro aplicado» cada vez que el usuario pulsa «Solo pendientes». Reescríbelo sin ningún `useEffect` y conserva el comportamiento. Antes de abrir la solución, predice cuántos commits hace la versión original al pulsar el botón.
+
+```jsx
+import { useEffect, useState } from 'react';
+
+export function TotalKilos({ envios }) {
+  const [soloPendientes, setSoloPendientes] = useState(false);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const lista = soloPendientes ? envios.filter((e) => e.estado === 'pendiente') : envios;
+    setTotal(lista.reduce((suma, e) => suma + e.kilos, 0));
+  }, [envios, soloPendientes]);
+
+  useEffect(() => {
+    if (soloPendientes) console.log('filtro aplicado');
+  }, [soloPendientes]);
+
+  return (
+    <>
+      <button onClick={() => setSoloPendientes(true)}>Solo pendientes</button>
+      <p>Total: {total} kg</p>
+    </>
+  );
+}
+```
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+La versión original hace **dos** commits por clic: uno con el total viejo y otro tras `setTotal`. Además, el registro se repite si el componente se vuelve a montar con el filtro ya activo.
+
+```jsx
+import { useState } from 'react';
+
+export function TotalKilos({ envios }) {
+  const [soloPendientes, setSoloPendientes] = useState(false);
+  const lista = soloPendientes ? envios.filter((e) => e.estado === 'pendiente') : envios;
+  const total = lista.reduce((suma, e) => suma + e.kilos, 0); // derivado
+
+  function aplicarFiltro() {
+    setSoloPendientes(true);
+    console.log('filtro aplicado'); // la causa es el clic
+  }
+
+  return (
+    <>
+      <button onClick={aplicarFiltro}>Solo pendientes</button>
+      <p>Total: {total} kg</p>
+    </>
+  );
+}
+```
+
+Compruébalo con `contarCommits` adaptado o con el Profiler de React DevTools: un commit por clic. Si tu versión guardaba `total` en estado y lo actualizaba dentro de `aplicarFiltro`, funciona, pero tendrías dos fuentes de verdad para el mismo dato.
+
+</details>
+
+**Fuentes oficiales:** [React — You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect), [React — Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state) y [React — `<Profiler>`](https://react.dev/reference/react/Profiler).
+
+### Tema 3: useRef — valores mutables sin re-render
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a contar, con `useRef`, cuántas veces se renderizó `PanelEnvios` sin que ese contador dispare ningún render adicional por sí mismo. Prerrequisitos: Tema 1 de este módulo.
 
 #### Paso 2 · Contexto y caso real
-Querés depurar cuántas veces se re-renderiza `PanelEnvios` mientras el operador escribe en el filtro de zona, pero contar eso con `useState` agregaría un render extra por cada medición, contaminando la medición misma.
+Quieres depurar cuántas veces se re-renderiza `PanelEnvios` mientras el operador escribe en el filtro de zona, pero contar eso con `useState` agregaría un render extra por cada medición, contaminando la medición misma.
 
 #### Paso 3 · Teoría, modelo mental y analogía
 `useRef` crea un objeto mutable que persiste entre renders sin disparar ninguno nuevo al modificar `.current` — una libreta personal que el componente puede modificar sin anunciarlo públicamente.
@@ -221,10 +524,10 @@ Corrige el Paso 5 devolviendo `useRef`, y agrega una segunda referencia que guar
 #### Paso 7 · Cierre
 Entrega el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explica por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
 
-### Tema 3: useMemo y useCallback con criterio
+### Tema 4: useMemo y useCallback con criterio
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a medir (antes de "optimizar a ciegas") si ordenar la lista de envíos por fecha estimada es realmente costoso, y a decidir si `useMemo` vale la pena para ese cálculo. Prerrequisitos: Tema 2 de este módulo.
+Al finalizar vas a medir (antes de "optimizar a ciegas") si ordenar la lista de envíos por fecha estimada es realmente costoso, y a decidir si `useMemo` vale la pena para ese cálculo. Prerrequisitos: Tema 3 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 Alguien en el equipo propuso envolver TODOS los cálculos de `PanelEnvios` en `useMemo` "por si acaso son lentos", sin medir ninguno todavía.
@@ -332,10 +635,10 @@ Corrige el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lug
 #### Paso 7 · Cierre
 Entrega la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explica la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
 
-### Tema 4: Reglas de los hooks, useReducer y useImperativeHandle
+### Tema 5: Reglas de los hooks, useReducer y useImperativeHandle
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a modelar con `useReducer` las transiciones de estado de `PanelEnvios` (cargando/éxito/error), en vez de varios `useState` independientes que podrían quedar en combinaciones inconsistentes. Prerrequisitos: Tema 3 de este módulo.
+Al finalizar vas a modelar con `useReducer` las transiciones de estado de `PanelEnvios` (cargando/éxito/error), en vez de varios `useState` independientes que podrían quedar en combinaciones inconsistentes. Prerrequisitos: Tema 4 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 Con `useState` separados para `cargando`, `envios` y `error`, nada impide que el código deje `cargando=true` y `error="algo falló"` activos al mismo tiempo, un estado que no debería ser posible pero que ningún tipo lo prohíbe.
@@ -434,7 +737,7 @@ Corrige el Paso 5 moviendo ese `useState` al nivel superior del componente (sin 
 Entrega el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explica por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
 **Implicación práctica:** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 
-### Tema 5: Error Boundaries — contener errores de render sin romper toda la app
+### Tema 6: Error Boundaries — contener errores de render sin romper toda la app
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás envolver una parte de la UI en un Error Boundary que atrape un error de render y muestre una interfaz de recuperación, en vez de que toda la app quede en blanco. Prerrequisitos: Módulo 1 (componentes y estado).
@@ -535,10 +838,11 @@ Entrega la app con el mapa contenido, el reintento y la versión con `react-erro
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
 | 1 | Suscribirse al evento `resize` de `window` | Ver Tema 1 | Verifica que se limpia al desmontar |
-| 2 | Guardar el valor anterior de una prop con `useRef` | Ver Tema 2 | Sin causar un re-render adicional |
-| 3 | Medir con `console.log` los recálculos sin `useMemo` | Ver Tema 3 | Luego confirma que `useMemo` evita recálculos |
-| 4 | Envolver un callback con `useCallback` para un hijo memoizado | Ver Tema 3 | Verifica que evita el re-render del hijo |
-| 5 | Provocar una violación de las reglas de los hooks | Ver Tema 4 | Lee el error que React reporta |
+| 2 | Reemplazar un efecto que deriva datos por un cálculo en el render | Ver Tema 2 | `<Profiler>` cuenta un commit en vez de dos |
+| 3 | Guardar el valor anterior de una prop con `useRef` | Ver Tema 3 | Sin causar un re-render adicional |
+| 4 | Medir con `console.log` los recálculos sin `useMemo` | Ver Tema 4 | Luego confirma que `useMemo` evita recálculos |
+| 5 | Envolver un callback con `useCallback` para un hijo memoizado | Ver Tema 4 | Verifica que evita el re-render del hijo |
+| 6 | Provocar una violación de las reglas de los hooks | Ver Tema 5 | Lee el error que React reporta |
 
 **Verificación:** el laboratorio se considera exitoso si el efecto de suscripción se limpia correctamente al desmontar (verificable sin advertencias de memory leak en consola), y si puedes demostrar con mediciones concretas que `useMemo`/`useCallback` efectivamente evitan trabajo redundante en el caso implementado.
 
@@ -554,7 +858,7 @@ Entrega la app con el mapa contenido, el reintento y la versión con `react-erro
 
 ## Laboratorio de transferencia
 
-### Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual
+### Tema 7: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar reproducirás una carrera entre dos solicitudes y evitarás mostrar datos de una selección anterior. **Prerrequisitos:** props, estado, efectos, promesas y cleanup. Node y npm compatibles con Vite 8. Ejemplo independiente desde carpeta vacía.
@@ -618,7 +922,7 @@ El siguiente paso es aplicar la señal a `fetch` y luego comparar con una librer
 
 **Fuentes oficiales:** [React useEffect](https://react.dev/reference/react/useEffect) y [MDN AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController).
 
-### Tema 7: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min
+### Tema 8: useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar · Avanzado · 45 min
 
 **Prerrequisito:** tema «useEffect — dependencias y limpieza» de este módulo.
 

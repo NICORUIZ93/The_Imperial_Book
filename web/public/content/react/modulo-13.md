@@ -161,13 +161,13 @@ npm run dev
 Resultado esperado: si la API falla, el `ErrorBoundary` más cercano muestra el mensaje "No pudimos mostrar este envío" con un botón de reintentar, sin que el resto de la pantalla (navegación, otros widgets) desaparezca junto con el error: pulsa «RF-0000 (falla)» y verás el mensaje con los botones de navegación intactos; como `resetKeys={[envioId]}` depende del envío, volver a «RF-4471» limpia el error. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: implementá `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
+Pista: implementa `resetErrorBoundary` para que simplemente vuelva a renderizar con el mismo resultado de query ya rechazado, sin invalidarlo ni crear una nueva Promise — ese es el fallo deliberado: tocar "Intentar de nuevo" muestra el mismo error inmediatamente otra vez, porque la cache todavía tiene el mismo resultado rechazado; nada cambió la precondición que causó el fallo original.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agregá un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red. Integra el boundary en la vista de detalle del proyecto integrador RutaFlow y prueba el reintento con MSW.
+Corrige el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese envío antes de resetear el boundary, y agrega un test que simule el fallo con MSW, confirmando que el botón de reintentar efectivamente dispara una nueva petición de red. Integra el boundary en la vista de detalle del proyecto integrador RutaFlow y prueba el reintento con MSW.
 
 #### Paso 7 · Cierre
-Entregá el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explicá por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
+Entrega el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explica por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
 
 ### Tema 2: La composición visual debe conservar semántica y foco
 
@@ -267,13 +267,13 @@ npm run dev
 Resultado esperado: al enviar un PIN incorrecto, el lector de pantalla anuncia tanto que el campo es inválido (`aria-invalid`) como el mensaje de error asociado (`aria-describedby`), sin depender únicamente de un color que un usuario con baja visión o ceguera no puede percibir. Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `1` en «PIN de entrega», pulsa «Confirmar» y comprueba `expect(campo).toHaveAttribute('aria-invalid', 'true')` y `expect(campo).toHaveAccessibleDescription('El PIN no coincide con el de la guía.')`. Después ejecuta `npm test`.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `aria-describedby` y dejá solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
+Pista: quita `aria-describedby` y deja solo el borde rojo con CSS para indicar el error — ese es el fallo deliberado: navegando con VoiceOver o NVDA, el campo se anuncia como inválido genéricamente (si acaso) pero sin explicar nada sobre cuál es el problema concreto ni cómo corregirlo.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `aria-describedby`, y agregá además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba. Aplica el orden de foco al formulario del proyecto integrador RutaFlow y verifica con teclado qué campo recibe el foco tras el error.
+Corrige el Paso 5 restaurando `aria-describedby`, y agrega además que, tras un submit fallido, el foco se mueva explícitamente al primer campo inválido, en vez de dejarlo donde estaba. Aplica el orden de foco al formulario del proyecto integrador RutaFlow y verifica con teclado qué campo recibe el foco tras el error.
 
 #### Paso 7 · Cierre
-Entregá el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explicá por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
+Entrega el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explica por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
 
 ### Tema 3: Cliente y servidor forman una sola frontera de seguridad
 
@@ -405,13 +405,25 @@ Abre `http://localhost:3000/seguridad` y pulsa el botón.
 Resultado esperado: llamar a `confirmarEntregaAction` para un envío que no está asignado al conductor autenticado lanza un error de autorización dentro de la propia función, sin importar si el botón correspondiente en el cliente estaba oculto, deshabilitado, o nunca se renderizó para ese usuario: el ejemplo simula al conductor `conductor-luis` y RF-4471 está asignado a `conductor-ana`, así que la acción lanza «No autorizado…». Cambia `requireSession` para que devuelva `conductor-ana` y la confirmación pasa (la terminal imprime «Envío RF-4471 confirmado»).
 
 #### Paso 5 · Práctica guiada
-Pista: quitá la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
+Pista: quita la llamada a `authorize(...)` de la Server Action, confiando en que el botón ya está oculto en el cliente para conductores sin esa ruta asignada — ese es el fallo deliberado: cualquiera que invoque la acción sin pasar por el botón oculto puede confirmar la entrega de un envío que no le pertenece, porque la única "protección" vivía en el cliente.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 restaurando `authorize(...)`, y agregá una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual. Aplica la validación de sesión del proyecto integrador RutaFlow en el servidor y verifica que el cliente no pueda saltarla.
+Corrige el Paso 5 restaurando `authorize(...)`, y agrega una prueba que invoque `confirmarEntregaAction` directamente (sin pasar por ningún componente de UI) con un `userId` sin autorización, confirmando que la acción la rechaza igual. Aplica la validación de sesión del proyecto integrador RutaFlow en el servidor y verifica que el cliente no pueda saltarla.
+
+**Autoriza y modifica con el mismo predicado.** Comprobar el permiso y después actualizar en dos pasos deja una ventana: si la asignación cambia entre la comprobación y la escritura, actualizas algo que ya no es tuyo. Con una base de datos, incluye el dueño en el filtro de la propia escritura y comprueba cuántas filas cambiaron:
+
+```ts
+const resultado = await db.envio.updateMany({
+  where: { id: envioId, conductorId: session.userId }, // autoriza y actualiza a la vez
+  data: { estado: 'entregado' },
+});
+if (resultado.count !== 1) throw new Error('Envío no disponible para este conductor');
+```
+
+Valida la **forma** de `envioId` con un esquema (por ejemplo, `z.string().regex(/^RF-\d{4}$/)` de zod): un id ajeno con formato válido pasa el esquema, y solo el filtro por `conductorId` lo rechaza. Prueba los tres casos: sin sesión, guía ajena con formato válido y guía con formato inválido; ninguno debe modificar datos.
 
 #### Paso 7 · Cierre
-Entregá la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explicá por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
+Entrega la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explica por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 
 ### Tema 4: Hidratación determinista, idioma y releases medibles
 
@@ -429,7 +441,7 @@ Hydration une listeners al HTML del servidor suponiendo que el primer render cli
 
 `suppressHydrationWarning` silencia una diferencia inevitable en un nivel; no corrige datos ni debe cubrir árboles completos. Investiga primero: una divergencia puede asociar handlers con DOM equivocado o forzar render cliente.
 
-El locale decidido en servidor debe llegar al cliente y a la ruta. Formatea números, moneda y fecha con locale y zona explícitos. Traduce contenido, labels, errores, metadatos y fallbacks de Suspense. Soporta plural completo y RTL mediante propiedades CSS lógicas. Prueba textos largos y mezcla bidireccional.
+El locale decidido en servidor debe llegar al cliente y a la ruta. Formatea números, moneda y fecha con locale y zona explícitos. Traduce contenido, labels, errores, metadatos y fallbacks de Suspense. Soporta plural completo y RTL mediante propiedades CSS lógicas (lo practicas con mensajes ICU y `next-intl` en el Módulo 14, Tema 4). Prueba textos largos y mezcla bidireccional.
 
 ```tsx
 const price = new Intl.NumberFormat(locale, {
@@ -516,13 +528,13 @@ Abre `http://localhost:3000/fecha`.
 Resultado esperado: tanto el servidor como el primer render del cliente usan exactamente el mismo `locale` y `userTimeZone` (decididos una sola vez, por ejemplo en la sesión), produciendo el mismo string de fecha en ambos lados («Entrega estimada: 19 de noviembre de 2026») — sin ninguna advertencia de mismatch de hidratación en consola. La fecha elegida lo hace visible: la misma hora en UTC ya es 20 de noviembre, así que si quitas `timeZone` y tu servidor y tu navegador están en zonas distintas, cada lado muestra un día diferente.
 
 #### Paso 5 · Práctica guiada
-Pista: quitá `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
+Pista: quita `timeZone: userTimeZone` del formato, dejando que `Intl.DateTimeFormat` use la zona horaria por defecto del entorno de ejecución — ese es el fallo deliberado: el servidor (en UTC) y el navegador del conductor (en su zona local) producen strings de fecha distintos para el mismo timestamp, y React reporta una advertencia de hydration mismatch, además de un parpadeo visible donde la fecha cambia justo después de cargar.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirmá en la consola del navegador que la advertencia de mismatch desapareció.
+Corrige el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirma en la consola del navegador que la advertencia de mismatch desapareció.
 
 #### Paso 7 · Cierre
-Entregá el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explicá por qué `suppressHydrationWarning` no habría sido la corrección correcta acá: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cerrá el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
+Entrega el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explica por qué `suppressHydrationWarning` no habría sido la corrección correcta aquí: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cierra el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
 **Implicación práctica:** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
 
 ### Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min

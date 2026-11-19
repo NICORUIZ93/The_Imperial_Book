@@ -123,7 +123,7 @@ Pista: deja el código del Paso 4 y espera que `intentos` llegue a 2 "porque lla
 Corrige `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`) en ambas llamadas, y confirma que ahora un solo click sí lleva el contador de 0 a 2, porque cada llamada recibe el valor más reciente en el momento en que React efectivamente la aplica. Lleva la forma funcional al contador de intentos del proyecto integrador RutaFlow y verifica que dos actualizaciones en el mismo manejador no se pierdan.
 
 #### Paso 7 · Cierre
-Entregá el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explicá por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
+Entrega el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explica por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
 **Implicación práctica:** Depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
 
 ### Tema 2: Render frente a commit
@@ -244,13 +244,13 @@ graph TD
     A["3 setState en el mismo manejador:<br/>setEnviando true<br/>setIntentos i => i + 1<br/>setError null"]
     
     B["SIN BATCHING:<br/>3 renders + 3 commits<br/>Ineficiente"]
-    C["CON BATCHING:<br/>1 render + 1 commit<br/>Aplicá el estado final"]
+    C["CON BATCHING:<br/>1 render + 1 commit<br/>Aplica el estado final"]
     
     A -->|Antes de React 18| B
     A -->|React 18+| C
     
     B -->|Resultado visual| D["console.log impreso 3 veces<br/>DOM actualizado 3 veces"]
-    C -->|Resultado visual| E["console.log impreso 1 vez<br/>DOM actualizado 1 vez<br/>(pero reflejá el estado final)"]
+    C -->|Resultado visual| E["console.log impreso 1 vez<br/>DOM actualizado 1 vez<br/>(pero refleja el estado final)"]
     
     style B fill:#ffebee
     style C fill:#e8f5e9
@@ -551,11 +551,292 @@ Crea `ListaParadas`, con un estado de array, y botones «Agregar» y «Quitar la
 - [ ] Reprodujiste el doble render de `StrictMode`.
 - [ ] Usas funciones de actualización cuando encadenas cambios.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mutar arrays u objetos del estado, leer el estado «nuevo» justo después de `setState` y desactivar `StrictMode` para esconder impurezas. **Siguiente paso:** el tema «Render frente a commit» explica cuándo React pinta en pantalla la instantánea nueva.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mutar arrays u objetos del estado, leer el estado «nuevo» justo después de `setState` y desactivar `StrictMode` para esconder impurezas. **Siguiente paso:** el Tema 6 usa esta misma idea para compartir un estado entre varios componentes.
 
 **Transferencia al proyecto integrador «RutaFlow»:** en el panel de RutaFlow, revisa los contadores de paradas y entregas y cambia cada actualización encadenada a funciones de actualización.
 
 **Fuente oficial:** [React — Keeping components pure](https://react.dev/learn/keeping-components-pure) y [React — State as a snapshot](https://react.dev/learn/state-as-a-snapshot).
+
+### Tema 6: Compartir estado: levantar el estado al padre común · Básico · 40 min
+
+**Duración estimada:** 40 min (4 subtemas de 10 min).
+
+**Al finalizar podrás:** mover un estado al padre común más cercano de los componentes que lo necesitan, pasarlo hacia abajo con props junto con la función que lo cambia, y reconocer cuándo una copia del estado rompe la única fuente de verdad.
+
+**¿Por qué es importante?** Hasta ahora cada componente guardaba su propio estado. En una pantalla real, dos hermanos necesitan el mismo dato: el filtro de zona decide qué envíos muestra la lista y qué cifra muestra el resumen. Si cada uno guarda su copia, se desincronizan. Levantar el estado es la herramienta base de React para compartirlo; Context (Módulo 4) y las librerías de estado global (Módulo 7) solo hacen falta cuando este patrón ya no alcanza.
+
+**Prerrequisitos:** Temas 1 y 4 de este módulo (`useState` y componentes controlados). Trabajas en el proyecto `mi-react` del Módulo 0, con las pruebas ya configuradas.
+
+#### Subtema 6.1: Dos hermanos que no se ven · 10 min
+
+**1. Contexto**
+El panel de RutaFlow tiene tres piezas: `FiltroZona`, `Resumen` y `ListaEnvios`. Si el filtro guarda la zona en su propio `useState`, la lista no tiene forma de leerla: el estado es privado del componente que lo declara.
+
+**2. Hazlo tú**
+Crea `src/PanelEnvios.jsx` con esta primera versión, en la que la zona vive dentro de `FiltroZona`:
+
+```jsx
+import { useState } from 'react';
+
+const ENVIOS = [
+  { id: 'RF-4471', zona: 'norte' },
+  { id: 'RF-4472', zona: 'norte' },
+  { id: 'RF-5101', zona: 'sur' },
+];
+
+function FiltroZona() {
+  const [zona, setZona] = useState('todas'); // privado: nadie más puede leerlo
+  return (
+    <label>
+      Zona{' '}
+      <select value={zona} onChange={(evento) => setZona(evento.target.value)}>
+        <option value="todas">Todas</option>
+        <option value="norte">Norte</option>
+        <option value="sur">Sur</option>
+      </select>
+    </label>
+  );
+}
+
+function ListaEnvios({ envios }) {
+  return (
+    <ul>
+      {envios.map((envio) => (
+        <li key={envio.id}>{envio.id}</li>
+      ))}
+    </ul>
+  );
+}
+
+export default function PanelEnvios() {
+  return (
+    <section>
+      <FiltroZona />
+      <ListaEnvios envios={ENVIOS} />
+    </section>
+  );
+}
+```
+
+Usa `<PanelEnvios />` en `src/App.jsx` y ejecuta `npm run dev`.
+
+**Resultado esperado:** el `<select>` cambia de «Todas» a «Norte», pero la lista sigue mostrando los tres envíos.
+
+**Fallo deliberado:** intenta leer la zona desde `ListaEnvios` escribiendo `envios.filter((envio) => envio.zona === zona)`. **Error esperado:** la página queda en blanco y la consola del navegador muestra `ReferenceError: zona is not defined`. **Diagnóstico:** `zona` es una variable local de `FiltroZona`; un hermano no puede leer el estado de otro. Deshaz el cambio.
+
+**3. Entiende**
+El estado pertenece a la instancia del componente que llama a `useState`. Los datos en React fluyen de padres a hijos por props; entre hermanos no hay canal directo. Para que dos hermanos usen el mismo dato, alguien que esté **por encima de los dos** tiene que guardarlo.
+
+**4. Cierra**
+Anota en un comentario de `PanelEnvios.jsx` qué componentes necesitan la zona (`FiltroZona` para mostrarla y cambiarla, `ListaEnvios` para filtrar) y cuál es su padre común (`PanelEnvios`).
+
+#### Subtema 6.2: Sube el estado y pásalo hacia abajo · 10 min
+
+**1. Contexto**
+Levantar el estado son tres pasos: quitar el estado del hijo, declararlo en el padre común y pasarlo hacia abajo como props, junto con una función para cambiarlo.
+
+**2. Hazlo tú**
+Reemplaza `src/PanelEnvios.jsx` por la versión final:
+
+```jsx
+import { useState } from 'react';
+
+const ENVIOS = [
+  { id: 'RF-4471', zona: 'norte' },
+  { id: 'RF-4472', zona: 'norte' },
+  { id: 'RF-5101', zona: 'sur' },
+];
+
+function FiltroZona({ zona, onCambiarZona }) {
+  return (
+    <label>
+      Zona{' '}
+      <select value={zona} onChange={(evento) => onCambiarZona(evento.target.value)}>
+        <option value="todas">Todas</option>
+        <option value="norte">Norte</option>
+        <option value="sur">Sur</option>
+      </select>
+    </label>
+  );
+}
+
+function Resumen({ zona, total }) {
+  const donde = zona === 'todas' ? 'todas las zonas' : `zona ${zona}`;
+  return <p>Visibles: {total} · {donde}</p>;
+}
+
+function ListaEnvios({ envios }) {
+  return (
+    <ul>
+      {envios.map((envio) => (
+        <li key={envio.id}>{envio.id}</li>
+      ))}
+    </ul>
+  );
+}
+
+export default function PanelEnvios() {
+  const [zona, setZona] = useState('todas'); // vive en el padre común de los tres hijos
+  const visibles = zona === 'todas' ? ENVIOS : ENVIOS.filter((envio) => envio.zona === zona); // se calcula, no se guarda
+  return (
+    <section>
+      <FiltroZona zona={zona} onCambiarZona={setZona} />
+      <Resumen zona={zona} total={visibles.length} />
+      <ListaEnvios envios={visibles} />
+    </section>
+  );
+}
+```
+
+Crea `src/PanelEnvios.test.jsx`:
+
+```jsx
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { expect, it } from 'vitest';
+import PanelEnvios from './PanelEnvios.jsx';
+
+it('cambiar la zona en FiltroZona actualiza la lista y el resumen', async () => {
+  render(<PanelEnvios />);
+  expect(screen.getAllByRole('listitem')).toHaveLength(3);
+  expect(screen.getByText('Visibles: 3 · todas las zonas')).toBeInTheDocument();
+
+  await userEvent.selectOptions(screen.getByLabelText('Zona'), 'norte');
+
+  expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  expect(screen.getByText('Visibles: 2 · zona norte')).toBeInTheDocument();
+});
+```
+
+```bash
+npm test
+```
+
+**Resultado esperado:** Vitest informa `PanelEnvios.test.jsx` en verde; en el navegador, elegir «Norte» deja dos envíos y el resumen dice «Visibles: 2 · zona norte».
+
+**Fallo deliberado:** en `PanelEnvios`, borra `onCambiarZona={setZona}`. **Error esperado:** al cambiar la zona, la consola muestra `TypeError: onCambiarZona is not a function` y la prueba falla. **Diagnóstico:** `FiltroZona` ya no es dueño del dato; ahora es un componente **controlado** por su padre, y sin la función del padre no puede pedir el cambio. Restaura la prop.
+
+**3. Entiende**
+**Explicación por bloques:** `PanelEnvios` declara `zona` y la reparte: `FiltroZona` recibe el valor y la función que lo cambia; `Resumen` y `ListaEnvios` reciben solo lo que necesitan. Cuando el usuario elige otra zona, `FiltroZona` llama a `onCambiarZona`, el padre actualiza su estado y vuelve a renderizar a los tres hijos con el valor nuevo. `visibles` no es estado: se **calcula** en cada render a partir de `zona`, así que no puede quedar desactualizado.
+
+**Analogía:** el estado levantado es la pizarra de la oficina de despacho. Los conductores no guardan cada uno su copia de la ruta del día: leen la pizarra, y si alguien necesita cambiarla, se lo pide al despachador, que la reescribe para todos. La analogía falla en un punto: en React el «aviso» a todos es automático, porque el padre vuelve a renderizar a sus hijos.
+
+**Límite:** levantar el estado hace que el padre y todos sus hijos se rendericen en cada cambio. En una pantalla pequeña no importa; si el padre común está muy arriba y el dato atraviesa muchos niveles, mira Context (Módulo 4).
+
+**4. Cierra**
+Guarda la prueba en verde. `PanelEnvios` queda como la única fuente de verdad de la zona.
+
+#### Subtema 6.3: Una sola fuente de verdad: no copies props en estado · 10 min
+
+**1. Contexto**
+Un error frecuente al levantar el estado es dejar en el hijo un `useState` inicializado con la prop «por si acaso». Parece funcionar en el primer render y se desincroniza después.
+
+**2. Hazlo tú**
+En `Resumen`, reemplaza la primera línea del cuerpo por estas dos:
+
+```jsx
+function Resumen({ zona, total }) {
+  const [zonaCopia] = useState(zona); // ❌ copia: solo lee la prop en el primer render
+  const donde = zonaCopia === 'todas' ? 'todas las zonas' : `zona ${zonaCopia}`;
+  return <p>Visibles: {total} · {donde}</p>;
+}
+```
+
+Ejecuta `npm test`.
+
+**Resultado esperado (fallo deliberado):** la prueba falla con `Unable to find an element with the text: Visibles: 2 · zona norte`. En el navegador ves «Visibles: 2 · todas las zonas»: el número cambió y el texto no.
+
+**Diagnóstico:** el argumento de `useState` es solo el **valor inicial**; React lo ignora en los renders siguientes. `total` llega como prop y está al día; `zonaCopia` se quedó con el primer valor. Restaura la versión que lee `zona` directamente y confirma que la prueba vuelve a verde.
+
+**3. Entiende**
+Cada dato debe tener **un** dueño. Si un hijo recibe un valor por props, lo lee de las props; solo guarda estado propio si de verdad es suyo (por ejemplo, si un menú desplegable está abierto). Intentar «arreglar» la copia con un `useEffect` que la sincronice es peor: agrega un render extra con el valor viejo. El próximo módulo dedica un tema completo a cuándo **no** usar un efecto.
+
+**4. Cierra**
+Revisa los componentes de tu proyecto y busca `useState(props.algo)` o `useState(algo)` con una prop; anota cada caso y decide si debe leer la prop directamente.
+
+#### Subtema 6.4: Decide dónde vive el estado · 10 min
+
+**1. Contexto**
+No todo estado se levanta. La regla es dejarlo en el componente **más bajo** que cubra a todos los que lo leen o lo cambian.
+
+**2. Hazlo tú**
+Agrega esta segunda prueba a `src/PanelEnvios.test.jsx` y ejecuta `npm test`:
+
+```jsx
+it('dos paneles no comparten la zona', async () => {
+  render(<><PanelEnvios /><PanelEnvios /></>);
+  const [primero] = screen.getAllByLabelText('Zona');
+  await userEvent.selectOptions(primero, 'sur');
+  expect(screen.getByText('Visibles: 1 · zona sur')).toBeInTheDocument();
+  expect(screen.getByText('Visibles: 3 · todas las zonas')).toBeInTheDocument();
+});
+```
+
+**Resultado esperado:** las dos pruebas pasan. Cada `PanelEnvios` tiene su propia zona, porque cada instancia guarda su propio estado.
+
+**Fallo deliberado:** mueve `const [zona, setZona] = useState('todas')` fuera de la función, al nivel del módulo, como si fuera una variable normal. **Error esperado:** la consola muestra el aviso «Invalid hook call. Hooks can only be called inside of the body of a function component» y después `TypeError: Cannot read properties of null (reading 'useState')`. **Diagnóstico:** el estado de React existe por instancia de componente; no se comparte declarándolo fuera. Para compartirlo entre dos paneles tendrías que levantarlo un nivel más, al componente que contiene a los dos.
+
+**3. Entiende**
+Para decidir dónde vive un estado: lista los componentes que lo leen o lo cambian, busca su padre común más cercano y declara el estado ahí. Si ese padre está muchos niveles arriba y los intermedios solo reenvían props, el patrón empieza a pesar (*prop drilling*): ahí entra Context (Módulo 4). Si el dato viene del servidor, su dueño será la caché de datos (Módulo 6), no un `useState`.
+
+**4. Cierra**
+Dibuja el árbol de `PanelEnvios` y marca dónde vive `zona` y por qué.
+
+**Hito del tema:**
+
+- [ ] Ejecuté la primera versión y comprobé que un hermano no ve el estado del otro.
+- [ ] Levanté la zona a `PanelEnvios` y la prueba de filtrado pasa.
+- [ ] Provoqué la copia desactualizada con `useState(zona)` y expliqué por qué el texto no cambia.
+- [ ] Expliqué con mis palabras dónde debe vivir un estado y cuándo pasaría a Context.
+
+**Resumen:** el estado compartido vive en el padre común más cercano; los hijos reciben el valor y la función para cambiarlo; lo que se puede calcular a partir del estado no se guarda; y una copia de una prop en `useState` rompe la única fuente de verdad.
+
+**Errores comunes:** dejar el estado en uno de los hermanos, copiar una prop en `useState` en el hijo, guardar en estado un valor derivado (`visibles`) y levantar el estado mucho más arriba de lo necesario.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el panel de envíos, levanta el estado de selección de envío para que la lista y la ficha de detalle muestren siempre el mismo envío.
+
+**Ejercicio:** agrega un componente `SelectorEnvio` dentro de `ListaEnvios`: al hacer clic en un envío, un `<p>` debajo de la lista (fuera de `ListaEnvios`, dentro de `PanelEnvios`) muestra «Seleccionado: RF-4471». Si cambias la zona y el envío seleccionado ya no está visible, el texto debe decir «Seleccionado: ninguno». Antes de abrir la solución, escribe dónde vivirá el estado del envío seleccionado y si guardarás el objeto completo o solo su id.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+El estado vive en `PanelEnvios`, porque lo usan la lista (para marcar el clic) y el párrafo (para mostrarlo). Guarda solo el **id**: el objeto se deriva de `visibles`, así que si el envío deja de estar visible, la búsqueda devuelve `undefined` sin ningún efecto extra.
+
+```jsx
+function ListaEnvios({ envios, onSeleccionar }) {
+  return (
+    <ul>
+      {envios.map((envio) => (
+        <li key={envio.id}>
+          <button onClick={() => onSeleccionar(envio.id)}>{envio.id}</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default function PanelEnvios() {
+  const [zona, setZona] = useState('todas');
+  const [idSeleccionado, setIdSeleccionado] = useState(null);
+  const visibles = zona === 'todas' ? ENVIOS : ENVIOS.filter((envio) => envio.zona === zona);
+  const seleccionado = visibles.find((envio) => envio.id === idSeleccionado); // derivado
+  return (
+    <section>
+      <FiltroZona zona={zona} onCambiarZona={setZona} />
+      <Resumen zona={zona} total={visibles.length} />
+      <ListaEnvios envios={visibles} onSeleccionar={setIdSeleccionado} />
+      <p>Seleccionado: {seleccionado ? seleccionado.id : 'ninguno'}</p>
+    </section>
+  );
+}
+```
+
+Prueba: selecciona `RF-5101`, cambia a «Norte» y el texto dice «Seleccionado: ninguno»; vuelve a «Todas» y reaparece `RF-5101`, porque el id sigue guardado. Si guardaste el objeto completo y lo borrabas con un efecto al cambiar la zona, compara: esa versión pierde la selección al volver a «Todas» y hace un render extra.
+
+</details>
+
+**Fuentes oficiales:** [React — Sharing State Between Components](https://react.dev/learn/sharing-state-between-components) y [React — Choosing the State Structure](https://react.dev/learn/choosing-the-state-structure).
+
 
 ## Laboratorio práctico
 
@@ -570,6 +851,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mutar arrays u obje
 | 3 | Agregar 3 `setState` en un mismo manejador | Ver Tema 3 | Verifica con `console.log` que hay un único render |
 | 4 | Implementar un formulario de 3 campos controlados | Ver Tema 4 | Con validación en cada tecla |
 | 5 | Explicar render vs commit con un ejemplo propio | Ver Tema 2 | Un caso donde el render no cambia el DOM |
+| 6 | Levantar la zona del filtro al padre común | Ver Tema 6 | `FiltroZona`, `Resumen` y `ListaEnvios` leen la misma zona |
 
 **Verificación:** el laboratorio se considera exitoso si el contador con la forma funcional acumula correctamente múltiples incrementos en un mismo manejador, y si el formulario valida y refleja el estado en tiempo real en cada tecla.
 

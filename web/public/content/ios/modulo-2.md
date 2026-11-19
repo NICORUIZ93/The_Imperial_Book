@@ -79,6 +79,8 @@ struct ConfirmarEntregaBoton: View {
 }
 ```
 
+Como `ContentView.swift` ya no declara `ContentView`, abre el `EstadoDemoApp.swift` generado y cambia `ContentView()` por `DetalleEnvio()` dentro de `WindowGroup`.
+
 Ejecútalo y obsérvalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema de la app):
 
 ```bash
@@ -166,6 +168,8 @@ struct ListaEnvios: View {
     ListaEnvios()
 }
 ```
+
+Abre el `EstadoDemoApp.swift` generado y cambia `ContentView()` por `ListaEnvios()` dentro de `WindowGroup`.
 
 Ejecútalo (en Xcode: ⌘R para el simulador, o ⌥⌘↵ para el canvas de Preview; por terminal, compila el esquema con `xcodebuild`):
 

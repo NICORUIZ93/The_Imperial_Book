@@ -120,7 +120,7 @@ El peso de un envío debe ser un número positivo y la dirección no puede estar
 Un schema de zod describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, conectado a React Hook Form mediante `zodResolver` — una plantilla de aduana que especifica qué documentos son válidos para pasar.
 **Conceptos clave:** schema declarativo, `zodResolver`, estado compartido entre pasos.
 
-Un schema de zod (`z.object({ email: z.string().email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
+Un schema de zod (`z.object({ email: z.email(), edad: z.number().min(18) })`) describe declarativamente qué forma y qué restricciones debe cumplir un objeto de datos válido, expresado como un schema TypeScript-first reutilizable también para validar datos en otros contextos (por ejemplo, validar la misma forma de datos en el backend, Módulo 8 del track de Node.js, compartiendo literalmente el mismo schema entre cliente y servidor). Conectar ese schema a React Hook Form mediante `useForm({ resolver: zodResolver(schema) })` delega toda la lógica de validación a zod, poblando automáticamente `errors` con los mensajes correspondientes cuando el schema rechaza algún valor.
 
 Un formulario multi-paso mantiene el estado combinado de todos los pasos en un componente padre compartido (`const [datos, setDatos] = useState({})`), donde cada paso individual es un sub-formulario independiente que, al completarse, fusiona sus propios datos con el estado acumulado existente (`setDatos(prev => ({ ...prev, ...datosDelPaso }))`) antes de avanzar al siguiente paso (`setPaso(p => p + 1)`); al retroceder a un paso anterior, ese estado combinado ya existente permite prellenar nuevamente los campos con los valores previamente ingresados, en vez de perderlos y forzar al usuario a reescribirlos desde cero.
 
@@ -129,7 +129,7 @@ Un formulario multi-paso mantiene el estado combinado de todos los pasos en un c
 **Código del ejemplo:**
 
 ```jsx
-const schema = z.object({ email: z.string().email(), edad: z.number().min(18) });
+const schema = z.object({ email: z.email(), edad: z.number().min(18) });
 useForm({ resolver: zodResolver(schema) });
 
 const [paso, setPaso] = useState(1);
@@ -212,7 +212,7 @@ export default function App() {
 **Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes las librerías) y arráncalo:
 
 ```bash
-npm install react-hook-form zod @hookform/resolvers
+npm install react-hook-form zod@4 @hookform/resolvers
 npm run dev
 ```
 

@@ -150,7 +150,7 @@ afterAll(() => server.close());
 Instala MSW como dependencia de desarrollo:
 
 ```bash
-npm install -D msw
+npm install -D msw@3
 ```
 
 Reemplaza `src/DetalleEnvio.jsx` por esta versión, que llama de verdad a la red:
@@ -195,7 +195,7 @@ import DetalleEnvio from './DetalleEnvio.jsx'
 const server = setupServer(
   http.post('/api/envios/:id/confirmar', () => HttpResponse.json({ estado: 'entregado' }))
 )
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
@@ -212,7 +212,7 @@ it('muestra la confirmación que responde el servidor', async () => {
 npm test
 ```
 
-Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada; la prueba encuentra «Entrega confirmada: entregado». `onUnhandledRequest: 'error'` hace fallar la prueba si el componente llama a una ruta sin handler.
+Resultado esperado: al hacer click en "Confirmar entrega" dentro del test, la llamada real a `fetch('/api/envios/RF-4471/confirmar', ...)` del código de `DetalleEnvio` es interceptada por MSW, que responde con `{ estado: 'entregado' }` sin que ningún servidor real haya recibido nada; la prueba encuentra «Entrega confirmada: entregado». `onUnhandledFrame: 'error'` hace fallar la prueba si el componente llama a una ruta sin handler (en MSW 2 la opción se llamaba `onUnhandledRequest`; MSW 3 la renombró).
 
 #### Paso 5 · Práctica guiada
 Pista: dentro de un test agrega `server.use(http.post('/api/envios/:id/confirmar', () => HttpResponse.error()))` para simular un fallo, y quita el `afterEach(() => server.resetHandlers())` global — ese es el fallo deliberado: ese handler de error queda activo y afecta a la PRÓXIMA prueba de la suite, que ahora falla inesperadamente aunque su propio código esté correcto.

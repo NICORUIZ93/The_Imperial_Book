@@ -71,6 +71,7 @@ XCTAssertEqual(Calculadora().sumar(2, 3), 5)
 ```swift
 // XCTest clásico
 import XCTest
+@testable import RutaFlowApp
 final class EsEnvioAtrasadoTests: XCTestCase {
     func testEnvioVencidoEstaAtrasado() {
         let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
@@ -79,7 +80,9 @@ final class EsEnvioAtrasadoTests: XCTestCase {
 }
 
 // Swift Testing
+import Foundation
 import Testing
+@testable import RutaFlowApp
 struct EsEnvioAtrasadoTests {
     @Test func envioVencidoEstaAtrasado() {
         let envio = Envio(fechaEstimada: Date().addingTimeInterval(-3600))
@@ -155,9 +158,13 @@ Esta simplificación de testing async es directamente análoga a `runTest` en Ko
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import Testing
+@testable import RutaFlowApp
+
 @Test func confirmarEntregaDelConductorAsignado() async throws {
+    // confirmarEntrega y su servidor simulado son los del Módulo 5.
     let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
-    #expect(resultado.estado == .entregado)
+    #expect(resultado.status == "delivered")
 }
 ```
 
@@ -238,15 +245,20 @@ En tu propio proyecto RutaFlow, escribe la vista bajo prueba en `DetalleEntregaV
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
-func testConfirmarEntregaDesdeLaUI() {
-    let app = XCUIApplication()
-    app.launch()
-    app.textFields["campoGuia"].tap()
-    app.textFields["campoGuia"].typeText("RF-4471")
-    app.textFields["campoPin"].tap()
-    app.textFields["campoPin"].typeText("837201")
-    app.buttons["botonConfirmar"].tap()
-    XCTAssertTrue(app.staticTexts["Entrega confirmada"].waitForExistence(timeout: 5))
+import XCTest
+
+final class ConfirmacionEntregaUITests: XCTestCase {
+    @MainActor
+    func testConfirmarEntregaDesdeLaUI() {
+        let app = XCUIApplication()
+        app.launch()
+        app.textFields["campoGuia"].tap()
+        app.textFields["campoGuia"].typeText("RF-4471")
+        app.textFields["campoPin"].tap()
+        app.textFields["campoPin"].typeText("837201")
+        app.buttons["botonConfirmar"].tap()
+        XCTAssertTrue(app.staticTexts["Entrega confirmada"].waitForExistence(timeout: 5))
+    }
 }
 ```
 

@@ -210,13 +210,13 @@ Resultado esperado: lograr el mismo comportamiento que el store de Zustand del T
 7. Resultado esperado: ver el historial completo de actions y poder viajar atrás en el tiempo, una herramienta de depuración que Zustand no ofrece por defecto (aunque hay extensiones de terceros).
 
 #### Paso 5 · Práctica guiada
-Pista: usá `useSelector(state => state.filtro)` en un componente para leer todo el slice `filtro` en vez de `useSelector(state => state.filtro.zona)` — ese es el fallo deliberado: si el slice `filtro` más adelante agrega otro campo (`orden`) que cambia con frecuencia, ese componente se re-renderiza también ante cambios de `orden`, aunque solo le interese `zona`.
+Pista: usa `useSelector(state => state.filtro)` en un componente para leer todo el slice `filtro` en vez de `useSelector(state => state.filtro.zona)` — ese es el fallo deliberado: si el slice `filtro` más adelante agrega otro campo (`orden`) que cambia con frecuencia, ese componente se re-renderiza también ante cambios de `orden`, aunque solo le interese `zona`.
 
 #### Paso 6 · Práctica independiente
-Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envolvé la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice. Si el proyecto integrador RutaFlow necesitara Redux, define un slice de filtros y compara la ceremonia con Zustand.
+Corrige el Paso 5 devolviendo el selector específico (`state => state.filtro.zona`), y envuelve la aplicación con `<Provider store={store}>`, confirmando que el componente ya no se re-renderiza ante cambios de otros campos del mismo slice. Si el proyecto integrador RutaFlow necesitara Redux, define un slice de filtros y compara la ceremonia con Zustand.
 
 #### Paso 7 · Cierre
-Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
+Entrega la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; cuenta explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
 **Implicación práctica:** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
 
 ### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto
@@ -257,7 +257,7 @@ import { create } from 'zustand';
 // Mal: mezclar estado de servidor dentro del store de cliente
 const useFiltroStore = create((set) => ({
   zona: 'todas',
-  envios: [], // esto no debería vivir acá
+  envios: [], // esto no debería vivir aquí
   setEnvios: (envios) => set({ envios }),
 }));
 

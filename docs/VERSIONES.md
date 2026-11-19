@@ -12,7 +12,7 @@ Mac del dueño (specs/015) y se anota la fecha.
 | Node.js | Node 24 (LTS activa) | nodejs.org/en/about/previous-releases · auditoría de calidad 2026-11-18 |
 | Python | Python 3.14 | python.org/downloads · auditoría de calidad 2026-11-18 |
 | TypeScript | TypeScript 7.x | auditoría de calidad 2026-11-18 (la plantilla de React ya trae TS 7) |
-| Angular | Angular 22 (zoneless, Vitest) | proyecto real `@angular/cli@22` compilado en specs/014 |
+| Angular | Angular 22 (zoneless, Vitest, OnPush por defecto) con TypeScript 6.0, que exige su compilador (`typescript >=6.0 <6.1`) | proyecto real `@angular/cli@22` compilado en specs/014; `ng new` con CLI 22.2.8 / core 22.3.0 el 2026-11-18 |
 | React | React 19.x · Vite 8 · Next.js 16 para servidor | proyectos reales compilados en specs/014 |
 | Kotlin / Android | Kotlin 2.4 · AGP 9 · `targetSdk` 36 | developer.android.com · el JDK de compilación lo decide la sonda de specs/015 |
 | Kotlin Multiplatform | Kotlin 2.4 con `com.android.kotlin.multiplatform.library` | kotlinlang.org/docs/multiplatform · auditoría de calidad 2026-11-18 |

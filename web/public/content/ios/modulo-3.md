@@ -50,8 +50,27 @@ path.append(tarea) // push programático
 **Límites y decisión de uso:** La pila de navegación representa destinos, no autorización sobre sus datos. Guarda identidades estables en lugar de objetos vivos y valida una ruta restaurada: el recurso pudo eliminarse o dejar de pertenecer al usuario.
 
 #### Paso 4 · Demostración guiada desde cero
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp` (como en los módulos 1 y 2). Crea `AppRutaFlow.swift` con **File ▸ New ▸ File ▸ Swift File** y escribe:
+
 ```swift
+import SwiftUI
+
 struct Envio: Hashable { let guia: String }
+
+struct ListaEnvios: View {
+    let guias = ["RF-4471", "RF-5002"]
+    var body: some View {
+        List(guias, id: \.self) { guia in
+            NavigationLink(guia, value: Envio(guia: guia)) // empuja un valor, no una vista
+        }
+        .navigationTitle("Envíos")
+    }
+}
+
+struct DetalleEnvio: View {
+    let guia: String
+    var body: some View { Text("Detalle de \(guia)") }
+}
 
 struct AppRutaFlow: View {
     @State private var path = NavigationPath()
@@ -65,6 +84,8 @@ struct AppRutaFlow: View {
 // Simula abrir una notificación push:
 // path.append(Envio(guia: "RF-4471"))
 ```
+
+En el archivo `@main` que generó Xcode (el que contiene `WindowGroup`), cambia `ContentView()` por `AppRutaFlow()`.
 
 **Ejecuta el ejemplo:**
 
@@ -125,13 +146,55 @@ TabView
 **Límites y decisión de uso:** Una presentación modal no debe ocultar una tarea incompleta sin posibilidad de recuperación. Define qué se guarda al cerrar y prueba cancelación; evita abrir varios modales simultáneos como respuesta a eventos repetidos.
 
 #### Paso 4 · Demostración guiada desde cero
-```swift
-.sheet(isPresented: $mostrarConfirmarEntrega) { ConfirmarEntregaBoton(entregado: $entregado) }
-.fullScreenCover(isPresented: $mostrarOnboarding) { OnboardingConductorView() }
+Sigue en el proyecto del Tema 1 (usa su `ListaEnvios`). Reemplaza el contenido de `ContentView.swift` y, en el archivo `@main`, vuelve a usar `ContentView()` en `WindowGroup`:
 
-TabView {
-    NavigationStack { ListaEnvios() }.tabItem { Label("Envíos", systemImage: "shippingbox") }
-    NavigationStack { HistorialEnvios() }.tabItem { Label("Historial", systemImage: "clock") }
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    @State private var mostrarConfirmarEntrega = false
+    @State private var mostrarOnboarding = true
+    @State private var entregado = false
+
+    var body: some View {
+        TabView {
+            NavigationStack {
+                ListaEnvios()
+                    .toolbar { Button("Confirmar") { mostrarConfirmarEntrega = true } }
+            }
+            .tabItem { Label("Envíos", systemImage: "shippingbox") }
+            NavigationStack { HistorialEnvios(entregado: entregado) }
+                .tabItem { Label("Historial", systemImage: "clock") }
+        }
+        .sheet(isPresented: $mostrarConfirmarEntrega) { ConfirmarEntregaBoton(entregado: $entregado) }
+        .fullScreenCover(isPresented: $mostrarOnboarding) { OnboardingConductorView(visible: $mostrarOnboarding) }
+    }
+}
+
+struct ConfirmarEntregaBoton: View {
+    @Binding var entregado: Bool
+    @Environment(\.dismiss) private var cerrar
+    var body: some View {
+        Button("Confirmar entrega de RF-4471") { entregado = true; cerrar() }
+    }
+}
+
+struct OnboardingConductorView: View {
+    @Binding var visible: Bool
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Bienvenido a RutaFlow")
+            Button("Empezar ruta") { visible = false } // única salida: el flujo es obligatorio
+        }
+    }
+}
+
+struct HistorialEnvios: View {
+    let entregado: Bool
+    var body: some View {
+        Text(entregado ? "RF-4471 entregado" : "Sin entregas hoy")
+            .navigationTitle("Historial")
+    }
 }
 ```
 
@@ -185,16 +248,27 @@ flowchart TD
     D -->|Sí| E["path.append(Envio(guia:))"]
 ```
 
-En tu propio proyecto RutaFlow, escribe este handler en `ContentView.swift`, junto al `Form` de motivo de no entrega que crearás en el Paso 6. Límite de la decisión: no conviene validar el formato de la URL en más de un lugar disperso de la app — centralizá esa validación en el único punto de entrada `.onOpenURL`, antes de que el valor llegue a `NavigationPath`; validar tarde, después de ya haber navegado, no conviene porque la vista de destino ya habría recibido un valor no confiable.
+En el proyecto del Tema 1, agrega este handler a `AppRutaFlow` en `AppRutaFlow.swift` y vuelve a usar `AppRutaFlow()` en `WindowGroup`. Para que iOS entregue los enlaces `rutaflow://` a tu app, registra el esquema en **Target ▸ Info ▸ URL Types** (URL Schemes: `rutaflow`). Límite de la decisión: no conviene validar el formato de la URL en más de un lugar disperso de la app — centralizá esa validación en el único punto de entrada `.onOpenURL`, antes de que el valor llegue a `NavigationPath`; validar tarde, después de ya haber navegado, no conviene porque la vista de destino ya habría recibido un valor no confiable.
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
+Reemplaza la `struct AppRutaFlow` del Tema 1 por esta versión (el resto del archivo no cambia):
+
 ```swift
-.onOpenURL { url in
-    guard url.scheme == "rutaflow", url.host == "envio",
-          let guia = url.pathComponents.last, guia.hasPrefix("RF-") else { return }
-    path.append(Envio(guia: guia))
+struct AppRutaFlow: View {
+    @State private var path = NavigationPath()
+    var body: some View {
+        NavigationStack(path: $path) {
+            ListaEnvios()
+                .navigationDestination(for: Envio.self) { envio in DetalleEnvio(guia: envio.guia) }
+        }
+        .onOpenURL { url in
+            guard url.scheme == "rutaflow", url.host == "envio",
+                  let guia = url.pathComponents.last, guia.hasPrefix("RF-") else { return }
+            path.append(Envio(guia: guia))
+        }
+    }
 }
 ```
 

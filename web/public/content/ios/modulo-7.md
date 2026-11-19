@@ -54,6 +54,8 @@ $texto
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import Combine
+
 class BuscadorEnviosViewModel: ObservableObject {
     @Published var textoBusqueda = ""
     private var cancelables = Set<AnyCancellable>()
@@ -111,16 +113,29 @@ Publishers.CombineLatest($filtro, $orden)
 **Límites y decisión de uso:** Debounce retrasa emisiones y puede ser inapropiado para acciones que deben ejecutarse inmediatamente. combineLatest necesita valores de sus fuentes; define estados iniciales y prueba ausencia de datos para no dejar la pantalla esperando sin explicación.
 
 #### Paso 4 · Demostración guiada desde cero
-```swift
-$textoBusqueda
-    .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-    .removeDuplicates()
-    .sink { valor in print("buscando guía: \(valor)") }
-    .store(in: &cancelables)
+Reemplaza el contenido de `BuscadorEnviosViewModel.swift` (Tema 1) por esta versión:
 
-Publishers.CombineLatest($textoBusqueda, $zonaFiltro)
-    .sink { texto, zona in print("filtrar: \(texto) en \(zona)") }
-    .store(in: &cancelables)
+```swift
+import Combine
+import Foundation
+
+class BuscadorEnviosViewModel: ObservableObject {
+    @Published var textoBusqueda = ""
+    @Published var zonaFiltro = "Norte"
+    private var cancelables = Set<AnyCancellable>()
+
+    init() {
+        $textoBusqueda
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .removeDuplicates()
+            .sink { valor in print("buscando guía: \(valor)") }
+            .store(in: &cancelables)
+
+        Publishers.CombineLatest($textoBusqueda, $zonaFiltro)
+            .sink { texto, zona in print("filtrar: \(texto) en \(zona)") }
+            .store(in: &cancelables)
+    }
+}
 ```
 
 **Ejecuta el ejemplo:**
@@ -173,17 +188,31 @@ flowchart TD
     A -->|Resultado único| C["async/await\n(confirmarEntrega)"]
 ```
 
-En tu propio proyecto RutaFlow, escribe `confirmarEntrega` en `DetalleEntregaView.swift` y la búsqueda con debounce en `BuscadorEnviosViewModel.swift`; crea cada archivo con **File ▸ New ▸ File ▸ Swift File** y asígnalo al target de la app.
+Para comparar los dos modelos sin tocar tu app, este ejemplo corre como paquete ejecutable: un `PassthroughSubject` hace de campo de texto y `confirmarEntrega` simula la petición del Módulo 5.
 
 ---
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import Combine
+import Foundation
+
 // Flujo continuo: correcto con Combine (Temas 1-2)
-$textoBusqueda.debounce(for: .milliseconds(300), scheduler: RunLoop.main).sink { ... }
+let texto = PassthroughSubject<String, Never>()
+let suscripcion = texto
+    .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+    .sink { valor in print("buscando guía: \(valor)") }
+for parcial in ["R", "RF", "RF-4471"] { texto.send(parcial) } // solo pasa el último
+try await Task.sleep(nanoseconds: 500_000_000)
 
 // Operación puntual: correcto con async/await (Módulo 5), NO con Combine
+func confirmarEntrega(guia: String, pin: String) async throws -> String {
+    try await Task.sleep(nanoseconds: 100_000_000) // simula la petición del Módulo 5
+    return "\(guia) entregado"
+}
 let resultado = try await confirmarEntrega(guia: "RF-4471", pin: "837201")
+print(resultado)
+suscripcion.cancel()
 ```
 
 **Ejecuta el ejemplo:**
@@ -198,7 +227,7 @@ swift run
 ```
 Este ejemplo tiene instrucciones al nivel superior (`let`, `await`, `print`): corre como paquete ejecutable, no dentro de la app (ver «Crea el proyecto base RutaFlowApp» en el capítulo 0).
 
-Resultado esperado: la búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
+Resultado esperado: `swift run` imprime una sola vez `buscando guía: RF-4471` (el `debounce` descarta "R" y "RF") y después `RF-4471 entregado`. La búsqueda en vivo usa Combine porque nunca "termina" mientras la pantalla esté abierta; `confirmarEntrega` usa `async`/`await` porque es una sola llamada con un resultado final, sin necesidad de ningún `AnyCancellable`.
 #### Paso 5 · Práctica guiada
 Pista: reescribí `confirmarEntrega` como un `Publisher` con `Future` en vez de una función `async` — ese es el fallo deliberado de elegir la herramienta equivocada: ahora necesitás gestionar un `AnyCancellable` y un `.store(in:)` para una operación que de por sí termina una sola vez, agregando complejidad de gestión de vida que `async`/`await` nunca necesitó.
 #### Paso 6 · Práctica independiente

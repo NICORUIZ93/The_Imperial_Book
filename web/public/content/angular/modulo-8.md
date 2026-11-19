@@ -60,7 +60,7 @@ cd demo-standalone
 npx -y @angular/cli@22 new . --standalone --style=css --routing=false --skip-git --defaults
 ```
 
-> **Angular 21+:** `HttpClient` ya se puede inyectar sin declarar `provideHttpClient()`; esa función sigue sirviendo para **configurarlo** (`withInterceptors`, `withFetch`…). Por eso este ejemplo usa un servicio propio sin `providedIn`, que sí exige un provider explícito (fuente: https://angular.dev/guide/http/setup).
+> **Angular 21+:** `HttpClient` ya se puede inyectar sin declarar `provideHttpClient()`; esa función sigue sirviendo para **configurarlo** (`withInterceptors`…; `withFetch` ya no hace falta en Angular 22, porque fetch es el transporte por defecto). Por eso este ejemplo usa un servicio propio sin `providedIn`, que sí exige un provider explícito (fuente: https://angular.dev/guide/http/setup).
 
 Crea `src/app/panel-entregas.component.ts`, que depende de un servicio sin `providedIn` para confirmar que la inyección de dependencias real requiere el provider explícito:
 

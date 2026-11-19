@@ -42,7 +42,13 @@ El modificador `.task { }` en una vista SwiftUI lanza una `Task` vinculada autom
 **¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 
 #### Paso 4 · Demostración guiada desde cero
+Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. Crea `DetalleEnvio.swift` con este contenido y, en el archivo `@main` generado, usa `WindowGroup { DetalleEnvio(guia: "RF-4471") }`:
+
 ```swift
+import SwiftUI
+
+struct Envio { let guia: String }
+
 func obtenerEnvio(guia: String) async throws -> Envio {
     try await Task.sleep(for: .seconds(1)) // simula la consulta real a ShipmentEvents
     return Envio(guia: guia)
@@ -196,7 +202,18 @@ En tu propio proyecto RutaFlow, crea `DetalleEnvioViewModel.swift` con **File �
 ---
 
 #### Paso 4 · Demostración guiada desde cero
+En el proyecto del Tema 1 (que ya declara `Envio` y `obtenerEnvio`), crea `DetalleEnvioViewModel.swift`:
+
 ```swift
+import Observation
+
+struct Conductor { let nombre: String }
+
+func obtenerConductor(guia: String) async throws -> Conductor {
+    try await Task.sleep(for: .seconds(1)) // simula la consulta del conductor asignado
+    return Conductor(nombre: "Ana")
+}
+
 @MainActor @Observable
 class DetalleEnvioViewModel {
     var envio: Envio?
@@ -434,9 +451,13 @@ swift test
 
 ```text
 ◇ Test run started.
-✔ Test registraMilEntregasSinPerder() passed
-✔ Test run with 1 test passed
+↳ Testing Library Version: …
+◇ Test registraMilEntregasSinPerder() started.
+✔ Test registraMilEntregasSinPerder() passed after 0.001 seconds.
+✔ Test run with 1 test in 0 suites passed after 0.001 seconds.
 ```
+
+Los tiempos y la versión de la biblioteca cambian en cada máquina.
 
 **Fallo deliberado:** reemplaza el actor por la clase comentada (con `total` y `sumar()`) y llámala dentro de `grupo.addTask`. **Error esperado:** en modo Swift 6, un error en la línea de `grupo.addTask` del tipo `passing closure as a 'sending' parameter risks causing data races between … and concurrent execution of the closure`, con una nota `closure captures 'contador' …`. `addTask` recibe su cierre como parámetro `sending`, así que el compilador comprueba que lo capturado no siga accesible desde la tarea actual; el texto exacto entre «between» y «and» depende de la versión del compilador. **Diagnóstico:** la clase tiene estado mutable y cruzaría a varias tareas. Conviértela en actor; no la marques `@unchecked Sendable` sin un lock.
 
@@ -557,9 +578,9 @@ let tarea = Task { @MainActor in
     print("bucle terminado")
 }
 
-try await Task.sleep(for: .milliseconds(350))
+try await Task.sleep(nanoseconds: 350_000_000) // (for:) exigiría macOS 13 en Package.swift
 tarea.cancel() // como salir de la pantalla
-try await Task.sleep(for: .milliseconds(100))
+try await Task.sleep(nanoseconds: 100_000_000)
 ```
 
 Ejecútalo:

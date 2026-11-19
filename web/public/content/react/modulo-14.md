@@ -1,158 +1,34 @@
-# Módulo 14: React Master: servidor, Next.js, a11y e i18n
+# Módulo 14: Next.js en producción: caché, Proxy, imágenes, React Aria e i18n
 
 
 ## Aprende construyendo
 
-### Tema 1: Server Components y streaming
+**Qué queda fuera y dónde está:** Server Components, streaming con `Suspense` y Server Actions se enseñan en el Módulo 10; la autorización dentro de una acción y la frontera de seguridad cliente/servidor, en el Módulo 13, Tema 3; la hidratación determinista y el formato de fechas por zona, en el Módulo 13, Tema 4. Este módulo parte de esas bases y solo trata lo que no aparece antes: caché ISR, metadatos y Proxy, imágenes y fuentes, componentes accesibles con React Aria e internacionalización con mensajes ICU.
+
+**Proyecto del módulo:** todos los temas trabajan en un proyecto Next.js 16 nuevo, `rutaflow-next`, creado en el Tema 1 sin carpeta `src` (el alias `@/` apunta a la raíz). Usa Node 24 LTS.
+
+### Tema 1: Next.js ISR, Metadata y Proxy (antes Middleware)
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir `app/envios/page.tsx` como Server Component que hace streaming de una sección lenta con `Suspense`, en vez de bloquear toda la página hasta que todo esté listo. **Prerrequisitos:** Node.js LTS, npm y un proyecto Next.js con App Router; confirma `npx next --version`.
+Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. **Prerrequisitos:** Módulo 10 (App Router y Server Components) y Módulo 13, Tema 3 (autorización en el servidor). Este ejemplo usa Next.js 16, runtime Node y la configuración tradicional de caché, sin `cacheComponents`; en Next.js 15 la convención equivalente es `middleware.ts` con función `middleware`.
 
 #### Paso 2 · Contexto y caso real
-La página pública de seguimiento de un envío tarda ~2 segundos en mostrar CUALQUIER contenido porque el historial de eventos (una consulta lenta) se espera con `await` antes del `return`, bloqueando también a la lista de datos del envío que ya estaba lista en 50ms.
+**¿Por qué es importante?** El panel de operadores contiene datos privados, pero el seguimiento público solo muestra guía y estado. Usar una cookie presente como prueba de identidad o cachear la vista privada como una pública cruza una frontera de seguridad.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un Server Component se ejecuta solo en el servidor y no agrega JavaScript propio al bundle del cliente; puede hacer `await` directo sobre datos sin un `useEffect`. Un límite `<Suspense>` permite que React envíe (haga streaming de) el HTML ya listo de inmediato, mientras lo que está dentro del límite llega después, sin que un `await` lento afuera del límite bloquee a lo que ya estaba listo. La analogía: una cocina que saca los platos que ya están listos en vez de retener todo el pedido hasta que el plato más lento también esté listo.
+Proxy puede filtrar navegación antes del render. **Analogía:** un aviso en la entrada no sustituye verificar la identidad en la operación. La presencia de una cookie solo permite una comprobación optimista; su firma, vigencia y permisos se validan en el servidor. Fuente oficial: [autenticación en Next.js](https://nextjs.org/docs/app/guides/authentication).
 
-**Diagrama: Full-stack React con Next.js**
-
-```mermaid
-graph TD
-    A["Cliente<br/>navegador"]
-    B["Server Components<br/>App Router"]
-    C["Se ejecutan<br/>en servidor"]
-    D["Sin JS enviado<br/>Acceso a datos directo"]
-    E["'use client'<br/>Client Components"]
-    F["Se ejecutan<br/>en cliente"]
-    G["Interactividad<br/>onClick, estado"]
-    H["Server Actions"]
-    I["Mutaciones<br/>en servidor"]
-
-    A -->|Request| B
-    B -->|Renderiza| C
-    C -->|Ventaja| D
-    A -->|Necesita interactividad| E
-    E -->|Renderiza| F
-    F -->|Ventaja| G
-    A -->|Envía datos| H
-    H -->|Ejecuta| I
-
-    style D fill:#e8f5e9
-    style G fill:#2196f3
-    style I fill:#4caf50
-```
-
-**¿Por qué es importante?** Un `await` lento fuera de un límite `Suspense` bloquea todo lo demás en ese componente, aunque el resto de los datos ya estuviera listo — el streaming solo funciona dentro de los límites que vos definís explícitamente.
-
-**Conceptos clave:** Server Component, `Suspense`, streaming por límite, `await` bloqueante.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Separa estado básico e historial lento del seguimiento mediante límites de streaming. Retrasa solo el historial y comprueba que el cliente puede leer la guía antes de que termine esa consulta.
+ISR conserva una versión pública y permite regenerarla después del intervalo cuando llega otra petición. No es un temporizador que actualiza puntualmente cada 60 segundos; durante regeneración puede servirse una versión anterior. Fuente oficial: [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration).
 
 #### Paso 4 · Demostración guiada
-Parte de una carpeta vacía y crea tu propio proyecto Next.js con Node 24 LTS:
-```bash
-npx create-next-app@latest ejemplo-react-streaming --ts --app --no-src-dir --use-npm --yes
-cd ejemplo-react-streaming
-```
-Conserva el `app/layout.tsx` generado y crea `app/envios/data.ts` con datos ficticios y retardos controlados:
-```ts
-export type Envio = { id: string; guia: string; estado: string };
-const esperar = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-export async function obtenerEnvios(empty = false): Promise<Envio[]> {
-  await esperar(50);
-  return empty ? [] : [{ id: 'e-1', guia: 'RF-4471', estado: 'En ruta' }];
-}
-export async function obtenerHistorial(envioId: string): Promise<string[]> {
-  await esperar(1200);
-  return [`${envioId}: Recogido`, `${envioId}: En tránsito`];
-}
-```
-Crea `app/envios/ListaEnvios.tsx`:
-```tsx
-import type { Envio } from './data';
-export function ListaEnvios({ envios }: { envios: Envio[] }) {
-  return <ul>{envios.map(envio =>
-    <li key={envio.id}>{envio.guia}: {envio.estado}</li>)}</ul>;
-}
-```
-Crea `app/envios/HistorialEnvio.tsx` como Server Component asíncrono:
-```tsx
-import { obtenerHistorial } from './data';
-export async function HistorialEnvio({ envioId }: { envioId: string }) {
-  const eventos = await obtenerHistorial(envioId);
-  return <ol>{eventos.map(evento => <li key={evento}>{evento}</li>)}</ol>;
-}
-```
-Crea `app/envios/page.tsx` con este contenido:
-```tsx
-import { Suspense } from 'react';
-import { obtenerEnvios } from './data';
-import { ListaEnvios } from './ListaEnvios';
-import { HistorialEnvio } from './HistorialEnvio';
-export const dynamic = 'force-dynamic';
-export default async function EnviosPage({ searchParams }: { searchParams: Promise<{ empty?: string }> }) {
-  const { empty } = await searchParams;
-  const envios = await obtenerEnvios(empty === '1');
-  if (envios.length === 0) return <main><h1>Sin envíos</h1></main>;
-  return <main><ListaEnvios envios={envios} />
-    <Suspense fallback={<p>Cargando historial…</p>}>
-      <HistorialEnvio envioId={envios[0].id} />
-    </Suspense>
-  </main>;
-}
-```
-Compila y arranca el servidor de producción:
-```bash
-npm run build
-npm start
-```
-Abre `/envios` y `/envios?empty=1`. **Resultado esperado:** la lista aparece antes del historial y el caso vacío no accede a `envios[0]`. Para observar los fragmentos sin el buffering visual del navegador, usa `curl --no-buffer http://127.0.0.1:3000/envios` y busca el fallback antes de `Recogido`. Una conexión o proxy puede agrupar fragmentos; mide llegada del contenido, no solo el primer byte.
-
-**Fallo deliberado:** importa `obtenerHistorial` y espéralo en `EnviosPage` antes del return. Esa espera retrasa también la lista. Compara la llegada de ambos fragmentos y restaura el componente async dentro de Suspense. Los temas posteriores añaden autenticación/persistencia al proyecto; no están implícitas en esta demostración pública.
-
-#### Paso 5 · Práctica guiada
-Pista: medí el tiempo hasta el primer byte (`curl -w "%{time_starttransfer}\n" -o /dev/null -s http://localhost:3000/envios`) con y sin el `<Suspense>` — la diferencia numérica es la evidencia, no la percepción visual.
-
-#### Paso 6 · Práctica independiente
-Agregá una segunda sección lenta (por ejemplo `EstadisticasEnvio`) con su propio límite `<Suspense>` independiente, y confirmá que ambas secciones hacen streaming por separado: una puede terminar antes que la otra sin esperarse entre sí.
-
-#### Paso 7 · Cierre
-Entrega la página con streaming del Paso 4, el bloqueo total reproducido en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué el streaming ocurre por límite `Suspense`, no por página completa. Como siguiente paso, estudia Server Actions para las mutaciones de esos mismos datos. Errores comunes: hacer `await` de algo lento fuera de cualquier `Suspense`, anulando el streaming de todo lo demás; marcar un componente como `'use client'` sin necesitarlo, perdiendo el beneficio de no enviar su JavaScript. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
-
-### Tema 2: Server Actions y seguridad
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir una Server Action `marcarEntregado` que valida su entrada con `zod` y verifica en el servidor que el operador tiene permiso sobre ESE envío, y vas a reproducir el fallo de confiar en el id que envía el cliente sin revalidar el permiso. **Prerrequisitos:** Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Un operador puede marcar como entregado un envío que NO le corresponde, simplemente editando el campo oculto `envioId` del formulario en las DevTools antes de enviarlo — la acción solo confiaba en el id recibido, sin volver a comprobar en el servidor si ese operador tiene permiso sobre ese envío específico.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Una Server Action marcada `'use server'` queda expuesta como un endpoint invocable: cualquier cliente puede llamarla con CUALQUIER valor, sin importar qué muestre la interfaz. El servidor es el único lugar donde la autorización es confiable; validar la forma de los datos con `zod` no reemplaza verificar que ese usuario puede actuar sobre ese recurso específico. La analogía: una ventanilla alcanzable por cualquiera que sepa el número — el empleado igual debe comprobar que el documento de identidad corresponde a la cuenta, nunca confiar en lo que la persona afirma.
-
-**¿Por qué es importante?** Una Server Action es un endpoint invocable con cualquier valor, sin importar qué muestre la interfaz; validar el formato del dato no reemplaza comprobar que ese usuario puede actuar sobre ese recurso específico.
-
-**Conceptos clave:** `'use server'`, validación de esquema vs. autorización, confianza cero en datos del cliente.
-
-**Transferencia al proyecto integrador «Portal de clientes»:** Autoriza la acción de confirmar sobre la guía concreta en el servidor. Prueba sesión ausente, guía ajena y entrada inválida, verificando que ningún caso rechazado modifica la base.
-
-**Límites y decisión de uso:** Una Server Action sigue siendo una operación invocable con datos manipulables. Valida sesión antes de usar su identidad, autoriza sobre el recurso y protege cambios concurrentes; el esquema de entrada solo comprueba forma, no permisos.
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
-
-Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
+**Desde cero:** crea el proyecto del módulo:
 
 ```bash
-npm run build
-npm run start
+npx create-next-app@latest rutaflow-next --ts --app --no-src-dir --use-npm --yes
+cd rutaflow-next
 ```
 
-Abre el formulario que invoca `marcarEntregado`; prueba un envío del usuario autenticado y otro de un operador distinto. Comprueba el rechazo y que el segundo registro no cambia en la base.
-
-El ejemplo usa zod (`npm install zod`), un repositorio `db.envio` con `id`, `operadorId` y `estado` (en producción, Prisma) y `auth()`, que valida la sesión y devuelve `{ userId }` o null. Para el laboratorio, crea estos dos stubs con dos operadores y guías distintas.
-
-`lib/auth.ts`:
+Crea un stub de sesión con dos operadores. `lib/auth.ts`:
 
 ```ts
 import { cookies } from 'next/headers';
@@ -171,82 +47,7 @@ export async function auth(): Promise<{ userId: string } | null> {
 }
 ```
 
-`lib/db.ts`:
-
-```ts
-// Stub en memoria con la misma forma que el repositorio Prisma `db.envio`.
-type Envio = { id: string; operadorId: string; estado: string };
-
-const envios: Envio[] = [
-  { id: 'RF-4471', operadorId: 'operador-ana', estado: 'en ruta' },
-  { id: 'RF-5101', operadorId: 'operador-luis', estado: 'en ruta' },
-];
-
-export const db = {
-  envio: {
-    async updateMany({ where, data }: { where: Partial<Envio>; data: Partial<Envio> }) {
-      const coinciden = envios.filter((envio) =>
-        Object.entries(where).every(([campo, valor]) => envio[campo as keyof Envio] === valor),
-      );
-      coinciden.forEach((envio) => Object.assign(envio, data));
-      return { count: coinciden.length };
-    },
-  },
-};
-```
-
-Para simular la sesión, crea en DevTools → Application → Cookies una cookie `session` con valor `token-ana` (o `token-luis` para el otro operador). Crea también un formulario en `app/page.tsx` que invoque la acción: `<form action={marcarEntregado}><input type="hidden" name="envioId" value="RF-4471" /><button>Marcar entregado</button></form>`.
-
-```tsx
-// app/actions.ts
-'use server';
-import { z } from 'zod';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db';
-
-const schema = z.object({ envioId: z.string().regex(/^RF-\d+$/) });
-
-export async function marcarEntregado(formData: FormData) {
-  const session = await auth();
-  if (!session?.userId) throw new Error('Sesión requerida');
-  const { envioId } = schema.parse({ envioId: formData.get('envioId') });
-
-  // Autoriza y actualiza con el mismo predicado para evitar una comprobación obsoleta.
-  const result = await db.envio.updateMany({
-    where: { id: envioId, operadorId: session.userId },
-    data: { estado: 'entregado' },
-  });
-  if (result.count !== 1) throw new Error('Envío no disponible para este operador');
-}
-```
-Resultado esperado: marcar como entregado un envío propio funciona; `zod` rechaza un `envioId` con formato inválido antes de llegar a la base de datos.
-
-**Fallo deliberado:** quita `operadorId: session.userId` del predicado de `updateMany`. Edita el campo oculto `envioId` en las DevTools del navegador para apuntar a un envío de otro operador (`RF-5101` con la sesión `token-ana`) y envía el formulario: la acción lo acepta y lo marca como entregado, porque `zod` valida la FORMA del dato (`RF-\d+`), no si el usuario tiene permiso sobre ese id específico.
-
-#### Paso 5 · Práctica guiada
-Pista: `zod` que valida el formato de `envioId` pasa aunque el id pertenezca a otro operador — prueba exactamente ese caso (un id ajeno con formato válido) para confirmar que el problema es de autorización, no de validación de esquema.
-
-#### Paso 6 · Práctica independiente
-Restaura el filtro de `operadorId`, y agrega una prueba con una sesión simulada que confirme que llamar a `marcarEntregado` con el id de un envío ajeno lanza el error, junto con una prueba de regresión que confirme que el camino legítimo (envío propio) sigue funcionando.
-
-#### Paso 7 · Cierre
-Entrega la acción autorizada del Paso 4, el envío ajeno modificado sin autorización del Paso 5, y las dos pruebas del Paso 6; explica por qué validar la forma de los datos con `zod` no es lo mismo que autorizar la operación sobre un recurso específico. Como siguiente paso, estudia ISR y Middleware para proteger rutas completas, no solo acciones puntuales. Errores comunes: confiar en cualquier dato que llega del cliente (incluidos ids en campos ocultos) sin revalidar permisos en el servidor; registrar tokens de sesión completos en logs de error. Fuente oficial: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security.
-
-### Tema 3: Next.js ISR, Metadata y Proxy (antes Middleware)
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. **Prerrequisitos:** Next.js con App Router y autenticación del tema anterior. Este ejemplo usa Next.js 16, runtime Node y la configuración tradicional de caché, sin `cacheComponents`; en Next.js 15 la convención equivalente es `middleware.ts` con función `middleware`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El panel de operadores contiene datos privados, pero el seguimiento público solo muestra guía y estado. Usar una cookie presente como prueba de identidad o cachear la vista privada como una pública cruza una frontera de seguridad.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Proxy puede filtrar navegación antes del render. **Analogía:** un aviso en la entrada no sustituye verificar la identidad en la operación. La presencia de una cookie solo permite una comprobación optimista; su firma, vigencia y permisos se validan en el servidor. Fuente oficial: [autenticación en Next.js](https://nextjs.org/docs/app/guides/authentication).
-
-ISR conserva una versión pública y permite regenerarla después del intervalo cuando llega otra petición. No es un temporizador que actualiza puntualmente cada 60 segundos; durante regeneración puede servirse una versión anterior. Fuente oficial: [ISR](https://nextjs.org/docs/app/guides/incremental-static-regeneration).
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
+Para simular la sesión, crea en DevTools → Application → Cookies una cookie `session` con valor `token-ana`.
 
 Crea `proxy.ts` en la raíz del proyecto Next.js:
 
@@ -264,7 +65,7 @@ export function proxy(request: NextRequest) {
 export const config = { matcher: '/panel/:path*' };
 ```
 
-En `app/panel/layout.tsx` comprueba realmente la sesión con el `auth` de `lib/auth.ts` (Tema 2). El contrato de `auth` del proyecto debe devolver una identidad validada o null; nunca se limita a leer la cookie. Repite autorización por recurso en cada consulta y mutación del backend, sin depender del layout.
+En `app/panel/layout.tsx` comprueba realmente la sesión con el `auth` de `lib/auth.ts`. El contrato de `auth` del proyecto debe devolver una identidad validada o null; nunca se limita a leer la cookie. Repite autorización por recurso en cada consulta y mutación del backend, sin depender del layout.
 
 ```tsx
 import type { ReactNode } from 'react';
@@ -335,10 +136,10 @@ Entrega las respuestas y explica la diferencia entre navegación, autorización 
 
 **Límites y decisión de uso:** Esta ficha estática demuestra regeneración del HTML. Al conectar datos reales debes definir caché e invalidación de esa fuente y mantener toda información privada fuera de esta ruta pública.
 
-### Tema 4: Optimización de imágenes y fuentes
+### Tema 2: Optimización de imágenes y fuentes
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir `app/components/Photo.tsx` con `next/image` y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con `next/font` en vez de un `<link>` bloqueante, midiendo el CLS antes y después. **Prerrequisitos:** Tema 3 de este módulo.
+Al finalizar vas a construir `app/components/Photo.tsx` con `next/image` y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con `next/font` en vez de un `<link>` bloqueante, midiendo el CLS antes y después. **Prerrequisitos:** Tema 1 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 La foto de evidencia de entrega en la página de detalle de un envío no tenía dimensiones explícitas: toda la página saltaba visiblemente hacia abajo apenas la imagen terminaba de descargar, un CLS (Cumulative Layout Shift) alto y medible, no solo una percepción de que "se ve mal".
@@ -353,9 +154,9 @@ La foto de evidencia de entrega en la página de detalle de un envío no tenía 
 **Transferencia al proyecto integrador «Portal de clientes»:** Reserva el espacio de la fotografía de evidencia y aplica la fuente seleccionada en el layout. Compara desplazamiento visual con descarga lenta y conserva la medición de la página real.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
+**Desde cero:** trabaja en el proyecto `rutaflow-next` del Tema 1 y escribe los archivos de este tema.
 
-Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
+Desde la raíz de `rutaflow-next`, ejecuta:
 
 ```bash
 npm run build
@@ -384,21 +185,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 ```
 Resultado esperado: Lighthouse reporta un CLS cercano a 0 para la foto, y el texto se pinta sin esperar la descarga de la fuente externa.
 
-**Fallo deliberado:** reemplazá `<Image src={src} alt={alt} width={400} height={300} />` por un `<img src={src} alt={alt} />` plano, sin dimensiones. El navegador ya no reserva espacio hasta que la imagen descarga, y el contenido debajo salta visiblemente — medible como un CLS alto en Lighthouse, no una impresión subjetiva.
+**Fallo deliberado:** reemplaza `<Image src={src} alt={alt} width={400} height={300} />` por un `<img src={src} alt={alt} />` plano, sin dimensiones. El navegador ya no reserva espacio hasta que la imagen descarga, y el contenido debajo salta visiblemente — medible como un CLS alto en Lighthouse, no una impresión subjetiva.
 
 #### Paso 5 · Práctica guiada
-Pista: corré Lighthouse (o el panel "Performance" de DevTools) antes y después del cambio y compará el valor numérico de CLS — el salto visual es la pista, el número es la evidencia.
+Pista: corre Lighthouse (o el panel "Performance" de DevTools) antes y después del cambio y compara el valor numérico de CLS — el salto visual es la pista, el número es la evidencia.
 
 #### Paso 6 · Práctica independiente
-Restaurá `next/image`, y además compará: quitá temporalmente `next/font` en favor de un `<link>` externo a Google Fonts y medí la diferencia en First Contentful Paint entre ambas estrategias.
+Restaura `next/image`, y además compara: quita temporalmente `next/font` en favor de un `<link>` externo a Google Fonts y mide la diferencia en First Contentful Paint entre ambas estrategias.
 
 #### Paso 7 · Cierre
 Entrega la foto sin salto de layout del Paso 4, el CLS alto reproducido con `<img>` plano del Paso 5, y la comparación de FCP entre `next/font` y un `<link>` externo del Paso 6; explica por qué reservar espacio de antemano es lo que elimina el salto, no el formato del archivo de imagen. Como siguiente paso, estudia accesibilidad con React Aria para esa misma página. Errores comunes: usar `<img>` plano sin `width`/`height` donde `next/image` ya está disponible; cargar una fuente externa bloqueante cuando `next/font` puede autohospedarla. Fuente oficial: https://nextjs.org/docs/app/building-your-application/optimizing/images y https://nextjs.org/docs/app/building-your-application/optimizing/fonts.
 
-### Tema 5: Accesibilidad y React Aria
+### Tema 3: Accesibilidad y React Aria
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a construir `app/components/Dialog.tsx` con `useDialog` de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un `<div>` plano que es invisible para un lector de pantalla. **Prerrequisitos:** Tema 4 de este módulo.
+Al finalizar vas a construir `app/components/Dialog.tsx` con `useDialog` de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un `<div>` plano que es invisible para un lector de pantalla. **Prerrequisitos:** Tema 2 de este módulo y Módulo 13, Tema 2 (foco y semántica).
 
 #### Paso 2 · Contexto y caso real
 Un diálogo de confirmación construido como un `<div>` con estilos propios se veía perfecto visualmente, pero un lector de pantalla no anunciaba nada al abrirlo, y la tecla Tab podía mover el foco a elementos detrás del diálogo mientras seguía abierto.
@@ -415,9 +216,9 @@ Un `<div>` no tiene ninguna semántica ARIA implícita: un lector de pantalla no
 **Límites y decisión de uso:** El nombre y role de un diálogo no bastan para hacerlo modal. Debes gestionar foco, cierre, restauración e interacción con el fondo mediante una solución completa y probar el recorrido con teclado.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
+**Desde cero:** trabaja en el proyecto `rutaflow-next` del Tema 1 y escribe los archivos de este tema.
 
-Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
+Desde la raíz de `rutaflow-next`, ejecuta:
 
 ```bash
 npm run build
@@ -449,21 +250,21 @@ export function ConfirmarEntregaDialog({ onConfirm, onClose }: Props) {
 ```
 Resultado esperado: un lector de pantalla anuncia "Confirmar entrega, diálogo" al abrirlo, y el árbol de accesibilidad de DevTools muestra `role="dialog"` con ese nombre.
 
-**Fallo deliberado:** quitá `{...dialogProps}` y `{...titleProps}` del JSX, dejando el `div` y el `h2` planos. El diálogo se ve idéntico, pero la pestaña "Accessibility" de Chrome DevTools ya no muestra ningún `role="dialog"` ni nombre accesible para ese nodo — confirmable sin tocar un lector de pantalla real.
+**Fallo deliberado:** quita `{...dialogProps}` y `{...titleProps}` del JSX, dejando el `div` y el `h2` planos. El diálogo se ve idéntico, pero la pestaña "Accessibility" de Chrome DevTools ya no muestra ningún `role="dialog"` ni nombre accesible para ese nodo — confirmable sin tocar un lector de pantalla real.
 
 #### Paso 5 · Práctica guiada
-Pista: usá la pestaña "Accessibility" de Chrome DevTools para inspeccionar el nodo del diálogo antes y después de quitar los props — el rol y el nombre accesible desaparecen del árbol, no solo de la apariencia visual.
+Pista: usa la pestaña "Accessibility" de Chrome DevTools para inspeccionar el nodo del diálogo antes y después de quitar los props — el rol y el nombre accesible desaparecen del árbol, no solo de la apariencia visual.
 
 #### Paso 6 · Práctica independiente
-Restaurá los props de `useDialog`, agregá `useModal`/`FocusScope` para confirmar que Tab no puede escapar del diálogo mientras está abierto, y agregá una prueba automática con `jest-axe` que falle si el `role="dialog"` o el nombre accesible faltan.
+Restaura los props de `useDialog`, agrega `useModal`/`FocusScope` para confirmar que Tab no puede escapar del diálogo mientras está abierto, y agrega una prueba automática con `jest-axe` que falle si el `role="dialog"` o el nombre accesible faltan.
 
 #### Paso 7 · Cierre
 Entrega el diálogo accesible del Paso 4, la pérdida de semántica confirmada en el árbol de accesibilidad del Paso 5, y el atrapado de foco más la prueba con `jest-axe` del Paso 6; explica por qué un componente puede verse idéntico y a la vez ser invisible para un lector de pantalla. Como siguiente paso, estudia i18n para que los textos de ese mismo diálogo sean traducibles. Errores comunes: confiar en que "se ve bien" es lo mismo que "es accesible"; reinventar el atrapado de foco a mano en vez de usar `useModal`/`FocusScope`. Fuente oficial: https://react-spectrum.adobe.com/react-aria/useDialog.html.
 
-### Tema 6: i18n, pluralización y RTL
+### Tema 4: i18n, pluralización y RTL
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a configurar `next-intl` para `/[locale]/envios/[id]` con un mensaje pluralizado correctamente ("1 envío" vs. "3 envíos") y `dir="rtl"` para un locale árabe, y vas a reproducir el fallo de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 5 de este módulo.
+Al finalizar vas a configurar `next-intl` para `/[locale]/envios/[id]` con un mensaje pluralizado correctamente ("1 envío" vs. "3 envíos") y `dir="rtl"` para un locale árabe, y vas a reproducir el fallo de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 3 de este módulo y Módulo 13, Tema 4 (locale y zona decididos en el servidor).
 
 #### Paso 2 · Contexto y caso real
 Agregar un locale "ar" para la expansión de RutaFlow a Medio Oriente expuso dos problemas a la vez: la regla de plural de "N envíos" no tiene la misma forma en árabe que en español (el árabe tiene seis categorías de plural, no dos), y el layout no invertía su dirección, dejando íconos y texto visualmente al revés.
@@ -481,10 +282,10 @@ Las reglas de pluralización son categorías CLDR específicas de cada idioma (`
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 #### Paso 4 · Demostración guiada
-**Desde cero:** trabaja en el proyecto Next.js del Tema 1 (`ejemplo-react-streaming`, creado sin carpeta `src`, así que el alias `@/` apunta a la raíz) y escribe los archivos de este tema.
+**Desde cero:** trabaja en el proyecto `rutaflow-next` del Tema 1 y escribe los archivos de este tema.
 
 
-Desde la raíz del proyecto Next.js del Tema 1, con sus dependencias y variables de entorno configuradas, ejecuta:
+Desde la raíz de `rutaflow-next`, ejecuta:
 
 ```bash
 npm run build
@@ -521,13 +322,13 @@ export default async function LocaleLayout({ children, params }: Props) {
 ```
 Resultado esperado: con el locale "ar", el documento tiene `dir="rtl"` y el conteo de envíos usa la categoría plural árabe correcta según la cantidad, no la regla binaria de español.
 
-**Fallo deliberado:** agregá la clave `envios` solo a `messages/es.json`, sin tocar `messages/ar.json`. Al visitar `/ar/envios`, `next-intl` no encuentra la clave para ese locale: la build falla (o la ruta lanza un error en runtime, según la configuración de `onError`), nunca muestra silenciosamente el texto en español como reemplazo.
+**Fallo deliberado:** agrega la clave `envios` solo a `messages/es.json`, sin tocar `messages/ar.json`. Al visitar `/ar/envios`, `next-intl` no encuentra la clave para ese locale: la build falla (o la ruta lanza un error en runtime, según la configuración de `onError`), nunca muestra silenciosamente el texto en español como reemplazo.
 
 #### Paso 5 · Práctica guiada
-Pista: corré la build (o visitá `/ar/envios` en desarrollo) inmediatamente después de agregar la clave a un solo archivo de idioma — el error aparece ahí, antes de que alguien reporte un texto roto en producción.
+Pista: corre la build (o visita `/ar/envios` en desarrollo) inmediatamente después de agregar la clave a un solo archivo de idioma — el error aparece ahí, antes de que alguien reporte un texto roto en producción.
 
 #### Paso 6 · Práctica independiente
-Agregá la clave `envios` a `messages/ar.json` con las categorías de plural correctas, y agregá una prueba que recorra todas las claves de `messages/es.json` confirmando que cada una tiene su equivalente en `messages/ar.json`, para detectar claves faltantes en CI en vez de en producción.
+Agrega la clave `envios` a `messages/ar.json` con las categorías de plural correctas, y agrega una prueba que recorra todas las claves de `messages/es.json` confirmando que cada una tiene su equivalente en `messages/ar.json`, para detectar claves faltantes en CI en vez de en producción.
 
 #### Paso 7 · Cierre
-Entrega la pluralización y el `dir="rtl"` funcionando del Paso 4, la build rota por la clave faltante del Paso 5, y la prueba de paridad de claves del Paso 6; explica por qué una clave de traducción faltante debe ser un error detectable, nunca un texto de respaldo silencioso. Con esto cerrás el track completo de React, listo para operar en producción real. Errores comunes: tratar la pluralización como un simple singular/plural binario cuando el idioma destino tiene más categorías; fijar `dir="ltr"` de forma fija en vez de derivarlo del locale activo. Fuente oficial: https://next-intl.dev/docs/usage/messages#plurals.
+Entrega la pluralización y el `dir="rtl"` funcionando del Paso 4, la build rota por la clave faltante del Paso 5, y la prueba de paridad de claves del Paso 6; explica por qué una clave de traducción faltante debe ser un error detectable, nunca un texto de respaldo silencioso. Con esto cierras el track completo de React, listo para operar en producción real. Errores comunes: tratar la pluralización como un simple singular/plural binario cuando el idioma destino tiene más categorías; fijar `dir="ltr"` de forma fija en vez de derivarlo del locale activo. Fuente oficial: https://next-intl.dev/docs/usage/messages#plurals.

@@ -1,127 +1,11 @@
-# Módulo 15: Angular Master: pruebas, animación y SSR
+# Módulo 15: Pruebas de signals, E2E, animación y TransferState
 
 
 ## Aprende construyendo
 
-Este módulo cierra el nivel "master" del track con seis técnicas avanzadas, cada una verificada con la herramienta real del ecosistema Angular actual (Vitest + `TestBed`, Playwright, transiciones CSS que respetan `prefers-reduced-motion`, `TransferState`, `isPlatformBrowser`), sin sustituir código por descripción.
+Este módulo reúne cuatro técnicas que no aparecen antes en el curso, cada una verificada con la herramienta real (Vitest, Playwright, transiciones CSS con `prefers-reduced-motion` y `TransferState`). `TestBed` y `ComponentFixture` se enseñan en el Módulo 10, Tema 1; SSR, hidratación e `isPlatformBrowser`, en el Módulo 11, Temas 1 y 2.
 
-### Tema 1: TestBed y ComponentFixture
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás montar un componente standalone real con `TestBed`, establecer sus inputs con `componentRef.setInput`, forzar la detección de cambios y confirmar el DOM renderizado real, no una suposición sobre la plantilla.
-
-**Conocimiento previo:** Módulo 1 de este track (componentes standalone, `input()`/`output()`).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** `TestBed` crea un entorno Angular real y aislado (un `ComponentFixture`) para cada test, sin necesitar arrancar la aplicación completa ni un navegador real; sin dominarlo, cada cambio en un componente solo puede verificarse manualmente en el navegador, un ciclo de feedback lento y no reproducible en CI.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `TestBed.configureTestingModule`, `ComponentFixture`, `componentRef.setInput`, `detectChanges`.
-
-`TestBed.configureTestingModule({ imports: [MiComponente] })` (para un standalone component, se importa directamente, sin un `NgModule` de test) seguido de `createComponent(MiComponente)` produce un `ComponentFixture`, que envuelve una instancia real del componente montada en un DOM real (jsdom en Vitest). `fixture.componentRef.setInput('valor', x)` establece un input de señal de forma segura para el test; `fixture.detectChanges()` dispara la detección de cambios real, actualizando el DOM antes de cualquier aserción.
-
-**Analogía:** `TestBed` es un taller de pruebas aislado donde se monta una réplica funcional real de una sola pieza del sistema (el componente), en vez de tener que ensamblar el vehículo completo para probar un solo faro.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-  A["TestBed.configureTestingModule"] --> B["createComponent(Comp)"]
-  B --> C["componentRef.setInput(...)"]
-  C --> D["fixture.detectChanges()"]
-  D --> E["fixture.nativeElement (DOM real)"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Parte de una carpeta vacía y crea `src/app/contador-entregas.component.ts`:
-
-```bash
-mkdir demo-testbed
-cd demo-testbed
-npx -y @angular/cli@22 new . --standalone --style=css --routing=false --skip-git --defaults
-mkdir -p src/app
-```
-
-```ts
-// src/app/contador-entregas.component.ts
-import { Component, input } from '@angular/core';
-
-@Component({
-  selector: 'app-contador-entregas',
-  standalone: true,
-  template: `<p>Entregas pendientes: {{ cantidad() }}</p>`,
-})
-export class ContadorEntregasComponent {
-  cantidad = input.required<number>();
-}
-```
-
-Confirma con `TestBed` real (no una suposición de plantilla) que el input se refleja en el DOM:
-
-```ts
-// src/app/contador-entregas.component.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { ContadorEntregasComponent } from './contador-entregas.component';
-
-describe('ContadorEntregasComponent', () => {
-  it('muestra en el DOM real la cantidad recibida como input', async () => {
-    await TestBed.configureTestingModule({
-      imports: [ContadorEntregasComponent],
-    }).compileComponents();
-
-    const fixture = TestBed.createComponent(ContadorEntregasComponent);
-    fixture.componentRef.setInput('cantidad', 7);
-    fixture.detectChanges();
-
-    const texto = fixture.nativeElement.querySelector('p').textContent;
-    expect(texto).toContain('Entregas pendientes: 7');
-  });
-});
-```
-
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** los tests pasan; el `nativeElement` REAL (un nodo DOM real dentro de jsdom, no una cadena simulada) contiene el texto `"Entregas pendientes: 7"`, confirmando que `setInput` y `detectChanges` efectivamente propagaron el valor hasta el DOM renderizado.
-
-**Fallo deliberado:** quita `fixture.detectChanges()` después de `setInput` y ejecuta de nuevo el test. FALLA porque `fixture.nativeElement.querySelector('p').textContent` sigue mostrando el placeholder de interpolación no evaluado (o vacío, según el binding) — diagnostica confirmando que `setInput` por sí solo actualiza el valor de la señal, pero NO fuerza sincrónicamente una nueva pasada de detección de cambios sobre el DOM: sin `detectChanges()`, la plantilla no se re-renderiza. Restaura la llamada antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un `output()` al componente (un evento `confirmar`) y un test que dispare un click real (`fixture.nativeElement.querySelector('button').click()`) confirmando, con un spy, que el output emitió.
-2. Confirma con un test que `fixture.componentInstance` da acceso directo a la instancia del componente, útil para inspeccionar señales internas sin depender solo del DOM.
-3. Escribe un test que confirme que cambiar el input DOS veces (`setInput` + `detectChanges` dos veces seguidas) refleja el último valor, no el primero.
-4. Escribe de memoria (sin mirar) un componente con un input de señal, y un test `TestBed` que confirme el DOM renderizado. Compara después contra el patrón del Paso 4.
-
-**Pista:** `fixture.nativeElement` es un nodo DOM REAL (no un mock ni una representación textual) — puedes usar cualquier API estándar del DOM (`querySelector`, `textContent`, `classList`) directamente sobre él, exactamente como en un navegador real.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con el método que fuerza la detección de cambios tras establecer un input:
-
-```ts
-fixture.componentRef.setInput('cantidad', 7);
-fixture.____();
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un componente standalone con un input, y un test `TestBed` que confirme el DOM renderizado tras `setInput` + `detectChanges`. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya montas componentes reales con `TestBed` y confirmas el DOM renderizado, no una suposición sobre la plantilla. El siguiente tema prueba la reactividad de Signals directamente, sin necesitar un componente completo. Fuentes oficiales: [Angular — Testing components](https://angular.dev/guide/testing/components-scenarios).
-
-**Errores comunes:** olvidar `detectChanges()` después de cambiar un input, asumiendo que la propagación es sincrónica sobre el DOM; usar selectores CSS frágiles en vez de consultar por rol o texto visible.
-
-**Cuándo no usarlo:** para lógica pura sin ningún DOM involucrado (un servicio, una función utilitaria), montar un `ComponentFixture` completo es sobrecarga innecesaria; un test unitario directo de la clase es suficiente.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Usa ComponentFixture para cambiar el estado de una entrega y ejecutar la detección necesaria. Comprueba el DOM resultante y una interacción real, no únicamente propiedades privadas de la clase.
-
-### Tema 2: Pruebas de Signals
+### Tema 1: Pruebas de Signals
 
 #### Paso 1 · Objetivo y preparación
 
@@ -245,7 +129,7 @@ Ya confirmas con un spy real que `computed()` memoiza correctamente y solo reeje
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Prueba el total de entregas pendientes derivado de Signals. Añade, completa y elimina una guía; el valor debe cambiar por actualización inmutable sin mutar el arreglo almacenado.
 
-### Tema 3: Cypress y Playwright
+### Tema 2: Cypress y Playwright
 
 #### Paso 1 · Objetivo y preparación
 
@@ -336,7 +220,7 @@ Ya escribes tests E2E reales con locators accesibles y auto-waiting, verificando
 
 **Cuándo no usarlo:** para lógica de negocio pura sin ninguna interacción de UI real, un test E2E completo es una herramienta desproporcionadamente costosa (lenta, frágil ante cambios de infraestructura); un test unitario o de integración más acotado es más apropiado.
 
-### Tema 4: Animaciones accesibles
+### Tema 3: Animaciones accesibles
 
 #### Paso 1 · Objetivo y preparación
 
@@ -465,7 +349,7 @@ Ya confirmas con un test real que una animación respeta la preferencia de movim
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Anima la apertura del detalle manteniendo el foco en un control útil. Con movimiento reducido, comprueba que la información y las acciones permanecen disponibles sin esperar una transición.
 
-### Tema 5: SSR y TransferState
+### Tema 4: SSR y TransferState
 
 #### Paso 1 · Objetivo y preparación
 
@@ -569,7 +453,7 @@ const entregas = state.____(ENTREGAS_KEY, [] as string[]);
 
 #### Paso 7 · Cierre
 
-Ya confirmas con `TransferState` real que un dato obtenido durante el renderizado del servidor se transfiere al cliente sin repetir la petición HTTP original. El siguiente y último tema de este módulo evita que código específico del navegador se ejecute incorrectamente durante el renderizado del servidor. Fuentes oficiales: [Angular — TransferState](https://angular.dev/api/core/TransferState).
+Ya confirmas con `TransferState` real que un dato obtenido durante el renderizado del servidor se transfiere al cliente sin repetir la petición HTTP original. Con esto cierras el módulo. Para proteger código que solo existe en el navegador durante el render del servidor, repasa `isPlatformBrowser` en el Módulo 11, Tema 2. Fuentes oficiales: [Angular — TransferState](https://angular.dev/api/core/TransferState).
 
 **Errores comunes:** definir la `StateKey` por separado en el código de servidor y de cliente con el mismo nombre pero como instancias distintas; olvidar el valor por defecto explícito en `get(...)`, tratando el resultado como si siempre existiera.
 
@@ -577,157 +461,3 @@ Ya confirmas con `TransferState` real que un dato obtenido durante el renderizad
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Transfiere al cliente los datos públicos usados para el primer render. Cuenta las consultas de seguimiento en servidor y navegador: hidratar no debe repetir la petición ni transferir tokens de sesión.
 
-### Tema 6: Hidratación y `provideServerRendering`
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás confirmar, con `TestBed` simulando un contexto no-navegador, que código guardado detrás de `isPlatformBrowser(platformId)` no se ejecuta durante el renderizado del servidor, evitando exactamente el tipo de discrepancia servidor/cliente que causa errores de hidratación; también sabrás cómo `provideServerRendering()` y `provideClientHydration(withEventReplay())` activan SSR e hidratación a nivel de arranque.
-
-**Conocimiento previo:** Tema 5 de este módulo (SSR y TransferState).
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Si un componente accede a una API exclusiva del navegador (`localStorage`, `window`) sin protección durante el renderizado del servidor, la aplicación falla al renderizar en el servidor, O produce un HTML inicial que no coincide con lo que el cliente renderiza al hidratarse — un error de hidratación real que Angular detecta y reporta en consola.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** `isPlatformBrowser`, `PLATFORM_ID`, discrepancia de hidratación.
-
-`isPlatformBrowser(inject(PLATFORM_ID))` confirma en tiempo de ejecución si el código actual corre en un navegador real o en el entorno de renderizado del servidor (Node.js, sin `window`/`localStorage` reales); envolver código específico del navegador en esa comprobación evita que se ejecute donde no debería, la causa más común de errores de hidratación.
-
-**`provideServerRendering` y `provideClientHydration` (la otra mitad, a nivel de arranque).** `isPlatformBrowser` protege código puntual dentro de un servicio o componente, pero la hidratación en sí se activa a nivel de arranque de la aplicación, en dos archivos de configuración distintos:
-
-```ts
-// src/app/app.config.server.ts (arranque del servidor)
-import { ApplicationConfig } from '@angular/core';
-import { provideServerRendering } from '@angular/ssr';
-
-export const serverConfig: ApplicationConfig = {
-  providers: [provideServerRendering()],
-};
-```
-
-```ts
-// src/app/app.config.ts (arranque del cliente, el mismo que se hidrata)
-import { ApplicationConfig } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideClientHydration(withEventReplay()), // reproduce clics/inputs ocurridos antes de hidratar
-  ],
-};
-```
-
-`provideServerRendering()` (paquete `@angular/ssr`) habilita el renderizado en el servidor; `provideClientHydration()` (paquete `@angular/platform-browser`) habilita que el cliente reutilice el HTML ya renderizado en vez de volver a construirlo desde cero, y `withEventReplay()` — generado por defecto por el CLI en proyectos SSR nuevos desde Angular 19 — reproduce eventos del usuario (clics, entradas de texto) que ocurrieron durante la ventana entre el HTML inicial y la hidratación completa, para que no se pierdan.
-
-**Analogía:** `isPlatformBrowser` es como preguntar "¿estoy en la tienda física o en el catálogo impreso?" antes de intentar abrir una puerta real — el catálogo impreso no tiene una puerta física que abrir, y asumir que sí produce un error.
-
-**Diagrama:**
-
-```
-┌── Sin isPlatformBrowser ──────────┐  localStorage.getItem(...) en SSR = ERROR REAL
-└──────────────────────────┘
-┌── Con isPlatformBrowser ──────────┐  código de navegador SOLO se ejecuta en el navegador real
-└──────────────────────────┘
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Continuando en `demo-testbed` (o, si prefieres un ejemplo independiente, parte de una carpeta vacía con `npx -y @angular/cli@22 new demo-hidratacion --standalone --skip-git --defaults` y luego `cd demo-hidratacion`), crea `src/app/preferencias.service.ts`:
-
-```bash
-mkdir -p src/app
-```
-
-```ts
-// src/app/preferencias.service.ts
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-
-@Injectable({ providedIn: 'root' })
-export class PreferenciasService {
-  private platformId = inject(PLATFORM_ID);
-
-  obtenerTemaGuardado(): string {
-    if (!isPlatformBrowser(this.platformId)) {
-      return 'claro'; // valor seguro por defecto: en el servidor NO existe localStorage real
-    }
-    return localStorage.getItem('tema') ?? 'claro';
-  }
-}
-```
-
-Confirma con `TestBed` sobreescribiendo `PLATFORM_ID` que el código guardado NUNCA intenta acceder a `localStorage` fuera del navegador real:
-
-```ts
-// src/app/preferencias.service.spec.ts
-import { TestBed } from '@angular/core/testing';
-import { PLATFORM_ID } from '@angular/core';
-import { PreferenciasService } from './preferencias.service';
-
-describe('PreferenciasService', () => {
-  it('en un contexto de servidor NUNCA intenta acceder a localStorage', () => {
-    TestBed.configureTestingModule({
-      providers: [{ provide: PLATFORM_ID, useValue: 'server' }], // simula el renderizado del servidor
-    });
-
-    const servicio = TestBed.inject(PreferenciasService);
-
-    // si el codigo intentara usar localStorage aqui, este entorno de test NO lo tiene definido -> lanzaria error real
-    expect(() => servicio.obtenerTemaGuardado()).not.toThrow();
-    expect(servicio.obtenerTemaGuardado()).toBe('claro'); // valor seguro por defecto en servidor
-  });
-
-  it('en un contexto de navegador real SI lee localStorage', () => {
-    TestBed.configureTestingModule({
-      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
-    });
-    localStorage.setItem('tema', 'oscuro');
-
-    const servicio = TestBed.inject(PreferenciasService);
-    expect(servicio.obtenerTemaGuardado()).toBe('oscuro');
-
-    localStorage.removeItem('tema');
-  });
-});
-```
-
-```bash
-npx ng test --watch=false
-```
-
-**Resultado esperado:** ambos tests pasan: con `PLATFORM_ID` simulado como `'server'`, el servicio devuelve el valor por defecto seguro SIN lanzar ningún error (confirmando que nunca intenta tocar `localStorage`); con `PLATFORM_ID` como `'browser'`, el servicio SÍ lee el valor real guardado — el mismo código se comporta correctamente en ambos contextos, sin discrepancia.
-
-**Fallo deliberado:** quita la comprobación `if (!isPlatformBrowser(this.platformId))` (dejando solo `return localStorage.getItem('tema') ?? 'claro';` sin protección) y ejecuta de nuevo el primer test. Si el entorno de test no tiene `localStorage` real disponible en ese contexto simulado, el test FALLA con un error real de referencia — diagnostica confirmando en código, no solo en teoría, por qué el error de hidratación ocurre: el mismo código que funciona en el navegador (donde `localStorage` sí existe) falla o se comporta diferente en el servidor (donde no existe de forma nativa), produciendo exactamente la discrepancia que causa errores de hidratación. Restaura la comprobación antes de continuar.
-
-#### Paso 5 · Práctica guiada — repetición progresiva
-
-1. Agrega un método que ESCRIBA en `localStorage` (`guardarTema(valor)`) y confirma con un test que, en contexto de servidor, la escritura simplemente no ocurre (no lanza error, no hace nada), documentando esa decisión de diseño.
-2. Documenta, en un comentario, la diferencia entre `isPlatformBrowser` (verifica en qué plataforma corre el código) y simplemente comprobar `typeof window !== 'undefined'` (una alternativa menos idiomática en Angular pero funcionalmente similar).
-3. Busca en el código de `demo-testbed` (Temas 1-5) algún otro punto donde código de navegador podría ejecutarse sin protección durante SSR, y documenta la corrección necesaria.
-4. Escribe de memoria (sin mirar) un servicio con `isPlatformBrowser` protegiendo acceso a una API de navegador, y dos tests (`server`/`browser`) que confirmen el comportamiento correcto en ambos. Compara después contra el patrón del Paso 4.
-
-**Pista:** sobreescribir el provider de `PLATFORM_ID` en `TestBed.configureTestingModule({ providers: [{ provide: PLATFORM_ID, useValue: 'server' }] })` es la forma oficial y real de simular el contexto de servidor dentro de un test unitario normal, sin necesitar arrancar un proceso Node.js de SSR completo para verificar esta protección específica.
-
-#### Paso 6 · Práctica independiente
-
-**Completa el código:** rellena el espacio con la función que confirma si el código actual corre en un navegador real:
-
-```ts
-if (!____(this.platformId)) {
-  return 'claro';
-}
-```
-
-**Reto de memoria sin mirar:** cierra este documento y escribe, solo de memoria, un servicio protegido con `isPlatformBrowser`, y dos tests que confirmen el comportamiento correcto en contexto de servidor y de navegador. Compara después contra el patrón del Paso 4.
-
-#### Paso 7 · Cierre
-
-Ya proteges código específico del navegador con `isPlatformBrowser`, y configuras `provideServerRendering()` + `provideClientHydration(withEventReplay())` a nivel de arranque, confirmando con tests reales que el mismo código se comporta de forma segura tanto en el servidor como en el navegador, evitando discrepancias de hidratación. Este era el último tema del módulo y del track; el siguiente paso natural es aplicar estas seis técnicas combinadas sobre un proyecto propio de tamaño real. Fuentes oficiales: [Angular — Hydration](https://angular.dev/guide/hydration), [Angular — SSR](https://angular.dev/guide/ssr).
-
-**Errores comunes:** acceder a APIs exclusivas del navegador (`window`, `localStorage`, `document`) sin verificar la plataforma primero; asumir que un error de hidratación es un bug de Angular en vez de una discrepancia real de comportamiento entre servidor y cliente en el propio código de la aplicación.
-
-**Cuándo no usarlo:** para una aplicación sin SSR habilitado (SPA pura, siempre en el navegador), `isPlatformBrowser` siempre devolvería `true` y la comprobación sería código muerto sin ningún propósito real.
-
-**Transferencia al proyecto integrador «Centro de control logístico»:** Protege con `isPlatformBrowser` la lectura del filtro de ruta guardado en `localStorage` del operador, y confirma con `TestBed` que el panel se renderiza en el servidor sin lanzar ningún error antes de hidratarse en el navegador.

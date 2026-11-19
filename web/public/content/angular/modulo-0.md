@@ -3,11 +3,11 @@
 
 ## Antes de comenzar: prepara tu equipo desde cero
 
-No necesitas haber programado antes. Solo necesitas saber crear una carpeta y copiar un comando. Usaremos **Visual Studio Code**, **Node.js LTS**, **Git** y Angular CLI. Un comando es una instrucción escrita en una terminal; ejecútalo con `Enter` y espera a que termine antes de escribir el siguiente.
+No necesitas haber programado antes. Solo necesitas saber crear una carpeta y copiar un comando. Usaremos **Visual Studio Code**, **Node.js 24 LTS**, **Git** y Angular CLI 22. Angular 22 exige Node `^22.22.3`, `^24.15.0` o `>=26` y fija **TypeScript 6.0** (su compilador declara `typescript >=6.0 <6.1`), aunque la línea de la academia para TypeScript es la 7: en este curso usa la versión que instala el CLI. Un comando es una instrucción escrita en una terminal; ejecútalo con `Enter` y espera a que termine antes de escribir el siguiente.
 
 ### Windows
 
-1. Instala [Visual Studio Code](https://code.visualstudio.com/), [Git](https://git-scm.com/download/win) y la versión **LTS** de [Node.js](https://nodejs.org/). Acepta las opciones predeterminadas.
+1. Instala [Visual Studio Code](https://code.visualstudio.com/), [Git](https://git-scm.com/download/win) y la versión **24 LTS** de [Node.js](https://nodejs.org/). Acepta las opciones predeterminadas.
 2. Reinicia VS Code y abre **Terminal → New Terminal**. Debe aparecer PowerShell.
 3. Ejecuta `node --version`, `npm --version` y `git --version`. Cada comando debe mostrar una versión, no “no se reconoce”.
 4. Instala Angular CLI con `npm install -g @angular/cli@22` y comprueba `ng version`.
@@ -21,7 +21,7 @@ No necesitas haber programado antes. Solo necesitas saber crear una carpeta y co
 ### Linux (Ubuntu/Debian)
 
 1. Instala Git con `sudo apt update && sudo apt install -y git`.
-2. Instala Node.js LTS desde [nodejs.org](https://nodejs.org/) o mediante `nvm`; evita versiones antiguas del repositorio de tu distribución.
+2. Instala Node.js 24 LTS desde [nodejs.org](https://nodejs.org/) o mediante `nvm`; evita versiones antiguas del repositorio de tu distribución.
 3. Instala VS Code, abre su terminal y verifica las versiones. Luego ejecuta `npm install -g @angular/cli@22`.
 
 ### Tu primer proyecto verificable
@@ -43,7 +43,7 @@ flowchart LR
     E0["Fundamentos<br/>módulos 0–3"]
     E1["Aplicación<br/>módulos 4–7"]
     E2["Integración<br/>módulos 8–10"]
-    E3["Experto<br/>módulos 11–16"]
+    E3["Experto<br/>módulos 11–15<br/>(16 opcional)"]
     E0 --> E1
     E1 --> E2
     E2 --> E3
@@ -56,18 +56,18 @@ flowchart LR
 | 2 | Fundamentos | [Signals: reactividad, linkedSignal y resource()](/curso/angular/2) |
 | 3 | Fundamentos | [Servicios e inyección de dependencias](/curso/angular/3) |
 | 4 | Aplicación | [Routing y navegación](/curso/angular/4) |
-| 5 | Aplicación | [Formularios reactivos y template-driven](/curso/angular/5) |
+| 5 | Aplicación | [Formularios: Reactive, template-driven y Signal Forms](/curso/angular/5) |
 | 6 | Aplicación | [RxJS esencial para Angular](/curso/angular/6) |
 | 7 | Aplicación | [HttpClient e interceptores](/curso/angular/7) |
 | 8 | Integración | [Standalone components y arquitectura sin NgModules](/curso/angular/8) |
 | 9 | Integración | [Gestión de estado](/curso/angular/9) |
 | 10 | Integración | [Testing en Angular](/curso/angular/10) |
-| 11 | Experto | [Performance, SSR y zoneless](/curso/angular/11) |
+| 11 | Experto | [Performance, SSR, zoneless y OnPush](/curso/angular/11) |
 | 12 | Experto | [Apéndice: qué cambió entre versiones mayores](/curso/angular/12) |
 | 13 | Experto | [Proyecto integrador: aplicación standalone completa](/curso/angular/13) |
 | 14 | Experto | [Angular en producción: accesibilidad, seguridad e i18n](/curso/angular/14) |
-| 15 | Experto | [Angular Master: pruebas, animación y SSR](/curso/angular/15) |
-| 16 | Experto | [Angular Native: componentes Angular como vistas nativas reales](/curso/angular/16) |
+| 15 | Experto | [Pruebas de signals, E2E, animación y TransferState](/curso/angular/15) |
+| 16 | Opcional | [Angular Native: componentes Angular como vistas nativas reales (opcional, alpha no oficial)](/curso/angular/16) |
 
 ## Aprende construyendo
 

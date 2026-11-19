@@ -120,17 +120,17 @@ Swift incorpora la ausencia de valor directamente en el sistema de tipos mediant
 #### Paso 4 · Demostración guiada desde cero
 Parte de una **carpeta vacía** y crea un ejecutable dedicado a valores ausentes:
 ```bash
-mkdir swift-optionals
-cd swift-optionals
+mkdir SwiftOptionals
+cd SwiftOptionals
 swift package init --type executable
-rm Sources/swift-optionals/*.swift
+rm Sources/SwiftOptionals/SwiftOptionals.swift
 ```
 
 `--type` es la bandera que elige la plantilla del paquete Swift (`executable`, un programa que corre directamente; más abajo verás `library`, un paquete pensado para ser importado).
 
-Desde Swift 6.2, la plantilla `executable` crea `Sources/swift-optionals/swift_optionals.swift` con un tipo `@main`; el `rm` lo borra porque un módulo no puede tener a la vez `@main` y `main.swift`.
+La plantilla `executable` crea `Sources/SwiftOptionals/SwiftOptionals.swift` con un tipo `@main`; el `rm` lo borra porque un módulo no puede tener a la vez `@main` y `main.swift`. Usa nombres sin guiones: con `swift-optionals`, Swift 6.4 crea la carpeta `Sources/swift_optionals` y las rutas de esta lección dejarían de coincidir.
 
-Guarda `Sources/swift-optionals/main.swift`:
+Guarda `Sources/SwiftOptionals/main.swift`:
 
 ```swift
 func etiquetaDestinatario(_ nombre: String?) -> String {
@@ -228,12 +228,12 @@ class Contador { var valor = 0 }            // reference type: instancia compart
 #### Paso 4 · Demostración guiada desde cero
 Desde una **carpeta vacía**, crea un ejemplo que haga visible copia frente a identidad:
 ```bash
-mkdir swift-identidad
-cd swift-identidad
+mkdir SwiftIdentidad
+cd SwiftIdentidad
 swift package init --type executable
-rm Sources/swift-identidad/*.swift
+rm Sources/SwiftIdentidad/SwiftIdentidad.swift
 ```
-Guarda `Sources/swift-identidad/main.swift`:
+Guarda `Sources/SwiftIdentidad/main.swift`:
 
 ```swift
 struct Paquete { var estado: String }
@@ -311,12 +311,12 @@ Un enum con valores asociados modela un estado como un conjunto cerrado y exhaus
 #### Paso 4 · Demostración guiada desde cero
 Desde una **carpeta vacía**, crea un contrato y un estado imposible de representar mal:
 ```bash
-mkdir swift-protocolos-estados
-cd swift-protocolos-estados
+mkdir SwiftProtocolosEstados
+cd SwiftProtocolosEstados
 swift package init --type executable
-rm Sources/swift-protocolos-estados/*.swift
+rm Sources/SwiftProtocolosEstados/SwiftProtocolosEstados.swift
 ```
-Guarda `Sources/swift-protocolos-estados/main.swift`:
+Guarda `Sources/SwiftProtocolosEstados/main.swift`:
 
 ```swift
 protocol Describible { var descripcion: String { get } }
@@ -376,6 +376,8 @@ swift test
 Empieza con transformaciones pequeñas y nombradas. `filter` conserva elementos, `map` transforma uno por uno, `compactMap` transforma y descarta resultados `nil`, y `reduce` acumula todos en un resultado.
 
 ```swift
+import Foundation
+
 public struct Stop: Equatable, Sendable {
     public let id: UUID
     public let sequence: Int
@@ -423,7 +425,7 @@ public func indexed<Element, ID: Hashable>(
     }
 }
 
-let stopsByID = try indexed(stops, by: \.id)
+// Uso, desde una función o una prueba: let stopsByID = try indexed(stops, by: \.id)
 ```
 
 El parámetro `by` es una closure no escapante: se usa antes de que termine `indexed`. Cuando una función guarda una closure para ejecutarla después, el parámetro necesita `@escaping`. Esa diferencia importa para vida de objetos y captura de `self`.
@@ -576,7 +578,7 @@ func entregar() {
     mostrar(codigo)
     mostrar(codigo)    // se puede mirar varias veces
     confirmar(codigo)  // lo entrega
-    // confirmar(codigo) // ❌ error: 'codigo' used after consume
+    // confirmar(codigo) // ❌ error: 'codigo' consumed more than once
     print("fin")
 }
 
@@ -602,7 +604,7 @@ código 7Q4K destruido
 fin
 ```
 
-**Fallo deliberado:** descomenta la segunda llamada a `confirmar(codigo)`. **Error esperado:** el compilador rechaza el programa con `'codigo' used after consume`. **Diagnóstico:** el código ya se entregó; la regla de un solo uso se cumple antes de ejecutar. Esa es la ventaja frente a una comprobación en tiempo de ejecución.
+**Fallo deliberado:** descomenta la segunda llamada a `confirmar(codigo)`. **Error esperado:** el compilador rechaza el programa con `'codigo' consumed more than once`. **Diagnóstico:** el código ya se entregó; la regla de un solo uso se cumple antes de ejecutar. Esa es la ventaja frente a una comprobación en tiempo de ejecución.
 
 #### Paso 5 · Práctica guiada
 

@@ -69,6 +69,21 @@ En el proyecto integrador RutaFlow, practicá extendiendo `envioID(from:session:
 
 #### Paso 4 · Demostración guiada
 ```swift
+import Foundation
+
+struct EnvioID: RawRepresentable, Hashable {
+    let rawValue: String
+    init?(rawValue: String) {
+        guard rawValue.hasPrefix("RF-") else { return nil } // formato de guía válido
+        self.rawValue = rawValue
+    }
+}
+
+struct Session {
+    let enviosAsignados: Set<EnvioID>
+    func puedeLeer(_ id: EnvioID) -> Bool { enviosAsignados.contains(id) }
+}
+
 enum LinkError: Error { case malformed, forbidden }
 
 func envioID(from url: URL, session: Session) throws -> EnvioID {
@@ -157,10 +172,15 @@ flowchart TD
     style D fill:#ffcccc
 ```
 
-En tu propio proyecto RutaFlow, crea `SesionVault.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí `guardarToken` con sus imports de `Foundation` y `Security`. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
+En tu propio proyecto RutaFlow, crea `SesionVault.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí este contenido completo. Límite de la decisión: Keychain no conviene para datos grandes o que necesitan consultas (una lista completa de envíos, por ejemplo) — está pensado para secretos pequeños como tokens; para esos datos usá SwiftData (Módulo 6) con la protección de archivo apropiada, no Keychain como base de datos general.
 
 #### Paso 4 · Demostración guiada
 ```swift
+import Foundation
+import Security
+
+enum SesionError: Error { case keychainWrite }
+
 func guardarToken(_ data: Data, conductorID: String) throws {
     let query: [CFString: Any] = [
         kSecClass: kSecClassGenericPassword,

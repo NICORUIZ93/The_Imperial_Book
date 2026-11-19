@@ -39,6 +39,15 @@ struct ListaEnvios: View {
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import SwiftUI
+import Observation
+
+// Servicio mínimo para el ejemplo; en tu proyecto es el ServicioAPI real.
+@Observable
+class ServicioAPI {
+    func obtenerEnvios() async throws -> [String] { ["RF-4471", "RF-5002"] }
+}
+
 // Antes: ListaEnvios hace fetching y decide qué hacer con el resultado en su body
 struct ListaEnvios: View {
     @State private var envios: [String] = []
@@ -124,6 +133,9 @@ init(servicio: ServicioAPI = ServicioAPI()) { self.servicio = servicio }
 // Servicios/ServicioAPI.swift   — networking real
 // Dominio/Envio.swift           — modelo puro
 
+// Archivo ViewModels/EnviosViewModel.swift
+import Observation
+
 @Observable
 class EnviosViewModel {
     var envios: [String] = []
@@ -134,6 +146,14 @@ class EnviosViewModel {
     func cargar() async {
         envios = (try? await servicio.obtenerEnvios()) ?? []
     }
+}
+
+// Archivo Servicios/ServicioAPI.swift (versión mínima; la real hace la petición de red)
+import Observation
+
+@Observable
+class ServicioAPI {
+    func obtenerEnvios() async throws -> [String] { ["RF-4471", "RF-5002"] }
 }
 ```
 
@@ -204,6 +224,10 @@ En tu propio proyecto RutaFlow, crea `Dominio/EsEnvioAtrasado.swift`: primero cr
 
 #### Paso 4 · Demostración guiada desde cero
 ```swift
+import Foundation
+
+struct Envio { let fechaEstimada: Date }
+
 // Antes: la regla "está atrasado" duplicada en dos ViewModels
 class EnviosViewModel {
     func estaAtrasado(_ envio: Envio) -> Bool { envio.fechaEstimada < Date() }

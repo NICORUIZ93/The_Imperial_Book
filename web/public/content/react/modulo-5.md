@@ -120,7 +120,7 @@ export default function App() {
 **Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (instala antes React Router) y arráncalo:
 
 ```bash
-npm install react-router
+npm install react-router@8
 npm run dev
 ```
 
@@ -244,18 +244,18 @@ Pista: apunta el loader a una URL inexistente (`/api/envios-typo/${params.id}.js
 Corrige el Paso 5 devolviendo la URL correcta, y agrega un `errorElement` específico para esa ruta que muestre "No pudimos cargar este envío" con un botón de reintentar, en vez de la pantalla de error genérica. Carga los datos de la ruta del proyecto integrador RutaFlow en un loader y compara el primer render con y sin él.
 
 #### Paso 7 · Cierre
-Entrega el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explica por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas y code-splitting. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
+Entrega el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explica por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
 
-### Tema 3: Rutas protegidas y code-splitting por ruta
+### Tema 3: Rutas protegidas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a proteger la ruta `/admin` de RutaFlow (solo para supervisores) y a cargarla con `React.lazy` para que su código no forme parte del bundle inicial. Prerrequisitos: Tema 2 de este módulo.
+Al finalizar vas a proteger la ruta `/admin` de RutaFlow (solo para supervisores) y a explicar por qué esa protección mejora la experiencia de usuario pero no reemplaza la autorización del servidor. Prerrequisitos: Tema 2 de este módulo.
 
 #### Paso 2 · Contexto y caso real
-La pantalla de administración de RutaFlow (gestión de conductores, reportes) la usan muy pocos operadores; descargarla en el bundle inicial para todos, incluyendo conductores que nunca la verán, infla innecesariamente la carga inicial de la app.
+La pantalla de administración de RutaFlow (gestión de conductores, reportes) solo la usan los supervisores. Un conductor que escribe `/admin` en la barra de direcciones no debería ver esa pantalla, y tampoco debería poder ejecutar sus acciones llamando a la API directamente.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una ruta protegida verifica una condición de acceso antes de mostrar su contenido real; `React.lazy` + `Suspense` descarga el código de un componente solo cuando efectivamente se necesita — un guardia que verifica credencial, y no llevar el manual completo de todas las salas, solo el de la sala a la que efectivamente entrás.
+Una ruta protegida es un componente que verifica una condición de acceso antes de mostrar a sus hijos; si no se cumple, redirige con `<Navigate>`. La analogía: un guardia en la puerta de una sala que revisa la credencial antes de dejarte pasar; el guardia evita que entres por error, pero los documentos importantes siguen en una caja fuerte con su propia llave (el servidor).
 
 **Diagrama:**
 
@@ -264,26 +264,26 @@ graph LR
     A["Usuario navega<br/>a /admin"]
     B["RutaProtegida<br/>verifica rol"]
     C{Es supervisor?}
-    D["Renderiza Admin<br/>descarga chunk"]
+    D["Renderiza Admin"]
     E["Redirige a /"]
-    F["Suspense muestra Spinner<br/>mientras carga"]
-    
+
     A --> B
     B --> C
-    C -->|Sí| F
-    F --> D
+    C -->|Sí| D
     C -->|No| E
-    
+
     style D fill:#e8f5e9
     style E fill:#ffebee
 ```
 
-* Cuándo: usar rutas protegidas para mejorar UX al redirigir sin sesión; usar lazy loading en rutas pesadas (>50KB) para reducir bundle inicial; no conviene si el overhead de un chunk adicional superaría el beneficio.
+* Cuándo: usar rutas protegidas para redirigir sin sesión o sin rol y no mostrar pantallas que el usuario no puede usar; no conviene confiar en ellas como control de seguridad.
 
-**¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación y el code-splitting reduce el bundle inicial, pero ninguna de las dos sustituye la autorización real que debe vivir en el servidor.
+**¿Por qué es importante?** Las rutas protegidas centralizan la lógica de redirección según autenticación, pero el código del cliente lo controla quien usa el navegador: la autorización real debe vivir en el servidor.
+
+**Carga diferida:** la pantalla de administración también es una buena candidata para descargarse solo cuando un supervisor entra. Esa técnica (`React.lazy` + `<Suspense>`) tiene su tema propio en el Módulo 9, Tema 5, donde la aplicarás a esta misma ruta.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea primero `src/Admin.jsx`, el componente que se cargará en un chunk aparte:
+Crea primero `src/Admin.jsx`:
 
 ```jsx
 export default function Admin() {
@@ -294,15 +294,11 @@ export default function Admin() {
 Y este `src/App.jsx`:
 
 ```jsx
-import { createContext, lazy, Suspense, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { createBrowserRouter, Link, Navigate, Outlet, RouterProvider } from 'react-router';
+import Admin from './Admin.jsx';
 
 const SesionContext = createContext(null);
-const Admin = lazy(() => import('./Admin.jsx')); // chunk separado, se descarga al usarlo
-
-function Spinner() {
-  return <p role="status">Cargando…</p>;
-}
 
 function RutaProtegida({ children }) {
   const { operador } = useContext(SesionContext);
@@ -329,7 +325,7 @@ const router = createBrowserRouter([
         path: 'admin',
         element: (
           <RutaProtegida>
-            <Suspense fallback={<Spinner />}><Admin /></Suspense>
+            <Admin />
           </RutaProtegida>
         ),
       },
@@ -351,22 +347,20 @@ export default function App() {
 **Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior (si no lo instalaste en el Tema 1, instala React Router) y arráncalo:
 
 ```bash
-npm install react-router
+npm install react-router@8
 npm run dev
 ```
 
-Resultado esperado: un conductor (rol distinto de `'supervisor'`) que navega a `/admin` es redirigido inmediatamente a `/` sin que el chunk de `Admin` siquiera se descargue; un supervisor sí accede, y recién ahí el navegador descarga el chunk separado de `Admin` (verificable en la pestaña Network).
-
-Ejecuta `npm run build` y comprueba en la salida que aparece un archivo `Admin-*.js` separado del `index-*.js`. Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
+Resultado esperado: un conductor (rol distinto de `'supervisor'`) que navega a `/admin` es redirigido inmediatamente a `/`; al cambiar el rol a `'supervisor'`, la misma URL muestra «Administración de conductores». Ejecuta `npm test` para confirmar que las pruebas anteriores siguen en verde.
 
 #### Paso 5 · Práctica guiada
-Pista: envuelve `Admin` en `Suspense` pero quita `RutaProtegida` "para simplificar" — ese es el fallo deliberado: cualquier conductor que navegue manualmente a `/admin` ahora sí ve la pantalla de administración completa en el cliente, aunque no tenga el rol correspondiente — una falsa sensación de seguridad, porque esta verificación es solo de experiencia de usuario, no un control de autorización real.
+Pista: quita `RutaProtegida` "para simplificar" — ese es el fallo deliberado: cualquier conductor que navegue manualmente a `/admin` ahora ve la pantalla de administración completa en el cliente, aunque no tenga el rol correspondiente. Y aun con `RutaProtegida`, el código de `Admin` viaja en el bundle: quien abra las DevTools puede leerlo. Es una verificación de experiencia de usuario, no un control de autorización.
 
 #### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `RutaProtegida`, y agrega un comentario explícito en el código recordando que el backend de RutaFlow debe repetir esta misma verificación de rol en cada endpoint que `Admin` consuma, porque una ruta protegida en el cliente nunca reemplaza la autorización real del servidor. Protege la ruta de operador del proyecto integrador RutaFlow y carga su chunk solo al entrar.
+Corrige el Paso 5 restaurando `RutaProtegida`, y agrega un comentario explícito en el código recordando que el backend de RutaFlow debe repetir esta misma verificación de rol en cada endpoint que `Admin` consuma. Escribe una prueba con `createMemoryRouter` que confirme la redirección de un conductor a `/`. Protege la ruta de operador del proyecto integrador RutaFlow.
 
 #### Paso 7 · Cierre
-Entrega la ruta protegida con lazy loading del Paso 4, el acceso indebido provocado en el Paso 5, y el recordatorio de autorización en servidor del Paso 6; explica por qué una ruta protegida en el cliente mejora la experiencia pero nunca sustituye la verificación de permisos en el servidor. Siguiente paso: cierra el módulo integrando rutas, loaders y protección en el proyecto completo. Errores comunes: confiar en una ruta protegida del cliente como única barrera de seguridad, olvidar `Suspense` alrededor de un componente `lazy`, y cargar con `lazy` una ruta tan pequeña que el overhead de un chunk adicional no se justifica. Fuentes oficiales: https://react.dev/reference/react/lazy y https://reactrouter.com/start/framework/navigating.
+Entrega la ruta protegida del Paso 4, el acceso indebido provocado en el Paso 5 y la prueba del Paso 6; explica por qué una ruta protegida en el cliente mejora la experiencia pero nunca sustituye la verificación de permisos en el servidor. Siguiente paso: cierra el módulo integrando rutas, loaders y protección en el proyecto completo; en el Módulo 9, Tema 5 cargarás `Admin` solo cuando un supervisor entre. Errores comunes: confiar en una ruta protegida del cliente como única barrera de seguridad, verificar el rol en cada pantalla en vez de en un componente envolvente, y redirigir sin `replace`, dejando la ruta prohibida en el historial. Fuentes oficiales: https://reactrouter.com/start/framework/navigating y https://react.dev/learn/passing-data-deeply-with-context.
 
 ## Laboratorio práctico
 
@@ -379,14 +373,14 @@ Entrega la ruta protegida con lazy loading del Paso 4, el acceso indebido provoc
 | 1 | Definir rutas anidadas con layout compartido | Ver Tema 1 | `/tareas` con hijas `index` y `:id` |
 | 2 | Agregar un loader a la ruta de detalle | Ver Tema 2 | Verifica que evita el parpadeo de carga |
 | 3 | Implementar la ruta protegida | Ver Tema 3 | Redirige a `/login` sin sesión |
-| 4 | Cargar una ruta pesada con `React.lazy` | Ver Tema 3 | Verifica en Network que el chunk se descarga solo al navegar ahí |
+| 4 | Probar la redirección con `createMemoryRouter` | Ver Tema 3 | Un conductor que entra a `/admin` termina en `/` |
 
-**Verificación:** el laboratorio se considera exitoso si la navegación entre rutas anidadas mantiene el layout compartido sin remontarlo, si la ruta con loader no muestra ningún parpadeo de carga, y si el chunk de la ruta perezosa se descarga únicamente al navegar hacia ella (verificable en la pestaña Network).
+**Verificación:** el laboratorio se considera exitoso si la navegación entre rutas anidadas mantiene el layout compartido sin remontarlo, si la ruta con loader no muestra ningún parpadeo de carga, y si la ruta protegida redirige a quien no tiene el rol (la carga diferida de esa ruta se hace en el Módulo 9, Tema 5).
 
 **Errores comunes y soluciones**
 
 - **Duplicar el layout en cada componente de vista en vez de anidar rutas.** Usa una ruta padre con `children` para compartir el layout.
 - **Hacer fetching dentro de un `useEffect` cuando un loader evitaría el parpadeo.** Prefiere un loader para datos necesarios antes de mostrar la vista.
-- **Olvidar envolver un componente `lazy` en `Suspense`.** Sin `Suspense`, React no sabe qué mostrar mientras el chunk se descarga.
+- **Tratar la ruta protegida como seguridad.** Repite la verificación de rol en cada endpoint del servidor.
 
 ---

@@ -567,7 +567,7 @@ imports: [____],
 
 #### Paso 7 · Cierre
 
-Ya confirmas, con un componente renderizado y un evento `input` real del DOM, que `[(ngModel)]` sincroniza en ambas direcciones, y reproduces el error real `NG8002` que ocurre al olvidar `FormsModule`. Con esto cierras el módulo de formularios: `FormGroup` testeado sin DOM (Tema 1), validación asíncrona con `PENDING` real (Tema 2), `FormArray` dinámico (Tema 3) y `ngModel` para casos triviales (Tema 4). El siguiente módulo aplica estos formularios a peticiones HTTP reales con `HttpClient`. Fuentes oficiales: [Angular — Template-driven forms](https://angular.dev/guide/forms/template-driven-forms).
+Ya confirmas, con un componente renderizado y un evento `input` real del DOM, que `[(ngModel)]` sincroniza en ambas direcciones, y reproduces el error real `NG8002` que ocurre al olvidar `FormsModule`. Con esto cierras el módulo de formularios: `FormGroup` testeado sin DOM (Tema 1), validación asíncrona con `PENDING` real (Tema 2), `FormArray` dinámico (Tema 3) y `ngModel` para casos triviales (Tema 4). El Tema 5 presenta Signal Forms, la API de formularios basada en signals que Angular 22 declaró estable. Fuentes oficiales: [Angular — Template-driven forms](https://angular.dev/guide/forms/template-driven-forms).
 
 **Errores comunes:** usar `ngModel` para un formulario con validación cruzada o arrays dinámicos, perdiendo la robustez y testabilidad de Reactive Forms sin necesidad real; olvidar `FormsModule` en un componente standalone y interpretar erróneamente el `NG8002` resultante como un bug del propio binding en vez de un import faltante.
 
@@ -576,6 +576,305 @@ Ya confirmas, con un componente renderizado y un evento `input` real del DOM, qu
 ---
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Usa un formulario simple para la preferencia de densidad del panel. Comprueba guardado y restauración, y documenta por qué el formulario de asignación conserva Reactive Forms para sus reglas entre campos.
+
+### Tema 5: Signal Forms: formularios basados en signals (Angular 22) · Intermedio · 45 min
+
+**Duración estimada:** 45 min (4 subtemas de 10–12 min).
+
+**Al finalizar podrás:** crear un formulario con `form()` sobre un `signal` de modelo, enlazar cada campo con `[formField]`, declarar reglas con mensaje (`required`, `pattern`, `email`, `min`, `max`), mostrar los errores cuando el campo fue tocado, enviar con `[formRoot]` y la opción `submission`, y decidir cuándo usar Signal Forms y cuándo Reactive Forms.
+
+**¿Por qué es importante?** Desde Angular 22, Signal Forms es una API estable de `@angular/forms/signals` (su documentación de tipos la marca `@publicApi 22.0`). El modelo del formulario es un `signal` normal, así que encaja con todo lo que aprendiste en el Módulo 2: el valor, la validez y los errores se leen como signals y se repintan sin suscripciones. Los Temas 1–4 siguen siendo necesarios: casi todo el código Angular existente usa Reactive Forms o template-driven forms, y verás los dos.
+
+**Prerrequisitos:** Módulo 2 (signals) y Tema 1 de este módulo (validadores y mensajes por error). Trabajas en el proyecto `demo-forms` del Tema 1, creado con `@angular/cli@22` (zoneless, con Vitest).
+
+Crea la carpeta `src/app/entrega/`. Al terminar el tema tendrás dos archivos: el componente y su prueba.
+
+#### Subtema 5.1: El modelo es un signal; el formulario, un árbol de campos · 10 min
+
+**1. Contexto**
+En Reactive Forms el valor vive dentro de cada `FormControl`. En Signal Forms el valor vive en **tu** `signal`, y `form()` construye encima un árbol de campos (`FieldTree`) que lo lee y lo escribe. RutaFlow necesita registrar una entrega con su guía y el email del destinatario.
+
+**2. Hazlo tú**
+Crea `src/app/entrega/formulario-entrega.ts`:
+
+```ts
+import { Component, signal } from '@angular/core';
+import { email, form, FormField, FormRoot, pattern, required } from '@angular/forms/signals';
+
+export interface Entrega {
+  guia: string;
+  email: string;
+}
+
+@Component({
+  selector: 'app-formulario-entrega',
+  imports: [FormField, FormRoot],
+  template: `
+    <form [formRoot]="formulario">
+      <label>
+        Guía
+        <input [formField]="formulario.guia" />
+      </label>
+      @if (formulario.guia().touched() && formulario.guia().invalid()) {
+        @for (error of formulario.guia().errors(); track error.kind) {
+          <p role="alert">{{ error.message }}</p>
+        }
+      }
+
+      <label>
+        Email del destinatario
+        <input type="email" [formField]="formulario.email" />
+      </label>
+      @if (formulario.email().touched() && formulario.email().invalid()) {
+        @for (error of formulario.email().errors(); track error.kind) {
+          <p role="alert">{{ error.message }}</p>
+        }
+      }
+
+      <button type="submit">Registrar</button>
+    </form>
+    @if (registrada(); as e) {
+      <p role="status">Registrada {{ e.guia }}</p>
+    }
+  `,
+})
+export class FormularioEntrega {
+  // El modelo es un signal normal: el formulario lo lee y lo escribe.
+  readonly modelo = signal<Entrega>({ guia: '', email: '' });
+  readonly registrada = signal<Entrega | null>(null);
+
+  readonly formulario = form(
+    this.modelo,
+    (ruta) => {
+      required(ruta.guia, { message: 'La guía es obligatoria' });
+      pattern(ruta.guia, /^RF-\d{4}$/, { message: 'Usa el formato RF-0000' });
+      required(ruta.email, { message: 'El email es obligatorio' });
+      email(ruta.email, { message: 'Escribe un email válido' });
+    },
+    {
+      submission: {
+        // Solo se llama si el formulario es válido.
+        action: async (campo) => {
+          this.registrada.set(campo().value());
+        },
+      },
+    },
+  );
+}
+```
+
+Crea `src/app/entrega/formulario-entrega.spec.ts` (los subtemas siguientes agregan pruebas al mismo `describe`):
+
+```ts
+import { TestBed } from '@angular/core/testing';
+import { FormularioEntrega } from './formulario-entrega';
+
+async function montar() {
+  const fixture = TestBed.createComponent(FormularioEntrega);
+  await fixture.whenStable();
+  return fixture;
+}
+
+function escribir(input: HTMLInputElement, valor: string) {
+  input.value = valor;
+  input.dispatchEvent(new Event('input'));
+  input.dispatchEvent(new Event('blur')); // marca el campo como touched
+}
+
+describe('FormularioEntrega (Signal Forms)', () => {
+  it('cada regla informa su propio mensaje', async () => {
+    const fixture = await montar();
+    const [guia, correo] = fixture.nativeElement.querySelectorAll('input');
+    escribir(guia, 'rf-1');
+    escribir(correo, 'ana');
+    await fixture.whenStable();
+    const mensajes = [...fixture.nativeElement.querySelectorAll('[role=alert]')].map((p: Element) => p.textContent?.trim());
+    expect(mensajes).toEqual(['Usa el formato RF-0000', 'Escribe un email válido']);
+  });
+
+  it('escribir en el input actualiza el modelo y el modelo actualiza el input', async () => {
+    const fixture = await montar();
+    const componente = fixture.componentInstance;
+    const [guia] = fixture.nativeElement.querySelectorAll('input');
+    escribir(guia, 'RF-4471');
+    expect(componente.modelo().guia).toBe('RF-4471');
+
+    componente.modelo.update((m) => ({ ...m, guia: 'RF-5101' }));
+    await fixture.whenStable();
+    expect(guia.value).toBe('RF-5101');
+  });
+
+  it('no envía si es inválido y envía el valor cuando es válido', async () => {
+    const fixture = await montar();
+    const boton: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    boton.click();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.registrada()).toBeNull();
+    expect(fixture.componentInstance.formulario.guia().touched()).toBe(true);
+
+    const [guia, correo] = fixture.nativeElement.querySelectorAll('input');
+    escribir(guia, 'RF-4471');
+    escribir(correo, 'ana@rutaflow.co');
+    boton.click();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('[role=status]').textContent).toContain('Registrada RF-4471');
+  });
+});
+```
+
+```bash
+npx ng test --watch=false
+```
+
+**Resultado esperado:** Vitest informa las tres pruebas de `FormularioEntrega (Signal Forms)` en verde. Esta subsección corresponde a la segunda: escribir en el `<input>` cambia `modelo().guia`, y actualizar el `signal` cambia lo que muestra el `<input>`.
+
+**Fallo deliberado:** quita `FormField` del array `imports` del componente y ejecuta la prueba. **Error esperado:** la compilación falla con `NG8002: Can't bind to 'formField' since it isn't a known property of 'input'`. **Diagnóstico:** `[formField]` es una directiva de `@angular/forms/signals`; un componente standalone solo reconoce las directivas que importa (el mismo error que viste con `ngModel` en el Tema 4). Restaura el import.
+
+**3. Entiende**
+**Explicación por bloques:** `modelo` es la única fuente de verdad. `form(this.modelo, ...)` devuelve `formulario`, cuyas propiedades (`formulario.guia`, `formulario.email`) siguen la forma del modelo. Cada campo es una función: `formulario.guia()` devuelve su estado, con signals como `value()`, `touched()`, `invalid()` y `errors()`. `[formField]` conecta el `<input>` con ese campo en las dos direcciones. Como el componente es `OnPush` por defecto en Angular 22 y el template lee signals, cada cambio repinta solo lo necesario.
+
+**Analogía:** el modelo es la hoja de ruta original y el formulario es una lámina transparente encima, donde marcas qué casillas faltan o están mal. Escribir en la lámina escribe en la hoja; la hoja sigue siendo una sola.
+
+**4. Cierra**
+Guarda el componente y la prueba en verde. Queda listo un formulario sin `FormGroup` ni `FormControl`.
+
+#### Subtema 5.2: Reglas con mensaje y errores cuando el campo fue tocado · 10 min
+
+**1. Contexto**
+El segundo argumento de `form()` es la **función de esquema**: recibe `ruta`, un mapa de los campos, y declara las reglas. Cada regla acepta `{ message }`, así que el template no necesita traducir claves de error a texto.
+
+**2. Hazlo tú**
+Las reglas ya están en el componente (`required`, `pattern` y `email`). La primera prueba escribe `rf-1` y `ana`, dispara `input` y `blur` (este marca el campo como tocado) y compara los mensajes. Ejecuta de nuevo `npx ng test --watch=false`.
+
+**Resultado esperado:** la prueba «cada regla informa su propio mensaje» pasa: el template muestra `Usa el formato RF-0000` y `Escribe un email válido`, y no muestra los mensajes de `required` porque los campos tienen texto.
+
+**Fallo deliberado:** en el template, quita `formulario.guia().touched() &&` de la primera condición y abre la app con `npx ng serve`. **Resultado:** al cargar la página, antes de escribir nada, ya aparece «La guía es obligatoria». **Diagnóstico:** el campo es inválido desde el principio; mostrar el error solo después de `touched()` evita regañar a quien todavía no escribió. Restaura la condición.
+
+**3. Entiende**
+`errors()` devuelve un arreglo de objetos con `kind` (por ejemplo `'required'`, `'pattern'`, `'email'`) y el `message` que declaraste; por eso el `@for` usa `track error.kind`. `invalid()` es `true` si hay al menos un error. Las reglas se evalúan como `computed`: cuando cambia el modelo, los errores se recalculan solos. **Límite:** `pattern` y `email` aceptan la cadena vacía; si el campo es obligatorio, combínalos con `required`.
+
+**4. Cierra**
+Anota qué `kind` produce cada regla. El formulario ya explica cada error con su propio texto, como pedía el Tema 1.
+
+#### Subtema 5.3: Envía con `[formRoot]` y `submission` · 12 min
+
+**1. Contexto**
+Un envío correcto debe ocurrir solo si el formulario es válido y, si no lo es, mostrar los errores de todos los campos aunque el usuario no los haya tocado.
+
+**2. Hazlo tú**
+El tercer argumento de `form()` declara `submission.action`, y el template enlaza `<form [formRoot]="formulario">`. La tercera prueba pulsa «Registrar» con el formulario vacío y después con datos válidos. Ejecuta `npx ng test --watch=false`.
+
+**Resultado esperado:** la prueba «no envía si es inválido y envía el valor cuando es válido» pasa: el primer clic no llama a `action`, pero marca los campos como tocados (por eso aparecen sus errores); el segundo muestra `Registrada RF-4471`.
+
+**Fallo deliberado:** quita `FormRoot` de `imports` (deja `FormField`) y ejecuta la prueba. **Error esperado:** `NG8002: Can't bind to 'formRoot' since it isn't a known property of 'form'`. **Diagnóstico:** sin la directiva, Angular no sabe que ese `<form>` pertenece a `formulario`. Restaura el import.
+
+**3. Entiende**
+`FormRoot` pone `novalidate` en el `<form>`, evita el envío por defecto del navegador (que recargaría la página) y llama a `submit()` sobre el árbol. `submit()` marca todos los campos como tocados y, solo si el formulario es válido, ejecuta `action` con el campo raíz; `campo().value()` es una copia del modelo en ese momento. `action` es asíncrona: ahí va la llamada a `HttpClient` del Módulo 7. Si el servidor rechaza los datos, `action` puede devolver errores, por ejemplo `{ kind: 'guiaDuplicada', message: 'La guía ya existe', fieldTree: campo.guia }`, y aparecen en `errors()` de ese campo. Fuente: [Form submission](https://angular.dev/guide/forms/signals/form-submission).
+
+**4. Cierra**
+Guarda las tres pruebas en verde.
+
+#### Subtema 5.4: Una sola fuente de verdad y cuándo elegir cada API · 10 min
+
+**1. Contexto**
+Como el modelo es tu `signal`, todas las reglas de signals del Módulo 2 aplican, incluida la más importante: actualizar con un objeto nuevo, nunca mutar el actual.
+
+**2. Hazlo tú**
+Agrega este bloque al final de `formulario-entrega.spec.ts` y ejecuta las pruebas:
+
+```ts
+describe('fallo deliberado', () => {
+  it('mutar el objeto del modelo en sitio no llega al input', async () => {
+    const fixture = await montar();
+    const [guia] = fixture.nativeElement.querySelectorAll('input');
+    fixture.componentInstance.modelo().guia = 'RF-9999';
+    await fixture.whenStable();
+    expect(guia.value).toBe('');
+  });
+});
+```
+
+**Resultado esperado:** la prueba pasa porque **documenta el fallo**: mutar `modelo().guia` en sitio no cambia la referencia del objeto, el signal no avisa y el `<input>` sigue vacío.
+
+**Fallo deliberado:** cambia la expectativa por `expect(guia.value).toBe('RF-9999')`. **Error esperado:** `AssertionError: expected '' to be 'RF-9999'`. **Diagnóstico:** el mismo problema que `push()` sobre un arreglo en un signal; usa `modelo.update((m) => ({ ...m, guia: 'RF-9999' }))` o `formulario.guia().value.set('RF-9999')`. Restaura la expectativa original.
+
+**3. Entiende**
+Usa Signal Forms en código nuevo de Angular 22 cuando el formulario se apoya en estado de signals. Mantén Reactive Forms cuando el proyecto ya los usa de forma extensa, cuando dependes de librerías que esperan un `ControlValueAccessor` o un `FormGroup`, o cuando el equipo aún no migró: las dos APIs conviven en la misma aplicación. Template-driven (Tema 4) sigue siendo la opción para un campo trivial. **Límite:** `[formField]` no admite todavía `<select multiple>`, según la [guía oficial](https://angular.dev/essentials/signal-forms).
+
+| Necesidad | Signal Forms | Reactive Forms |
+|---|---|---|
+| Dónde vive el valor | En tu `signal` | Dentro de cada `FormControl` |
+| Leer validez y errores | Signals (`invalid()`, `errors()`) | Propiedades y `statusChanges` (Observable) |
+| Mensajes de error | En la regla (`{ message }`) | En el template, por clave de error |
+| Código existente y librerías | Nuevo en Angular 22 | La mayor parte del ecosistema actual |
+
+**4. Cierra**
+Escribe en un comentario del componente por qué elegiste Signal Forms para este formulario y qué te haría elegir Reactive Forms.
+
+**Hito del tema:**
+
+- [ ] `npx ng test --watch=false` muestra en verde las cuatro pruebas de `formulario-entrega.spec.ts`.
+- [ ] Provoqué el `NG8002` al quitar `FormField` y lo diagnostiqué.
+- [ ] Comprobé que `submit()` no llama a `action` con datos inválidos y marca los campos como tocados.
+- [ ] Expliqué con una limitación cuándo mantendría Reactive Forms.
+
+**Resumen:** el modelo es un `signal`; `form()` construye el árbol de campos; `[formField]` enlaza cada input; las reglas declaran su mensaje; los errores se muestran tras `touched()`; `[formRoot]` y `submission` envían solo si el formulario es válido; y el modelo se actualiza con objetos nuevos.
+
+**Errores comunes:** olvidar importar `FormField` o `FormRoot`, mutar el objeto del modelo en sitio, mostrar errores antes de que el campo se toque y usar `pattern` sin `required` en un campo obligatorio.
+
+**Transferencia al proyecto integrador «Centro de control logístico»:** crea el formulario de alta de entregas con Signal Forms y conserva el de asignación en Reactive Forms; documenta la decisión.
+
+**Ejercicio:** crea `src/app/ejercicio/paquete.ts`, un componente con un único campo numérico `pesoKg` (valor inicial `1`) que acepte de 0,1 a 30 kg y muestre «El peso máximo es 30 kg» o «El peso mínimo es 0,1 kg». Escribe una prueba que escriba `40` y compruebe que el modelo guarda el **número** `40` (no el texto `'40'`) y que aparece el mensaje. Antes de abrir la solución, predice qué tipo tendrá `modelo().pesoKg` después de escribir en un `<input type="number">`.
+
+<details>
+<summary>Solución — ábrela después de intentarlo</summary>
+
+`[formField]` sobre un `<input type="number">` convierte el texto en número porque el modelo es `number`; por eso `toBe(40)` pasa.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { form, FormField, max, min } from '@angular/forms/signals';
+
+@Component({
+  selector: 'app-paquete',
+  imports: [FormField],
+  template: `
+    <label>Peso (kg) <input type="number" [formField]="paquete.pesoKg" /></label>
+    @for (error of paquete.pesoKg().errors(); track error.kind) {
+      <p role="alert">{{ error.message }}</p>
+    }
+  `,
+})
+export class Paquete {
+  readonly modelo = signal({ pesoKg: 1 });
+  readonly paquete = form(this.modelo, (ruta) => {
+    min(ruta.pesoKg, 0.1, { message: 'El peso mínimo es 0,1 kg' });
+    max(ruta.pesoKg, 30, { message: 'El peso máximo es 30 kg' });
+  });
+}
+```
+
+```ts
+import { TestBed } from '@angular/core/testing';
+import { Paquete } from './paquete';
+
+it('valida el rango del peso y guarda un número', async () => {
+  const fixture = TestBed.createComponent(Paquete);
+  await fixture.whenStable();
+  const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+  input.value = '40';
+  input.dispatchEvent(new Event('input'));
+  await fixture.whenStable();
+  expect(fixture.componentInstance.modelo().pesoKg).toBe(40);
+  expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toBe('El peso máximo es 30 kg');
+});
+```
+
+Si tu prueba comparaba con `'40'`, falla con `expected 40 to be '40'`: el modelo conserva el tipo que declaraste. Si usaste un `validate()` propio en vez de `min`/`max`, compara: las reglas incorporadas ya producen errores con `kind` `'min'` y `'max'`.
+
+</details>
+
+**Fuentes oficiales:** [Angular — Signal Forms (essentials)](https://angular.dev/essentials/signal-forms), [Angular — Form submission](https://angular.dev/guide/forms/signals/form-submission) y [Angular — Signal Forms overview](https://angular.dev/guide/forms/signals/overview).
 
 ## Laboratorio práctico
 
@@ -590,6 +889,7 @@ Ya confirmas, con un componente renderizado y un evento `input` real del DOM, qu
 | 3 | Agregar un validador asíncrono | Ver Tema 2, simulado con delay | Verifica el estado `pending` mientras resuelve |
 | 4 | Construir un FormArray de teléfonos | Ver Tema 3 | Agrega y quita dinámicamente |
 | 5 | Implementar el mismo formulario simple con ngModel | Ver Tema 4 | Documenta cuándo seguirías esa opción |
+| 6 | Reescribir el formulario de entrega con Signal Forms | Ver Tema 5 | `form()`, `[formField]`, reglas con mensaje y `[formRoot]` |
 
 **Verificación:** el laboratorio se considera exitoso si cada validador muestra su mensaje de error específico correspondiente, si el validador asíncrono correctamente marca el control como `pending` mientras verifica, y si el `FormArray` permite agregar y quitar teléfonos dinámicamente sin errores.
 

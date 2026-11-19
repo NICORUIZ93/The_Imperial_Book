@@ -43,11 +43,13 @@ En el grupo de la app crea **File ▸ New ▸ File ▸ Swift File**, nómbralo `
 ```swift
 import Foundation
 
-struct Envio: Equatable, Sendable {
+// nonisolated: un proyecto nuevo de Xcode 26 aísla por defecto todo en MainActor, y el
+// servicio de prueba es un actor, que no puede adoptar un protocolo aislado en MainActor.
+nonisolated struct Envio: Equatable, Sendable {
     let id: String
 }
 
-protocol ServicioEnvios: Sendable {
+nonisolated protocol ServicioEnvios: Sendable {
     func obtenerEnvios() async throws -> [Envio]
 }
 
@@ -181,11 +183,13 @@ En el grupo de la app crea `EnviosViewModel.swift` con **File ▸ New ▸ File �
 ```swift
 import Foundation
 
-struct Envio: Equatable, Sendable {
+// nonisolated: un proyecto nuevo de Xcode 26 aísla por defecto todo en MainActor, y el
+// servicio de prueba es un actor, que no puede adoptar un protocolo aislado en MainActor.
+nonisolated struct Envio: Equatable, Sendable {
     let id: String
 }
 
-protocol ServicioEnvios: Sendable {
+nonisolated protocol ServicioEnvios: Sendable {
     func obtenerEnvios() async throws -> [Envio]
 }
 
@@ -289,16 +293,37 @@ sequenceDiagram
     SL-->>SL: sink recibe solo B
 ```
 
-En tu propio proyecto RutaFlow, crea `BuscadorEnviosViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí esta cadena dentro del ViewModel, junto con `textoBusqueda`, `resultados`, `servicio` y `cancelables`.
+En tu propio proyecto RutaFlow, crea `BuscadorEnviosViewModel.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí este ViewModel (si ya tienes uno del Módulo 7, reemplázalo):
 
 #### Paso 4 · Demostración guiada
 ```swift
-$textoBusqueda
-    .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-    .map { texto in servicio.buscarPublisher(texto) } // cada letra produce un nuevo Publisher
-    .switchToLatest() // cancela el Publisher anterior si todavía no completó
-    .sink { resultados in self.resultados = resultados }
-    .store(in: &cancelables)
+import Combine
+import Foundation
+
+struct ServicioBusqueda {
+    // Simula la red: responde 200 ms después, como una petición real.
+    func buscarPublisher(_ texto: String) -> AnyPublisher<[String], Never> {
+        Just(["RF-4471", "RF-5002"].filter { $0.hasPrefix(texto) })
+            .delay(for: .milliseconds(200), scheduler: RunLoop.main)
+            .eraseToAnyPublisher()
+    }
+}
+
+class BuscadorEnviosViewModel: ObservableObject {
+    @Published var textoBusqueda = ""
+    @Published private(set) var resultados: [String] = []
+    private let servicio = ServicioBusqueda()
+    private var cancelables = Set<AnyCancellable>()
+
+    init() {
+        $textoBusqueda
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .map { [servicio] texto in servicio.buscarPublisher(texto) } // cada búsqueda produce un nuevo Publisher
+            .switchToLatest() // cancela el Publisher anterior si todavía no completó
+            .sink { [weak self] resultados in self?.resultados = resultados }
+            .store(in: &cancelables)
+    }
+}
 ```
 
 **Ejecuta el ejemplo:**
@@ -340,19 +365,46 @@ flowchart LR
     B --> C
 ```
 
-En tu propio proyecto RutaFlow, escribe esta transición en `DetalleEntregaView.swift`; si aún no existe, crealo con **File ▸ New ▸ File ▸ Swift File** dentro del target de la app y declara allí las vistas que comparten el namespace. Límite de la decisión: `matchedGeometryEffect` no conviene para transiciones entre vistas sin relación visual real (dos pantallas completamente distintas) — ahí una transición estándar de `NavigationStack` es más clara; reservalo específicamente cuando dos vistas distintas representan visualmente el mismo elemento de datos, como esta tarjeta que se expande.
+En tu propio proyecto RutaFlow, crea `TransicionEnvio.swift` con **File ▸ New ▸ File ▸ Swift File** dentro del target de la app; ahí viven la lista y el detalle que comparten el namespace. Límite de la decisión: `matchedGeometryEffect` no conviene para transiciones entre vistas sin relación visual real (dos pantallas completamente distintas) — ahí una transición estándar de `NavigationStack` es más clara; reservalo específicamente cuando dos vistas distintas representan visualmente el mismo elemento de datos, como esta tarjeta que se expande.
 
 #### Paso 4 · Demostración guiada
 ```swift
-@Namespace var espacioAnimacion
+import SwiftUI
 
-// En ListaEnvios:
-TarjetaEnvio(envio: envio)
-    .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+struct EnvioResumen: Identifiable {
+    let id: Int
+    let guia: String
+    let direccion: String
+}
 
-// En DetalleEnvio (mismo namespace compartido):
-EncabezadoEnvio(envio: envio)
-    .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+struct TransicionEnvio: View {
+    @Namespace private var espacioAnimacion
+    @State private var seleccionado: EnvioResumen?
+    let envios = [EnvioResumen(id: 1, guia: "RF-4471", direccion: "Calle 10 #5-20")]
+
+    var body: some View {
+        if let envio = seleccionado {
+            // En el detalle: mismo id y mismo namespace que la tarjeta de la lista.
+            VStack(alignment: .leading) {
+                Text(envio.guia).font(.largeTitle)
+                Text(envio.direccion)
+            }
+            .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+            .onTapGesture { withAnimation { seleccionado = nil } }
+        } else {
+            // En la lista: cada tarjeta declara su geometría con el id del envío.
+            VStack {
+                ForEach(envios) { envio in
+                    Text(envio.guia)
+                        .padding()
+                        .background(.blue.opacity(0.1), in: .rect(cornerRadius: 8))
+                        .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+                        .onTapGesture { withAnimation { seleccionado = envio } }
+                }
+            }
+        }
+    }
+}
 ```
 
 **Ejecuta el ejemplo:**
@@ -362,9 +414,9 @@ xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' bui
 ```
 Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
 
-Resultado esperado: al tocar una `TarjetaEnvio`, su versión en `DetalleEnvio` se anima expandiéndose suavemente desde la posición y tamaño exactos de la tarjeta original, en vez de un corte instantáneo entre pantallas.
+Resultado esperado: al tocar la tarjeta de la lista, el detalle se anima expandiéndose suavemente desde la posición y tamaño exactos de la tarjeta original, en vez de un corte instantáneo entre pantallas.
 #### Paso 5 · Práctica guiada
-Pista: usá un `id` distinto en cada lado (`envio.id` en `ListaEnvios` pero `envio.guia` en `DetalleEnvio`) — ese es el fallo deliberado: SwiftUI no reconoce ninguna relación entre ambas vistas, y la transición vuelve a ser un corte instantáneo sin ninguna animación, sin ningún error visible que explique por qué.
+Pista: usá un `id` distinto en cada lado (`envio.id` en la lista pero `envio.guia` en el detalle) — ese es el fallo deliberado: SwiftUI no reconoce ninguna relación entre ambas vistas, y la transición vuelve a ser un corte instantáneo sin ninguna animación, sin ningún error visible que explique por qué.
 #### Paso 6 · Práctica independiente
 Corregí el Paso 5 usando el mismo `id` (`envio.id`) en ambos lados, y agregá una segunda `matchedGeometryEffect` para animar también el ícono de estado del envío entre ambas pantallas, con su propio `id` distinto al de la tarjeta completa.
 
@@ -395,10 +447,18 @@ flowchart TD
     D --> E
 ```
 
-En tu propio proyecto RutaFlow, crea `MapaRuta.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí `MapaRuta`, sus imports de `SwiftUI` y `MapKit`, y el modelo `Parada` que usa el fragmento.
+En tu propio proyecto RutaFlow, crea `MapaRuta.swift` con **File ▸ New ▸ File ▸ Swift File**, selecciona el target de la app y escribe allí `MapaRuta` con sus imports y el modelo `Parada`:
 
 #### Paso 4 · Demostración guiada
 ```swift
+import MapKit
+import SwiftUI
+
+struct Parada {
+    let direccion: String
+    let coordenada: CLLocationCoordinate2D
+}
+
 struct MapaRuta: UIViewRepresentable {
     let paradas: [Parada]
 
@@ -460,6 +520,9 @@ En tu propio proyecto RutaFlow, crea `SelectorFotoEntrega.swift` con **File ▸ 
 
 #### Paso 4 · Demostración guiada
 ```swift
+import SwiftUI
+import UIKit
+
 struct SelectorFotoEntrega: UIViewControllerRepresentable {
     @Binding var foto: UIImage?
 
