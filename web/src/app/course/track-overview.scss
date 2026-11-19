@@ -147,7 +147,7 @@
 .overview-stats div + div { padding-left:28px; border-left:1px solid $bd; }
 .overview-stats dt { font-size:28px; }
 .overview-stats dd { margin-top:5px; font-size:11px; }
-.orientation-grid { gap:16px; margin:22px 0 56px; padding:0; border:0; }
+.orientation-grid { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:22px 0 56px; padding:0; border:0; }
 .orientation-card {
   padding:22px; border:1px solid $bd; border-radius:16px; background:$wh; box-shadow:$sh;
 }
@@ -155,6 +155,8 @@
 .card-label { color:$p; font-weight:750; letter-spacing:.08em; }
 .orientation-card strong { margin-top:12px; font-size:16px; }
 .orientation-card p,.orientation-card li { font-size:13px; }
+.prerequisite-card a { color:$p; font-weight:700; text-decoration:none; }
+.prerequisite-card a:hover { text-decoration:underline; text-underline-offset:3px; }
 .section-heading h2 { font-size:clamp(28px,3vw,36px); }
 .module-groups { gap:34px; }
 .group-heading { padding:12px 4px; border-bottom:0; }

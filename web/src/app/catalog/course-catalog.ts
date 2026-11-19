@@ -9,6 +9,7 @@ import { TRACK_ICONS, TRACK_MARKS } from '../icon-registry';
 import { ProgressService } from '../progress.service';
 import { ThemeService } from '../theme.service';
 import { TopicIndexService } from '../topic-index.service';
+import { ACADEMY_STAGES, TRACK_PREREQUISITES, academyTrackPosition, stageForTrack } from '../learning-paths';
 
 interface TrackCard {
   id: string;
@@ -29,6 +30,8 @@ interface TrackCard {
   topicCount: number;
   nextModuleId: number;
   guide: typeof TRACK_GUIDES[string];
+  stage: string;
+  prerequisites: string[];
 }
 
 /** Biblioteca de cursos: cada track es un libro con capítulos (módulos). */
@@ -57,7 +60,7 @@ export class CourseCatalogComponent {
   constructor(private readonly progressService: ProgressService) {}
 
   readonly cards = computed<TrackCard[]>(() =>
-    [...TRACKS].sort((a, b) => ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow', 'control-1'].indexOf(a.id) - ['foundations', 'javascript', 'java', 'angular', 'react', 'node', 'spring-boot', 'microservices', 'flutter', 'android', 'ios', 'kotlin-multiplatform', 'cloud', 'devops', 'rutaflow', 'control-1'].indexOf(b.id)).map(track => ({
+    [...TRACKS].sort((a, b) => academyTrackPosition(a.id) - academyTrackPosition(b.id)).map(track => ({
       id: track.id,
       name: track.name,
       shortName: track.shortName,
@@ -76,6 +79,8 @@ export class CourseCatalogComponent {
       topicCount: Object.values(this.topicIndex.data()[track.id] ?? {}).reduce((n, topics) => n + topics.length, 0),
       nextModuleId: this.progressService.nextPendingModuleId(track.id, track.modules.length),
       guide: TRACK_GUIDES[track.id],
+      stage: stageForTrack(track.id)?.title ?? 'Curso',
+      prerequisites: TRACK_PREREQUISITES[track.id] ?? [],
     }))
   );
 
@@ -93,7 +98,24 @@ export class CourseCatalogComponent {
   });
 
   trackGroups() {
-    return [{ title: this.categories.find(category => category.id === this.category())?.label ?? 'Cursos', cards: this.filteredCards() }];
+    if (this.category() !== 'all' || this.query().trim()) {
+      return [{
+        number: '',
+        title: this.categories.find(category => category.id === this.category())?.label ?? 'Cursos',
+        description: this.query().trim() ? 'Resultados ordenados según la secuencia académica recomendada.' : 'Cursos de esta área en orden de prerrequisitos.',
+        cards: this.filteredCards(),
+      }];
+    }
+    return ACADEMY_STAGES
+      .map(stage => ({ ...stage, cards: stage.trackIds.map(id => this.cards().find(card => card.id === id)).filter((card): card is TrackCard => Boolean(card)) }))
+      .filter(group => group.cards.length > 0);
+  }
+
+  prerequisiteNames(card: TrackCard): string {
+    if (!card.prerequisites.length) return 'Sin curso previo obligatorio';
+    return card.prerequisites
+      .map(id => this.cards().find(candidate => candidate.id === id)?.shortName ?? id)
+      .join(' · ');
   }
 
   categoryCount(id: string): number { return this.cards().filter(card => id === 'all' || card.category === id).length; }

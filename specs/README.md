@@ -14,3 +14,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [013](013-programa-de-cursos-y-correcciones.md) | Programa de cursos y correcciones | en curso |
 | [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | hecho |
 | [015](015-redisenio-experiencia-academica.md) | Rediseño de la experiencia académica | hecho |
+| [016](016-arquitectura-curricular-y-redisenio-total.md) | Arquitectura curricular y rediseño total | hecho |

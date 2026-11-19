@@ -29,6 +29,14 @@
         <strong>{{ guide().entry }}</strong>
         <ul><li *ngFor="let skill of guide().skills.slice(0, 3)">{{ skill }}</li></ul>
       </article>
+      <article class="orientation-card prerequisite-card">
+        <span class="card-label">Ruta previa recomendada</span>
+        <ng-container *ngIf="prerequisites().length; else noPrerequisite">
+          <strong>Completa o valida estas bases</strong>
+          <ul><li *ngFor="let prerequisite of prerequisites()"><a [routerLink]="['/curso', prerequisite.id, 'overview']">{{ prerequisite.shortName }}</a></li></ul>
+        </ng-container>
+        <ng-template #noPrerequisite><strong>Puedes comenzar aquí</strong><p>Esta ruta enseña sus herramientas iniciales desde cero.</p></ng-template>
+      </article>
       <article class="orientation-card project-card" *ngIf="project() as routeProject">
         <span class="card-label"><lucide-icon [img]="icons.BookOpen" /> Proyecto conductor</span>
         <strong>{{ routeProject.title }}</strong>

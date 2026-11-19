@@ -15,7 +15,12 @@ export interface CourseModule {
 }
 
 export const courseLevelLabel = (level: CourseModule['level']): string =>
-  level === 'Experto' ? 'Especialización (objetivo)' : level;
+  ({
+    Fundamentos: '1 · Fundamentos',
+    Aplicación: '2 · Práctica guiada',
+    Integración: '3 · Integración y proyecto',
+    Experto: '4 · Diagnóstico y decisión profesional',
+  })[level];
 
 export interface Track {
   id: string;
