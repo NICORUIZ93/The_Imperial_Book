@@ -51,19 +51,58 @@ En el proyecto integrador RutaFlow, `zona_preferida` vive en `lib/features/deliv
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final prefs = SharedPreferencesAsync();
-await prefs.setString('zona_preferida', 'norte');
-final zona = await prefs.getString('zona_preferida') ?? 'todas';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = SharedPreferencesAsync();
+  final zona = await prefs.getString('zona_preferida') ?? 'todas';
+  runApp(MaterialApp(home: SelectorZona(prefs: prefs, zonaInicial: zona)));
+}
+
+class SelectorZona extends StatefulWidget {
+  const SelectorZona({required this.prefs, required this.zonaInicial, super.key});
+  final SharedPreferencesAsync prefs;
+  final String zonaInicial;
+
+  @override
+  State<SelectorZona> createState() => _SelectorZonaState();
+}
+
+class _SelectorZonaState extends State<SelectorZona> {
+  late String zona = widget.zonaInicial;
+
+  Future<void> elegir(String nueva) async {
+    await widget.prefs.setString('zona_preferida', nueva);
+    if (!mounted) return;
+    setState(() => zona = nueva);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: Text('Zona preferida: $zona')),
+        body: ListView(children: [
+          for (final opcion in ['todas', 'norte', 'sur'])
+            ListTile(
+              title: Text(opcion),
+              trailing: opcion == zona ? const Icon(Icons.check) : null,
+              onTap: () => elegir(opcion),
+            ),
+        ]),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add shared_preferences
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: cerrar y volver a abrir RutaFlow restaura automáticamente `zona_preferida` como `'norte'`, sin que el conductor tenga que volver a seleccionarla.
 
@@ -155,23 +194,43 @@ flutter test test/envio_dao_test.dart
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final db = await openDatabase('rutaflow.db', version: 1, onCreate: (db, version) {
-  db.execute('CREATE TABLE envio(id TEXT PRIMARY KEY, zona TEXT, conductor TEXT, estado TEXT)');
-});
-final resumen = await db.rawQuery(
-  'SELECT estado, COUNT(*) as total FROM envio WHERE conductor = ? AND zona = ? GROUP BY estado',
-  ['c-891', 'norte'],
-);
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final db = await openDatabase('rutaflow.db', version: 1, onCreate: (db, version) async {
+    await db.execute('CREATE TABLE envio(id TEXT PRIMARY KEY, zona TEXT, conductor TEXT, estado TEXT)');
+  });
+  await db.delete('envio'); // la demostración arranca siempre con los mismos datos
+  for (final (id, estado) in [('RF-1', 'entregado'), ('RF-2', 'entregado'), ('RF-3', 'en_ruta')]) {
+    await db.insert('envio', {'id': id, 'zona': 'norte', 'conductor': 'c-891', 'estado': estado});
+  }
+  final resumen = await db.rawQuery(
+    'SELECT estado, COUNT(*) as total FROM envio WHERE conductor = ? AND zona = ? GROUP BY estado',
+    ['c-891', 'norte'],
+  );
+  runApp(MaterialApp(
+    home: Scaffold(
+      body: SafeArea(
+        child: Column(children: [
+          for (final fila in resumen) Text('${fila['estado']}: ${fila['total']}'),
+        ]),
+      ),
+    ),
+  ));
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add sqflite
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `resumen` devuelve directamente el conteo de envíos agrupados por estado para ese conductor y zona específicos — una agregación relacional que `sqflite` resuelve con una sola query SQL, sin cargar todos los envíos en memoria y agruparlos manualmente en Dart.
 
@@ -245,22 +304,92 @@ En el proyecto integrador RutaFlow, este patrón vive en `lib/features/offline/p
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Stream<List<Envio>> get envios => box.watch().map((_) => box.values.toList());
+import 'dart:async';
 
-Future<void> sincronizar() async {
-  final remotos = await api.obtenerEnvios();
-  for (final e in remotos) { box.put(e.id, e); }
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+class Envio {
+  const Envio(this.id, this.estado);
+  final String id;
+  final String estado;
+}
+
+/// API simulada: en la app real es Dio contra el backend.
+class ApiEnvios {
+  Future<List<Envio>> obtenerEnvios() async {
+    await Future<void>.delayed(const Duration(seconds: 1));
+    return const [Envio('RF-4471', 'en_ruta'), Envio('RF-5002', 'entregado')];
+  }
+}
+
+class RepositorioEnvios {
+  RepositorioEnvios(this.box, this.api);
+  final Box<String> box; // id -> estado
+  final ApiEnvios api;
+
+  List<Envio> get _actuales => [for (final id in box.keys.cast<String>()) Envio(id, box.get(id)!)];
+
+  // La UI siempre lee de la caché local; cada cambio en la caja emite la lista nueva.
+  Stream<List<Envio>> get envios async* {
+    yield _actuales;
+    yield* box.watch().map((_) => _actuales);
+  }
+
+  Future<void> sincronizar() async {
+    try {
+      final remotos = await api.obtenerEnvios();
+      for (final e in remotos) {
+        await box.put(e.id, e.estado);
+      }
+    } on Exception {
+      // Sin red: la pantalla sigue mostrando la caché local.
+    }
+  }
+}
+
+Future<void> main() async {
+  await Hive.initFlutter();
+  final box = await Hive.openBox<String>('envios');
+  final repo = RepositorioEnvios(box, ApiEnvios());
+  runApp(MaterialApp(home: ListaEnvios(repo: repo)));
+  unawaited(repo.sincronizar());
+}
+
+class ListaEnvios extends StatefulWidget {
+  const ListaEnvios({required this.repo, super.key});
+  final RepositorioEnvios repo;
+
+  @override
+  State<ListaEnvios> createState() => _ListaEnviosState();
+}
+
+class _ListaEnviosState extends State<ListaEnvios> {
+  late final Stream<List<Envio>> envios = widget.repo.envios;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Envíos (caché local)')),
+        body: StreamBuilder<List<Envio>>(
+          stream: envios,
+          builder: (context, snapshot) => ListView(children: [
+            for (final e in snapshot.data ?? const <Envio>[])
+              ListTile(title: Text(e.id), subtitle: Text(e.estado)),
+          ]),
+        ),
+      );
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add hive hive_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `ListaEnvios` se suscribe al `Stream envios` (que lee de Hive) y muestra los últimos datos cacheados incluso en modo avión; cuando `sincronizar()` completa con conectividad real, la caja de Hive se actualiza y el `Stream` emite automáticamente la lista refrescada.
 

@@ -1,4 +1,4 @@
-# Módulo 18: Autenticación y backend seguro con Spring Security
+# Módulo 18: Spring Security II: OIDC, autorización por recurso y SAML
 
 ## Aprende construyendo
 
@@ -19,7 +19,7 @@ El rol permite entrar a una clase de operación; la comprobación de propiedad a
 
 **Evidencia final:** pruebas HTTP para token ausente, token sin rol, escritura permitida y lectura de pedido propio frente a pedido ajeno.
 
-#### Subtema 18.1 · Define qué rutas acepta el filtro · 8 min
+#### Subtema 1.1 · Define qué rutas acepta el filtro · 8 min
 
 **Contexto:** cuando aparece un endpoint nuevo, no debe quedar accesible por accidente. El laboratorio da acceso solo a las rutas que nombra y niega las demás.
 
@@ -46,7 +46,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Cierra:** di qué regla protege GET y qué regla niega una ruta no descrita.
 
-#### Subtema 18.2 · Traduce un rol del JWT a una autoridad · 8 min
+#### Subtema 1.2 · Traduce un rol del JWT a una autoridad · 8 min
 
 **Contexto:** Keycloak pone los roles del realm dentro de `realm_access.roles`; Spring Security necesita saber cómo convertirlos a authorities para que `hasAuthority` pueda compararlos.
 
@@ -64,7 +64,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Cierra:** escribe la transformación del claim hasta el texto que verifica `hasAuthority`.
 
-#### Subtema 18.3 · Distingue identidad de permiso · 8 min
+#### Subtema 1.3 · Distingue identidad de permiso · 8 min
 
 **Contexto:** una persona puede estar identificada correctamente y aun así no tener permiso para una acción.
 
@@ -82,7 +82,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Cierra:** explica cuál de las dos respuestas corresponde a token ausente y cuál a rol insuficiente.
 
-#### Subtema 18.4 · Autoriza el pedido que pertenece a la persona · 10 min
+#### Subtema 1.4 · Autoriza el pedido que pertenece a la persona · 10 min
 
 **Contexto:** un rol puede permitir consultar pedidos, pero no revela si la persona puede consultar cualquier pedido. La propiedad del recurso es una comprobación separada.
 
@@ -103,6 +103,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y ownership, no la firma ni la expiración del token. Para probar el issuer real, el laboratorio incluye Keycloak y su realm local; sigue `examples/spring-security-keycloak-rutaflow/README.md` y ejecuta el recorrido con Docker.
 
 **Fuentes primarias:** [Spring Security: autorización de peticiones HTTP](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html); [Spring Security: Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
+
 ### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
 
 **Meta:** validar datos antes de guardar, limitar qué páginas web leen la API, confiar en un emisor OIDC identificado y filtrar destinos de llamadas HTTP salientes.
@@ -120,7 +121,7 @@ flowchart LR
 
 **Límite:** CORS decide qué páginas pueden leer respuestas desde el navegador; no valida identidad. El filtro IP limita destinos resueltos, pero no sustituye una lista de hosts permitidos.
 
-#### Subtema 18.5 · Valida la petición en la entrada · 8 min
+#### Subtema 2.1 · Valida la petición en la entrada · 8 min
 
 **Contexto:** una entrega con destinatario vacío no debe llegar al servicio ni quedar guardada en PostgreSQL.
 
@@ -144,7 +145,7 @@ Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta de
 
 **Cierra:** anota qué regla rechaza el destinatario y cuál test comprueba que no se persiste. Lleva el mismo contrato al proyecto integrador RutaFlow.
 
-#### Subtema 18.6 · Configura CORS para el origen necesario · 8 min
+#### Subtema 2.2 · Configura CORS para el origen necesario · 8 min
 
 **Contexto:** una aplicación web de desarrollo necesita leer respuestas desde `localhost:4200`; no por eso cualquier sitio debe poder leer la API.
 
@@ -163,7 +164,7 @@ cd examples/spring-security-keycloak-rutaflow
 
 **Cierra:** explica por qué permites un origen y mantienes `allowCredentials=false` en este laboratorio.
 
-#### Subtema 18.7 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
+#### Subtema 2.3 · Confía en el issuer OIDC, no en un JWT decodificado · 10 min
 
 **Contexto:** base64 permite leer un payload, pero no verificar quién firmó el JWT ni si sigue vigente. El Resource Server debe consultar las claves del emisor que tu aplicación decidió confiar.
 
@@ -183,7 +184,7 @@ curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 
 **Cierra:** apunta el issuer y `jwks_uri` de la salida local y distingue esa comprobación del test con token simulado.
 
-#### Subtema 18.8 · Bloquea destinos internos en el cliente saliente · 10 min
+#### Subtema 2.4 · Bloquea destinos internos en el cliente saliente · 10 min
 
 **Contexto:** un endpoint que recibe una URL puede ser usado para pedir datos a servicios locales, a rangos privados o al endpoint de metadata. Controla el destino antes de abrir la conexión.
 
@@ -367,9 +368,8 @@ Registra un segundo IdP (`empresa2`) en el mismo `application.yml` y comprueba q
 - [ ] Reprodujiste el error de audiencia.
 - [ ] Sabes cuándo usar SAML y cuándo OIDC.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** desactivar la validación de firmas, usar SAML para proteger APIs y mezclar `entity-id` entre ambientes. **Siguiente paso:** el módulo 10 integra OIDC con Keycloak y Token Relay para los servicios internos.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** desactivar la validación de firmas, usar SAML para proteger APIs y mezclar `entity-id` entre ambientes. **Siguiente paso:** el módulo 16 integra OIDC con Keycloak y Token Relay para los servicios internos.
 
 **Transferencia al proyecto integrador «RutaFlow»:** permite que los operadores del cliente corporativo de RutaFlow entren al panel con su IdP SAML y mapea sus grupos a roles del panel.
 
 **Fuente oficial:** [Spring Security — SAML 2.0 Login](https://docs.spring.io/spring-security/reference/servlet/saml2/login/overview.html) y [Keycloak — SAML clients](https://www.keycloak.org/docs/latest/server_admin/#_client-saml-configuration).
-

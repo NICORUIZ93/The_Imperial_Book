@@ -1,114 +1,15 @@
-# Módulo 7: Records, sealed classes y pattern matching
+# Módulo 7: Sealed classes y pattern matching
+
+**Prerrequisito:** `record` se enseña en [M1 T5](/curso/java/1); este módulo lo combina con jerarquías `sealed` y patrones.
 
 
 ## Aprende construyendo
 
-### Tema 1: record — modelos inmutables sin boilerplate
-
-**¿Por qué es importante?** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
-
-#### Subtema 1.1: Construye un record de guía · 10 min
-
-**1. Contexto**
-
-El centro de despacho recibe número y peso de cada paquete. No se debe poder crear una guía vacía ni con peso cero.
-
-**2. Hazlo tú**
-
-Crea `src/Guia.java`:
-
-```java
-public record Guia(String numero, double pesoKg) {
-    public Guia {
-        if (numero == null || numero.isBlank()) throw new IllegalArgumentException("Falta número");
-        if (pesoKg <= 0) throw new IllegalArgumentException("Peso debe ser positivo");
-    }
-    public static void main(String[] args) {
-        System.out.println(new Guia("RT-1", 2.5));
-    }
-}
-```
-
-Desde la raíz ejecuta:
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-**Resultado esperado:** imprime `Guia[numero=RT-1, pesoKg=2.5]`.
-
-**Fallo deliberado:** crea `new Guia("", 0)`. **Diagnóstico:** el constructor compacto valida antes de que exista un objeto inválido.
-
-**3. Entiende**
-
-`record` genera constructor, accesores, `equals`, `hashCode` y `toString`; el constructor compacto sirve para validar los componentes.
-
-**4. Cierra**
-
-Guarda la salida válida y el error de validación.
-
-#### Subtema 1.2: Comprueba igualdad por valor · 10 min
-
-**1. Contexto**
-
-Dos servicios pueden construir dos objetos distintos que representen la misma guía; el sistema debe compararlos por sus datos.
-
-**2. Hazlo tú**
-
-En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta:
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-**Resultado esperado:** `equals` imprime `true`; `==` imprime `false` porque son objetos diferentes.
-
-**Fallo deliberado:** compara solo con `==`. **Diagnóstico:** esa operación compara identidad, no los componentes que describen la guía.
-
-**3. Entiende**
-
-La igualdad generada por el record usa sus componentes. Si un componente mutable se guarda dentro, el record no vuelve inmutable ese objeto interno.
-
-**4. Cierra**
-
-Anota qué comparación usarías en un `Set<Guia>` y por qué.
-
-#### Subtema 1.3: Produce una versión actualizada · 10 min
-
-**1. Contexto**
-
-La guía no se modifica en sitio cuando cambia el peso medido: se emite un nuevo valor para conservar las referencias anteriores.
-
-**2. Hazlo tú**
-
-En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta:
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-**Resultado esperado:** `2.5` y `3.0`; el objeto original conserva sus datos.
-
-**Fallo deliberado:** intenta asignar `original.pesoKg = 3.0`. **Diagnóstico:** los componentes no tienen setters; construye un valor nuevo.
-
-**3. Entiende**
-
-Usa records para valores que se describen por sus datos. Una entidad con identidad persistente y cambios durante su ciclo de vida puede necesitar una clase tradicional.
-
-**4. Cierra**
-
-Entrega los dos valores y explica por qué elegiste record. Fuente: [records en Dev.java](https://dev.java/learn/classes-objects/records/).
-
-**Proyecto integrador:** el motor de asignación de entregas representa cada guía como un `record` inmutable, igual que en este tema, para poder comparar y compartir guías entre hilos sin riesgo de mutación. **Límite:** usa `record` para un valor que se describe completamente por sus componentes; si la guía necesita identidad propia que persiste aunque cambien sus datos (por ejemplo, un historial de estados a lo largo del tiempo), modélala como una clase tradicional con identidad, no como record.
-
-### Tema 2: sealed — jerarquías cerradas y exhaustividad
+### Tema 1: sealed — jerarquías cerradas y exhaustividad
 
 **¿Por qué es importante?** estados de negocio conocidos no deben quedar sin manejar cuando el dominio crece.
 
-#### Subtema 2.1: Declara estados permitidos · 10 min
+#### Subtema 1.1: Declara estados permitidos · 10 min
 
 **1. Contexto**
 
@@ -151,7 +52,7 @@ java -cp out EstadoEntregaDemo
 
 Guarda el error del compilador y la lista de estados autorizados.
 
-#### Subtema 2.2: Añade un estado con intención · 10 min
+#### Subtema 1.2: Añade un estado con intención · 10 min
 
 **1. Contexto**
 
@@ -180,7 +81,7 @@ La lista cerrada es adecuada para un dominio controlado por el mismo equipo; un 
 
 Registra quién puede ampliar esta jerarquía en el producto real.
 
-#### Subtema 2.3: Distingue jerarquía cerrada de abierta · 10 min
+#### Subtema 1.3: Distingue jerarquía cerrada de abierta · 10 min
 
 **1. Contexto**
 
@@ -210,13 +111,13 @@ Escribe una frase que justifique la decisión de RutaFlow. Fuente: [JEP 409](htt
 
 **Decide cuándo cerrar:** `sealed` sirve si el equipo controla los estados y puede revisar consumidores al añadir uno. Una interfaz abierta conviene si otras aplicaciones aportan implementaciones. Añade `Cancelada`, busca cada `switch` que usa `EstadoEntrega` y crea una prueba para ese estado. `permits` restringe quién implementa la jerarquía, pero no valida los datos del record. Fuente: https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html.
 
-**Proyecto integrador:** el motor de asignación de entregas modela sus estados de guía con esta misma jerarquía `sealed`, porque el equipo controla exactamente qué estados existen. **Práctica:** agrega un cuarto estado `Rechazada(String motivo)` a `permits`, declara su record y corrige el `switch` del Tema 3 hasta que vuelva a ser exhaustivo.
+**Proyecto integrador:** el motor de asignación de entregas modela sus estados de guía con esta misma jerarquía `sealed`, porque el equipo controla exactamente qué estados existen. **Práctica:** agrega un cuarto estado `Rechazada(String motivo)` a `permits`, declara su record y corrige el `switch` del Tema 2 hasta que vuelva a ser exhaustivo.
 
-### Tema 3: Pattern matching exhaustivo y para instanceof
+### Tema 2: Pattern matching exhaustivo y para instanceof
 
 **¿Por qué es importante?** manejar cada estado evita que una regla de negocio asigne un resultado incorrecto a un tipo nuevo.
 
-#### Subtema 3.1: Calcula una regla con switch · 10 min
+#### Subtema 2.1: Calcula una regla con switch · 10 min
 
 **1. Contexto**
 
@@ -224,7 +125,7 @@ Solo las entregas aún activas se pueden reprogramar.
 
 **2. Hazlo tú**
 
-Crea `src/Reprogramar.java` con `EstadoEntrega` y sus records del Tema 2. Añade:
+Crea `src/Reprogramar.java` con `EstadoEntrega` y sus records del Tema 1. Añade:
 
 ```java
 static boolean sePuedeReprogramar(EstadoEntrega e) {
@@ -258,7 +159,7 @@ El patrón del `case` comprueba el subtipo y declara una variable con tipo corre
 
 Guarda el error de exhaustividad y la corrección.
 
-#### Subtema 3.2: Extrae el tipo con instanceof · 10 min
+#### Subtema 2.2: Extrae el tipo con instanceof · 10 min
 
 **1. Contexto**
 
@@ -285,7 +186,7 @@ La variable `ruta` solo existe donde la comprobación garantiza que el objeto es
 
 Conserva el fragmento y señala la comprobación que hace seguro el acceso.
 
-#### Subtema 3.3: Compara con casteo clásico · 10 min
+#### Subtema 2.3: Compara con casteo clásico · 10 min
 
 **1. Contexto**
 
@@ -312,13 +213,13 @@ Usa switch para clasificar todos los casos; usa `instanceof` cuando solo necesit
 
 Elige una forma para la regla completa y justifica tu elección. Fuente: [pattern matching en Java](https://docs.oracle.com/en/java/javase/25/language/pattern-matching.html).
 
-**Proyecto integrador:** la regla de reprogramación del motor de entregas usa exactamente este `switch` exhaustivo sobre `EstadoEntrega`, de modo que agregar un estado nuevo obliga a actualizar la regla en tiempo de compilación. **Límite:** usa `switch` con pattern matching cuando necesitas cubrir todos los subtipos de una jerarquía `sealed`; usa `instanceof` suelto solo para una comprobación puntual de un único tipo, no para clasificar varios casos a la vez. **Práctica:** agrega el estado `Rechazada` (del Tema 2) a `sePuedeReprogramar` y confirma que el compilador exige la rama nueva.
+**Proyecto integrador:** la regla de reprogramación del motor de entregas usa exactamente este `switch` exhaustivo sobre `EstadoEntrega`, de modo que agregar un estado nuevo obliga a actualizar la regla en tiempo de compilación. **Límite:** usa `switch` con pattern matching cuando necesitas cubrir todos los subtipos de una jerarquía `sealed`; usa `instanceof` suelto solo para una comprobación puntual de un único tipo, no para clasificar varios casos a la vez. **Práctica:** agrega el estado `Rechazada` (del Tema 1) a `sePuedeReprogramar` y confirma que el compilador exige la rama nueva.
 
-### Tema 4: Unnamed variables y patterns (_, Java 22)
+### Tema 3: Unnamed variables y patterns (_, Java 22)
 
 **¿Por qué es importante?** distinguir lo que se descarta intencionalmente de una variable olvidada reduce ruido y hace visibles errores reales.
 
-#### Subtema 4.1: Descarta un componente de record pattern · 10 min
+#### Subtema 3.1: Descarta un componente de record pattern · 10 min
 
 **1. Contexto**
 
@@ -363,7 +264,7 @@ El record pattern separa la forma del dato de los componentes que necesita el c�
 
 Guarda la salida y marca qué componente se ignoró deliberadamente.
 
-#### Subtema 4.2: Ignora una excepción sin ocultar el caso · 10 min
+#### Subtema 3.2: Ignora una excepción sin ocultar el caso · 10 min
 
 **1. Contexto**
 
@@ -390,7 +291,7 @@ java -cp out Convertir abc
 
 Explica por qué se captura `NumberFormatException` y no `Exception`.
 
-#### Subtema 4.3: Escribe texto multilínea legible · 10 min
+#### Subtema 3.3: Escribe texto multilínea legible · 10 min
 
 **1. Contexto**
 
@@ -417,10 +318,9 @@ Los text blocks sirven para texto multilínea; no validan ni parametrizan una co
 
 Guarda la consulta y anota qué mecanismo usarías para valores dinámicos. Fuente: [variables y patrones sin nombre](https://openjdk.org/jeps/456).
 
-**Proyecto integrador:** el resumen de paquetes del motor de entregas descarta las dimensiones con `_` en el record pattern cuando el reporte solo necesita el destino, igual que en el Subtema 4.1. **Límite:** usa `_` solo cuando de verdad no vas a leer ese valor en ningún punto del bloque; si existe la posibilidad de necesitarlo más adelante, dale un nombre real en vez de descartarlo prematuramente. **Práctica:** modifica `ResumenPaquete.java` para agregar un segundo caso que también muestre el volumen (`x * y * z`) cuando el destino sea `"Norte"`, sin descartar `Dimensiones` en ese caso.
+**Proyecto integrador:** el resumen de paquetes del motor de entregas descarta las dimensiones con `_` en el record pattern cuando el reporte solo necesita el destino, igual que en el Subtema 3.1. **Límite:** usa `_` solo cuando de verdad no vas a leer ese valor en ningún punto del bloque; si existe la posibilidad de necesitarlo más adelante, dale un nombre real en vez de descartarlo prematuramente. **Práctica:** modifica `ResumenPaquete.java` para agregar un segundo caso que también muestre el volumen (`x * y * z`) cuando el destino sea `"Norte"`, sin descartar `Dimensiones` en ese caso.
 
 ---
-
 
 ## Construcción guiada del capítulo
 
@@ -430,12 +330,12 @@ Guarda la consulta y anota qué mecanismo usarías para valores dinámicos. Fuen
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Definir `Punto` como record | Ver Tema 1 | Verifica los métodos generados automáticamente |
-| 2 | Definir `Forma` como sealed interface | Ver Tema 2 | Con `Circulo` y `Cuadrado` como records |
-| 3 | Escribir un switch exhaustivo sin `default` | Ver Tema 3 | Verifica el error del compilador si falta un caso |
-| 4 | Usar pattern matching para instanceof | Ver Tema 3 | Sin casteo manual |
-| 5 | Escribir un text block para SQL multilínea | Ver Tema 4 | Con `"""`, cuidando la sangría de la comilla de cierre |
-| 6 | Descartar un componente de un record pattern con `_` | Ver Tema 4 | Sin ruido de lint por variables no utilizadas |
+| 1 | Definir `Punto` como record | Ver Tema 5 del Módulo 1 | Verifica los métodos generados automáticamente |
+| 2 | Definir `Forma` como sealed interface | Ver Tema 1 | Con `Circulo` y `Cuadrado` como records |
+| 3 | Escribir un switch exhaustivo sin `default` | Ver Tema 2 | Verifica el error del compilador si falta un caso |
+| 4 | Usar pattern matching para instanceof | Ver Tema 2 | Sin casteo manual |
+| 5 | Escribir un text block para SQL multilínea | Ver Tema 3 | Con `"""`, cuidando la sangría de la comilla de cierre |
+| 6 | Descartar un componente de un record pattern con `_` | Ver Tema 3 | Sin ruido de lint por variables no utilizadas |
 
 **Verificación:** el laboratorio se considera exitoso si agregar una nueva implementación a `permits` sin actualizar el switch existente produce un error de compilación (no un bug silencioso), si el modelo de dominio es completamente inmutable, y si el linter no reporta ninguna advertencia sobre los componentes descartados con `_`.
 

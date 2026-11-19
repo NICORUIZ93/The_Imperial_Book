@@ -1,215 +1,585 @@
-# Módulo 19: Spring Batch — jobs, chunks y procesamiento masivo
+# Módulo 19: Empaquetado y despliegue
+
 
 ## Aprende construyendo
 
-Construirás un job que importa pedidos desde CSV, valida y transforma cada fila, y persiste resultados por lotes. Después ensayarás reinicio y políticas de error con datos deliberadamente inválidos. El objetivo es procesamiento reanudable, observable y acotado en memoria.
+Cada tema se verifica con mecanismos reales y ejecutables sin depender de un daemon de Docker disponible en este entorno: el modo `layertools` embebido en el propio JAR de Spring Boot, la meta de Maven `spring-boot:process-aot` (que ejecuta de verdad el motor de AOT de Spring, sin necesitar un compilador nativo de GraalVM instalado), y los endpoints reales de Actuator agrupados por probes de Kubernetes. Continúa sobre `demo-cloud` (Módulo 16) o un proyecto nuevo.
 
-### Dos ejemplos: primero visible, luego real
+### Tema 1: Fat JAR vs capas de Docker
 
-- **Ejemplo sencillo:** importa tres filas CSV con chunk de dos; una fila inválida se registra y la escritura del chunk falla o confirma completa.
-- **Caso RutaFlow:** reconcilia cientos de miles de tarifas con archivo identificado por checksum y `JobParameters` estables. Guarda rechazados para conciliación, registra leídos/escritos/omitidos, y reinicia la misma instancia tras una caída sin duplicar registros por la clave natural.
+Duración: 35–45 min. **Meta:** empaquetar RutaFlow en un JAR ejecutable, separar sus partes y construir una imagen con capas que puedan reutilizarse entre versiones. Sigue `examples/spring-boot-layered-jar-rutaflow/`; necesita Java 25 y Maven Wrapper. Para construir la imagen, usa Docker o Podman.
 
-Compara los límites de transacción y el consumo de memoria con más de un chunk. No confundas `skip` con una salida silenciosa: cada fila excluida necesita causa y evidencia.
-
-### Tema 1: Job, Step, Tasklet y chunk processing
-
-**Meta:** importar un CSV pequeño, filtrar una fila, guardar las válidas y reconocer qué trabajo hace cada parte de Spring Batch.
-
-**Caso visible:** cuatro filas entran; dos pedidos válidos se guardan, una tarifa cero se filtra y una fila mal formada se registra como rechazo.
-
-**¿Por qué es importante?** un archivo grande se procesa por partes; si algo falla, el sistema puede conservar el trabajo confirmado y reanudarlo con control.
-
-**Modelo mental:** el Job es una receta con etapas; cada Step ejecuta una tarea concreta, y cada chunk funciona como una caja que se confirma antes de llenar la siguiente.
-
-**Límite:** Batch encaja con archivos y lotes; para responder de inmediato a una petición pequeña, usa un flujo HTTP normal.
+**¿Por qué es importante?** Cuando publicas una versión, las capas que no cambiaron se pueden reutilizar; esto puede reducir lo que reconstruyes y transfieres entre despliegues.
 
 ```mermaid
 flowchart LR
-  Job[Job: importPedidos] --> Step1[Step: importarPedidos]
-  Step1 --> Reader[Reader: CSV]
-  Reader --> Processor[Processor: filtra cero]
-  Processor --> Writer[Writer: JDBC]
-  Job --> Step2[Step: resumen Tasklet]
+  D[Dependencias] --> L[Loader Spring Boot]
+  L --> S[Dependencias SNAPSHOT]
+  S --> A[Código de la app]
 ```
 
-#### Subtema 19.1 · Separa el Job del trabajo de cada Step · 8 min
+**Proyecto integrador RutaFlow:** deja este empaquetado preparado para publicar el microservicio de seguimiento sin reconstruir todas sus dependencias cada vez que cambie `/ruta`.
 
-**Contexto:** `Job` representa el proceso completo; un `Step` es una etapa. Un `Tasklet` sirve para una acción breve, como imprimir el resumen al terminar.
+#### Subtema 1.1: Mira qué contiene el JAR · 8 min
 
-**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java`. Compara `importPedidosStep`, que procesa registros, con `resumenStep`, que consulta cuántos quedaron. Mira cómo `importPedidosJob` los conecta con `.start(...).next(...)`.
+**1. Contexto**
+
+El JAR se parece a un ZIP que reúne tu código y las bibliotecas que necesita. Primero vamos a ver esos archivos.
+
+**2. Hazlo tú**
+
+En la terminal, entra a `examples/spring-boot-layered-jar-rutaflow/` y ejecuta:
 
 ```bash
-cd examples/spring-batch-rutaflow
+./mvnw clean package
+jar tf target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar | head -20
+```
+
+Busca `BOOT-INF/classes/` y `BOOT-INF/lib/`. La primera carpeta guarda la aplicación; la segunda, las bibliotecas.
+
+**Resultado esperado:** el comando lista clases de `academia.rutaflow` y archivos `.jar` dentro de `BOOT-INF/lib/`.
+
+**Fallo deliberado:** ejecuta `jar tf target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar.original`. **Diagnóstico:** verás clases, pero no el contenido ejecutable bajo `BOOT-INF/lib/`; compara el JAR original con el repaquetado para identificar qué agregó Spring Boot.
+
+**3. Entiende**
+
+Un Fat JAR es cómodo para ejecutar con `java -jar`. Si Docker copia ese único archivo como una capa, un cambio pequeño del código invalida la capa completa.
+
+**4. Cierra**
+
+Escribe el nombre de una clase propia y de una biblioteca que encontraste.
+
+#### Subtema 1.2: Pide a Spring Boot el mapa de capas · 10 min
+
+**1. Contexto**
+
+Spring Boot puede ordenar el JAR en grupos. Las bibliotecas normalmente cambian menos que el código de la aplicación.
+
+**2. Hazlo tú**
+
+Abre `pom.xml`: el plugin `spring-boot-maven-plugin` vuelve ejecutable el JAR y activa el índice de capas por defecto. Ejecuta:
+
+```bash
+java -Djarmode=tools -jar target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar list-layers
+```
+
+**Resultado esperado:** aparecen `dependencies`, `spring-boot-loader`, `snapshot-dependencies` y `application`.
+
+**Fallo deliberado:** ejecuta el mismo comando sobre `target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar.original`. **Resultado real:** `no hay ningún atributo de manifiesto principal`. **Diagnóstico:** Maven guardó ahí el JAR común, que no tiene el lanzador de Spring Boot; usa el archivo ejecutable que no termina en `.original`.
+
+**3. Entiende**
+
+En Spring Boot 4, el comando vigente es `jarmode=tools list-layers`. Los tutoriales antiguos pueden mostrar `jarmode=layertools list`; esa instrucción no coincide con esta versión.
+
+**4. Cierra**
+
+Explica por qué el código propio queda en la capa que suele cambiar con más frecuencia.
+
+#### Subtema 1.3: Extrae y copia las capas en el orden correcto · 12 min
+
+**1. Contexto**
+
+Docker puede guardar cada instrucción `COPY` como una capa. Si las dependencias siguen iguales, el motor puede reutilizar esa parte al reconstruir la imagen.
+
+**2. Hazlo tú**
+
+Extrae el JAR a `target/extracted/`:
+
+```bash
+java -Djarmode=tools -jar target/spring-boot-layered-jar-rutaflow-0.1.0-SNAPSHOT.jar extract --layers --destination target/extracted
+```
+
+Revisa `Dockerfile`. Tiene una etapa de construcción que extrae el JAR y una etapa final que copia primero lo que cambia poco:
+
+```dockerfile
+COPY --from=builder /builder/extracted/dependencies/ ./
+COPY --from=builder /builder/extracted/spring-boot-loader/ ./
+COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
+COPY --from=builder /builder/extracted/application/ ./
+```
+
+Comprueba los cuatro directorios bajo `target/extracted/`. Después construye y ejecuta la imagen:
+
+```bash
+podman build -t rutaflow-capas:local .
+podman run --rm -p 8080:8080 rutaflow-capas:local
+```
+
+En otra terminal, pide el estado: `curl -s http://localhost:8080/ruta`.
+
+**Resultado esperado:** `{"codigo":"RF-314","estado":"en camino"}`.
+
+**Fallo deliberado:** ejecuta `podman build --build-arg JAR_FILE=target/no-existe.jar -t rutaflow-capas:error .`. **Diagnóstico:** la etapa `COPY` no encuentra el JAR; recompila y revisa la ruta `JAR_FILE`.
+
+**3. Entiende**
+
+El contenedor final no ejecuta el Fat JAR original; ejecuta el JAR reorganizado que quedó junto con las capas extraídas. El orden de `COPY` ayuda a aprovechar caché cuando solo cambia el código.
+
+**4. Cierra**
+
+Marca en el Dockerfile cuál de las cuatro instrucciones copiaría el controlador `/ruta`.
+
+#### Subtema 1.4: Comprueba qué se reutiliza y diagnostica una capa faltante · 10 min
+
+**1. Contexto**
+
+Una imagen por capas solo ayuda si la reconstrucción deja intactas las partes que no cambiaron.
+
+**2. Hazlo tú**
+
+Detén el contenedor. Cambia el texto `"en camino"` en `EstadoRutaController.java` por `"entregado"`, reconstruye el JAR y luego la imagen:
+
+```bash
+./mvnw -q package
+podman build -t rutaflow-capas:local .
+```
+
+Observa la salida: Podman debe marcar como reutilizadas las instrucciones `COPY` de capas sin cambios; la instrucción de `application/` se vuelve a ejecutar. Ejecuta la imagen y vuelve a consultar `/ruta`.
+
+**Resultado esperado:** la respuesta cambia a `{"codigo":"RF-314","estado":"entregado"}`; las capas de dependencias aparecen como `Using cache`.
+
+**Fallo deliberado:** comenta `COPY --from=builder /builder/extracted/application/ ./` y reconstruye. **Diagnóstico:** si la imagen se construye, el error aparece al arrancar porque falta la clase principal; restaura la copia de `application/`.
+
+**3. Entiende**
+
+La caché ahorra reconstrucción y transferencia de capas sin cambios; no hace que el JAR sea más pequeño ni garantiza un despliegue más rápido en todos los casos. Para un prototipo que se publica una sola vez, el Dockerfile más simple puede ser suficiente.
+
+**Cuándo no usarlo:** si el prototipo se publica una vez y no vas a reconstruirlo, mantener un Dockerfile multicapa puede costar más que el tiempo que ahorra.
+
+**4. Cierra**
+
+Entrega la respuesta antes y después del cambio, la lista de capas y la línea de build donde se ve la capa reutilizada. Antes de producción, fija también la imagen base a una versión o digest revisado.
+
+Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.spring.io/spring-boot/maven-plugin/packaging.html) y [Dockerfiles para imágenes de contenedor](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html). Siguiente: Tema 2, imagen nativa con GraalVM.
+
+### Tema 2: GraalVM native image
+
+Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `examples/spring-boot-native-rutaflow/`, Java 25 y Maven Wrapper.
+
+**¿Por qué es importante?** Un binario nativo puede iniciar rápido y usar menos memoria en algunos servicios; hay que medirlo porque su compilación tarda más y limita funciones dinámicas.
+
+```mermaid
+flowchart LR
+  C[Código Java] --> A[AOT de Spring: clases y metadata]
+  A --> J[JAR en JVM con AOT]
+  A --> N[GraalVM Native Image]
+  N --> B[Ejecutable para un SO y arquitectura]
+```
+
+**Proyecto integrador RutaFlow:** compila el endpoint `/estado` para JVM y Native Image y compara inicio, memoria y tamaño en el mismo entorno.
+
+#### Subtema 2.1: Distingue AOT de un binario nativo · 10 min
+
+**1. Contexto**
+
+Spring puede preparar parte de la aplicación durante el build. Eso no convierte por sí solo el JAR en un ejecutable nativo.
+
+**2. Hazlo tú**
+
+En `examples/spring-boot-native-rutaflow/`, ejecuta:
+
+```bash
+./scripts/verify-aot.sh
+```
+
+Abre `scripts/verify-aot.sh`: usa `-Pnative package`, arranca el JAR con `spring.aot.enabled=true` y llama dos rutas.
+
+**Resultado esperado:** `GET /estado` devuelve `{"codigo":"RF-314","estado":"en camino"}` y `GET /mensaje` devuelve `Tu entrega RF-314 va en camino.`
+
+**Fallo deliberado:** arranca el JAR sin `-Dspring.aot.enabled=true`. **Diagnóstico:** la respuesta puede ser igual porque ejecutas la app normal en la JVM; el modo AOT se confirma en el comando y en las clases de `target/spring-aot/`, no por cambiar el JSON.
+
+**3. Entiende**
+
+El JAR continúa corriendo sobre una JVM. Native Image es otro paso: toma clases y metadata AOT y produce un ejecutable para un sistema operativo y una arquitectura concretos.
+
+**4. Cierra**
+
+Escribe dos cosas que generó Spring y una que todavía no produjo el script.
+
+#### Subtema 2.2: Registra un recurso dinámico para Native Image · 12 min
+
+**1. Contexto**
+
+En una JVM, la app puede leer recursos que encuentre al arrancar. Un binario nativo se construye antes y necesita saber qué archivos debe incluir.
+
+**2. Hazlo tú**
+
+Compara `src/main/java/academia/rutaflow/nativeimage/MensajeHints.java` con `NativeRutaApplication.java` y `src/main/resources/mensajes/ruta.txt`:
+
+```java
+public class MensajeHints implements RuntimeHintsRegistrar {
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader loader) {
+        hints.resources().registerPattern("mensajes/*.txt");
+    }
+}
+```
+
+La clase de aplicación importa el registrador con `@ImportRuntimeHints(MensajeHints.class)`. Ejecuta `./scripts/verify-aot.sh` y busca `mensajes` en `target/spring-aot/main/resources/META-INF/native-image/academia.rutaflow/spring-boot-native-rutaflow/reachability-metadata.json`.
+
+**Resultado esperado:** la metadata generada incluye el patrón `mensajes/*.txt` y `/mensaje` puede leer `mensajes/ruta.txt`.
+
+**Fallo deliberado:** quita `@ImportRuntimeHints(MensajeHints.class)` y vuelve a ejecutar `./mvnw -q clean package -Pnative`. **Diagnóstico:** el build puede terminar, pero el patrón `mensajes/*.txt` desaparece de la metadata; sin esa pista, un binario nativo no tiene garantizado el recurso. Restaura la anotación.
+
+**3. Entiende**
+
+El AOT prepara archivos y código. Las pistas dicen al compilador qué cosas dinámicas debe conservar. No todas las bibliotecas ni formas de reflexión funcionan automáticamente.
+
+**4. Cierra**
+
+Entrega el nombre del recurso, el patrón que lo incluye y la clase que registra ese patrón.
+
+#### Subtema 2.3: Construye el ejecutable nativo · 12 min
+
+**1. Contexto**
+
+El JAR corre en distintos sistemas con una JVM; el binario nativo se ajusta al sistema y arquitectura de compilación.
+
+**2. Hazlo tú**
+
+Abre `pom.xml` y localiza `org.graalvm.buildtools:native-maven-plugin`. Comprueba que `native-image --version` funcione con un JDK GraalVM y que tu sistema tenga el compilador C/C++ requerido. Desde la raíz del proyecto ejecuta:
+
+```bash
+./mvnw -Pnative native:compile
+```
+
+El perfil `native` del padre Spring Boot ejecuta AOT y configura el plugin de Native Build Tools. En un contenedor GraalVM ARM64/Linux se puede compilar así:
+
+```bash
+podman run --rm -v "$PWD:/workspace:Z" -w /workspace ghcr.io/graalvm/native-image-community:25 ./mvnw -Pnative native:compile
+```
+
+**Resultado esperado:** el build crea `target/spring-boot-native-rutaflow`; `file` debe identificar un ejecutable nativo para la plataforma de compilación.
+
+**Práctica:** anota la versión de GraalVM y plataforma junto al tamaño de `target/spring-boot-native-rutaflow`.
+
+**Fallo deliberado:** ejecuta `./mvnw -Pnative native:compile` con un JDK que no tenga `native-image`. **Diagnóstico:** el plugin indica que no encuentra el compilador; selecciona GraalVM y verifica `JAVA_HOME` y `PATH`.
+
+**3. Entiende**
+
+El build nativo suele tardar más y consume más recursos que `package`. El archivo resultante no es un JAR universal: compílalo para cada sistema operativo y arquitectura de destino.
+
+**4. Cierra**
+
+Registra sistema, arquitectura, versión de GraalVM, duración y tamaño del ejecutable.
+
+#### Subtema 2.4: Ejecuta y compara con JVM · 15 min
+
+**1. Contexto**
+
+El inicio rápido importa si una instancia debe atender tráfico pronto; el tiempo de compilación también forma parte del costo.
+
+**2. Hazlo tú**
+
+Ejecuta `target/spring-boot-native-rutaflow` en el mismo sistema donde lo compilaste y comprueba `/estado` y `/mensaje`. Si lo compilaste dentro del contenedor ARM64/Linux, sigue el comando de ejecución de `examples/spring-boot-native-rutaflow/README.md`; consulta `http://localhost:18081`. Después ejecuta el JAR normal y compara las dos salidas y los tamaños:
+
+```bash
+du -h target/spring-boot-native-rutaflow target/spring-boot-native-rutaflow-0.1.0-SNAPSHOT.jar
+```
+
+Mide el inicio con el mismo equipo y condiciones; detén cada servidor después de hacer las peticiones.
+
+**Resultado esperado:** ambas versiones devuelven el mismo JSON y mensaje. La diferencia de inicio, memoria y tamaño se anota con valores medidos, no se adivina.
+
+**Fallo deliberado:** elimina temporalmente la anotación de hints, reconstruye el binario y llama `/mensaje`. **Diagnóstico:** si falla la lectura del recurso, compara la metadata entre builds, restaura el registrador y recompila.
+
+**3. Entiende**
+
+Un inicio más rápido no garantiza menor costo total. Revisa el tiempo de build, memoria, tamaño, compatibilidad de dependencias y facilidad de depuración antes de escoger.
+
+**Cuándo no usarlo:** conserva JVM si no tienes presión por arranque o memoria y la mayoría de tus dependencias dependen de carga dinámica.
+
+**4. Cierra**
+
+Entrega las dos respuestas, sus mediciones y una razón concreta para elegir JVM o binario nativo en el microservicio de seguimiento.
+
+Fuentes oficiales: [AOT y perfil Maven `native`](https://docs.spring.io/spring-boot/maven-plugin/aot.html), [imágenes nativas de Spring Boot](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html), [metadata y hints personalizados](https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html) y [prerrequisitos y build Native Image](https://www.graalvm.org/reference-manual/native-image/). Siguiente: Tema 3, health checks de Actuator para Kubernetes.
+
+### Tema 3: Health checks para Kubernetes
+
+Duración: 40–50 min. **Meta:** configurar Spring Actuator para que Kubernetes pueda distinguir un contenedor que debe reiniciar de uno que solo debe dejar de recibir tráfico. Usa `examples/spring-boot-probes-rutaflow/`, Java 25 y Maven Wrapper. El laboratorio local prueba la app; para observar acciones del kubelet necesitas un clúster.
+
+**¿Por qué es importante?** Una ruta de salud mal escrita puede hacer que Kubernetes marque el pod como fallido, aunque la aplicación esté funcionando.
+
+```mermaid
+flowchart LR
+  S[Arranque] -->|startup OK| L[Liveness]
+  S -->|startup OK| R[Readiness]
+  L -->|falla repetida| X[Kubernetes reinicia]
+  R -->|falla| N[Kubernetes deja de enrutar]
+```
+
+**Proyecto integrador RutaFlow:** conecta los endpoints de Actuator con el `Deployment` del servicio de entregas y comprueba cuál señal reinicia el contenedor y cuál solo retira tráfico.
+
+#### Subtema 3.1: Enciende los probes de Spring · 8 min
+
+**1. Contexto**
+
+En Spring Boot 4.1.2 estos grupos están habilitados por defecto. El proyecto los declara igual en su archivo para que sea fácil ver y cambiar la configuración.
+
+**2. Hazlo tú**
+
+Abre `src/main/resources/application.properties` y revisa:
+
+```properties
+management.endpoint.health.probes.enabled=true
+management.endpoints.web.exposure.include=health
+```
+
+Desde `examples/spring-boot-probes-rutaflow/` ejecuta:
+
+```bash
 ./mvnw -q test
 ```
 
-**Resultado esperado:** el log contiene `Pedidos importados: 2` y la prueba termina en verde.
+**Resultado esperado:** las dos pruebas de `ProbeEndpointsTest.java` pasan; localmente existen `/actuator/health/liveness` y `/actuator/health/readiness`.
 
-**Fallo deliberado:** quita `.next(resumenStep)` y ejecuta otra vez. **Diagnóstico:** se guardan pedidos, pero el paso de resumen no corre y no aparece su línea. Restáuralo.
+**Fallo deliberado:** cambia el valor a `false` y repite `./mvnw -q test`. **Resultado comprobado:** liveness esperaba `200` y recibió `404`; readiness esperaba `503` y recibió `404`. **Diagnóstico:** la propiedad deshabilita los grupos; restáurala a `true` y ejecuta otra vez.
 
-**Entiende:** el job ordena las etapas; no procesa cada fila por sí solo. Reserva Tasklet para tareas pequeñas, no para cargar el CSV entero en memoria.
+**3. Entiende**
 
-**Cierra:** señala en el código qué bean es Job y cuáles son Steps; registra cuál usarías para preparar un archivo de tarifas del proyecto integrador RutaFlow.
+La exposición de `health` permite consultar estos endpoints. `probes.enabled` vale `true` por defecto en esta versión; declararlo aquí hace visible la intención. Actuator oculta detalles internos por defecto; evita publicarlos sin control en producción.
 
-#### Subtema 19.2 · Lee filas y transforma una a la vez · 8 min
+**4. Cierra**
 
-**Contexto:** `pedidos.csv` trae una fila por pedido. El reader crea un objeto; el processor decide qué pasa a la escritura.
+Escribe las dos rutas completas y señala la propiedad que las habilita en local.
 
-**Hazlo tú:** abre `src/main/resources/pedidos.csv`, luego `ImportJobConfig.java`. Sigue `pedidosReader()` hasta `positiveAmountsOnly()`:
+#### Subtema 3.2: Distingue vivo de listo para tráfico · 10 min
 
-```java
-return pedido.importe().signum() > 0 ? pedido : null;
-```
+**1. Contexto**
 
-`null` significa “filtrar esta fila”. Ejecuta `./mvnw -q test` desde `examples/spring-batch-rutaflow`.
+Un proceso puede seguir vivo mientras todavía rechaza pedidos. Kubernetes necesita saberlo para poder sacarlo temporalmente del balanceo.
 
-**Resultado esperado:** `RF-1002` queda fuera por importe cero; el reader continúa con `RF-1003`.
+**2. Hazlo tú**
 
-**Fallo deliberado:** cambia el processor para que siempre devuelva `pedido`. **Diagnóstico:** la prueba encuentra tres filas, incluida la de importe cero. Restaura la condición.
-
-**Entiende:** una fila filtrada no es lo mismo que un error. En importaciones reales guarda el motivo del rechazo para poder conciliarlo.
-
-**Cierra:** agrega al CSV una tarifa válida para el proyecto integrador RutaFlow y predice qué filas quedarán antes de ejecutar.
-
-#### Subtema 19.3 · Confirma filas en grupos pequeños · 10 min
-
-**Contexto:** el writer guarda en JDBC los registros que el processor dejó pasar. El tamaño del chunk marca cuántos elementos se procesan antes de confirmar el grupo.
-
-**Hazlo tú:** en `ImportJobConfig.java`, localiza el step y su configuración actual:
+En `src/test/java/academia/rutaflow/probes/ProbeEndpointsTest.java`, ubica la prueba de readiness. Esta publica el mismo evento que usa Spring para cambiar disponibilidad:
 
 ```java
-.<PedidoImportado, PedidoImportado>chunk(2)
-.reader(pedidosReader)
-.processor(positiveAmountsOnly)
-.writer(pedidosWriter)
+AvailabilityChangeEvent.publish(events, this, ReadinessState.REFUSING_TRAFFIC);
+http.perform(get("/actuator/health/readiness"))
+    .andExpect(status().isServiceUnavailable())
+    .andExpect(jsonPath("$.status").value("OUT_OF_SERVICE"));
 ```
 
-El writer usa parámetros SQL para guardar referencia e importe. Corre `./mvnw -q clean test`.
-
-**Resultado esperado:** la consulta de la prueba devuelve dos registros; el test cubre escritura real sobre H2.
-
-**Fallo deliberado:** cambia el nombre `:referencia` del SQL a `:codigo`. **Diagnóstico:** el parámetro ya no coincide con el record y la ejecución falla al escribir. Restáuralo.
-
-**Entiende:** un chunk de dos acota el grupo de trabajo y el commit. No asumas que el tamaño óptimo es dos: mídelo con filas, base de datos y costo de recuperación reales. Este lab usa H2 y no mide producción.
-
-**Cierra:** apunta qué parte cambia al ajustar el tamaño de chunk y conserva el test como evidencia del proyecto integrador RutaFlow.
-
-#### Subtema 19.4 · Ejecuta el job y comprueba sus datos · 8 min
-
-**Contexto:** una línea “job completado” no demuestra que los resultados sean correctos. Comprueba filas concretas en la base.
-
-**Hazlo tú:** ejecuta desde `examples/spring-batch-rutaflow`:
+Ejecuta solo esas pruebas:
 
 ```bash
-./mvnw -q clean test
+./mvnw -q -Dtest=ProbeEndpointsTest test
 ```
 
-Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e importes esperados. Para ver el job arrancar desde consola, usa `./mvnw spring-boot:run`; Spring Boot ejecuta el único Job configurado al iniciar.
+**Resultado esperado:** liveness da `200 UP`; readiness da `503 OUT_OF_SERVICE` después del evento. `@AfterEach` devuelve la aplicación a `ACCEPTING_TRAFFIC`.
 
-**Resultado esperado:** `RF-1001` y `RF-1003` quedan guardados; `RF-1002` se filtra; la fila mal formada se registra y el paso final imprime el conteo.
+**Fallo deliberado:** quita temporalmente la publicación `REFUSING_TRAFFIC`. **Diagnóstico:** readiness permanece `200 UP`; la prueba falla porque nadie cambió el estado de disponibilidad.
 
-**Fallo deliberado:** comenta la llamada `.processor(positiveAmountsOnly)`. **Diagnóstico:** la fila de importe cero también llega a la tabla y la prueba falla. Devuelve el processor.
+**3. Entiende**
 
-**Entiende:** el job exitoso, los datos escritos y la regla de filtrado son evidencias distintas. No ejecutes este ejemplo como una petición HTTP pequeña: está diseñado para archivos y procesamiento por lotes.
+Si liveness falla repetidamente, Kubernetes reinicia el contenedor. Si readiness falla, lo conserva, pero deja de enviarle tráfico del Service.
 
-**Cierra:** conserva el test, el CSV de muestra y una tabla con leídas, filtradas y escritas para extender el proyecto integrador RutaFlow.
+**4. Cierra**
 
-**Fuentes primarias:** [Spring Batch: procesamiento por chunks](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html); [Spring Batch: configurar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: Tasklet](https://docs.spring.io/spring-batch/reference/step/tasklet.html); [Spring Boot: Spring Batch y ejecución automática](https://docs.spring.io/spring-boot/reference/io/spring-batch.html).
+Explica por qué `503` en readiness puede ser correcto sin que el proceso tenga que reiniciarse.
 
-### Tema 2: Reinicio, JobParameters, retry, skip y listeners
+#### Subtema 3.3: Conecta Actuator con el Deployment · 12 min
 
-**Meta:** reconocer una ejecución lógica, reanudar el job con sus parámetros y separar fallas temporales de filas que no se pueden procesar.
+**1. Contexto**
 
-**Caso visible:** un lote guarda su primer chunk y falla en el segundo. El mismo identificador permite reiniciar; un identificador nuevo crea otra instancia y vuelve a leer el archivo.
+Un endpoint de salud solo influye en Kubernetes cuando el `Deployment` lo consulta.
 
-**¿Por qué es importante?** al procesar miles de registros, recuperar el trabajo y explicar los rechazados evita duplicar pagos o perder filas sin causa.
+**2. Hazlo tú**
 
-**Modelo mental:** un checkpoint es el separador que marca hasta dónde llegó el lote; los parámetros identificadores dicen si retomas ese trabajo o comienzas uno nuevo.
+Abre `k8s/deployment.yaml`. El manifiesto define tres comprobaciones:
+
+```yaml
+startupProbe:
+  httpGet: { path: /actuator/health/liveness, port: http }
+  periodSeconds: 10
+  failureThreshold: 30
+livenessProbe:
+  httpGet: { path: /actuator/health/liveness, port: http }
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:
+  httpGet: { path: /actuator/health/readiness, port: http }
+  periodSeconds: 5
+  failureThreshold: 2
+```
+
+Construye la imagen `rutaflow-probes:local` con `Dockerfile`. Si tienes un clúster configurado y la imagen disponible para él, aplica y revisa:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+kubectl rollout status deployment/rutaflow-probes
+kubectl get pods -l app=rutaflow-probes
+```
+
+**Resultado esperado:** la réplica termina `Ready`; `kubectl describe pod` muestra las tres rutas de probe y no registra eventos `Unhealthy`.
+
+**Fallo deliberado:** cambia readiness a `/actuator/health/ready`. **Diagnóstico:** `kubectl describe pod` muestra fallos HTTP 404 y el pod queda `NotReady`; restaura `/readiness` y espera el rollout.
+
+**3. Entiende**
+
+`startupProbe` da tiempo de arranque; mientras no tenga éxito, Kubernetes espera para empezar liveness y readiness. Después, cada probe cumple un propósito distinto.
+
+**4. Cierra**
+
+Asocia cada probe con su acción: dar tiempo, reiniciar o retirar tráfico.
+
+#### Subtema 3.4: Evita reinicios en cascada · 10 min
+
+**1. Contexto**
+
+Si una base de datos cae, reiniciar todos los pods de la aplicación no la arregla y puede aumentar la carga cuando vuelve.
+
+**2. Hazlo tú**
+
+Compara el `Deployment` con `application.properties`. Aquí liveness solo revisa el estado del proceso y readiness señala si la app acepta tráfico. Si tu servicio requiere una base de datos, agrega la comprobación externa a readiness solo cuando no pueda responder pedidos sin ella; conserva liveness independiente.
+
+En un clúster observa fallos y eventos con:
+
+```bash
+kubectl describe pod -l app=rutaflow-probes
+kubectl get events --sort-by=.lastTimestamp
+```
+
+**Resultado esperado:** una dependencia temporalmente no disponible puede retirar el pod del tráfico sin provocar por sí misma un reinicio liveness.
+
+**Fallo deliberado:** agrega la base externa a liveness y simula que la base no responde. **Diagnóstico:** todos los pods pueden reiniciarse sin que cambie el estado de la base; mueve esa condición a readiness y despliega gradualmente.
+
+**3. Entiende**
+
+Los grupos de probes de Spring no incluyen automáticamente todas las dependencias. La decisión depende del servicio: readiness evalúa si debe recibir solicitudes; liveness pregunta si el proceso puede recuperarse sin reinicio.
+
+**Cuándo no usarlo:** si no despliegas con Kubernetes ni un orquestador que consulte probes, estas rutas no cambian cómo se opera tu app.
+
+**4. Cierra**
+
+Entrega la salida de `./scripts/verify-probes.sh`, el manifiesto y la decisión de qué dependencias deben afectar readiness.
+
+Fuentes oficiales: [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes), [propiedad probes en Spring Boot 4.1.2](https://docs.spring.io/spring-boot/appendix/application-properties/), [pruebas MockMvc de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html), [diferencias entre probes en Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/probes/). El manifiesto de ejemplo no se aplicó a un clúster en esta revisión.
+
+### Tema 4: Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile · Avanzado · 40 min
+
+**Prerrequisito:** tema «Fat JAR vs capas de Docker» de este módulo.
+
+**Al finalizar podrás:** crear una imagen de contenedor de tu aplicación con `./mvnw spring-boot:build-image`, inspeccionar sus capas y su usuario, y configurar la versión de Java y la memoria sin escribir un Dockerfile.
+
+**¿Por qué es importante?** Mantener un Dockerfile por servicio significa repetir las mismas decisiones (imagen base, usuario sin privilegios, capas, memoria) y olvidar actualizarlas. Los Buildpacks las toman por ti y se actualizan en un solo lugar.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 4.1.2 con JDK 25 en `academia-spring` y Docker en ejecución. La primera vez se descargan las imágenes del builder de Paketo, así que necesitas red.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow tenía doce servicios con doce Dockerfiles distintos. Tres corrían como `root` y uno usaba una imagen base con vulnerabilidades de hace un año. Al pasar a Buildpacks, todos comparten la misma base y se actualizan al reconstruir.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** Cloud Native Buildpacks, builder, Paketo, imagen OCI, capas, rebase, `BP_JVM_VERSION`, calculadora de memoria.
+
+Un **buildpack** detecta qué es tu proyecto (una app de Spring Boot con JDK 25) y aporta lo necesario para ejecutarlo: el JRE, la configuración de memoria y el comando de arranque. Un **builder** agrupa varios buildpacks; Spring Boot usa por defecto los de **Paketo**.
+
+`spring-boot:build-image` (Maven) o `bootBuildImage` (Gradle) generan una **imagen OCI** que:
+
+- separa en **capas** las dependencias, que cambian poco, de tu código, que cambia mucho;
+- corre con un usuario sin privilegios;
+- calcula al arrancar cuánta memoria dar al heap según el límite del contenedor.
+
+La configuración va en el `pom.xml` o con variables `BP_*`, por ejemplo `BP_JVM_VERSION=25` (Paketo usa otra versión por defecto si no la indicas).
+
+**Analogía:** un Dockerfile es cocinar desde cero cada vez; un buildpack es una receta estándar del restaurante que todos los cocineros siguen igual. La analogía falla en que, si necesitas un ingrediente muy especial (una librería nativa), la receta estándar puede no tenerlo.
+
+**Límite de uso:** la primera construcción es lenta y necesita red. Si tu servicio necesita paquetes del sistema poco comunes, un Dockerfile propio puede ser más simple. Revisa el tamaño final: incluye un JRE completo.
 
 ```mermaid
 flowchart LR
-  Error -->|mismos parámetros| Reinicio[Reanuda instancia]
-  Error -->|parámetro nuevo| Nuevo[Empieza instancia nueva]
+    S["código + pom.xml"] -->|"spring-boot:build-image"| B["builder Paketo"]
+    B --> J["capa: JRE 25"]
+    B --> D["capa: dependencias"]
+    B --> A["capa: aplicación"]
+    J & D & A --> I["imagen OCI<br/>usuario sin privilegios"]
 ```
 
-**Práctica:** fuerza una falla, compara ambos lanzamientos y consulta filas guardadas, referencias rechazadas y estado final.
+#### Paso 4 · Demostración guiada desde cero
 
-#### Subtema 19.5 · Reanuda la misma instancia del Job · 10 min
+Archivo `academia-spring/pom.xml`:
 
-**Contexto:** si un proceso cae tras confirmar un chunk, no vuelvas a iniciar el trabajo a ciegas.
+```xml
+<!-- Dentro de <build><plugins> -->
+<plugin>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-maven-plugin</artifactId>
+  <configuration>
+    <image>
+      <name>rutaflow/asignacion:${project.version}</name>
+      <env>
+        <BP_JVM_VERSION>25</BP_JVM_VERSION>
+      </env>
+    </image>
+  </configuration>
+</plugin>
+```
 
-**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java`. Ejecuta:
+Ejecútalo:
 
 ```bash
-cd examples/spring-batch-rutaflow
-./mvnw -q -Dtest=RestartJobTest#mismaInstanciaReanudaTrasElPrimerChunkConfirmadoSinDuplicarlo test
+./mvnw spring-boot:build-image
+docker run --rm -p 8080:8080 -m 512m rutaflow/asignacion:0.0.1-SNAPSHOT
+docker inspect rutaflow/asignacion:0.0.1-SNAPSHOT --format '{{.Config.User}}'
 ```
 
-El test lanza el mismo Job con los mismos `JobParameters`; el writer provoca un fallo una vez y vuelve a ejecutarlo. El fixture usa H2 `MERGE` por referencia para hacer idempotente la escritura.
+**Explicación por bloques:** En el `pom.xml`, `<name>` fija el nombre y la etiqueta de la imagen, y `BP_JVM_VERSION` pide un JRE 25, la misma versión con la que compilas. `spring-boot:build-image` construye la aplicación, ejecuta el builder de Paketo y deja la imagen en tu Docker local. Al correrla con `-m 512m`, la calculadora de memoria lee el límite y ajusta el heap. `docker inspect` muestra que el usuario no es `root`.
 
-**Resultado esperado:** primera ejecución `FAILED`; la reanudación `COMPLETED`; la tabla final contiene las cuatro referencias sin duplicados.
+**Resultado esperado:**
 
-**Fallo deliberado:** cambia el parámetro `run` entre los dos lanzamientos. **Diagnóstico:** ya no es la misma instancia; la segunda ejecución empieza el archivo como un trabajo nuevo. Vuelve a usar el mismo valor.
-
-**Entiende:** el `JobRepository` guarda estado para reanudar. Aun así, un chunk o un efecto externo puede repetirse; idempotencia es la protección ante la repetición.
-
-**Cierra:** registra estado de ambas ejecuciones y explica por qué una llamada de pago o email necesita protección adicional en el proyecto RutaFlow.
-
-#### Subtema 19.6 · Usa parámetros estables para identificar el lote · 8 min
-
-**Contexto:** el nombre del archivo identifica la entrada; un `run` nuevo puede representar intencionalmente una nueva ejecución lógica.
-
-**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java` y compara `parametroIdentificadorNuevoCreaOtraInstanciaDesdeElPrincipio`. Corre `./mvnw -q -Dtest=RestartJobTest test`.
-
-```java
-var params = new JobParametersBuilder()
-    .addString("inputFile", "restart-pedidos.csv")
-    .addLong("run", run)
-    .toJobParameters();
+```text
+[INFO] Successfully built image 'docker.io/rutaflow/asignacion:0.0.1-SNAPSHOT'
+Al arrancar: «Calculating JVM memory based on ... available memory» seguido del banner de Spring Boot.
+docker inspect imprime un usuario no root (por ejemplo, 1002:1000 o cnb).
 ```
 
-**Resultado esperado:** con el mismo valor se puede relanzar la ejecución fallida; con otro valor se crea una instancia distinta. Los registros del ejemplo usan una clave natural y `MERGE`, así que no duplican filas visibles.
+**Fallo deliberado:** detén Docker y ejecuta `./mvnw spring-boot:build-image`. **Error esperado:** `Connection to the Docker daemon at 'localhost' failed`. **Diagnóstico:** los Buildpacks construyen dentro de contenedores; necesitan el demonio de Docker (o Podman) disponible. Arráncalo y repite.
 
-**Fallo deliberado:** genera un `run` aleatorio para cada reintento. **Diagnóstico:** Spring Batch interpreta cada intento como un lote nuevo y pierde la continuidad del checkpoint. Restaura el identificador.
+#### Paso 5 · Práctica guiada
 
-**Entiende:** no uses hora actual como parámetro identificador si quieres reanudar el mismo lote. Guarda una referencia estable del archivo, como nombre y checksum.
+1. **Reproducción:** construye la imagen y anota su tamaño con `docker images`.
+2. **Variación:** cambia una línea de código, reconstruye y observa en la salida que solo cambia la capa de la aplicación.
+3. **Diagnóstico:** reproduce el fallo deliberado con Docker detenido.
+4. **Integración:** arranca con `-m 256m` y con `-m 1g` y compara el heap calculado en el registro.
+5. **Diseño:** compara la imagen de Buildpacks con la del Dockerfile de capas del tema anterior: tamaño, usuario y quién mantiene la base.
 
-**Cierra:** elige qué campos identifican cada archivo de tarifas de RutaFlow y cuáles son solo etiquetas de ejecución.
+**Pista:** si la imagen no arranca con poca memoria, mira la línea de la calculadora: dice cuánta memoria necesita.
 
-#### Subtema 19.7 · Distingue retry de skip · 10 min
+#### Paso 6 · Práctica independiente
 
-**Contexto:** una caída temporal de base de datos puede recuperarse; un importe que no se puede leer requiere rechazo explícito.
+Configura el pipeline de CI para construir la imagen con Buildpacks, etiquetarla con el hash del commit y publicarla en el registro del proyecto.
 
-**Hazlo tú:** abre `ImportJobConfig.java`. Busca `faultTolerant`, `retry`, `retryLimit`, `skip` y `skipLimit`:
+#### Paso 7 · Cierre
 
-```java
-.faultTolerant()
-.retry(TransientDataAccessException.class).retryLimit(2)
-.skip(FlatFileParseException.class).skipLimit(2)
-```
+- [ ] Explicas qué aporta un buildpack y qué es un builder.
+- [ ] Construiste y ejecutaste la imagen sin Dockerfile.
+- [ ] Reprodujiste el error sin Docker.
+- [ ] Comprobaste que la imagen no corre como root.
 
-Corre `./mvnw -q clean test`. El writer del ejemplo falla una vez de manera controlada; la cuarta línea del CSV trae un importe inválido.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** construir sin fijar la versión de Java, correr con límites de memoria muy bajos sin mirar la calculadora y mantener Dockerfiles distintos por costumbre. **Siguiente paso:** el tema «GraalVM native image» construye imágenes nativas con el mismo comando y otra configuración.
 
-**Resultado esperado:** el writer vuelve a intentar el error temporal; la fila mal formada se excluye y la prueba encuentra una causa en `batch_rechazo`.
+**Transferencia al proyecto integrador «RutaFlow»:** reemplaza los Dockerfiles de los servicios Java de RutaFlow por Buildpacks con JDK 25 y publica las imágenes desde el CI.
 
-**Fallo deliberado:** elimina `.skip(...)` y ejecuta `ImportJobTest`. **Diagnóstico:** el error de lectura detiene el Job. Restaura el límite de skip.
+**Fuente oficial:** [Spring Boot — Packaging OCI Images (Maven)](https://docs.spring.io/spring-boot/maven-plugin/build-image.html) y [Paketo Buildpacks — Java](https://paketo.io/docs/howto/java/).
 
-**Entiende:** limita reintentos y skips. Reintenta solo fallas transitorias; no conviertas una caída permanente en un ciclo infinito ni descartes errores de infraestructura como si fueran datos malos.
+## Laboratorio práctico
 
-**Cierra:** propone qué errores de una importación de tarifas reintentar y cuáles enviar a conciliación.
+**Objetivo:** empaquetar RutaFlow, ejecutar el modo AOT disponible y dejar probes configurados para un despliegue. Los tres ejemplos están en `examples/spring-boot-layered-jar-rutaflow/`, `examples/spring-boot-native-rutaflow/` y `examples/spring-boot-probes-rutaflow/`.
 
-#### Subtema 19.8 · Deja rastro sin guardar datos sensibles · 8 min
+| Evidencia | Comando | Debe observarse |
+|---|---|---|
+| JAR organizado | `./scripts/verify-layers.sh` en el laboratorio de capas | Cuatro directorios bajo `target/extracted/` |
+| Caché de capas | Cambia solo `/ruta` y repite `podman build` | Dependencias reutilizadas; capa de aplicación reconstruida |
+| Spring AOT | `./scripts/verify-aot.sh` en el laboratorio native | JAR JVM responde `/estado` y `/mensaje`; metadata contiene el recurso |
+| Probes | `./scripts/verify-probes.sh` en el laboratorio de Actuator | MockMvc confirma `200 UP` y `503 OUT_OF_SERVICE`; HTTP local responde ambos grupos |
 
-**Contexto:** “leí 500 mil y escribí 499 mil” no explica qué pasó con la diferencia.
+Para producir un binario nativo, sigue la parte GraalVM del Tema 2 con una toolchain compatible. No trates el JAR en modo AOT como binario nativo. El manifiesto de Kubernetes se aplica solo si tienes clúster y la imagen está disponible para sus nodos.
 
-**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java` y sigue el bean `rechazoAudit`; luego consulta `ImportJobTest.java`. Ejecuta `./mvnw -q -Dtest=ImportJobTest test`; comprueba el total importado, el total rechazado y los intentos del writer.
+**Criterio de cierre:** entrega las cuatro salidas, registra plataforma y mediciones nativas solo si completaste ese build y, si usaste Kubernetes, adjunta estado del Deployment. No se exige una mejora fija de tamaño o arranque: mídela en el mismo entorno y conserva el resultado.
 
-**Resultado esperado:** dos pedidos escritos, una fila inválida auditada y un fallo temporal recuperado. El importe cero se cuenta como filtrado por regla de negocio, no como parse error.
-
-**Fallo deliberado:** elimina el listener de skip. **Diagnóstico:** la prueba no encuentra causa registrada aunque el job complete. Restáuralo.
-
-**Entiende:** registra referencia y causa útil, no datos personales completos. Los efectos externos como publicar evento o enviar dinero no quedan cubiertos por la transacción del chunk; usa outbox o idempotency key.
-
-**Cierra:** prepara una conciliación de leídas, filtradas, rechazadas y escritas para el proyecto integrador RutaFlow. La prueba con H2 no mide millones de filas ni garantiza el comportamiento de PostgreSQL en producción.
-
-**Fuentes primarias:** [Spring Batch: reiniciar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: retry](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/retry-logic.html); [Spring Batch: skip](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/configuring-skip.html); [Spring Batch: listeners](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/intercepting-execution.html); [Spring Boot: reiniciar jobs fallidos](https://docs.spring.io/spring-boot/how-to/batch.html).
+---

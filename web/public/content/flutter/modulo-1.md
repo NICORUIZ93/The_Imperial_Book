@@ -66,33 +66,60 @@ En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliver
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: PantallaEnvio()));
+
+class PantallaEnvio extends StatelessWidget {
+  const PantallaEnvio({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Envío del día')),
+        body: const Column(
+          children: [
+            TarjetaEnvio(guia: 'RF-4471', estado: 'En ruta'),
+            ContadorIntentos(),
+          ],
+        ),
+      );
+}
+
 class TarjetaEnvio extends StatelessWidget {
   final String guia;
   final String estado;
   const TarjetaEnvio({required this.guia, required this.estado, super.key});
+
+  @override
   Widget build(BuildContext context) => ListTile(title: Text(guia), subtitle: Text(estado));
 }
 
 class ContadorIntentos extends StatefulWidget {
+  const ContadorIntentos({super.key});
+
+  @override
   State<ContadorIntentos> createState() => _ContadorIntentosState();
 }
+
 class _ContadorIntentosState extends State<ContadorIntentos> {
   int intentos = 0;
+
+  @override
   Widget build(BuildContext context) => ElevatedButton(
-    onPressed: () => setState(() => intentos++),
-    child: Text("Intentos: $intentos"),
-  );
+        onPressed: () => setState(() => intentos++),
+        child: Text('Intentos: $intentos'),
+      );
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `TarjetaEnvio` nunca necesita reconstruirse por sí misma (no tiene ningún `setState`); `ContadorIntentos` incrementa visualmente su contador cada vez que se toca el botón, porque `setState()` dispara la reconstrucción de `_ContadorIntentosState`.
 
@@ -334,17 +361,80 @@ En el proyecto integrador RutaFlow, la lista reordenable con `ValueKey` vive en 
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-ListView(children: envios.map((e) => TarjetaEnvio(key: ValueKey(e.id), guia: e.guia, estado: e.estado)).toList())
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: ListaReordenable()));
+
+class Envio {
+  const Envio(this.id, this.guia, this.estado);
+  final String id;
+  final String guia;
+  final String estado;
+}
+
+class ListaReordenable extends StatefulWidget {
+  const ListaReordenable({super.key});
+
+  @override
+  State<ListaReordenable> createState() => _ListaReordenableState();
+}
+
+class _ListaReordenableState extends State<ListaReordenable> {
+  final envios = [
+    const Envio('e1', 'RF-4471', 'En ruta'),
+    const Envio('e2', 'RF-5002', 'Asignado'),
+    const Envio('e3', 'RF-5310', 'Urgente'),
+  ];
+
+  void mover(int desde, int hasta) {
+    setState(() {
+      final destino = hasta > desde ? hasta - 1 : hasta;
+      envios.insert(destino, envios.removeAt(desde));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Envíos')),
+        body: ReorderableListView(
+          onReorder: mover,
+          children: envios
+              .map((e) => TarjetaEnvio(key: ValueKey(e.id), guia: e.guia, estado: e.estado))
+              .toList(),
+        ),
+      );
+}
+
+class TarjetaEnvio extends StatefulWidget {
+  const TarjetaEnvio({required this.guia, required this.estado, super.key});
+  final String guia;
+  final String estado;
+
+  @override
+  State<TarjetaEnvio> createState() => _TarjetaEnvioState();
+}
+
+class _TarjetaEnvioState extends State<TarjetaEnvio> {
+  bool revisado = false; // estado de la fila: debe seguir al envío al reordenar
+
+  @override
+  Widget build(BuildContext context) => CheckboxListTile(
+        title: Text(widget.guia),
+        subtitle: Text(widget.estado),
+        value: revisado,
+        onChanged: (valor) => setState(() => revisado = valor ?? false),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: al arrastrar un envío urgente al principio de la lista, el checkbox "revisado" de cada `TarjetaEnvio` sigue asociado al envío correcto (identificado por `e.id`), sin importar su nueva posición.
 
@@ -549,6 +639,7 @@ Archivo `gestos_rutaflow/lib/main.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart'; // CustomSemanticsAction
 
 void main() => runApp(const MaterialApp(home: ListaEntregas()));
 

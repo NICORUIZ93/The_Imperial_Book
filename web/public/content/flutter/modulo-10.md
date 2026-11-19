@@ -43,21 +43,34 @@ En el proyecto integrador RutaFlow, el `ThemeData` vive en `lib/core/app_theme.d
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-MaterialApp(
-  theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
-  darkTheme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo, brightness: Brightness.dark),
-  themeMode: ThemeMode.system,
-)
+import 'package:flutter/material.dart';
+
+void main() => runApp(MaterialApp(
+      theme: ThemeData(colorSchemeSeed: Colors.indigo),
+      darkTheme: ThemeData(colorSchemeSeed: Colors.indigo, brightness: Brightness.dark),
+      themeMode: ThemeMode.system,
+      home: const PantallaConfirmar(),
+    ));
+
+class PantallaConfirmar extends StatelessWidget {
+  const PantallaConfirmar({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Entrega RF-4471')),
+        body: Center(child: FilledButton(onPressed: () {}, child: const Text('Confirmar'))),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: cada botón "Confirmar" en toda la app usa automáticamente el mismo tono derivado de `Colors.indigo`, sin que ningún widget individual especifique su propio color hardcodeado — cambiar `colorSchemeSeed` en un solo lugar actualiza el color en toda la app.
 
@@ -85,6 +98,9 @@ Detectar la plataforma en tiempo de ejecución y mostrar el widget correspondien
 
 ```dart
 import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 Widget botonAdaptativo() => Platform.isIOS
     ? CupertinoButton(child: Text('Continuar'), onPressed: () {})
@@ -114,19 +130,26 @@ En el proyecto integrador RutaFlow, `botonConfirmar()` vive en `lib/features/del
 ```dart
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+void confirmar() => debugPrint('Entrega confirmada');
+
 Widget botonConfirmar() => Platform.isIOS
-    ? CupertinoButton.filled(child: Text('Confirmar entrega'), onPressed: confirmar)
-    : ElevatedButton(child: Text('Confirmar entrega'), onPressed: confirmar);
+    ? CupertinoButton.filled(onPressed: confirmar, child: const Text('Confirmar entrega'))
+    : ElevatedButton(onPressed: confirmar, child: const Text('Confirmar entrega'));
+
+void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: botonConfirmar()))));
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: corriendo la app en un simulador de iOS, el botón se ve como un `CupertinoButton` nativo; corriendo exactamente el mismo código Dart en un emulador de Android, el mismo botón lógico se renderiza como `ElevatedButton` con las convenciones de Material.
 
@@ -188,21 +211,47 @@ En el proyecto integrador RutaFlow, este botón vive en `lib/features/deliveries
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Semantics(
-  label: 'Eliminar envío',
-  button: true,
-  child: IconButton(icon: Icon(Icons.delete), onPressed: eliminarEnvio),
-)
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: ListaEnvios()));
+
+class ListaEnvios extends StatefulWidget {
+  const ListaEnvios({super.key});
+
+  @override
+  State<ListaEnvios> createState() => _ListaEnviosState();
+}
+
+class _ListaEnviosState extends State<ListaEnvios> {
+  final envios = ['RF-4471', 'RF-5002'];
+
+  void eliminarEnvio(String guia) => setState(() => envios.remove(guia));
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: ListView(children: [
+          for (final guia in envios)
+            ListTile(
+              title: Text(guia),
+              trailing: Semantics(
+                label: 'Eliminar envío',
+                button: true,
+                child: IconButton(icon: const Icon(Icons.delete), onPressed: () => eliminarEnvio(guia)),
+              ),
+            ),
+        ]),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: activando TalkBack o VoiceOver y navegando hasta ese botón, el lector anuncia "Eliminar envío, botón" — no "botón" genérico sin ninguna indicación de qué acción realiza.
 

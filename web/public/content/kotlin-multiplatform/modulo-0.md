@@ -5,17 +5,17 @@ Este módulo no se lee una sola vez: se practica hasta que la sintaxis sale sin 
 
 ## Antes de comenzar: entorno Kotlin Multiplatform
 
-Kotlin Multiplatform combina herramientas de varias plataformas. Para empezar instala **JDK 27**, Git e **IntelliJ IDEA** con el plugin Kotlin. Para Android necesitarás Android Studio; para compilar el destino iOS necesitarás obligatoriamente un Mac con Xcode.
+Kotlin Multiplatform combina herramientas de varias plataformas. Para empezar instala **JDK 25** (LTS), Git e **IntelliJ IDEA** con el plugin Kotlin. Para Android necesitarás Android Studio; para compilar el destino iOS necesitarás obligatoriamente un Mac con Xcode.
 
 | Sistema | Qué puedes desarrollar | Instalación mínima |
 |---|---|---|
-| Windows | commonMain, JVM, Android y Desktop | JDK 27, Gradle 9.8+, IntelliJ/Android Studio, Git |
-| macOS | Todos los destinos, incluido iOS | JDK 27, Gradle 9.8+, Xcode, Android Studio, Git |
-| Linux | commonMain, JVM, Android y Desktop | OpenJDK 27, Gradle 9.8+, IntelliJ/Android Studio, Git |
+| Windows | commonMain, JVM, Android y Desktop | JDK 25, Gradle 9.7+, IntelliJ/Android Studio, Git |
+| macOS | Todos los destinos, incluido iOS | JDK 25, Gradle 9.7+, Xcode, Android Studio, Git |
+| Linux | commonMain, JVM, Android y Desktop | OpenJDK 25, Gradle 9.7+, IntelliJ/Android Studio, Git |
 
-El track usa Kotlin 2.4.21. Si el asistente genera una versión anterior de Kotlin o un wrapper anterior a Gradle 9.8, actualízalos antes de continuar: JDK 27 no arranca con Gradle 8.x.
+El track usa Kotlin 2.4.21 con JDK 25. Si el asistente genera una versión anterior de Kotlin o un wrapper anterior a Gradle 9.7, actualízalos antes de continuar. No uses un JDK más nuevo para compilar: con JDK 27, Kotlin 2.4.21 avisa «Kotlin does not yet support 27 JDK target, falling back to Kotlin JVM_26 JVM target».
 
-Verifica `java --version`, `./gradlew --version` (Gradle 9.8 o superior) y `git --version`. En macOS abre Xcode una vez y acepta su licencia; comprueba `xcodebuild -version`. Crea un proyecto desde el asistente **Kotlin Multiplatform** de Android Studio/IntelliJ y ejecuta primero el destino Desktop o Android. Usa siempre el Gradle Wrapper incluido:
+Verifica `java --version` (25), `./gradlew --version` (Gradle 9.7 o superior) y `git --version`. En macOS abre Xcode una vez y acepta su licencia; comprueba `xcodebuild -version`. Crea un proyecto desde el asistente **Kotlin Multiplatform** de Android Studio/IntelliJ y ejecuta primero el destino Desktop o Android. Usa siempre el Gradle Wrapper incluido:
 
 ```bash
 ./gradlew tasks          # macOS/Linux
@@ -65,7 +65,7 @@ kotlin {
     }
 }
 EOF
-gradle wrapper --gradle-version 9.8.0
+gradle wrapper --gradle-version 9.7.0
 ./gradlew :shared:jvmTest
 ```
 

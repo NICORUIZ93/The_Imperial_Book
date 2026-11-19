@@ -280,7 +280,7 @@ Ejecuta:
 
 Modifica una clase de `domain` para que importe algo de `infrastructure` a propósito, ejecuta `./gradlew test` y confirma que el mensaje de fallo señala exactamente el origen y destino de la dependencia prohibida.
 
-### Tema 4: JUnit 5, Mockito y assertions expresivas
+### Tema 4: JUnit 6, Mockito y assertions expresivas
 
 **¿Por qué es importante?** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
 

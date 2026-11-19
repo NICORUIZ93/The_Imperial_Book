@@ -67,6 +67,28 @@ En el proyecto integrador RutaFlow, `parseEnvioLink` vive en `lib/features/deliv
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+
+class EnvioId {
+  const EnvioId._(this.valor);
+  final String valor;
+
+  factory EnvioId.parse(String texto) {
+    if (!RegExp(r'^RF-\d+$').hasMatch(texto)) throw FormatException('Id inválido', texto);
+    return EnvioId._(texto);
+  }
+}
+
+class ForbiddenException implements Exception {
+  const ForbiddenException();
+}
+
+class Session {
+  const Session(this.legibles);
+  final Set<String> legibles;
+  bool canRead(EnvioId id) => legibles.contains(id.valor);
+}
+
 EnvioId parseEnvioLink(Uri uri, Session session) {
   if (uri.scheme != 'https' || uri.host != 'rutaflow.app') {
     throw const FormatException('Origen inválido');
@@ -78,16 +100,45 @@ EnvioId parseEnvioLink(Uri uri, Session session) {
   if (!session.canRead(id)) throw const ForbiddenException();
   return id;
 }
+
+String probar(String enlace, Session session) {
+  try {
+    return 'abre ${parseEnvioLink(Uri.parse(enlace), session).valor}';
+  } on FormatException catch (e) {
+    return 'FormatException: ${e.message}';
+  } on ForbiddenException {
+    return 'ForbiddenException';
+  }
+}
+
+void main() {
+  const session = Session({'RF-4471'});
+  const enlaces = [
+    'https://rutaflow.app/envios/RF-4471',
+    'https://rutaflow.app/envios/RF-9999',
+    'https://otro.app/envios/RF-4471',
+    'https://rutaflow.app/admin',
+  ];
+  runApp(MaterialApp(
+    home: Scaffold(
+      body: SafeArea(
+        child: ListView(children: [
+          for (final enlace in enlaces) ListTile(title: Text(enlace), subtitle: Text(probar(enlace, session))),
+        ]),
+      ),
+    ),
+  ));
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `parseEnvioLink` lanza `FormatException` si la URL no tiene exactamente la forma esperada, y lanza `ForbiddenException` si la estructura es válida pero la sesión actual no tiene permiso de leer ese envío puntual.
 
@@ -257,6 +308,18 @@ En el proyecto integrador RutaFlow, `decodeOffUi` vive en `lib/features/offline/
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+class Envio {
+  const Envio(this.id, this.estado);
+  factory Envio.fromJson(Map<String, Object?> json) => Envio(json['id']! as String, json['estado']! as String);
+  final String id;
+  final String estado;
+}
+
 List<Envio> decodeEnvios(String body) =>
     (jsonDecode(body) as List)
         .cast<Map<String, Object?>>()
@@ -264,16 +327,45 @@ List<Envio> decodeEnvios(String body) =>
         .toList(growable: false);
 
 Future<List<Envio>> decodeOffUi(String body) => compute(decodeEnvios, body);
+
+final historial = jsonEncode([
+  for (var i = 0; i < 20000; i++) {'id': 'RF-$i', 'estado': i.isEven ? 'entregado' : 'en_ruta'},
+]);
+
+void main() => runApp(const MaterialApp(home: PantallaHistorial()));
+
+class PantallaHistorial extends StatefulWidget {
+  const PantallaHistorial({super.key});
+
+  @override
+  State<PantallaHistorial> createState() => _PantallaHistorialState();
+}
+
+class _PantallaHistorialState extends State<PantallaHistorial> {
+  late final Future<List<Envio>> envios = decodeOffUi(historial);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: FutureBuilder<List<Envio>>(
+            future: envios,
+            builder: (context, snapshot) => snapshot.hasData
+                ? Text('${snapshot.data!.length} envíos decodificados')
+                : const CircularProgressIndicator(),
+          ),
+        ),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: grabando con DevTools mientras se abre el historial, el isolate de UI permanece respondiendo mientras `decodeEnvios` corre en un isolate worker separado, que solo devuelve el resultado final ya decodificado.
 
@@ -345,6 +437,8 @@ En el proyecto integrador RutaFlow, `PendingMutation` vive en `lib/features/offl
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+
 final class PendingMutation {
   PendingMutation(this.id, this.entityId, this.baseVersion, this.payload);
   final String id; // clave de idempotencia estable
@@ -353,16 +447,38 @@ final class PendingMutation {
   final Map<String, Object?> payload;
   int attempts = 0;
 }
+
+/// Servidor simulado: recuerda qué claves de idempotencia ya aplicó.
+class ServidorEntregas {
+  final _aplicadas = <String>{};
+  int efectos = 0;
+
+  void recibir(PendingMutation mutacion) {
+    if (_aplicadas.add(mutacion.id)) efectos++; // un id repetido no repite el efecto
+  }
+}
+
+void main() {
+  final servidor = ServidorEntregas();
+  final mutacion = PendingMutation('op-RF-4471-1', 'RF-4471', 3, {'estado': 'entregado'});
+  for (var intento = 0; intento < 3; intento++) { // tres reintentos tras perder la red
+    mutacion.attempts++;
+    servidor.recibir(mutacion);
+  }
+  runApp(MaterialApp(
+    home: Scaffold(body: Center(child: Text('intentos=${mutacion.attempts} efectos=${servidor.efectos}'))),
+  ));
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: confirmar una entrega sin red crea un `PendingMutation` con un `id` fijo; reintentarla más tarde con conectividad real reusa ese mismo `id`, permitiendo que el servidor reconozca si ya procesó ese intento y evite aplicar el efecto dos veces.
 

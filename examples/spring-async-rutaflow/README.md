@@ -11,7 +11,7 @@ El retorno indica el hilo para enseñar el mecanismo; no acredita entrega SMS.
 
 El rechazo se lanza al intentar encolar; un error de la tarea llega por Future.
 Una cola en memoria no sobrevive a reinicios: para trabajo recuperable usa el
-outbox de M20 T3. Dimensiona límites con mediciones del proveedor real.
+outbox de Spring Boot M8 T3. Dimensiona límites con mediciones del proveedor real.
 
 Fuente: https://docs.spring.io/spring-framework/reference/integration/scheduling.html
 

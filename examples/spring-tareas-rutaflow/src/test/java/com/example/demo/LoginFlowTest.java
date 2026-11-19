@@ -1,7 +1,7 @@
 package com.example.demo;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class LoginFlowTest {
     @Autowired MockMvc mockMvc;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final JsonMapper mapper = JsonMapper.builder().build();
 
     @Test
     void loginEntregaTokenQueAbreLaRutaProtegida() throws Exception {
@@ -30,14 +30,14 @@ class LoginFlowTest {
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
         JsonNode token = mapper.readTree(respuesta).get("token");
-        assertTrue(token != null && !token.asText().isBlank());
+        assertTrue(token != null && !token.asString().isBlank());
 
         mockMvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
         var protegida = mockMvc.perform(get("/api/usuarios")
-                .header("Authorization", "Bearer " + token.asText()))
+                .header("Authorization", "Bearer " + token.asString()))
             .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertEquals("ana@rutaflow.dev", mapper.readTree(protegida).get("email").asText());
-        assertEquals("ROLE_ADMIN", mapper.readTree(protegida).get("rol").asText());
+        assertEquals("ana@rutaflow.dev", mapper.readTree(protegida).get("email").asString());
+        assertEquals("ROLE_ADMIN", mapper.readTree(protegida).get("rol").asString());
     }
 
 @Test

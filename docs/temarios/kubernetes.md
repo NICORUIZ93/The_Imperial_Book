@@ -74,7 +74,7 @@ con un controlador mantenido.
 | DevOps M15 T4 | GitOps con Argo CD y Flux | M13 T1–T2 | DevOps M12 T5 (GitOps) se fusiona aquí, sin duplicar |
 | Cloud M14 T3 | Contenedores frente a Lambda, y EKS | M14 | Cloud conserva la comparación con Lambda y enlaza aquí para EKS |
 
-Estos temas no se mueven; se enlazan: Spring Boot M11 T3 (health checks para Kubernetes), desde M3 T1, y
+Estos temas no se mueven; se enlazan: Spring Boot M19 T3 (health checks para Kubernetes), desde M3 T1, y
 Microservicios M9 (despliegue y descubrimiento), que remite a este curso para la implementación.
 
 ## 5. Módulos
@@ -118,7 +118,7 @@ Microservicios M9 (despliegue y descubrimiento), que remite a este curso para la
 ### M3 · Salud, observación y depuración de aplicaciones
 **Objetivo:** cubrir «Application Observability and Maintenance» (CKAD, 15 %).
 **Origen:** DevOps M7 T4.
-- T1 · Probes liveness, readiness y startup con Actuator (enlaza Spring Boot M11 T3) · 45 min
+- T1 · Probes liveness, readiness y startup con Actuator (enlaza Spring Boot M19 T3) · 45 min
 - T2 · Logs de contenedores y `kubectl top` con metrics-server · 35 min
 - T3 · `kubectl debug` y contenedores efímeros · 40 min
 - T4 · Deprecaciones de API: guía de migración y `kubectl convert` · 35 min

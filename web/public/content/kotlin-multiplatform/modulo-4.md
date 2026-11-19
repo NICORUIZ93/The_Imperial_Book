@@ -45,6 +45,7 @@ data class Tarea(val id: String, val titulo: String, val completada: Boolean)
 
 interface TareaRepository {
     suspend fun obtenerTodas(): List<Tarea>
+    suspend fun guardar(tarea: Tarea)
 }
 
 class ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository) {
@@ -62,7 +63,7 @@ cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
 
-**Explicación línea por línea:** `data class Tarea(...)` define la entidad sin ninguna referencia a plataforma; `interface TareaRepository { suspend fun obtenerTodas(): List<Tarea> }` declara el contrato sin especificar cómo se obtienen los datos; `ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository)` recibe la interfaz como dependencia, no una clase concreta, por lo que puede funcionar con cualquier implementación que la satisfaga.
+**Explicación línea por línea:** `data class Tarea(...)` define la entidad sin ninguna referencia a plataforma; `interface TareaRepository` declara el contrato (leer con `obtenerTodas` y escribir con `guardar`) sin especificar cómo se obtienen ni dónde se guardan los datos; es la única declaración de la interfaz en el proyecto: el Tema 2 la implementa, no la vuelve a declarar; `ObtenerTareasPendientesUseCase(private val repositorio: TareaRepository)` recibe la interfaz como dependencia, no una clase concreta, por lo que puede funcionar con cualquier implementación que la satisfaga.
 
 Escribe un test que ejecute el caso de uso con dos implementaciones distintas de la interfaz (una fake en memoria, una simulando latencia real con `delay`), confirmando que el resultado no cambia, en `shared/src/commonTest/kotlin/com/academia/kmp/DominioTest.kt`:
 
@@ -76,8 +77,9 @@ import kotlin.test.assertEquals
 
 private val tareaPendiente = Tarea("1", "Comprar leche", completada = false)
 
-class FakeTareaRepository : TareaRepository {
+class RepositorioEnMemoria : TareaRepository {
     override suspend fun obtenerTodas(): List<Tarea> = listOf(tareaPendiente)
+    override suspend fun guardar(tarea: Tarea) = Unit
 }
 
 class RepositorioConLatencia : TareaRepository {
@@ -85,12 +87,13 @@ class RepositorioConLatencia : TareaRepository {
         delay(300) // simula red/DB real
         return listOf(tareaPendiente)
     }
+    override suspend fun guardar(tarea: Tarea) = Unit
 }
 
 class DominioTest {
     @Test
     fun elCasoDeUsoProduceElMismoResultadoConCualquierImplementacion() = runTest {
-        val resultadoFake = ObtenerTareasPendientesUseCase(FakeTareaRepository())()
+        val resultadoFake = ObtenerTareasPendientesUseCase(RepositorioEnMemoria())()
         val resultadoConLatencia = ObtenerTareasPendientesUseCase(RepositorioConLatencia())()
         assertEquals(resultadoFake, resultadoConLatencia)
         assertEquals(listOf(tareaPendiente), resultadoFake)
@@ -108,7 +111,7 @@ cd academia-kmp
 
 **Resultado esperado:** la prueba pasa en verde, confirmando que ambas implementaciones producen exactamente el mismo resultado filtrado, sin que `ObtenerTareasPendientesUseCase` cambie una sola línea según cuál implementación reciba.
 
-**Fallo deliberado:** cambia la firma de `ObtenerTareasPendientesUseCase` para que reciba directamente `FakeTareaRepository` en vez de la interfaz (`private val repositorio: FakeTareaRepository`). `./gradlew :shared:compileKotlinMetadata` sigue compilando, pero la prueba con `RepositorioConLatencia()` ya no compila (`Type mismatch: inferred type is RepositorioConLatencia but FakeTareaRepository was expected`) — diagnostica confirmando que depender de una implementación concreta en vez de la interfaz acopla el caso de uso a esa implementación específica, exactamente lo que el principio de inversión de dependencias evita.
+**Fallo deliberado:** cambia la firma de `ObtenerTareasPendientesUseCase` para que reciba directamente la implementación de prueba en vez de la interfaz (`private val repositorio: RepositorioEnMemoria`). `./gradlew :shared:compileKotlinMetadata` falla con `Unresolved reference 'RepositorioEnMemoria'`: el código de producción (`commonMain`) ni siquiera ve las clases de `commonTest`, y aunque las viera, la prueba con `RepositorioConLatencia()` dejaría de encajar — diagnostica confirmando que depender de una implementación concreta en vez de la interfaz acopla el caso de uso a esa implementación específica, exactamente lo que el principio de inversión de dependencias evita.
 
 #### Paso 5 · Práctica guiada — repetición progresiva
 
@@ -177,15 +180,10 @@ Al finalizar podrás definir una interfaz de repositorio en `commonMain` con al 
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía (o continuando en `academia-kmp`, o créala con `mkdir -p academia-kmp` si es tu primera vez), crea `shared/src/commonMain/kotlin/com/academia/kmp/Repositorio.kt` con este contenido:
+Continúa en `academia-kmp`, con el `Dominio.kt` del Tema 1: allí ya están `Tarea` y la interfaz `TareaRepository`, que este tema implementa sin volver a declararla (dos `interface TareaRepository` en el mismo paquete no compilan: «Redeclaration»). Crea `shared/src/commonMain/kotlin/com/academia/kmp/Repositorio.kt` con este contenido:
 
 ```kotlin
 package com.academia.kmp
-
-interface TareaRepository {
-    suspend fun obtenerTodas(): List<Tarea>
-    suspend fun guardar(tarea: Tarea)
-}
 
 class TareaRepositoryImpl(private val api: Any, private val db: Any) : TareaRepository {
     override suspend fun obtenerTodas(): List<Tarea> = emptyList() // combinaría api y db reales
@@ -207,7 +205,7 @@ cd academia-kmp
 ./gradlew :shared:compileKotlinMetadata
 ```
 
-**Explicación línea por línea:** `interface TareaRepository` declara el contrato; `TareaRepositoryImpl` lo implementa combinando fuentes reales (`api`, `db`); `FakeTareaRepository` lo implementa con una simple `MutableList` en memoria, sin ninguna dependencia externa, ideal para pruebas rápidas y deterministas.
+**Explicación línea por línea:** `TareaRepository` (declarada en `Dominio.kt`) es el contrato; `TareaRepositoryImpl` lo implementa combinando fuentes reales (`api`, `db`); `FakeTareaRepository` lo implementa con una simple `MutableList` en memoria, sin ninguna dependencia externa, ideal para pruebas rápidas y deterministas.
 
 Escribe un test que ejercite ambas implementaciones con la misma secuencia de llamadas, confirmando que ambas satisfacen el contrato de forma intercambiable, en `shared/src/commonTest/kotlin/com/academia/kmp/RepositorioTest.kt`:
 

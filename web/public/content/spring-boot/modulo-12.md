@@ -1,432 +1,215 @@
-# Módulo 12: Proyecto integrador — microservicio productivo
-
+# Módulo 12: Spring Batch: jobs, chunks y procesamiento masivo
 
 ## Aprende construyendo
 
-Los tres temas amplían incrementalmente el proyecto real `examples/spring-boot-integrador-rutaflow/`, combinando piezas ya estudiadas en el track: entidades y migraciones Flyway (Módulo 3), JWT y `@PreAuthorize` (Módulo 4), pruebas de integración con Testcontainers (Módulo 6) y una métrica de negocio de Actuator (Módulo 7). Cada tema comprueba cambios con código ejecutable y evidencia observable.
+Construirás un job que importa pedidos desde CSV, valida y transforma cada fila, y persiste resultados por lotes. Después ensayarás reinicio y políticas de error con datos deliberadamente inválidos. El objetivo es procesamiento reanudable, observable y acotado en memoria.
 
-### Tema 1: Arquitectura del microservicio integrador
+### Dos ejemplos: primero visible, luego real
 
-**Resultado del tema:** construirás y comprobarás un endpoint que valida una solicitud, pasa por controller → service → repository y guarda una entrega en PostgreSQL. Al final podrás explicar qué hace cada capa con evidencia de una petición HTTP y una fila guardada.
+- **Ejemplo sencillo:** importa tres filas CSV con chunk de dos; una fila inválida se registra y la escritura del chunk falla o confirma completa.
+- **Caso RutaFlow:** reconcilia cientos de miles de tarifas con archivo identificado por checksum y `JobParameters` estables. Guarda rechazados para conciliación, registra leídos/escritos/omitidos, y reinicia la misma instancia tras una caída sin duplicar registros por la clave natural.
 
-**¿Por qué es importante?** Separar HTTP, reglas del servicio y persistencia hace que cada cambio tenga un lugar claro. La prueba de extremo a extremo comprueba que esas piezas sí trabajan juntas.
+Compara los límites de transacción y el consumo de memoria con más de un chunk. No confundas `skip` con una salida silenciosa: cada fila excluida necesita causa y evidencia.
 
-**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
+### Tema 1: Job, Step, Tasklet y chunk processing
 
-#### Subtema 12.1.1: Sigue una petición por las capas · 8 min
+**Meta:** importar un CSV pequeño, filtrar una fila, guardar las válidas y reconocer qué trabajo hace cada parte de Spring Batch.
 
-**1. Contexto**
+**Caso visible:** cuatro filas entran; dos pedidos válidos se guardan, una tarifa cero se filtra y una fila mal formada se registra como rechazo.
 
-Una petición no debería decidir cómo se guarda en la base de datos. El controller entiende HTTP; el service aplica la acción del producto; el repository habla con PostgreSQL.
+**¿Por qué es importante?** un archivo grande se procesa por partes; si algo falla, el sistema puede conservar el trabajo confirmado y reanudarlo con control.
 
-**2. Hazlo tú**
+**Modelo mental:** el Job es una receta con etapas; cada Step ejecuta una tarea concreta, y cada chunk funciona como una caja que se confirma antes de llenar la siguiente.
 
-Abre `src/main/java/academia/rutaflow/integrador/entrega/` y sigue `EntregaController.java` → `EntregaService.java` → `EntregaRepository.java`. Desde `examples/spring-boot-integrador-rutaflow/` ejecuta:
+**Límite:** Batch encaja con archivos y lotes; para responder de inmediato a una petición pequeña, usa un flujo HTTP normal.
+
+```mermaid
+flowchart LR
+  Job[Job: importPedidos] --> Step1[Step: importarPedidos]
+  Step1 --> Reader[Reader: CSV]
+  Reader --> Processor[Processor: filtra cero]
+  Processor --> Writer[Writer: JDBC]
+  Job --> Step2[Step: resumen Tasklet]
+```
+
+#### Subtema 1.1 · Separa el Job del trabajo de cada Step · 8 min
+
+**Contexto:** `Job` representa el proceso completo; un `Step` es una etapa. Un `Tasklet` sirve para una acción breve, como imprimir el resumen al terminar.
+
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java`. Compara `importPedidosStep`, que procesa registros, con `resumenStep`, que consulta cuántos quedaron. Mira cómo `importPedidosJob` los conecta con `.start(...).next(...)`.
 
 ```bash
-./scripts/verify-integration.sh
+cd examples/spring-batch-rutaflow
+./mvnw -q test
 ```
 
-```text
-POST /api/entregas
-  JSON → EntregaController → EntregaService → EntregaRepository → PostgreSQL
-  HTTP 201 ← EntregaResponse ← entidad guardada
-```
+**Resultado esperado:** el log contiene `Pedidos importados: 2` y la prueba termina en verde.
 
-**Resultado esperado:** la suite final informa 7 pruebas y 0 fallos; la petición de creación devuelve HTTP 201 y una URL `Location`.
+**Fallo deliberado:** quita `.next(resumenStep)` y ejecuta otra vez. **Diagnóstico:** se guardan pedidos, pero el paso de resumen no corre y no aparece su línea. Restáuralo.
 
-**Fallo deliberado:** cambia temporalmente `@PostMapping` por `@PutMapping` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la prueba recibe un estado distinto a 201 porque envía POST. Restaura `@PostMapping`.
+**Entiende:** el job ordena las etapas; no procesa cada fila por sí solo. Reserva Tasklet para tareas pequeñas, no para cargar el CSV entero en memoria.
 
-**3. Entiende**
+**Cierra:** señala en el código qué bean es Job y cuáles son Steps; registra cuál usarías para preparar un archivo de tarifas del proyecto integrador RutaFlow.
 
-El flujo se puede seguir leyendo los archivos: el controller convierte la entrada y la respuesta HTTP, el service coordina la operación y el repository persiste. El diagrama recorta las capas de datos; el laboratorio final ya incluye JWT y métricas, que se analizan en el Tema 2. No incluye entrega de eventos a un broker.
+#### Subtema 1.2 · Lee filas y transforma una a la vez · 8 min
 
-**4. Cierra**
+**Contexto:** `pedidos.csv` trae una fila por pedido. El reader crea un objeto; el processor decide qué pasa a la escritura.
 
-Sin mirar los archivos, explica qué clase recibe HTTP y cuál guarda los datos. Luego señala la línea de código que conecta cada paso.
-
-#### Subtema 12.1.2: Deja que Flyway cree la tabla · 10 min
-
-**1. Contexto**
-
-La entidad Java describe los datos que usa la app. La migración SQL define el cambio que se aplica a la base. Así, el esquema no depende de que Hibernate invente tablas al arrancar.
-
-**2. Hazlo tú**
-
-Compara `src/main/resources/db/migration/V1__crear_entrega.sql` con `entrega/Entrega.java`. Ejecuta `./scripts/verify-integration.sh`.
-
-```sql
-CREATE TABLE entrega (
-    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    destinatario VARCHAR(200) NOT NULL,
-    estado VARCHAR(30) NOT NULL
-);
-```
-
-En `application.properties`, `spring.jpa.hibernate.ddl-auto=validate` pide comprobar que la tabla coincide; Flyway aplica la migración.
-
-**Resultado esperado:** Flyway aplica la migración y Hibernate valida la tabla antes de ejecutar las siete pruebas.
-
-**Fallo deliberado:** renombra la migración para que ya no empiece con `V1__` y vuelve a ejecutar `./scripts/verify-integration.sh`. **Diagnóstico:** Flyway no la reconoce y la validación de Hibernate falla porque falta `entrega`. Restaura el nombre `V1__crear_entrega.sql`.
-
-**3. Entiende**
-
-La migración deja un historial de cambios del esquema. La entidad y el SQL deben coincidir: por ejemplo, ambos limitan `destinatario` a 200 caracteres.
-
-**4. Cierra**
-
-Di qué archivo define la tabla y qué propiedad evita que Hibernate la cree por su cuenta.
-
-#### Subtema 12.1.3: Valida la solicitud antes de guardar · 10 min
-
-**1. Contexto**
-
-Una entrega sin destinatario no sirve. Validar la entrada en el borde HTTP permite responder con un error claro antes de tocar la base.
-
-**2. Hazlo tú**
-
-Abre `entrega/CrearEntregaRequest.java` y `entrega/EntregaController.java`. Envía un cuerpo válido y uno vacío:
-
-```json
-{"destinatario":"Tienda Norte"}
-```
-
-```json
-{"destinatario":" "}
-```
-
-El test `destinatarioVacioSeRechazaAntesDeGuardar` envía el segundo cuerpo por HTTP real y comprueba que recibe 400. Ejecuta `./scripts/verify-integration.sh`.
-
-**Resultado esperado:** destinatario válido produce 201; destinatario vacío produce 400 y no se guarda. La suite completa mantiene sus siete pruebas en verde.
-
-**Fallo deliberado:** quita `@Valid` de `crear(...)` y ejecuta `./scripts/verify-integration.sh`. **Diagnóstico:** la validación de `@NotBlank` deja de activarse y la prueba que espera 400 falla. Restaura `@Valid`.
-
-**3. Entiende**
-
-`CrearEntregaRequest` es el formato de entrada; `EntregaResponse` es la salida. Separarlos evita exponer directamente la entidad como contrato HTTP. `@NotBlank` rechaza texto vacío o compuesto por espacios.
-
-**4. Cierra**
-
-Explica por qué el cuerpo HTTP no se pasa directamente al repository. Identifica la anotación que activa la validación.
-
-#### Subtema 12.1.4: Comprueba HTTP y PostgreSQL juntos · 12 min
-
-**1. Contexto**
-
-Una prueba del controller aislado no confirma que SQL, migración y base de datos funcionen en conjunto. Aquí la prueba arranca la aplicación y PostgreSQL real en un contenedor temporal.
-
-**2. Hazlo tú**
-
-Abre `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`. Localiza `@Testcontainers`, `@SpringBootTest`, la petición de `HttpClient` y la comprobación `entregas.existsByDestinatario(...)`. Corre:
-
-```bash
-./scripts/verify-integration.sh
-```
-
-**Resultado esperado:** las siete pruebas pasan; cubren HTTP 201 con persistencia, HTTP 400 sin guardar, reglas JWT 401/403, métrica y guardia de configuración.
-
-**Fallo deliberado:** cambia en la prueba el puerto destino por `port + 1` y ejecútala. **Diagnóstico:** la conexión HTTP falla porque el servidor de prueba escucha en `port`. Restaura `port`.
-
-**3. Entiende**
-
-La app recibe una petición de red local, Flyway prepara PostgreSQL y el repository lee la fila después de crearla. Testcontainers ofrece la base real para esta prueba; no es una base simulada. En macOS, el script configura la conexión del runtime Podman antes de invocar Maven.
-
-**4. Cierra**
-
-Guarda como evidencia el resultado de las siete pruebas y dibuja el recorrido desde JSON hasta la fila. Si algo falla, anota primero el primer error y el archivo responsable; no tapes un problema de conexión cambiando el código de negocio.
-
-**Siguiente:** el Tema 2 analiza la seguridad y las métricas ya presentes en este laboratorio final. No desactives JWT para seguir el Tema 1: sus pruebas envían credenciales válidas cuando corresponde.
-
-**Fuentes:** [migraciones SQL de Flyway en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [Testcontainers con PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/), [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/) y [runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
-
-
-**Aplicación y decisión:** En el proyecto integrador, recorre la petición desde EntregaController hasta Flyway y EntregaRepository. El límite del test local incluye PostgreSQL efímero y JWT de laboratorio; no prueba una plataforma desplegada ni credenciales de producción.
-
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
-
-```bash
-bash ./scripts/verify-integration.sh
-```
-
-### Tema 2: Integra seguridad JWT y observabilidad
-
-**Resultado del tema:** protegerás la creación de entregas con un JWT firmado y el rol `USER`, conservarás la persistencia del Tema 1 y medirás cada creación exitosa con un contador visible en Actuator.
-
-**¿Por qué es importante?** La base de datos no sabe quién hizo una solicitud y un contador no prueba que el trabajo terminó. El servicio valida identidad y permiso antes de escribir, y registra la métrica después de guardar.
-
-**Necesitas:** el Tema 1 y sus pruebas verdes. Continúa en [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La clave HS256 del archivo de propiedades es solo de demostración local; no la uses como secreto de producción.
-
-#### Subtema 12.2.1: Verifica un JWT firmado · 10 min
-
-**1. Contexto**
-
-Un JWT es una credencial firmada. La API valida la firma y la caducidad antes de confiar en sus datos; cambiar texto del token no crea una identidad válida.
-
-**2. Hazlo tú**
-
-Abre `src/main/java/academia/rutaflow/integrador/security/JwtSecurityConfig.java`. Sigue el bean `jwtDecoder`, que valida HS256 con una clave, y `jwtAuthenticationConverter`, que lee el claim `roles`. En `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`, busca `token(...)`: crea una credencial firmada para las pruebas. Ejecuta:
-
-```bash
-./scripts/verify-integration.sh
-```
-
-**Resultado esperado:** la app inicia y las siete pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
-
-**Fallo deliberado:** cambia en el convertidor el claim `roles` por `perfiles` y ejecuta el script. **Diagnóstico:** el token todavía tiene una firma válida, pero el convertidor ya no encuentra la autoridad y el request con `ROLE_USER` recibe 403. Restaura `roles`.
-
-**3. Entiende**
-
-`JwtDecoder` verifica la credencial; el convertidor transforma el claim de roles en autoridades de Spring Security. La API consume tokens, no ofrece un endpoint para emitirlos. El valor por defecto solo sirve en local; para ejecutar con tu propia clave define `RUTAFLOW_JWT_SECRET_BASE64`. En producción, conecta un emisor de identidad y guarda las claves fuera del repositorio.
-
-**4. Cierra**
-
-Explica qué revisa la firma y de qué claim sale `ROLE_USER`. Señala por qué el token de la prueba es distinto de escribir un nombre en un encabezado.
-
-#### Subtema 12.2.2: Distingue identidad de permiso · 10 min
-
-**1. Contexto**
-
-Tener un token válido confirma quién hace la llamada; no significa que esa persona pueda crear cualquier recurso. El endpoint exige el rol `USER`.
-
-**2. Hazlo tú**
-
-En `entrega/EntregaController.java`, localiza `@PreAuthorize("hasRole('USER')")`. En `ArquitecturaIntegradaTest.java`, corre el caso `escrituraRequiereJwtValidoYRolUser`: sin token espera 401; con token válido de `ROLE_ADMIN` espera 403.
-
-```bash
-./scripts/verify-integration.sh
-```
-
-**Resultado esperado:** 401 sin token o con firma alterada; 403 si el token es válido, pero no tiene el rol requerido.
-
-**Fallo deliberado:** quita `@PreAuthorize` y ejecuta el script. **Diagnóstico:** el token `ROLE_ADMIN` alcanza el endpoint y devuelve 201; `anyRequest().authenticated()` valida identidad, pero no el rol de negocio. Restaura `@PreAuthorize`.
-
-**3. Entiende**
-
-`@EnableMethodSecurity` activa la regla sobre el método. La cadena HTTP exige autenticación general, usa sesiones sin estado y `@PreAuthorize` aplica el permiso concreto de esta acción. No uses un test con usuario simulado para afirmar que la firma JWT se verificó: aquí el test firma un token y altera otro para confirmar que el filtro rechaza la firma rota.
-
-**4. Cierra**
-
-Di qué respuesta esperas para (a) sin credencial, (b) firma alterada, (c) token válido con rol incorrecto y (d) token válido con `ROLE_USER`. Relaciona cada caso con la regla que lo produce.
-
-#### Subtema 12.2.3: Cuenta solo las entregas guardadas · 10 min
-
-**1. Contexto**
-
-El contador debe representar trabajo terminado. Si sumas antes de guardar, puede informar una entrega que la base rechazó.
-
-**2. Hazlo tú**
-
-Abre `entrega/EntregaService.java`. Localiza el orden: `entregas.save(...)` y luego `entregasCreadas.increment()`. En la prueba `jwtConRolUserCreaYActuatorMuestraElContador`, compara el contador antes y después de una creación.
+**Hazlo tú:** abre `src/main/resources/pedidos.csv`, luego `ImportJobConfig.java`. Sigue `pedidosReader()` hasta `positiveAmountsOnly()`:
 
 ```java
-Entrega creada = entregas.save(Entrega.crear(destinatario));
-entregasCreadas.increment();
-return creada;
+return pedido.importe().signum() > 0 ? pedido : null;
 ```
 
-Ejecuta `./scripts/verify-integration.sh`.
+`null` significa “filtrar esta fila”. Ejecuta `./mvnw -q test` desde `examples/spring-batch-rutaflow`.
 
-**Resultado esperado:** la prueba observa que el contador sube exactamente en 1 tras la respuesta 201.
+**Resultado esperado:** `RF-1002` queda fuera por importe cero; el reader continúa con `RF-1003`.
 
-**Fallo deliberado:** comenta `entregasCreadas.increment()` y ejecuta el script. **Diagnóstico:** PostgreSQL guarda la entrega y el endpoint responde 201, pero la aserción del contador no aumenta. Restaura la línea.
+**Fallo deliberado:** cambia el processor para que siempre devuelva `pedido`. **Diagnóstico:** la prueba encuentra tres filas, incluida la de importe cero. Restaura la condición.
 
-**3. Entiende**
+**Entiende:** una fila filtrada no es lo mismo que un error. En importaciones reales guarda el motivo del rechazo para poder conciliarlo.
 
-`Counter` registra cuántas veces ocurre un evento acumulable. Este contador vive en la instancia del proceso y se reinicia cuando la app reinicia; para conservar y agregar valores entre réplicas se conecta un exporter y un sistema de métricas.
+**Cierra:** agrega al CSV una tarifa válida para el proyecto integrador RutaFlow y predice qué filas quedarán antes de ejecutar.
 
-**4. Cierra**
+#### Subtema 1.3 · Confirma filas en grupos pequeños · 10 min
 
-Explica por qué el incremento ocurre después de `save` y qué limitación tiene un contador en memoria al reiniciar el proceso.
+**Contexto:** el writer guarda en JDBC los registros que el processor dejó pasar. El tamaño del chunk marca cuántos elementos se procesan antes de confirmar el grupo.
 
-#### Subtema 12.2.4: Consulta la métrica sin abrirla a todos · 10 min
+**Hazlo tú:** en `ImportJobConfig.java`, localiza el step y su configuración actual:
 
-**1. Contexto**
-
-La app puede medir por dentro y a la vez limitar quién consulta la información de Actuator. En este laboratorio salud es pública; métricas requiere `ROLE_ADMIN`.
-
-**2. Hazlo tú**
-
-En `application.properties`, verifica que Actuator expone `health,metrics`. En `JwtSecurityConfig.java`, localiza la regla `.requestMatchers("/actuator/metrics/**").hasRole("ADMIN")`. La prueba crea una entrega, lee el valor del `MeterRegistry` y consulta con un token de `ROLE_ADMIN`:
-
-```text
-GET /actuator/metrics/entregas.creadas
-Authorization: Bearer <JWT con ROLE_ADMIN>
+```java
+.<PedidoImportado, PedidoImportado>chunk(2)
+.reader(pedidosReader)
+.processor(positiveAmountsOnly)
+.writer(pedidosWriter)
 ```
 
-Ejecuta `./scripts/verify-integration.sh` y observa la aserción sobre `$.measurements[0].value`.
+El writer usa parámetros SQL para guardar referencia e importe. Corre `./mvnw -q clean test`.
+
+**Resultado esperado:** la consulta de la prueba devuelve dos registros; el test cubre escritura real sobre H2.
+
+**Fallo deliberado:** cambia el nombre `:referencia` del SQL a `:codigo`. **Diagnóstico:** el parámetro ya no coincide con el record y la ejecución falla al escribir. Restáuralo.
+
+**Entiende:** un chunk de dos acota el grupo de trabajo y el commit. No asumas que el tamaño óptimo es dos: mídelo con filas, base de datos y costo de recuperación reales. Este lab usa H2 y no mide producción.
+
+**Cierra:** apunta qué parte cambia al ajustar el tamaño de chunk y conserva el test como evidencia del proyecto integrador RutaFlow.
+
+#### Subtema 1.4 · Ejecuta el job y comprueba sus datos · 8 min
+
+**Contexto:** una línea “job completado” no demuestra que los resultados sean correctos. Comprueba filas concretas en la base.
+
+**Hazlo tú:** ejecuta desde `examples/spring-batch-rutaflow`:
 
 ```bash
-./scripts/verify-integration.sh
+./mvnw -q clean test
 ```
 
-**Resultado esperado:** Actuator devuelve el mismo número que el `MeterRegistry`; la creación requirió `ROLE_USER` y la lectura de métricas requiere `ROLE_ADMIN`.
+Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e importes esperados. Para ver el job arrancar desde consola, usa `./mvnw spring-boot:run`; Spring Boot ejecuta el único Job configurado al iniciar.
 
-**Fallo deliberado:** cambia `.hasRole("ADMIN")` por `.hasRole("USER")` y ejecuta el script. **Diagnóstico:** las pruebas actuales aún leen la métrica con administrador, así que el endpoint responde 403; restaura `ADMIN`.
+**Resultado esperado:** `RF-1001` y `RF-1003` quedan guardados; `RF-1002` se filtra; la fila mal formada se registra y el paso final imprime el conteo.
 
-**3. Entiende**
+**Fallo deliberado:** comenta la llamada `.processor(positiveAmountsOnly)`. **Diagnóstico:** la fila de importe cero también llega a la tabla y la prueba falla. Devuelve el processor.
 
-`/actuator/metrics/{nombre}` consulta una medida local. Exponer el endpoint no envía métricas a Prometheus: hace falta configurar un exporter y restringir red, credenciales y etiquetas según el despliegue.
+**Entiende:** el job exitoso, los datos escritos y la regla de filtrado son evidencias distintas. No ejecutes este ejemplo como una petición HTTP pequeña: está diseñado para archivos y procesamiento por lotes.
 
-**4. Cierra**
+**Cierra:** conserva el test, el CSV de muestra y una tabla con leídas, filtradas y escritas para extender el proyecto integrador RutaFlow.
 
-Resume el recorrido: JWT validado → rol autorizado → fila persistida → contador incrementado → lectura de Actuator con permiso administrativo. Anota qué parte queda fuera del laboratorio.
+**Fuentes primarias:** [Spring Batch: procesamiento por chunks](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html); [Spring Batch: configurar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: Tasklet](https://docs.spring.io/spring-batch/reference/step/tasklet.html); [Spring Boot: Spring Batch y ejecución automática](https://docs.spring.io/spring-boot/reference/io/spring-batch.html).
 
-**Fuentes:** [Spring Security: JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [autorización por método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html), [métricas de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/actuator/metrics.html), [exposición y seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing) y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
+### Tema 2: Reinicio, JobParameters, retry, skip y listeners
 
+**Meta:** reconocer una ejecución lógica, reanudar el job con sus parámetros y separar fallas temporales de filas que no se pueden procesar.
 
-**Aplicación y decisión:** En el proyecto integrador, añade un caso de rol válido sin permiso sobre un recurso y demuestra el rechazo antes de guardar. Conserva métricas protegidas y evita inferir entrega final de un evento a partir de una creación HTTP.
+**Caso visible:** un lote guarda su primer chunk y falla en el segundo. El mismo identificador permite reiniciar; un identificador nuevo crea otra instancia y vuelve a leer el archivo.
 
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
+**¿Por qué es importante?** al procesar miles de registros, recuperar el trabajo y explicar los rechazados evita duplicar pagos o perder filas sin causa.
+
+**Modelo mental:** un checkpoint es el separador que marca hasta dónde llegó el lote; los parámetros identificadores dicen si retomas ese trabajo o comienzas uno nuevo.
+
+```mermaid
+flowchart LR
+  Error -->|mismos parámetros| Reinicio[Reanuda instancia]
+  Error -->|parámetro nuevo| Nuevo[Empieza instancia nueva]
+```
+
+**Práctica:** fuerza una falla, compara ambos lanzamientos y consulta filas guardadas, referencias rechazadas y estado final.
+
+#### Subtema 2.1 · Reanuda la misma instancia del Job · 10 min
+
+**Contexto:** si un proceso cae tras confirmar un chunk, no vuelvas a iniciar el trabajo a ciegas.
+
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java`. Ejecuta:
 
 ```bash
-bash ./scripts/verify-integration.sh
+cd examples/spring-batch-rutaflow
+./mvnw -q -Dtest=RestartJobTest#mismaInstanciaReanudaTrasElPrimerChunkConfirmadoSinDuplicarlo test
 ```
 
-### Tema 3: Cierra el servicio con evidencia y próximos pasos
+El test lanza el mismo Job con los mismos `JobParameters`; el writer provoca un fallo una vez y vuelve a ejecutarlo. El fixture usa H2 `MERGE` por referencia para hacer idempotente la escritura.
 
-**Resultado del tema:** ejecutarás una guardia automática de configuración, revisarás la suite completa y separarás lo comprobado en local de lo que todavía requiere evidencia del entorno de despliegue.
+**Resultado esperado:** primera ejecución `FAILED`; la reanudación `COMPLETED`; la tabla final contiene las cuatro referencias sin duplicados.
 
-**¿Por qué es importante?** Un test verde no demuestra que la API esté lista para producción. La decisión mejora cuando sabes qué comprobó el test, qué no comprobó y cuál es el siguiente paso.
+**Fallo deliberado:** cambia el parámetro `run` entre los dos lanzamientos. **Diagnóstico:** ya no es la misma instancia; la segunda ejecución empieza el archivo como un trabajo nuevo. Vuelve a usar el mismo valor.
 
-**Necesitas:** los Temas 1 y 2. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow).
+**Entiende:** el `JobRepository` guarda estado para reanudar. Aun así, un chunk o un efecto externo puede repetirse; idempotencia es la protección ante la repetición.
 
-#### Subtema 12.3.1: Protege la migración con una prueba de configuración · 8 min
+**Cierra:** registra estado de ambas ejecuciones y explica por qué una llamada de pago o email necesita protección adicional en el proyecto RutaFlow.
 
-**1. Contexto**
+#### Subtema 2.2 · Usa parámetros estables para identificar el lote · 8 min
 
-Flyway es responsable del esquema y Hibernate solo lo valida. Si alguien cambia la propiedad a `update`, una prueba de salida debe detener el cambio antes de un despliegue.
+**Contexto:** el nombre del archivo identifica la entrada; un `run` nuevo puede representar intencionalmente una nueva ejecución lógica.
 
-**2. Hazlo tú**
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/test/java/academia/rutaflow/batch/RestartJobTest.java` y compara `parametroIdentificadorNuevoCreaOtraInstanciaDesdeElPrincipio`. Corre `./mvnw -q -Dtest=RestartJobTest test`.
 
-En `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`, busca `configuracionFinalMantieneMigracionSeguridadYValidacion`. Comprueba que verifica `ddl-auto=validate`, la versión aplicada por Flyway y los beans de JWT y seguridad. Ejecuta:
-
-```bash
-./scripts/verify-integration.sh
+```java
+var params = new JobParametersBuilder()
+    .addString("inputFile", "restart-pedidos.csv")
+    .addLong("run", run)
+    .toJobParameters();
 ```
 
-**Resultado esperado:** la suite informa 7 pruebas y 0 fallos; la prueba identifica la migración `V1__crear_entrega.sql`.
+**Resultado esperado:** con el mismo valor se puede relanzar la ejecución fallida; con otro valor se crea una instancia distinta. Los registros del ejemplo usan una clave natural y `MERGE`, así que no duplican filas visibles.
 
-**Fallo deliberado:** cambia `spring.jpa.hibernate.ddl-auto=validate` a `update` en `application.properties` y ejecuta el script. **Diagnóstico:** la prueba falla con `expected: "validate" but was: "update"`. Restaura `validate`.
+**Fallo deliberado:** genera un `run` aleatorio para cada reintento. **Diagnóstico:** Spring Batch interpreta cada intento como un lote nuevo y pierde la continuidad del checkpoint. Restaura el identificador.
 
-**3. Entiende**
+**Entiende:** no uses hora actual como parámetro identificador si quieres reanudar el mismo lote. Guarda una referencia estable del archivo, como nombre y checksum.
 
-La prueba inspecciona los valores y beans cargados por la aplicación con PostgreSQL conectado. No reemplaza una revisión de cambios SQL ni una práctica de respaldo y restauración.
+**Cierra:** elige qué campos identifican cada archivo de tarifas de RutaFlow y cuáles son solo etiquetas de ejecución.
 
-**4. Cierra**
+#### Subtema 2.3 · Distingue retry de skip · 10 min
 
-Señala qué evita la propiedad `validate` y qué evidencia confirma que Flyway aplicó la migración.
+**Contexto:** una caída temporal de base de datos puede recuperarse; un importe que no se puede leer requiere rechazo explícito.
 
-#### Subtema 12.3.2: Comprueba el flujo integrado completo · 10 min
+**Hazlo tú:** abre `ImportJobConfig.java`. Busca `faultTolerant`, `retry`, `retryLimit`, `skip` y `skipLimit`:
 
-**1. Contexto**
-
-Cada pieza aislada puede pasar y el servicio completo fallar. Esta suite recorre HTTP, firma JWT, permisos, validación, PostgreSQL, Flyway, Micrometer y Actuator.
-
-**2. Hazlo tú**
-
-Abre `ArquitecturaIntegradaTest.java` y localiza las siete pruebas. Ejecuta `./scripts/verify-integration.sh`; observa el informe Surefire final.
-
-```bash
-./scripts/verify-integration.sh
+```java
+.faultTolerant()
+.retry(TransientDataAccessException.class).retryLimit(2)
+.skip(FlatFileParseException.class).skipLimit(2)
 ```
 
-**Resultado esperado:** 7 pruebas pasan: las cinco del flujo base (creación/persistencia, validación, JWT, métrica y configuración) y dos contratos adicionales de respuesta y error de M13.
+Corre `./mvnw -q clean test`. El writer del ejemplo falla una vez de manera controlada; la cuarta línea del CSV trae un importe inválido.
 
-**Fallo deliberado:** quita `metrics` de `management.endpoints.web.exposure.include` y repite el script. **Diagnóstico:** la prueba de Actuator no recibe 200 porque la ruta de métricas ya no se publica. Restaura `health,metrics`.
+**Resultado esperado:** el writer vuelve a intentar el error temporal; la fila mal formada se excluye y la prueba encuentra una causa en `batch_rechazo`.
 
-**3. Entiende**
+**Fallo deliberado:** elimina `.skip(...)` y ejecuta `ImportJobTest`. **Diagnóstico:** el error de lectura detiene el Job. Restaura el límite de skip.
 
-`@SpringBootTest` levanta la app y Testcontainers aporta PostgreSQL. Algunas llamadas recorren HTTP real; MockMvc prueba filtros y reglas dentro del contexto completo, no un navegador ni un clúster.
+**Entiende:** limita reintentos y skips. Reintenta solo fallas transitorias; no conviertas una caída permanente en un ciclo infinito ni descartes errores de infraestructura como si fueran datos malos.
 
-**4. Cierra**
+**Cierra:** propone qué errores de una importación de tarifas reintentar y cuáles enviar a conciliación.
 
-Relaciona cada una de las siete pruebas con la capa que verifica. No cuentes un 401 o un 403 esperado como fallo de la suite: son los resultados correctos para esos casos.
+#### Subtema 2.4 · Deja rastro sin guardar datos sensibles · 8 min
 
-#### Subtema 12.3.3: Declara lo que todavía falta para desplegar · 8 min
+**Contexto:** “leí 500 mil y escribí 499 mil” no explica qué pasó con la diferencia.
 
-**1. Contexto**
+**Hazlo tú:** abre `examples/spring-batch-rutaflow/src/main/java/academia/rutaflow/batch/ImportJobConfig.java` y sigue el bean `rechazoAudit`; luego consulta `ImportJobTest.java`. Ejecuta `./mvnw -q -Dtest=ImportJobTest test`; comprueba el total importado, el total rechazado y los intentos del writer.
 
-El laboratorio usa una clave de prueba y una base temporal. No contiene un proveedor de identidad, secretos del entorno destino, TLS ni una plataforma que recoja métricas.
+**Resultado esperado:** dos pedidos escritos, una fila inválida auditada y un fallo temporal recuperado. El importe cero se cuenta como filtrado por regla de negocio, no como parse error.
 
-**2. Hazlo tú**
+**Fallo deliberado:** elimina el listener de skip. **Diagnóstico:** la prueba no encuentra causa registrada aunque el job complete. Restáuralo.
 
-Abre `docs/salida-a-produccion.md`. Separa la lista entre comprobado localmente y pendiente de evidencia externa. Ejecuta `./scripts/verify-integration.sh` y marca solo los puntos cuya prueba puedas reproducir aquí.
+**Entiende:** registra referencia y causa útil, no datos personales completos. Los efectos externos como publicar evento o enviar dinero no quedan cubiertos por la transacción del chunk; usa outbox o idempotency key.
 
-```bash
-./scripts/verify-integration.sh
-```
+**Cierra:** prepara una conciliación de leídas, filtradas, rechazadas y escritas para el proyecto integrador RutaFlow. La prueba con H2 no mide millones de filas ni garantiza el comportamiento de PostgreSQL en producción.
 
-**Resultado esperado:** los seis puntos locales quedan respaldados por la suite; los pendientes del entorno siguen sin marcar.
-
-**Fallo deliberado:** marca `Aplicar el manifiesto al clúster` como terminado sin desplegar. **Diagnóstico:** el script local no inicia un clúster ni observa al kubelet; deja el punto pendiente hasta registrar esa evidencia.
-
-**3. Entiende**
-
-Usar Testcontainers prueba integración con PostgreSQL, no copias de seguridad reales. Exponer un contador por Actuator no lo envía a Prometheus. La lista evita confundir código de demostración con operación desplegada.
-
-**4. Cierra**
-
-Escribe qué prueba faltaría para un punto pendiente: entorno, acción ejecutada y resultado que guardarías.
-
-#### Subtema 12.3.4: Deja una ruta técnica para el siguiente nivel · 8 min
-
-**1. Contexto**
-
-El microservicio ya tiene un flujo vertical local. El siguiente salto profesional es operar la misma API con identidad, secretos, métricas y salud administrados por infraestructura real.
-
-**2. Hazlo tú**
-
-En `docs/salida-a-produccion.md`, toma los pendientes de identidad, métricas y Kubernetes. Para cada uno agrega el nombre de una prueba o evidencia que pedirías en el entorno destino. Usa como referencia los módulos 4 (JWT), 7 (Actuator), 11 (probes) y 12 (integración).
-
-```bash
-./scripts/verify-integration.sh
-```
-
-**Resultado esperado:** cada pendiente tiene una comprobación concreta, por ejemplo token emitido por el IdP, métrica recibida por el exporter o readiness observada por el clúster.
-
-**Fallo deliberado:** borra de la lista los pendientes de identidad y Kubernetes sin añadir evidencia. **Diagnóstico:** la ruta deja de reflejar capacidades que este laboratorio no implementa; restáuralos antes de cerrar.
-
-**3. Entiende**
-
-La API no implementa emisor JWT, despliegue Kubernetes, exporter, TLS, límites de abuso ni procedimientos de recuperación de base. Los temas anteriores aportan piezas para avanzar, pero aún se deben integrar y comprobar en el destino.
-
-**4. Cierra**
-
-Entrega el informe de 7 pruebas verdes y la lista de pendientes con evidencias requeridas. Con eso cierras el hito integrador base. El M13 profundiza fronteras transaccionales, recuperación y contratos; M14–M25 amplían prácticas especializadas.
-
-**Fuentes:** [inicialización de bases en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [métricas y Actuator](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [probes de Spring Boot](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes).
-
----
-
-
-**Aplicación y decisión:** En el proyecto integrador, entrega el README de reproducción y el registro de salida a producción con lo ejecutado y lo pendiente. Una suite verde local no reemplaza restauración, carga o recuperación de un despliegue destino.
-
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
-
-```bash
-bash ./scripts/verify-integration.sh
-```
-
-## Laboratorio práctico
-
-**Objetivo del laboratorio:** comprobar el flujo completo del microservicio con JWT, autorización por rol, persistencia real, Actuator y una guardia de configuración.
-
-**Requisitos previos:** Módulos 0-11 completados.
-
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Diseñar la arquitectura por capas completa | Ver Tema 1 | controller/service/repository/dto |
-| 2 | Implementar persistencia con migraciones Flyway | Módulo 3 | Flyway aplica el esquema y Hibernate usa `ddl-auto=validate` |
-| 3 | Proteger endpoints con Spring Security + JWT | Módulo 4 | Autorización por rol |
-| 4 | Exponer Actuator con una métrica de negocio | Módulo 7 | Verifica en `/actuator/metrics` |
-| 5 | Escribir tests de integración con Testcontainers | Módulo 6 | Cubriendo el flujo crítico completo |
-
-**Verificación local:** desde `examples/spring-boot-integrador-rutaflow/`, ejecuta `./scripts/verify-integration.sh`. Las siete pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
-
-**Errores comunes y soluciones**
-
-- **Dejar endpoints sensibles sin protección de autorización.** Verifica que cada endpoint tenga la anotación de autorización apropiada según su sensibilidad.
-- **Confiar en `ddl-auto` en vez de migraciones versionadas para el proyecto final.** Usa Flyway consistentemente.
-- **Omitir tests de integración del flujo crítico.** Prioriza cubrir con Testcontainers el camino principal completo de la aplicación.
-
----
+**Fuentes primarias:** [Spring Batch: reiniciar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: retry](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/retry-logic.html); [Spring Batch: skip](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/configuring-skip.html); [Spring Batch: listeners](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing/intercepting-execution.html); [Spring Boot: reiniciar jobs fallidos](https://docs.spring.io/spring-boot/how-to/batch.html).

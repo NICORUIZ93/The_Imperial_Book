@@ -56,20 +56,69 @@ En el proyecto integrador RutaFlow, el cliente `dio` vive en `lib/core/api_clien
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final dio = Dio();
-final cancelToken = CancelToken();
-final respuesta = await dio.get('/envios', queryParameters: {'guia': guia}, cancelToken: cancelToken);
-// al escribir una nueva guía: cancelToken.cancel('nueva búsqueda');
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+
+// httpbin.org/delay/2 tarda dos segundos: da tiempo a escribir otra guía y cancelar.
+final dio = Dio(BaseOptions(baseUrl: 'https://httpbin.org'));
+
+void main() => runApp(const MaterialApp(home: BuscadorEnvios()));
+
+class BuscadorEnvios extends StatefulWidget {
+  const BuscadorEnvios({super.key});
+
+  @override
+  State<BuscadorEnvios> createState() => _BuscadorEnviosState();
+}
+
+class _BuscadorEnviosState extends State<BuscadorEnvios> {
+  CancelToken? cancelToken;
+  String resultado = 'Escribe una guía';
+
+  Future<void> buscar(String guia) async {
+    cancelToken?.cancel('nueva búsqueda'); // la búsqueda anterior ya no importa
+    final token = CancelToken();
+    cancelToken = token;
+    try {
+      final respuesta = await dio.get<Map<String, dynamic>>(
+        '/delay/2',
+        queryParameters: {'guia': guia},
+        cancelToken: token,
+      );
+      final args = respuesta.data?['args'] as Map<String, dynamic>?;
+      if (!mounted) return;
+      setState(() => resultado = 'Respuesta para ${args?['guia']}');
+    } on DioException catch (e) {
+      if (CancelToken.isCancel(e)) return; // cancelada a propósito: no es un error
+      if (!mounted) return;
+      setState(() => resultado = 'Error: ${e.message}');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Buscar envío')),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(children: [
+            TextField(decoration: const InputDecoration(labelText: 'Guía'), onChanged: buscar),
+            const SizedBox(height: 16),
+            Text(resultado),
+          ]),
+        ),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add dio
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: al escribir una guía nueva antes de que la búsqueda anterior complete, llamar a `cancelToken.cancel()` cancela efectivamente esa petición en curso — la respuesta vieja nunca llega a sobrescribir el resultado de la búsqueda más reciente.
 
@@ -126,23 +175,54 @@ En el proyecto integrador RutaFlow, el modelo `Envio` vive en `lib/core/models.d
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'main.g.dart'; // lo genera: dart run build_runner build
+
 @JsonSerializable()
 class Envio {
   final String guia;
   final String estado;
   Envio({required this.guia, required this.estado});
   factory Envio.fromJson(Map<String, dynamic> json) => _$EnvioFromJson(json);
+  Map<String, dynamic> toJson() => _$EnvioToJson(this);
 }
+
+String probar(String json) {
+  try {
+    final envio = Envio.fromJson(jsonDecode(json) as Map<String, dynamic>);
+    return '${envio.guia}: ${envio.estado}';
+  } on TypeError catch (e) {
+    return 'Error al parsear: $e';
+  }
+}
+
+void main() => runApp(MaterialApp(
+      home: Scaffold(
+        body: SafeArea(
+          child: Column(children: [
+            Text(probar('{"guia": "RF-4471", "estado": "en_ruta"}')),
+            Text(probar('{"guia": "RF-5002"}')), // falta `estado`
+          ]),
+        ),
+      ),
+    ));
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add json_annotation
+flutter pub add dev:build_runner dev:json_serializable
+dart run build_runner build
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: deserializar una respuesta de la API que le falte el campo `estado` lanza un error explícito y claro en el punto exacto de `Envio.fromJson(json)` — no un `null` silencioso que recién falla mucho más adelante al intentar mostrar `envio.estado` en pantalla.
 
@@ -220,29 +300,89 @@ En el proyecto integrador RutaFlow, el interceptor vive en `lib/core/api_client.
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-dio.interceptors.add(InterceptorsWrapper(
-  onRequest: (options, handler) {
-    options.headers['Authorization'] = 'Bearer $token';
-    handler.next(options);
-  },
-));
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+
+const token = 'token-de-laboratorio';
+
+// httpbin.org/headers devuelve los headers recibidos: así se ve el que añadió el interceptor.
+final dio = Dio(BaseOptions(baseUrl: 'https://httpbin.org'));
+
+class Envio {
+  const Envio(this.guia);
+  final String guia;
+}
 
 sealed class EstadoEnvios {}
 class Cargando extends EstadoEnvios {}
 class Exito extends EstadoEnvios { final List<Envio> envios; Exito(this.envios); }
 class ErrorEnvios extends EstadoEnvios { final String mensaje; ErrorEnvios(this.mensaje); }
+
+void main() {
+  dio.interceptors.add(InterceptorsWrapper(
+    onRequest: (options, handler) {
+      options.headers['Authorization'] = 'Bearer $token';
+      handler.next(options);
+    },
+  ));
+  runApp(const MaterialApp(home: PantallaEnvios()));
+}
+
+class PantallaEnvios extends StatefulWidget {
+  const PantallaEnvios({super.key});
+
+  @override
+  State<PantallaEnvios> createState() => _PantallaEnviosState();
+}
+
+class _PantallaEnviosState extends State<PantallaEnvios> {
+  EstadoEnvios estado = Cargando();
+
+  @override
+  void initState() {
+    super.initState();
+    cargar();
+  }
+
+  Future<void> cargar() async {
+    try {
+      final respuesta = await dio.get<Map<String, dynamic>>('/headers');
+      final headers = respuesta.data?['headers'] as Map<String, dynamic>?;
+      if (!mounted) return;
+      setState(() => estado = Exito([Envio('RF-4471 · ${headers?['Authorization']}')]));
+    } on DioException catch (e) {
+      if (!mounted) return;
+      setState(() => estado = ErrorEnvios(e.message ?? 'Error de red'));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: switch (estado) {
+            Cargando() => const CircularProgressIndicator(),
+            Exito(:final envios) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [for (final e in envios) Text(e.guia)],
+              ),
+            ErrorEnvios(:final mensaje) => Text('Error: $mensaje'),
+          },
+        ),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add dio
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
-Resultado esperado: cualquier petición nueva agregada al cliente `dio` incluye automáticamente el header de autenticación sin código adicional por llamada; un `switch` sobre `EstadoEnvios` que no maneje alguno de los tres casos produce una advertencia del analizador de Dart, no un bug silencioso descubierto en producción.
+Resultado esperado: cualquier petición nueva agregada al cliente `dio` incluye automáticamente el header de autenticación sin código adicional por llamada; un `switch` sobre `EstadoEnvios` que no maneje alguno de los tres casos produce un error del analizador de Dart, no un bug silencioso descubierto en producción.
 
 #### Paso 5 · Práctica guiada
 Pista: decidí qué renderizar según el estado usando `if (estado is Cargando) ... else if (estado is Exito) ...` en vez de un `switch` exhaustivo sobre la `sealed class` — ese es el fallo deliberado: agregá el caso `ErrorEnvios` más tarde a la jerarquía, y esta cadena de `if`/`else if` sigue compilando sin ninguna advertencia aunque nadie haya agregado la rama para el nuevo estado, dejando la pantalla en blanco cuando ocurre un error real de red.

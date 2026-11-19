@@ -4,7 +4,7 @@
 
 Un microservicio no es «un proyecto pequeño»: es una unidad desplegable con un contrato, datos propios y una responsabilidad de negocio. Este módulo convierte los límites y eventos de los módulos 19 y 20 en servicios que pueden fallar por separado. Vas a descomponer RutaFlow por capacidad de negocio, definir un contrato HTTP verificable, impedir que dos servicios compartan la misma tabla, añadir timeouts y un cortacircuitos, y propagar un identificador de traza para diagnosticar una petición que cruza procesos.
 
-Cada tema se ejecuta con `node --test` y no requiere Docker; el Módulo 22 lleva estos conceptos a un laboratorio con Floci, contenedores y Terraform. **Conocimiento previo:** Módulos 19 y 20, Node.js, HTTP y JSON. Si trabajas con Spring Boot, el Módulo 15 muestra bulkhead, rate limiter y saga en Java; aquí el foco está en los contratos y en las decisiones que puedes verificar sin framework.
+Cada tema se ejecuta con `node --test` y no requiere Docker; el Módulo 22 lleva estos conceptos a un laboratorio con Floci, contenedores y Terraform. **Conocimiento previo:** Módulos 19 y 20, Node.js, HTTP y JSON. Si trabajas con Spring Boot, los Módulos 16 (bulkhead y rate limiter) y 17 (saga) lo muestran en Java; aquí el foco está en los contratos y en las decisiones que puedes verificar sin framework.
 
 ### Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato
 

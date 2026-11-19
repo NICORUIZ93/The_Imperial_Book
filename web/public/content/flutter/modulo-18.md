@@ -74,16 +74,24 @@ Agrega `import UIKit` si hace falta. Ejecuta `flutter run` y muestra el valor en
 Agrega `test/platform/device_info_test.dart` con un handler simulado que responda `Android 15`; verifica que Dart recibe ese texto sin depender del teléfono:
 
 ```dart
-TestWidgetsFlutterBinding.ensureInitialized();
-const channel = MethodChannel('rutaflow/device');
-test('lee versión del sistema por el canal', () async {
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(channel, (call) async => 'Android 15');
-  expect(await DeviceInfo().platformVersion(), 'Android 15');
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(channel, null);
-});
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:rutaflow_mobile/platform/device_info.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const channel = MethodChannel('rutaflow/device');
+  test('lee versión del sistema por el canal', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async => 'Android 15');
+    expect(await DeviceInfo().platformVersion(), 'Android 15');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
+  });
+}
 ```
+
+Ejecuta `flutter test test/platform/device_info_test.dart`.
 
 **Pista:** importa `flutter/services.dart` y `flutter_test`; limpia el mock handler para que una prueba no afecte a la siguiente.
 
@@ -226,17 +234,37 @@ Una pantalla que salta dificulta completar una entrega mientras se camina o cond
 La tubería tiene una parte que prepara widgets y otra que rasteriza píxeles. En DevTools mira ambas. Un frame lento en UI apunta al trabajo Dart/build/layout; uno lento en raster apunta al costo de dibujar. Mide en `profile`: el modo debug añade trabajo y no representa el rendimiento final.
 
 #### Paso 4 · Demostración guiada
-En `lib/screens/route_list.dart`, usa `ListView.builder` en lugar de construir todos los renglones:
+Crea `lib/screens/route_list.dart`; usa `ListView.builder` en lugar de construir todos los renglones:
 
 ```dart
-ListView.builder(
-  itemCount: deliveries.length,
-  itemBuilder: (context, index) => ListTile(
-    title: Text(deliveries[index].recipient),
-    subtitle: Text(deliveries[index].address),
-  ),
-)
+import 'package:flutter/material.dart';
+
+class Delivery {
+  const Delivery(this.recipient, this.address);
+  final String recipient;
+  final String address;
+}
+
+final deliveries = List.generate(
+  1000,
+  (i) => Delivery('Destinatario $i', 'Calle ${i + 1} #${i % 90}-${i % 50}'),
+);
+
+class RouteList extends StatelessWidget {
+  const RouteList({super.key});
+
+  @override
+  Widget build(BuildContext context) => ListView.builder(
+        itemCount: deliveries.length,
+        itemBuilder: (context, index) => ListTile(
+          title: Text(deliveries[index].recipient),
+          subtitle: Text(deliveries[index].address),
+        ),
+      );
+}
 ```
+
+En `lib/main.dart`, muéstrala con `runApp(const MaterialApp(home: Scaffold(body: RouteList())));` e importa `screens/route_list.dart`.
 
 Corre `flutter run --profile`, abre DevTools Performance y graba un desplazamiento repetible. Anota los frames lentos. Para 60 Hz busca tiempos por debajo de 16 ms; no conviertas ese número en garantía para otros teléfonos.
 
@@ -347,14 +375,27 @@ Los equipos necesitan distinguir un fallo que bloquea a muchas personas de un re
 Crashlytics y Sentry reciben reportes y ayudan a agruparlos; no arreglan la causa. `recordFlutterFatalError` cubre errores del framework según la configuración de Firebase; `PlatformDispatcher.instance.onError` atiende errores asíncronos no manejados. Mantén la diferencia entre informar y manejar una excepción.
 
 #### Paso 4 · Demostración guiada
-En la app de práctica configura Firebase con `flutterfire configure`, inicializa `firebase_core` y añade `firebase_crashlytics`. En `lib/main.dart`, después de inicializar Firebase:
+En la app de práctica ejecuta `flutter pub add firebase_core firebase_crashlytics` y configura Firebase con `flutterfire configure`, que genera `lib/firebase_options.dart`. Reemplaza `lib/main.dart`; los handlers se registran después de inicializar Firebase:
 
 ```dart
-FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-PlatformDispatcher.instance.onError = (error, stack) {
-  FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  return true;
-};
+import 'dart:ui';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/material.dart';
+
+import 'firebase_options.dart'; // generado por flutterfire configure
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+  runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow')))));
+}
 ```
 
 Para una excepción recuperable, llama `recordError(error, stack, fatal: false)` en el `catch` correspondiente y sigue mostrando un mensaje útil. Agrega `sentry_flutter` como alternativa de backend, no dupliques reportes sin política de deduplicación. Ejecuta solo el crash de prueba en un build de desarrollo con proyecto autorizado; confirma recepción en el panel.
@@ -362,10 +403,31 @@ Para una excepción recuperable, llama `recordError(error, stack, fatal: false)`
 Para probar Sentry en una app separada, corre `flutter pub add sentry_flutter` y usa en `lib/main.dart` el inicializador oficial; el DSN identifica el proyecto y no debe confundirse con una llave de servicio:
 
 ```dart
-await SentryFlutter.init(
-  (options) => options.dsn = const String.fromEnvironment('SENTRY_DSN'),
-  appRunner: () => runApp(const MyApp()),
-);
+import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) => options.dsn = const String.fromEnvironment('SENTRY_DSN'),
+    appRunner: () => runApp(const MyApp()),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: FilledButton(
+              onPressed: () => throw StateError('Error de prueba para Sentry'),
+              child: const Text('Provocar error de prueba'),
+            ),
+          ),
+        ),
+      );
+}
 ```
 
 Ejecuta con `flutter run --dart-define=SENTRY_DSN=<DSN-del-proyecto-de-prueba>`. El SDK captura errores no manejados; para reportar un error recuperable desde un `catch`, usa `await Sentry.captureException(error, stackTrace: stack)`. Elige un solo SDK como dueño de los handlers globales, salvo que hayas diseñado y comprobado la deduplicación.
@@ -414,7 +476,7 @@ Una métrica útil no justifica recolectar todos los datos disponibles. Consenti
 Un evento es una fila de observación: acción, momento y pocos atributos permitidos. Define el propósito antes del campo. Si la colección debe esperar una decisión de usuario, desactívala al inicio y actívala solo después de registrar el consentimiento; la app también debe poder detenerla al revocarse.
 
 #### Paso 4 · Demostración guiada
-Añade `firebase_analytics`. Empieza con la recolección desactivada según la configuración oficial de Android/iOS y no llames a eventos antes de resolver consentimiento. En la capa Dart, centraliza la transición:
+Añade `firebase_analytics`. Empieza con la recolección desactivada según la configuración oficial de Android/iOS y no llames a eventos antes de resolver consentimiento. En la capa Dart, centraliza la transición en `lib/analytics/analytics_consent.dart`:
 
 ```dart
 abstract interface class AnalyticsSwitch {
@@ -479,7 +541,6 @@ Define indicadores antes de instalar otro SDK: tiempo al primer frame, duración
 En `lib/observability/frame_metrics.dart`, añade un observador de tiempos:
 
 ```dart
-import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 class FrameMetrics {

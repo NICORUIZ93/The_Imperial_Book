@@ -51,17 +51,46 @@ En el proyecto integrador RutaFlow, el router vive en `lib/core/router.dart` y l
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final router = GoRouter(routes: [
-  GoRoute(path: '/envios', builder: (context, state) => ListaEnvios()),
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+final router = GoRouter(initialLocation: '/envios', routes: [
+  GoRoute(path: '/envios', builder: (context, state) => const ListaEnvios()),
   GoRoute(
     path: '/envios/:id',
     builder: (context, state) => DetalleEnvio(id: state.pathParameters['id']!),
   ),
 ]);
-context.go('/envios/RF-4471'); // navegación declarativa, la URL es la fuente de verdad
+
+void main() => runApp(MaterialApp.router(routerConfig: router));
+
+class ListaEnvios extends StatelessWidget {
+  const ListaEnvios({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Envíos')),
+        body: ListTile(
+          title: const Text('RF-4471'),
+          // navegación declarativa, la URL es la fuente de verdad
+          onTap: () => context.go('/envios/RF-4471'),
+        ),
+      );
+}
+
+class DetalleEnvio extends StatelessWidget {
+  const DetalleEnvio({required this.id, super.key});
+  final String id;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: Text('Envío $id')),
+        body: Center(child: Text('Detalle de $id')),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
@@ -69,8 +98,7 @@ cd demo_flutter
 flutter pub add go_router
 flutter run
 ```
-El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: tocar un envío en la lista llama a `context.go('/envios/RF-4471')`, y `DetalleEnvio` lee el id directamente de `state.pathParameters['id']` — la URL `/envios/RF-4471` representa exactamente qué se está mostrando, sin ningún stack imperativo oculto.
 
@@ -125,14 +153,53 @@ En el proyecto integrador RutaFlow, el guard vive en `lib/core/router.dart` junt
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-GoRoute(
-  path: '/admin',
-  redirect: (context, state) => estaAutenticadoComoSupervisor ? null : '/login',
-  builder: (context, state) => AdminScreen(),
-)
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+bool estaAutenticadoComoSupervisor = false;
+
+final router = GoRouter(initialLocation: '/admin', routes: [
+  GoRoute(
+    path: '/admin',
+    redirect: (context, state) => estaAutenticadoComoSupervisor ? null : '/login',
+    builder: (context, state) => const AdminScreen(),
+  ),
+  GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+  GoRoute(
+    path: '/envios/:id',
+    builder: (context, state) => Scaffold(body: Center(child: Text('Envío ${state.pathParameters['id']}'))),
+  ),
+]);
+
+void main() => runApp(MaterialApp.router(routerConfig: router));
+
+class AdminScreen extends StatelessWidget {
+  const AdminScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Panel de supervisor')));
+}
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Ingreso')),
+        body: Center(
+          child: FilledButton(
+            onPressed: () {
+              estaAutenticadoComoSupervisor = true;
+              context.go('/admin');
+            },
+            child: const Text('Entrar como supervisor'),
+          ),
+        ),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
@@ -140,8 +207,7 @@ cd demo_flutter
 flutter pub add go_router
 flutter run
 ```
-El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: un operador sin sesión de supervisor que navega a `/admin` es redirigido automáticamente a `/login`; con App Links (Android) o Universal Links (iOS) ya configurados —o en web, que no los necesita—, un deep link externo a `/envios/RF-4471` abre `DetalleEnvio` directamente, porque esa URL ya coincide con una ruta existente del router, sin código Dart adicional de "manejo de deep links". Para probarlo en Android: `adb shell am start -a android.intent.action.VIEW -d "https://<tu-dominio>/envios/RF-4471"`; en el simulador de iOS: `xcrun simctl openurl booted https://<tu-dominio>/envios/RF-4471`.
 
@@ -200,16 +266,53 @@ En el proyecto integrador RutaFlow, la transición de confirmación vive en `lib
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-GoRoute(
-  path: '/envios/:id/confirmado',
-  pageBuilder: (context, state) => CustomTransitionPage(
-    child: ConfirmacionExitosa(),
-    transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+final router = GoRouter(initialLocation: '/envios/RF-4471', routes: [
+  GoRoute(
+    path: '/envios/:id',
+    builder: (context, state) => DetalleEnvio(id: state.pathParameters['id']!),
   ),
-)
+  GoRoute(
+    path: '/envios/:id/confirmado',
+    pageBuilder: (context, state) => CustomTransitionPage(
+      key: state.pageKey,
+      child: const ConfirmacionExitosa(),
+      transitionsBuilder: (context, animation, _, child) => FadeTransition(opacity: animation, child: child),
+    ),
+  ),
+]);
+
+void main() => runApp(MaterialApp.router(routerConfig: router));
+
+class DetalleEnvio extends StatelessWidget {
+  const DetalleEnvio({required this.id, super.key});
+  final String id;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: Text('Envío $id')),
+        body: Center(
+          child: FilledButton(
+            onPressed: () => context.go('/envios/$id/confirmado'),
+            child: const Text('Confirmar entrega'),
+          ),
+        ),
+      );
+}
+
+class ConfirmacionExitosa extends StatelessWidget {
+  const ConfirmacionExitosa({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(
+        body: Center(child: Icon(Icons.check_circle, size: 96, color: Colors.green)),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
@@ -217,8 +320,7 @@ cd demo_flutter
 flutter pub add go_router
 flutter run
 ```
-El router solo se usa si la app lo recibe: en `main.dart`, `runApp(MaterialApp.router(routerConfig: router));` en lugar de `MaterialApp(home: ...)`.
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: al confirmar una entrega, la navegación hacia `ConfirmacionExitosa` usa un fundido de opacidad en vez del deslizamiento estándar, comunicando visualmente que ese flujo concluyó, distinto de navegar "un paso más adentro" en la jerarquía habitual.
 

@@ -40,7 +40,7 @@ final deliveryStatusNotifierProvider =
 class DeliveryStatusNotifier extends StateNotifier<AsyncValue<Delivery>> {
   final Ref ref;
 
-  DeliveryStatusNotifier(this.ref) : super(const AsyncValue.data(
+  DeliveryStatusNotifier(this.ref) : super(AsyncValue.data(
     Delivery(
       id: '',
       guia: '',

@@ -521,7 +521,7 @@ flowchart LR
 
 ---
 
-La estructura por capas de este tema es la que organiza el proyecto integrador de este track (microservicio productivo, Módulo 12).
+La estructura por capas de este tema es la que organiza el proyecto integrador de este track (microservicio productivo, Módulo 20).
 
 ## Laboratorio práctico
 
@@ -531,7 +531,7 @@ La estructura por capas de este tema es la que organiza el proyecto integrador d
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Revisar el proyecto web generado con Spring Initializr | web | JPA y base de datos se agregan cuando se usan en M2–M3 |
+| 1 | Revisar el proyecto web generado con Spring Initializr | web | JPA y base de datos se agregan cuando se usan en M2–M4 |
 | 2 | Convertir a `application.yml` | Ver Tema 2 | Compara la legibilidad |
 | 3 | Crear `application-dev.yml`/`application-prod.yml` | Ver Tema 3 | Arranca con `--spring.profiles.active=dev` |
 | 4 | Organizar en paquetes por capa | Ver Tema 3 | `controller/`, `service/`, `repository/`, `dto/` |

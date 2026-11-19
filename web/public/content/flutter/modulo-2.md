@@ -54,27 +54,68 @@ En el proyecto integrador RutaFlow, `PanelEnvios` vive en `lib/features/deliveri
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Row(children: [
-  Expanded(
-    flex: 1,
-    child: LayoutBuilder(builder: (context, constraints) {
-      return constraints.maxWidth > 400
-          ? ListaEnviosExpandida()
-          : ListaEnviosCompacta();
-    }),
-  ),
-  Expanded(flex: 2, child: MapaRuta()),
-])
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: Scaffold(body: PanelEnvios())));
+
+class PanelEnvios extends StatelessWidget {
+  const PanelEnvios({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Expanded(
+        flex: 1,
+        child: LayoutBuilder(builder: (context, constraints) {
+          return constraints.maxWidth > 400
+              ? const ListaEnviosExpandida()
+              : const ListaEnviosCompacta();
+        }),
+      ),
+      const Expanded(flex: 2, child: MapaRuta()),
+    ]);
+  }
+}
+
+class ListaEnviosExpandida extends StatelessWidget {
+  const ListaEnviosExpandida({super.key});
+
+  @override
+  Widget build(BuildContext context) => ListView(children: const [
+        ListTile(title: Text('RF-4471'), subtitle: Text('En ruta · Calle 80 #12-34')),
+        ListTile(title: Text('RF-5002'), subtitle: Text('Asignado · Carrera 7 #45-10')),
+      ]);
+}
+
+class ListaEnviosCompacta extends StatelessWidget {
+  const ListaEnviosCompacta({super.key});
+
+  @override
+  Widget build(BuildContext context) => ListView(children: const [
+        ListTile(dense: true, title: Text('RF-4471')),
+        ListTile(dense: true, title: Text('RF-5002')),
+      ]);
+}
+
+class MapaRuta extends StatelessWidget {
+  const MapaRuta({super.key});
+
+  @override
+  Widget build(BuildContext context) => const ColoredBox(
+        color: Color(0xFFE0E0E0),
+        child: Center(child: Text('Mapa de la ruta')),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `LayoutBuilder` dentro del panel reporta correctamente que su espacio disponible es solo un tercio del ancho total de la pantalla (porque comparte la fila con `MapaRuta`), permitiendo elegir `ListaEnviosCompacta` incluso en una tablet ancha, donde `MediaQuery` hubiera reportado un ancho total mucho mayor y elegido incorrectamente la versión expandida.
 
@@ -132,22 +173,49 @@ En el proyecto integrador RutaFlow, este patrón vive en `lib/features/deliverie
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Column(children: [
-  Text('Envíos de hoy'),
-  Expanded(          // da un alto máximo finito al ListView
-    child: ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
-  ),
-])
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: Scaffold(body: SafeArea(child: EnviosDeHoy()))));
+
+class Envio {
+  const Envio(this.guia, this.estado);
+  final String guia;
+  final String estado;
+}
+
+final envios = List.generate(30, (i) => Envio('RF-${4400 + i}', i.isEven ? 'En ruta' : 'Asignado'));
+
+class EnviosDeHoy extends StatelessWidget {
+  const EnviosDeHoy({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      const Text('Envíos de hoy'),
+      Expanded(          // da un alto máximo finito al ListView
+        child: ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
+      ),
+    ]);
+  }
+}
+
+class TarjetaEnvio extends StatelessWidget {
+  const TarjetaEnvio({required this.envio, super.key});
+  final Envio envio;
+
+  @override
+  Widget build(BuildContext context) => ListTile(title: Text(envio.guia), subtitle: Text(envio.estado));
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: envolver el `ListView` en `Expanded` le comunica una constraint de alto máximo finito (el espacio restante de la `Column` después de `Text`), permitiendo que el `ListView` decida su tamaño dentro de ese límite y haga scroll internamente sin romper el layout.
 
@@ -212,24 +280,54 @@ En el proyecto integrador RutaFlow, `segunAncho()` vive en `lib/core/responsive.
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+
 enum TipoDispositivo { movil, tablet, escritorio }
+
 TipoDispositivo segunAncho(double ancho) {
   if (ancho < 600) return TipoDispositivo.movil;
   if (ancho < 1024) return TipoDispositivo.tablet;
   return TipoDispositivo.escritorio;
 }
 
-Scaffold(body: SafeArea(child: PanelEnvios()))
+void main() => runApp(const MaterialApp(home: Scaffold(body: SafeArea(child: PanelEnvios()))));
+
+class PanelEnvios extends StatelessWidget {
+  const PanelEnvios({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final tipo = segunAncho(constraints.maxWidth);
+      final columnas = switch (tipo) {
+        TipoDispositivo.movil => 1,
+        TipoDispositivo.tablet => 2,
+        TipoDispositivo.escritorio => 3,
+      };
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text('Dispositivo: ${tipo.name} · $columnas columna(s)'),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: columnas,
+            children: [
+              for (var i = 1; i <= 6; i++) Card(child: Center(child: Text('RF-440$i'))),
+            ],
+          ),
+        ),
+      ]);
+    });
+  }
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: cada pantalla de RutaFlow llama a `segunAncho(constraints.maxWidth)` en vez de comparar números directamente; `SafeArea` evita que la primera fila de `PanelEnvios` quede oculta detrás del notch en dispositivos con cámara frontal pronunciada.
 

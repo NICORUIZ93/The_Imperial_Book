@@ -6,7 +6,7 @@
 ### Tema 1: kotlin.test en commonTest
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 27 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
+Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
 
 #### Paso 2 · Contexto y caso real
 El equipo de tareas tiene duplicada la prueba del filtro de pendientes: una suite en Android con JUnit y otra en iOS con XCTest, ambas verificando la misma regla de negocio por separado, y ya divergieron ligeramente entre sí.

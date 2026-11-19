@@ -456,12 +456,16 @@
         "fragment": "tema-4-zoneless"
       },
       {
+        "title": "OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager`",
+        "fragment": "tema-5-onpush-por-defecto-angular-22-que-se-revisa-y-cuando-usar-eager"
+      },
+      {
         "title": "Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts",
-        "fragment": "tema-5-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
+        "fragment": "tema-6-modos-de-render-por-ruta-ssr-prerender-ssg-y-csr-con-app-routes-server-ts"
       },
       {
         "title": "Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa",
-        "fragment": "tema-6-hidratacion-incremental-defer-con-hydrate-on-para-despertar-solo-lo-que-se-usa"
+        "fragment": "tema-7-hidratacion-incremental-defer-con-hydrate-on-para-despertar-solo-lo-que-se-usa"
       }
     ],
     "12": [
@@ -520,28 +524,20 @@
     ],
     "15": [
       {
-        "title": "TestBed y ComponentFixture",
-        "fragment": "tema-1-testbed-y-componentfixture"
-      },
-      {
         "title": "Pruebas de Signals",
-        "fragment": "tema-2-pruebas-de-signals"
+        "fragment": "tema-1-pruebas-de-signals"
       },
       {
         "title": "Cypress y Playwright",
-        "fragment": "tema-3-cypress-y-playwright"
+        "fragment": "tema-2-cypress-y-playwright"
       },
       {
         "title": "Animaciones accesibles",
-        "fragment": "tema-4-animaciones-accesibles"
+        "fragment": "tema-3-animaciones-accesibles"
       },
       {
         "title": "SSR y TransferState",
-        "fragment": "tema-5-ssr-y-transferstate"
-      },
-      {
-        "title": "Hidratación y `provideServerRendering`",
-        "fragment": "tema-6-hidratacion-y-provideserverrendering"
+        "fragment": "tema-4-ssr-y-transferstate"
       }
     ],
     "16": [
@@ -648,6 +644,10 @@
       {
         "title": "Template-driven forms — cuándo siguen siendo válidos",
         "fragment": "tema-4-template-driven-forms-cuando-siguen-siendo-validos"
+      },
+      {
+        "title": "Signal Forms: formularios basados en signals (Angular 22)",
+        "fragment": "tema-5-signal-forms-formularios-basados-en-signals-angular-22"
       }
     ],
     "6": [
@@ -670,8 +670,8 @@
     ],
     "7": [
       {
-        "title": "HttpClient con backend fetch",
-        "fragment": "tema-1-httpclient-con-backend-fetch"
+        "title": "HttpClient (fetch por defecto) y peticiones tipadas",
+        "fragment": "tema-1-httpclient-fetch-por-defecto-y-peticiones-tipadas"
       },
       {
         "title": "Interceptores funcionales",
@@ -1690,6 +1690,90 @@
       {
         "title": "Simulacro con solución",
         "fragment": "tema-1-simulacro-con-solucion"
+      }
+    ],
+    "23": [
+      {
+        "title": "Del Bode al diagrama polar",
+        "fragment": "tema-1-del-bode-al-diagrama-polar"
+      },
+      {
+        "title": "El criterio Z = N + P",
+        "fragment": "tema-2-el-criterio-z-n-p"
+      },
+      {
+        "title": "Polos en el origen y estabilidad relativa",
+        "fragment": "tema-3-polos-en-el-origen-y-estabilidad-relativa"
+      }
+    ],
+    "24": [
+      {
+        "title": "Compensador de adelanto por margen de fase",
+        "fragment": "tema-1-compensador-de-adelanto-por-margen-de-fase"
+      },
+      {
+        "title": "Compensador de atraso por margen de fase",
+        "fragment": "tema-2-compensador-de-atraso-por-margen-de-fase"
+      },
+      {
+        "title": "Atraso-adelanto y sensibilidad",
+        "fragment": "tema-3-atraso-adelanto-y-sensibilidad"
+      }
+    ],
+    "25": [
+      {
+        "title": "Controlabilidad",
+        "fragment": "tema-1-controlabilidad"
+      },
+      {
+        "title": "Observabilidad",
+        "fragment": "tema-2-observabilidad"
+      },
+      {
+        "title": "Ubicación de polos por realimentación de estados",
+        "fragment": "tema-3-ubicacion-de-polos-por-realimentacion-de-estados"
+      }
+    ],
+    "26": [
+      {
+        "title": "El observador de orden completo",
+        "fragment": "tema-1-el-observador-de-orden-completo"
+      },
+      {
+        "title": "Elige la velocidad del observador",
+        "fragment": "tema-2-elige-la-velocidad-del-observador"
+      },
+      {
+        "title": "Controlador con observador",
+        "fragment": "tema-3-controlador-con-observador"
+      }
+    ],
+    "27": [
+      {
+        "title": "Igualación de modelos",
+        "fragment": "tema-1-igualacion-de-modelos"
+      },
+      {
+        "title": "Ubicación de polos con la ecuación diofántica",
+        "fragment": "tema-2-ubicacion-de-polos-con-la-ecuacion-diofantica"
+      },
+      {
+        "title": "Compensador de dos parámetros",
+        "fragment": "tema-3-compensador-de-dos-parametros"
+      }
+    ],
+    "28": [
+      {
+        "title": "Bloque A — frecuencia (puntos 1 a 3)",
+        "fragment": "tema-1-bloque-a-frecuencia-puntos-1-a-3"
+      },
+      {
+        "title": "Bloque B — estado y método algebraico (puntos 4 a 6)",
+        "fragment": "tema-2-bloque-b-estado-y-metodo-algebraico-puntos-4-a-6"
+      },
+      {
+        "title": "Corrige con python-control y planea el repaso",
+        "fragment": "tema-3-corrige-con-python-control-y-planea-el-repaso"
       }
     ],
     "3": [
@@ -2966,6 +3050,14 @@
       {
         "title": "Cómo la computadora representa los datos — binario, texto y decimales",
         "fragment": "tema-5-como-la-computadora-representa-los-datos-binario-texto-y-decimales"
+      },
+      {
+        "title": "Clases y objetos: atributos, métodos e `__init__`",
+        "fragment": "tema-6-clases-y-objetos-atributos-metodos-e-init"
+      },
+      {
+        "title": "Herencia, composición y clases abstractas con `abc`",
+        "fragment": "tema-7-herencia-composicion-y-clases-abstractas-con-abc"
       }
     ],
     "10": [
@@ -3706,6 +3798,10 @@
       {
         "title": "Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)",
         "fragment": "tema-8-entrada-java-time-y-por-que-evitar-las-apis-obsoletas-date-calendar"
+      },
+      {
+        "title": "Java 25 para programas pequeños: `IO`, archivos compactos e `import module`",
+        "fragment": "tema-9-java-25-para-programas-pequenos-io-archivos-compactos-e-import-module"
       }
     ],
     "1": [
@@ -3724,6 +3820,14 @@
       {
         "title": "Sobrecarga vs sobreescritura, y modificadores de acceso",
         "fragment": "tema-4-sobrecarga-vs-sobreescritura-y-modificadores-de-acceso"
+      },
+      {
+        "title": "record — modelos inmutables sin boilerplate",
+        "fragment": "tema-5-record-modelos-inmutables-sin-boilerplate"
+      },
+      {
+        "title": "Constructores flexibles (Java 25): validar y preparar antes de `super(...)`",
+        "fragment": "tema-6-constructores-flexibles-java-25-validar-y-preparar-antes-de-super"
       }
     ],
     "10": [
@@ -3838,8 +3942,8 @@
         "fragment": "tema-3-proyectos-multi-modulo-sin-ciclos"
       },
       {
-        "title": "JUnit 5, Mockito y assertions expresivas",
-        "fragment": "tema-4-junit-5-mockito-y-assertions-expresivas"
+        "title": "JUnit 6, Mockito y assertions expresivas",
+        "fragment": "tema-4-junit-6-mockito-y-assertions-expresivas"
       },
       {
         "title": "Pruebas de integración reproducibles",
@@ -3952,12 +4056,24 @@
         "fragment": "tema-1-list-set-map-y-sus-implementaciones"
       },
       {
+        "title": "El contrato de equals y hashCode",
+        "fragment": "tema-2-el-contrato-de-equals-y-hashcode"
+      },
+      {
+        "title": "Claves mutables y el mapa que pierde entradas",
+        "fragment": "tema-3-claves-mutables-y-el-mapa-que-pierde-entradas"
+      },
+      {
         "title": "Genéricos, wildcards y type erasure",
-        "fragment": "tema-2-genericos-wildcards-y-type-erasure"
+        "fragment": "tema-4-genericos-wildcards-y-type-erasure"
       },
       {
         "title": "Comparable vs Comparator, e iteración",
-        "fragment": "tema-3-comparable-vs-comparator-e-iteracion"
+        "fragment": "tema-5-comparable-vs-comparator-e-iteracion"
+      },
+      {
+        "title": "Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue`",
+        "fragment": "tema-6-colas-y-pilas-queue-deque-arraydeque-y-priorityqueue"
       }
     ],
     "20": [
@@ -4038,24 +4154,16 @@
     ],
     "22": [
       {
-        "title": "El contrato de equals y hashCode",
-        "fragment": "tema-1-el-contrato-de-equals-y-hashcode"
-      },
-      {
-        "title": "Claves mutables y el mapa que pierde entradas",
-        "fragment": "tema-2-claves-mutables-y-el-mapa-que-pierde-entradas"
-      },
-      {
         "title": "Copia defensiva, copia superficial y clone",
-        "fragment": "tema-3-copia-defensiva-copia-superficial-y-clone"
+        "fragment": "tema-1-copia-defensiva-copia-superficial-y-clone"
       },
       {
         "title": "Enums de dominio: estado, código y comportamiento",
-        "fragment": "tema-4-enums-de-dominio-estado-codigo-y-comportamiento"
+        "fragment": "tema-2-enums-de-dominio-estado-codigo-y-comportamiento"
       },
       {
         "title": "Clases anidadas, this$0 y la referencia que retiene",
-        "fragment": "tema-5-clases-anidadas-this-0-y-la-referencia-que-retiene"
+        "fragment": "tema-3-clases-anidadas-this-0-y-la-referencia-que-retiene"
       }
     ],
     "3": [
@@ -4136,20 +4244,16 @@
     ],
     "7": [
       {
-        "title": "record — modelos inmutables sin boilerplate",
-        "fragment": "tema-1-record-modelos-inmutables-sin-boilerplate"
-      },
-      {
         "title": "sealed — jerarquías cerradas y exhaustividad",
-        "fragment": "tema-2-sealed-jerarquias-cerradas-y-exhaustividad"
+        "fragment": "tema-1-sealed-jerarquias-cerradas-y-exhaustividad"
       },
       {
         "title": "Pattern matching exhaustivo y para instanceof",
-        "fragment": "tema-3-pattern-matching-exhaustivo-y-para-instanceof"
+        "fragment": "tema-2-pattern-matching-exhaustivo-y-para-instanceof"
       },
       {
         "title": "Unnamed variables y patterns (_, Java 22)",
-        "fragment": "tema-4-unnamed-variables-y-patterns-java-22"
+        "fragment": "tema-3-unnamed-variables-y-patterns-java-22"
       }
     ],
     "8": [
@@ -4172,8 +4276,8 @@
     ],
     "9": [
       {
-        "title": "JUnit 5 — anotaciones y ciclo de vida",
-        "fragment": "tema-1-junit-5-anotaciones-y-ciclo-de-vida"
+        "title": "JUnit 6 (Jupiter) — anotaciones y ciclo de vida",
+        "fragment": "tema-1-junit-6-jupiter-anotaciones-y-ciclo-de-vida"
       },
       {
         "title": "Mockito — aislar dependencias",
@@ -4210,6 +4314,10 @@
       {
         "title": "JavaScript en navegador y Node.js",
         "fragment": "tema-5-javascript-en-navegador-y-node-js"
+      },
+      {
+        "title": "Números, strings y fechas con la biblioteca estándar",
+        "fragment": "tema-6-numeros-strings-y-fechas-con-la-biblioteca-estandar"
       }
     ],
     "1": [
@@ -4236,6 +4344,10 @@
       {
         "title": "Desestructuración, valores por defecto y rest",
         "fragment": "tema-6-desestructuracion-valores-por-defecto-y-rest"
+      },
+      {
+        "title": "Errores síncronos: `throw`, `try/catch/finally`, subclases de `Error` y `cause`",
+        "fragment": "tema-7-errores-sincronos-throw-try-catch-finally-subclases-de-error-y-cause"
       }
     ],
     "10": [
@@ -4282,8 +4394,8 @@
         "fragment": "tema-5-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
       },
       {
-        "title": "Decoradores estándar de TypeScript 5",
-        "fragment": "tema-6-decoradores-estandar-de-typescript-5"
+        "title": "Decoradores estándar de TC39 en TypeScript",
+        "fragment": "tema-6-decoradores-estandar-de-tc39-en-typescript"
       }
     ],
     "12": [
@@ -4324,64 +4436,52 @@
     ],
     "14": [
       {
-        "title": "TypeScript avanzado",
-        "fragment": "tema-1-typescript-avanzado"
-      },
-      {
-        "title": "Workers y ejecución fuera del hilo principal",
-        "fragment": "tema-2-workers-y-ejecucion-fuera-del-hilo-principal"
-      },
-      {
-        "title": "Bundlers y optimización",
-        "fragment": "tema-3-bundlers-y-optimizacion"
-      },
-      {
         "title": "Accesibilidad web",
-        "fragment": "tema-4-accesibilidad-web"
+        "fragment": "tema-1-accesibilidad-web"
       },
       {
         "title": "WebAssembly con Rust o C",
-        "fragment": "tema-5-webassembly-con-rust-o-c"
+        "fragment": "tema-2-webassembly-con-rust-o-c"
       },
       {
         "title": "Web3 y machine learning en navegador",
-        "fragment": "tema-6-web3-y-machine-learning-en-navegador"
+        "fragment": "tema-3-web3-y-machine-learning-en-navegador"
       },
       {
         "title": "Geolocalización, permisos y precisión GPS",
-        "fragment": "tema-7-geolocalizacion-permisos-y-precision-gps"
+        "fragment": "tema-4-geolocalizacion-permisos-y-precision-gps"
       },
       {
         "title": "sessionStorage, cookies e IndexedDB",
-        "fragment": "tema-8-sessionstorage-cookies-e-indexeddb"
+        "fragment": "tema-5-sessionstorage-cookies-e-indexeddb"
       },
       {
         "title": "Expresiones regulares avanzadas y Unicode",
-        "fragment": "tema-9-expresiones-regulares-avanzadas-y-unicode"
+        "fragment": "tema-6-expresiones-regulares-avanzadas-y-unicode"
       },
       {
         "title": "Patrones Factory, Strategy, Observer y Pub/Sub",
-        "fragment": "tema-10-patrones-factory-strategy-observer-y-pub-sub"
+        "fragment": "tema-7-patrones-factory-strategy-observer-y-pub-sub"
       },
       {
         "title": "Service Workers, PWA y estrategias de caché",
-        "fragment": "tema-11-service-workers-pwa-y-estrategias-de-cache"
+        "fragment": "tema-8-service-workers-pwa-y-estrategias-de-cache"
       },
       {
         "title": "WebSocket y comunicación en tiempo real",
-        "fragment": "tema-12-websocket-y-comunicacion-en-tiempo-real"
+        "fragment": "tema-9-websocket-y-comunicacion-en-tiempo-real"
       },
       {
         "title": "Typed Arrays, ArrayBuffer y DataView",
-        "fragment": "tema-13-typed-arrays-arraybuffer-y-dataview"
+        "fragment": "tema-10-typed-arrays-arraybuffer-y-dataview"
       },
       {
         "title": "ECMAScript moderno, Temporal e iterator helpers",
-        "fragment": "tema-14-ecmascript-moderno-temporal-e-iterator-helpers"
+        "fragment": "tema-11-ecmascript-moderno-temporal-e-iterator-helpers"
       },
       {
         "title": "Gestión explícita de recursos: using, await using y DisposableStack",
-        "fragment": "tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+        "fragment": "tema-12-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
       }
     ],
     "2": [
@@ -4452,6 +4552,10 @@
       {
         "title": "Métodos inmutables modernos",
         "fragment": "tema-5-metodos-inmutables-modernos"
+      },
+      {
+        "title": "Expresiones regulares básicas: validar, extraer y reemplazar",
+        "fragment": "tema-6-expresiones-regulares-basicas-validar-extraer-y-reemplazar"
       }
     ],
     "5": [
@@ -4516,8 +4620,8 @@
         "fragment": "tema-2-tree-shaking-y-code-splitting"
       },
       {
-        "title": "Vite y esbuild",
-        "fragment": "tema-3-vite-y-esbuild"
+        "title": "Vite 8: desarrollo con ESM nativo y build con Rolldown",
+        "fragment": "tema-3-vite-8-desarrollo-con-esm-nativo-y-build-con-rolldown"
       },
       {
         "title": "package.json — exports, type y scripts",
@@ -4983,6 +5087,54 @@
         "title": "Separar mitos y verdades de Domain-Driven Design",
         "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
       }
+    ],
+    "2": [
+      {
+        "title": "Contextos delimitados y mapa de contextos antes de cortar",
+        "fragment": "tema-1-contextos-delimitados-y-mapa-de-contextos-antes-de-cortar"
+      },
+      {
+        "title": "Elegir la primera costura: Cotización, con las señales de M1 T12",
+        "fragment": "tema-2-elegir-la-primera-costura-cotizacion-con-las-senales-de-m1-t12"
+      },
+      {
+        "title": "Strangler Fig: proxy de enrutamiento con `/cotizaciones` al servicio nuevo y el resto al monolito",
+        "fragment": "tema-3-strangler-fig-proxy-de-enrutamiento-con-cotizaciones-al-servicio-nuevo-y-el-resto-al-monolito"
+      },
+      {
+        "title": "Capa anticorrupción: traducir el modelo heredado sin contaminar el nuevo",
+        "fragment": "tema-4-capa-anticorrupcion-traducir-el-modelo-heredado-sin-contaminar-el-nuevo"
+      },
+      {
+        "title": "Ejecución en paralelo y comparación de respuestas antes del corte",
+        "fragment": "tema-5-ejecucion-en-paralelo-y-comparacion-de-respuestas-antes-del-corte"
+      },
+      {
+        "title": "Revertir el enrutamiento y retirar el código heredado",
+        "fragment": "tema-6-revertir-el-enrutamiento-y-retirar-el-codigo-heredado"
+      }
+    ],
+    "3": [
+      {
+        "title": "Gateway: enrutamiento y descarga de responsabilidades sin lógica de negocio",
+        "fragment": "tema-1-gateway-enrutamiento-y-descarga-de-responsabilidades-sin-logica-de-negocio"
+      },
+      {
+        "title": "BFF: un backend para la app del conductor y otro para la consola web",
+        "fragment": "tema-2-bff-un-backend-para-la-app-del-conductor-y-otro-para-la-consola-web"
+      },
+      {
+        "title": "Composición de API con presupuesto de deadline",
+        "fragment": "tema-3-composicion-de-api-con-presupuesto-de-deadline"
+      },
+      {
+        "title": "Respuesta degradada ante un fallo parcial",
+        "fragment": "tema-4-respuesta-degradada-ante-un-fallo-parcial"
+      },
+      {
+        "title": "Versionado y deprecación de la API pública (cabeceras `Deprecation` y `Sunset`)",
+        "fragment": "tema-5-versionado-y-deprecacion-de-la-api-publica-cabeceras-deprecation-y-sunset"
+      }
     ]
   },
   "node": {
@@ -5002,6 +5154,10 @@
       {
         "title": "Event-driven architecture y non-blocking I/O",
         "fragment": "tema-4-event-driven-architecture-y-non-blocking-i-o"
+      },
+      {
+        "title": "CLI moderna de Node: `util.parseArgs`, `--env-file`, `node --run` y `--watch`",
+        "fragment": "tema-5-cli-moderna-de-node-util-parseargs-env-file-node-run-y-watch"
       }
     ],
     "1": [
@@ -5106,8 +5262,8 @@
         "fragment": "tema-1-tipos-estaticos-dentro-datos-desconocidos-en-la-frontera"
       },
       {
-        "title": "Un contrato HTTP es comportamiento, no solo documentación",
-        "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
+        "title": "Contratos HTTP: comportamiento verificable y OpenAPI ejecutable",
+        "fragment": "tema-2-contratos-http-comportamiento-verificable-y-openapi-ejecutable"
       },
       {
         "title": "Reintentar sin duplicar el efecto",
@@ -5116,10 +5272,6 @@
       {
         "title": "Webhooks verificables y recuperación por reconciliación",
         "fragment": "tema-4-webhooks-verificables-y-recuperacion-por-reconciliacion"
-      },
-      {
-        "title": "OpenAPI como contrato ejecutable",
-        "fragment": "tema-5-openapi-como-contrato-ejecutable"
       }
     ],
     "14": [
@@ -5128,32 +5280,20 @@
         "fragment": "tema-1-typescript-en-node-js"
       },
       {
-        "title": "GraphQL avanzado y Federation",
-        "fragment": "tema-2-graphql-avanzado-y-federation"
+        "title": "GraphQL Federation: componer subgrafos de equipos distintos",
+        "fragment": "tema-2-graphql-federation-componer-subgrafos-de-equipos-distintos"
       },
       {
         "title": "Compensar una entrega cuando falla un paso",
         "fragment": "tema-3-compensar-una-entrega-cuando-falla-un-paso"
       },
       {
-        "title": "Serverless multi-cloud",
-        "fragment": "tema-4-serverless-multi-cloud"
-      },
-      {
-        "title": "Docker productivo con Node",
-        "fragment": "tema-5-docker-productivo-con-node"
-      },
-      {
-        "title": "CI/CD y promoción de artefactos",
-        "fragment": "tema-6-ci-cd-y-promocion-de-artefactos"
-      },
-      {
         "title": "Kafka desde Node: clave, grupo consumidor y offset",
-        "fragment": "tema-7-kafka-desde-node-clave-grupo-consumidor-y-offset"
+        "fragment": "tema-4-kafka-desde-node-clave-grupo-consumidor-y-offset"
       },
       {
         "title": "RabbitMQ desde Node: exchange, cola y confirmaciones",
-        "fragment": "tema-8-rabbitmq-desde-node-exchange-cola-y-confirmaciones"
+        "fragment": "tema-5-rabbitmq-desde-node-exchange-cola-y-confirmaciones"
       }
     ],
     "15": [
@@ -5228,6 +5368,10 @@
       {
         "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
         "fragment": "tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
+      },
+      {
+        "title": "Consumir APIs desde Node con `fetch`: timeouts, errores HTTP y reintentos",
+        "fragment": "tema-8-consumir-apis-desde-node-con-fetch-timeouts-errores-http-y-reintentos"
       }
     ],
     "4": [
@@ -5350,6 +5494,10 @@
       {
         "title": "Redis para caché, idempotencia y Pub/Sub",
         "fragment": "tema-5-redis-para-cache-idempotencia-y-pub-sub"
+      },
+      {
+        "title": "Perfilar CPU con `--cpu-prof` y encontrar lo que bloquea el event loop",
+        "fragment": "tema-6-perfilar-cpu-con-cpu-prof-y-encontrar-lo-que-bloquea-el-event-loop"
       }
     ],
     "9": [
@@ -5418,6 +5566,10 @@
       {
         "title": "Componentes puros y el estado como instantánea",
         "fragment": "tema-5-componentes-puros-y-el-estado-como-instantanea"
+      },
+      {
+        "title": "Compartir estado: levantar el estado al padre común",
+        "fragment": "tema-6-compartir-estado-levantar-el-estado-al-padre-comun"
       }
     ],
     "10": [
@@ -5490,28 +5642,20 @@
     ],
     "14": [
       {
-        "title": "Server Components y streaming",
-        "fragment": "tema-1-server-components-y-streaming"
-      },
-      {
-        "title": "Server Actions y seguridad",
-        "fragment": "tema-2-server-actions-y-seguridad"
-      },
-      {
         "title": "Next.js ISR, Metadata y Proxy (antes Middleware)",
-        "fragment": "tema-3-next-js-isr-metadata-y-proxy-antes-middleware"
+        "fragment": "tema-1-next-js-isr-metadata-y-proxy-antes-middleware"
       },
       {
         "title": "Optimización de imágenes y fuentes",
-        "fragment": "tema-4-optimizacion-de-imagenes-y-fuentes"
+        "fragment": "tema-2-optimizacion-de-imagenes-y-fuentes"
       },
       {
         "title": "Accesibilidad y React Aria",
-        "fragment": "tema-5-accesibilidad-y-react-aria"
+        "fragment": "tema-3-accesibilidad-y-react-aria"
       },
       {
         "title": "i18n, pluralización y RTL",
-        "fragment": "tema-6-i18n-pluralizacion-y-rtl"
+        "fragment": "tema-4-i18n-pluralizacion-y-rtl"
       }
     ],
     "2": [
@@ -5520,28 +5664,32 @@
         "fragment": "tema-1-useeffect-dependencias-y-limpieza"
       },
       {
+        "title": "Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key`",
+        "fragment": "tema-2-cuando-no-usar-un-effect-estado-derivado-eventos-y-reinicio-con-key"
+      },
+      {
         "title": "useRef — valores mutables sin re-render",
-        "fragment": "tema-2-useref-valores-mutables-sin-re-render"
+        "fragment": "tema-3-useref-valores-mutables-sin-re-render"
       },
       {
         "title": "useMemo y useCallback con criterio",
-        "fragment": "tema-3-usememo-y-usecallback-con-criterio"
+        "fragment": "tema-4-usememo-y-usecallback-con-criterio"
       },
       {
         "title": "Reglas de los hooks, useReducer y useImperativeHandle",
-        "fragment": "tema-4-reglas-de-los-hooks-usereducer-y-useimperativehandle"
+        "fragment": "tema-5-reglas-de-los-hooks-usereducer-y-useimperativehandle"
       },
       {
         "title": "Error Boundaries — contener errores de render sin romper toda la app",
-        "fragment": "tema-5-error-boundaries-contener-errores-de-render-sin-romper-toda-la-app"
+        "fragment": "tema-6-error-boundaries-contener-errores-de-render-sin-romper-toda-la-app"
       },
       {
         "title": "Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
-        "fragment": "tema-6-efectos-cancelables-impedir-que-una-respuesta-antigua-sobrescriba-la-seleccion-actual"
+        "fragment": "tema-7-efectos-cancelables-impedir-que-una-respuesta-antigua-sobrescriba-la-seleccion-actual"
       },
       {
         "title": "useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar",
-        "fragment": "tema-7-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
+        "fragment": "tema-8-uselayouteffect-y-useeffectevent-medir-antes-de-pintar-y-leer-valores-sin-reconectar"
       }
     ],
     "3": [
@@ -5586,8 +5734,8 @@
         "fragment": "tema-2-loaders-datos-antes-de-renderizar"
       },
       {
-        "title": "Rutas protegidas y code-splitting por ruta",
-        "fragment": "tema-3-rutas-protegidas-y-code-splitting-por-ruta"
+        "title": "Rutas protegidas",
+        "fragment": "tema-3-rutas-protegidas"
       }
     ],
     "6": [
@@ -5646,16 +5794,16 @@
         "fragment": "tema-2-react-memo-con-criterio"
       },
       {
-        "title": "Virtualización y code-splitting",
-        "fragment": "tema-3-virtualizacion-y-code-splitting"
+        "title": "Virtualización de listas largas",
+        "fragment": "tema-3-virtualizacion-de-listas-largas"
       },
       {
         "title": "useTransition, useDeferredValue y Fiber",
         "fragment": "tema-4-usetransition-usedeferredvalue-y-fiber"
       },
       {
-        "title": "Suspense y React.lazy — carga diferida del lado cliente",
-        "fragment": "tema-5-suspense-y-react-lazy-carga-diferida-del-lado-cliente"
+        "title": "Suspense y React.lazy: carga diferida de componentes y rutas",
+        "fragment": "tema-5-suspense-y-react-lazy-carga-diferida-de-componentes-y-rutas"
       },
       {
         "title": "El hook use: leer una promesa con Suspense y un contexto de forma condicional",
@@ -5818,6 +5966,14 @@
       {
         "title": "Ciclo de vida de los beans y apagado ordenado",
         "fragment": "tema-4-ciclo-de-vida-de-los-beans-y-apagado-ordenado"
+      },
+      {
+        "title": "Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor`",
+        "fragment": "tema-5-proxies-y-aop-aspect-around-y-beanpostprocessor"
+      },
+      {
+        "title": "Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL",
+        "fragment": "tema-6-varias-implementaciones-primary-qualifier-y-expresiones-spel"
       }
     ],
     "1": [
@@ -5836,6 +5992,150 @@
     ],
     "10": [
       {
+        "title": "Producers y consumers con Spring Kafka",
+        "fragment": "tema-1-producers-y-consumers-con-spring-kafka"
+      },
+      {
+        "title": "Dead-letter queue",
+        "fragment": "tema-2-dead-letter-queue"
+      },
+      {
+        "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
+        "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
+      },
+      {
+        "title": "Outbox transaccional y flujo de negocio",
+        "fragment": "tema-4-outbox-transaccional-y-flujo-de-negocio"
+      },
+      {
+        "title": "Rebalanceo de consumer groups y asignación de particiones",
+        "fragment": "tema-5-rebalanceo-de-consumer-groups-y-asignacion-de-particiones"
+      },
+      {
+        "title": "Kafka Streams con Spring para transformar eventos",
+        "fragment": "tema-6-kafka-streams-con-spring-para-transformar-eventos"
+      },
+      {
+        "title": "Avro y Schema Registry para contratos de eventos",
+        "fragment": "tema-7-avro-y-schema-registry-para-contratos-de-eventos"
+      }
+    ],
+    "11": [
+      {
+        "title": "Kafka frente a RabbitMQ",
+        "fragment": "tema-1-kafka-frente-a-rabbitmq"
+      },
+      {
+        "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
+        "fragment": "tema-2-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
+      },
+      {
+        "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones",
+        "fragment": "tema-3-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
+      },
+      {
+        "title": "bindings y destinations",
+        "fragment": "tema-4-bindings-y-destinations"
+      },
+      {
+        "title": "binder Kafka y binder RabbitMQ",
+        "fragment": "tema-5-binder-kafka-y-binder-rabbitmq"
+      },
+      {
+        "title": "reintentos, error handler y dead-letter",
+        "fragment": "tema-6-reintentos-error-handler-y-dead-letter"
+      },
+      {
+        "title": "test binder y límites de la prueba",
+        "fragment": "tema-7-test-binder-y-limites-de-la-prueba"
+      }
+    ],
+    "12": [
+      {
+        "title": "Job, Step, Tasklet y chunk processing",
+        "fragment": "tema-1-job-step-tasklet-y-chunk-processing"
+      },
+      {
+        "title": "Reinicio, JobParameters, retry, skip y listeners",
+        "fragment": "tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+      }
+    ],
+    "13": [
+      {
+        "title": "Mono y Flux",
+        "fragment": "tema-1-mono-y-flux"
+      },
+      {
+        "title": "WebClient y composición no bloqueante",
+        "fragment": "tema-2-webclient-y-composicion-no-bloqueante"
+      },
+      {
+        "title": "Cuándo WebFlux vale la complejidad, y R2DBC",
+        "fragment": "tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
+      },
+      {
+        "title": "Backpressure real en WebFlux con reactor-test",
+        "fragment": "tema-4-backpressure-real-en-webflux-con-reactor-test"
+      }
+    ],
+    "14": [
+      {
+        "title": "schema-first con tipos y consultas",
+        "fragment": "tema-1-schema-first-con-tipos-y-consultas"
+      },
+      {
+        "title": "data fetchers, relaciones y problema N+1",
+        "fragment": "tema-2-data-fetchers-relaciones-y-problema-n-1"
+      },
+      {
+        "title": "mutations y subscriptions",
+        "fragment": "tema-3-mutations-y-subscriptions"
+      },
+      {
+        "title": "pruebas GraphQL con GraphQlTester",
+        "fragment": "tema-4-pruebas-graphql-con-graphqltester"
+      }
+    ],
+    "15": [
+      {
+        "title": "Hexagonal: puertos que hablan el idioma del dominio",
+        "fragment": "tema-1-hexagonal-puertos-que-hablan-el-idioma-del-dominio"
+      },
+      {
+        "title": "Arquitectura hexagonal verificada con ArchUnit",
+        "fragment": "tema-2-arquitectura-hexagonal-verificada-con-archunit"
+      },
+      {
+        "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
+        "fragment": "tema-3-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
+      },
+      {
+        "title": "C4: contexto, contenedores, componentes y código",
+        "fragment": "tema-4-c4-contexto-contenedores-componentes-y-codigo"
+      },
+      {
+        "title": "ADR: decisiones con contexto, alternativas y consecuencias",
+        "fragment": "tema-5-adr-decisiones-con-contexto-alternativas-y-consecuencias"
+      },
+      {
+        "title": "módulos y límites entre paquetes",
+        "fragment": "tema-6-modulos-y-limites-entre-paquetes"
+      },
+      {
+        "title": "eventos entre módulos sin importar implementación",
+        "fragment": "tema-7-eventos-entre-modulos-sin-importar-implementacion"
+      },
+      {
+        "title": "documentación generada y mapa de dependencias",
+        "fragment": "tema-8-documentacion-generada-y-mapa-de-dependencias"
+      },
+      {
+        "title": "pruebas de integración por módulo",
+        "fragment": "tema-9-pruebas-de-integracion-por-modulo"
+      }
+    ],
+    "16": [
+      {
         "title": "Config Server y service discovery",
         "fragment": "tema-1-config-server-y-service-discovery"
       },
@@ -5848,28 +6148,28 @@
         "fragment": "tema-3-circuit-breaker-con-resilience4j"
       },
       {
+        "title": "Bulkhead y RateLimiter de Resilience4j",
+        "fragment": "tema-4-bulkhead-y-ratelimiter-de-resilience4j"
+      },
+      {
         "title": "OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
-        "fragment": "tema-4-oauth2-oidc-keycloak-y-token-relay-sin-perder-la-frontera-de-autorizacion"
+        "fragment": "tema-5-oauth2-oidc-keycloak-y-token-relay-sin-perder-la-frontera-de-autorizacion"
       },
       {
         "title": "HTTP Interfaces, deadlines y descubrimiento según el entorno",
-        "fragment": "tema-5-http-interfaces-deadlines-y-descubrimiento-segun-el-entorno"
+        "fragment": "tema-6-http-interfaces-deadlines-y-descubrimiento-segun-el-entorno"
       },
       {
         "title": "Spring gRPC, contrato HTTP/2 y evolución segura",
-        "fragment": "tema-6-spring-grpc-contrato-http-2-y-evolucion-segura"
+        "fragment": "tema-7-spring-grpc-contrato-http-2-y-evolucion-segura"
       },
       {
         "title": "DDD para decidir límites y propiedad de datos",
-        "fragment": "tema-7-ddd-para-decidir-limites-y-propiedad-de-datos"
+        "fragment": "tema-8-ddd-para-decidir-limites-y-propiedad-de-datos"
       },
       {
         "title": "Orquestar pedidos con Temporal y Spring Boot",
-        "fragment": "tema-8-orquestar-pedidos-con-temporal-y-spring-boot"
-      },
-      {
-        "title": "Comprueba módulos antes de separar servicios",
-        "fragment": "tema-9-comprueba-modulos-antes-de-separar-servicios"
+        "fragment": "tema-9-orquestar-pedidos-con-temporal-y-spring-boot"
       },
       {
         "title": "Spring Cloud Bus para propagar cambios de configuración",
@@ -5884,39 +6184,7 @@
         "fragment": "tema-12-contract-testing-entre-productor-y-consumidor"
       }
     ],
-    "11": [
-      {
-        "title": "Fat JAR vs capas de Docker",
-        "fragment": "tema-1-fat-jar-vs-capas-de-docker"
-      },
-      {
-        "title": "GraalVM native image",
-        "fragment": "tema-2-graalvm-native-image"
-      },
-      {
-        "title": "Health checks para Kubernetes",
-        "fragment": "tema-3-health-checks-para-kubernetes"
-      },
-      {
-        "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
-        "fragment": "tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
-      }
-    ],
-    "12": [
-      {
-        "title": "Arquitectura del microservicio integrador",
-        "fragment": "tema-1-arquitectura-del-microservicio-integrador"
-      },
-      {
-        "title": "Integra seguridad JWT y observabilidad",
-        "fragment": "tema-2-integra-seguridad-jwt-y-observabilidad"
-      },
-      {
-        "title": "Cierra el servicio con evidencia y próximos pasos",
-        "fragment": "tema-3-cierra-el-servicio-con-evidencia-y-proximos-pasos"
-      }
-    ],
-    "13": [
+    "17": [
       {
         "title": "`@Transactional` funciona en una frontera, no como encantamiento",
         "fragment": "tema-1-transactional-funciona-en-una-frontera-no-como-encantamiento"
@@ -5932,50 +6200,6 @@
       {
         "title": "Observabilidad sirve a un objetivo y a una decisión",
         "fragment": "tema-4-observabilidad-sirve-a-un-objetivo-y-a-una-decision"
-      }
-    ],
-    "14": [
-      {
-        "title": "CRUD API y contratos",
-        "fragment": "tema-1-crud-api-y-contratos"
-      },
-      {
-        "title": "MySQL y datos espaciales",
-        "fragment": "tema-2-mysql-y-datos-espaciales"
-      },
-      {
-        "title": "JPA e Hibernate Spatial",
-        "fragment": "tema-3-jpa-e-hibernate-spatial"
-      },
-      {
-        "title": "JWT Bearer y autorización por roles",
-        "fragment": "tema-4-jwt-bearer-y-autorizacion-por-roles"
-      },
-      {
-        "title": "Tiempo real con STOMP",
-        "fragment": "tema-5-tiempo-real-con-stomp"
-      },
-      {
-        "title": "Archivos y notificaciones push",
-        "fragment": "tema-6-archivos-y-notificaciones-push"
-      }
-    ],
-    "15": [
-      {
-        "title": "Backpressure real en WebFlux con reactor-test",
-        "fragment": "tema-1-backpressure-real-en-webflux-con-reactor-test"
-      },
-      {
-        "title": "Contenedores Testcontainers reutilizados entre clases",
-        "fragment": "tema-2-contenedores-testcontainers-reutilizados-entre-clases"
-      },
-      {
-        "title": "Arquitectura hexagonal verificada con ArchUnit",
-        "fragment": "tema-3-arquitectura-hexagonal-verificada-con-archunit"
-      },
-      {
-        "title": "Bulkhead y RateLimiter de Resilience4j",
-        "fragment": "tema-4-bulkhead-y-ratelimiter-de-resilience4j"
       },
       {
         "title": "Saga con compensación real",
@@ -5988,30 +6212,6 @@
       {
         "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
         "fragment": "tema-7-compensacion-que-falla-conservar-trabajo-pendiente-y-reintentar-sin-duplicar"
-      },
-      {
-        "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
-        "fragment": "tema-8-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
-      }
-    ],
-    "16": [
-      {
-        "title": "Relaciones, lado propietario y ciclo de vida",
-        "fragment": "tema-1-relaciones-lado-propietario-y-ciclo-de-vida"
-      },
-      {
-        "title": "LAZY, EAGER, N+1 y consultas de caso de uso",
-        "fragment": "tema-2-lazy-eager-n-1-y-consultas-de-caso-de-uso"
-      }
-    ],
-    "17": [
-      {
-        "title": "DataSource, JdbcTemplate y DAO",
-        "fragment": "tema-1-datasource-jdbctemplate-y-dao"
-      },
-      {
-        "title": "`@Transactional`, rollback y límites de transacción",
-        "fragment": "tema-2-transactional-rollback-y-limites-de-transaccion"
       }
     ],
     "18": [
@@ -6030,12 +6230,20 @@
     ],
     "19": [
       {
-        "title": "Job, Step, Tasklet y chunk processing",
-        "fragment": "tema-1-job-step-tasklet-y-chunk-processing"
+        "title": "Fat JAR vs capas de Docker",
+        "fragment": "tema-1-fat-jar-vs-capas-de-docker"
       },
       {
-        "title": "Reinicio, JobParameters, retry, skip y listeners",
-        "fragment": "tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+        "title": "GraalVM native image",
+        "fragment": "tema-2-graalvm-native-image"
+      },
+      {
+        "title": "Health checks para Kubernetes",
+        "fragment": "tema-3-health-checks-para-kubernetes"
+      },
+      {
+        "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
+        "fragment": "tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
       }
     ],
     "2": [
@@ -6062,9 +6270,169 @@
       {
         "title": "Paginación HTTP con validación y un límite de recursos explícito",
         "fragment": "tema-6-paginacion-http-con-validacion-y-un-limite-de-recursos-explicito"
+      },
+      {
+        "title": "JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos",
+        "fragment": "tema-7-json-con-jackson-3-jsonmapper-fechas-y-valores-por-defecto-nuevos"
+      },
+      {
+        "title": "Versionado de API nativo de Spring Framework 7",
+        "fragment": "tema-8-versionado-de-api-nativo-de-spring-framework-7"
       }
     ],
     "20": [
+      {
+        "title": "Arquitectura del microservicio integrador",
+        "fragment": "tema-1-arquitectura-del-microservicio-integrador"
+      },
+      {
+        "title": "Integra seguridad JWT y observabilidad",
+        "fragment": "tema-2-integra-seguridad-jwt-y-observabilidad"
+      },
+      {
+        "title": "Cierra el servicio con evidencia y próximos pasos",
+        "fragment": "tema-3-cierra-el-servicio-con-evidencia-y-proximos-pasos"
+      },
+      {
+        "title": "CRUD API y contratos",
+        "fragment": "tema-4-crud-api-y-contratos"
+      },
+      {
+        "title": "MySQL y datos espaciales",
+        "fragment": "tema-5-mysql-y-datos-espaciales"
+      },
+      {
+        "title": "JPA e Hibernate Spatial",
+        "fragment": "tema-6-jpa-e-hibernate-spatial"
+      },
+      {
+        "title": "JWT Bearer y autorización por roles",
+        "fragment": "tema-7-jwt-bearer-y-autorizacion-por-roles"
+      },
+      {
+        "title": "Tiempo real con STOMP",
+        "fragment": "tema-8-tiempo-real-con-stomp"
+      },
+      {
+        "title": "Archivos y notificaciones push",
+        "fragment": "tema-9-archivos-y-notificaciones-push"
+      }
+    ],
+    "3": [
+      {
+        "title": "DataSource, JdbcTemplate y DAO",
+        "fragment": "tema-1-datasource-jdbctemplate-y-dao"
+      },
+      {
+        "title": "`JdbcClient`: la API fluida de Spring para SQL explícito",
+        "fragment": "tema-2-jdbcclient-la-api-fluida-de-spring-para-sql-explicito"
+      },
+      {
+        "title": "`@Transactional`, rollback y límites de transacción",
+        "fragment": "tema-3-transactional-rollback-y-limites-de-transaccion"
+      }
+    ],
+    "4": [
+      {
+        "title": "Entidades y repositorios derivados",
+        "fragment": "tema-1-entidades-y-repositorios-derivados"
+      },
+      {
+        "title": "El problema N+1 y su corrección",
+        "fragment": "tema-2-el-problema-n-1-y-su-correccion"
+      },
+      {
+        "title": "Más allá del N+1: el límite de LAZY y páginas DTO",
+        "fragment": "tema-3-mas-alla-del-n-1-el-limite-de-lazy-y-paginas-dto"
+      },
+      {
+        "title": "Migraciones con Flyway",
+        "fragment": "tema-4-migraciones-con-flyway"
+      },
+      {
+        "title": "Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos",
+        "fragment": "tema-5-spring-data-mongodb-documentos-consultas-derivadas-y-cuando-elegir-un-modelo-de-documentos"
+      }
+    ],
+    "5": [
+      {
+        "title": "SecurityFilterChain moderno",
+        "fragment": "tema-1-securityfilterchain-moderno"
+      },
+      {
+        "title": "JWT con el resource server de Spring Security y autorización por rol",
+        "fragment": "tema-2-jwt-con-el-resource-server-de-spring-security-y-autorizacion-por-rol"
+      },
+      {
+        "title": "CORS y CSRF",
+        "fragment": "tema-3-cors-y-csrf"
+      },
+      {
+        "title": "Reducir SSRF en clientes HTTP con InetAddressFilter",
+        "fragment": "tema-4-reducir-ssrf-en-clientes-http-con-inetaddressfilter"
+      },
+      {
+        "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
+        "fragment": "tema-5-flujo-de-login-completo-de-api-auth-login-a-una-ruta-protegida"
+      }
+    ],
+    "6": [
+      {
+        "title": "Probar un controller con `@WebMvcTest`",
+        "fragment": "tema-1-probar-un-controller-con-webmvctest"
+      },
+      {
+        "title": "Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
+        "fragment": "tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest"
+      },
+      {
+        "title": "Integrar el flujo con `@SpringBootTest`",
+        "fragment": "tema-3-integrar-el-flujo-con-springboottest"
+      },
+      {
+        "title": "`RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4",
+        "fragment": "tema-4-resttestclient-el-cliente-de-pruebas-http-de-spring-boot-4"
+      },
+      {
+        "title": "Contenedores Testcontainers reutilizados entre clases",
+        "fragment": "tema-5-contenedores-testcontainers-reutilizados-entre-clases"
+      }
+    ],
+    "7": [
+      {
+        "title": "@ConfigurationProperties tipado",
+        "fragment": "tema-1-configurationproperties-tipado"
+      },
+      {
+        "title": "Fallar rápido al arranque",
+        "fragment": "tema-2-fallar-rapido-al-arranque"
+      },
+      {
+        "title": "Manejo global de excepciones consistente entre entornos",
+        "fragment": "tema-3-manejo-global-de-excepciones-consistente-entre-entornos"
+      },
+      {
+        "title": "FailureAnalyzer: errores de arranque que explican la causa y la solución",
+        "fragment": "tema-4-failureanalyzer-errores-de-arranque-que-explican-la-causa-y-la-solucion"
+      },
+      {
+        "title": "Actuator y health checks personalizados",
+        "fragment": "tema-5-actuator-y-health-checks-personalizados"
+      },
+      {
+        "title": "Contar operaciones de negocio con Micrometer",
+        "fragment": "tema-6-contar-operaciones-de-negocio-con-micrometer"
+      },
+      {
+        "title": "Liveness y readiness sin reinicios en cadena",
+        "fragment": "tema-7-liveness-y-readiness-sin-reinicios-en-cadena"
+      },
+      {
+        "title": "Logging en Spring Boot: niveles, grupos y logs estructurados en JSON",
+        "fragment": "tema-8-logging-en-spring-boot-niveles-grupos-y-logs-estructurados-en-json"
+      }
+    ],
+    "8": [
       {
         "title": "Scheduling y tareas periódicas",
         "fragment": "tema-1-scheduling-y-tareas-periodicas"
@@ -6082,262 +6450,38 @@
         "fragment": "tema-4-cache-con-spring-cache-caffeine-y-redis"
       },
       {
-        "title": "@Async y ejecutores: trabajo en segundo plano con límites",
-        "fragment": "tema-5-async-y-ejecutores-trabajo-en-segundo-plano-con-limites"
-      },
-      {
         "title": "Integraciones empresariales, SOAP y fronteras de protocolo",
-        "fragment": "tema-6-integraciones-empresariales-soap-y-fronteras-de-protocolo"
+        "fragment": "tema-5-integraciones-empresariales-soap-y-fronteras-de-protocolo"
       },
       {
         "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "fragment": "tema-7-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
+        "fragment": "tema-6-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
       },
       {
         "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "fragment": "tema-8-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
+        "fragment": "tema-7-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
       },
       {
         "title": "Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
-        "fragment": "tema-9-model-context-protocol-mcp-con-spring-ai-exponer-y-consumir-herramientas"
-      }
-    ],
-    "21": [
-      {
-        "title": "Productor, tópico, key y consumidor",
-        "fragment": "tema-1-productor-topico-key-y-consumidor"
-      },
-      {
-        "title": "Reintentos, DLT, entrega al menos una vez e idempotencia",
-        "fragment": "tema-2-reintentos-dlt-entrega-al-menos-una-vez-e-idempotencia"
-      },
-      {
-        "title": "Outbox transaccional y flujo de negocio",
-        "fragment": "tema-3-outbox-transaccional-y-flujo-de-negocio"
-      }
-    ],
-    "22": [
-      {
-        "title": "Hexagonal: puertos que hablan el idioma del dominio",
-        "fragment": "tema-1-hexagonal-puertos-que-hablan-el-idioma-del-dominio"
-      },
-      {
-        "title": "C4: contexto, contenedores, componentes y código",
-        "fragment": "tema-2-c4-contexto-contenedores-componentes-y-codigo"
-      },
-      {
-        "title": "ADR: decisiones con contexto, alternativas y consecuencias",
-        "fragment": "tema-3-adr-decisiones-con-contexto-alternativas-y-consecuencias"
-      }
-    ],
-    "23": [
-      {
-        "title": "módulos y límites entre paquetes",
-        "fragment": "tema-1-modulos-y-limites-entre-paquetes"
-      },
-      {
-        "title": "eventos entre módulos sin importar implementación",
-        "fragment": "tema-2-eventos-entre-modulos-sin-importar-implementacion"
-      },
-      {
-        "title": "documentación generada y mapa de dependencias",
-        "fragment": "tema-3-documentacion-generada-y-mapa-de-dependencias"
-      },
-      {
-        "title": "pruebas de integración por módulo",
-        "fragment": "tema-4-pruebas-de-integracion-por-modulo"
-      }
-    ],
-    "24": [
-      {
-        "title": "schema-first con tipos y consultas",
-        "fragment": "tema-1-schema-first-con-tipos-y-consultas"
-      },
-      {
-        "title": "data fetchers, relaciones y problema N+1",
-        "fragment": "tema-2-data-fetchers-relaciones-y-problema-n-1"
-      },
-      {
-        "title": "mutations y subscriptions",
-        "fragment": "tema-3-mutations-y-subscriptions"
-      },
-      {
-        "title": "pruebas GraphQL con GraphQlTester",
-        "fragment": "tema-4-pruebas-graphql-con-graphqltester"
-      }
-    ],
-    "25": [
-      {
-        "title": "bindings y destinations",
-        "fragment": "tema-1-bindings-y-destinations"
-      },
-      {
-        "title": "binder Kafka y binder RabbitMQ",
-        "fragment": "tema-2-binder-kafka-y-binder-rabbitmq"
-      },
-      {
-        "title": "reintentos, error handler y dead-letter",
-        "fragment": "tema-3-reintentos-error-handler-y-dead-letter"
-      },
-      {
-        "title": "test binder y límites de la prueba",
-        "fragment": "tema-4-test-binder-y-limites-de-la-prueba"
-      }
-    ],
-    "26": [
-      {
-        "title": "CompletableFuture, @Async y el bug de la autoinvocación",
-        "fragment": "tema-1-completablefuture-async-y-el-bug-de-la-autoinvocacion"
-      },
-      {
-        "title": "Locks, deadlocks, semáforos y MDC en concurrencia",
-        "fragment": "tema-2-locks-deadlocks-semaforos-y-mdc-en-concurrencia"
-      }
-    ],
-    "3": [
-      {
-        "title": "Entidades y repositorios derivados",
-        "fragment": "tema-1-entidades-y-repositorios-derivados"
-      },
-      {
-        "title": "El problema N+1 y su corrección",
-        "fragment": "tema-2-el-problema-n-1-y-su-correccion"
-      },
-      {
-        "title": "Migraciones con Flyway",
-        "fragment": "tema-3-migraciones-con-flyway"
-      },
-      {
-        "title": "Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos",
-        "fragment": "tema-4-spring-data-mongodb-documentos-consultas-derivadas-y-cuando-elegir-un-modelo-de-documentos"
-      }
-    ],
-    "4": [
-      {
-        "title": "SecurityFilterChain moderno",
-        "fragment": "tema-1-securityfilterchain-moderno"
-      },
-      {
-        "title": "Filtro JWT y autorización por rol",
-        "fragment": "tema-2-filtro-jwt-y-autorizacion-por-rol"
-      },
-      {
-        "title": "CORS y CSRF",
-        "fragment": "tema-3-cors-y-csrf"
-      },
-      {
-        "title": "Reducir SSRF en clientes HTTP con InetAddressFilter",
-        "fragment": "tema-4-reducir-ssrf-en-clientes-http-con-inetaddressfilter"
-      },
-      {
-        "title": "Flujo de login completo — de `/api/auth/login` a una ruta protegida",
-        "fragment": "tema-5-flujo-de-login-completo-de-api-auth-login-a-una-ruta-protegida"
-      }
-    ],
-    "5": [
-      {
-        "title": "@ConfigurationProperties tipado",
-        "fragment": "tema-1-configurationproperties-tipado"
-      },
-      {
-        "title": "Fallar rápido al arranque",
-        "fragment": "tema-2-fallar-rapido-al-arranque"
-      },
-      {
-        "title": "Manejo global de excepciones consistente entre entornos",
-        "fragment": "tema-3-manejo-global-de-excepciones-consistente-entre-entornos"
-      },
-      {
-        "title": "FailureAnalyzer: errores de arranque que explican la causa y la solución",
-        "fragment": "tema-4-failureanalyzer-errores-de-arranque-que-explican-la-causa-y-la-solucion"
-      }
-    ],
-    "6": [
-      {
-        "title": "Probar un controller con `@WebMvcTest`",
-        "fragment": "tema-1-probar-un-controller-con-webmvctest"
-      },
-      {
-        "title": "Probar el repositorio contra PostgreSQL con `@DataJpaTest`",
-        "fragment": "tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest"
-      },
-      {
-        "title": "Integrar el flujo con `@SpringBootTest`",
-        "fragment": "tema-3-integrar-el-flujo-con-springboottest"
-      }
-    ],
-    "7": [
-      {
-        "title": "Actuator y health checks personalizados",
-        "fragment": "tema-1-actuator-y-health-checks-personalizados"
-      },
-      {
-        "title": "Contar operaciones de negocio con Micrometer",
-        "fragment": "tema-2-contar-operaciones-de-negocio-con-micrometer"
-      },
-      {
-        "title": "Liveness y readiness sin reinicios en cadena",
-        "fragment": "tema-3-liveness-y-readiness-sin-reinicios-en-cadena"
-      },
-      {
-        "title": "Logging en Spring Boot: niveles, grupos y logs estructurados en JSON",
-        "fragment": "tema-4-logging-en-spring-boot-niveles-grupos-y-logs-estructurados-en-json"
-      }
-    ],
-    "8": [
-      {
-        "title": "Producers y consumers con Spring Kafka",
-        "fragment": "tema-1-producers-y-consumers-con-spring-kafka"
-      },
-      {
-        "title": "Dead-letter queue",
-        "fragment": "tema-2-dead-letter-queue"
-      },
-      {
-        "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
-        "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
-      },
-      {
-        "title": "Rebalanceo de consumer groups y asignación de particiones",
-        "fragment": "tema-4-rebalanceo-de-consumer-groups-y-asignacion-de-particiones"
-      },
-      {
-        "title": "Kafka frente a RabbitMQ",
-        "fragment": "tema-5-kafka-frente-a-rabbitmq"
-      },
-      {
-        "title": "Spring Cloud Stream y binders de Kafka/RabbitMQ",
-        "fragment": "tema-6-spring-cloud-stream-y-binders-de-kafka-rabbitmq"
-      },
-      {
-        "title": "Kafka Streams con Spring para transformar eventos",
-        "fragment": "tema-7-kafka-streams-con-spring-para-transformar-eventos"
-      },
-      {
-        "title": "Avro y Schema Registry para contratos de eventos",
-        "fragment": "tema-8-avro-y-schema-registry-para-contratos-de-eventos"
-      },
-      {
-        "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
-        "fragment": "tema-9-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
-      },
-      {
-        "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones",
-        "fragment": "tema-10-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
+        "fragment": "tema-8-model-context-protocol-mcp-con-spring-ai-exponer-y-consumir-herramientas"
       }
     ],
     "9": [
       {
-        "title": "Mono y Flux",
-        "fragment": "tema-1-mono-y-flux"
+        "title": "@Async y ejecutores: trabajo en segundo plano con límites",
+        "fragment": "tema-1-async-y-ejecutores-trabajo-en-segundo-plano-con-limites"
       },
       {
-        "title": "WebClient y composición no bloqueante",
-        "fragment": "tema-2-webclient-y-composicion-no-bloqueante"
+        "title": "CompletableFuture, @Async y el bug de la autoinvocación",
+        "fragment": "tema-2-completablefuture-async-y-el-bug-de-la-autoinvocacion"
       },
       {
-        "title": "Cuándo WebFlux vale la complejidad, y R2DBC",
-        "fragment": "tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
+        "title": "Locks, deadlocks, semáforos y MDC en concurrencia",
+        "fragment": "tema-3-locks-deadlocks-semaforos-y-mdc-en-concurrencia"
+      },
+      {
+        "title": "Resiliencia en el núcleo: `@Retryable` y `@ConcurrencyLimit` (Spring Framework 7)",
+        "fragment": "tema-4-resiliencia-en-el-nucleo-retryable-y-concurrencylimit-spring-framework-7"
       }
     ]
   }

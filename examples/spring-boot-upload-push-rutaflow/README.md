@@ -23,7 +23,7 @@ objeto ni notificación.
 - `@TransactionalEventListener(AFTER_COMMIT)` evita avisar antes de confirmar la
   transacción, pero el evento no es durable. Si el proceso cae después del
   commit, puede perderse el push. En producción guarda un outbox en la misma
-  transacción y procesa/reintenta con idempotencia (continúa en M13).
+  transacción y procesa/reintenta con idempotencia (continúa en Spring Boot M17).
 - Decodificar PNG/JPEG y rechazar MIME inconsistente son controles útiles, no
   una garantía de archivo seguro. Falta autorización real por envío, cuota por
   usuario, políticas de conservación, protección de descarga y revisión de

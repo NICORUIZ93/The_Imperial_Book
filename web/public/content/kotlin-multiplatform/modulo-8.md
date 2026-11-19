@@ -6,7 +6,7 @@
 ### Tema 1: El framework generado para iOS
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a identificar la estructura que debe tener el framework `Shared` para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: el apartado «Antes de comenzar» del módulo 0 y, para generar el binario real, JDK 27, el Gradle Wrapper del proyecto y macOS con Xcode.
+Al finalizar vas a identificar la estructura que debe tener el framework `Shared` para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: el apartado «Antes de comenzar» del módulo 0 y, para generar el binario real, JDK 25, el Gradle Wrapper del proyecto y macOS con Xcode.
 
 #### Paso 2 · Contexto y caso real
 El equipo iOS de RutaFlow necesita consumir la lógica de dominio compartida (`Tarea`, casos de uso) desde SwiftUI. No quiere un puente entre procesos ni una capa de interpretación: quiere un framework nativo que se importe con `import Shared`. El problema aparece cuando una clase que el equipo Kotlin cree pública no está en la cabecera generada y Swift simplemente no la ve, sin un error de compilación que explique por qué.

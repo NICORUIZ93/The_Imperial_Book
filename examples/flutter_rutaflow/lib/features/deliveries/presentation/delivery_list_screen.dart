@@ -59,7 +59,7 @@ class DeliveryListScreen extends ConsumerWidget {
               ElevatedButton(
                 onPressed: () {
                   // Tema 9: Retry mechanism
-                  ref.refresh(deliveriesProvider);
+                  ref.invalidate(deliveriesProvider);
                 },
                 child: const Text('Reintentar'),
               ),

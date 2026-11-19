@@ -368,6 +368,63 @@ El executor crea virtual threads por tarea y `close()` espera a que terminen las
 
 Guarda una salida y señala qué límite de capacidad aún necesita tu sistema. Fuente oficial: [Virtual Threads](https://docs.oracle.com/en/java/javase/25/core/virtual-threads.html).
 
+#### Subtema 3.4: Comprueba que `synchronized` ya no ancla el virtual thread (JDK 24+) · 10 min
+
+**1. Contexto**
+
+Un virtual thread que se bloquea suelta su hilo de plataforma (el *carrier*) para que otro avance. Hasta JDK 23 había una excepción importante: si se bloqueaba **dentro de un bloque `synchronized`**, quedaba *anclado* (*pinned*) al carrier y lo ocupaba mientras esperaba. JDK 24 eliminó esa limitación (JEP 491). Muchos artículos todavía recomiendan cambiar `synchronized` por `ReentrantLock` por ese motivo; con JDK 25 ya no hace falta.
+
+**2. Hazlo tú**
+
+Crea `src/Anclaje.java`:
+
+```java
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.Executors;
+
+public class Anclaje {
+    public static void main(String[] args) {
+        Instant inicio = Instant.now();
+        try (var hilos = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (int i = 0; i < 8; i++) {
+                Object candado = new Object();
+                hilos.submit(() -> {
+                    synchronized (candado) {
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
+            }
+        }
+        long ms = Duration.between(inicio, Instant.now()).toMillis();
+        System.out.println("Java " + Runtime.version().feature() + ": 8 tareas en "
+                + (ms < 600 ? "menos de 600 ms" : "600 ms o mas") + " (" + ms + " ms)");
+    }
+}
+```
+
+Cada tarea usa **su propio** candado, así que no compiten entre sí. Para que el efecto sea visible, limita a dos los carriers y ejecuta con JDK 25:
+
+```bash
+java -Djdk.virtualThreadScheduler.parallelism=2 -Djdk.virtualThreadScheduler.maxPoolSize=2 src/Anclaje.java
+```
+
+**Resultado esperado:** `Java 25: 8 tareas en menos de 600 ms (...)`, alrededor de 200 ms: las ocho esperas ocurren a la vez aunque solo haya dos carriers.
+
+**Fallo deliberado:** si tienes un JDK 21 instalado, ejecuta el mismo comando con él (por ejemplo, con la ruta completa a su `bin/java`). **Resultado esperado:** `Java 21: 8 tareas en 600 ms o mas`, cerca de 800 ms (8 tareas / 2 carriers × 200 ms). **Diagnóstico:** en JDK 21 cada `sleep` dentro de `synchronized` mantuvo ocupado su carrier, así que solo avanzaban dos tareas a la vez. Si no tienes JDK 21, quita `synchronized (candado)` en JDK 25 y comprueba que el tiempo no cambia: confirma que ya no es el cuello de botella.
+
+**3. Entiende**
+
+`parallelism` fija cuántos carriers hay; `maxPoolSize` impide que la JVM añada carriers de compensación. Con JDK 25, un virtual thread que espera dentro de `synchronized` libera el carrier igual que fuera de él. Aún existen casos de anclaje (por ejemplo, al bloquearse dentro de código nativo), y el evento `jdk.VirtualThreadPinned` de Java Flight Recorder (Módulo 11) los detecta. **Límite:** que no haya anclaje no significa que no haya contención: si las ocho tareas compartieran **el mismo** candado, seguirían ejecutándose de una en una.
+
+**4. Cierra**
+
+Guarda las dos salidas (o la de JDK 25 con y sin `synchronized`) y escribe qué consejo sobre `synchronized` y virtual threads quedó obsoleto. Fuente oficial: [JEP 491: Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491).
+
 ### Tema 4: Condiciones de carrera y sincronización
 
 **¿Por qué es importante?** Una carrera puede aceptar dos retiros sobre el mismo saldo y romper una regla de negocio. **Modelo mental:** dos personas leen el mismo tablero antes de que ninguna escriba el cambio.

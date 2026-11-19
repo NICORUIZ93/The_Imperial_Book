@@ -9,11 +9,11 @@ mueve solo después de aprobar cada temario (specs/016, «Reglas»).
 
 | Curso | Archivo | Módulos | Temas | Horas (temas + proyecto) | Prerrequisitos de la academia |
 |---|---|---:|---:|---|---|
-| Docker | [docker.md](docker.md) | 14 | 64 | 42 h 20 min + 8 h ≈ **50 h** | Fundamentos M3 y M8; Java M0–M3 y M8; Spring Boot M0–M2, M5 y M7 |
+| Docker | [docker.md](docker.md) | 14 | 64 | 42 h 20 min + 8 h ≈ **50 h** | Fundamentos M3 y M8; Java M0–M3 y M8; Spring Boot M0–M2 y M7 |
 | Kubernetes | [kubernetes.md](kubernetes.md) | 16 | 69 | 46 h 55 min + 10 h ≈ **57 h** | Docker M0–M9; Fundamentos M3 y M8 T3; Spring Boot M7 |
-| Diseño de sistemas | [diseno-de-sistemas.md](diseno-de-sistemas.md) | 10 | 38 | 25 h 50 min + 6 h ≈ **32 h** | Fundamentos M3, M4 y M10; Spring Boot M0–M3; Docker M7 |
-| IA aplicada al desarrollo | [ia-aplicada.md](ia-aplicada.md) | 11 | 47 | 31 h 20 min + 8 h ≈ **39 h** | Java M0–M5 y M9; Spring Boot M0–M6; Docker M7; Fundamentos M6 y M7 T6–T7 |
-| Blockchain | [blockchain.md](blockchain.md) | 10 | 37 | 24 h 50 min + 6 h ≈ **31 h** | Fundamentos M2 y M6; Java M0–M5 y M9; Spring Boot M0–M6; Docker M7 |
+| Diseño de sistemas | [diseno-de-sistemas.md](diseno-de-sistemas.md) | 10 | 38 | 25 h 50 min + 6 h ≈ **32 h** | Fundamentos M3, M4 y M10; Spring Boot M0–M4; Docker M7 |
+| IA aplicada al desarrollo | [ia-aplicada.md](ia-aplicada.md) | 11 | 47 | 31 h 20 min + 8 h ≈ **39 h** | Java M0–M5 y M9; Spring Boot M0–M7; Docker M7; Fundamentos M6 y M7 T6–T7 |
+| Blockchain | [blockchain.md](blockchain.md) | 10 | 37 | 24 h 50 min + 6 h ≈ **31 h** | Fundamentos M2 y M6; Java M0–M5 y M9; Spring Boot M0–M7; Docker M7 |
 | Microservicios (completo) | [microservicios.md](microservicios.md) | 12 (M0–M1 existentes) | 78 | 52 h 45 min + 10 h ≈ **63 h** | Java M0–M3, M5, M8 y M9; Fundamentos M3, M4 y M10; Docker M7 (desde M7); Diseño de sistemas M4 (recomendado) |
 
 Las horas salen de la fórmula de la auditoría: suma de las duraciones de los temas (20–45 min cada uno) más

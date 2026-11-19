@@ -1,0 +1,5 @@
+# Generado por extraer.py y por run.sh; resultados.tsv sí se versiona (specs/015 V2).
+build/
+logs/
+ejecucion/
+estado/

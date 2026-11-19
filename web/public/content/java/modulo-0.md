@@ -25,17 +25,17 @@ Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.c
 
 **Maven y Gradle (los necesitas desde el Módulo 8 y para `gradle init` del final de este módulo).** Instala Maven 3.9 o posterior y Gradle 9.1 o posterior, la primera versión de Gradle que funciona con Java 25. En macOS usa `brew install maven gradle`; en Windows y Ubuntu descarga los binarios de [maven.apache.org](https://maven.apache.org/download.cgi) y [gradle.org/install](https://gradle.org/install/), porque `apt` en Ubuntu 24.04 ofrece Maven 3.8.7 y Gradle 4.4.1, demasiado antiguos. Verifica con `mvn --version` y `gradle --version`: ambos deben mostrar Java 25.
 
-## Ruta recomendada: recorrido del desarrollador Java en 17 pasos
+## Ruta recomendada: recorrido del desarrollador Java en 16 pasos
 
 Esta ruta ordena lo que un desarrollador Java aprende desde cero hasta llegar a producción. La idea central:
 no hay atajos; cada paso hace más fácil el siguiente, así que no saltes a Kafka sin dominar los
-fundamentos. La numeración salta del paso 9 al 11.
+fundamentos.
 
 ```mermaid
 flowchart LR
     F["Fundamentos<br/>pasos 1–5"] --> B["Base de datos<br/>pasos 6–7"]
-    B --> S["Ecosistema Spring<br/>pasos 8, 9 y 11"]
-    S --> P["Grado de producción<br/>pasos 12–17"]
+    B --> S["Ecosistema Spring<br/>pasos 8–10"]
+    S --> P["Grado de producción<br/>pasos 11–16"]
 ```
 
 | Paso | Tema de la ruta | Etapa | Dónde lo aprendes en la academia |
@@ -49,13 +49,13 @@ flowchart LR
 | 07 | SQL | Base de datos | [SQL para definir, escribir, consultar y relacionar](/curso/foundations/4#tema-2-sql-para-definir-escribir-consultar-y-relacionar) |
 | 08 | Spring Core | Ecosistema Spring | [Inversión de control y el contenedor de Spring](/curso/spring-boot/0#tema-1-inversion-de-control-y-el-contenedor-de-spring) |
 | 09 | Spring Boot | Ecosistema Spring | [Estereotipos, autoconfiguración y scopes](/curso/spring-boot/0#tema-3-estereotipos-autoconfiguracion-y-scopes) |
-| 11 | JPA / Hibernate | Ecosistema Spring | [Probar el repositorio contra PostgreSQL con @DataJpaTest](/curso/spring-boot/6#tema-2-probar-el-repositorio-contra-postgresql-con-datajpatest) |
-| 12 | Microservicios | Grado de producción | [Arquitectura del microservicio integrador](/curso/spring-boot/12#tema-1-arquitectura-del-microservicio-integrador) |
-| 13 | Kafka | Grado de producción | [Producers y consumers con Spring Kafka](/curso/spring-boot/8#tema-1-producers-y-consumers-con-spring-kafka) |
-| 14 | Docker | Grado de producción | [Dockerfile multi-stage](/curso/devops/2#tema-1-dockerfile-multi-stage) |
-| 15 | Kubernetes | Grado de producción | [Pod, ReplicaSet, Deployment](/curso/devops/6#tema-1-pod-replicaset-deployment) |
-| 16 | AWS en la nube | Grado de producción | [Contenedores vs Lambda, y EKS](/curso/cloud/14#tema-3-contenedores-vs-lambda-y-eks) |
-| 17 | Diseño de sistemas | Grado de producción | [Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](/curso/foundations/10#tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella) |
+| 10 | JPA / Hibernate | Ecosistema Spring | [Entidades y relaciones JPA](/curso/java/16#tema-1-entidades-y-relaciones-jpa) y [Persistencia con Spring Data JPA](/curso/spring-boot/4) |
+| 11 | Microservicios | Grado de producción | [Curso Microservicios](/curso/microservices/0) y [Microservicios con Spring Cloud](/curso/spring-boot/16) |
+| 12 | Kafka | Grado de producción | [Producers y consumers con Spring Kafka](/curso/spring-boot/10#tema-1-producers-y-consumers-con-spring-kafka) |
+| 13 | Docker | Grado de producción | [Dockerfile multi-stage](/curso/devops/2#tema-1-dockerfile-multi-stage) |
+| 14 | Kubernetes | Grado de producción | [Pod, ReplicaSet, Deployment](/curso/devops/6#tema-1-pod-replicaset-deployment) |
+| 15 | AWS en la nube | Grado de producción | [Contenedores vs Lambda, y EKS](/curso/cloud/14#tema-3-contenedores-vs-lambda-y-eks) |
+| 16 | Diseño de sistemas | Grado de producción | [Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](/curso/foundations/10#tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella) |
 
 ## Mapa de la ruta
 
@@ -75,15 +75,15 @@ flowchart LR
 | Módulo | Etapa | Qué aprendes |
 |---|---|---|
 | 0 | Fundamentos | [Sintaxis, tipos y el modelo de la JVM](/curso/java/0) |
-| 1 | Fundamentos | [Programación orientada a objetos](/curso/java/1) |
-| 2 | Fundamentos | [Colecciones y genéricos](/curso/java/2) |
+| 1 | Fundamentos | [Programación orientada a objetos, records y constructores flexibles](/curso/java/1) |
+| 2 | Fundamentos | [Colecciones, igualdad, genéricos y colas](/curso/java/2) |
 | 3 | Fundamentos | [Excepciones y manejo de recursos](/curso/java/3) |
 | 4 | Aplicación | [Streams, programación funcional y Stream Gatherers](/curso/java/4) |
 | 5 | Aplicación | [Concurrencia: hilos, virtual threads y structured concurrency](/curso/java/5) |
 | 6 | Aplicación | [I/O, NIO.2 y serialización](/curso/java/6) |
-| 7 | Integración | [Records, sealed classes, pattern matching y unnamed patterns](/curso/java/7) |
+| 7 | Integración | [Sealed classes, pattern matching y unnamed patterns](/curso/java/7) |
 | 8 | Integración | [Build tools: Maven y Gradle](/curso/java/8) |
-| 9 | Integración | [Testing con JUnit 5 y Mockito](/curso/java/9) |
+| 9 | Integración | [Testing con JUnit 6 (Jupiter) y Mockito](/curso/java/9) |
 | 10 | Experto | [Módulos (JPMS) y proyectos grandes](/curso/java/10) |
 | 11 | Experto | [JVM interna: GC, profiling, JIT y Foreign Function & Memory API](/curso/java/11) |
 | 12 | Experto | [Buenas prácticas y patrones de diseño](/curso/java/12) |
@@ -96,7 +96,7 @@ flowchart LR
 | 19 | Integración | [Java del día a día: reflexión, regex, dinero, contratos, plugins e i18n](/curso/java/19) |
 | 20 | Aplicación | [Java funcional: interfaces que componen comportamiento](/curso/java/20) |
 | 21 | Experto | [APIs públicas, compatibilidad y evolución](/curso/java/21) |
-| 22 | Integración | [El objeto por dentro: igualdad, copia, enums y tipos anidados](/curso/java/22) |
+| 22 | Integración | [El objeto por dentro: copia, enums y tipos anidados](/curso/java/22) |
 
 ## Aprende construyendo
 
@@ -565,11 +565,16 @@ Reemplaza el contenido de `java-motor/src/Tipos.java` por este archivo completo:
 
 ```java
 public class Tipos {
-    record Envio(String guia, String destino) {}
+    static class Envio {
+        String guia;
+        String destino;
+    }
 
     public static void main(String[] args) {
-        Envio envio = new Envio("RT-8", "Cali");
-        System.out.println(envio.guia() + " -> " + envio.destino());
+        Envio envio = new Envio();
+        envio.guia = "RT-8";
+        envio.destino = "Cali";
+        System.out.println(envio.guia + " -> " + envio.destino);
     }
 }
 ```
@@ -578,11 +583,11 @@ Desde `java-motor`, compila y ejecuta `javac -d out src/Tipos.java` y `java -cp 
 
 **Resultado esperado:** `RT-8 -> Cali`.
 
-**Fallo deliberado:** antes de crear el record, asigna `null` a `envio` y llama `envio.guia()`. **Diagnóstico:** `NullPointerException` aparece porque la referencia no apunta a un objeto; crea el objeto o comprueba que exista antes de usarlo.
+**Fallo deliberado:** cambia `Envio envio = new Envio();` por `Envio envio = null;` y ejecuta. **Error esperado:** `NullPointerException` al asignar `envio.guia`. **Diagnóstico:** `NullPointerException` aparece porque la referencia no apunta a un objeto; crea el objeto o comprueba que exista antes de usarlo.
 
 **3. Entiende**
 
-Una referencia apunta a un objeto; puede valer `null`. El objeto y la variable que lo referencia son conceptos distintos.
+Una referencia apunta a un objeto; puede valer `null`. El objeto y la variable que lo referencia son conceptos distintos. `static class Envio` es una clase mínima dentro de `Tipos`; en el Módulo 1 aprenderás a protegerla con constructor y campos privados, y en M1 T5 a escribirla en una línea con `record`.
 
 **4. Cierra**
 
@@ -804,15 +809,19 @@ Crea `java-motor/src/Condicion.java`:
 
 ```java
 public class Condicion {
-    record Paquete(double pesoKg) {}
+    static class Paquete {
+        double pesoKg;
+    }
 
     static boolean pesoValido(Paquete paquete) {
-        return paquete != null && paquete.pesoKg() > 0 && paquete.pesoKg() <= 50;
+        return paquete != null && paquete.pesoKg > 0 && paquete.pesoKg <= 50;
     }
 
     public static void main(String[] args) {
+        Paquete paquete = new Paquete();
+        paquete.pesoKg = 12.5;
         System.out.println(pesoValido(null));
-        System.out.println(pesoValido(new Paquete(12.5)));
+        System.out.println(pesoValido(paquete));
     }
 }
 ```
@@ -1184,6 +1193,154 @@ Compila y ejecuta `javac -d out src/Instantes.java` y `java -cp out Instantes`.
 
 Explica cuál valor guardarías para registrar el momento de una entrega y cuál para guardar el día prometido. Fuente oficial: [java.time](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html).
 
+### Tema 9: Java 25 para programas pequeños: `IO`, archivos compactos e `import module` · Básico · 30 min
+
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Java 25 (LTS) incorporó como definitivas tres funciones pensadas para scripts y primeros programas: archivos fuente compactos con `main` de instancia (JEP 512), la clase `java.lang.IO` para leer y escribir en consola, y la importación de módulos completos (JEP 511). Las verás en ejemplos actuales y en la certificación de Java 25; también debes saber cuándo **no** usarlas, porque no compilan con versiones anteriores.
+**Prerrequisitos:** Tema 2 (`main` clásico y la forma compacta) y Tema 8 (entrada con `Scanner`) de este módulo. Usa JDK 25.
+
+#### Subtema 9.1: Lee y escribe en consola con `IO` · 10 min
+
+**1. Contexto**
+
+El Tema 8 leyó la entrada con `Scanner` y escribió con `System.out.println`. Para una herramienta de una sola pantalla, Java 25 ofrece una forma más corta.
+
+**2. Hazlo tú**
+
+En `java-motor/java25/`, crea `Saludo.java`:
+
+```java
+void main() {
+    String nombre = IO.readln("Conductor: ");
+    IO.println("Hola, " + nombre + ". Hoy tienes " + List.of("RF-1", "RF-2").size() + " entregas.");
+}
+```
+
+Ejecuta desde `java-motor/java25/` y escribe `Ana` cuando lo pida:
+
+```bash
+java Saludo.java
+```
+
+**Resultado esperado:** el programa muestra `Conductor: `, tú escribes `Ana` y pulsas Enter, y aparece `Hola, Ana. Hoy tienes 2 entregas.`
+
+**Fallo deliberado:** compila el archivo para Java 21: `javac --release 21 -d out Saludo.java`. **Error esperado:** `Saludo.java:1: error: implicitly declared classes are not supported in -source 21`. **Diagnóstico:** la forma compacta y `IO` existen desde Java 25; un proyecto que deba compilar con 21 necesita la clase y el `main` clásicos.
+
+**3. Entiende**
+
+`IO` está en `java.lang`, así que no necesita `import`. `IO.readln(mensaje)` muestra el mensaje y devuelve la línea leída; `IO.println` escribe con salto de línea. Un archivo compacto (sin `class`) importa automáticamente todo el módulo `java.base`: por eso `List.of` funciona sin `import java.util.List`.
+
+**4. Cierra**
+
+Guarda la salida y anota qué tres cosas omitiste respecto al `PuntoEntrada` del Tema 2.
+
+#### Subtema 9.2: Importa un módulo completo con `import module` · 10 min
+
+**1. Contexto**
+
+En una clase normal (no compacta), cada tipo de otro paquete necesita su `import`. Para prototipos que usan muchas clases de `java.util` y `java.time`, la lista crece.
+
+**2. Hazlo tú**
+
+Crea `java-motor/java25/Modulos.java`:
+
+```java
+import module java.base;
+
+public class Modulos {
+    public static void main(String[] args) {
+        List<String> guias = new ArrayList<>(List.of("RF-2", "RF-1"));
+        Collections.sort(guias);
+        Map<String, LocalDate> entregas = new TreeMap<>();
+        entregas.put(guias.get(0), LocalDate.of(2026, 11, 18));
+        IO.println(guias + " " + entregas);
+    }
+}
+```
+
+Ejecuta `java Modulos.java`.
+
+**Resultado esperado:** `[RF-1, RF-2] {RF-1=2026-11-18}`.
+
+**Fallo deliberado:** borra la línea `import module java.base;` y compila con `javac -d out Modulos.java`. **Error esperado:** `error: cannot find symbol` en `List`. **Diagnóstico:** en una clase declarada no hay importación automática del módulo; vuelve a poner la línea o escribe los `import` de cada clase.
+
+**3. Entiende**
+
+`import module java.base;` importa todos los paquetes **exportados** por ese módulo (`java.util`, `java.time`, `java.io`...). No carga más código en tiempo de ejecución: solo cambia cómo el compilador resuelve nombres. Los módulos los estudiarás a fondo en el Módulo 10 (JPMS).
+
+**4. Cierra**
+
+Cuenta cuántas líneas `import` habrías necesitado sin esta línea.
+
+#### Subtema 9.3: Resuelve un nombre ambiguo entre dos módulos · 10 min
+
+**1. Contexto**
+
+Importar módulos enteros trae muchos nombres a la vez, y dos módulos pueden exportar clases con el mismo nombre simple.
+
+**2. Hazlo tú**
+
+Crea `java-motor/java25/amb/Ambiguo.java`:
+
+```java
+import module java.base;
+import module java.desktop;
+
+public class Ambiguo {
+    public static void main(String[] args) {
+        List<String> guias = List.of("RF-1");
+        IO.println(guias);
+    }
+}
+```
+
+Compila con `javac -d out amb/Ambiguo.java` desde `java-motor/java25/`.
+
+**Resultado esperado (fallo deliberado):**
+
+```text
+error: reference to List is ambiguous
+  both class java.awt.List in java.awt and interface java.util.List in java.util match
+```
+
+**Diagnóstico:** `java.desktop` exporta `java.awt.List` y `java.base` exporta `java.util.List`. Añade debajo de los `import module` la línea `import java.util.List;`: una importación de tipo concreta gana sobre las de módulo. Compila y ejecuta con `java -cp out Ambiguo`; ahora imprime `[RF-1]`.
+
+**3. Entiende**
+
+Precedencia de importaciones: un `import` de tipo (`java.util.List`) gana sobre un `import` de paquete con `*`, y este sobre `import module`. **Límite:** en código de producción, prefiere importaciones explícitas: el lector ve de dónde viene cada tipo y un módulo nuevo no puede introducir ambigüedades al actualizar dependencias.
+
+**4. Cierra**
+
+Escribe la regla de precedencia en una línea y decide si el motor de entregas usará `import module` (respuesta habitual: solo en scripts y pruebas rápidas).
+
+**Ejercicio:** escribe un archivo compacto `Kilometros.java` que pida con `IO.readln` dos distancias en kilómetros, las sume y muestre el total con un decimal. Antes de abrir la solución, predice qué ocurre si el usuario escribe `doce`.
+
+<details>
+<summary>Solución</summary>
+
+```java
+void main() {
+    double a = Double.parseDouble(IO.readln("Tramo 1 (km): "));
+    double b = Double.parseDouble(IO.readln("Tramo 2 (km): "));
+    IO.println("Total: %.1f km".formatted(a + b));
+}
+```
+
+Con `doce`, `Double.parseDouble` lanza `NumberFormatException: For input string: "doce"`. `IO.readln` devuelve texto; convertirlo y validarlo sigue siendo tu responsabilidad (Módulo 3 enseña a manejar esa excepción). El formato `%.1f` usa la configuración regional por defecto: en algunos sistemas imprime coma decimal.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Ejecuté un archivo compacto con `IO.readln` e `IO.println`.
+- [ ] Provoqué el error de compilación con `--release 21` y expliqué la versión mínima.
+- [ ] Usé `import module java.base` y vi el error al quitarlo.
+- [ ] Resolví la ambigüedad de `List` con una importación de tipo.
+
+**Fuentes oficiales:** [JEP 512: Compact Source Files and Instance Main Methods](https://openjdk.org/jeps/512), [JEP 511: Module Import Declarations](https://openjdk.org/jeps/511) y [API de `java.lang.IO`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/IO.html).
+
+**Proyecto integrador:** usa un archivo compacto para un script de diagnóstico que pida una guía y muestre su estado. **Límite:** el motor de entregas sigue con clases y `main` clásicos para compilar también en JDK 21 (Tema 2).
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza con `mkdir academia-java && cd academia-java && git init && gradle init --type java-application`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
@@ -1196,7 +1353,6 @@ No crees un proyecto desechable por módulo. Conserva un único repositorio que 
 | Experto | testing, profiling y seguridad. | Perfil o threat model, telemetría y runbook de recuperación. |
 
 Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
-
 
 ## Construcción guiada del capítulo
 

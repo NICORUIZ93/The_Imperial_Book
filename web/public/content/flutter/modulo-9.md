@@ -56,25 +56,57 @@ flowchart TD
 En el proyecto integrador RutaFlow, estos tests viven en `test/tarjeta_envio_test.dart` sobre `lib/features/deliveries/presentation/delivery_list_screen.dart`. Límite de la decisión: no conviene escribir un widget test para lógica puramente de dominio (como `estaAtrasado()`) — eso es más rápido y claro como unit test aislado; reservá el widget test específicamente para verificar que la UI refleja correctamente ese resultado.
 
 #### Paso 4 · Demostración guiada desde cero
-```dart
-test('un envío con fecha estimada pasada está atrasado', () {
-  expect(estaAtrasado(Envio(fechaEstimada: DateTime.now().subtract(Duration(hours: 1)))), isTrue);
-});
-
-testWidgets('TarjetaEnvio muestra la guía', (tester) async {
-  await tester.pumpWidget(MaterialApp(home: TarjetaEnvio(guia: 'RF-4471', estado: 'en_ruta')));
-  expect(find.text('RF-4471'), findsOneWidget);
-});
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+Crea el proyecto y quita la prueba de la plantilla, que prueba un contador que no vas a usar:
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
-flutter run
+rm test/widget_test.dart
 ```
-Para las pruebas de widget: `flutter test`.
+
+Crea `lib/envios.dart` con la regla y el widget que vas a probar:
+
+```dart
+import 'package:flutter/material.dart';
+
+class Envio {
+  Envio({required this.fechaEstimada});
+  final DateTime fechaEstimada;
+}
+
+bool estaAtrasado(Envio envio) => DateTime.now().isAfter(envio.fechaEstimada);
+
+class TarjetaEnvio extends StatelessWidget {
+  const TarjetaEnvio({required this.guia, required this.estado, super.key});
+  final String guia;
+  final String estado;
+
+  @override
+  Widget build(BuildContext context) => ListTile(title: Text(guia), subtitle: Text(estado));
+}
+```
+
+Crea `test/envios_test.dart`:
+
+```dart
+import 'package:demo_flutter/envios.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('un envío con fecha estimada pasada está atrasado', () {
+    expect(estaAtrasado(Envio(fechaEstimada: DateTime.now().subtract(const Duration(hours: 1)))), isTrue);
+  });
+
+  testWidgets('TarjetaEnvio muestra la guía', (tester) async {
+    // ListTile necesita un Material ancestro: Scaffold lo aporta.
+    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: TarjetaEnvio(guia: 'RF-4471', estado: 'en_ruta'))));
+    expect(find.text('RF-4471'), findsOneWidget);
+  });
+}
+```
+
+Ejecuta `flutter test`.
 
 Resultado esperado: el unit test verifica la regla de negocio en milisegundos sin ningún widget involucrado; el widget test renderiza `TarjetaEnvio` en un entorno simulado y confirma que el texto "RF-4471" aparece, sin necesitar un emulador completo corriendo.
 
@@ -131,26 +163,62 @@ flowchart LR
 En el proyecto integrador RutaFlow, el mock vive en `test/envios_viewmodel_test.dart` sobre `lib/features/deliveries/domain/delivery_providers.dart`. Límite de la decisión: no conviene mockear una dependencia que no tiene efectos externos reales (una función pura de cálculo, por ejemplo) — ahí llamarla directamente en el test es más simple y claro; reservá `mocktail` específicamente para dependencias con red, disco o estado externo real.
 
 #### Paso 4 · Demostración guiada desde cero
-```dart
-class EnviosRepositoryFake extends Mock implements EnviosRepository {}
-
-test('el ViewModel carga envíos del repositorio', () async {
-  final repo = EnviosRepositoryFake();
-  when(() => repo.obtenerEnvios()).thenAnswer((_) async => [envioDePrueba]);
-  final vm = EnviosViewModel(repo);
-  await vm.cargar();
-  expect(vm.envios, [envioDePrueba]);
-});
-```
-
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
-
 ```bash
 flutter create demo_flutter
 cd demo_flutter
-flutter run
+rm test/widget_test.dart
+flutter pub add dev:mocktail
 ```
-Para las pruebas de widget: `flutter test`.
+
+Crea `lib/envios_view_model.dart`:
+
+```dart
+import 'package:flutter/foundation.dart';
+
+class Envio {
+  const Envio(this.guia);
+  final String guia;
+}
+
+abstract class EnviosRepository {
+  Future<List<Envio>> obtenerEnvios();
+}
+
+class EnviosViewModel extends ChangeNotifier {
+  EnviosViewModel(this._repo);
+  final EnviosRepository _repo;
+  List<Envio> envios = const [];
+
+  Future<void> cargar() async {
+    envios = await _repo.obtenerEnvios();
+    notifyListeners();
+  }
+}
+```
+
+Crea `test/envios_view_model_test.dart`:
+
+```dart
+import 'package:demo_flutter/envios_view_model.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class EnviosRepositoryFake extends Mock implements EnviosRepository {}
+
+const envioDePrueba = Envio('RF-4471');
+
+void main() {
+  test('el ViewModel carga envíos del repositorio', () async {
+    final repo = EnviosRepositoryFake();
+    when(() => repo.obtenerEnvios()).thenAnswer((_) async => [envioDePrueba]);
+    final vm = EnviosViewModel(repo);
+    await vm.cargar();
+    expect(vm.envios, [envioDePrueba]);
+  });
+}
+```
+
+Ejecuta `flutter test`.
 
 Resultado esperado: el test completa en milisegundos sin ninguna conexión de red real — `EnviosRepositoryFake` responde exactamente lo configurado con `when(...).thenAnswer(...)`, sin depender de que el backend de RutaFlow esté corriendo.
 

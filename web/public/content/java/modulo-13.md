@@ -304,8 +304,8 @@ Modifica temporalmente una versión de dependencia en `pom.xml` a un rango abier
 |---|---|---|---|
 | 1 | Diseñar la arquitectura por capas | Ver Tema 1 | `dominio/`, `servicio/`, `infraestructura/` |
 | 2 | Implementar procesamiento con virtual threads | Ver Tema 2 | Modela el resultado como sealed interface |
-| 3 | Modelar el dominio con records y sealed interfaces | Módulo 7 | Donde sea apropiado |
-| 4 | Escribir tests con JUnit 5 y Mockito | Módulo 9 | Para la lógica de negocio crítica |
+| 3 | Modelar el dominio con records y sealed interfaces | M1 T5 y Módulo 7 | Donde sea apropiado |
+| 4 | Escribir tests con JUnit 6 y Mockito | Módulo 9 | Para la lógica de negocio crítica |
 | 5 | Configurar el build reproducible | Ver Tema 3 | Ejecutable con un solo comando |
 
 **Verificación:** el laboratorio (y el track completo) se considera exitoso si la aplicación procesa tareas concurrentemente sin condiciones de carrera, si el manejo de éxito/error está modelado explícitamente y verificado exhaustivamente por el compilador, y si cualquier persona puede clonar y ejecutar el proyecto con un único comando documentado.

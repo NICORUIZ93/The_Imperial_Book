@@ -748,6 +748,266 @@ Ordena los cuatro niveles de menor a mayor alcance y explica por qué leer estad
 
 **Transferencia al proyecto integrador:** conserva una interfaz pública pequeña para operar el motor y mantén privados los datos que solo el modelo debe cambiar.
 
+### Tema 5: record — modelos inmutables sin boilerplate
+
+**Prerrequisitos:** Temas 1 y 4 de este módulo (constructores, encapsulación y sobreescritura). Los records se usan desde el Módulo 2; las jerarquías `sealed` que los combinan están en el Módulo 7.
+
+**¿Por qué es importante?** una guía de envío es un dato con valor; compararla por campos y proteger sus invariantes no debería exigir decenas de líneas repetidas.
+
+#### Subtema 5.1: Construye un record de guía · 10 min
+
+**1. Contexto**
+
+El centro de despacho recibe número y peso de cada paquete. No se debe poder crear una guía vacía ni con peso cero.
+
+**2. Hazlo tú**
+
+Crea `src/Guia.java`:
+
+```java
+public record Guia(String numero, double pesoKg) {
+    public Guia {
+        if (numero == null || numero.isBlank()) throw new IllegalArgumentException("Falta número");
+        if (pesoKg <= 0) throw new IllegalArgumentException("Peso debe ser positivo");
+    }
+    public static void main(String[] args) {
+        System.out.println(new Guia("RT-1", 2.5));
+    }
+}
+```
+
+Desde la raíz ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
+
+**Resultado esperado:** imprime `Guia[numero=RT-1, pesoKg=2.5]`.
+
+**Fallo deliberado:** crea `new Guia("", 0)`. **Diagnóstico:** el constructor compacto valida antes de que exista un objeto inválido.
+
+**3. Entiende**
+
+`record` genera constructor, accesores, `equals`, `hashCode` y `toString`; el constructor compacto sirve para validar los componentes.
+
+**4. Cierra**
+
+Guarda la salida válida y el error de validación.
+
+#### Subtema 5.2: Comprueba igualdad por valor · 10 min
+
+**1. Contexto**
+
+Dos servicios pueden construir dos objetos distintos que representen la misma guía; el sistema debe compararlos por sus datos.
+
+**2. Hazlo tú**
+
+En `src/Guia.java`, en `main`, crea dos `Guia("RT-1", 2.5)` y muestra `primera.equals(segunda)` y `primera == segunda`. Ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
+
+**Resultado esperado:** `equals` imprime `true`; `==` imprime `false` porque son objetos diferentes.
+
+**Fallo deliberado:** compara solo con `==`. **Diagnóstico:** esa operación compara identidad, no los componentes que describen la guía.
+
+**3. Entiende**
+
+La igualdad generada por el record usa sus componentes. Si un componente mutable se guarda dentro, el record no vuelve inmutable ese objeto interno.
+
+**4. Cierra**
+
+Anota qué comparación usarías en un `Set<Guia>` y por qué.
+
+#### Subtema 5.3: Produce una versión actualizada · 10 min
+
+**1. Contexto**
+
+La guía no se modifica en sitio cuando cambia el peso medido: se emite un nuevo valor para conservar las referencias anteriores.
+
+**2. Hazlo tú**
+
+En `src/Guia.java` conserva `original = new Guia("RT-1", 2.5)` y crea `recalculada = new Guia(original.numero(), 3.0)`. Imprime ambos pesos; ejecuta:
+
+```bash
+javac -d out src/Guia.java
+java -cp out Guia
+```
+
+**Resultado esperado:** `2.5` y `3.0`; el objeto original conserva sus datos.
+
+**Fallo deliberado:** intenta asignar `original.pesoKg = 3.0`. **Diagnóstico:** los componentes no tienen setters; construye un valor nuevo.
+
+**3. Entiende**
+
+Usa records para valores que se describen por sus datos. Una entidad con identidad persistente y cambios durante su ciclo de vida puede necesitar una clase tradicional.
+
+**4. Cierra**
+
+Entrega los dos valores y explica por qué elegiste record. Fuente: [records en Dev.java](https://dev.java/learn/classes-objects/records/).
+
+**Proyecto integrador:** el motor de asignación de entregas representa cada guía como un `record` inmutable, igual que en este tema, para poder comparar y compartir guías entre hilos sin riesgo de mutación. **Límite:** usa `record` para un valor que se describe completamente por sus componentes; si la guía necesita identidad propia que persiste aunque cambien sus datos (por ejemplo, un historial de estados a lo largo del tiempo), modélala como una clase tradicional con identidad, no como record.
+
+### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de `super(...)` · Intermedio · 30 min
+
+**Duración estimada:** 30 min.
+**¿Por qué es importante?** Hasta Java 24, `super(...)` o `this(...)` tenía que ser la **primera** instrucción del constructor. Para validar un argumento antes de pasarlo a la clase padre había que inventar métodos estáticos auxiliares, y un campo de la subclase quedaba sin inicializar si el constructor padre llamaba a un método sobrescrito. Java 25 (JEP 513) permite código antes de `super(...)` con reglas precisas. Es una novedad del lenguaje que evalúa la certificación de Java 25.
+**Prerrequisitos:** Tema 1 (constructores) y Tema 2 (herencia, `super` y sobrescritura) de este módulo. Usa JDK 25.
+
+#### Subtema 6.1: Valida el argumento antes de construir la clase padre · 10 min
+
+**1. Contexto**
+
+Una `Moto` es un `Vehiculo` con capacidad máxima de 30 kg. Si el valor es inválido, no tiene sentido construir primero la parte de `Vehiculo`.
+
+**2. Hazlo tú**
+
+Crea `java-motor/src/ConstructorFlexible.java`:
+
+```java
+class Vehiculo {
+    private final String placa;
+    private final int capacidadKg;
+
+    Vehiculo(String placa, int capacidadKg) {
+        this.placa = placa;
+        this.capacidadKg = capacidadKg;
+        System.out.println("Vehiculo creado: " + descripcion());
+    }
+
+    String descripcion() {
+        return placa + " (" + capacidadKg + " kg)";
+    }
+}
+
+class Moto extends Vehiculo {
+    private final boolean conCaja;
+
+    Moto(String placa, int capacidadKg, boolean conCaja) {
+        if (capacidadKg > 30) {
+            throw new IllegalArgumentException("Una moto lleva hasta 30 kg: " + capacidadKg);
+        }
+        String normalizada = placa.strip().toUpperCase();
+        this.conCaja = conCaja;
+        super(normalizada, capacidadKg);
+    }
+
+    @Override
+    String descripcion() {
+        return super.descripcion() + (conCaja ? " con caja" : " sin caja");
+    }
+}
+
+public class ConstructorFlexible {
+    public static void main(String[] args) {
+        new Moto(" abc12d ", 25, true);
+        try {
+            new Moto("XYZ98E", 80, false);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Rechazada: " + e.getMessage());
+        }
+    }
+}
+```
+
+Desde `java-motor`, ejecuta `java src/ConstructorFlexible.java`.
+
+**Resultado esperado:**
+
+```text
+Vehiculo creado: ABC12D (25 kg) con caja
+Rechazada: Una moto lleva hasta 30 kg: 80
+```
+
+**Fallo deliberado:** compila para Java 21: `javac --release 21 -d out src/ConstructorFlexible.java`. **Error esperado:** `error: flexible constructors is not supported in -source 21`. **Diagnóstico:** el código antes de `super(...)` es Java 25; en 21 debes mover la validación a un método `static` que se llame dentro del argumento de `super(...)`.
+
+**3. Entiende**
+
+Las instrucciones antes de `super(...)` forman el **prólogo** del constructor. Allí puedes validar argumentos, calcular valores en variables locales y **asignar** campos de la propia clase. La segunda moto se rechaza antes de que exista ninguna parte del objeto.
+
+**4. Cierra**
+
+Señala en el archivo las tres líneas del prólogo y qué hace cada una.
+
+#### Subtema 6.2: Corrige un campo que el padre veía sin inicializar · 10 min
+
+**1. Contexto**
+
+El constructor de `Vehiculo` llama a `descripcion()`, que `Moto` sobrescribe y que lee `conCaja`. Con el orden de Java 21 (campo asignado **después** de `super`), el padre ve el valor por defecto `false`.
+
+**2. Hazlo tú**
+
+En `Moto`, mueve `this.conCaja = conCaja;` para que quede **después** de `super(normalizada, capacidadKg);` y ejecuta de nuevo `java src/ConstructorFlexible.java`.
+
+**Resultado esperado (fallo deliberado):** `Vehiculo creado: ABC12D (25 kg) sin caja`, aunque pediste `true`.
+
+**Diagnóstico:** el constructor de `Vehiculo` ejecutó la versión sobrescrita de `descripcion()` cuando `conCaja` todavía valía `false`. Vuelve a poner la asignación **antes** de `super(...)` y comprueba que imprime `con caja`.
+
+**3. Entiende**
+
+Durante la construcción, Java ejecuta primero el constructor del padre. Si este llama a un método sobrescrito, el método corre en la subclase antes de que su constructor termine. Asignar campos en el prólogo resuelve este caso. **Límite:** la regla clásica sigue vigente: evita llamar a métodos sobrescribibles desde un constructor; el prólogo es una red de seguridad, no un permiso.
+
+**4. Cierra**
+
+Guarda las dos salidas (`sin caja` y `con caja`) y explica en una línea por qué difieren.
+
+#### Subtema 6.3: Reconoce lo que el prólogo no permite · 8 min
+
+**1. Contexto**
+
+El prólogo existe **antes** de que el objeto esté listo; el compilador impide usarlo como si ya lo estuviera.
+
+**2. Hazlo tú**
+
+En el constructor de `Moto`, añade antes de `super(...)` la línea `System.out.println(descripcion());` y compila con `javac -d out src/ConstructorFlexible.java`.
+
+**Resultado esperado (fallo deliberado):** `error: cannot reference descripcion() before supertype constructor has been called`.
+
+**Diagnóstico:** en el prólogo no puedes llamar métodos de instancia, leer campos ni pasar `this` a otro método; solo asignar campos propios y trabajar con argumentos y variables locales. Borra la línea.
+
+**3. Entiende**
+
+Regla para recordar: en el prólogo, `this` solo puede aparecer a la izquierda de una asignación a un campo de esta clase. Todo lo demás espera a que `super(...)` termine.
+
+**4. Cierra**
+
+Escribe una lista de dos columnas: "permitido en el prólogo" y "prohibido en el prólogo".
+
+**Ejercicio:** crea `Camion extends Vehiculo` cuyo constructor reciba la capacidad en **toneladas** (`double`) y la convierta a kilogramos enteros antes de llamar a `super`, rechazando valores menores o iguales a cero. Escribe el prólogo antes de abrir la solución.
+
+<details>
+<summary>Solución</summary>
+
+```java
+class Camion extends Vehiculo {
+    Camion(String placa, double toneladas) {
+        if (toneladas <= 0) {
+            throw new IllegalArgumentException("Capacidad inválida: " + toneladas);
+        }
+        int kilos = (int) Math.round(toneladas * 1000);
+        super(placa, kilos);
+    }
+}
+```
+
+`new Camion("TRK001", 2.5)` imprime `Vehiculo creado: TRK001 (2500 kg)`. En Java 21 habrías escrito `super(placa, aKilos(toneladas))` con un método `static int aKilos(double)` que validara y convirtiera.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Validé y normalicé argumentos antes de `super(...)` y provoqué el error con `--release 21`.
+- [ ] Reproduje el campo `sin caja` al asignarlo después de `super` y lo corregí en el prólogo.
+- [ ] Provoqué el error de llamar a un método de instancia en el prólogo.
+- [ ] Expliqué qué está permitido y qué no antes de `super(...)`.
+
+**Fuentes oficiales:** [JEP 513: Flexible Constructor Bodies](https://openjdk.org/jeps/513) y [Java Language Specification 25, §8.8.7](https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html#jls-8.8.7).
+
+**Proyecto integrador:** valida en el prólogo los vehículos del motor de entregas. **Límite:** si el motor debe compilar también con JDK 21, usa la variante con método `static` del ejercicio.
+
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** construir una jerarquía de clases con herencia, una interfaz y una clase abstracta.

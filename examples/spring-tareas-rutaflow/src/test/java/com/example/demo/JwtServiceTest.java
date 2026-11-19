@@ -9,8 +9,8 @@ class JwtServiceTest {
     @Test
     void tokenFirmadoConservaUsuarioYRol() {
         var service = new JwtService(new JwtSettings(CLAVE_DE_PRUEBA, 120));
-        var claims = service.validar(service.generar("ana-1", "ADMIN"));
-        assertEquals("ana-1", claims.getSubject());
-        assertEquals("ADMIN", claims.get("rol", String.class));
+        var jwt = service.validar(service.generar("ana-1", "ADMIN"));
+        assertEquals("ana-1", jwt.getSubject());
+        assertEquals("ADMIN", jwt.getClaimAsString("rol"));
     }
 }

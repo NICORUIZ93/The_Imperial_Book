@@ -1,4 +1,4 @@
-# Módulo 0: Fundamentos de Spring — IoC y DI
+# Módulo 0: Fundamentos de Spring: IoC, DI y AOP
 
 Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria. El mecanismo de inyección de dependencias se documenta con comandos reales de Maven/Spring Boot y con el comportamiento exacto y verificable que produce cada anotación, sin sustituir el código Java por ningún otro lenguaje.
 
@@ -24,7 +24,7 @@ No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapp
 Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pero aún no existe una ruta; "connection refused" significa que no arrancó. Lee siempre desde la primera línea `Caused by:` del error, no solo la última.
 
 
-**Herramienta y continuidad:** los comandos originales usan **Maven** (`pom.xml` y `mvnw`). Los laboratorios también incorporan una alternativa **Gradle 9.8.2** (`build.gradle` y `gradlew`) con las mismas fuentes. El M1 explica cómo elegir una herramienta y traducir los comandos. Conserva `academia-spring` de M0 a M7. En M1 la generación de un proyecto es un experimento separado; aplica después la configuración a tu proyecto base. Desde M8 hay laboratorios aislados con infraestructura propia; cada tema identifica su carpeta, y M12 integra una selección de esas piezas. No copies todas sus configuraciones sobre una sola aplicación.
+**Herramienta y continuidad:** los comandos originales usan **Maven** (`pom.xml` y `mvnw`). Los laboratorios también incorporan una alternativa **Gradle 9.8.2** (`build.gradle` y `gradlew`) con las mismas fuentes. El M1 explica cómo elegir una herramienta y traducir los comandos. Conserva `academia-spring` de M0 a M7. En M1 la generación de un proyecto es un experimento separado; aplica después la configuración a tu proyecto base. Desde M10 hay laboratorios aislados con infraestructura propia; cada tema identifica su carpeta, y M20 integra una selección de esas piezas. No copies todas sus configuraciones sobre una sola aplicación.
 
 **Regla de ejecución:** ejecuta los comandos desde la carpeta que contiene el `pom.xml` del proyecto indicado. Antes de cambiar de laboratorio, detén el servidor con Ctrl+C para liberar su puerto. Tras cambiar Java o recursos, reinicia `spring-boot:run` salvo que hayas configurado recarga explícitamente. Una práctica independiente puede cambiar el estado esperado: restaura la base indicada antes de continuar.
 
@@ -34,14 +34,14 @@ Cada laboratorio del inventario `docs/spring-gradle-labs.json` incorpora su buil
 
 ## Mapa de la ruta
 
-«Spring Boot» tiene 27 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+«Spring Boot» tiene 21 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto. El orden sigue las dependencias: primero el contenedor y la web, después datos, seguridad, pruebas y operación, y al final mensajería, arquitectura y sistemas distribuidos.
 
 ```mermaid
 flowchart LR
     E0["Fundamentos<br/>módulos 0–1"]
-    E1["Aplicación<br/>módulos 2–3"]
-    E2["Integración<br/>módulos 4–6, 16–17 y 20"]
-    E3["Experto<br/>módulos 7–15, 18–19 y 21–26"]
+    E1["Aplicación<br/>módulos 2–4"]
+    E2["Integración<br/>módulos 5–8"]
+    E3["Experto<br/>módulos 9–20"]
     E0 --> E1
     E1 --> E2
     E2 --> E3
@@ -49,33 +49,27 @@ flowchart LR
 
 | Módulo | Etapa | Qué aprendes |
 |---|---|---|
-| 0 | Fundamentos | [Fundamentos de Spring: IoC y DI](/curso/spring-boot/0) |
+| 0 | Fundamentos | [Fundamentos de Spring: IoC, DI y AOP](/curso/spring-boot/0) |
 | 1 | Fundamentos | [Spring Boot CLI y estructura de proyecto](/curso/spring-boot/1) |
 | 2 | Aplicación | [REST APIs con Spring Web](/curso/spring-boot/2) |
-| 3 | Aplicación | [Persistencia con Spring Data JPA](/curso/spring-boot/3) |
-| 4 | Integración | [Spring Security y protección SSRF](/curso/spring-boot/4) |
-| 5 | Integración | [Configuración, perfiles y manejo de errores](/curso/spring-boot/5) |
+| 3 | Aplicación | [JDBC, JdbcClient y transacciones en Spring Boot](/curso/spring-boot/3) |
+| 4 | Aplicación | [Persistencia con Spring Data JPA](/curso/spring-boot/4) |
+| 5 | Integración | [Spring Security I: cadena, JWT con resource server, CORS y SSRF](/curso/spring-boot/5) |
 | 6 | Integración | [Testing en Spring Boot](/curso/spring-boot/6) |
-| 7 | Experto | [Observabilidad con Actuator](/curso/spring-boot/7) |
-| 8 | Experto | [Mensajería profesional: Kafka, RabbitMQ y contratos](/curso/spring-boot/8) |
-| 9 | Experto | [Programación reactiva con WebFlux](/curso/spring-boot/9) |
-| 10 | Experto | [Microservicios Spring Cloud: diseño, comunicación y operación](/curso/spring-boot/10) |
-| 11 | Experto | [Empaquetado y despliegue](/curso/spring-boot/11) |
-| 12 | Experto | [Proyecto integrador: microservicio productivo](/curso/spring-boot/12) |
-| 13 | Experto | [Consistencia, contratos y operación distribuida](/curso/spring-boot/13) |
-| 14 | Experto | [Backend de entregas: MySQL espacial, archivos y tiempo real](/curso/spring-boot/14) |
-| 15 | Experto | [Spring Master: hexagonal, reactivo y microservicios](/curso/spring-boot/15) |
-| 16 | Integración | [JPA de Spring Boot: Hibernate, Lazy vs Eager y N+1](/curso/spring-boot/16) |
-| 17 | Integración | [JDBC, DAO y transacciones en Spring Boot](/curso/spring-boot/17) |
-| 18 | Experto | [Autenticación, JWT y backend seguro con Spring Security](/curso/spring-boot/18) |
-| 19 | Experto | [Spring Batch: jobs, chunks y procesamiento masivo](/curso/spring-boot/19) |
-| 20 | Integración | [Integraciones Spring: scheduling, eventos, correo y caché](/curso/spring-boot/20) |
-| 21 | Experto | [Apache Kafka con Spring Boot: eventos, consumidores y recuperación](/curso/spring-boot/21) |
-| 22 | Experto | [Arquitectura: puertos, C4 y decisiones](/curso/spring-boot/22) |
-| 23 | Experto | [Spring Modulith: límites, eventos y pruebas modulares](/curso/spring-boot/23) |
-| 24 | Experto | [Spring GraphQL: schema, data fetchers y subscriptions](/curso/spring-boot/24) |
-| 25 | Experto | [Spring Cloud Stream: bindings Kafka y RabbitMQ](/curso/spring-boot/25) |
-| 26 | Experto | [Concurrencia avanzada en Spring](/curso/spring-boot/26) |
+| 7 | Integración | [Configuración, errores y observabilidad](/curso/spring-boot/7) |
+| 8 | Integración | [Integraciones Spring: scheduling, eventos, correo, caché e IA](/curso/spring-boot/8) |
+| 9 | Experto | [Concurrencia, @Async y resiliencia en el núcleo de Spring](/curso/spring-boot/9) |
+| 10 | Experto | [Mensajería con Kafka: eventos, errores, outbox y contratos](/curso/spring-boot/10) |
+| 11 | Experto | [RabbitMQ, JMS y Spring Cloud Stream](/curso/spring-boot/11) |
+| 12 | Experto | [Spring Batch: jobs, chunks y procesamiento masivo](/curso/spring-boot/12) |
+| 13 | Experto | [Programación reactiva con WebFlux](/curso/spring-boot/13) |
+| 14 | Experto | [Spring GraphQL: contrato, datos anidados y cambios](/curso/spring-boot/14) |
+| 15 | Experto | [Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith](/curso/spring-boot/15) |
+| 16 | Experto | [Microservicios con Spring Cloud](/curso/spring-boot/16) |
+| 17 | Experto | [Consistencia, contratos y operación distribuida](/curso/spring-boot/17) |
+| 18 | Experto | [Spring Security II: OIDC, autorización por recurso y SAML](/curso/spring-boot/18) |
+| 19 | Experto | [Empaquetado y despliegue](/curso/spring-boot/19) |
+| 20 | Experto | [Proyecto integrador: backend de entregas productivo](/curso/spring-boot/20) |
 
 ## Aprende construyendo
 
@@ -587,7 +581,7 @@ Guarda dos respuestas y marca cuáles IDs se repiten. Elige `singleton` para obj
 
 ---
 
-Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son los que organizan las clases del proyecto integrador de este track (microservicio productivo, Módulo 12).
+Los estereotipos (`@Service`, `@Repository`, `@Controller`) que uses aquí son los que organizan las clases del proyecto integrador de este track (microservicio productivo, Módulo 20).
 
 ### Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min
 
@@ -745,6 +739,578 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** hacer trabajo pesad
 
 **Fuente oficial:** [Spring Boot — Graceful Shutdown](https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html) y [Spring Framework — Lifecycle Callbacks](https://docs.spring.io/spring-framework/reference/core/beans/factory-nature.html).
 
+### Tema 5: Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` · Intermedio · 45 min
+
+Al terminar, podrás explicar qué objeto recibes cuando Spring te inyecta un bean con `@Transactional`, `@Async`, `@Cacheable` o `@PreAuthorize`, escribir un aspecto `@Around` que mida un servicio y diagnosticar por qué una llamada interna con `this` no pasa por él.
+
+**¿Por qué es importante?** Muchas anotaciones de Spring no cambian tu clase: el contenedor la envuelve en un **proxy** que hace trabajo antes y después de llamarla. Si no ves ese envoltorio, los fallos parecen magia: una transacción que no se abre, un método `@Async` que corre en el mismo hilo o una regla de seguridad que no se aplica. La certificación Spring Professional (2V0-72.22) evalúa AOP, proxies y `BeanPostProcessor` en su sección de Core.
+
+**Prerrequisitos:** Temas 1–4 de este módulo (`ServicioEnvios`, `RepositorioEnvios` y el controlador `/envios/{codigo}`) e interfaces de Java. Usa JDK 25 y Spring Boot 4.1.2.
+
+```mermaid
+flowchart LR
+  C["EnviosController"] -->|"consultar('RF-42')"| P["Proxy de ServicioEnvios<br/>(lo crea un BeanPostProcessor)"]
+  P -->|"antes"| A["@Around MedicionAspect"]
+  A -->|"proceed()"| S["ServicioEnvios real"]
+  S -->|"this.consultar(...)<br/>no vuelve a pasar por el proxy"| S
+```
+
+#### Subtema X.1 · Construye un proxy a mano con `java.lang.reflect.Proxy` · 10 min
+
+**Contexto:** antes de usar la versión de Spring, conviene ver el mecanismo sin framework. Un proxy es un objeto que implementa la misma interfaz que el real y decide qué hacer en cada llamada.
+
+**Hazlo tú:** en una carpeta aparte, `experimentos/aop/`, crea `ProxyAMano.java`:
+
+```java
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+
+interface Envios {
+    String consultar(String codigo);
+    String consultarDos(String a, String b);
+}
+
+final class EnviosReales implements Envios {
+    @Override
+    public String consultar(String codigo) {
+        return "En ruta: " + codigo;
+    }
+
+    @Override
+    public String consultarDos(String a, String b) {
+        return consultar(a) + " | " + consultar(b);
+    }
+}
+
+public class ProxyAMano {
+    public static void main(String[] args) {
+        Envios real = new EnviosReales();
+        InvocationHandler registro = (proxy, metodo, argumentos) -> {
+            System.out.println("[proxy] entra a " + metodo.getName());
+            Object resultado = metodo.invoke(real, argumentos);
+            System.out.println("[proxy] sale de " + metodo.getName());
+            return resultado;
+        };
+        Envios envios = (Envios) Proxy.newProxyInstance(
+                Envios.class.getClassLoader(), new Class<?>[] {Envios.class}, registro);
+
+        System.out.println(envios.consultar("RF-42"));
+        System.out.println(envios.consultarDos("RF-1", "RF-2"));
+        System.out.println("Es un proxy: " + Proxy.isProxyClass(envios.getClass()));
+    }
+}
+```
+
+Ejecuta con JDK 25 desde `experimentos/aop/`:
+
+```bash
+java ProxyAMano.java
+```
+
+**Resultado esperado:**
+
+```text
+[proxy] entra a consultar
+[proxy] sale de consultar
+En ruta: RF-42
+[proxy] entra a consultarDos
+[proxy] sale de consultarDos
+En ruta: RF-1 | En ruta: RF-2
+Es un proxy: true
+```
+
+**Fallo deliberado:** cambia la variable a la clase concreta: `EnviosReales envios = (EnviosReales) Proxy.newProxyInstance(...)`. **Error esperado:** `java.lang.ClassCastException: class $Proxy0 cannot be cast to class EnviosReales`. **Diagnóstico:** un proxy de JDK implementa interfaces; no es una subclase de la clase real. Restaura el tipo `Envios`.
+
+**Entiende:** fíjate en la segunda llamada. `consultarDos` pasó por el proxy, pero las dos llamadas internas a `consultar` **no** imprimieron nada: dentro de `EnviosReales`, `consultar(a)` es `this.consultar(a)`, y `this` es el objeto real, no el proxy. Esa es la causa de la **autoinvocación**, el error más común con `@Transactional` y `@Async`.
+
+**Cierra:** guarda la salida y marca la línea que demuestra que la llamada interna no fue interceptada.
+
+#### Subtema X.2 · Mide el servicio con `@Aspect` y `@Around` · 10 min
+
+**Contexto:** escribir un `InvocationHandler` por cada preocupación transversal (tiempos, auditoría, reintentos) no escala. Spring AOP te deja declarar **dónde** actuar (pointcut) y **qué** hacer (advice), y él crea el proxy.
+
+**Hazlo tú:** en `academia-spring`, añade el starter de AspectJ a `pom.xml`. En Spring Boot 4 se llama `spring-boot-starter-aspectj` (antes `spring-boot-starter-aop`); no lleva versión:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aspectj</artifactId>
+</dependency>
+```
+
+Crea `src/main/java/com/example/demo/MedicionAspect.java`:
+
+```java
+package com.example.demo;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class MedicionAspect {
+    private static final Logger log = LoggerFactory.getLogger(MedicionAspect.class);
+
+    @Around("execution(* com.example.demo.ServicioEnvios.*(..))")
+    public Object medir(ProceedingJoinPoint punto) throws Throwable {
+        long inicio = System.nanoTime();
+        try {
+            return punto.proceed();
+        } finally {
+            long micros = (System.nanoTime() - inicio) / 1_000;
+            log.info("medido {} en {} us", punto.getSignature().toShortString(), micros);
+        }
+    }
+}
+```
+
+Crea `src/test/java/com/example/demo/MedicionAspectTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+
+@SpringBootTest
+@ExtendWith(OutputCaptureExtension.class)
+class MedicionAspectTest {
+    @Autowired ServicioEnvios servicio;
+
+    @Test
+    void elAspectoEnvuelveElServicio(CapturedOutput salida) {
+        assertEquals("En ruta: RF-42", servicio.consultar("RF-42"));
+        assertTrue(AopUtils.isAopProxy(servicio), "Spring debió inyectar un proxy");
+        assertTrue(salida.getOut().contains("medido ServicioEnvios.consultar(..)"));
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=MedicionAspectTest test`.
+
+**Resultado esperado:** verde; el log contiene `medido ServicioEnvios.consultar(..) en N us`.
+
+**Fallo deliberado:** cambia el pointcut a `execution(* com.example.demos.ServicioEnvios.*(..))` (paquete mal escrito) y repite. **Error esperado:** falla la aserción `Spring debió inyectar un proxy`. **Diagnóstico:** ningún bean coincide con el pointcut, así que Spring no crea proxy y no hay advice que ejecutar. Restaura `com.example.demo`.
+
+**Entiende:** un **aspecto** agrupa advices; un **pointcut** (`execution(...)`) elige los métodos; `@Around` recibe un `ProceedingJoinPoint` y decide si llama `proceed()`, con qué argumentos y qué hace con el resultado o la excepción. Si olvidas `proceed()`, el método real nunca se ejecuta. Existen también `@Before`, `@AfterReturning`, `@AfterThrowing` y `@After`, más limitados que `@Around`. **Límite:** Spring AOP solo intercepta métodos públicos de beans llamados desde fuera del objeto; no modifica `new ServicioEnvios(...)` ni campos.
+
+**Cierra:** conserva el test verde y la línea de log como evidencia.
+
+#### Subtema X.3 · Observa quién crea el proxy: `BeanPostProcessor` · 10 min
+
+**Contexto:** el proxy no aparece por magia: un `BeanPostProcessor` (BPP) recibe cada bean recién inicializado y puede devolver otro objeto en su lugar. El creador de proxies de AOP es un BPP; tú puedes escribir otro para observar el resultado.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/InspectorDeBeans.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
+
+@Component
+public class InspectorDeBeans implements BeanPostProcessor {
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String nombre) {
+        if (bean instanceof ServicioEnvios) {
+            System.out.println("[BPP] " + nombre + " -> " + bean.getClass().getName());
+        }
+        return bean;
+    }
+}
+```
+
+Arranca con `./mvnw spring-boot:run` y busca la línea `[BPP]` en el arranque.
+
+**Resultado esperado:** `[BPP] servicioEnvios -> com.example.demo.ServicioEnvios$$SpringCGLIB$$0` (el número final puede variar). El nombre contiene `$$SpringCGLIB$$`: es una **subclase** generada, no la clase que escribiste.
+
+**Fallo deliberado:** en `InspectorDeBeans`, devuelve `null` en lugar de `bean` cuando el bean es `ServicioEnvios`. **Error esperado:** el contexto no arranca; el controlador no encuentra un `ServicioEnvios` para inyectar. **Diagnóstico:** lo que devuelve un BPP **reemplaza** al bean. Restaura `return bean;`.
+
+**Entiende:** Spring Boot crea proxies CGLIB (subclases) por defecto (`spring.aop.proxy-target-class=true`), por eso aquí sí puedes inyectar la clase concreta, a diferencia del proxy de JDK del Subtema X.1. Un BPP actúa sobre beans ya creados; un `BeanFactoryPostProcessor` actúa antes, sobre las *definiciones* (así se resuelven los `${...}` de `@Value`). **Límite:** un BPP que inyecta otros beans en su constructor los fuerza a crearse antes que el resto, y Spring avisa con `is not eligible for getting processed by all BeanPostProcessors`; mantén los BPP sin dependencias.
+
+**Cierra:** borra `InspectorDeBeans` cuando termines; era un instrumento de observación, no lógica de la aplicación.
+
+#### Subtema X.4 · Reproduce la autoinvocación en Spring · 8 min
+
+**Contexto:** el Subtema X.1 mostró que `this` salta el proxy. Comprueba que en Spring ocurre lo mismo, porque es la causa de que `@Transactional` o `@Async` "no hagan nada" (Módulos 3 y 9).
+
+**Hazlo tú:** añade a `ServicioEnvios`:
+
+```java
+public String consultarVarios(String a, String b) {
+    return consultar(a) + " | " + consultar(b);
+}
+```
+
+Añade al test:
+
+```java
+@Test
+void laLlamadaInternaNoPasaPorElAspecto(CapturedOutput salida) {
+    servicio.consultarVarios("RF-1", "RF-2");
+    long medidas = salida.getOut().lines().filter(l -> l.contains("medido ServicioEnvios")).count();
+    assertEquals(1, medidas);
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=MedicionAspectTest test`.
+
+**Resultado esperado:** verde con **una** medición (`consultarVarios`), no tres.
+
+**Fallo deliberado:** cambia la expectativa a `3` y ejecuta. **Error esperado:** `expected: <3> but was: <1>`. **Diagnóstico:** las dos llamadas a `consultar` ocurren dentro del objeto real. Restaura `1`.
+
+**Entiende:** la solución habitual es mover el método llamado a **otro bean** e inyectarlo; así la llamada vuelve a cruzar un proxy. Inyectarse a sí mismo o usar `AopContext.currentProxy()` funciona, pero esconde el diseño.
+
+**Cierra:** escribe en una línea por qué `consultarVarios` se midió y `consultar` no.
+
+**Ejercicio:** limita la medición a los métodos marcados con una anotación propia `@Medido`, en lugar de a todos los de `ServicioEnvios`. Antes de abrir la solución, escribe el pointcut que crees correcto.
+
+<details>
+<summary>Solución</summary>
+
+```java
+package com.example.demo;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Medido { }
+```
+
+En `MedicionAspect`, cambia el pointcut:
+
+```java
+@Around("@annotation(com.example.demo.Medido)")
+```
+
+Marca `consultar` con `@Medido`. La retención `RUNTIME` es obligatoria: con la retención por defecto (`CLASS`) la anotación no existe en tiempo de ejecución y el pointcut no coincide con nada.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Ejecuté un proxy de JDK y vi que la llamada interna no fue interceptada.
+- [ ] Medí `ServicioEnvios` con `@Around` y comprobé con `AopUtils.isAopProxy` que recibí un proxy.
+- [ ] Vi con un `BeanPostProcessor` la clase `$$SpringCGLIB$$` y provoqué el fallo de devolver `null`.
+- [ ] Expliqué la autoinvocación y su corrección con otro bean.
+
+**Fuentes oficiales:** [Spring Framework — AOP con @AspectJ](https://docs.spring.io/spring-framework/reference/core/aop/ataspectj.html), [Spring Framework — Proxying mechanisms](https://docs.spring.io/spring-framework/reference/core/aop/proxying.html), [Spring Framework — Customizing beans with a BeanPostProcessor](https://docs.spring.io/spring-framework/reference/core/beans/factory-extension.html) y la [guía del examen 2V0-72.22](https://docs.broadcom.com/doc/vmw-spring-professional-develop-exam-guide).
+
+**Proyecto integrador:** en RutaFlow, mide solo los casos de uso marcados con `@Medido` y registra el tiempo con el nombre del método. **Límite:** para métricas reales usarás Micrometer en el Módulo 7; este aspecto es para entender el mecanismo.
+
+### Tema 6: Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL · Intermedio · 40 min
+
+Al terminar, podrás resolver la ambigüedad cuando dos beans implementan la misma interfaz, inyectar todas las implementaciones a la vez y calcular valores de configuración con Spring Expression Language (SpEL).
+
+**¿Por qué es importante?** En cuanto RutaFlow tenga una tarifa urbana y una express, el contenedor ya no sabe cuál inyectar y la aplicación no arranca. Elegir con `@Primary`, `@Qualifier` o una lista es una decisión de diseño, no un truco para silenciar el error. SpEL aparece en `@Value`, `@PreAuthorize`, `@Cacheable` y `@Retryable`; confundir `${...}` con `#{...}` es un fallo frecuente. Ambos temas están en la sección Core del examen 2V0-72.22.
+
+**Prerrequisitos:** Temas 1–3 de este módulo (inyección por constructor y estereotipos). Usa JDK 25 y Spring Boot 4.1.2.
+
+#### Subtema X.1 · Provoca la ambigüedad y elige un bean por defecto con `@Primary` · 10 min
+
+**Contexto:** el cotizador de envíos depende de una interfaz `Tarifador`. Mientras solo exista una implementación, la inyección por constructor funciona sin anotaciones.
+
+**Hazlo tú:** en `academia-spring`, paquete `com.example.demo`, crea tres archivos:
+
+```java
+// src/main/java/com/example/demo/Tarifador.java
+package com.example.demo;
+
+public interface Tarifador {
+    long tarifa(int kilometros);
+}
+```
+
+```java
+// src/main/java/com/example/demo/TarifaUrbana.java
+package com.example.demo;
+
+import org.springframework.stereotype.Component;
+
+@Component("tarifaUrbana")
+public class TarifaUrbana implements Tarifador {
+    @Override
+    public long tarifa(int kilometros) { return 3_500 + 1_000L * kilometros; }
+}
+```
+
+```java
+// src/main/java/com/example/demo/CotizadorService.java
+package com.example.demo;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class CotizadorService {
+    private final Tarifador tarifador;
+
+    public CotizadorService(Tarifador tarifador) { this.tarifador = tarifador; }
+
+    public long cotizar(int kilometros) { return tarifador.tarifa(kilometros); }
+}
+```
+
+Arranca con `./mvnw spring-boot:run`: funciona. Ahora crea la segunda implementación:
+
+```java
+// src/main/java/com/example/demo/TarifaExpress.java
+package com.example.demo;
+
+import org.springframework.stereotype.Component;
+
+@Component("tarifaExpress")
+public class TarifaExpress implements Tarifador {
+    @Override
+    public long tarifa(int kilometros) { return 9_000 + 1_500L * kilometros; }
+}
+```
+
+**Fallo deliberado:** vuelve a arrancar. **Error esperado:** `APPLICATION FAILED TO START` con `Parameter 0 of constructor in com.example.demo.CotizadorService required a single bean, but 2 were found:` y la lista `tarifaExpress`, `tarifaUrbana`. **Diagnóstico:** hay dos candidatos del tipo pedido y ninguno está marcado como preferido.
+
+Marca la urbana como opción por defecto: añade `@Primary` (de `org.springframework.context.annotation.Primary`) encima de `@Component("tarifaUrbana")` y arranca de nuevo.
+
+**Resultado esperado:** la aplicación arranca y `cotizar(10)` devuelve `13500`.
+
+**Entiende:** `@Primary` resuelve el empate **para todos los puntos de inyección** que pidan un único `Tarifador`. Es adecuado cuando hay una implementación normal y otras especiales. Spring también desempata si el nombre del parámetro coincide con el nombre de un bean (por eso aquí se llama `tarifador`, que no coincide con ninguno); no dependas de eso, porque un renombre lo rompe en silencio.
+
+**Cierra:** guarda el mensaje de error completo: el `FailureAnalyzer` de Boot ya te dice qué tipos compiten y qué hacer.
+
+#### Subtema X.2 · Pide una implementación concreta con `@Qualifier` · 8 min
+
+**Contexto:** el endpoint de envíos express debe usar siempre la tarifa express, aunque la urbana sea la principal.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/CotizadorExpress.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CotizadorExpress {
+    private final Tarifador tarifador;
+
+    public CotizadorExpress(@Qualifier("tarifaExpress") Tarifador tarifador) {
+        this.tarifador = tarifador;
+    }
+
+    public long cotizar(int kilometros) { return tarifador.tarifa(kilometros); }
+}
+```
+
+Crea `src/test/java/com/example/demo/CotizadoresTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class CotizadoresTest {
+    @Autowired CotizadorService normal;
+    @Autowired CotizadorExpress express;
+
+    @Test
+    void cadaCotizadorRecibeSuTarifa() {
+        assertEquals(13_500, normal.cotizar(10));
+        assertEquals(24_000, express.cotizar(10));
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=CotizadoresTest test`.
+
+**Resultado esperado:** verde.
+
+**Fallo deliberado:** escribe `@Qualifier("tarifa-express")`. **Error esperado:** el contexto no arranca: `required a bean of type 'com.example.demo.Tarifador' that could not be found` con el calificador indicado. **Diagnóstico:** el calificador compara con el nombre del bean (`tarifaExpress`), letra por letra. Restaura el nombre.
+
+**Entiende:** `@Qualifier` gana sobre `@Primary` en ese punto de inyección. Para evitar cadenas repetidas, puedes crear una anotación propia meta-anotada con `@Qualifier`; el principio es el mismo.
+
+**Cierra:** anota qué clase usa cada estrategia y por qué.
+
+#### Subtema X.3 · Inyecta todas las implementaciones como lista o mapa · 7 min
+
+**Contexto:** la pantalla de comparación muestra todas las tarifas disponibles. No quieres editar el servicio cada vez que aparezca una nueva.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/ComparadorTarifas.java`:
+
+```java
+package com.example.demo;
+
+import java.util.Map;
+import java.util.TreeMap;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ComparadorTarifas {
+    private final Map<String, Tarifador> tarifadores;
+
+    public ComparadorTarifas(Map<String, Tarifador> tarifadores) {
+        this.tarifadores = tarifadores;
+    }
+
+    public Map<String, Long> comparar(int kilometros) {
+        Map<String, Long> resultado = new TreeMap<>();
+        tarifadores.forEach((nombre, t) -> resultado.put(nombre, t.tarifa(kilometros)));
+        return resultado;
+    }
+}
+```
+
+Añade al test:
+
+```java
+@Autowired ComparadorTarifas comparador;
+
+@Test
+void elMapaContieneTodasLasTarifas() {
+    assertEquals(java.util.Map.of("tarifaExpress", 24_000L, "tarifaUrbana", 13_500L),
+        comparador.comparar(10));
+}
+```
+
+**Resultado esperado:** verde; la clave de cada entrada es el nombre del bean.
+
+**Fallo deliberado:** cambia el constructor a `ComparadorTarifas(Tarifador tarifadores)` con tipo singular. El test falla porque ahora recibes solo la `@Primary`. **Diagnóstico:** el tipo del parámetro decide si pides uno o todos. Restaura `Map<String, Tarifador>`.
+
+**Entiende:** `List<Tarifador>` también funciona; su orden sigue `@Order` u `Ordered` si los declaras. Este patrón reemplaza un `switch` por estrategia sin tocar el servicio (principio abierto/cerrado).
+
+**Cierra:** agrega mentalmente una `TarifaNocturna`: ¿qué archivo cambiarías? Solo el nuevo.
+
+#### Subtema X.4 · Calcula valores con SpEL: `${...}` frente a `#{...}` · 10 min
+
+**Contexto:** `${...}` es un *placeholder*: copia una propiedad tal cual. `#{...}` es una *expresión*: evalúa código pequeño (aritmética, llamadas a métodos, otros beans). La certificación pide distinguirlos.
+
+**Hazlo tú:** en `src/main/resources/application.properties` añade:
+
+```properties
+rutaflow.tarifa-base=3500
+rutaflow.zonas=norte,sur,centro
+```
+
+Crea `src/main/java/com/example/demo/ParametrosTarifa.java`:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ParametrosTarifa {
+    private final int base;
+    private final int recargoNocturno;
+    private final List<String> zonas;
+
+    public ParametrosTarifa(
+            @Value("${rutaflow.tarifa-base}") int base,
+            @Value("#{${rutaflow.tarifa-base} * 2}") int recargoNocturno,
+            @Value("#{'${rutaflow.zonas}'.split(',')}") List<String> zonas) {
+        this.base = base;
+        this.recargoNocturno = recargoNocturno;
+        this.zonas = zonas;
+    }
+
+    public int base() { return base; }
+    public int recargoNocturno() { return recargoNocturno; }
+    public List<String> zonas() { return zonas; }
+}
+```
+
+Crea `src/test/java/com/example/demo/SpelTest.java`, que además evalúa una expresión sin Spring Boot:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+@SpringBootTest
+class SpelTest {
+    @Autowired ParametrosTarifa parametros;
+
+    @Test
+    void placeholderYExpresion() {
+        assertEquals(3500, parametros.base());
+        assertEquals(7000, parametros.recargoNocturno());
+        assertEquals(List.of("norte", "sur", "centro"), parametros.zonas());
+    }
+
+    @Test
+    void expresionSueltaConVariable() {
+        var contexto = new StandardEvaluationContext();
+        contexto.setVariable("km", 12);
+        Integer total = new SpelExpressionParser()
+            .parseExpression("#km * 1000 + 3500")
+            .getValue(contexto, Integer.class);
+        assertEquals(15_500, total);
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=SpelTest test`.
+
+**Resultado esperado:** verde: `3500`, `7000` y la lista de tres zonas.
+
+**Fallo deliberado:** cambia la segunda anotación a `@Value("${rutaflow.tarifa-base * 2}")`. **Error esperado:** el contexto no arranca con `Could not resolve placeholder 'rutaflow.tarifa-base * 2'`. **Diagnóstico:** dentro de `${...}` no hay aritmética; Spring buscó una propiedad con ese nombre literal. Restaura `#{${rutaflow.tarifa-base} * 2}`.
+
+**Entiende:** primero se sustituyen los `${...}` y luego se evalúa el `#{...}` resultante (`#{3500 * 2}`). En una expresión, `#nombre` es una variable, `@nombre` es un bean y `T(java.lang.Math)` es un tipo. Verás la misma sintaxis en `@PreAuthorize("hasRole('ADMIN') and #codigo.startsWith('RF')")` (Módulo 5). **Límite:** no evalúes con `StandardEvaluationContext` texto que venga de usuarios: puede invocar métodos arbitrarios. Para datos no confiables usa `SimpleEvaluationContext`, que solo permite acceso a propiedades.
+
+**Cierra:** escribe una regla de una línea para decidir entre `${...}` y `#{...}`.
+
+**Ejercicio:** añade `rutaflow.km-gratis=2` y una propiedad calculada que valga la tarifa base más 1 000 por cada kilómetro **por encima** de los gratis, para 5 km, usando una sola expresión en `@Value`. Escribe tu expresión antes de abrir la solución.
+
+<details>
+<summary>Solución</summary>
+
+```java
+@Value("#{${rutaflow.tarifa-base} + 1000 * T(java.lang.Math).max(0, 5 - ${rutaflow.km-gratis})}")
+int tarifaCincoKm;   // 3500 + 1000 * 3 = 6500
+```
+
+`T(java.lang.Math).max` evita un valor negativo cuando los kilómetros gratis superan la distancia. Si la regla crece, muévela a un método Java con prueba unitaria: SpEL sirve para configuración corta, no para lógica de negocio.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Provoqué y leí el error de "2 beans encontrados" y lo resolví con `@Primary`.
+- [ ] Inyecté una implementación concreta con `@Qualifier` y probé las dos tarifas.
+- [ ] Recibí todas las implementaciones en un `Map<String, Tarifador>`.
+- [ ] Distinguí `${...}` de `#{...}` con una prueba y con el fallo del placeholder aritmético.
+
+**Fuentes oficiales:** [Spring Framework — Fine-tuning annotation-based autowiring with @Primary](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-primary.html), [con @Qualifier](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-qualifiers.html), [Spring Expression Language](https://docs.spring.io/spring-framework/reference/core/expressions.html) y la [guía del examen 2V0-72.22](https://docs.broadcom.com/doc/vmw-spring-professional-develop-exam-guide).
+
+**Proyecto integrador:** en RutaFlow, expón `GET /tarifas?km=10` con `ComparadorTarifas`. **Límite:** las tarifas reales viven en la base de datos (Módulo 4); aquí solo cambia la estrategia de cálculo.
+
 ## Ruta de proyecto progresivo desde carpeta vacía
 
 No crees un proyecto desechable por módulo. Conserva un único repositorio que evoluciona durante todo el track y etiqueta cada hito (`git tag modulo-N`). Empieza generando `academia-spring` en `start.spring.io`, descomprímelo en una carpeta vacía y ejecuta `git init`. Ejecuta el comando paso a paso, inspecciona los archivos generados y registra versiones y precondiciones en el README.
@@ -757,7 +1323,6 @@ No crees un proyecto desechable por módulo. Conserva un único repositorio que 
 | Experto | contratos, observabilidad y resiliencia. | Perfil o threat model, telemetría y runbook de recuperación. |
 
 Al iniciar cada laboratorio crea una rama `modulo-N`, implementa el incremento, verifica el criterio de éxito y fusiona solo con pruebas verdes. Si un módulo necesita un experimento aislado, colócalo en `experiments/modulo-N/`; el producto acumulativo permanece ejecutable. Al terminar, otra persona debe poder clonar el repositorio y reproducir el último hito siguiendo únicamente el README.
-
 
 ## Laboratorio práctico
 

@@ -1,9 +1,9 @@
-# Módulo 9: Testing con JUnit 5 y Mockito
+# Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito
 
 
 ## Aprende construyendo
 
-### Tema 1: JUnit 5 — anotaciones y ciclo de vida
+### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida
 
 **¿Por qué es importante?** una prueba repetible descubre cuando un cambio rompe una regla antes de que el fallo llegue al usuario.
 
@@ -303,7 +303,7 @@ Modifica el valor esperado de la fila `"501, 7000"` a `"501, 4000"` (incorrecto 
 
 ### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
-**Prerrequisito:** temas «JUnit 5 — anotaciones y ciclo de vida» y «Tests parametrizados y cobertura» de este módulo.
+**Prerrequisito:** temas «JUnit 6 (Jupiter) — anotaciones y ciclo de vida» y «Tests parametrizados y cobertura» de este módulo.
 
 **Al finalizar podrás:** escribir propiedades (reglas que deben cumplirse para toda entrada válida), comprobarlas con mil entradas generadas con una semilla fija y reducir un fallo al caso mínimo; después, expresarlas con jqwik.
 
@@ -451,11 +451,11 @@ Escribe una propiedad para una función `codificar`/`decodificar` de códigos de
 - [ ] Explicas por qué la segunda propiedad pasa con código incorrecto.
 - [ ] Escribiste propiedades que no repiten la implementación.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** generar sin semilla reproducible, olvidar los bordes y escribir propiedades que copian la fórmula. **Siguiente paso:** el módulo 15 integra jqwik junto a JUnit 5 en el build de Maven y Gradle.
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** generar sin semilla reproducible, olvidar los bordes y escribir propiedades que copian la fórmula. **Siguiente paso:** el módulo 15 integra jqwik junto a JUnit Jupiter en el build de Maven y Gradle.
 
 **Transferencia al proyecto integrador «RutaFlow»:** agrega pruebas de propiedades con jqwik a las tarifas de RutaFlow: positiva, monótona respecto al peso y con tope máximo.
 
-**Fuente oficial:** [jqwik — User Guide](https://jqwik.net/docs/current/user-guide.html) y [JUnit 5 — User Guide](https://junit.org/junit5/docs/current/user-guide/).
+**Fuente oficial:** [jqwik — User Guide](https://jqwik.net/docs/current/user-guide.html) y [JUnit — User Guide](https://docs.junit.org/current/user-guide/).
 
 ## Construcción guiada del capítulo
 

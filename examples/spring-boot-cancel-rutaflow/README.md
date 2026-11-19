@@ -1,6 +1,6 @@
 # Cancelar sin borrar: CRUD Spring Boot
 
-Laboratorio pequeño del Módulo 14. Crea un envío, lo recupera y cancela cambiando su estado; no necesita Docker.
+Laboratorio pequeño del Módulo 20 (Spring Boot). Crea un envío, lo recupera y cancela cambiando su estado; no necesita Docker.
 
 ## Requisitos y ejecución
 

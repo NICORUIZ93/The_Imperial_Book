@@ -3,7 +3,7 @@
 Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades), automatiza la validación de entrada y centraliza el manejo de errores — las tres piezas que hacen que una API REST sea predecible para quien la consume.
 
 
-**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
@@ -607,7 +607,6 @@ No devuelvas `ex.getStackTrace()` ni mensajes de base de datos a la API. Si el p
 **Transferencia al proyecto integrador:** aplica el mismo esquema a errores previstos del servicio de envíos; documenta los códigos estables y deja detalles internos en los logs del servidor, no en la respuesta pública.
 
 **Fuentes primarias:** [Spring MVC: manejadores de excepción](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
-
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos
 
@@ -1268,3 +1267,453 @@ Page es útil si la interfaz necesita total y número de páginas. Para una list
 **Transferencia al proyecto integrador:** pagina el listado de envíos con límites explícitos, orden estable y DTO de respuesta; registra cuándo el total de resultados es necesario para la interfaz.
 
 **Fuentes primarias:** [Spring Data: repositorios y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html), [Spring Data: uso de Pageable y Page](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html), [Spring MVC: validación de parámetros](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).
+
+### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Intermedio · 35 min
+
+Al terminar, podrás serializar y leer los DTO de la API con Jackson 3, el motor JSON que Spring Boot 4 usa por defecto, y reconocer los cambios que rompen código escrito para Jackson 2.
+
+**¿Por qué es importante?** Cada respuesta de `TareaController` pasa por Jackson. Spring Boot 4 cambió a Jackson 3: los paquetes pasan de `com.fasterxml.jackson` a `tools.jackson`, las excepciones dejan de ser *checked* y varios valores por defecto cambian. Si copias un ejemplo antiguo con `com.fasterxml.jackson.databind.ObjectMapper`, compila solo si alguna librería trae Jackson 2 por casualidad, y entonces tus pruebas no usan el mismo motor que tu API.
+
+**Prerrequisitos:** Temas 1–2 de este módulo (`TareaDTO`, `CrearTareaRequest`) y records de Java. Usa JDK 25 y Spring Boot 4.1.2.
+
+#### Subtema X.1 · Serializa y lee un DTO con `JsonMapper` · 10 min
+
+**Contexto:** antes de tocar la configuración de Boot, mira el motor solo. Una prueba sin contexto de Spring muestra los valores por defecto de Jackson 3.
+
+**Hazlo tú:** en `academia-spring` no añadas dependencias: `spring-boot-starter-webmvc` ya trae `tools.jackson.core:jackson-databind`. Crea `src/test/java/com/example/demo/JacksonTresTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.json.JsonMapper;
+
+class JacksonTresTest {
+    private final JsonMapper mapper = JsonMapper.builder().build();
+
+    @Test
+    void escribeYLeeUnRecordSinExcepcionesChecked() {
+        String json = mapper.writeValueAsString(new TareaDTO(7L, "Revisar ruta", 2));
+        assertTrue(json.contains("\"titulo\":\"Revisar ruta\""));
+
+        TareaDTO leido = mapper.readValue(json, TareaDTO.class);
+        assertEquals(new TareaDTO(7L, "Revisar ruta", 2), leido);
+    }
+
+    @Test
+    void unNullEnUnPrimitivoYaNoSeConvierteEnCero() {
+        String json = "{\"titulo\":\"Sin prioridad\",\"prioridad\":null}";
+        assertThrows(MismatchedInputException.class,
+            () -> mapper.readValue(json, CrearTareaRequest.class));
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=JacksonTresTest test`.
+
+**Resultado esperado:** los dos tests pasan. Observa que ningún método declara `throws`: en Jackson 3, `JacksonException` extiende `RuntimeException`.
+
+**Fallo deliberado:** cambia `assertThrows(MismatchedInputException.class, ...)` por una llamada directa `mapper.readValue(json, CrearTareaRequest.class);`. **Error esperado:** el test falla con `MismatchedInputException: Cannot map \`null\` into type \`int\``. **Diagnóstico:** Jackson 3 activa `FAIL_ON_NULL_FOR_PRIMITIVES` por defecto; con Jackson 2 ese `null` se convertía en silencio en `0`. Restaura el `assertThrows`.
+
+**Entiende:** `JsonMapper` es el `ObjectMapper` específico de JSON y se construye con un *builder*: una vez creado es inmutable, así que no lo reconfigures en caliente. Las anotaciones (`@JsonProperty`, `@JsonInclude`) siguen en `com.fasterxml.jackson.annotation`, porque `jackson-annotations` se comparte entre Jackson 2 y 3; el resto vive en `tools.jackson`.
+
+**Cierra:** anota los dos paquetes (`tools.jackson.databind` y `com.fasterxml.jackson.annotation`) y para qué sirve cada uno.
+
+#### Subtema X.2 · Escribe fechas sin módulos extra · 10 min
+
+**Contexto:** el historial de una tarea guarda cuándo cambió. En Jackson 2 necesitabas registrar `jackson-datatype-jsr310`; en Jackson 3 el soporte de `java.time` viene dentro de `jackson-databind`.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/EventoTarea.java`:
+
+```java
+package com.example.demo;
+
+import java.time.Instant;
+
+public record EventoTarea(long tareaId, String tipo, Instant ocurrido) { }
+```
+
+Añade a `JacksonTresTest`:
+
+```java
+@Test
+void instantSaleComoTextoIso8601() {
+    var evento = new EventoTarea(7L, "CREADA", java.time.Instant.parse("2026-11-18T10:15:30Z"));
+    String json = mapper.writeValueAsString(evento);
+    assertTrue(json.contains("\"ocurrido\":\"2026-11-18T10:15:30Z\""), json);
+    assertEquals(evento, mapper.readValue(json, EventoTarea.class));
+}
+
+@Test
+void fechaConFormatoLocalSeRechaza() {
+    String json = "{\"tareaId\":7,\"tipo\":\"CREADA\",\"ocurrido\":\"18/11/2026\"}";
+    assertThrows(tools.jackson.core.JacksonException.class,
+        () -> mapper.readValue(json, EventoTarea.class));
+}
+```
+
+**Resultado esperado:** verde. El instante sale como texto ISO-8601, no como número.
+
+**Fallo deliberado:** cambia la expectativa del primer test a `"\"ocurrido\":1795…"` (un número) y ejecuta. **Error esperado:** la aserción falla e imprime el JSON real con la fecha en texto. **Diagnóstico:** Jackson 3 cambió el valor por defecto de `WRITE_DATES_AS_TIMESTAMPS` a `false`. Restaura la expectativa ISO.
+
+**Entiende:** un `Instant` es un punto en UTC; por eso termina en `Z`. Para fechas sin zona (`LocalDate`) el JSON será `"2026-11-18"`. **Límite:** no dependas del orden de las propiedades en el texto: Jackson 3 también cambió `MapperFeature.SORT_PROPERTIES_ALPHABETICALLY` a `true`; compara campos, no la cadena completa.
+
+**Cierra:** guarda el JSON impreso y señala el campo de fecha.
+
+#### Subtema X.3 · Usa el `JsonMapper` que configura Spring Boot · 10 min
+
+**Contexto:** tus controladores no usan `JsonMapper.builder().build()`, sino el bean que crea Boot con las propiedades `spring.jackson.*`. Las pruebas de integración deben usar ese mismo bean.
+
+**Hazlo tú:** crea `src/test/java/com/example/demo/JsonMapperDeBootTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import tools.jackson.databind.json.JsonMapper;
+
+@SpringBootTest
+class JsonMapperDeBootTest {
+    @Autowired JsonMapper mapper;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    record ResumenTarea(Long id, String titulo, String nota) { }
+
+    @Test
+    void omiteCamposNulosMarcadosConJsonInclude() {
+        String json = mapper.writeValueAsString(new ResumenTarea(1L, "Revisar", null));
+        assertFalse(json.contains("nota"), json);
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=JsonMapperDeBootTest test`.
+
+**Resultado esperado:** verde; el JSON es `{"id":1,"titulo":"Revisar"}` (el orden puede variar).
+
+**Fallo deliberado:** quita `@JsonInclude(JsonInclude.Include.NON_NULL)` del record. **Error esperado:** la aserción imprime un JSON con `"nota":null`. **Diagnóstico:** sin la anotación, Jackson escribe también los nulos. Restaura la anotación.
+
+**Entiende:** Spring Boot 4 autoconfigura un bean `JsonMapper` (ya no un `ObjectMapper` de Jackson 2). Para personalizarlo usa propiedades `spring.jackson.*` o un bean `JsonMapperBuilderCustomizer`, que reemplaza a `Jackson2ObjectMapperBuilderCustomizer`; `@JsonComponent` pasó a llamarse `@JacksonComponent`. Si migras un proyecto grande, `spring.jackson.use-jackson2-defaults=true` alinea temporalmente los valores por defecto con Jackson 2. **Límite:** esa propiedad es un puente de migración, no una configuración para código nuevo.
+
+**Cierra:** busca en tu proyecto cualquier `import com.fasterxml.jackson.databind` y cámbialo a `tools.jackson.databind`.
+
+**Ejercicio:** con el `mapper` de `JacksonTresTest`, lee `{"titulo":"Ruta","prioridad":3,"color":"rojo"}` como `CrearTareaRequest`. Predice si falla por la propiedad desconocida `color`; luego escribe un segundo test con un mapper que sí falle.
+
+<details>
+<summary>Solución</summary>
+
+En Jackson 3, `FAIL_ON_UNKNOWN_PROPERTIES` está desactivado por defecto, así que la lectura funciona y `color` se ignora. Para exigir un contrato estricto:
+
+```java
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
+
+@Test
+void contratoEstrictoRechazaPropiedadesDesconocidas() {
+    JsonMapper estricto = JsonMapper.builder()
+        .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .build();
+    String json = "{\"titulo\":\"Ruta\",\"prioridad\":3,\"color\":\"rojo\"}";
+    assertThrows(UnrecognizedPropertyException.class,
+        () -> estricto.readValue(json, CrearTareaRequest.class));
+}
+```
+
+Ignorar campos desconocidos permite que un cliente nuevo hable con un servidor viejo; rechazarlos detecta errores de escritura. Decide según quién controla a los clientes.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Serialicé y leí un record con `tools.jackson.databind.json.JsonMapper` sin `throws`.
+- [ ] Provoqué el rechazo de `null` en un `int` y lo expliqué con el valor por defecto de Jackson 3.
+- [ ] Vi un `Instant` como texto ISO-8601 sin registrar módulos.
+- [ ] Usé el `JsonMapper` de Boot y comprobé `@JsonInclude` desde `com.fasterxml.jackson.annotation`.
+
+**Fuentes oficiales:** [Jackson 3.0 release notes](https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.0) (paquetes, excepciones y valores por defecto) y [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) (sección Jackson 3).
+
+**Proyecto integrador:** en RutaFlow, decide si la API pública ignora o rechaza propiedades desconocidas y documéntalo en el contrato OpenAPI. **Límite:** springdoc puede traer Jackson 2 como dependencia transitiva; eso no cambia el motor que usan tus controladores, que es el `JsonMapper` de Boot.
+
+### Tema 8: Versionado de API nativo de Spring Framework 7 · Intermedio · 40 min
+
+Al terminar, podrás servir dos versiones del mismo recurso desde un controlador, elegir la versión por cabecera, rechazar versiones desconocidas y avisar a los clientes de que una versión será retirada con las cabeceras `Deprecation` y `Sunset`.
+
+**¿Por qué es importante?** El cliente móvil de RutaFlow no se actualiza el mismo día que el backend. Si cambias la forma de una respuesta, rompes a quien aún usa la anterior. Hasta Spring Framework 6 cada equipo inventaba su esquema (`/v1/...`, cabeceras propias, `if` en el controlador). Spring Framework 7 y Spring Boot 4 traen versionado integrado: la versión es parte del mapeo, igual que la ruta o el método HTTP.
+
+**Prerrequisitos:** Temas 1–3 de este módulo (`ServicioTareas.buscar`, `TareaDTO` y `GlobalExceptionHandler`). Usa JDK 25 y Spring Boot 4.1.2.
+
+```mermaid
+flowchart LR
+  R["GET /api/tareas/7/resumen"] --> H{"Cabecera API-Version"}
+  H -->|"ausente"| D["usa 1.0 por defecto"] --> V1["resumenV1()"]
+  H -->|"1.0"| V1
+  H -->|"2.0"| V2["resumenV2()"]
+  H -->|"3.0"| E["400: versión no soportada"]
+```
+
+#### Subtema X.1 · Activa el versionado por cabecera · 8 min
+
+**Contexto:** la versión puede viajar en una cabecera, un parámetro, un parámetro del *media type* o un segmento de la ruta. Para una API consumida por apps propias, la cabecera mantiene las URL estables.
+
+**Hazlo tú:** en `src/main/resources/application.properties` de `academia-spring` añade:
+
+```properties
+spring.mvc.apiversion.use.header=API-Version
+spring.mvc.apiversion.default=1.0
+```
+
+Crea los dos contratos en `src/main/java/com/example/demo/`:
+
+```java
+// ResumenTareaV1.java
+package com.example.demo;
+
+public record ResumenTareaV1(Long id, String titulo) { }
+```
+
+```java
+// ResumenTareaV2.java
+package com.example.demo;
+
+public record ResumenTareaV2(Long id, String titulo, int prioridad) { }
+```
+
+Crea `src/main/java/com/example/demo/ResumenTareaController.java`:
+
+```java
+package com.example.demo;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/tareas")
+public class ResumenTareaController {
+    private final ServicioTareas servicio;
+
+    public ResumenTareaController(ServicioTareas servicio) { this.servicio = servicio; }
+
+    @GetMapping(path = "/{id}/resumen", version = "1.0")
+    public ResumenTareaV1 resumenV1(@PathVariable Long id) {
+        TareaDTO t = servicio.buscar(id);
+        return new ResumenTareaV1(t.id(), t.titulo());
+    }
+
+    @GetMapping(path = "/{id}/resumen", version = "2.0")
+    public ResumenTareaV2 resumenV2(@PathVariable Long id) {
+        TareaDTO t = servicio.buscar(id);
+        return new ResumenTareaV2(t.id(), t.titulo(), t.prioridad());
+    }
+}
+```
+
+Arranca la aplicación, crea una tarea con el `curl` del Tema 1 (supón que recibe `id` 1) y pide:
+
+```bash
+curl -s http://localhost:8080/api/tareas/1/resumen
+curl -s -H 'API-Version: 2.0' http://localhost:8080/api/tareas/1/resumen
+```
+
+**Resultado esperado:** la primera respuesta solo tiene `id` y `titulo` (versión 1.0 por defecto); la segunda añade `prioridad`.
+
+**Fallo deliberado:** borra `version = "1.0"` del primer método y repite la petición sin cabecera. **Error esperado:** sigue respondiendo la versión 1, pero ahora porque un método sin versión "acepta cualquiera" y queda como respaldo; con `-H 'API-Version: 2.0'` gana el método versionado. **Diagnóstico:** un método sin `version` no es "la versión 1"; es el comodín de menor prioridad. Restaura `version = "1.0"` para que el contrato sea explícito.
+
+**Entiende:** Boot crea la `ApiVersionStrategy` a partir de `spring.mvc.apiversion.*`. Al fijar `default`, la versión deja de ser obligatoria: una petición sin cabecera se trata como `1.0`. El parser por defecto es semántico (`mayor.menor.parche`), así que `"2"` y `"2.0"` son la misma versión.
+
+**Cierra:** guarda las dos respuestas y señala el campo que cambió entre versiones.
+
+#### Subtema X.2 · Prueba las versiones y el rechazo de una desconocida · 10 min
+
+**Contexto:** lo que no está probado se rompe en el siguiente refactor. La prueba debe cubrir versión por defecto, versión explícita y versión inexistente.
+
+**Hazlo tú:** crea `src/test/java/com/example/demo/VersionadoApiTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class VersionadoApiTest {
+    @Autowired MockMvc mockMvc;
+    @Autowired ServicioTareas servicio;
+    Long id;
+
+    @BeforeEach
+    void crearTarea() {
+        id = servicio.crear(new CrearTareaRequest("Revisar ruta", 2)).id();
+    }
+
+    @Test
+    void sinCabeceraUsaLaVersionPorDefecto() throws Exception {
+        mockMvc.perform(get("/api/tareas/{id}/resumen", id))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.titulo").value("Revisar ruta"))
+            .andExpect(jsonPath("$.prioridad").doesNotExist());
+    }
+
+    @Test
+    void laVersionDosIncluyePrioridad() throws Exception {
+        mockMvc.perform(get("/api/tareas/{id}/resumen", id).header("API-Version", "2.0"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.prioridad").value(2));
+    }
+
+    @Test
+    void unaVersionDesconocidaResponde400() throws Exception {
+        mockMvc.perform(get("/api/tareas/{id}/resumen", id).header("API-Version", "3.0"))
+            .andExpect(status().isBadRequest());
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=VersionadoApiTest test`.
+
+**Resultado esperado:** tres pruebas verdes.
+
+**Fallo deliberado:** cambia el segundo método a `version = "2.0+"` (línea base) y añade al test una petición con `API-Version: 2.5`. **Error esperado:** sigue respondiendo `400`. **Diagnóstico:** `2.0+` acepta 2.0 y las versiones **soportadas** superiores; `2.5` no aparece en ningún mapeo ni en la configuración, así que se rechaza antes de buscar el método. Vuelve a `version = "2.0"` y quita esa petición.
+
+**Entiende:** una versión desconocida produce `InvalidApiVersionException` y un `400`. Si tu `GlobalExceptionHandler` tiene un `@ExceptionHandler(Exception.class)` genérico, revisa que no convierta ese `400` en un `500`. Las versiones soportadas salen, por defecto, de los mapeos de los controladores.
+
+**Cierra:** conserva la salida de las tres pruebas.
+
+#### Subtema X.3 · Anuncia la retirada con `Deprecation` y `Sunset` · 10 min
+
+**Contexto:** la versión 1.0 se retirará. Los clientes deben enterarse por la propia respuesta, no por un correo que nadie lee.
+
+**Hazlo tú:** crea `src/main/java/com/example/demo/VersionadoConfig.java`. Boot inyecta este bean en la configuración de MVC que ya autoconfiguró:
+
+```java
+package com.example.demo;
+
+import java.net.URI;
+import java.time.ZonedDateTime;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.accept.StandardApiVersionDeprecationHandler;
+
+@Configuration
+public class VersionadoConfig {
+    @Bean
+    StandardApiVersionDeprecationHandler retiradaDeVersiones() {
+        var handler = new StandardApiVersionDeprecationHandler();
+        handler.configureVersion("1.0")
+            .setDeprecationDate(ZonedDateTime.parse("2026-12-01T00:00:00Z"))
+            .setSunsetDate(ZonedDateTime.parse("2027-06-01T00:00:00Z"))
+            .setSunsetLink(URI.create("https://academia.dev/api/migrar-a-v2"));
+        return handler;
+    }
+}
+```
+
+Añade a `VersionadoApiTest`:
+
+```java
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+
+@Test
+void laVersionUnoAnunciaSuRetirada() throws Exception {
+    mockMvc.perform(get("/api/tareas/{id}/resumen", id).header("API-Version", "1.0"))
+        .andExpect(status().isOk())
+        .andExpect(header().exists("Deprecation"))
+        .andExpect(header().exists("Sunset"));
+}
+
+@Test
+void laVersionDosNoLlevaCabeceras() throws Exception {
+    mockMvc.perform(get("/api/tareas/{id}/resumen", id).header("API-Version", "2.0"))
+        .andExpect(status().isOk())
+        .andExpect(header().doesNotExist("Deprecation"));
+}
+```
+
+**Resultado esperado:** `./mvnw -q -Dtest=VersionadoApiTest test` termina con cinco pruebas verdes. Con `curl -i -H 'API-Version: 1.0' ...` verás las cabeceras `Deprecation`, `Sunset` y `Link` con `rel="sunset"`.
+
+**Fallo deliberado:** borra la línea `.setSunsetDate(...)` y repite. **Error esperado:** `laVersionUnoAnunciaSuRetirada` falla con `Response does not contain header 'Sunset'`. **Diagnóstico:** el manejador solo escribe las cabeceras que configuraste; `Deprecation` sin `Sunset` anuncia la obsolescencia pero no la fecha de retirada. Restaura la línea.
+
+**Entiende:** `Deprecation` (RFC 9745) dice desde cuándo la versión está obsoleta; `Sunset` (RFC 8594) dice cuándo dejará de responder; `Link` apunta a la guía de migración. El servidor sigue atendiendo la versión 1.0: avisar no es retirar.
+
+**Cierra:** registra las tres cabeceras de la respuesta 1.0.
+
+#### Subtema X.4 · Decide la estrategia y su límite · 7 min
+
+**Contexto:** cabecera, ruta, parámetro y *media type* funcionan; la elección afecta a cachés, documentación y clientes.
+
+**Hazlo tú:** compara en tu README las cuatro estrategias que admite `ApiVersionConfigurer` (`useRequestHeader`, `usePathSegment`, `useQueryParam`, `useMediaTypeParameter`) con esta tabla y añade una columna con tu decisión para RutaFlow:
+
+| Estrategia | Ejemplo | A favor | En contra |
+|---|---|---|---|
+| Cabecera | `API-Version: 2.0` | URL estable | Una caché HTTP debe variar por esa cabecera (`Vary`) |
+| Segmento de ruta | `/api/v2/tareas` | Visible y fácil de probar en el navegador | Cambia la URL del recurso |
+| Parámetro | `?version=2.0` | Simple | Se pierde con facilidad al construir enlaces |
+| *Media type* | `Accept: application/json;version=2.0` | Semántica HTTP | Más difícil para clientes simples |
+
+**Resultado esperado:** una decisión escrita con su desventaja aceptada.
+
+**Fallo deliberado:** intenta combinar cabecera y parámetro solo con propiedades. **Diagnóstico:** la documentación de Boot indica que, si necesitas varias estrategias con un orden concreto, debes declararlas en un `WebMvcConfigurer` sobrescribiendo `configureApiVersioning`.
+
+**Entiende:** versionar no sustituye a evolucionar con cuidado: añadir un campo opcional no necesita versión nueva; quitar o cambiar el tipo de un campo, sí. `RestClient` y `WebClient` también pueden enviar la versión en cada petición.
+
+**Cierra:** enlaza tu decisión desde el contrato OpenAPI del Tema 5.
+
+**Ejercicio:** cambia la estrategia a segmento de ruta (`/api/v1/tareas/...` y `/api/v2/tareas/...`) con un `WebMvcConfigurer`. Escribe qué índice de segmento usarás antes de abrir la solución.
+
+<details>
+<summary>Solución</summary>
+
+Quita las dos propiedades `spring.mvc.apiversion.*` y crea:
+
+```java
+package com.example.demo;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ApiVersionConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class VersionPorRuta implements WebMvcConfigurer {
+    @Override
+    public void configureApiVersioning(ApiVersionConfigurer configurer) {
+        configurer.usePathSegment(1);
+    }
+}
+```
+
+Los segmentos se cuentan desde 0: en `/api/v2/tareas/1/resumen`, `api` es el 0 y `v2` el 1. Cambia el controlador a `@RequestMapping("/api/{version}/tareas")`. Con el parser semántico por defecto, el prefijo `v` se acepta. `usePathSegment` nunca devuelve `null`: toda ruta que pase por él debe llevar versión, así que rutas no versionadas como `/actuator` necesitan la variante con predicado `usePathSegment(1, predicado)`.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Serví dos versiones del mismo recurso con `@GetMapping(version = ...)`.
+- [ ] Probé versión por defecto, explícita y desconocida (`400`).
+- [ ] Vi `Deprecation`, `Sunset` y `Link` en la versión 1.0.
+- [ ] Elegí una estrategia de versionado y escribí su desventaja.
+
+**Fuentes oficiales:** [Spring Framework — API Versioning](https://docs.spring.io/spring-framework/reference/web/webmvc-versioning.html), [mapeo con `version`](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html), [`ApiVersionConfigurer`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/ApiVersionConfigurer.html) y [Spring Boot — API Versioning](https://docs.spring.io/spring-boot/reference/web/servlet.html).
+
+**Proyecto integrador:** versiona en RutaFlow el recurso que más cambia (la ruta optimizada) y fija la fecha de `Sunset` en el ADR del Módulo 15. **Límite:** versionar el contrato HTTP no versiona los eventos de Kafka; esos se gobiernan con Schema Registry (Módulo 10).

@@ -144,31 +144,63 @@ En el proyecto integrador RutaFlow, `ListaEnviosScreen` vive en `lib/features/de
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class Envio {
+  const Envio(this.guia, this.estado);
+  final String guia;
+  final String estado;
+}
+
+class EnvioRepository {
+  Future<List<Envio>> obtenerEnvios() async {
+    await Future<void>.delayed(const Duration(seconds: 1)); // simula la lectura de la caché
+    return const [Envio('RF-4471', 'En ruta'), Envio('RF-5002', 'Entregado')];
+  }
+}
+
+final envioRepositoryProvider = Provider((ref) => EnvioRepository());
+
 final enviosProvider = FutureProvider<List<Envio>>((ref) async {
   final repo = ref.watch(envioRepositoryProvider);
   return repo.obtenerEnvios(); // lee de caché local, sincroniza en background
 });
 
+void main() => runApp(const ProviderScope(child: MaterialApp(home: Scaffold(body: ListaEnviosScreen()))));
+
 class ListaEnviosScreen extends ConsumerWidget {
+  const ListaEnviosScreen({super.key});
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enviosAsync = ref.watch(enviosProvider);
     return enviosAsync.when(
       data: (envios) => ListView(children: envios.map((e) => TarjetaEnvio(envio: e)).toList()),
-      loading: () => CircularProgressIndicator(),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (e, _) => Text('Error: $e'),
     );
   }
 }
+
+class TarjetaEnvio extends StatelessWidget {
+  const TarjetaEnvio({required this.envio, super.key});
+  final Envio envio;
+
+  @override
+  Widget build(BuildContext context) => ListTile(title: Text(envio.guia), subtitle: Text(envio.estado));
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add flutter_riverpod
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `ListaEnviosScreen` muestra el spinner mientras carga, la lista real cuando los datos llegan, o un mensaje de error si falla — los tres casos posibles manejados explícitamente, sin ningún estado ambiguo.
 

@@ -1,256 +1,192 @@
-# Módulo 15: Spring Master: hexagonal, reactivo y microservicios
-
+# Módulo 15: Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith
 
 ## Aprende construyendo
 
-Este módulo cierra el nivel "master" del track con ocho temas avanzados: backpressure medido con `reactor-test`, reutilización de contenedores Testcontainers, reglas con ArchUnit, Bulkhead y RateLimiter con Resilience4j, una saga con compensación, event sourcing con replay, recuperación de compensaciones fallidas y Clean Architecture con DDD táctico. Cada tema debe enlazar sus herramientas y pruebas reales; el inventario de herramientas no sustituye evidencia de ejecución.
+Cada Tema parte de una carpeta vacía, produce un artefacto concreto y lo verifica con un comando real. El recorrido va de dentro hacia afuera: puertos y adaptadores (Temas 1–3), cómo documentar y decidir la arquitectura (Temas 4–5) y cómo verificar los límites dentro de un mismo proceso con Spring Modulith (Temas 6–9). Un módulo de Modulith es una frontera lógica, no un microservicio; la decisión de separar servicios se estudia en el curso [Microservicios](/curso/microservices/0).
 
-### Tema 1: Backpressure real en WebFlux con reactor-test
+### Tema 1: Hexagonal: puertos que hablan el idioma del dominio
 
-**Objetivo observable:** usar `StepVerifier` para pedir elementos por tandas y comprobar los valores emitidos y las solicitudes que llegan al origen.
+Al finalizar vas a separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y a compilar el caso de uso sin Spring ni JPA en el classpath.
 
-**¿Por qué es importante?** Si el consumidor va más lento que el productor, Reactive Streams deja que solicite la cantidad que puede procesar. Los operadores pueden guardar elementos o cambiar las tandas de demanda; por eso la posición donde medimos importa.
+**Conocimiento previo:** JDK 25, `javac`/`java` en el `PATH`, y el Módulo 15 (Clean Architecture y DDD táctico). Comprueba `javac -version`.
 
-**Antes de empezar:** conocer `Flux` y una prueba básica de `StepVerifier` (Módulo 9). Continúa en el ejemplo existente `examples/spring-reactor-rutaflow/`, que ya incluye `reactor-test`.
+**¿Por qué es importante?** Un puerto que devuelve `Page<ReservaEntity>` obliga al dominio a depender de Spring Data: el test del caso de uso levanta el contexto de Spring, tarda segundos y falla cuando cambia la versión de JPA. El síntoma aparece cuando alguien intenta probar una regla de negocio y descubre que necesita una base de datos.
+
+En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
+
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
 
 ```bash
-cd examples/spring-reactor-rutaflow
-./mvnw -q -Dtest=BackpressureDemandTest test
+cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cd practica-arquitectura
 ```
+
+#### Subtema 1.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+
+**Contexto:** El puerto conserva lenguaje del dominio; el adaptador en memoria satisface el contrato sin Spring.
+
+**Hazlo tú:** Desde una carpeta vacía:
+
+```bash
+mkdir arquitectura-hexagonal && cd arquitectura-hexagonal
+mkdir src
+```
+
+Crea `src/Hexagonal.java` con este contenido completo:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public final class Hexagonal {
+    record ReservaId(String valor) {
+        ReservaId {
+            if (valor == null || valor.isBlank()) throw new IllegalArgumentException("id requerido");
+        }
+    }
+
+    record Reserva(ReservaId id, String vehiculo, int dias) {
+        Reserva {
+            if (dias <= 0) throw new IllegalArgumentException("dias debe ser positivo");
+        }
+    }
+
+    // Puerto: declara lo que la aplicación necesita, con tipos del dominio.
+    interface ReservaRepository {
+        void guardar(Reserva reserva);
+        Optional<Reserva> buscar(ReservaId id);
+    }
+
+    static final class CrearReserva {
+        private final ReservaRepository repositorio;
+        CrearReserva(ReservaRepository repositorio) { this.repositorio = repositorio; }
+
+        Reserva ejecutar(ReservaId id, String vehiculo, int dias) {
+            Reserva reserva = new Reserva(id, vehiculo, dias);
+            repositorio.guardar(reserva);
+            return reserva;
+        }
+    }
+
+    static final class EnMemoria implements ReservaRepository {
+        private final List<Reserva> datos = new ArrayList<>();
+
+        public void guardar(Reserva reserva) { datos.add(reserva); }
+
+        public Optional<Reserva> buscar(ReservaId id) {
+            return datos.stream().filter(reserva -> reserva.id().equals(id)).findFirst();
+        }
+    }
+
+    public static void main(String[] args) {
+        ReservaRepository repositorio = new EnMemoria();
+        Reserva creada = new CrearReserva(repositorio).ejecutar(new ReservaId("RES-1"), "camion-1", 3);
+        Reserva recuperada = repositorio.buscar(creada.id()).orElseThrow();
+        System.out.println("reserva=" + recuperada.id().valor() + " vehiculo=" + recuperada.vehiculo());
+    }
+}
+```
+
+Compila y ejecuta sin ninguna dependencia externa:
+
+```bash
+javac -d out src/Hexagonal.java
+java -cp out Hexagonal
+```
+
+**Resultado esperado:** `reserva=RES-1 vehiculo=camion-1`. El programa no menciona Spring, JPA ni una base de datos: el adaptador es una lista en memoria y el caso de uso no lo sabe.
+
+**Fallo deliberado:** cambia el puerto para que devuelva una entidad de Spring Data:
+
+```java
+interface ReservaRepository {
+    org.springframework.data.domain.Page<ReservaEntity> buscar(
+        org.springframework.data.domain.Pageable pageable);
+}
+```
+
+Al compilar, `javac` responde:
+
+```text
+Hexagonal.java:19: error: package org.springframework.data.domain does not exist
+```
+
+El diagnóstico es que el dominio ahora depende de un framework. No falta una dependencia (este laboratorio compila con `javac`, sin Maven ni Gradle): el problema es de dirección. Corrige el puerto para devolver `Reserva` y comprueba que `javac` vuelve a compilar sin Spring.
+
+**Conceptos clave:** puerto, adaptador, dirección de dependencias, tipos del dominio.
+
+**Entiende:** La arquitectura hexagonal separa tres zonas: el **dominio** (tipos y reglas), la **aplicación** (casos de uso que coordinan) y los **adaptadores** (HTTP, JPA, colas). El puerto es una interfaz declarada por la aplicación y hablada en tipos del dominio; el adaptador la implementa traduciendo desde su tecnología.
+
+**Analogía:** un enchufe no sabe qué aparato se conecta. El puerto fija la forma (dos patas, 220 V) y el adaptador es el cable del aparato concreto. Si el enchufe exigiera un tipo de cable propietario, cambiar de aparato obligaría a cambiar la pared.
+
+**Diagrama:**
 
 ```mermaid
-sequenceDiagram
-  participant T as Test StepVerifier
-  participant F as Flux.range
-  T->>F: demanda inicial 0
-  T->>F: request(3)
-  F-->>T: valores 1, 2, 3
-  T->>F: request(7)
-  F-->>T: valores 4 a 10
+flowchart LR
+    Controlador["Controlador HTTP"] --> CasoUso["Caso de uso CrearReserva"]
+    CasoUso --> Puerto["Puerto ReservaRepository"]
+    Adaptador["Adaptador: memoria o JPA"] -.->|implementa| Puerto
+    Adaptador --> Dominio["Dominio: Reserva y ReservaId"]
 ```
 
-#### Subtema 15.1.1: Empieza con cero solicitudes · 8 min
+**Cierra:** Conserva salida y error por introducir Spring; explica quién decide la regla y quién guarda datos.
 
-**Contexto:** `Flux.range(1, 10)` produce diez enteros. Para ver cuándo llegan, `StepVerifier` puede suscribirse con una demanda inicial de cero.
+#### Subtema 1.2 · Amplía una consulta del puerto sin filtrar infraestructura · 10 min
 
-**Hazlo tú:** Abre `src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Encuentra `StepVerifier.create(source, 0)` y la lista `received`. Corre el comando del laboratorio.
+**Contexto:** El caso de uso necesita consultar reservas por vehículo y conservar tipos propios.
 
-Archivo concreto para esta comprobación: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`.
-
-
-Para comprobar «Empieza con cero solicitudes», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+**Hazlo tú:** En `src/Hexagonal.java`, añade al puerto `List<Reserva> buscarPorVehiculo(String vehiculo)` e impleméntalo filtrando la lista de `EnMemoria`.
 
 ```bash
-./mvnw -q test
+javac -d out src/Hexagonal.java
+java -cp out Hexagonal
 ```
 
-**Resultado esperado:** El test confirma que la lista sigue vacía justo después de la suscripción; los valores aparecen solo después de `thenRequest`.
+**Resultado esperado:** La compilación conserva cero dependencias Spring y el main sigue mostrando RES-1.
 
-**Fallo deliberado:** Cambia `create(source, 0)` por `create(source)`. **Diagnóstico:** Ejecuta `emiteTresYDespuesSieteSoloCuandoElSuscriptorLosSolicita`: llegan los diez valores antes de la comprobación de lista vacía. Restaura `0`.
+**Fallo deliberado:** Devuelve un `Page<Reserva>` de Spring Data en el puerto. **Diagnóstico:** javac no encuentra Spring: se introdujo un contrato de infraestructura en el dominio. Restaura List<Reserva>.
 
-**Entiende:** La demanda es un pedido de elementos, como pedir tres piezas de una línea de armado. El productor no debe enviar más valores que los pedidos por esa suscripción.
+**Entiende:** Un puerto expresa necesidades del caso de uso, no reproduce cada operación de la base. La paginación puede usar un tipo propio si el negocio la necesita.
 
-**Cierra:** Describe qué cambio observable produjo quitar la demanda inicial controlada.
+**Cierra:** Guarda firma e implementación y explica por qué no agregaste Spring al classpath.
 
-#### Subtema 15.1.2: Solicita tres y luego siete · 8 min
+#### Subtema 1.3 · Transfiere la regla a una cancelación independiente · 10 min
 
-**Contexto:** La prueba observa tanto lo recibido como las llamadas de demanda al `Flux`.
+**Contexto:** Crear y cancelar comparten almacenamiento, pero tienen reglas diferentes.
 
-**Hazlo tú:** Lee el tramo del test y predice qué valores aparecen tras cada pedido:
-
-```java
-StepVerifier.create(source, 0)
-    .thenRequest(3).expectNext(1, 2, 3)
-    .thenRequest(7).expectNext(4, 5, 6, 7, 8, 9, 10)
-    .verifyComplete();
-
-assertThat(upstreamRequests).containsExactly(3L, 7L);
-```
-
-Ejecuta la prueba y compara tu predicción con `upstreamRequests`.
-
-
-Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+**Hazlo tú:** Crea `src/CancelarReserva.java` con un caso de uso que busque por ID, distinga ausente/cancelada y guarde una transición válida. Añade un main de prueba con dos cancelaciones del mismo ID.
 
 ```bash
-./mvnw -q test
+javac -d out src/Hexagonal.java src/CancelarReserva.java
+java -cp out CancelarReserva
 ```
 
-**Resultado esperado:** El consumidor ve los diez valores en orden en dos grupos, y `doOnRequest` registra exactamente `3` y `7` en ese punto del flujo.
+**Resultado esperado:** Tu main imprime una cancelación aceptada y un resultado explícito para la repetida; define primero ese contrato.
 
-**Fallo deliberado:** Cambia el segundo `.thenRequest(7)` a `.thenRequest(6)`. `verifyComplete` falla porque queda un elemento sin solicitar. **Diagnóstico:** Restaura la cantidad y corre la prueba verde.
+**Fallo deliberado:** Devuelve null en el adaptador para una reserva ausente y úsala sin comprobar el resultado. **Diagnóstico:** un NullPointerException indica que el caso de uso no convirtió ausencia en una decisión del dominio; comprueba la ausencia antes de acceder.
 
-**Entiende:** `thenRequest(n)` aumenta la demanda acumulada; no reinicia el pedido anterior. `doOnRequest` registra la solicitud que llega a esa ubicación del publisher.
+**Entiende:** No hay una única política universal para repetir cancelación: rechazo o resultado idempotente deben declararse. No añadas un framework para evitar decidirla.
 
-**Cierra:** Guarda el resultado JUnit y los dos valores registrados por la lista.
+**Cierra:** Conserva tu archivo, salida y decisión para la cancelación repetida. Ese ejercicio es tu evidencia, no un test publicado ya aprobado.
 
-#### Subtema 15.1.3: Mira la demanda sin límite · 8 min
+**Hito del tema:** guarda el artefacto ejecutado, su salida, un fallo diagnosticado y la decisión que trasladarías al proyecto integrador. El ejercicio independiente requiere tu implementación; no se declara resuelto por leerlo.
 
-**Contexto:** Si no configuras demanda inicial, `StepVerifier.create(source)` solicita demanda ilimitada para recorrer la secuencia y terminarla.
+Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaje:** entrega `Hexagonal.java`, la salida `reserva=RES-1 vehiculo=camion-1` y el error de compilación con Spring junto con su diagnóstico.
 
-**Hazlo tú:** Ejecuta `stepVerifierSinParametroInicialSolicitaDemandaIlimitada` y lee la lista capturada por `doOnRequest`.
+**Errores comunes:** devolver entidades JPA desde el puerto; inyectar `Pageable` en el dominio; poner la lógica de negocio en el adaptador; crear un puerto por cada método del repositorio.
 
+**Límites y decisión de uso:** hexagonal no significa una carpeta por capa ni un puerto por tabla. Si el sistema es un CRUD sin reglas, la separación añade ceremonia sin beneficio. En el proyecto integrador se justifica donde hay reglas que deben probarse sin infraestructura.
 
-Para comprobar «Mira la demanda sin límite», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+**Fuente oficial:** [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/) y [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/).
 
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** El test registra `Long.MAX_VALUE`, que Reactor puede tratar como demanda efectivamente ilimitada, y consume los tres valores finitos.
-
-**Fallo deliberado:** Cambia `StepVerifier.create(source)` en ese test por `StepVerifier.create(source, 0).thenRequest(3)`. **Diagnóstico:** La aserción de demanda ilimitada falla porque el origen vio `3`, no `Long.MAX_VALUE`. Restaura el valor por defecto y corre la suite.
-
-**Entiende:** **Límite:** esta prueba mide `Flux.range`, no demuestra por sí sola cuánto almacena cada operador ni que un endpoint WebFlux vaya a soportar cualquier carga. `flatMap`, `buffer` y otros operadores pueden cambiar la demanda hacia arriba.
-
-**Cierra:** Explica por qué “usa WebFlux” no equivale a “memoria ilimitada protegida”.
-
-#### Subtema 15.1.4: Observa cómo `limitRate` cambia las tandas · 10 min
-
-**Contexto:** El consumidor sigue viendo lo que solicitó, pero `limitRate` agrupa las peticiones que llegan al origen.
-
-**Hazlo tú:** En `limitRateAgrupaLoQueSolicitaAlOrigen`, encuentra `.limitRate(4, 0)` y revisa dónde se puso `doOnRequest`:
-
-```java
-Flux<Integer> source = Flux.range(1, 10)
-    .doOnRequest(upstreamRequests::add)
-    .limitRate(4, 0);
-```
-
-Ejecuta `./mvnw -q -Dtest=BackpressureDemandTest test`.
-
-**Resultado esperado:** StepVerifier conserva los valores y su orden; la lista del origen registra tandas `4`, `4`, `4`, incluida la solicitud final de dos elementos que Reactor completa al tamaño de tanda configurado.
-
-**Fallo deliberado:** Cambia temporalmente el tamaño a `2` y corre el test: la expectativa deja de coincidir; `doOnRequest` observó `[2, 2, 2, 2, 2, 2]` en vez de `[4, 4, 4]`. **Diagnóstico:** Restaura el `4` original y confirma los tests verdes.
-
-**Entiende:** Los operadores pueden transformar demanda entre suscriptor y origen. Para evaluar el proyecto integrador, coloca la medición en el límite que quieres comprender y prueba con el operador real de tu cadena.
-
-**Cierra:** Evidencia: reporte verde de `BackpressureDemandTest`, captura de demandas `3/7` y `4/4/4`, y explicación del cambio con `limitRate`.
-
-**Transferencia al proyecto integrador:** si una ruta WebFlux procesa un flujo grande, prueba la cadena real con demanda limitada y revisa operadores que almacenan o solicitan elementos por adelantado; no uses este ejemplo como prueba de carga del servicio.
-
-**Fuentes oficiales:** [Project Reactor: testing](https://projectreactor.io/docs/core/release/reference/testing.html), [Project Reactor: backpressure y operadores](https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html) y [Reactive Streams: reglas de demanda](https://github.com/reactive-streams/reactive-streams-jvm).
-
-### Tema 2: Contenedores Testcontainers reutilizados entre clases
-
-**Objetivo observable:** hacer que dos clases JUnit consulten el mismo PostgreSQL Testcontainers dentro de una ejecución de pruebas y comparar el ID real observado por cada una.
-
-**¿Por qué es importante?** Crear contenedores cuesta tiempo. Un singleton puede evitar arranques repetidos cuando varias clases necesitan la misma base; también significa que esas pruebas comparten estado y ciclo de vida.
-
-**Antes de empezar:** conocer Testcontainers básico (Módulo 6). El laboratorio `examples/testcontainers-singleton-rutaflow/` usa Testcontainers 2.0.5, dos clases JUnit y Postgres. Solo ejecuta `SELECT 1`, no comparte filas modificadas.
-
-**Comando:** desde esa carpeta, Docker compatible ejecuta `./mvnw -q test`. En macOS con Podman, sigue los comandos exactos del README para apuntar al socket local y desactivar Ryuk rootless.
-
-```bash
-cd examples/testcontainers-singleton-rutaflow
-./mvnw -q test
-```
-
-#### Subtema 15.2.1: Arranca el singleton una sola vez · 8 min
-
-**Contexto:** `@Container` estático comparte el contenedor entre métodos de una clase. El patrón singleton manual permite compartirlo entre varias clases que heredan una base común.
-
-**Hazlo tú:** Abre `src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Encuentra el campo estático y el bloque de arranque:
-
-```java
-static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:16-alpine");
-
-static {
-    POSTGRES.start();
-}
-```
-
-**Resultado esperado:** El contenedor comienza al cargar la clase base y las dos clases lectoras heredan la misma referencia.
-
-**Fallo deliberado:** Quita temporalmente `POSTGRES.start()` y ejecuta la suite. **Diagnóstico:** Las dos clases fallan con `Mapped port can only be obtained after the container is started`. Restaura el bloque y vuelve a probar.
-
-**Entiende:** Una sola cocina prepara comida para dos mesas; ambas dependen de que esa cocina exista. El cierre ocurre cuando termina la JVM de tests.
-
-**Cierra:** Señala por qué esta base no lleva las anotaciones `@Testcontainers` y `@Container`.
-
-#### Subtema 15.2.2: Comprueba la base desde cada clase · 8 min
-
-**Contexto:** Que un ID exista no confirma que PostgreSQL acepte consultas. Cada clase ejecuta una consulta pequeña y guarda el ID que observó.
-
-**Hazlo tú:** Abre `FirstRepositoryTest.java` y `SecondRepositoryTest.java`; ambas llaman al método heredado `queryAndRecordContainerId()`.
-
-```java
-try (Connection connection = DriverManager.getConnection(
-        POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
-     Statement statement = connection.createStatement();
-     ResultSet result = statement.executeQuery("SELECT 1")) {
-    assertThat(result.next()).isTrue();
-    assertThat(result.getInt(1)).isEqualTo(1);
-}
-```
-
-Corre `./mvnw -q test` y compara las dos líneas `usa containerId=`.
-
-**Resultado esperado:** Ambas consultas pasan y muestran el mismo ID de contenedor. Al terminar la segunda clase, el `@AfterAll` heredado verifica la igualdad sin depender del orden de las clases.
-
-**Fallo deliberado:** Cambia una de las consultas de `SELECT 1` a `SELECT columna_que_no_existe`. **Diagnóstico:** Solo la clase que ejecuta esa consulta falla. Restaura `SELECT 1` y corre la suite completa.
-
-**Entiende:** El ID igual en ambos logs es la evidencia de que las clases accedieron al mismo contenedor en esa JVM. No mide cuánto tiempo se ahorró.
-
-**Cierra:** Guarda el reporte JUnit y los IDs iguales de la ejecución actual.
-
-#### Subtema 15.2.3: Aísla los datos compartidos · 8 min
-
-**Contexto:** Las clases comparten la base junto con el contenedor. Una prueba que inserta filas puede alterar lo que observa la siguiente.
-
-**Hazlo tú:** Lee `junit-platform.properties` y confirma que el paralelismo de Jupiter está apagado. Inspecciona las dos pruebas: usan `SELECT 1` y no cambian filas.
-
-
-Para comprobar «Aísla los datos compartidos», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Las dos clases pasan en secuencia y no necesitan limpiar datos.
-
-**Fallo deliberado:** En `SharedPostgres.queryAndRecordContainerId`, guarda temporalmente el texto `id-falso` en lugar del ID real para `SecondRepositoryTest`. **Diagnóstico:** La consulta todavía pasa, pero la comprobación `@AfterAll` falla al encontrar IDs distintos. Restaura el ID real y confirma la suite verde.
-
-**Entiende:** **Límite:** singleton no significa base limpia por clase. Si cambias datos, limpia cada prueba con claves únicas, transacciones realmente aisladas o esquemas por clase.
-
-**Cierra:** Escribe qué limpieza necesitaría tu caso de prueba si insertara una entrega.
-
-#### Subtema 15.2.4: Decide si conviene compartir · 8 min
-
-**Contexto:** El singleton comparte el ciclo de vida dentro de una JVM; el modo `withReuse(true)` trata de conservar contenedores entre ejecuciones locales y tiene una configuración diferente.
-
-**Hazlo tú:** Lee el README del laboratorio y la guía oficial de ciclo manual. Busca las diferencias entre `@Container` estático por clase, el singleton manual entre clases y la reutilización persistente local.
-
-
-Para comprobar «Decide si conviene compartir», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Puedes decir qué alcance comparte cada patrón y cuándo debes limpiar filas o evitar forks paralelos.
-
-**Fallo deliberado:** Ejecuta cada clase por separado con `./mvnw -q -Dtest=FirstRepositoryTest test` y luego `./mvnw -q -Dtest=SecondRepositoryTest test`. **Diagnóstico:** Los IDs cambian porque son dos ejecuciones/JVM distintas; el singleton solo comparte dentro de la ejecución conjunta. Después vuelve a correr `./mvnw -q test` para comprobar un ID compartido.
-
-**Entiende:** Usa singleton si has medido que el arranque repetido domina el tiempo de pruebas y puedes aislar estado. Para pocas clases, conserva el ciclo de vida administrado por JUnit.
-
-**Cierra:** Evidencia: ambas consultas verdes, dos IDs reales iguales y una razón concreta para usar o no el patrón en el proyecto integrador.
-
-**Transferencia al proyecto integrador:** úsalo solo si varias suites comparten el mismo servicio externo y cada prueba conserva aislamiento de datos. La prueba actual no demuestra ahorro de tiempo; mide tu pipeline antes de decidir.
-
-**Fuentes oficiales:** [Testcontainers: ciclo manual y singleton](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/), [integración JUnit 5](https://java.testcontainers.org/test_framework_integration/junit_5/) y [configuración Podman](https://java.testcontainers.org/supported_docker_environment/).
-
-
-```bash
-./mvnw -q -Dtest=FirstRepositoryTest test
-```
-### Tema 3: Arquitectura hexagonal verificada con ArchUnit
+### Tema 2: Arquitectura hexagonal verificada con ArchUnit
 
 **Objetivo observable:** agregar una regla ejecutable que bloquee dependencias desde `domain` y `application` hacia `infrastructure`.
 
 **¿Por qué es importante?** El dominio conserva las reglas del negocio; si importa una clase de base de datos o un framework, cambiar esa infraestructura puede arrastrar cambios al negocio. ArchUnit convierte la frontera en un test que muestra qué clase la cruzó.
 
-**Antes de empezar:** entender puertos y adaptadores (Módulo 22, Tema 1, «Hexagonal: puertos que hablan el idioma del dominio»; puedes leerlo antes de este tema). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
+**Antes de empezar:** entender puertos y adaptadores (Módulo 15, Tema 1, «Hexagonal: puertos que hablan el idioma del dominio»; puedes leerlo antes de este tema). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
 
 ```bash
 cd examples/archunit-hexagonal-rutaflow
@@ -265,7 +201,7 @@ flowchart LR
   D -. prohibido .-> I
 ```
 
-#### Subtema 15.3.1: Ubica el puerto y el adaptador · 8 min
+#### Subtema 2.1: Ubica el puerto y el adaptador · 8 min
 
 **Contexto:** El puerto expresa qué necesita el caso de uso; el adaptador decide cómo guardar.
 
@@ -288,7 +224,7 @@ Para comprobar «Ubica el puerto y el adaptador», consulta: `examples/archunit-
 
 **Cierra:** Anota la ruta del puerto y la ruta de su implementación.
 
-#### Subtema 15.3.2: Escribe la regla sobre el bytecode · 8 min
+#### Subtema 2.2: Escribe la regla sobre el bytecode · 8 min
 
 **Contexto:** ArchUnit importa las clases compiladas del paquete y comprueba las relaciones que quedaron en el bytecode.
 
@@ -309,7 +245,7 @@ rule.check(project);
 
 **Cierra:** Conserva el mensaje de ArchUnit que nombra `Delivery` y `InMemoryDeliveryRepository`.
 
-#### Subtema 15.3.3: Protege también el caso de uso · 8 min
+#### Subtema 2.3: Protege también el caso de uso · 8 min
 
 **Contexto:** Prohibir la fuga desde el dominio no basta si application importa la base concreta directamente.
 
@@ -334,7 +270,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Cierra:** Guarda el reporte verde de las dos reglas.
 
-#### Subtema 15.3.4: Decide qué reglas merece mantener · 8 min
+#### Subtema 2.4: Decide qué reglas merece mantener · 8 min
 
 **Contexto:** Una regla demasiado general puede bloquear decisiones válidas; una regla ausente deja la frontera a la memoria del equipo.
 
@@ -348,444 +284,13 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Cierra:** Evidencia: suite verde restaurada y explicación de una regla útil para el proyecto integrador.
 
-**Transferencia al proyecto integrador:** protege con ArchUnit las capas de una ruta real (controller → caso de uso → puerto → adapter). La prueba actual solo cubre un ejemplo mínimo en memoria; no inspecciona el microservicio del Módulo 12.
+**Transferencia al proyecto integrador:** protege con ArchUnit las capas de una ruta real (controller → caso de uso → puerto → adapter). La prueba actual solo cubre un ejemplo mínimo en memoria; no inspecciona el microservicio del Módulo 20.
 
 **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html), [ArchUnit Getting Started](https://www.archunit.org/getting-started).
 
-### Tema 4: Bulkhead y RateLimiter de Resilience4j
+### Tema 3: Clean Architecture y DDD táctico: caso de uso antes que framework
 
-#### Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
-
-**Contexto:** El `CircuitBreaker` del Módulo 10 reacciona a fallos. El Bulkhead limita cuántas llamadas están dentro al mismo tiempo; el RateLimiter cuenta permisos durante un período.
-
-**¿Por qué es importante?** Una dependencia lenta o una ráfaga pueden agotar recursos o saturar un servicio externo. Estos límites hacen explícita la protección, siempre que las llamadas pasen por ellos y que la configuración refleje la capacidad medida.
-
-```text
-2 llamadas activas ──> [Bulkhead: 2 espacios] ──> la tercera se rechaza
-2 permisos / período ──> [RateLimiter: 2] ─────> la tercera se rechaza
-```
-
-**Hazlo tú:** Abre `examples/spring-resilience-rutaflow/README.md` y `src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`. En una hoja, dibuja dos llamadas ocupando los dos espacios del Bulkhead y tres solicitudes que compiten por dos permisos del RateLimiter.
-
-**Resultado esperado:** El primer límite depende de cuántas llamadas siguen activas; el segundo, de cuántos permisos quedan en el período. La tercera llamada de cada ejemplo se rechaza por una razón distinta.
-
-**Fallo deliberado:** Cambia `maxConcurrentCalls(2)` por `maxConcurrentCalls(3)` y ejecuta `./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test` desde `examples/spring-resilience-rutaflow/`. **Diagnóstico:** El test debe fallar porque hay un espacio disponible para la tercera llamada. Restaura el límite a 2 y corre la prueba de nuevo.
-
-**Entiende:** El Bulkhead de semáforo regula el acceso; no crea un grupo aislado de hilos. Resilience4j también ofrece `ThreadPoolBulkhead`, que sí usa un pool y una cola limitada. No prometas que estas primitivas aíslan toda la aplicación.
-
-**Cierra:** Anota qué recurso proteges y qué tipo de rechazo puede observar quien llama.
-
-#### Subtema 15.4.2: Mantén la llamada dentro del Bulkhead · 8 min
-
-**Contexto:** Configurar el objeto no cambia una llamada por sí solo: hay que ejecutar la operación a través de la decoración.
-
-**Hazlo tú:** En `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta desde la carpeta del laboratorio:
-
-```bash
-./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test
-```
-
-**Resultado esperado:** El test espera a que dos tareas reales entren, observa cero espacios disponibles y comprueba `BulkheadFullException` en la tercera; luego libera ambas tareas y termina sin dejar hilos ocupados.
-
-**Fallo deliberado:** Quita `Bulkhead.decorateRunnable(bulkhead, ...)` de la tercera llamada y ejecútala directamente. **Diagnóstico:** El rechazo desaparece y la prueba falla. Restaura la decoración y repite el comando.
-
-**Entiende:** El límite solo cubre el código que atraviesa este Bulkhead. Si una ruta alternativa llama directo al servicio externo, esta protección no la alcanza.
-
-**Cierra:** Explica en una frase dónde debe colocarse la llamada protegida en el servicio de tu proyecto.
-
-#### Subtema 15.4.3: Cuenta permisos por período · 8 min
-
-**Contexto:** El RateLimiter renueva un número de permisos al empezar cada período. Con espera cero, una llamada sin permiso se rechaza en vez de quedarse esperando.
-
-**Hazlo tú:** Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java` y localiza `rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo`. Ejecuta:
-
-```bash
-./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo test
-```
-
-**Resultado esperado:** Las dos primeras llamadas reciben `true`, la tercera `false`; la ventana de una hora mantiene el ejemplo determinista sin depender de que el reloj avance durante la prueba.
-
-**Fallo deliberado:** Cambia `limitForPeriod(2)` a `limitForPeriod(3)`. **Diagnóstico:** El test falla porque la tercera solicitud también consigue permiso. Restablece el límite y ejecútalo otra vez.
-
-**Entiende:** El contador pertenece a esta instancia local del RateLimiter. Varias réplicas de un servicio tienen sus propios contadores; esto no implementa por sí solo una cuota global de cliente.
-
-**Cierra:** Describe qué debería ocurrir en tu API cuando el permiso se agota: responder con límite excedido o esperar un tiempo acotado.
-
-#### Subtema 15.4.4: Decide el límite y observa sus fronteras · 8 min
-
-**Contexto:** Un límite elegido sin medir la dependencia puede rechazar tráfico útil o dejar pasar más carga de la que soporta.
-
-**Hazlo tú:** Revisa `examples/spring-resilience-rutaflow/pom.xml`, `README.md` y los dos tests nuevos. Ejecuta la suite completa:
-
-```bash
-./mvnw -q clean test
-```
-
-**Resultado esperado:** Pasan las pruebas de CircuitBreaker ya existentes y las dos nuevas de concurrencia y tasa. El proyecto usa Resilience4j 2.4.0; ambos límites son locales al proceso y el ejemplo no llama a un proveedor real.
-
-**Fallo deliberado:** Cambia `timeoutDuration(Duration.ZERO)` del RateLimiter por `Duration.ofSeconds(1)` y deja el período largo. **Diagnóstico:** La tercera llamada puede esperar hasta agotar el segundo; registra esa diferencia de comportamiento y restaura cero para conservar una suite rápida y determinista.
-
-**Entiende:** El número correcto sale de medir capacidad, tiempos y política de rechazo. Un RateLimiter por instancia no equivale a una cuota compartida; el Bulkhead de semáforo no equivale a un pool separado. Aplicar ambos a la misma operación también requiere decidir cuál debe rechazar primero.
-
-**Cierra:** Evidencia: resultado verde de la suite, configuración final elegida y límite explícito del laboratorio. Para el microservicio del Módulo 12, primero registra latencia y tasa observada; luego dimensiona y prueba el límite con su tráfico real.
-
-**Proyecto integrador:** en el cliente HTTP del servicio de pedidos del Módulo 12, identifica una dependencia lenta y documenta un límite de concurrencia inicial y una tasa por instancia. Añade pruebas equivalentes antes de habilitar esos límites; los valores del laboratorio no se deben copiar como capacidad de producción.
-
-**Fuentes oficiales:** [Resilience4j Bulkhead](https://resilience4j.readme.io/docs/bulkhead), [Resilience4j RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
-
-### Tema 5: Saga con compensación real
-
-#### Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
-
-**Contexto:** Una compra puede necesitar reservar inventario, cobrar y confirmar el envío. Cada paso cambia un estado distinto y no existe un botón universal de deshacer para todos.
-
-**¿Por qué es importante?** Si un paso posterior falla, dejar activos los cambios anteriores puede producir cobros sin envío o inventario bloqueado. La compensación da una acción explícita para esos efectos parciales.
-
-**Hazlo tú:** Abre `examples/spring-saga-rutaflow/README.md` y revisa el recorrido antes de abrir el código:
-
-```text
-┌────────────────────┐  ┌──────────────┐  ┌────────────────┐
-│ Reservar inventario├─>│ Cobrar pago  ├─>│ Confirmar envío│
-└─────────┬──────────┘  └──────┬───────┘  └────────────────┘
-          ↑                    ↑
-   Liberar reserva       Devolver pago
-```
-
-
-Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Si falla el envío, el dinero y la reserva se revierten en orden inverso: primero se devuelve el cobro, luego se libera el inventario.
-
-**Fallo deliberado:** Cambia el dibujo para devolver primero el inventario. **Diagnóstico:** Luego compáralo con la prueba del siguiente subtema y explica por qué el orden inverso mantiene disponibles las dependencias necesarias para deshacer el paso anterior.
-
-**Entiende:** Una compensación es una acción nueva que intenta corregir un efecto previo; no borra el historial ni garantiza que el mundo vuelva exactamente al estado anterior.
-
-**Cierra:** Nombra un efecto que se pueda compensar y otro que quizá no (por ejemplo, una notificación ya leída).
-
-#### Subtema 15.5.2: Ejecuta y compensa en orden inverso · 8 min
-
-**Contexto:** El orquestador registra una compensación solo después de que termina cada paso. Cuando falla un paso, recorre esas acciones completadas desde la última hacia la primera.
-
-**Hazlo tú:** Abre `examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/OrderSaga.java` y `src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Ejecuta desde `examples/spring-saga-rutaflow/`:
-
-```bash
-./mvnw -q -Dtest=OrderSagaTest#ifShippingFailsItRefundsAndReleasesInReverseOrder test
-```
-
-**Resultado esperado:** La prueba fuerza un fallo del envío, comprueba que el pago vuelve y la reserva se libera; el registro contiene `devolver pago` antes de `liberar inventario`.
-
-**Fallo deliberado:** Cambia el recorrido inverso por uno que compense desde la primera acción hasta la última. **Diagnóstico:** Ejecuta la misma prueba: falla porque las acciones observadas ya no están en el orden esperado. Restaura el recorrido inverso y repite el comando.
-
-**Entiende:** Un paso que falla no se añade a la lista de compensaciones completadas. Por eso no se intenta cancelar un envío que nunca se confirmó.
-
-**Cierra:** Dibuja el estado final del inventario y el pago después de la compensación; ambos deben quedar sin efecto para ese pedido.
-
-#### Subtema 15.5.3: Compara fallo y éxito · 8 min
-
-**Contexto:** Una compensación solo se ejecuta si un paso posterior falla. Si todos terminan bien, los cambios permanecen.
-
-**Hazlo tú:** En `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`, lee `ifAllParticipantsSucceedItKeepsTheOrderEffects` y ejecuta:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** En éxito, la reserva, el cobro y el envío quedan registrados, y no aparecen acciones de compensación. En fallo, la prueba anterior verifica las acciones inversas y el estado restaurado.
-
-**Fallo deliberado:** Mueve la compensación de inventario al camino de éxito en `OrderSaga.place`. **Diagnóstico:** El test del caso exitoso falla porque la reserva desaparece. Restaura la compensación dentro del bloque de fallo.
-
-**Entiende:** Las pruebas inspeccionan el estado de tres participantes en memoria y el orden del registro; eso permite comprobar la regla del ejemplo sin depender de una interpretación del log.
-
-**Cierra:** Explica qué resultado debería guardar tu servicio: pedido confirmado, pedido rechazado o recuperación pendiente.
-
-#### Subtema 15.5.4: Delimita la demo y planea la recuperación · 8 min
-
-**Contexto:** La saga de este laboratorio corre en una sola JVM con participantes locales. Una caída del proceso borraría el estado y la lista de acciones.
-
-**Hazlo tú:** Revisa el límite al final de `examples/spring-saga-rutaflow/README.md` y compara este orquestador síncrono con el Módulo 13 y el próximo M15 T7.
-
-
-Para comprobar «Delimita la demo y planea la recuperación», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Puedes señalar qué falta para coordinar microservicios reales: persistir el estado, comunicar comandos/eventos de forma fiable, definir idempotencia y reintentar compensaciones fallidas.
-
-**Fallo deliberado:** Imagina que el cobro fue aceptado por el proveedor, pero la respuesta se perdió antes de que el orquestador lo registrara. **Diagnóstico:** Anota por qué repetir el cobro puede duplicarlo y qué clave o consulta de idempotencia necesitaría la integración.
-
-**Entiende:** Esta implementación demuestra el orden de orquestación y compensación; no es una transacción distribuida ni un sistema durable. Una saga no ofrece aislamiento ACID y puede requerir mecanismos adicionales para evitar estados intermedios visibles.
-
-**Cierra:** **Proyecto integrador:** para el pedido del Módulo 12, enumera los servicios participantes, el estado que cambia cada uno y la acción compensatoria concreta. No copies este almacenamiento en memoria como solución de producción.
-
-**Fuentes:** [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La referencia describe tanto coordinación por orquestación como coreografía y destaca que las compensaciones se diseñan explícitamente; este laboratorio solo ejercita la variante orquestada local.
-
-### Tema 6: Event Sourcing con replay real
-
-#### Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
-
-**Contexto:** Una tabla que solo dice `CANCELADO` no cuenta cuándo se creó o confirmó el pedido. Event Sourcing conserva los cambios como eventos ordenados y calcula el estado al reproducirlos.
-
-**¿Por qué es importante?** El historial permite reconstruir cómo llegó el pedido a su estado actual y explicar decisiones pasadas. Ese beneficio solo compensa el trabajo adicional si el negocio necesita historial o reconstrucción.
-
-**Hazlo tú:** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java` y `OrderEventStore.java`. Sigue cómo se guarda cada evento en el stream del pedido.
-
-```text
-PedidoCreado → PedidoConfirmado → PedidoCancelado
-       └──────────── replay ──────────────> CANCELADO
-```
-
-Archivo concreto para esta comprobación: `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java`.
-
-
-Para comprobar «Guarda hechos, no solo el estado final», consulta: `examples/spring-eventsourcing-rutaflow/src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`. Desde `examples/spring-eventsourcing-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Hay tres eventos para el pedido, en orden; el evento más reciente no reemplaza los anteriores.
-
-**Fallo deliberado:** Intenta guardar `OrderCancelled` antes de confirmar el pedido usando la prueba `anInvalidEventIsNotAddedToTheStream`. **Diagnóstico:** El store rechaza la transición y conserva solo `OrderCreated`.
-
-**Entiende:** Un evento describe un hecho ya ocurrido. Un comando pide hacer algo; un evento registra que algo pasó.
-
-**Cierra:** Explica qué se perdería si solo guardáramos el último estado `CANCELLED`.
-
-#### Subtema 15.6.2: Reconstruye el pedido paso a paso · 8 min
-
-**Contexto:** El replay empieza sin pedido y aplica cada evento en el orden guardado; cada paso produce un nuevo estado inmutable.
-
-**Hazlo tú:** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`. Lee `replay` y `apply`, luego ejecuta:
-
-```bash
-./mvnw -q -Dtest=OrderReplayTest#eventStreamCanRebuildTheCurrentOrderWithoutSavingASnapshot test
-```
-
-Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
-
-**Resultado esperado:** Al volver a leer los tres eventos, el estado coincide con `CANCELLED` y conserva el motivo de cancelación, sin cargar una copia del estado final.
-
-**Fallo deliberado:** En `replayRejectsEventsStoredInAnImpossibleOrder`, mueve `OrderConfirmed` después de `OrderCancelled`. **Diagnóstico:** La prueba falla porque la secuencia ya no genera la transición inválida que espera detectar. Restaura el historial inválido y vuelve a correrla.
-
-**Entiende:** El orden es parte del significado: confirmar un pedido cancelado no equivale a cancelarlo después de confirmar.
-
-**Cierra:** Cuenta en voz alta qué estado produce cada evento de la lista.
-
-#### Subtema 15.6.3: Rechaza eventos que rompen las reglas · 8 min
-
-**Contexto:** Un replay que acepta cualquier secuencia puede construir estados que nunca debieron existir en el negocio.
-
-**Hazlo tú:** En `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`, inspecciona las reglas: un pedido debe crearse antes de confirmarse y confirmarse antes de cancelarse. Luego lee `anInvalidEventIsNotAddedToTheStream` en `src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`.
-
-**Resultado esperado:** El intento de cancelar el pedido recién creado lanza `IllegalStateException` y el evento no se añade al stream.
-
-**Fallo deliberado:** Quita la validación de estado previo a `OrderCancelled` y corre `./mvnw -q -Dtest=OrderReplayTest#replayRejectsEventsStoredInAnImpossibleOrder test`. **Diagnóstico:** El replay deja de proteger la regla y la prueba falla. Restaura la validación.
-
-**Entiende:** Los eventos registrados son la fuente de verdad de esta demo; `currentState` es una lectura derivada. En un sistema grande, reconstruir cada vez cuesta más y pueden usarse snapshots como atajo, verificándolos contra el stream.
-
-**Cierra:** Añade una regla de negocio que deba cumplirse antes de guardar un nuevo evento.
-
-#### Subtema 15.6.4: Delimita el almacenamiento y la reconstrucción · 8 min
-
-**Contexto:** El store del ejemplo vive en memoria; reiniciar el proceso borra el historial. Sirve para estudiar el modelo y no para guardar pedidos reales.
-
-**Hazlo tú:** Revisa `examples/spring-eventsourcing-rutaflow/README.md` y ejecuta toda la suite desde la carpeta del laboratorio:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Pasan cuatro pruebas: replay con tres eventos, rechazo de orden imposible, stream vacío y rechazo de un evento que no debe añadirse.
-
-**Fallo deliberado:** Cierra el proceso y vuelve a levantarlo. **Diagnóstico:** El stream ya no existe. Anota qué almacenamiento duradero necesitaría un servicio real antes de afirmar que conserva el historial.
-
-**Entiende:** Event Sourcing no es lo mismo que publicar eventos en Kafka ni que guardar un outbox. En producción requiere almacenamiento durable, control de escrituras concurrentes, evolución de versiones y cuidado para no repetir efectos externos durante un replay.
-
-**Cierra:** **Proyecto integrador:** para el envío del Módulo 12, propone eventos inmutables de creación, recogida y entrega; indica qué estado se reconstruye y cómo se guardaría el historial de forma durable. El laboratorio no integra Kafka, base de datos ni proyecciones externas.
-
-**Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
-
-### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
-
-#### Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
-
-**Contexto:** Una compensación también puede fallar. Si solo guardamos el error en un log y marcamos la saga como terminada, la acción pendiente puede perderse.
-
-**¿Por qué es importante?** Un pedido puede quedar con el inventario reservado aunque ya se rechazó el pago. Un estado `PENDING` permite saber qué reparación falta después de un reinicio.
-
-**Hazlo tú:** Abre `examples/spring-saga-recovery-rutaflow/src/main/resources/schema.sql` y revisa `compensation_job`. Localiza `PENDING` y `DONE` en `CompensationService.java`.
-
-```text
-PENDING ── compensación exitosa ──> DONE
-   │
-   └── falla la transacción ───────> PENDING
-```
-
-Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`.
-
-
-Para comprobar «Conserva el trabajo pendiente», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** La tarea fallida mantiene un ID y puede buscarse para un nuevo intento.
-
-**Fallo deliberado:** Cambia temporalmente el estado inicial insertado en `schedule` de `PENDING` a `DONE`. **Diagnóstico:** Ejecuta la prueba completa: el servicio debe omitir la tarea y el test falla al esperar una liberación.
-
-**Entiende:** `PENDING` significa “queda trabajo”; no es solo un mensaje de error.
-
-**Cierra:** Indica dónde consultaría el equipo el trabajo pendiente tras reiniciar.
-
-#### Subtema 15.7.2: Confirma juntos el efecto y su estado · 8 min
-
-**Contexto:** Liberar inventario y marcar la compensación deben confirmarse juntos. Si solo ocurre el primero, un reintento podría repetirlo; si solo el segundo, el trabajo se pierde.
-
-**Hazlo tú:** Abre `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`. Sigue el `TransactionTemplate`, la lectura `FOR UPDATE` y las escrituras de inventario y estado. Ejecuta desde `examples/spring-saga-recovery-rutaflow/`:
-
-```bash
-./mvnw -q -Dtest=CompensationRecoveryTest test
-```
-
-El núcleo que mantiene juntas las dos escrituras se ve así:
-
-```java
-jdbc.update("UPDATE inventory_reservation SET released = TRUE, release_count = release_count + 1 WHERE id = ?",
-    job.reservationId());
-jdbc.update("UPDATE compensation_job SET status = 'DONE' WHERE id = ? AND status = 'PENDING'",
-    compensationId);
-```
-
-**Resultado esperado:** El fallo inyectado después de actualizar el inventario provoca rollback: la reserva sigue sin liberar y la tarea permanece `PENDING`.
-
-**Fallo deliberado:** Después de crear `TransactionTemplate`, agrega temporalmente `transaction.setPropagationBehavior(org.springframework.transaction.TransactionDefinition.PROPAGATION_NOT_SUPPORTED);`. **Diagnóstico:** Ejecuta el test: la primera escritura queda aplicada cuando ocurre el fallo y se detecta el estado parcial. Quita esa línea y repite el test.
-
-**Entiende:** Este límite es una sola base de datos de un participante. La transacción de Spring no convierte varios microservicios en una transacción global.
-
-**Cierra:** Nombra las dos escrituras que esta transacción debe proteger juntas.
-
-#### Subtema 15.7.3: Reabre y reintenta sin duplicar · 8 min
-
-**Contexto:** La memoria del proceso desaparece; una tarea guardada en una base de archivo puede sobrevivir a que la aplicación cierre su conexión.
-
-**Hazlo tú:** En `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`, sigue el fallo, el cierre del pool, la reapertura del mismo archivo H2 y la nueva instancia del servicio.
-
-Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`.
-
-
-Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** La nueva instancia lee `PENDING`, completa el trabajo y lo marca `DONE`. Al repetirlo, responde `ALREADY_DONE`; el contador `release_count` sigue en 1.
-
-**Fallo deliberado:** Quita la salida temprana para un trabajo `DONE` y ejecuta el test. **Diagnóstico:** La segunda llamada vuelve a liberar inventario y el contador termina en 2. Restaura la comprobación idempotente.
-
-**Entiende:** El ID estable identifica el mismo trabajo entre reintentos. El bloqueo de fila serializa dos intentos simultáneos sobre esta base local.
-
-**Cierra:** Explica por qué el sistema debe reutilizar el mismo ID al reintentar la misma compensación.
-
-#### Subtema 15.7.4: Define los límites de recuperación · 8 min
-
-**Contexto:** El ejemplo conserva el trabajo en H2 y una prueba lo vuelve a ejecutar; todavía no hay un trabajador que descubra pendientes ni un plan de reintentos.
-
-**Hazlo tú:** Revisa `examples/spring-saga-recovery-rutaflow/README.md` y corre la suite completa:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** La prueba comprueba fallo después de una escritura, rollback, reapertura de archivo y repetición con un único efecto.
-
-**Fallo deliberado:** En `CompensationRecoveryTest`, cambia `DATABASE_URL` de `jdbc:h2:file:` a `jdbc:h2:mem:`. **Diagnóstico:** Al cerrar el pool, el historial se pierde y el test falla al reabrir la base.
-
-**Entiende:** El ejercicio no implementa un broker, outbox, espera entre reintentos, métricas ni alarmas. El ejemplo usa el ID de compensación como clave estable y una transacción local; no coordina bases distintas.
-
-**Cierra:** **Proyecto integrador:** para el pedido del Módulo 12, define el ID estable, el estado pendiente, la operación idempotente y una alarma para trabajos demasiado antiguos. Decide cómo guardar el outbox si el comando de reintento se publica en Kafka o RabbitMQ.
-
-**Fuentes:** [Spring Framework — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html), [H2 — Connection Modes and Database URLs](https://h2database.com/html/features.html#database_url), [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La transacción aquí solo cubre cambios en la base del participante local.
-
-#### Material Python de referencia RutaFlow · consulta optativa
-
-El tema se estudia por la ruta Java/Spring Boot anterior. Este anexo conserva el
-material Python original de RutaFlow para comparar una compensación local con
-SQLite. Puedes ejecutarlo desde `examples/rutaflow-material/sagas/` con
-`python3 -m unittest test_compensacion.py`.
-
-Archivo: `examples/rutaflow-material/sagas/compensacion.py` (`compensacion.py`):
-
-```python
-import sqlite3
-
-
-def iniciar(db):
-    db.executescript('''CREATE TABLE IF NOT EXISTS stock(id TEXT PRIMARY KEY, cantidad INTEGER);
-    CREATE TABLE IF NOT EXISTS compensaciones(id TEXT PRIMARY KEY, estado TEXT);
-    INSERT OR IGNORE INTO stock VALUES ('reserva-42', 9);
-    INSERT OR IGNORE INTO compensaciones VALUES ('liberar-42', 'PENDIENTE');''')
-
-
-def compensar(db, falla=False):
-    estado = db.execute("SELECT estado FROM compensaciones WHERE id='liberar-42'").fetchone()[0]
-    if estado == 'HECHA':
-        return
-    if falla:
-        raise ConnectionError('Inventario temporalmente no disponible')
-    # El efecto y su marcador son atómicos EN ESTA base local del participante.
-    with db:
-        db.execute("UPDATE stock SET cantidad=cantidad+1 WHERE id='reserva-42'")
-        db.execute("UPDATE compensaciones SET estado='HECHA' WHERE id='liberar-42'")
-
-
-if __name__ == '__main__':
-    with sqlite3.connect('saga.db') as db:
-        iniciar(db)
-        try:
-            compensar(db, falla=True)
-        except ConnectionError:
-            print('Compensación pendiente; requiere reintento')
-        compensar(db)
-        compensar(db)
-        print('Stock final:', db.execute('SELECT cantidad FROM stock').fetchone()[0])
-```
-
-Archivo: `examples/rutaflow-material/sagas/test_compensacion.py` (`test_compensacion.py`):
-
-```python
-import sqlite3
-import tempfile
-from pathlib import Path
-import unittest
-from compensacion import iniciar, compensar
-
-class CompensacionTest(unittest.TestCase):
-    def test_reinicio_y_reintento_no_duplican_efecto(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            path=Path(tmp)/'saga.db'
-            with sqlite3.connect(path) as db:
-                iniciar(db)
-                with self.assertRaises(ConnectionError): compensar(db, falla=True)
-                self.assertEqual('PENDIENTE', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
-            with sqlite3.connect(path) as db:
-                compensar(db)
-                compensar(db)
-                self.assertEqual(10, db.execute('SELECT cantidad FROM stock').fetchone()[0])
-                self.assertEqual('HECHA', db.execute('SELECT estado FROM compensaciones').fetchone()[0])
-if __name__=='__main__':unittest.main()
-```
-
-### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
-
-#### Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
+#### Subtema 3.1: Haz que el agregado proteja la regla · 8 min
 
 **Contexto:** Un envío sin destino puede asignarse; uno ya asignado no debe cambiar de destino por una segunda petición.
 
@@ -816,7 +321,7 @@ Ejecuta desde `examples/spring-clean-architecture-rutaflow/`:
 
 **Cierra:** Escribe qué otra transición debería controlar este agregado y desde qué estado sería válida.
 
-#### Subtema 15.8.2: Conecta el caso de uso a un puerto · 8 min
+#### Subtema 3.2: Conecta el caso de uso a un puerto · 8 min
 
 **Contexto:** El caso de uso coordina una acción y pide guardar el resultado mediante una interfaz; el adaptador decide dónde se guarda.
 
@@ -843,7 +348,7 @@ Ejecuta:
 
 **Cierra:** Explica qué clase reemplazarías para guardar los envíos en PostgreSQL.
 
-#### Subtema 15.8.3: Usa Spring como adaptador HTTP · 8 min
+#### Subtema 3.3: Usa Spring como adaptador HTTP · 8 min
 
 **Contexto:** El controller traduce una petición web y llama al caso de uso; no contiene la regla para asignar dos veces.
 
@@ -861,7 +366,7 @@ Ejecuta:
 
 **Cierra:** Dibuja la ruta de una petición hasta la regla del agregado y de vuelta a la respuesta.
 
-#### Subtema 15.8.4: Comprueba el corte vertical y sus límites · 8 min
+#### Subtema 3.4: Comprueba el corte vertical y sus límites · 8 min
 
 **Contexto:** El recorrido completo combina un agregado, un caso de uso, un puerto, un adaptador y un endpoint; una estructura de carpetas por sí sola no garantiza esa dirección.
 
@@ -879,7 +384,7 @@ Para iniciar la app y probar el endpoint manualmente, sigue los comandos del REA
 
 **Entiende:** Este laboratorio usa memoria y se vacía al reiniciar; no incluye JPA, seguridad ni persistencia. Para proyectos pequeños, conserva estos límites dentro de un monolito modular; añade servicios separados solo cuando propiedad de datos, escala o equipos lo justifiquen.
 
-**Cierra:** **Proyecto integrador:** en la API de envíos del Módulo 12, identifica agregado e invariantes, caso de uso, puerto, adaptadores HTTP/JPA y reglas de dependencia. Migra el repositorio sin cambiar la regla de asignación.
+**Cierra:** **Proyecto integrador:** en la API de envíos del Módulo 20, identifica agregado e invariantes, caso de uso, puerto, adaptadores HTTP/JPA y reglas de dependencia. Migra el repositorio sin cambiar la regla de asignación.
 
 **Fuente:** [Martin Fowler — DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/). La demo prueba un recorrido local; no certifica el diseño completo ni su rendimiento.
 
@@ -952,3 +457,663 @@ trap 'rm -rf "$build_dir"' EXIT
 javac -d "$build_dir" Main.java
 java -cp "$build_dir" Main
 ```
+
+### Tema 4: C4: contexto, contenedores, componentes y código
+
+Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
+
+**Conocimiento previo:** Tema 1 de este módulo; Node.js 24 LTS o superior (`node --version`).
+
+**¿Por qué es importante?** Un diagrama que nadie puede contrastar se convierte en decoración. En el proyecto integrador, el diagrama de contenedores se usa para decidir dónde vive la cola y quién escribe en la base; si el diagrama muestra un worker que el código no tiene, la decisión se toma sobre una ficción.
+
+C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior.
+
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
+
+```bash
+cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cd practica-arquitectura
+```
+
+#### Subtema 4.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+
+**Contexto:** Los cuatro niveles describen un diseño propuesto: no hay api, worker y broker ejecutados por este laboratorio.
+
+**Hazlo tú:** Desde una carpeta vacía:
+
+```bash
+mkdir c4-envios && cd c4-envios
+mkdir -p docs/c4
+```
+
+Crea `validar-c4.mjs` y `docs/c4/envios.md`. El validador primero, para que el documento tenga una prueba:
+
+```javascript
+// Comprueba que el C4 tenga los cuatro niveles y los contenedores propuestos.
+import { readFile } from 'node:fs/promises';
+
+const texto = await readFile('docs/c4/envios.md', 'utf8');
+const contenedores = ['api', 'worker', 'base-datos', 'cola'];
+const faltantes = contenedores.filter((nombre) => !texto.toLowerCase().includes(nombre));
+if (faltantes.length) {
+  console.error(`Faltan contenedores en el C4: ${faltantes.join(', ')}`);
+  process.exit(1);
+}
+
+const niveles = ['Contexto', 'Contenedores', 'Componentes', 'Código'];
+const sinNivel = niveles.filter((nivel) => !texto.includes(`## ${nivel}`));
+if (sinNivel.length) {
+  console.error(`Faltan niveles: ${sinNivel.join(', ')}`);
+  process.exit(1);
+}
+
+const relaciones = (texto.match(/-->/g) ?? []).length;
+if (relaciones < 12) {
+  console.error(`Se esperaban al menos 12 relaciones y hay ${relaciones}`);
+  process.exit(1);
+}
+
+console.log(`C4 OK: ${niveles.length} niveles y ${relaciones} relaciones`);
+```
+
+Crea `docs/c4/envios.md` con el título `# API de envíos — C4` y cuatro secciones (`## Contexto`, `## Contenedores`, `## Componentes`, `## Código`). Cada sección lleva su diagrama; estos son los cuatro, en orden:
+
+```mermaid
+flowchart LR
+    Operador["Operador de bodega"] --> Sistema["API de envíos"]
+    Sistema --> Cliente["Cliente que consulta"]
+    Sistema --> Transportadora["Transportadora externa"]
+```
+
+```mermaid
+flowchart LR
+    Web["Web Angular"] --> Api["api Spring Boot"]
+    Api --> Db[("base-datos PostgreSQL")]
+    Api --> Cola["cola Kafka"]
+    Cola --> Worker["worker de asignación"]
+    Worker --> Db
+```
+
+```mermaid
+flowchart LR
+    Controlador["Controlador de envíos"] --> CasoUso["Caso de uso AsignarEnvio"]
+    CasoUso --> Puerto["Puerto EnvioRepository"]
+    Puerto --> Adaptador["Adaptador JPA"]
+```
+
+```mermaid
+flowchart LR
+    CrearEnvio["CrearEnvio"] --> EnvioRepository["EnvioRepository"]
+```
+
+Verifica:
+
+```bash
+node validar-c4.mjs
+```
+
+**Resultado esperado:** `C4 OK: 4 niveles y 12 relaciones`. El número es el de flechas del documento; el validador informa el real y falla si baja de doce.
+
+**Fallo deliberado:** elimina la línea `Cola --> Worker["worker de asignación"]` y ejecuta otra vez. El validador responde `Se esperaban al menos 12 relaciones y hay 11`. Si además borras el nodo del worker, responde `Faltan contenedores en el C4: worker`. El diagnóstico es una diferencia de forma documental: el validador detecta la ausencia, no la corrige. Vuelve a añadir el worker y su relación.
+
+**Conceptos clave:** nivel C4, contenedor, relación verificable, documento versionado.
+
+**Entiende:** Los cuatro niveles son: **contexto** (el sistema y sus usuarios), **contenedores** (aplicaciones, colas y bases que se despliegan por separado), **componentes** (piezas dentro de un contenedor) y **código** (clases y relaciones). Cada flecha debe corresponder a una llamada o dependencia real.
+
+**Analogía:** es un mapa de escalas. El contexto es el mapa del país, los contenedores son las ciudades, los componentes son los barrios y el código son las calles. Un mapa de país con calles es ilegible; un mapa de calles que pretende explicar el país, también.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    Operador["Operador de bodega"] --> Api["API de envíos"]
+    Cliente["Cliente que consulta"] --> Api
+    Api --> Transportadora["Transportadora externa"]
+```
+
+**Cierra:** Conserva la salida de validación e identifica una relación que sigue siendo un supuesto explícito.
+
+#### Subtema 4.2 · Contrasta un contenedor con el código que existiría · 10 min
+
+**Contexto:** El ejemplo C4 muestra un sistema propuesto; contar flechas no demuestra su implementación.
+
+**Hazlo tú:** Abre `docs/c4/envios.md` del laboratorio y crea `docs/c4/evidencia.md` con una fila para api, worker, base-datos y cola. Marca cada uno como supuesto o enlaza una clase/configuración real del integrador.
+
+```bash
+node validar-c4.mjs
+```
+
+**Resultado esperado:** El formato sigue válido; la tabla separa propuesta y código existente. El lab arquitectónico no ejecuta esos cuatro procesos.
+
+**Fallo deliberado:** Quita el nivel Contenedores y ejecuta el validador. **Diagnóstico:** falla la comprobación de niveles aunque existan palabras como api o worker en otras secciones; restaura el encabezado.
+
+**Entiende:** C4 permite varias escalas. Una relación debe tener propósito, dirección y evidencia; la heurística textual no verifica esos tres aspectos.
+
+**Cierra:** Señala una flecha todavía hipotética y qué archivo necesitas para respaldarla.
+
+#### Subtema 4.3 · Añade una relación solo después de justificarla · 10 min
+
+**Contexto:** Una modificación del producto puede exigir otro componente; el documento debe evolucionar con la implementación.
+
+**Hazlo tú:** En `docs/c4/envios.md`, añade el caso de uso CancelarEnvio al nivel Código y su relación con EnvioRepository. Anota en `docs/c4/evidencia.md` que es una propuesta hasta implementarse.
+
+```bash
+node validar-c4.mjs
+```
+
+**Resultado esperado:** El contador aumenta de 12 a 13 relaciones; eso mide texto, no calidad.
+
+**Fallo deliberado:** Añade la misma flecha dos veces para simular más cobertura. **Diagnóstico:** el contador puede pasar igualmente: el validador no detecta duplicados ni demuestra relaciones reales. Retira la repetición y contrasta el diseño manualmente.
+
+**Entiende:** La revisión humana debe resolver semántica y correspondencia con código. En una arquitectura real no añadas un worker solo porque el ejemplo lo mencione.
+
+**Cierra:** Como ejercicio independiente, relaciona una clase real del integrador con su nivel C4 y anota el archivo exacto. Conserva diseño y evidencia juntos.
+
+**Hito del tema:** guarda el artefacto ejecutado, su salida, un fallo diagnosticado y la decisión que trasladarías al proyecto integrador. El ejercicio independiente requiere tu implementación; no se declara resuelto por leerlo.
+
+Siguiente paso: registrar por qué se eligió esta arquitectura. **Evidencia de aprendizaje:** entrega `docs/c4/envios.md`, `validar-c4.mjs` y la salida del validador antes y después de romper el diagrama.
+
+**Errores comunes:** mezclar niveles en un solo dibujo; dibujar un contenedor que no existe; usar C4 como sustituto de un ADR; no versionar el diagrama junto al código.
+
+**Límites y decisión de uso:** C4 documenta estructura, no decisiones ni comportamiento en tiempo de ejecución. Para una decisión que cambia el costo futuro, el artefacto correcto es un ADR. En el proyecto integrador, C4 responde «qué hay» y el ADR responde «por qué».
+
+**Fuente oficial:** [C4 model](https://c4model.com/) y [Diagramas como código con Mermaid](https://mermaid.js.org/syntax/flowchart.html).
+
+### Tema 5: ADR: decisiones con contexto, alternativas y consecuencias
+
+Al finalizar vas a escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y a validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
+
+**Conocimiento previo:** Temas 1 y 2; Node.js 24 LTS o superior.
+
+**¿Por qué es importante?** Dentro de un año, alguien preguntará por qué la asignación va por Kafka y no por una llamada directa. Sin un ADR, la respuesta se pierde y la decisión se revierte por moda. En el proyecto integrador, la elección de cola, base de datos y estrategia de reintentos debe poder revisarse sin depender de la memoria del equipo.
+
+Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó.
+
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
+
+```bash
+cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cd practica-arquitectura
+```
+
+#### Subtema 5.1 · Ejecuta el ejemplo completo y reconoce sus límites · 12 min
+
+**Contexto:** Los tres ADR del laboratorio permiten revisar una decisión con sus razones y alternativas.
+
+**Hazlo tú:** Desde una carpeta vacía:
+
+```bash
+mkdir adr-envios && cd adr-envios
+mkdir -p docs/adr
+```
+
+Crea `validar-adr.mjs` y tres ADR. Empieza por el validador:
+
+```javascript
+// Verifica que cada ADR tenga las secciones y al menos dos alternativas.
+import { readdir, readFile } from 'node:fs/promises';
+
+const archivos = (await readdir('docs/adr'))
+  .filter((nombre) => /^\d{4}-.+\.md$/.test(nombre))
+  .sort();
+if (archivos.length < 3) {
+  console.error(`Se esperaban 3 ADR y hay ${archivos.length}`);
+  process.exit(1);
+}
+
+const secciones = ['## Contexto', '## Decisión', '## Alternativas', '## Consecuencias', '## Estado'];
+for (const archivo of archivos) {
+  const texto = await readFile(`docs/adr/${archivo}`, 'utf8');
+  const faltan = secciones.filter((seccion) => !texto.includes(seccion));
+  if (faltan.length) {
+    console.error(`${archivo}: faltan ${faltan.join(', ')}`);
+    process.exit(1);
+  }
+  const alternativas = (texto.match(/^- \*\*/gm) ?? []).length;
+  if (alternativas < 2) {
+    console.error(`${archivo}: se esperaban al menos 2 alternativas y hay ${alternativas}`);
+    process.exit(1);
+  }
+}
+
+console.log(`ADR OK: ${archivos.length} decisiones con contexto, alternativas y consecuencias`);
+```
+
+Crea `docs/adr/0001-postgresql-en-lugar-de-mongodb.md`:
+
+```markdown
+# 0001 — PostgreSQL para el estado de envíos
+
+## Contexto
+
+El estado de un envío cambia con reglas de negocio (transiciones válidas) y se consulta por
+identificador y por fecha. El equipo ya opera PostgreSQL en local y necesita transacciones.
+
+## Decisión
+
+Usar PostgreSQL como base de datos del estado de envíos.
+
+## Alternativas
+
+- **MongoDB:** documentos flexibles, pero sin transacciones multi-documento simples en nuestro caso de uso.
+- **SQLite:** suficiente para una demo, no para varias instancias concurrentes.
+
+## Consecuencias
+
+Se gana consistencia transaccional y consultas por fecha con índices. Se paga operación de
+migraciones y un esquema que exige revisar cada cambio.
+
+## Estado
+
+Aceptada el 2026-10-30.
+```
+
+Crea `docs/adr/0002-kafka-para-asignacion.md` y `docs/adr/0003-reintentos-con-outbox.md` con la misma estructura y al menos dos alternativas cada uno. Verifica:
+
+```bash
+node validar-adr.mjs
+```
+
+**Resultado esperado:** `ADR OK: 3 decisiones con contexto, alternativas y consecuencias`.
+
+**Fallo deliberado:** borra la sección `## Alternativas` del ADR `0003`. El validador responde `0003-reintentos-con-outbox.md: faltan ## Alternativas`. El diagnóstico es que un ADR sin alternativas no permite revisar la decisión: parece una orden, no una elección. Vuelve a añadir la sección con dos opciones reales.
+
+**Conceptos clave:** contexto, decisión, alternativas, consecuencias, estado del ADR.
+
+**Entiende:** Un ADR tiene cinco partes: **contexto** (la fuerza que obliga a decidir), **decisión** (qué se eligió), **alternativas** (qué se descartó y por qué), **consecuencias** (qué se gana y qué se paga) y **estado** (propuesta, aceptada, reemplazada). El estado importa: una decisión reemplazada sigue siendo historia útil.
+
+**Analogía:** es el acta de una reunión técnica. No describe la oficina ni el organigrama; registra qué se decidió, quién lo propuso, qué otras opciones había y qué se aceptó perder. Sin acta, la reunión se repite cada seis meses.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    Contexto["Contexto y fuerzas"] --> Decision["Decisión"]
+    Alternativas["Alternativas descartadas"] --> Decision
+    Decision --> Consecuencias["Consecuencias y costo aceptado"]
+    Consecuencias --> Estado["Estado: aceptada o reemplazada"]
+```
+
+**Cierra:** Conserva los tres archivos y distingue una decisión propuesta de una aceptada por un equipo.
+
+#### Subtema 5.2 · Compara alternativas con condiciones concretas · 10 min
+
+**Contexto:** Una alternativa descartada sin motivo no permite revisar la decisión.
+
+**Hazlo tú:** Abre `docs/adr/0002-kafka-para-asignacion.md` y `0003-reintentos-con-outbox.md`. Para cada opción identifica requisito, coste operativo y una condición que haría cambiar de elección.
+
+```bash
+node validar-adr.mjs
+```
+
+**Resultado esperado:** Hay tres ADR con secciones; los nuevos se mantienen como propuestas didácticas.
+
+**Fallo deliberado:** Borra ## Alternativas de 0003 y ejecuta el comando. **Diagnóstico:** el validador informa la sección ausente; restaura el contenido con opciones reales.
+
+**Entiende:** Validar estructura no evalúa si Kafka o outbox son la decisión adecuada. PostgreSQL, MongoDB y SQLite deben compararse según el caso y operación, sin prohibiciones universales inventadas.
+
+**Cierra:** Guarda una condición medible que obligaría a revisar la decisión de mensajería.
+
+#### Subtema 5.3 · Reemplaza una decisión conservando el historial · 10 min
+
+**Contexto:** El equipo necesita saber qué estuvo vigente y por qué cambió.
+
+**Hazlo tú:** Crea `docs/adr/0004-revision-de-asignacion.md` con contexto, decisión, dos alternativas, consecuencias y estado. En 0002 escribe Reemplazada por 0004 y enlaza el archivo desde README.md.
+
+```bash
+node validar-adr.mjs
+```
+
+**Resultado esperado:** El validador registra cuatro decisiones sin borrar 0002; revisa manualmente que el enlace exista.
+
+**Fallo deliberado:** Borra ## Consecuencias del nuevo ADR. **Diagnóstico:** falta el coste aceptado y el validador falla por sección ausente; restaura el análisis.
+
+**Entiende:** Un ADR conserva razones, no es una orden irreversible ni una certificación de diseño. La fecha de ejemplo no acredita aprobación de un equipo real.
+
+**Cierra:** Como ejercicio independiente, escribe un ADR de caché o autorización del proyecto integrador con evidencia y alternativa descartada; entrega el enlace y explica qué lo haría revocable.
+
+**Hito del tema:** guarda el artefacto ejecutado, su salida, un fallo diagnosticado y la decisión que trasladarías al proyecto integrador. El ejercicio independiente requiere tu implementación; no se declara resuelto por leerlo.
+
+Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto. **Evidencia de aprendizaje:** entrega los tres ADR, `validar-adr.mjs` y la salida del validador con el fallo de `0003` y su corrección.
+
+**Errores comunes:** escribir un ADR después de implementar sin registrar las alternativas; copiar el mismo texto en los tres; dejar el estado «propuesta» para siempre; usar el ADR para describir la arquitectura completa.
+
+**Límites y decisión de uso:** un ADR documenta una decisión, no garantiza que sea buena. Si la decisión es reversible y barata, el registro puede ser una línea en el commit; el ADR se justifica cuando el costo de revertir es alto. En el proyecto integrador se escribe para las decisiones que alguien querrá cuestionar dentro de un año.
+
+**Fuente oficial:** [Architecture Decision Records (AWS Prescriptive Guidance)](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html) y [ADR en Martin Fowler](https://martinfowler.com/bliki/ArchitectureDecisionRecord.html).
+
+### Tema 6: módulos y límites entre paquetes
+
+**Meta:** detectar una dependencia de un módulo hacia una clase interna de otro.
+
+**¿Por qué es importante?** Separar carpetas no impide acoplamiento; una verificación repetible hace visible la dependencia prohibida.
+
+**Prerrequisitos:** M15 T1, paquetes Java, imports y JUnit. Duración: 30–40 min.
+
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
+
+```bash
+cp -R examples/spring-modulith-rutaflow practica-m23-t1
+cd practica-m23-t1
+./mvnw -q test
+```
+
+**Analogía:** los módulos son habitaciones con puertas públicas; un import a internals atraviesa una pared. Esa comparación no decide por sí sola qué API es conveniente.
+
+#### Subtema 6.1 · Reconoce la frontera verificable · 10 min
+
+**Contexto:** Los paquetes inmediatos de la aplicación definen capacidades de negocio.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/RutaFlowModulithApplication.java` y `src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java`. Sigue ApplicationModules.of y verify.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest test
+```
+
+**Resultado esperado:** La prueba no encuentra ciclos ni accesos a internals en el laboratorio actual.
+
+**Fallo deliberado:** En NotificacionListener.java, añade un campo con tipo academia.rutaflow.modulith.pedidos.internal.PedidoInterno.
+
+**Diagnóstico:** Java permite el tipo público, pero Modulith detecta que otro módulo accede al paquete interno; elimina el campo.
+
+**Entiende:** verify comprueba relaciones estáticas del modelo modular. No verifica autorización, transacciones distribuidas ni corrección de negocio.
+
+**Cierra:** Guarda la dependencia rechazada y el resultado correcto tras retirarla.
+
+#### Subtema 6.2 · Publica contratos pequeños · 10 min
+
+**Contexto:** Notificaciones necesita saber que un pedido se creó, sin leer su dirección privada.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/pedidos/PedidoCreado.java` y compáralo con `pedidos/internal/PedidoInterno.java`. El evento solo contiene pedidoId.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest,PedidosModuleTest test
+```
+
+**Resultado esperado:** El evento público se puede referenciar y el módulo Pedidos publica RF-205.
+
+**Fallo deliberado:** Importa PedidoInterno desde el listener para extraer direccionPrivada.
+
+**Diagnóstico:** la prueba de frontera rechaza el acoplamiento aunque el código compile; vuelve a usar PedidoCreado.
+
+**Entiende:** Un contrato de evento debe contener lo que el consumidor necesita y permitir evolución. Público en Java no significa API pública del módulo.
+
+**Cierra:** Anota qué dato privado quedó fuera y por qué no es necesario para el aviso.
+
+#### Subtema 6.3 · Comprueba antes de mover paquetes · 10 min
+
+**Contexto:** Cambiar el paquete de una clase puede cambiar su visibilidad modular.
+
+**Hazlo tú:** En `src/test/java/academia/rutaflow/modulith/ArquitecturaModularTest.java`, lee qué clase raíz delimita el análisis. Ejecuta desde la carpeta copiada.
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** Arquitectura y pruebas de eventos pasan con la estructura actual.
+
+**Fallo deliberado:** Mueve PedidoCreado al paquete internal y cambia el import del listener para que compile.
+
+**Diagnóstico:** el consumidor ya depende de un interno; verify falla. Restaura el paquete público original.
+
+**Entiende:** Una refactorización de paquetes puede alterar el contrato aunque el IDE actualice imports. Comprueba arquitectura y consumidores juntos.
+
+**Cierra:** Guarda los paquetes públicos y los internos en una nota de tu proyecto.
+
+**Práctica independiente:** En una copia añade un módulo facturacion que use solo PedidoCreado. Escribe un test de frontera y luego un acceso interno deliberado; conserva el contraste. No lo presentes como servicio desplegado.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: fundamentos](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
+
+### Tema 7: eventos entre módulos sin importar implementación
+
+**Meta:** publicar un hecho de negocio y observar su reacción local después del commit.
+
+**¿Por qué es importante?** Invocar directamente internals de otro módulo oculta el contrato y acopla cambios.
+
+**Prerrequisitos:** M8 T2 y M15 T6. Duración: 30–40 min.
+
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
+
+```bash
+cp -R examples/spring-modulith-rutaflow practica-m23-t2
+cd practica-m23-t2
+./mvnw -q test
+```
+
+**Analogía:** el evento es un aviso acordado entre oficinas; publicar el aviso no equivale a confirmar su recepción durable.
+
+#### Subtema 7.1 · Publica desde el servicio · 10 min
+
+**Contexto:** PedidosService declara una operación transaccional que publica PedidoCreado.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/pedidos/PedidosService.java` y `src/test/java/academia/rutaflow/modulith/pedidos/PedidosModuleTest.java`. Sigue crear hasta publishEvent.
+
+```bash
+./mvnw -q -Dtest=PedidosModuleTest test
+```
+
+**Resultado esperado:** PublishedEvents contiene un PedidoCreado con RF-205.
+
+**Fallo deliberado:** Quita events.publishEvent de crear.
+
+**Diagnóstico:** el conjunto de eventos observado queda vacío y falla la cantidad esperada; restaura publicación.
+
+**Entiende:** PublishedEvents observa eventos del contexto de test; no demuestra que Kafka, RabbitMQ o una app móvil recibieran datos.
+
+**Cierra:** Conserva ID y cantidad del evento observado.
+
+#### Subtema 7.2 · Reacciona mediante el contrato · 10 min
+
+**Contexto:** El listener consume PedidoCreado y actualiza la bandeja local.
+
+**Hazlo tú:** Abre `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java` y `src/test/java/academia/rutaflow/modulith/notificaciones/NotificacionesModuleTest.java`. Sigue ApplicationModuleListener hasta agregar.
+
+```bash
+./mvnw -q -Dtest=NotificacionesModuleTest test
+```
+
+**Resultado esperado:** La bandeja llega a contener Pedido recibido: RF-204 antes del timeout de prueba.
+
+**Fallo deliberado:** Omite bandeja.agregar en el listener.
+
+**Diagnóstico:** la espera termina sin el aviso esperado; restaura la llamada. El timeout del test evita una espera infinita, no define un SLA.
+
+**Entiende:** ApplicationModuleListener combina manejo transaccional y asíncrono. El registro de publicaciones ayuda a gestionar pendientes; no convierte un efecto externo en transacción distribuida.
+
+**Cierra:** Guarda el aviso y explica la diferencia entre publicar y consumir.
+
+#### Subtema 7.3 · Separa registro y efecto durable · 10 min
+
+**Contexto:** El laboratorio registra publicaciones con JDBC en H2, pero la bandeja y la base de test son locales.
+
+**Hazlo tú:** Abre `src/test/resources/application.yml` y `src/main/java/academia/rutaflow/modulith/notificaciones/BandejaNotificaciones.java`. Identifica qué se perdería al reiniciar.
+
+```bash
+./mvnw -q -Dtest=NotificacionesModuleTest test
+```
+
+**Resultado esperado:** La reacción local pasa; no se produce una prueba de reinicio ni de recuperación entre procesos.
+
+**Fallo deliberado:** Escribe en tu evidencia que este test prueba un broker externo.
+
+**Diagnóstico:** no existe conexión a broker en el test ni configuración de ese transporte; corrige la afirmación y distingue H2 de un almacén persistente externo.
+
+**Entiende:** Para probar recuperación debes conservar una base relacional real, provocar publicación pendiente, reiniciar y observar reintento con idempotencia del efecto. Esa prueba no está implementada aquí.
+
+**Cierra:** Enumera lo demostrado y el experimento que aún necesita infraestructura persistente.
+
+**Práctica independiente:** Añade un segundo evento autorizado y un listener de prueba. Comprueba que el aviso aparece una vez en el caso normal; estudia por separado replay y deduplicación antes de prometer exactamente una vez.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: eventos](https://docs.spring.io/spring-modulith/reference/events.html)
+
+### Tema 8: documentación generada y mapa de dependencias
+
+**Meta:** generar PlantUML y fichas Asciidoc desde el modelo modular y contrastar una relación con un import.
+
+**¿Por qué es importante?** Una documentación manual puede divergir del código; la generación reduce ese desfase sin validar todas las decisiones.
+
+**Prerrequisitos:** M15 T4 y M15 T6. Duración: 30–40 min.
+
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
+
+```bash
+cp -R examples/spring-modulith-rutaflow practica-m23-t3
+cd practica-m23-t3
+./mvnw -q test
+```
+
+**Analogía:** el mapa generado es una fotografía de los paquetes analizados, no del despliegue completo ni de su tráfico.
+
+#### Subtema 8.1 · Genera documentos reproducibles · 10 min
+
+**Contexto:** Documenter usa el mismo ApplicationModules que analiza las fronteras.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/DocumentacionModularTest.java`. Sigue new Documenter(modules).writeDocumentation().
+
+```bash
+./mvnw -q -Dtest=DocumentacionModularTest test
+```
+
+**Resultado esperado:** target/spring-modulith-docs contiene archivos .puml y .adoc; el test comprueba que existen ambos formatos.
+
+**Fallo deliberado:** Comenta writeDocumentation, elimina solo target/spring-modulith-docs y repite.
+
+**Diagnóstico:** faltan los archivos generados; la prueba falla. Restaura la generación; conservar salidas anteriores habría ocultado este fallo.
+
+**Entiende:** Crear PlantUML no equivale a renderizar PNG ni publicar una página. El test verifica archivos, no legibilidad de una imagen.
+
+**Cierra:** Guarda nombres y fecha de generación y señala que no se renderizó una imagen aquí.
+
+#### Subtema 8.2 · Contrasta una relación con código · 10 min
+
+**Contexto:** Notificaciones depende del contrato de Pedidos para interpretar PedidoCreado.
+
+**Hazlo tú:** Abre un .puml bajo `target/spring-modulith-docs` y contrasta la dependencia con el import de `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java`.
+
+```bash
+./mvnw -q -Dtest=ArquitecturaModularTest,DocumentacionModularTest test
+```
+
+**Resultado esperado:** La relación del mapa tiene un import rastreable y la verificación modular sigue pasando.
+
+**Fallo deliberado:** Dibuja manualmente una dependencia Pedidos hacia Notificaciones sin cambiar el código.
+
+**Diagnóstico:** el mapa editado ya no es una salida fiel de Documenter; regenera y contrasta los archivos en lugar de tratar la edición como evidencia.
+
+**Entiende:** El diagrama describe módulos y relaciones estáticas; no demuestra dónde corre cada módulo ni si una llamada ocurrió durante un incidente.
+
+**Cierra:** Escribe archivo origen, símbolo importado y relación que lo representa.
+
+#### Subtema 8.3 · Versiona la explicación junto al mapa · 10 min
+
+**Contexto:** Un artefacto de build puede regenerarse; las decisiones y límites también deben conservarse.
+
+**Hazlo tú:** Crea `docs/mapa-modular.md` en la copia y enlaza generación, módulos, import respaldado y límites. Revisa `README.md` del laboratorio.
+
+```bash
+./mvnw -q -Dtest=DocumentacionModularTest test
+```
+
+**Resultado esperado:** La guía indica cómo reconstruir el mapa y no promete descubrir infraestructura externa.
+
+**Fallo deliberado:** Afirma que el mapa prueba recuperación del broker Kafka.
+
+**Diagnóstico:** el modelo inspecciona paquetes Java y aquí no analiza ningún despliegue Kafka; elimina esa conclusión.
+
+**Entiende:** Acompaña documentación generada con contexto de operación y ADR. Un enlace a un archivo temporal de target puede romperse si no se publica el artefacto.
+
+**Cierra:** Conserva comando, relación respaldada y ubicación donde publicarías el resultado.
+
+**Práctica independiente:** Agrega un módulo nuevo a la copia, genera de nuevo y compara dependencias y canvas. Documenta una relación esperada y comprueba su import; no añadas flechas para mejorar apariencia.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: Documenter](https://docs.spring.io/spring-modulith/reference/documentation.html)
+
+### Tema 9: pruebas de integración por módulo
+
+**Meta:** distinguir un test modular acotado del contexto completo y localizar qué evidencia produce cada uno.
+
+**¿Por qué es importante?** Ampliar todo test a la aplicación completa puede esconder dependencias que deberían ser explícitas.
+
+**Prerrequisitos:** M6 y M15 T6–T3. Duración: 30–40 min.
+
+**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
+
+```bash
+cp -R examples/spring-modulith-rutaflow practica-m23-t4
+cd practica-m23-t4
+./mvnw -q test
+```
+
+**Analogía:** un ensayo de una oficina comprueba su trabajo; un ensayo conjunto comprueba el intercambio entre oficinas. Ninguno ensaya automáticamente toda la red.
+
+#### Subtema 9.1 · Ejecuta solo Pedidos · 10 min
+
+**Contexto:** ApplicationModuleTest limita el contexto al módulo donde vive la prueba.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/pedidos/PedidosModuleTest.java` y ubica su paquete y anotación.
+
+```bash
+./mvnw -q -Dtest=PedidosModuleTest test
+```
+
+**Resultado esperado:** Pedidos publica un evento sin necesitar cargar la bandeja de Notificaciones como colaborador del servicio.
+
+**Fallo deliberado:** Inyecta BandejaNotificaciones en el test modular sin ampliar el alcance.
+
+**Diagnóstico:** el contexto acotado no ofrece ese bean de otro módulo; restaura el test y explica la dependencia que intentaste introducir.
+
+**Entiende:** El aislamiento modular ayuda a detectar acoplamiento. Un mock externo puede satisfacer una dependencia explícita, pero entonces no prueba su implementación real.
+
+**Cierra:** Guarda anotación, módulo cargado y colaboración que no participó.
+
+#### Subtema 9.2 · Contrasta con el test del flujo · 10 min
+
+**Contexto:** NotificacionesModuleTest usa SpringBootTest para observar la reacción entre dos módulos reales.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/modulith/notificaciones/NotificacionesModuleTest.java` y compáralo con el test anterior.
+
+```bash
+./mvnw -q -Dtest=PedidosModuleTest,NotificacionesModuleTest test
+```
+
+**Resultado esperado:** Ambos pasan, con evidencias distintas: publicación en un módulo y aviso en un contexto más amplio.
+
+**Fallo deliberado:** Sustituye SpringBootTest por ApplicationModuleTest en el test de Notificaciones manteniendo la inyección de PedidosService.
+
+**Diagnóstico:** el alcance cambia y el bean externo puede faltar; no amplíes silenciosamente el test para ocultar ese cambio. Restaura la configuración inicial.
+
+**Entiende:** Spring Modulith ofrece Scenario para expresar estímulo y espera en otros escenarios. Este laboratorio usa PublishedEvents y Awaitility; no declara ejecutada una prueba Scenario que no existe.
+
+**Cierra:** Escribe por qué este flujo exige ambos módulos y qué transporte sigue fuera.
+
+#### Subtema 9.3 · Cierra la matriz de alcance · 10 min
+
+**Contexto:** La suite junta frontera, publicación, reacción y generación documental.
+
+**Hazlo tú:** Abre `pom.xml` y los cuatro tests bajo `src/test/java/academia/rutaflow/modulith/`. Ejecuta una suite limpia.
+
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** Cuatro pruebas correctas, incluida DocumentacionModularTest; el registro JDBC usa H2 de test.
+
+**Fallo deliberado:** Quita la publicación del evento y ejecuta la suite.
+
+**Diagnóstico:** las pruebas de publicación/reacción fallan aunque la frontera estática pueda seguir válida; restaura y repite.
+
+**Entiende:** Una prueba de arquitectura y una de comportamiento responden preguntas distintas. Ninguna mide todavía recuperación tras caída de proceso o autorización de usuario.
+
+**Cierra:** Conserva conteos, pruebas seleccionadas y límites sin presentar cuatro tests como todas las garantías del sistema.
+
+**Práctica independiente:** Escribe una prueba modular de una regla nueva y otra del flujo entre módulos. Declara en cada una qué dependencia es real, cuál simulada y si existe transporte externo.
+
+**Hito del tema:** conserva el resultado ejecutado, el fallo diagnosticado y restaurado, una explicación propia del mecanismo y tu ejercicio independiente. En el proyecto integrador RutaFlow aplica la decisión solo cuando puedas justificar su alcance. La suite del laboratorio no acredita un despliegue productivo ni la resolución de tu ejercicio.
+
+**Fuente primaria:** [Spring Modulith: pruebas modulares](https://docs.spring.io/spring-modulith/reference/testing.html)

@@ -557,7 +557,7 @@ kotlin {
     jvm()
     iosArm64()
     iosSimulatorArm64() // ningún módulo puede olvidarlo
-    jvmToolchain(21)
+    jvmToolchain(25) // JDK 25, la línea del curso (docs/VERSIONES.md)
     compilerOptions { allWarningsAsErrors.set(true) }
 }
 ```
@@ -579,7 +579,11 @@ Archivo `settings.gradle.kts`:
 
 ```kotlin
 pluginManagement { includeBuild("build-logic") }
-include(":shared", ":feature-envios")
+dependencyResolutionManagement {
+    repositories { mavenCentral() } // sin esto los módulos no encuentran kotlin-stdlib, Ktor ni coroutines
+}
+rootProject.name = "rutaflow"
+include(":feature-envios") // el Tema 6 añade ":shared"
 ```
 
 Ejecútalo:
@@ -589,7 +593,7 @@ Ejecútalo:
 ./gradlew :feature-envios:allTests
 ```
 
-**Explicación por bloques:** El catálogo define versiones una vez y las referencia con `version.ref`. `build-logic` es un build aparte con `kotlin-dsl`; usa el mismo catálogo desde su propio `settings.gradle.kts`. El archivo `rutaflow.kmp.library.gradle.kts` es un plugin precompilado: aplica el plugin multiplataforma y fija targets, toolchain y avisos como errores. `settings.gradle.kts` de la raíz incluye `build-logic` para que sus plugins estén disponibles. El módulo `feature-envios` queda con su plugin y sus dependencias.
+**Explicación por bloques:** El catálogo define versiones una vez y las referencia con `version.ref`. `build-logic` es un build aparte con `kotlin-dsl`; usa el mismo catálogo desde su propio `settings.gradle.kts`. El archivo `rutaflow.kmp.library.gradle.kts` es un plugin precompilado: aplica el plugin multiplataforma y fija targets, toolchain y avisos como errores. `settings.gradle.kts` de la raíz incluye `build-logic` para que sus plugins estén disponibles y declara en `dependencyResolutionManagement` el repositorio de donde salen las dependencias de todos los módulos: el `settings.gradle.kts` de `build-logic` solo sirve a ese build, no a la raíz. Cada `include` debe apuntar a una carpeta que exista; por eso `:shared` se añade en el Tema 6, cuando se crea. El módulo `feature-envios` queda con su plugin y sus dependencias.
 
 **Resultado esperado:**
 
@@ -673,6 +677,17 @@ flowchart TB
 
 #### Paso 4 · Demostración guiada desde cero
 
+Continúa en el proyecto del Tema 5 y registra el módulo nuevo. Archivo `settings.gradle.kts` (reemplaza el del Tema 5):
+
+```kotlin
+pluginManagement { includeBuild("build-logic") }
+dependencyResolutionManagement {
+    repositories { mavenCentral() }
+}
+rootProject.name = "rutaflow"
+include(":shared", ":feature-envios")
+```
+
 Archivo `shared/build.gradle.kts`:
 
 ```kotlin
@@ -720,6 +735,24 @@ package co.rutaflow.tarifa
 actual fun plataforma(): String = "JavaScript"
 ```
 
+El convention plugin también declara iOS y este módulo añade Wasm, así que esos dos targets necesitan su `actual`.
+
+Archivo `shared/src/iosMain/kotlin/co/rutaflow/tarifa/Plataforma.ios.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+actual fun plataforma(): String = "iOS"
+```
+
+Archivo `shared/src/wasmJsMain/kotlin/co/rutaflow/tarifa/Plataforma.wasm.kt`:
+
+```kotlin
+package co.rutaflow.tarifa
+
+actual fun plataforma(): String = "Wasm"
+```
+
 Archivo `shared/src/commonTest/kotlin/co/rutaflow/tarifa/TarifaTest.kt`:
 
 ```kotlin
@@ -744,7 +777,7 @@ Ejecútalo:
 ./gradlew :shared:jsBrowserProductionLibraryDistribution
 ```
 
-**Explicación por bloques:** El módulo hereda `jvm` e iOS del convention plugin y agrega `js` (navegador y Node, como librería) y `wasmJs`. `tarifaCentavos` vive en `commonMain` y se exporta a JavaScript con `@JsExport`. `plataforma` es un `expect` con un `actual` por target (aquí JVM y JS; Wasm e iOS tendrían el suyo). La misma prueba común corre en cada target. La última tarea genera un paquete JS que el cotizador web puede importar.
+**Explicación por bloques:** El módulo hereda `jvm` e iOS del convention plugin y agrega `js` (navegador y Node, como librería) y `wasmJs`. `tarifaCentavos` vive en `commonMain` y se exporta a JavaScript con `@JsExport`. `plataforma` es un `expect` con un `actual` por cada target que compila: JVM, JS, Wasm e iOS (el de iOS sirve para `iosArm64` e `iosSimulatorArm64`, que comparten `iosMain`). La misma prueba común corre en cada target. La última tarea genera un paquete JS que el cotizador web puede importar.
 
 **Resultado esperado:**
 

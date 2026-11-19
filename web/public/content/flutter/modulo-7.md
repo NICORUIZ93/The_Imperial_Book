@@ -74,18 +74,53 @@ En el proyecto integrador RutaFlow, practicá este patrón creando tu propio can
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 const canal = MethodChannel('com.rutaflow/bateria');
-final nivel = await canal.invokeMethod<int>('obtenerNivelBateria');
+
+void main() => runApp(const MaterialApp(home: PantallaBateria()));
+
+class PantallaBateria extends StatefulWidget {
+  const PantallaBateria({super.key});
+
+  @override
+  State<PantallaBateria> createState() => _PantallaBateriaState();
+}
+
+class _PantallaBateriaState extends State<PantallaBateria> {
+  String texto = 'Toca el botón para leer la batería';
+
+  Future<void> leer() async {
+    String nuevo;
+    try {
+      final nivel = await canal.invokeMethod<int>('obtenerNivelBateria');
+      nuevo = 'Batería: $nivel%';
+    } on PlatformException catch (e) {
+      nuevo = 'Error nativo: ${e.message}';
+    } on MissingPluginException {
+      nuevo = 'Esta plataforma no implementa el canal';
+    }
+    if (!mounted) return;
+    setState(() => texto = nuevo);
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(child: Text(texto)),
+        floatingActionButton: FloatingActionButton(onPressed: leer, child: const Icon(Icons.battery_std)),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Reemplaza `android/app/src/main/kotlin/<tu/paquete>/MainActivity.kt` (conserva la línea `package` que generó `flutter create`):
 
@@ -266,22 +301,53 @@ En el proyecto integrador RutaFlow, esta solicitud de permiso vive en `lib/featu
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-final estado = await Permission.camera.request();
-if (estado.isGranted) {
-  abrirCamara();
-} else {
-  mostrarMensajePermisoDenegado();
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+void main() => runApp(const MaterialApp(home: PantallaEvidencia()));
+
+class PantallaEvidencia extends StatefulWidget {
+  const PantallaEvidencia({super.key});
+
+  @override
+  State<PantallaEvidencia> createState() => _PantallaEvidenciaState();
+}
+
+class _PantallaEvidenciaState extends State<PantallaEvidencia> {
+  String mensaje = 'Toca el botón para fotografiar la evidencia';
+
+  void abrirCamara() => setState(() => mensaje = 'Permiso concedido: aquí se abre la cámara');
+
+  void mostrarMensajePermisoDenegado() => setState(() => mensaje =
+      'Sin permiso de cámara no puedes fotografiar la evidencia. Puedes activarlo en Ajustes.');
+
+  Future<void> pedirPermiso() async {
+    final estado = await Permission.camera.request();
+    if (!mounted) return;
+    if (estado.isGranted) {
+      abrirCamara();
+    } else {
+      mostrarMensajePermisoDenegado();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(mensaje))),
+        floatingActionButton: FloatingActionButton(onPressed: pedirPermiso, child: const Icon(Icons.camera_alt)),
+      );
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add permission_handler
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: si el conductor concede el permiso, la cámara se abre normalmente; si lo rechaza, la app muestra un mensaje explicando por qué no puede fotografiar la evidencia, en vez de intentar abrir la cámara igual o quedar sin ninguna respuesta visible.
 
@@ -349,11 +415,13 @@ final class DeliveryProof {
 }
 ```
 
-El adaptador `image_picker_proof_source.dart` convierte el resultado del plugin en un tipo propio. `pickImage` puede devolver `null`: cancelar el selector no es un error.
+El adaptador `lib/features/delivery_proof/infrastructure/image_picker_proof_source.dart` convierte el resultado del plugin en un tipo propio. `pickImage` puede devolver `null`: cancelar el selector no es un error.
 
 ```dart
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+
+import '../domain/delivery_proof.dart';
 
 final class ImagePickerProofSource {
   ImagePickerProofSource(this._picker);
@@ -376,9 +444,11 @@ final class ImagePickerProofSource {
 }
 ```
 
-Define en `delivery_proof_repository.dart` el contrato que necesita el caso de uso:
+Define en `lib/features/delivery_proof/domain/delivery_proof_repository.dart` el contrato que necesita el caso de uso:
 
 ```dart
+import 'delivery_proof.dart';
+
 abstract interface class DeliveryProofRepository {
   Future<Uri> upload({
     required String deliveryId,
@@ -389,11 +459,14 @@ abstract interface class DeliveryProofRepository {
 }
 ```
 
-La implementación `dio_delivery_proof_repository.dart` traduce el contrato de dominio a HTTP. Envía un identificador de idempotencia para que reintentar después de perder la conexión no cree dos evidencias:
+La implementación `lib/features/delivery_proof/infrastructure/dio_delivery_proof_repository.dart` traduce el contrato de dominio a HTTP. Envía un identificador de idempotencia para que reintentar después de perder la conexión no cree dos evidencias:
 
 ```dart
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
+
+import '../domain/delivery_proof.dart';
+import '../domain/delivery_proof_repository.dart';
 
 final class DioDeliveryProofRepository implements DeliveryProofRepository {
   DioDeliveryProofRepository(this._dio);
@@ -457,6 +530,10 @@ sequenceDiagram
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+
 final class DeliveryProof {
   DeliveryProof({required this.bytes, required this.fileName, required this.mimeType}) {
     if (bytes.isEmpty) throw ArgumentError('La imagen está vacía');
@@ -467,16 +544,37 @@ final class DeliveryProof {
   final String fileName;
   final String mimeType;
 }
+
+String probar(int tamano, String mimeType) {
+  try {
+    DeliveryProof(bytes: Uint8List(tamano), fileName: 'evidencia', mimeType: mimeType);
+    return 'aceptada';
+  } on ArgumentError catch (e) {
+    return 'rechazada: ${e.message}';
+  }
+}
+
+void main() => runApp(MaterialApp(
+      home: Scaffold(
+        body: SafeArea(
+          child: Column(children: [
+            Text('1 MB JPEG: ${probar(1024 * 1024, 'image/jpeg')}'),
+            Text('6 MB JPEG: ${probar(6 * 1024 * 1024, 'image/jpeg')}'),
+            Text('1 MB GIF: ${probar(1024 * 1024, 'image/gif')}'),
+          ]),
+        ),
+      ),
+    ));
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: construir un `DeliveryProof` con una imagen de 6 MB (o un tipo MIME no permitido) lanza un `ArgumentError` inmediatamente en el dominio, antes de que esos bytes lleguen siquiera a considerarse para una subida por red.
 

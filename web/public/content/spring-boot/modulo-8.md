@@ -1,1496 +1,1100 @@
-# Módulo 8: Mensajería — Kafka/RabbitMQ
-
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka` para Kafka, sin necesitar Docker; `RabbitMQContainer` de Testcontainers para RabbitMQ), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito.
-
+# Módulo 8: Integraciones Spring: scheduling, eventos, correo, caché e IA
 
 ## Aprende construyendo
 
-### Tema 1: Producers y consumers con Spring Kafka
+Este módulo completa el mapa de integraciones de Spring identificado en las capturas. Cada capacidad se introduce con una prueba observable y un límite importante: el scheduler local no coordina instancias, los eventos en memoria no son durables, SMTP puede fallar y las cachés necesitan invalidación.
 
-**Duración estimada:** 35 min.
-**¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
-**Prerrequisitos:** Spring Boot M1 T1 y M2 T1. Proyecto continuo: enviar un evento de creación y permitir ruteo y notificaciones independientes.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper incluido. El mismo proyecto contiene patrones de los temas posteriores (reintentos/DLT y outbox/inbox); en este Tema 1 practica solo los tres subtemas y sus pruebas dirigidas. Si quieres provocar los fallos, copia el directorio a `spring-kafka-practice` y cambia allí las líneas indicadas.
+### Dos ejemplos: primero visible, luego real
 
-#### Subtema 1.1: Publica el evento con la clave del envío · 10 min
+- **Ejemplo sencillo:** un `@Scheduled` revisa pedidos vencidos en H2; un evento Spring actualiza una métrica; Caffeine cachea una tarifa y el test observa la invalidación.
+- **Caso RutaFlow:** al confirmar un envío, la API debe guardar el estado aunque el broker, SMTP o Redis no respondan. Usa el outbox para el evento que debe sobrevivir reinicios, procesa la notificación fuera de la transacción y mide el resultado de caché entre instancias.
 
-**1. Contexto**
-El identificador del envío sirve de clave para mantener sus eventos relacionados en una misma partición de Kafka.
+Este módulo demuestra el comportamiento dentro de una aplicación Spring. El módulo 10 desarrolla Kafka entre procesos; `@TransactionalEventListener` no sustituye al outbox y un evento local no es mensajería durable.
 
-**2. Hazlo tú**
-Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioEventPublisher.java. Confirma que publicar envía topic, clave y evento:
+### Tema 1: Scheduling y tareas periódicas
+
+**Meta:** elegir entre fixed delay y cron, delegar una tarea a un servicio y probar su llamada sin esperar el reloj.
+
+**Evidencia final:** un test confirma que Spring registró la tarea y que el método llama el servicio; una nota explica qué pasa si hay varias réplicas.
+
+**¿Por qué es importante?** revisar pedidos pendientes en intervalos evita depender de que una persona recuerde ejecutar el proceso; probarlo sin esperar minutos hace que el feedback sea rápido.
+
+**Modelo mental:** el scheduler es un despertador. Despierta al método; el método delega el trabajo real a un servicio.
+
+```mermaid
+flowchart LR
+  Reloj[Scheduler] --> Metodo[revisarPendientes]
+  Metodo --> Servicio[RevisionPedidos]
+  Servicio --> Resultado[marca vencidos]
+```
+
+#### Subtema 1.1 · Elige cuándo debe volver a correr · 8 min
+
+**Contexto:** una revisión que debe ocurrir cinco minutos después de terminar no tiene la misma regla que una tarea que inicia cada cinco minutos.
+
+**Hazlo tú:** abre `examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/PedidosScheduler.java`. Lee `fixedDelayString` y los valores en `application.yml`:
 
 ```java
-public CompletableFuture<SendResult<String, EnvioCreado>> publicar(EnvioCreado evento) {
-    return kafka.send(TOPIC, evento.envioId().toString(), evento);
+@Scheduled(fixedDelayString = "${app.revision.delay-ms}",
+           initialDelayString = "${app.revision.initial-delay-ms}")
+```
+
+**Resultado esperado:** el intervalo se lee de configuración y la primera ejecución espera el tiempo inicial.
+
+**Fallo deliberado:** cambia `fixedDelayString` a `fixedRateString`. **Diagnóstico:** ahora el reloj mide de inicio a inicio, aunque la ejecución anterior siga trabajando. Vuelve a `fixedDelayString` para el caso del laboratorio.
+
+**Entiende:** fixed delay espera que termine una ejecución; fixed rate mide entre inicios. Cron sirve para horarios de calendario y debe declarar zona cuando el horario local importe.
+
+**Cierra:** elige una de las tres opciones para revisar pendientes de RutaFlow y escribe en una frase por qué encaja.
+
+#### Subtema 1.2 · Conecta el disparo con el trabajo real · 8 min
+
+**Contexto:** mantener la consulta del negocio dentro del método programado dificulta probarla y cambiar el disparador.
+
+**Hazlo tú:** abre `PedidosScheduler.java` y `RevisionPedidos.java`:
+
+```java
+public void revisarPendientes() {
+    revision.marcarVencidos();
 }
 ```
 
-El mensaje contiene dos identificadores distintos: `eventId` identifica este hecho; `envioId` agrupa todos los cambios del envío. El record real vive en `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioCreado.java`:
+Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-scheduling-rutaflow`:
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** la tarea registrada apunta al método del scheduler, que delega una vez al servicio.
+
+**Fallo deliberado:** comenta `revision.marcarVencidos()`. **Diagnóstico:** el test del contador queda en cero. Restaura la llamada.
+
+**Entiende:** el reloj decide cuándo empezar; el servicio define qué significa “pedido vencido”. Mantenerlos separados permite probar las reglas aparte.
+
+**Cierra:** anota cuál regla de vencimiento agregarías al servicio del proyecto integrador RutaFlow.
+
+#### Subtema 1.3 · Comprueba la tarea sin dormir en el test · 8 min
+
+**Contexto:** un test no debe esperar cinco minutos para revisar una tarea periódica.
+
+**Hazlo tú:** abre `PedidosSchedulerTest.java`. Los valores de prueba alargan la demora para que el reloj no dispare la tarea durante el test; `ScheduledTaskHolder` confirma que la tarea quedó registrada y el test invoca directamente el método.
+
+```bash
+./mvnw -q -Dtest=PedidosSchedulerTest test
+```
+
+**Resultado esperado:** pasa una prueba, cuenta una tarea registrada y el servicio registra una llamada.
+
+**Fallo deliberado:** quita `@EnableScheduling` de `SchedulingApplication`. **Diagnóstico:** Spring no registra la tarea y el test detecta cero. Restáuralo.
+
+**Entiende:** esta prueba comprueba registro y delegación; no espera al reloj ni demuestra la precisión de un cron de producción.
+
+**Cierra:** guarda el test como evidencia del proyecto integrador RutaFlow y especifica qué parte cubre.
+
+#### Subtema 1.4 · Evita duplicados al desplegar varias réplicas · 10 min
+
+**Contexto:** si hay tres copias de la aplicación, cada proceso puede registrar su propio scheduler.
+
+**Hazlo tú:** en `examples/spring-scheduling-rutaflow/README.md`, crea una nota para dos réplicas que intentan tomar `pedido-42`. Escribe qué reclamo atómico deja a una sola procesar la fila y qué ve la segunda. Ejecuta `./mvnw -q test` para confirmar que el lab local solo cubre registro y delegación.
+
+**Resultado esperado:** la tarea local puede ocurrir una vez por réplica; la regla de negocio impide aplicar dos veces el mismo cambio.
+
+**Fallo deliberado:** despliega dos instancias sin coordinación sobre el mismo pedido. **Diagnóstico:** ambas pueden procesar la fila. La anotación `@Scheduled` no comparte un lock entre procesos.
+
+**Entiende:** un scheduler local no es cola durable ni coordinador de cluster. Para trabajo largo y reanudable, evalúa Spring Batch; para ejecución coordinada, usa un lock distribuido o reclama filas con una operación atómica.
+
+**Cierra:** documenta una opción de coordinación y su evidencia en RutaFlow. El laboratorio usa un contador en memoria; no simula PostgreSQL, scheduler distribuido ni carga real.
+
+**Fuentes primarias:** [Spring Framework: scheduling y `@Scheduled`](https://docs.spring.io/spring-framework/reference/integration/scheduling.html); [Spring Boot: ejecución y scheduler](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html).
+
+### Tema 2: Eventos locales, eventos transaccionales y mensajería
+
+**Meta:** distinguir un aviso dentro del proceso, una acción posterior al commit y un mensaje que debe sobrevivir al reinicio.
+
+**¿Por qué es importante?** Notificar antes de guardar puede anunciar un envío que no existe; confiar solo en el aviso local puede perderlo si el proceso se cierra.
+
+**Evidencia final:** para el proyecto integrador RutaFlow, explica qué se guarda junto al envío, qué puede publicarse de nuevo y cómo el consumidor evita repetir el efecto.
+
+#### Subtema 2.1 · Sigue el evento dentro de la aplicación · 8 min
+
+**Contexto:** al aceptar una imagen, RutaFlow debe guardar sus metadatos y pedir una notificación sin acoplar el servicio al proveedor push.
+
+**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/main/java/academia/rutaflow/upload/UploadService.java` y sigue `publishEvent` hasta `PushAfterCommitListener.java`:
 
 ```java
-public record EnvioCreado(
-        UUID eventId, UUID envioId, int version, Instant occurredAt, String referencia) {}
+@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+public void afterCommit(UploadAccepted event) { gateway.send(event); }
 ```
 
-En `examples/spring-kafka-rutaflow/src/main/resources/application.yml`, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
-
-```yaml
-spring:
-  kafka:
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      acks: all
-      properties:
-        enable.idempotence: true
-    consumer:
-      group-id: rutaflow-ruteo
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.value.default.type: academia.rutaflow.event.EnvioCreado
-        spring.json.trusted.packages: academia.rutaflow.event
-```
-
-Desde examples/spring-kafka-rutaflow/, ejecuta la prueba de integración:
+Desde `examples/spring-boot-upload-push-rutaflow`, ejecuta:
 
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
+./mvnw -q -Dtest=UploadPushIntegrationTest#imagenValidaSeGuardaYNotificaDespuesDelCommit test
 ```
 
-**Resultado esperado:** la prueba confirma topic, clave, partición, offset y el mismo evento recibido por el consumidor.
+**Resultado esperado:** la prueba confirma que se guardan archivo y metadatos, y se envía una notificación.
 
-**Fallo deliberado:** cambia la clave por el identificador del evento. **Error esperado:** la prueba informa que la clave recibida no coincide con el identificador del envío. **Diagnóstico:** el envío y sus eventos deben compartir una clave estable si el negocio requiere procesarlos en el mismo orden.
+**Fallo deliberado:** cambia temporalmente `@TransactionalEventListener` por `@EventListener` y ejecuta `UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush`. **Diagnóstico:** el test observa la notificación antes de que la transacción exterior haga rollback. Restablece la anotación.
 
-**3. Entiende**
-KafkaTemplate devuelve un CompletableFuture<SendResult<...>>; publicar inicia una operación asíncrona. La clave no es el valor del evento: Kafka la usa para decidir la partición.
+**Entiende:** `ApplicationEventPublisher` conecta componentes del mismo proceso; el evento no queda guardado ni llega por sí mismo a otra aplicación.
 
-**4. Cierra**
-Anota topic, clave y partición que devolvió la prueba. Verifica qué campo elegirías para conservar juntos los cambios de un mismo envío.
+**Cierra:** dibuja las tres llamadas desde el servicio hasta el gateway y señala en cuál línea sale el proceso a un proveedor externo.
 
-#### Subtema 1.2: Conecta dos grupos consumidores · 10 min
+#### Subtema 2.2 · Comprueba qué significa “después del commit” · 8 min
 
-**1. Contexto**
-Ruteo y notificaciones deben procesar el mismo hecho, cada grupo con su propio avance. `groupId` nombra al lector lógico; el `@KafkaListener` se suscribe al topic y recibe cada registro asignado a su grupo.
+**Contexto:** el listener no debe anunciar una operación que la base de datos terminó revirtiendo.
 
-**2. Hazlo tú**
-Lee los archivos completos:
-
-- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/RuteoListener.java
-- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/NotificacionListener.java
-
-Compara el valor de `groupId` en ambos listeners. Este extracto real de `RuteoListener.java` muestra la suscripción y la key que llega en la cabecera:
-
-```java
-@KafkaListener(topics = EnvioEventPublisher.TOPIC, groupId = "rutaflow-ruteo")
-public void alCrear(
-        EnvioCreado evento,
-        @Header(KafkaHeaders.RECEIVED_KEY) String key,
-        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-        @Header(KafkaHeaders.OFFSET) long offset) {
-    inbox.procesar(evento);
-    recibidos.add(new Recibido(key, partition, offset, evento));
-}
-```
-
-`NotificacionListener.java` usa el mismo topic y `groupId = "rutaflow-notificaciones"`. Ejecuta:
+**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java` y ejecuta:
 
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
+./mvnw -q -Dtest=UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush test
 ```
 
-**Resultado esperado:** ambos grupos reciben el mismo registro y cada listener pone su copia en una cola de prueba independiente. La prueba compara key, partición, offset y contenido; esas colas solo sincronizan el test, no son colas de Kafka.
+**Resultado esperado:** no queda fila, archivo ni push. La anotación espera al commit, pero la llamada externa todavía vive en el mismo proceso.
 
-**Fallo deliberado:** cambia el groupId de notificaciones por el de ruteo. **Error esperado:** la comprobación de la segunda cola queda sin mensaje y vence el timeout. **Diagnóstico:** dos consumidores en el mismo grupo reparten trabajo; dos grupos distintos reciben cada uno una copia lógica del registro.
+**Fallo deliberado:** quita `@TransactionalEventListener` o cambia la fase por `BEFORE_COMMIT`. **Diagnóstico:** el listener puede ejecutarse antes del rollback; vuelve a `AFTER_COMMIT` y repite la prueba.
 
-**3. Entiende**
-Un consumer group representa un lector lógico. Kafka distribuye cada partición entre los consumidores de un grupo; los offsets de grupos distintos son independientes. Un evento no llama un método Java del otro servicio.
+**Entiende:** `AFTER_COMMIT` evita publicar antes de confirmar SQL; queda una ventana entre el commit y la ejecución del listener. Si el proceso cae allí, esta notificación local puede perderse. La opción `fallbackExecution` no es necesaria aquí; por defecto el listener necesita una transacción activa.
 
-**4. Cierra**
-Escribe qué grupo atiende cada listener y por qué el publicador no tiene que conocer esos nombres.
+**Cierra:** escribe una oración que describa qué protege la prueba y qué no puede proteger.
 
-#### Subtema 1.3: Comprueba orden y entrega con un broker · 15 min
+#### Subtema 2.3 · Guarda el evento junto con el envío · 10 min
 
-**1. Contexto**
-El envío al topic no implica que el listener ya haya terminado. Comprueba el recorrido con un broker embebido y espera a que el consumidor procese el evento.
+**Contexto:** si el mensaje debe sobrevivir al reinicio, guardar solo el envío y luego llamar Kafka deja una ventana en la que el envío existe pero el evento se pierde.
 
-**2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. La prueba dirige el broker embebido a tres particiones y compara la metadata de Kafka con lo que recibió el consumidor:
-
-```java
-var primero = publisher.publicar(primerEvento).get(10, TimeUnit.SECONDS).getRecordMetadata();
-var segundo = publisher.publicar(segundoEvento).get(10, TimeUnit.SECONDS).getRecordMetadata();
-
-assertThat(primero.partition()).isEqualTo(segundo.partition());
-assertThat(segundo.offset()).isGreaterThan(primero.offset());
-assertThat(recibidoPrimero.evento()).isEqualTo(primerEvento);
-assertThat(recibidoSegundo.evento()).isEqualTo(segundoEvento);
-```
-
-Ejecuta:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#conservaParticionYOrdenParaDosEventosDelMismoEnvio test
-```
-
-**Resultado esperado:** los dos eventos comparten partición, el segundo tiene un offset mayor y el listener los recibe en el mismo orden.
-
-**Fallo deliberado:** en el publicador usa un UUID aleatorio como clave en vez de envioId. **Error esperado:** la prueba ya no puede confirmar una partición común para los dos eventos. **Diagnóstico:** el particionador recibe claves diferentes; genera la clave a partir del envío que define el orden del negocio.
-
-**3. Entiende**
-El orden está garantizado dentro de una partición, no entre todas las particiones del topic. Kafka aplica el particionador a la key; para el mismo topic y número de particiones, una key estable coloca los registros de ese envío juntos. `acks: all` e idempotencia ayudan al productor frente a fallos y reintentos; no hacen que el efecto de negocio del consumidor se ejecute una sola vez. Eso requiere diseño adicional y se estudia después.
-
-**4. Cierra**
-Entrega los resultados de ambas pruebas y describe qué esperarías si publicaras dos eventos del mismo envío con claves distintas.
-
-**Hito del tema:**
-
-- [ ] Publiqué un evento con KafkaTemplate y clave estable.
-- [ ] Identifiqué los grupos independientes de ruteo y notificaciones.
-- [ ] Verifiqué partición, offset y orden mediante un broker embebido.
-- [ ] Reproduje un fallo por usar una clave incorrecta y lo diagnostiqué.
-
-**Nota del laboratorio:** `@DirtiesContext` cierra el contexto Spring antes que el broker embebido; en la suite de 8 pruebas ya no aparece el error de `KafkaStorageException` al borrar el directorio temporal. Kafka 4.2.2 aún registra un `WARN` interno al cerrar un cliente que ya se había cerrado. La prueba de la DLT usa la sobrecarga vigente `KafkaTestUtils.consumerProps(broker, "verificador-dlt", false)`, disponible desde Spring Kafka 4.0.
-
-**Fuentes oficiales:** [envío con KafkaTemplate](https://docs.spring.io/spring-kafka/reference/kafka/sending-messages.html), [recepción con listeners](https://docs.spring.io/spring-kafka/reference/kafka/receiving-messages.html), [pruebas con broker embebido](https://docs.spring.io/spring-kafka/reference/4.0/testing.html) y [KafkaTestUtils 4.0](https://docs.spring.io/spring-kafka/docs/4.0.x/api/org/springframework/kafka/test/utils/KafkaTestUtils.html).
-
-**Transferencia al proyecto integrador:** conecta el evento de envío con consumidores independientes y conserva el identificador del envío como clave para el procesamiento ordenado por partición.
-
-### Tema 2: Dead-letter queue
-
-**Duración estimada:** 35 min.
-**¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
-**Prerrequisitos:** M8 T1. Proyecto continuo: apartar eventos de envío que no pasan la validación del listener.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Continúa en `spring-kafka-practice`, la copia que preparaste en el Tema 1; allí prueba cambios deliberados sin alterar la versión base.
-
-#### Subtema 2.1: Configura reintentos limitados y DLT · 10 min
-
-**1. Contexto**
-Kafka no crea un DLT de aplicación automáticamente. El listener informa el fallo; un manejador decide si vuelve a ejecutar el listener y dónde deja el registro que sigue fallando.
-
-**2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java y estudia el bean completo errorHandler:
-
-```java
-@Bean
-DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> kafka) {
-    var recoverer = new DeadLetterPublishingRecoverer(kafka);
-    return new DefaultErrorHandler(recoverer, new FixedBackOff(100L, 2));
-}
-```
-
-En la misma clase confirma que se crean `rutaflow.envio.creado` y `rutaflow.envio.creado-dlt`, ambos con tres particiones. `FixedBackOff(100L, 2)` define 100 ms entre reintentos y dos reintentos adicionales después del primer intento. Desde la raíz de la copia ejecuta:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
-```
-
-**Resultado esperado:** Maven termina con BUILD SUCCESS y la prueba encuentra el evento fallido en rutaflow.envio.creado-dlt.
-
-**Fallo deliberado:** comenta el bean errorHandler en la copia del laboratorio y vuelve a ejecutar. **Error esperado:** la prueba no encuentra el registro en la DLT y vence su espera. **Diagnóstico:** sin recoverer configurado no hay una regla que publique el registro fallido en el destino esperado.
-
-**3. Entiende**
-`DefaultErrorHandler` coordina los fallos del listener; `FixedBackOff` define el intervalo y el máximo de reintentos. `DeadLetterPublishingRecoverer` publica en otro topic cuando se agota la política. Sin un DLT configurado, la aplicación necesita otra estrategia explícita para los mensajes irrecuperables.
-
-**4. Cierra**
-Señala dónde se crea el topic original, dónde se crea el DLT y qué bean conecta el fallo con la recuperación.
-
-#### Subtema 2.2: Provoca un mensaje inválido y comprueba los intentos · 10 min
-
-**1. Contexto**
-Una clave que no coincide con el envío hace que el listener falle siempre. Ese error repetible permite observar cada reintento y comprobar que el mensaje no desaparece.
-
-**2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java y ejecuta el test reintentaYPublicaEnDltCuandoLaKeyNoCoincide:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
-```
-
-Localiza en la prueba el envío con key incorrecta, la espera por tres intentos y la lectura desde el topic DLT. Este fragmento toma la metadata del topic original y comprueba la key, partición y contenido que recuperó el consumer:
-
-```java
-var origen = kafka.send(EnvioEventPublisher.TOPIC, "key-incorrecta", evento)
-        .get(10, TimeUnit.SECONDS).getRecordMetadata();
-await().atMost(Duration.ofSeconds(5))
-        .untilAsserted(() -> assertThat(ruteoListener.intentos()).isEqualTo(3));
-ConsumerRecord<String, String> deadLetter = KafkaTestUtils.getSingleRecord(
-        consumer, EnvioEventPublisher.TOPIC + "-dlt", Duration.ofSeconds(10));
-
-assertThat(deadLetter.key()).isEqualTo("key-incorrecta");
-assertThat(deadLetter.partition()).isEqualTo(origen.partition());
-assertThat(deadLetter.value()).contains("RT-DLT");
-```
-
-**Resultado esperado:** el test confirma tres entregas fallidas del listener y encuentra el JSON del envío en `rutaflow.envio.creado-dlt`, con la key y partición originales.
-
-**Fallo deliberado:** cambia la key incorrecta del test por envioId.toString(). **Resultado esperado:** la ruta de ruteo acepta el mensaje y la condición de tres fallos vence. **Diagnóstico:** el caso deja de ser inválido; restaura una key que no coincida para que el test ejercite el error y la recuperación.
-
-**3. Entiende**
-FixedBackOff(100L, 2) significa un intento inicial y hasta dos reintentos adicionales: tres entregas al listener en total. El evento que llega al DLT queda disponible para inspección y reproceso controlado.
-
-**4. Cierra**
-Anota el total de intentos, el topic de origen y el DLT donde quedó el registro.
-
-#### Subtema 2.3: Ajusta la política y atiende los mensajes recuperados · 15 min
-
-**1. Contexto**
-El número de reintentos y el tiempo de espera dependen del fallo. Un dato definitivamente inválido no mejora por esperar; un problema temporal sí podría resolverse con otro intento.
-
-**2. Hazlo tú**
-En `spring-kafka-practice/src/main/java/academia/rutaflow/KafkaLabConfiguration.java`, cambia `FixedBackOff(100L, 2)` por `FixedBackOff(100L, 0)`. En `spring-kafka-practice/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`, cambia la expectativa de `intentos()` de `3` a `1`; vuelve a ejecutar el test:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
-```
-
-**Resultado esperado:** con cero reintentos adicionales, el primer fallo se recupera y el mensaje llega a rutaflow.envio.creado-dlt.
-
-**Fallo deliberado:** en esa prueba cambia las dos lecturas de `EnvioEventPublisher.TOPIC + "-dlt"` por `EnvioEventPublisher.TOPIC + "-dlt-mal"`. **Error esperado:** el consumidor agota los diez segundos y la prueba falla porque el topic alternativo no recibió el mensaje. **Diagnóstico:** el recoverer usa el sufijo `-dlt`; restaura la misma ruta en la escucha y en la lectura.
-
-**3. Entiende**
-El recoverer de esta práctica usa por defecto el topic original más el sufijo `-dlt`, y conserva key y partición si el topic destino tiene esa partición. El test lo comprueba comparando la metadata del envío original y el registro recuperado. El DLT requiere monitoreo y responsable; acumular mensajes sin revisarlos solo traslada el problema.
-
-**4. Cierra**
-Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la salida correcta y explica cuándo dejarías de reintentar un error de validación.
-
-**Hito del tema:**
-
-- [ ] Configuré DefaultErrorHandler y DeadLetterPublishingRecoverer.
-- [ ] Comprobé el intento inicial y los dos reintentos configurados.
-- [ ] Encontré el registro fallido en el topic terminado en -dlt.
-- [ ] Cambié temporalmente a cero reintentos y restauré el laboratorio.
-
-**Fuentes oficiales:** [manejo de excepciones y reintentos en Spring Kafka](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html) y [publicación en dead-letter topics](https://docs.spring.io/spring-kafka/reference/kafka/annotation-error-handling.html#publishing-dead-letter-records).
-
-**Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
-
-### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once
-
-**Duración estimada:** 50 min.
-**¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
-**Prerrequisitos:** M8 T1 y M8 T2. Proyecto continuo: guardar un envío, publicar su evento y procesarlo sin duplicar la proyección.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa la copia de M8 T1. El test usa Kafka embebido y H2; comprueba estas fronteras en una sola máquina, no sustituye pruebas con PostgreSQL ni con un clúster Kafka de producción.
-
-#### Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min
-
-**1. Contexto**
-Si el productor pierde una confirmación, puede repetir el envío. La idempotencia permite que Kafka reconozca ese reintento de la misma sesión del productor. No deduplica dos llamadas de negocio que crean dos envíos.
-
-**2. Hazlo tú**
-Revisa `spring.kafka.producer` en `examples/spring-kafka-rutaflow/src/main/resources/application.yml`:
-
-```yaml
-spring:
-  kafka:
-    producer:
-      acks: all
-      properties:
-        enable.idempotence: true
-```
-
-Ejecuta la prueba de publicación:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
-```
-
-**Resultado esperado:** La prueba verifica envío, partición, key y recepción. La suite completa también pasa si cambias temporalmente `enable.idempotence` a `false`; no simula perder el ACK del productor y reintentar el mismo envío.
-
-**Fallo deliberado:** en la copia apaga la idempotencia y ejecuta la suite. **Diagnóstico:** que la suite siga pasando significa que este test no mide reintentos internos del cliente. Restaura `true`; no presentes esta prueba como evidencia directa de la garantía.
-
-**3. Entiende**
-Idempotencia de productor reduce duplicados que Kafka recibiría por retries de una misma sesión. Dos llamadas separadas siguen siendo dos registros posibles; el efecto de negocio requiere su propia clave idempotente.
-
-**4. Cierra**
-Separa en dos frases qué duplicado resuelve Kafka y cuál debe resolver la aplicación.
-
-#### Subtema 3.2 · Guardar envío y evento en la misma transacción SQL · 15 min
-
-**1. Contexto**
-PostgreSQL y Kafka no comparten una transacción local. Si guardas primero el envío y falla el proceso antes de publicar, el evento se perdería sin un registro pendiente durable.
-
-**2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java`. En `crear`, la transacción cubre ambas escrituras:
+**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java` y comprueba que ambos `INSERT` están dentro del mismo método `@Transactional`. Ejecuta desde `examples/spring-kafka-rutaflow`:
 
 ```java
 @Transactional
 public EnvioCreado crear(String referencia) {
-    UUID envioId = UUID.randomUUID();
-    EnvioCreado evento = new EnvioCreado(
-            UUID.randomUUID(), envioId, 1, clock.instant(), referencia);
-    try {
-        String payload = json.writeValueAsString(evento);
-        jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
-        jdbc.update("""
-                INSERT INTO outbox_event
-                    (event_id, aggregate_id, event_type, payload, created_at)
-                VALUES (?, ?, ?, ?, ?)
-                """, evento.eventId(), envioId, "EnvioCreado", payload, evento.occurredAt());
-        return evento;
-    } catch (JsonProcessingException error) {
-        throw new IllegalStateException("No se pudo serializar EnvioCreado", error);
-    }
+    // ...
+    jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
+    jdbc.update("""
+            INSERT INTO outbox_event
+                (event_id, aggregate_id, event_type, payload, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """, evento.eventId(), envioId, "EnvioCreado", payload, evento.occurredAt());
+    return evento;
 }
 ```
 
-Este es el flujo real: serializa el evento, inserta el envío y luego outbox dentro de la misma transacción. Ejecuta:
-
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
+./mvnw -q -Dtest=EnvioEventPublisherTest#guardaEnvioYOutboxEnLaMismaTransaccion test
 ```
 
-**Resultado esperado:** El test hace fallar el `INSERT` de outbox con una restricción SQL. Al salir de `crear`, no queda ni el envío ni el evento parcial.
+**Resultado esperado:** el test fuerza el fallo del `INSERT` outbox y verifica que también se revierte el envío.
 
-**Fallo deliberado:** en la copia quita `@Transactional` de `crear` y repite el test. **Diagnóstico:** con autocommit, la primera escritura SQL ya se confirmó y queda una fila `envio` aunque falle outbox. Restaura la anotación.
+**Fallo deliberado:** elimina temporalmente el `INSERT INTO outbox_event` y repite el test. **Diagnóstico:** ya no ocurre la violación SQL esperada y la prueba falla: el registro de negocio quedó sin su evento. Restaura el `INSERT`.
 
-**3. Entiende**
-La outbox guarda el evento pendiente junto con el cambio de negocio en una transacción de la base de datos. Un dispatcher publica después y marca la fila solo tras recibir el ACK; entre el ACK y esa marca puede haber replay. Este dispatcher de laboratorio no reclama filas con lease: no lo ejecutes en varias instancias.
+**Entiende:** la base de datos confirma los dos registros juntos. `OutboxDispatcher.java` los busca después, espera el ACK de Kafka y recién entonces marca `published_at`; el proceso puede caer tras el ACK y antes de marcar la fila.
 
-**4. Cierra**
-Describe qué dato pendiente permite al dispatcher recuperar la publicación si Kafka está temporalmente fuera de servicio.
+**Cierra:** compara `published_at IS NULL` antes y después de ejecutar `dispatcherPublicaYMarcaSoloDespuesDelAck`.
 
-#### Subtema 3.3 · Procesar un `eventId` repetido sin duplicar el efecto · 15 min
+#### Subtema 2.4 · Repite la entrega sin repetir el efecto · 10 min
 
-**1. Contexto**
-El dispatcher puede publicar dos veces el mismo evento si Kafka confirmó, pero el proceso no alcanzó a guardar `published_at`. El consumidor registra `eventId` en inbox junto a la proyección, dentro de una transacción.
+**Contexto:** si el ACK de Kafka llegó pero falló la marca SQL, el dispatcher volverá a enviar el evento. El consumidor debe tolerar esa entrega repetida.
 
-**2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java`. Fíjate en el retorno temprano y en la transacción que contiene el registro y el efecto:
+**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java` y el test `EnvioEventPublisherTest.java`. Ejecuta:
+
+```java
+if (existente != null && existente > 0) return false;
+jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)",
+        evento.eventId(), clock.instant());
+```
+
+```bash
+./mvnw -q -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
+./mvnw -q -Dtest=EnvioEventPublisherTest#replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion test
+```
+
+**Resultado esperado:** el segundo manejo del mismo `event_id` no repite el efecto; el replay puede observar dos entregas y una sola proyección.
+
+**Fallo deliberado:** quita la comprobación/registro de `event_id` en `InboxProcessor`. **Diagnóstico:** la prueba de inbox deja de poder ignorar el duplicado (o choca con la restricción única); restaura la deduplicación.
+
+**Entiende:** outbox + Kafka permite reintentos con entrega al menos una vez. La tabla inbox hace idempotente el efecto de negocio; no convierte el dispatcher en exactly-once. **Límite:** el laboratorio usa H2 y Kafka embebido, no reclama filas con lease y no debe correr con varios dispatchers.
+
+**Cierra:** entrega el resultado de los dos tests y marca en un diagrama el commit SQL, ACK de Kafka, marca `published_at` y deduplicación inbox.
+
+**Fuentes primarias:** [Spring Framework: eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html); [Spring for Apache Kafka: transacciones](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html).
+
+### Tema 3: Correo con Spring Mail y entrega recuperable
+
+**Meta:** preparar un correo, proteger la configuración SMTP y reintentar una notificación fallida sin retrasar el guardado del envío.
+
+**¿Por qué es importante?** SMTP es otro servicio remoto: puede tardar, fallar o aceptar el mensaje justo antes de que se pierda la respuesta.
+
+**Evidencia final:** tests que inspeccionan el mensaje, comprueban el rollback conjunto y observan reintentos con límite.
+
+#### Subtema 3.1 · Construye el mensaje y revísalo sin enviar correo · 8 min
+
+**Contexto:** queremos revisar destinatario, asunto y texto antes de depender de una cuenta SMTP.
+
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/JavaMailCorreoGateway.java` y su test `JavaMailCorreoGatewayTest.java`:
+
+```java
+SimpleMailMessage message = new SimpleMailMessage();
+message.setFrom(remitente);
+message.setTo(correo.destinatario());
+message.setSubject(correo.asunto());
+message.setText(correo.texto());
+sender.send(message);
+```
+
+Desde `examples/spring-mail-rutaflow`, ejecuta:
+
+```bash
+./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
+```
+
+**Resultado esperado:** una prueba confirma remitente, destinatario, asunto y referencia; usa un `JavaMailSender` simulado, así que no contacta SMTP.
+
+**Fallo deliberado:** cambia el asunto por `Envío cancelado`. **Diagnóstico:** el test detecta que el texto enviado no coincide con la confirmación; restaura el asunto.
+
+**Entiende:** `SimpleMailMessage` sirve para texto simple. Si necesitas HTML o archivos adjuntos, Spring ofrece `MimeMessage`; usa esa forma solo cuando el mensaje lo requiera.
+
+**Cierra:** indica qué campo del test protegería a un cliente de recibir un mensaje equivocado.
+
+#### Subtema 3.2 · Configura SMTP fuera del código · 8 min
+
+**Contexto:** el servidor de salida (SMTP) y sus credenciales cambian entre tu equipo, pruebas y producción; el código debe poder moverse sin editarlo.
+
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  mail:
+    host: ${MAIL_HOST:localhost}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 5000
+```
+
+Ejecuta la prueba sin servidor:
+
+```bash
+./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
+```
+
+**Resultado esperado:** las pruebas no necesitan credenciales; el adaptador queda separado de la conexión real. Los límites de tiempo evitan esperar sin fin a un servidor SMTP.
+
+**Fallo deliberado:** escribe una contraseña de prueba literal en `application.yml` y busca claves en el archivo con `rg -n 'password|secret|token' src/main/resources`. **Diagnóstico:** el valor quedaría versionado; quítalo y léelo desde el entorno o el gestor de secretos.
+
+**Entiende:** variables como `MAIL_PASSWORD` son el puente entre el entorno y `spring.mail.password`. No imprimas esas variables ni contraseñas en logs.
+
+**Cierra:** anota qué tres valores configurarías en el servicio de despliegue sin guardarlos en Git.
+
+#### Subtema 3.3 · Guarda el envío y la notificación juntos · 10 min
+
+**Contexto:** si el envío se confirma y el proceso se cierra antes de llamar SMTP, la confirmación debe quedar esperando en una fila recuperable.
+
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/ConfirmarEnvioService.java`:
 
 ```java
 @Transactional
-public boolean procesar(EnvioCreado evento) {
-    Integer existente = jdbc.queryForObject(
-            "SELECT COUNT(*) FROM evento_procesado WHERE event_id = ?",
-            Integer.class, evento.eventId());
-    if (existente != null && existente > 0) {
-        return false;
-    }
-    jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)",
-            evento.eventId(), clock.instant());
-    int actualizados = jdbc.update("""
-            UPDATE route_projection
-            SET referencia = ?, updated_at = ?
-            WHERE envio_id = ?
-            """, evento.referencia(), clock.instant(), evento.envioId());
-    if (actualizados == 0) {
-        jdbc.update("""
-                INSERT INTO route_projection (envio_id, referencia, updated_at)
-                VALUES (?, ?, ?)
-                """, evento.envioId(), evento.referencia(), clock.instant());
-    }
-    return true;
+public UUID confirmar(String referencia, String destinatario) {
+    UUID envioId = UUID.randomUUID();
+    jdbc.update("INSERT INTO envio (envio_id, referencia) VALUES (?, ?)", envioId, referencia);
+    jdbc.update("""
+            INSERT INTO correo_outbox
+                (event_id, envio_id, destinatario, asunto, cuerpo, next_attempt_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, eventId, envioId, destinatario, asunto, texto, clock.instant());
+    return envioId;
 }
 ```
 
-Ejecuta las pruebas de duplicado y de replay tras fallar la marca SQL después del ACK:
+En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reintento:
 
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#inboxHaceIdempotenteElEfectoDeNegocio test
-./mvnw -Dtest=EnvioEventPublisherTest#replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion test
+./mvnw -q -Dtest=MailOutboxTest#confirmacionYCorreoPendienteSeGuardanEnLaMismaTransaccion test
+./mvnw -q -Dtest=MailOutboxTest#falloTransitorioSeReintentaDespuesYQuedaMarcadoComoEnviado test
 ```
 
-La segunda prueba agrega una restricción temporal que impide marcar una fila concreta como publicada; Kafka ya confirmó el primer registro. Al quitar la restricción, el dispatcher lo reenvía y el listener recibe dos mensajes con el mismo `eventId`.
+**Resultado esperado:** si falla insertar el correo, también se revierte el envío; ante un fallo transitorio se guarda el contador y la hora del próximo intento.
 
-**Resultado esperado:** El primer `procesar` devuelve `true`, el duplicado `false`; tras los dos mensajes hay una fila inbox y una sola proyección. La fila de outbox queda pendiente si falla la marca y se cierra después del replay correcto.
+**Fallo deliberado:** quita `@Transactional` y repite la primera prueba. **Diagnóstico:** queda el envío aunque el outbox no se insertó; restaura la anotación.
 
-**Fallo deliberado:** en la copia quita el `SELECT`/retorno temprano que evita procesar un `eventId` existente. **Diagnóstico:** la segunda inserción choca con la clave primaria de inbox en vez de devolver `false`; restaura la comprobación.
+**Entiende:** outbox significa “bandeja de salida”: es una fila pendiente, no una llamada SMTP. El dispatcher contacta SMTP después de que la transacción del envío terminó.
 
-**3. Entiende**
-Outbox evita perder el evento entre el commit SQL y la publicación; inbox hace seguro repetir su efecto SQL. La consulta seguida del insert de este ejemplo se prueba secuencialmente; con consumidores concurrentes hay que manejar el conflicto de unicidad de forma explícita.
+**Cierra:** explica por qué la espera y reintento ocurren fuera de la transacción que creó el envío.
 
-**4. Cierra**
-Explica por qué el dispatcher puede publicar al menos una vez y cómo inbox evita que eso duplique la proyección.
+#### Subtema 3.4 · Limita los reintentos y conserva evidencia útil · 10 min
 
-#### Subtema 3.4 · Leer solo registros confirmados de una transacción Kafka · 10 min
+**Contexto:** repetir para siempre tapa errores permanentes y puede llenar la cola.
 
-**1. Contexto**
-Una transacción de Kafka agrupa registros del broker. El consumidor `read_committed` oculta los registros abortados; `read_uncommitted` también puede observarlos. Esto no hace que una base SQL forme parte de la transacción Kafka.
-
-**2. Hazlo tú**
-En `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`, estudia `transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted`. El test crea un topic único, un `KafkaTemplate` transaccional y dos consumidores con distinto `isolation.level`. `DefaultKafkaProducerFactory` necesita un prefijo transaccional único:
-
-```java
-producerFactory.setTransactionIdPrefix("rutaflow-tx-" + UUID.randomUUID() + "-");
-var transactionalTemplate = new KafkaTemplate<>(producerFactory);
-```
-
-El envío se confirma dentro de la transacción local y luego se provoca el rollback:
-
-```java
-transactionalTemplate.executeInTransaction(template -> {
-    try {
-        template.send(topic, "envio-1", "registro-abortado").get(10, TimeUnit.SECONDS);
-    } catch (Exception error) {
-        throw new IllegalStateException("falló el envío de prueba", error);
-    }
-    throw new IllegalStateException("aborto intencional de la transacción");
-});
-```
-
-Ejecuta:
+**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/MailOutboxDispatcher.java` y ejecuta:
 
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted test
+./mvnw -q -Dtest=MailOutboxTest#agotaTresIntentosYConservaElErrorSinSeguirEnviando test
 ```
 
-**Resultado esperado:** El consumer `read_committed` no recibe el registro; `read_uncommitted` sí observa el valor `registro-abortado`. Ver ambas salidas evita que el test pase solo porque el productor no hubiera enviado nada.
+**Resultado esperado:** tras tres fallos, la fila queda apartada para revisión (`dead_lettered_at`) con un tipo de error; no sigue enviándose.
 
-**Fallo deliberado:** en el test cambia temporalmente la configuración del consumidor `committedProps` a `read_uncommitted`. **Diagnóstico:** su aserción de vacío falla porque ahora ve el registro abortado. Restaura `read_committed` y repite el método.
+**Fallo deliberado:** cambia `MAX_INTENTOS` de 3 a 1. **Diagnóstico:** la prueba observa que se aparta tras el primer error, antes de probar la recuperación; restaura el límite.
 
-**3. Entiende**
-Esta prueba verifica visibilidad de una transacción de productor abortada; no comprueba por sí sola el flujo completo de lectura, procesamiento y offsets. En Spring Kafka, EOS para ese flujo requiere una transacción de listener que incluya los mensajes producidos y offsets consumidos. Ninguna de estas transacciones incorpora automáticamente PostgreSQL; outbox e inbox cubren esa otra frontera.
+**Entiende:** la espera crece de 30 a 60 segundos y luego llega al límite. Un timeout no siempre dice si el proveedor recibió el correo; si lo recibió y la aplicación reintenta, puede llegar duplicado. SMTP no promete exactamente una entrega; este laboratorio no simula una respuesta perdida tras aceptación.
 
-**4. Cierra**
-Identifica qué fila ve cada nivel de aislamiento y di qué parte de la garantía de exactly-once no prueba este laboratorio.
+**Cierra:** para el proyecto integrador RutaFlow, adjunta los resultados de los tres tests y acuerda qué equipo revisa las filas apartadas. No uses correo síncrono dentro de la transacción HTTP crítica ni guardes mensajes sensibles más tiempo del necesario.
 
-**Hito del tema:**
+**Fuentes primarias:** [Spring Boot: envío de correo y timeouts SMTP](https://docs.spring.io/spring-boot/reference/io/email.html); [Spring Framework: `JavaMailSender`, `SimpleMailMessage` y MIME](https://docs.spring.io/spring-framework/reference/integration/email.html).
 
-- [ ] Diferencié reintentos internos del productor de otra llamada de negocio.
-- [ ] Comprobé el rollback conjunto de envío y outbox.
-- [ ] Reproduje un fallo de marca posterior al ACK y una sola proyección tras replay.
-- [ ] Comparé `read_committed` y `read_uncommitted` ante un registro abortado.
-- [ ] Expliqué por qué Kafka EOS no hace partícipe a la base de datos SQL.
+### Tema 4: Caché con Spring Cache, Caffeine y Redis
 
-**Fuentes oficiales:** [idempotencia del productor Kafka](https://kafka.apache.org/41/configuration/producer-configs/), [Exactly Once Semantics en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/exactly-once.html), [transacciones con `KafkaTemplate`](https://docs.spring.io/spring-kafka/reference/4.0/kafka/transactions.html) y [diseño y semántica de Kafka](https://kafka.apache.org/28/design/design/).
+**Meta:** cachear consultas repetidas, invalidar una tarifa que cambió y elegir entre memoria local y un almacén compartido.
 
-**Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con clave estable y protege cada `eventId` en inbox. Describe la garantía y sus límites por cada frontera; no llames exactly-once a la operación total sin una transacción que cubra su entrada y salida.
+**Preparación:** JDK 25, Maven Wrapper incluido y los archivos del repositorio. Todos los comandos de este tema se ejecutan desde `examples/spring-cache-rutaflow`. Primero trabaja con Caffeine sin servicios externos; el último subtema necesita Redis local.
 
-### Tema 4: Rebalanceo de consumer groups y asignación de particiones
+**¿Por qué es importante?** la segunda lectura puede evitar trabajo repetido, pero una copia vieja puede mostrar una tarifa equivocada.
 
-**Duración estimada:** 45 min.
+**Evidencia final:** tests que cuentan lecturas, separan zonas, verifican invalidación y leen los límites de tamaño y duración configurados.
 
-**Resultado:** observa cómo cambia la propiedad de las particiones cuando entra otro consumer, mantiene correcto el estado local con los callbacks y decide cuándo sirve la membresía estática.
-**¿Por qué es importante?** Un estado local desactualizado puede hacer que una instancia procese datos de una partición que ya pertenece a otro miembro.
+**Práctica:** elige una consulta del catálogo de RutaFlow y define su clave, duración, tamaño máximo y regla de invalidación.
 
-**Necesitas:** M8 T1 y un clon del laboratorio `examples/spring-kafka-rutaflow/`. Prueba el comando desde esa carpeta.
+#### Subtema 4.1 · Comprueba qué trabajo ahorra una caché · 7 min
 
-#### Subtema 4.1 · Una partición pertenece a un consumer del grupo · 10 min
+**Contexto:** la tarifa de una zona se consulta varias veces y el repositorio de ejemplo cuenta cada lectura.
 
-**1. Contexto**
-
-Kafka reparte las particiones suscritas entre los miembros de un mismo grupo. Dos grupos distintos pueden leer el mismo tópico; dentro de un grupo, una partición se asigna a un solo miembro a la vez. El resultado exacto depende del protocolo y del asignador.
-
-**2. Hazlo tú**
-
-Abre `src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. El laboratorio crea un tópico de prueba con dos particiones y consumer group identificable. Ejecuta:
-
-```bash
-./mvnw -Dtest=EnvioEventPublisherTest#unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones test
-```
-
-Al inicio solo está activo el consumer A. El test espera a que su callback registre dos particiones antes de arrancar B.
-
-**Resultado esperado:** Antes de arrancar B, A tiene dos asignaciones. Tras unirse B, el test espera hasta que cada uno tenga una partición.
-
-**Fallo deliberado:** Cambia la creación del tópico de dos particiones a una. **Diagnóstico:** el test deja de poder afirmar una partición por consumer; con una partición no se pueden mantener ocupados dos consumers del mismo grupo.
-
-**3. Entiende**
-
-El número de consumers útiles de un grupo no puede superar el número de particiones del tópico que consumen. Tener más consumers puede ayudar con varios tópicos o asignaciones, pero uno de ellos puede quedarse sin particiones.
-
-**4. Cierra**
-
-Explica por qué el segundo consumer recibe trabajo al unirse y qué cambia si el tópico solo tiene una partición.
-
-#### Subtema 4.2 · Mantener el estado local con callbacks reales · 10 min
-
-**1. Contexto**
-
-Cuando una partición deja de pertenecer a esta instancia, una caché o un contador local deben dejar de tratarla como propia. Kafka llama al listener antes de retirar asignaciones y después de asignar las nuevas.
-
-**2. Hazlo tú**
-
-En la clase de prueba `SeguimientoAsignaciones`, localiza los dos callbacks. El listener usa un conjunto concurrente porque los callbacks ocurren en el hilo del consumer:
+**Hazlo tú:** abre `examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/TarifaService.java`:
 
 ```java
-@Override
-public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-    asignadas.removeAll(partitions);
-    revocaciones.incrementAndGet();
-}
-
-@Override
-public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-    asignadas.addAll(partitions);
+@Cacheable(cacheNames = "tarifas", key = "#zona")
+public Tarifa buscar(String zona) {
+    return repository.buscarPorZona(zona)
+            .orElseThrow(() -> new IllegalArgumentException("Zona desconocida: " + zona));
 }
 ```
 
-Busca `containerProps.setConsumerRebalanceListener(rebalanceListener)`: ahí Spring entrega el listener al contenedor. Ejecuta el mismo test focalizado de 4.1.
-
-
-Para comprobar «Mantener el estado local con callbacks reales», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Desde `examples/spring-cache-rutaflow`, ejecuta:
 
 ```bash
-./mvnw -q test
+./mvnw -q -Dtest=TarifaServiceTest#segundaConsultaReutilizaLaTarifaCacheada test
 ```
 
-**Resultado esperado:** Al entrar B, A recibe revocación; ambos reciben callbacks de asignación con la distribución final.
+**Resultado esperado:** dos llamadas a `buscar("NORTE")` devuelven 1200 centavos y el repositorio se consulta una sola vez.
 
-**Fallo deliberado:** En una copia, elimina `asignadas.removeAll(partitions)` y repite la prueba. **Diagnóstico:** el conjunto de A conserva la partición revocada y la suma temporal/final de asignaciones deja de coincidir con las dos particiones reales.
+**Fallo deliberado:** quita `@Cacheable` y repite el test. **Diagnóstico:** el contador sube a dos; restaura la anotación.
 
-**3. Entiende**
+**Entiende:** `@EnableCaching` conecta las anotaciones con el proveedor. En una lectura repetida, Spring encuentra la clave y devuelve la copia guardada sin volver a ejecutar el método.
 
-El callback actualiza conocimiento local; no cambia la propiedad en el broker. La asignación del broker es la autoridad. En aplicaciones reales, usa la revocación para guardar progreso o limpiar estado que dependa de esas particiones.
+Spring intercepta las llamadas recibidas desde otro componente. Una llamada como `this.buscar("NORTE")` dentro del propio servicio no pasa por ese intermediario; la anotación no se aplica en ese recorrido.
 
-**4. Cierra**
+**Cierra:** diferencia con tus palabras una primera lectura que no encuentra copia y una segunda que sí la encuentra.
 
-Di qué debe limpiarse en `onPartitionsRevoked` y qué error aparece si la instancia conserva una partición que ya perdió.
+#### Subtema 4.2 · Invalida o reemplaza la copia al actualizar · 10 min
 
-#### Subtema 4.3 · Ver el rebalanceo al entrar el segundo consumer · 15 min
+**Contexto:** NORTE y SUR tienen tarifas diferentes; cambiar una tarifa no debe devolver el valor anterior.
 
-**1. Contexto**
+**Hazlo tú:** compara la clave de `@Cacheable` con `@CacheEvict` en `TarifaService.java` y ejecuta los dos tests de zona e invalidación:
 
-Un rebalanceo redistribuye asignaciones cuando cambia el grupo o su suscripción. No significa siempre que todas las particiones se quiten y vuelvan a asignarse: el alcance depende del protocolo de grupo y del asignador. La prueba usa dos particiones y consumers dinámicos para observar una redistribución concreta.
+```java
+@CacheEvict(cacheNames = "tarifas", key = "#tarifa.zona")
+public Tarifa actualizar(Tarifa tarifa) {
+    return repository.guardar(tarifa);
+}
 
-**2. Hazlo tú**
-
-Lee `unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones` en el mismo archivo. El test crea un tópico único, espera la asignación inicial de A, arranca B y comprueba callback de revocación y una partición final por instancia.
+@CachePut(cacheNames = "tarifas", key = "#result.zona")
+public Tarifa actualizarYCachear(Tarifa tarifa) {
+    return repository.guardar(tarifa);
+}
+```
 
 ```bash
-./mvnw -Dtest=EnvioEventPublisherTest#unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones test
+./mvnw -q -Dtest=TarifaServiceTest#cadaZonaTieneSuPropiaEntrada test
+./mvnw -q -Dtest=TarifaServiceTest#actualizarInvalidaLaClaveDeEsaZona test
+./mvnw -q -Dtest=TarifaServiceTest#cachePutActualizaLaCopiaSinOtraLecturaDelRepositorio test
 ```
 
+**Resultado esperado:** NORTE devuelve 1200, SUR 900; al cambiar NORTE a 1350, la próxima consulta devuelve 1350 y vuelve al repositorio.
 
-Para comprobar «Ver el rebalanceo al entrar el segundo consumer», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+**Fallo deliberado:** quita `@CacheEvict`. **Diagnóstico:** tras guardar 1350, la búsqueda todavía devuelve 1200; restaura la invalidación con la misma clave `#tarifa.zona`.
 
-```bash
-./mvnw -q test
-```
+**Entiende:** la clave debe representar todos los datos que cambian la respuesta. En una aplicación multi-tenant añade también el identificador del cliente; la clave del ejemplo solo usa zona.
 
-**Resultado esperado:** El broker procesa el nuevo miembro, A recibe una revocación y al estabilizarse el grupo la asignación es una partición para A y una para B. Es una prueba de integración con Kafka embebido, no una medición de pausas, latencia o disponibilidad de producción.
+`@CacheEvict` elimina la copia y deja que la próxima lectura consulte el repositorio. `@CachePut` ejecuta la escritura siempre y guarda su resultado en caché: el tercer test obtiene 1350 sin otra lectura del repositorio. Este catálogo vive en memoria; con una base de datos transaccional, coordina la invalidación con el commit y contempla lectores concurrentes que podrían volver a guardar un valor viejo.
 
-**Fallo deliberado:** En una copia, elimina la limpieza de particiones revocadas o cambia la aserción a esperar dos particiones en A después del rebalanceo. **Diagnóstico:** la prueba falla porque el estado local o la expectativa ya no coincide con la asignación final.
+**Cierra:** anota qué otra parte incluirías en la clave si cada cliente de RutaFlow mantiene su propio catálogo.
 
-**3. Entiende**
+#### Subtema 4.3 · Pon un límite de memoria y de antigüedad · 8 min
 
-El rebalanceo puede pausar consumo mientras se estabiliza el grupo, y su impacto depende del tamaño del grupo, el protocolo, el asignador y la carga de trabajo. Mide esos tiempos con métricas y pruebas de carga del despliegue; este test solo demuestra callbacks y propiedad final.
+**Contexto:** sin límite, una caché local puede crecer; sin expiración, una tarifa vieja puede quedarse hasta que alguien la invalide.
 
-**4. Cierra**
-
-Describe la secuencia observada: asignación inicial, entrada de B, revocación y nueva asignación.
-
-#### Subtema 4.4 · Usar membresía estática solo para reinicios breves · 10 min
-
-**1. Contexto**
-
-`group.instance.id` identifica de forma estable un miembro estático. Kafka permite que una indisponibilidad transitoria no desencadene la misma respuesta inmediata que la salida de un miembro dinámico; el broker espera el timeout de sesión antes de recuperar sus particiones. No elimina rebalanceos ni debe compartirse entre dos instancias activas.
-
-**2. Hazlo tú**
-
-En un perfil de despliegue, revisa esta propiedad y compárala con la guía oficial de Consumer Configs:
+**Hazlo tú:** abre `examples/spring-cache-rutaflow/src/main/resources/application.yml` y ejecuta:
 
 ```yaml
 spring:
-  kafka:
-    consumer:
-      properties:
-        group.instance.id: rutaflow-consumer-0
+  cache:
+    type: caffeine
+    cache-names: tarifas
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=5m,recordStats
 ```
-
-Define un ID estable y único por réplica (por ejemplo, ordinal de StatefulSet). No uses el mismo literal fijo para todas las réplicas de un Deployment. Este laboratorio no simula reinicios ni mide el timeout; no cambies la configuración general de pruebas.
-
-
-Para comprobar «Usar membresía estática solo para reinicios breves», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
 
 ```bash
-./mvnw -q test
+./mvnw -q -Dtest=TarifaServiceTest#proveedorTieneLimiteDeEntradasYExpiracionConfigurados test
 ```
 
-**Resultado esperado:** Puedes explicar cuándo el ID reduce cambios por una interrupción corta y por qué la sesión todavía puede expirar y reasignar particiones.
+**Resultado esperado:** el test lee el máximo de 1000 entradas y el vencimiento cinco minutos después de escribir la tarifa.
 
-**Fallo deliberado:** Escribe el mismo `group.instance.id` en dos réplicas activas en una copia de configuración. **Diagnóstico:** la identidad no es única; Kafka puede cercar una de las instancias y el despliegue deja de representar dos miembros independientes. Restaura IDs distintos.
+**Fallo deliberado:** cambia `maximumSize=1000` por `maximumSize=10`. **Diagnóstico:** el test reporta el límite configurado y falla; restaura 1000 o define un límite apropiado para tu catálogo.
 
-**3. Entiende**
+**Entiende:** `maximumSize` limita entradas; `expireAfterWrite` (vencimiento tras escribir) cuenta desde que se crea o cambia una entrada, no desde cada lectura. En el test se valida la política, sin esperar cinco minutos.
 
-Membresía estática y asignación cooperativa son mecanismos diferentes: la primera conserva identidad entre reinicios; un asignador cooperativo puede reducir cuántas particiones cambian de dueño durante un rebalanceo. Ninguno sustituye idempotencia, manejo de revocaciones ni pruebas operativas.
+**Cierra:** para el proyecto integrador RutaFlow, estima un límite y cuánto tiempo aceptas mostrar la tarifa guardada.
 
-**4. Cierra**
+#### Subtema 4.4 · Mide las lecturas que realmente evitas · 8 min
 
-Anota una situación apropiada para membresía estática, el costo de un timeout más largo y una señal que vigilarías en producción.
+**Contexto:** una caché que casi nunca encuentra la clave añade memoria y trabajo sin evitar muchas consultas. Un *hit* encuentra una copia; un *miss* obliga a cargarla.
 
-**Transferencia al proyecto integrador:** ejecuta el test con dos consumers y explica quién es dueño de cada partición tras el rebalanceo. Para producción, verifica unicidad de `group.instance.id`, duración del rebalanceo, mensajes repetidos y limpieza de recursos por partición.
-
-**Fuentes oficiales:** [Rebalance listeners en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html), [configuración de consumidores Apache Kafka 4.2](https://kafka.apache.org/42/generated/consumer_config.html) y [protocolo de rebalanceo Apache Kafka 4.3](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/).
-
-### Tema 5: Kafka frente a RabbitMQ
-
-**Duración estimada:** 45 min.
-
-**Resultado:** eliges el broker según quién debe recibir cada mensaje, cuánto tiempo necesitas conservarlo y cómo confirmas su procesamiento.
-
-**¿Por qué es importante?** Kafka y RabbitMQ pueden transportar eventos, pero sus grupos, colas, retención y confirmaciones no significan lo mismo.
-
-**Prerrequisitos:** M8 T1 y el laboratorio `examples/spring-stream-rutaflow/`.
-
-#### Subtema 5.1 · Repartir mensajes o dar una copia a cada grupo · 10 min
-
-**1. Contexto**
-
-En Kafka, cada consumer group lleva su propio avance; dos grupos independientes pueden leer el mismo tópico. En RabbitMQ, consumers sobre una misma cola compiten por las entregas. Para que dos aplicaciones reciban sus propias copias, se crean dos colas y se enruta el mensaje a ambas; no se agrega un `groupId` a la cola.
-
-**2. Hazlo tú**
-
-En `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/`, compara los `groupId` `rutaflow-ruteo` y `rutaflow-notificaciones`. Ejecuta la prueba que envía un evento y espera a ambos listeners:
-
-```bash
-cd examples/spring-kafka-rutaflow
-./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
-```
-
-Después abre `examples/node-messaging/rabbit/topology.mjs`: hoy declara una cola `envios` y la vincula a un exchange. Un segundo worker que consuma `envios` competiría por las entregas. Para fan-out, necesitarías otra cola durable enlazada al exchange.
-
-**Resultado esperado:** La prueba de Kafka recibe el evento en ambos grupos. Puedes dibujar las dos topologías y señalar que dos consumers de una sola cola Rabbit se reparten mensajes, mientras dos colas enlazadas pueden recibir copias.
-
-**Fallo deliberado:** En una copia, pon ambos `@KafkaListener` en el mismo `groupId`. **Diagnóstico:** dejan de ser dos suscripciones independientes y compiten por las particiones; la prueba que espera ambos listeners puede fallar.
-
-**3. Entiende**
-
-Kafka replica la lectura por grupo; RabbitMQ replica por rutas a colas. RabbitMQ puede hacer fan-out con exchange y varias colas. La comparación correcta es topología completa, no “Kafka tiene fan-out y RabbitMQ no”.
-
-**4. Cierra**
-
-Dibuja el destino necesario para que dos servicios procesen cada uno una copia, primero en Kafka y luego en RabbitMQ.
-
-#### Subtema 5.2 · Releer historial o conservar mensajes pendientes · 10 min
-
-**1. Contexto**
-
-Kafka conserva registros según las políticas de retención del tópico, aunque un consumer ya los haya leído; un consumer group nuevo puede empezar desde el inicio si el dato sigue retenido y se configura `auto.offset.reset=earliest`. RabbitMQ conserva un mensaje en una cola mientras esté pendiente; después de una confirmación de consumo, el broker puede eliminar esa entrega. Una cola nueva no recibe automáticamente el historial de una cola distinta.
-
-**2. Hazlo tú**
-
-Compara el log de Kafka en [M8 T1](#tema-1-producers-y-consumers-con-spring-kafka) y la cola `envios` de `examples/node-messaging/rabbit/topology.mjs`. En RabbitMQ abre `examples/node-messaging/rabbit/worker.mjs` y localiza `channel.ack(message)`. Para ver la persistencia por broker, inicia cada ejemplo desde sus carpetas según sus README:
-
-```bash
-cd examples/spring-stream-rutaflow
-./mvnw test
-```
-
-El test binder comprueba la función, no retención ni broker. La práctica de broker real se describe en `examples/spring-stream-rutaflow/README.md` y requiere Docker Compose.
-
-**Resultado esperado:** Explicas la diferencia entre “ya consumido” y “ya no retenido”: Kafka puede expirar registros por política; RabbitMQ elimina una entrega confirmada de su cola, pero puede retener mensajes aún no confirmados y reenviarlos tras un fallo.
-
-**Fallo deliberado:** Cambia mentalmente el `ack` a antes del procesamiento: si el proceso cae luego, RabbitMQ ya puede tratar la entrega como terminada. **Diagnóstico:** En el laboratorio Node no cambies ni ejecutes esa mutación; escribe qué dato de negocio podrías perder.
-
-**3. Entiende**
-
-No prometas que Kafka guarda el historial para siempre: depende de `retention.ms`, bytes, compactación y configuración. Tampoco afirmes que RabbitMQ borra siempre al primer intento: con ack manual un mensaje sin confirmar puede reencolarse.
-
-**4. Cierra**
-
-Completa dos frases: “Kafka permite releer mientras…” y “RabbitMQ conserva un mensaje hasta…”.
-
-#### Subtema 5.3 · Distinguir confirmación de publicación y confirmación de consumo · 10 min
-
-**1. Contexto**
-
-Que el broker acepte una publicación no significa que la aplicación destino haya procesado el mensaje. RabbitMQ tiene publisher confirms para el lado productor y acknowledgements del consumer para el procesamiento; son señales separadas. Kafka confirma la escritura del productor y administra offsets de lectura por grupo como otro estado.
-
-**2. Hazlo tú**
-
-Lee `examples/node-messaging/rabbit/producer.mjs`: crea un confirm channel, publica y espera `waitForConfirms()`. Luego lee `examples/node-messaging/rabbit/worker.mjs`: usa `prefetch(5)` y confirma cada entrega con `channel.ack(message)` tras procesarla. Compara con `EnvioEventPublisherTest` de M8 T1, que espera el ACK del productor y verifica la recepción de listeners por separado.
-
-```bash
-cd examples/node-messaging
-npm ci
-npm test
-```
-
-`npm test` verifica topología y flujo local definido por el test; no demuestra conexión con broker real. El README incluye el comando Docker para practicar la entrega real.
-
-**Resultado esperado:** Identificas dos confirmaciones de RabbitMQ y dos etapas de Kafka sin llamarlas “exactly once”. Si el consumer procesa y cae antes de confirmar, puede aparecer una redelivery; el efecto debe ser idempotente.
-
-**Fallo deliberado:** En una hoja, intercambia las etiquetas “publisher confirm” y “consumer ack”. **Diagnóstico:** una confirma la recepción por el broker; la otra confirma el manejo de una entrega. No prueban mutuamente el trabajo opuesto.
-
-**3. Entiende**
-
-Las confirmaciones ayudan a detectar fallos, pero entre persistir el efecto y confirmar puede ocurrir una caída. Outbox, inbox e idempotencia siguen siendo necesarios para cubrir esa frontera.
-
-**4. Cierra**
-
-Describe qué confirma `waitForConfirms()` y qué confirma `channel.ack()` en estos archivos.
-
-#### Subtema 5.4 · Elegir por el flujo y comprobar ambos binders · 15 min
-
-**1. Contexto**
-
-Kafka suele encajar cuando varias aplicaciones necesitan leer el mismo log a su ritmo o reprocesar offsets retenidos. RabbitMQ suele encajar cuando el exchange enruta trabajo a colas y los workers compiten por cada entrega. Ambos pueden conservar datos, reintentar y enrutar; la topología, los límites operativos y el requisito definen la decisión.
-
-**2. Hazlo tú**
-
-Abre `examples/spring-stream-rutaflow/README.md`. Ejecuta primero el test binder:
-
-```bash
-cd examples/spring-stream-rutaflow
-./mvnw test
-```
-
-El binder prueba la función y el mapping dentro de Spring. Después, si Docker está disponible, levanta los brokers y ejecuta un perfil a la vez:
-
-```bash
-docker compose up -d
-./mvnw spring-boot:run -Dspring-boot.run.profiles=kafka
-```
-
-Prueba el mensaje válido y el código postal `XX` según el README; observa el destino de error en Kafka. Detén la aplicación y repite con `-Dspring-boot.run.profiles=rabbit`; revisa la cola y dead-letter queue en la consola de RabbitMQ. La configuración es real, pero el test binder por sí solo no certifica integración con los brokers.
-
-**Resultado esperado:** La función de negocio se mantiene igual; cada perfil configura su binder y su política de error. Escribe para cada caso si necesitas repetición por offset, distribución entre workers o copias en varias colas, y elige con esa necesidad.
-
-**Fallo deliberado:** Intenta afirmar que el test binder prueba publisher confirms, offsets Kafka y acknowledgements Rabbit. **Diagnóstico:** el test no se conecta a ninguno de los brokers; esa evidencia requiere ejecutar los perfiles reales y observar sus destinos.
-
-**3. Entiende**
-
-La abstracción de Spring Cloud Stream reduce código de integración, pero no convierte garantías diferentes en una garantía común. Mantén visible el binder, el grupo/cola, la retención, el manejo de error y la forma de confirmar.
-
-**4. Cierra**
-
-Entrega una decisión breve para un flujo de reprocesamiento histórico y otra para una cola de trabajo, nombrando evidencia y configuración que revisarías.
-
-**Fuentes oficiales:** [log y retención de Kafka 4.2](https://kafka.apache.org/42/implementation/log/), [retención de tópicos Kafka](https://kafka.apache.org/42/configuration/topic-configs/), [consumers RabbitMQ](https://www.rabbitmq.com/docs/consumers), [acks y confirms RabbitMQ](https://www.rabbitmq.com/docs/confirms), [ack mode de Spring AMQP](https://docs.spring.io/spring-amqp/reference/amqp/containerAttributes.html) y [publisher confirms en Spring AMQP](https://docs.spring.io/spring-amqp/reference/amqp/connections.html), [binder abstraction de Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html) y [testing binder](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html).
-
-**Transferencia al proyecto integrador:** documenta por evento quién lo necesita, si necesita copia independiente o competencia por trabajo, cuánto retenerlo, qué confirma publicación y qué confirma procesamiento, cómo reintenta y qué efecto idempotente protege una redelivery.
-
-### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
-
-**Duración estimada:** 45 min.
-
-**Resultado:** sigues una función de negocio desde el binding de entrada hasta su salida y explicas qué cambia al elegir el binder.
-
-**¿Por qué es importante?** Una función común puede conectarse a más de un broker, pero las garantías y las propiedades de cada broker siguen siendo específicas.
-
-**Laboratorio:** `examples/spring-stream-rutaflow/`. Usa las versiones declaradas por su `pom.xml` y no cambies el BOM para seguir el ejemplo.
-
-#### Subtema 6.1 · Recorrer la función y los destinos reales · 10 min
-
-**1. Contexto**
-
-Spring Cloud Stream conecta una función con bindings de entrada/salida. En el laboratorio la función recibe `ShipmentCreated` y devuelve `RoutePlanningRequested`; los nombres de destino están en YAML, no en la clase Java.
-
-**2. Hazlo tú**
-
-Abre `src/main/java/academia/rutaflow/stream/RouteFunctions.java` y sigue este código:
+**Hazlo tú:** abre `src/test/java/academia/rutaflow/cache/TarifaServiceTest.java`, método `metricasDistinguenAciertoYFalloDeCache`. Actuator conecta Caffeine con el registro de métricas de Micrometer; `recordStats` activa sus contadores:
 
 ```java
-@Bean
-public Function<ShipmentCreated, RoutePlanningRequested> planRoute() {
-    return shipment -> {
-        if (shipment.postalCode() == null || shipment.postalCode().length() < 2) {
-            throw new IllegalArgumentException("El código postal debe tener dos caracteres");
+var aciertos = metricas.get("cache.gets")
+        .tags("cache", "tarifas", "result", "hit").functionCounter();
+```
+
+```bash
+./mvnw -q -Dtest=TarifaServiceTest#metricasDistinguenAciertoYFalloDeCache test
+```
+
+**Resultado esperado:** dos consultas a NORTE añaden un miss y un hit. El test compara incrementos porque limpiar las entradas no reinicia las estadísticas.
+
+**Fallo deliberado:** elimina `recordStats` de `src/main/resources/application.yml` y repite la prueba. **Diagnóstico:** los contadores dejan de registrar las lecturas; restaura la opción.
+
+**Entiende:** un miss es normal. Muchos misses simultáneos para la misma clave pueden causar una avalancha de recargas (*cache stampede*). `@Cacheable(sync = true)` permite coordinar la carga según el proveedor; con Caffeine esa coordinación pertenece al proceso. Estos tests secuenciales no demuestran coordinación entre réplicas ni rendimiento bajo carga. Evita etiquetas métricas por usuario o pedido, que crearían demasiadas series.
+
+**Cierra:** como ejercicio independiente, añade CENTRO con 1100 centavos a `CatalogoTarifaRepository.java`; amplía `cadaZonaTieneSuPropiaEntrada` con dos lecturas a CENTRO y espera tres lecturas totales del repositorio. Ejecuta ese test y explica por qué la segunda consulta no lo incrementa.
+
+#### Subtema 4.5 · Comprueba una caché compartida en Redis · 12 min
+
+**Contexto:** Caffeine guarda una copia en cada proceso; Redis permite que varias réplicas lean el mismo almacén remoto.
+
+**Hazlo tú:** compara `application.yml` con `application-redis.yml`. La primera fuerza Caffeine; la segunda cambia el proveedor y configura Redis:
+
+```yaml
+spring:
+  cache:
+    type: redis
+    cache-names: tarifas
+    redis:
+      time-to-live: 5m
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+```
+
+Abre también `src/main/java/academia/rutaflow/cache/RedisWriteConfiguration.java`: personaliza el writer con `RedisCacheWriter.create(connectionFactory, config -> config.immediateWrites())`, conservando TTL y prefijo definidos por Boot. El segundo gestor del test usa la misma política. En Spring Data Redis 4 con Lettuce, escritura e invalidación pueden terminar después del retorno del método; este laboratorio exige visibilidad inmediata y elige esperar la operación. Esa espera bloquea al llamador y no convierte caché y base de datos en una transacción.
+
+Abre `src/test/java/academia/rutaflow/cache/RedisTarifaTest.java`. La prueba crea dos gestores de caché con el mismo prefijo único para comprobar que comparten valores e invalidación. Arranca un Redis de laboratorio en el puerto 16379 (puedes sustituir `podman` por `docker`):
+
+```bash
+podman run --rm -d --name rutaflow-cache-lab -p 127.0.0.1:16379:6379 docker.io/library/redis:7.4-alpine
+podman exec rutaflow-cache-lab redis-cli ping
+REDIS_PORT=16379 ./mvnw -q -Dredis.integration=true -Dtest=RedisTarifaTest test
+podman stop rutaflow-cache-lab
+```
+
+Si ya tienes `redis-server`, puedes iniciarlo en otra terminal con `redis-server --bind 127.0.0.1 --port 16379 --save "" --appendonly no` y ejecutar el mismo comando Maven; detenlo con Ctrl+C. La suite local `./mvnw -q clean test` ejecuta seis pruebas Caffeine y omite Redis hasta que pases `-Dredis.integration=true`.
+
+**Resultado esperado:** Redis responde `PONG`; el segundo gestor lee 1200, la entrada tiene entre 1 y 300 segundos de vida, la actualización elimina esa copia y la siguiente lectura comparte 1350. El test limpia solo su clave, sin borrar otras cachés.
+
+**Fallo deliberado:** detén tu servidor Redis y repite el comando Maven de integración. **Diagnóstico:** aparece `RedisConnectionFailureException`; vuelve a arrancar el servicio en el puerto configurado.
+
+**Entiende:** Redis comparte la caché entre réplicas que apuntan al mismo servidor, pero añade red, disponibilidad y reglas de serialización. Mantén el prefijo de clave de caché; separa claves por tenant y no caches datos sensibles sin aislamiento.
+
+El ejemplo usa el serializador Java predeterminado, por eso `Tarifa` implementa `Serializable`. En un sistema con versiones distintas de la aplicación define un formato compatible y prueba su evolución. El repositorio de este lab es local: compartir la caché no convierte sus datos de origen en una base de datos compartida.
+
+**Cierra:** elige Caffeine o Redis para el catálogo de RutaFlow y documenta qué harás si Redis no responde: consultar el origen con límites o devolver un error controlado. No añadas un fallback silencioso a autorización. La prueba usa dos gestores en una JVM; no mide carga, pérdida de red durante una escritura ni varias JVM con una base de datos real.
+
+**Fuentes primarias:** [Spring Boot: proveedores, Caffeine y Redis](https://docs.spring.io/spring-boot/reference/io/caching.html); [Spring Data Redis: TTL, prefijos y serialización](https://docs.spring.io/spring-data/redis/reference/redis/redis-cache.html); [Spring Boot: conexión Redis](https://docs.spring.io/spring-boot/reference/data/nosql.html); [Spring Data Redis: migración y escrituras inmediatas](https://docs.spring.io/spring-data/redis/reference/upgrading.html).
+
+Consulta también [Spring Framework: `@CachePut`, proxies y carga sincronizada](https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html) y [Spring Boot: métricas de caché](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
+**Hito del tema:** conserva (1) las seis pruebas locales correctas, (2) la predicción y el fallo al quitar la invalidación, (3) el ejercicio CENTRO con contador comprobado y (4) una decisión de proveedor con clave, TTL y respuesta ante indisponibilidad. Adjunta por separado el resultado Redis si lo ejecutaste; omitirlo no demuestra integración compartida. Sigue con M9 T1 para limitar el trabajo en segundo plano.
+
+### Tema 5: Integraciones empresariales, SOAP y fronteras de protocolo
+
+**¿Por qué es importante?** confundir un mensaje aceptado con un resultado correcto puede registrar entregas inexistentes; el adaptador debe reconocer contratos y fallos antes de tocar el dominio.
+
+**Meta:** extraer un identificador de un mensaje local SOAP 1.2, distinguir namespace de prefijo y rechazar versión, identificador o respuesta de fallo incorrectos. **Prerrequisitos:** HTTP, XML básico y funciones del track Fundamentos. Duración: 30 min. No necesitas Java ni Maven para este ejemplo de contrato.
+
+**Preparación:** desde la raíz del repositorio copia `examples/soap-contract-rutaflow` a una carpeta nueva:
+
+```bash
+cp -R examples/soap-contract-rutaflow practica-soap
+cd practica-soap
+python3 -m unittest -v
+```
+
+**Resultado esperado:** cuatro pruebas correctas. El código usa Python 3 sin dependencias. **Evidencia final:** salida del identificador, prefijo cambiado sin romper el contrato y rechazos observados. No es un servidor SOAP ni una implementación de Spring Web Services.
+
+#### Subtema 5.1 · Lee un contrato antes de adaptar el dominio · 7 min
+
+**Contexto:** un socio de RutaFlow envía XML; el adaptador debe extraer la identidad del envío antes de llamar al caso de uso. **Analogía:** como traducir un formulario, primero reconoce sus campos y luego aplica las reglas del negocio.
+
+**Hazlo tú:** abre `soap_contrato.py` (original en `examples/soap-contract-rutaflow/soap_contrato.py`) en tu copia. `MENSAJE` contiene el sobre `Envelope`, un cuerpo `Body` y la operación `ConsultarEnvio` con su `id`. Ejecuta desde `practica-soap`:
+
+```bash
+python3 soap_contrato.py
+python3 -m unittest test_soap_contrato.ContratoTest.test_extrae_identificador -v
+```
+
+**Resultado esperado:** `Consultar envío: ENV-42` y una prueba correcta. Sigue `ET.fromstring`, la búsqueda de `Body` y `findtext`: convierten el literal a un árbol, encuentran el cuerpo y extraen el texto de la operación.
+
+**Fallo deliberado:** en `soap_contrato.py`, cambia `<r:id>` y `</r:id>` por `<r:codigo>` y `</r:codigo>`. **Diagnóstico:** `findtext` no encuentra el campo contratado y aparece `ValueError: Falta id del envío`. Restaura ambas etiquetas.
+
+**Entiende:** SOAP define el mensaje; el dominio decide qué significa consultar ese envío y si está autorizado. Que exista un identificador no prueba su existencia ni permiso de lectura. Este código solo analiza un literal local confiable; no valida un esquema ni acepta XML de usuarios.
+
+**Cierra:** conserva la salida y dibuja adaptador → caso de uso → repositorio. Señala dónde ubicarías autorización antes de consultar datos.
+
+#### Subtema 5.2 · Separa prefijo de namespace y versión · 7 min
+
+**Contexto:** dos socios pueden escribir prefijos distintos para el mismo vocabulario XML. La identidad se determina por el URI del namespace y el nombre local, no por las letras visibles antes de los dos puntos.
+
+**Hazlo tú:** abre `test_soap_contrato.py` (original en `examples/soap-contract-rutaflow/test_soap_contrato.py`) y sigue `test_prefijo_no_cambia_identidad`. Cambia `s` por `env` en la declaración y etiquetas manteniendo el URI. Ejecuta:
+
+```bash
+python3 -m unittest test_soap_contrato.ContratoTest.test_prefijo_no_cambia_identidad -v
+```
+
+**Resultado esperado:** sigue extrayendo ENV-42. La notación `f"{{{SOAP}}}Body"` busca el nombre expandido que construye ElementTree; las llaves representan el URI, no el prefijo del documento.
+
+**Fallo deliberado:** en `soap_contrato.py`, cambia solo el URI del literal `MENSAJE` al namespace SOAP 1.1 `http://schemas.xmlsoap.org/soap/envelope/`, manteniendo `SOAP` como SOAP 1.2. **Diagnóstico:** `consultar_id` rechaza la raíz por versión; restaura el literal. Ejecuta también `python3 -m unittest test_soap_contrato.ContratoTest.test_rechaza_version_y_id_vacio -v`.
+
+**Entiende:** cambiar el prefijo conserva significado; cambiar el namespace puede cambiar el protocolo. No adaptes un cliente a SOAP 1.1 cambiando una cadena sin revisar binding, cabeceras y contrato WSDL. Un WSDL describe interfaz y tipos; no se inventa la dirección del servicio desde el nombre de una operación.
+
+**Cierra:** registra un cambio que conserva el contrato y otro que lo rompe, con sus resultados reales y la corrección aplicada.
+
+#### Subtema 5.3 · Rechaza campos vacíos y respuestas Fault · 8 min
+
+**Contexto:** un mensaje bien formado puede indicar fallo o carecer de datos obligatorios. Convertirlo a una respuesta de éxito escondería el problema del socio.
+
+**Hazlo tú:** abre las validaciones de `soap_contrato.py` (original en `examples/soap-contract-rutaflow/soap_contrato.py`) y ejecuta ambos casos negativos desde tu carpeta:
+
+```bash
+python3 -m unittest test_soap_contrato.ContratoTest.test_rechaza_version_y_id_vacio test_soap_contrato.ContratoTest.test_fault_no_se_convierte_en_exito -v
+```
+
+**Resultado esperado:** dos pruebas correctas porque observan `ValueError`. La primera comprueba versión y texto vacío después de `strip`; la segunda detecta `Fault` antes de buscar el identificador. El Fault mínimo de prueba enseña el rechazo; no demuestra conformidad con todo el esquema SOAP.
+
+**Fallo deliberado:** elimina el bloque que comprueba `body.find(...Fault...)` de `soap_contrato.py`. **Diagnóstico:** la prueba de Fault recibe «Falta id» en lugar del fallo de protocolo y falla; restaura el bloque. No trates ambos errores como la misma causa.
+
+**Entiende:** clasifica fallo de transporte, fallo de protocolo y fallo de negocio por separado. Este parser no ejecuta HTTP y no permite concluir que HTTP 200 equivalga a éxito. Para XML externo hacen falta parser/configuración adecuados, límites de tamaño y profundidad, y validación de contrato; este ejercicio no acredita esas defensas.
+
+**Cierra:** guarda ambos diagnósticos e indica qué error puede corregir el usuario y cuál requiere investigar la integración. No añadas un reintento indiscriminado para datos inválidos.
+
+#### Subtema 5.4 · Define garantías del adaptador del proyecto · 8 min
+
+**Contexto:** REST, SOAP, SFTP y SMTP resuelven problemas distintos. El adaptador de RutaFlow conserva correlación y traduce resultados sin prometer más de lo observado.
+
+**Hazlo tú:** crea `decision-integracion.md` en `practica-soap` con esta tabla inicial y complétala con una decisión para el socio:
+
+```markdown
+| Canal | Evidencia mínima | Lo que falta comprobar |
+| REST | Estado HTTP y contrato del recurso | Autorización y resultado de negocio |
+| SOAP | Versión, operación y Fault | WSDL, esquema y servicio real |
+| SFTP | Transferencia sobre SSH | Host key, archivo completo y procesamiento |
+| SMTP | Aceptación por servidor | Entrega final al destinatario |
+
+Socio: transporte por confirmar con su contrato.
+Identidad del envío: campo id, obligatorio y no vacío.
+Correlación: conservar un identificador en petición, resultado y diagnóstico.
+Reintentos: definir errores transitorios y evitar duplicar efectos.
+```
+
+Ejecuta desde la carpeta del laboratorio y abre `decision-integracion.md`:
+
+```bash
+python3 -m unittest -v
+```
+
+**Resultado esperado:** cuatro pruebas correctas y una decisión que distingue aceptación de procesamiento final. SFTP usa SSH y no equivale a FTP ni FTPS; una operación de lectura no demuestra entrega de archivos.
+
+**Fallo deliberado:** escribe en la fila SMTP «aceptado implica entregado». **Diagnóstico:** las pruebas XML seguirán pasando porque no prueban correo; detecta el error comparando con el laboratorio outbox de M8 T3 y corrige la garantía. Una suite parcial no valida toda la tabla.
+
+**Entiende:** probar el adaptador local es un primer paso. Timeouts, credenciales, host key y tamaño de mensajes dependen del canal y del socio. No conectes todavía este parser local a entradas externas ni declares interoperabilidad por cuatro tests.
+
+**Cierra:** como ejercicio independiente, añade un test de `Body` ausente y otro de namespace de operación incorrecto en `test_soap_contrato.py`. Espera rechazo en ambos, ejecútalos y explica qué contrato incumple cada mensaje. Después documenta qué evidencia necesitarías del socio para probar una integración real.
+
+**Transferencia al proyecto integrador RutaFlow:** conserva el adaptador separado del caso de uso y registra las garantías pendientes antes de conectarlo a un socio.
+
+**Hito del tema:** conserva (1) extracción ejecutada, (2) equivalencia de prefijos y rechazo de versión, (3) diagnóstico de vacío y Fault y (4) tabla de garantías con tus dos pruebas nuevas. El ejemplo publicado verifica cuatro tests locales, no un endpoint, seguridad XML ni interoperabilidad. El siguiente bloque introduce Spring AI conservando autorización fuera del modelo.
+
+**Fuente primaria:** [W3C: SOAP 1.2, mensajes y Fault](https://www.w3.org/TR/soap12-part1/).
+
+### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+
+**Meta:** ejecutar ChatClient con un modelo controlado, invocar un callback real y demostrar que dos sesiones no comparten permisos. **Prerrequisitos:** interfaces Java, JUnit, JSON y autorización por recurso de M18. Duración: 35–40 min.
+
+**¿Por qué es importante?** una respuesta convincente no acredita permiso para consultar una entrega. En el proyecto integrador RutaFlow, el servidor conserva la identidad y la decisión de autorización aunque el modelo proponga argumentos.
+
+**Preparación:** JDK 25 y repositorio. Desde su raíz copia el laboratorio a una carpeta nueva:
+
+```bash
+cp -R examples/rutaflow-material/spring-ai practica-spring-ai
+cd practica-spring-ai
+./mvnw -q clean test
+```
+
+**Resultado esperado:** ocho pruebas correctas: cuatro de herramientas y cuatro del tema siguiente. El wrapper incluido descarga Maven; la primera ejecución puede necesitar red para dependencias. No hacen falta claves ni pago a un proveedor. Spring AI 2.0.2 y Boot 4.0.9 están fijados; este tema conserva esas versiones compatibles en lugar de tomar versiones de una publicación social.
+
+#### Subtema 6.1 · Separa ChatClient del modelo · 9 min
+
+**Contexto:** ChatClient construye la solicitud y adapta la respuesta. ChatModel es la interfaz del componente que responde. **Analogía:** el cliente prepara un formulario y un mostrador lo atiende; la interfaz permite cambiar quién atiende. En esta práctica el mostrador está programado, no razona ni aprende.
+
+**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java`. El método `chatClientUsaElModeloSustituible` crea un ChatModel con una lambda: comprueba que la solicitud contiene ENV-42 y devuelve una respuesta fija. Ejecuta desde `practica-spring-ai`:
+
+```bash
+./mvnw -q -Dtest=ChatToolsTest#chatClientUsaElModeloSustituible test
+```
+
+**Resultado esperado:** una prueba correcta y respuesta `Estado: creado` comprobada por la aserción. No esperes ver una conversación en terminal: el test inspecciona el resultado. Lee `.prompt().user(...).call().content()`: prepara mensajes, asigna el texto del usuario, llama al modelo y extrae contenido.
+
+**Fallo deliberado:** en el test cambia solo el texto enviado por `.user(...)` de ENV-42 a ENV-99. **Diagnóstico:** el modelo controlado exige ENV-42 y la aserción interna falla; restaura el texto. No cambies también la expectativa, porque perderías el contraste.
+
+**Entiende:** esta prueba valida el contrato cliente/modelo sin variabilidad ni credenciales. No mide precisión, latencia o coste de un LLM. Para probar selección automática de herramientas hace falta otro recorrido: aquí el callback se ejecuta directamente en el siguiente subtema.
+
+<details>
+<summary>Archivos completos del laboratorio para contrastar tu copia</summary>
+
+El archivo de construcción es `pom.xml` dentro de la carpeta copiada; no crees otro directorio `spring-ai` por dentro.
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.0.9</version><relativePath/></parent>
+  <groupId>academia</groupId><artifactId>spring-ai-lab</artifactId><version>1</version>
+  <properties><java.version>27</java.version></properties>
+  <dependencyManagement><dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-bom</artifactId><version>2.0.2</version><type>pom</type><scope>import</scope></dependency></dependencies></dependencyManagement>
+  <dependencies><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency></dependencies>
+</project>
+```
+
+El archivo de prueba completo es `src/test/java/academia/ChatToolsTest.java`:
+
+```java
+package academia;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
+import java.util.List;
+import java.util.Set;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ChatToolsTest {
+    static class Consulta {
+        // En producción, estos permisos vienen de la sesión verificada del servidor.
+        private final Set<String> enviosPermitidos;
+        Consulta() { this(Set.of("ENV-42")); }
+        Consulta(Set<String> enviosPermitidos) { this.enviosPermitidos = Set.copyOf(enviosPermitidos); }
+        @Tool(description = "Consulta el estado del envío autorizado de esta sesión")
+        public String estado(String envioId) {
+            if (!enviosPermitidos.contains(envioId)) throw new IllegalArgumentException("Sin permiso");
+            return "creado";
         }
-        if (shipment.postalCode().startsWith("XX")) {
-            throw new IllegalArgumentException("La zona XX requiere revisión manual");
-        }
-        return new RoutePlanningRequested(
-                shipment.shipmentId(), shipment.postalCode().substring(0, 2));
-    };
+    }
+    @Test void chatClientUsaElModeloSustituible() {
+        ChatModel modeloControlado = prompt -> {
+            assertTrue(prompt.getInstructions().stream().anyMatch(m -> m.getText().contains("ENV-42")));
+            return new ChatResponse(List.of(new Generation(new AssistantMessage("Estado: creado"))));
+        };
+        var client = ChatClient.builder(modeloControlado).build();
+        assertEquals("Estado: creado", client.prompt().user("Consulta ENV-42").call().content());
+    }
+    @Test void callbackRealRespetaLaFronteraDeAutorizacion() {
+        var callbacks = MethodToolCallbackProvider.builder().toolObjects(new Consulta()).build().getToolCallbacks();
+        assertEquals(1, callbacks.length);
+        assertTrue(callbacks[0].call("{\"envioId\":\"ENV-42\"}").contains("creado"));
+        assertThrows(RuntimeException.class, () -> callbacks[0].call("{\"envioId\":\"ENV-ajeno\"}"));
+    }
+    @Test void dosSesionesNoCompartenPermisos() {
+        var ana = MethodToolCallbackProvider.builder()
+            .toolObjects(new Consulta(Set.of("ENV-42"))).build().getToolCallbacks()[0];
+        var bruno = MethodToolCallbackProvider.builder()
+            .toolObjects(new Consulta(Set.of("ENV-99"))).build().getToolCallbacks()[0];
+        assertTrue(ana.call("{\"envioId\":\"ENV-42\"}").contains("creado"));
+        assertTrue(bruno.call("{\"envioId\":\"ENV-99\"}").contains("creado"));
+        assertThrows(RuntimeException.class, () -> ana.call("{\"envioId\":\"ENV-99\"}"));
+        assertThrows(RuntimeException.class, () -> bruno.call("{\"envioId\":\"ENV-42\"}"));
+    }
+    @Test void contratoNoSolicitaIdentidadAlModelo() {
+        var callback = MethodToolCallbackProvider.builder()
+            .toolObjects(new Consulta()).build().getToolCallbacks()[0];
+        String schema = callback.getToolDefinition().inputSchema();
+        assertTrue(schema.contains("envioId"));
+        assertFalse(schema.contains("usuario"));
+        assertFalse(schema.contains("empresa"));
+    }
 }
 ```
 
-En `src/main/resources/application.yml`, localiza `spring.cloud.function.definition`, `planRoute-in-0`, `planRoute-out-0` y `group: route-planner`. Ejecuta las pruebas del mapping:
+</details>
+
+**Cierra:** guarda el resultado del test y explica qué piezas son reales (ChatClient y mensajes) y cuál está controlada (ChatModel). No presentes la cadena fija como una respuesta evaluada de IA.
+
+#### Subtema 6.2 · Autoriza antes de consultar el envío · 9 min
+
+**Contexto:** la herramienta permite consultar un estado; el argumento `envioId` puede referirse a un envío ajeno. La descripción de `@Tool` comunica intención, pero la condición Java ejecuta el control.
+
+**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y sigue `Consulta.estado`: consulta `enviosPermitidos` antes de devolver `creado`. `MethodToolCallbackProvider` construye un callback a partir del objeto y `.call(...)` convierte el argumento JSON a la llamada Java. Ejecuta:
 
 ```bash
-cd examples/spring-stream-rutaflow
-./mvnw -Dtest=RouteFunctionsTest test
+./mvnw -q -Dtest=ChatToolsTest#callbackRealRespetaLaFronteraDeAutorizacion test
 ```
 
-**Resultado esperado:** El test envía `ShipmentCreated("sh-42", "10ABC")` y recibe en `routes.requested` una salida con `sh-42` y región `10`.
+**Resultado esperado:** ENV-42 devuelve `creado`; ENV-ajeno lanza una excepción y el test pasa porque exige ese rechazo. No se lee una base de datos; el estado es fijo después de la autorización.
 
-**Fallo deliberado:** Cambia en una copia el destino de salida a `routes.wrong`, pero deja la prueba leyendo `routes.requested`. **Diagnóstico:** `OutputDestination` no recibe el mensaje en el destino esperado. Restaura el YAML.
+**Fallo deliberado:** elimina la línea que lanza `IllegalArgumentException` si el conjunto no contiene el envío. **Diagnóstico:** ENV-ajeno devuelve estado y falla la aserción que exige excepción. Restaura la línea antes de seguir.
 
-**3. Entiende**
+**Entiende:** el callback es real, pero se invoca directamente; no hemos probado que un modelo lo elija, forme JSON válido o se detenga. En el proyecto integrador la identidad viene de una sesión autenticada del servidor. Nunca conviertas un `usuario` propuesto por el modelo en autoridad para consultar datos.
 
-La función transforma datos; el binding conecta esa función con una dirección. Un error en destino puede dejar correcta la función Java y aun así enviar el mensaje al lugar incorrecto.
+**Cierra:** conserva autorización positiva, rechazo ajeno y fallo corregido. Identifica el punto del servicio donde aplicarías el mismo control antes de acceder a un repositorio real.
 
-**4. Cierra**
+#### Subtema 6.3 · Aísla permisos entre dos sesiones · 9 min
 
-Nombra la clase, el binding de entrada y el destino donde aparece la salida.
+**Contexto:** comprobar solo ENV-42 con un permiso fijo puede ocultar contaminación entre usuarios. Aquí dos objetos Consulta representan contextos de sesión diferentes: Ana puede leer ENV-42 y Bruno ENV-99.
 
-#### Subtema 6.2 · Cambiar el binder sin cambiar la función · 10 min
-
-**1. Contexto**
-
-La clase de dominio y la función no conocen si el mensaje viaja por Kafka o RabbitMQ. Los perfiles declaran ese detalle de despliegue: `application-kafka.yml` selecciona Kafka y `application-rabbit.yml` selecciona Rabbit.
-
-**2. Hazlo tú**
-
-Compara los perfiles del laboratorio:
-
-```yaml
-# application-kafka.yml
-spring:
-  cloud:
-    stream:
-      default-binder: kafka
-```
-
-```yaml
-# application-rabbit.yml
-spring:
-  cloud:
-    stream:
-      default-binder: rabbit
-```
-
-En ambos perfiles sigue `planRoute-in-0`; después abre la configuración base para comprobar que la función usa el destino `shipments.created` y el grupo `route-planner`. Ejecuta el test binder:
+**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y lee `dosSesionesNoCompartenPermisos`. El constructor copia el conjunto recibido con `Set.copyOf`; cada objeto mantiene sus permisos. Ejecuta:
 
 ```bash
-./mvnw test
+./mvnw -q -Dtest=ChatToolsTest#dosSesionesNoCompartenPermisos test
 ```
 
-**Resultado esperado:** La misma función y sus pruebas de mapping funcionan sin especificar un broker. La prueba valida el código y el binding de prueba en memoria; no demuestra que Kafka ni RabbitMQ estén conectados.
+**Resultado esperado:** cada sesión lee su envío y ambas lecturas cruzadas fallan. Son cuatro comprobaciones dentro de un test, no cuatro tests distintos.
 
-**Fallo deliberado:** Selecciona mentalmente el perfil Kafka pero describe el broker como RabbitMQ. **Diagnóstico:** el nombre de perfil y `default-binder` deben coincidir con el broker que levantaste; confirma la propiedad efectiva antes de atribuir un error a la función.
+**Fallo deliberado:** cambia el constructor para que ambas instancias reciban `Set.of("ENV-42", "ENV-99")`. **Diagnóstico:** los accesos cruzados dejan de rechazarse; restaura `Set.copyOf(enviosPermitidos)`.
 
-**3. Entiende**
+**Entiende:** la independencia del objeto no implementa login ni valida una cookie. El servidor debe construir el contexto desde identidad verificada y evitar reutilizar como singleton un objeto con permisos personales. Un permiso también puede revocarse: copiarlo no define cómo se actualiza durante una sesión larga.
 
-El binder reemplaza integración y configuración de transporte. No hace equivalentes los offsets Kafka, las colas Rabbit, las confirmaciones o las políticas de reintento.
+**Cierra:** como ejercicio independiente, crea una tercera sesión sin permisos y demuestra rechazo de los dos envíos. Después describe cómo verificarías revocación contra el servicio real de autorización, sin aceptar la identidad en los argumentos del modelo.
 
-**4. Cierra**
+#### Subtema 6.4 · Revisa qué argumentos puede proponer el modelo · 8 min
 
-Explica qué archivo cambiarías para mover el servicio a RabbitMQ y cuál clase de negocio se mantiene igual.
+**Contexto:** el esquema de entrada describe los campos de la herramienta. Reducir argumentos evita delegar decisiones que corresponden al servidor, aunque el esquema por sí solo tampoco autoriza una operación.
 
-#### Subtema 6.3 · Rechazar una entrada y ubicar la política de reintento · 10 min
-
-**1. Contexto**
-
-Un código postal inválido o una zona que requiere revisión lanza una excepción. Los perfiles fijan tres intentos y un destino de mensajes fallidos con opciones propias de cada binder.
-
-**2. Hazlo tú**
-
-Lee `RouteFunctionsTest.zonaXXSeRechazaParaRevisionManual` y ejecuta:
+**Hazlo tú:** abre `src/test/java/academia/ChatToolsTest.java` y ejecuta:
 
 ```bash
-./mvnw -Dtest=RouteFunctionsTest#zonaXXSeRechazaParaRevisionManual test
+./mvnw -q -Dtest=ChatToolsTest#contratoNoSolicitaIdentidadAlModelo test
 ```
 
-Luego compara las propiedades en `application-kafka.yml` (`enable-dlq: true`) y `application-rabbit.yml` (`auto-bind-dlq: true`). El test prueba que la función rechaza la zona; no prueba reintentos ni DLQ del broker.
+**Resultado esperado:** el esquema contiene `envioId` y no contiene campos `usuario` ni `empresa`. Inspecciona `callback.getToolDefinition().inputSchema()` temporalmente en el depurador o imprime ese valor localmente para reconocer el contrato JSON.
 
-**Resultado esperado:** La prueba recibe la excepción `La zona XX requiere revisión manual`; encuentras `max-attempts: 3` y la propiedad DLQ de cada perfil.
+**Fallo deliberado:** añade un argumento `String usuario` a `estado` sin modificar el cuerpo. **Diagnóstico:** el esquema ahora solicita identidad y falla la expectativa del test; restaura la firma original. No uses ese argumento para sustituir la sesión.
 
-**Fallo deliberado:** Cambia en una copia la entrada de prueba de `XX101` a `10101`. **Diagnóstico:** la prueba deja de recibir la excepción porque la zona es aceptada. Restaura el caso `XX`.
+**Entiende:** comprobar nombres en el esquema solo controla este contrato concreto. No demuestra validación exhaustiva de JSON, rate limiting, timeout, auditoría ni seguridad del conjunto de herramientas. Una herramienta de escritura exige reglas de negocio propias antes de ejecutar efectos; añadirla a un prompt no resuelve esas reglas.
 
-**3. Entiende**
+**Cierra:** registra los argumentos permitidos y los datos que aporta exclusivamente el servidor. En el proyecto integrador conserva la herramienta como lectura hasta probar autorización, límites y tratamiento de fallos de la dependencia real.
 
-`max-attempts` y dead lettering describen manejo del binder, no la regla de negocio. Kafka DLQ y Rabbit dead-letter queue tienen destinos y configuración distintos. Para confirmar redelivery y destino necesitas broker real; el test binder no es esa evidencia.
+**Hito del tema:** conserva las cuatro pruebas correctas, un rechazo ajeno, la demostración de permisos separados y el esquema revisado. Explica el fallo que provocaste y corregiste. No se ha contactado un LLM ni probado selección automática, streaming, facturación o persistencia. Sigue con M8 T6 para decidir qué documentos pueden llegar al contexto.
 
-**4. Cierra**
+**Fuentes primarias:** [ChatClient](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [herramientas y ejecución](https://docs.spring.io/spring-ai/reference/api/tools.html), [compatibilidad Spring AI/Boot](https://docs.spring.io/spring-ai/reference/getting-started.html).
 
-Separa en una frase el rechazo del dominio y en otra la política que decide qué hace el binder con el fallo.
+### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
 
-#### Subtema 6.4 · Probar en memoria y después contra el broker · 15 min
+**Meta:** filtrar documentos por empresa, excluir contexto sin evidencia y conservar referencias antes de generar una respuesta. **Prerrequisitos:** M8 T5, colecciones, metadatos y JUnit. Duración: 35–40 min.
 
-**1. Contexto**
+**¿Por qué es importante?** recuperar un documento relevante de otra empresa sigue siendo una fuga. En el proyecto integrador RutaFlow, la autorización debe actuar antes de entregar contexto al modelo.
 
-El test binder ejecuta la aplicación dentro del proceso sin hablar con un broker. Sirve para verificar transformación y mapping; la disponibilidad, la topología y la política del broker requieren una prueba separada.
+**Preparación independiente:** copia `examples/rutaflow-material/spring-ai` a `practica-rag`, entra y ejecuta `./mvnw -q -Dtest=RagScopeTest test`. Si ya tienes `practica-spring-ai`, usa esa misma copia. Requiere JDK 25; el `pom.xml` completo está en M8 T5 y el wrapper viene incluido.
 
-**2. Hazlo tú**
+#### Subtema 7.1 · Filtra la empresa antes de construir contexto · 9 min
 
-Desde `examples/spring-stream-rutaflow/`, corre primero `./mvnw test`. Cuando tengas Docker, sigue el README para levantar ambos brokers:
+**Contexto:** RAG añade documentos recuperados al contexto de una solicitud. Un flujo completo incluye ingestión, particionado, recuperación y generación. Aquí aislamos la frontera de recuperación con búsqueda literal; no usamos embeddings ni vector store.
+
+**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java`. En `recuperar`, sigue el filtro `empresaAutorizada.equals(...)`, la búsqueda de texto y el límite. Ejecuta desde tu copia:
 
 ```bash
-docker compose up -d
-./mvnw spring-boot:run -Dspring-boot.run.profiles=kafka
+./mvnw -q -Dtest=RagScopeTest#filtraAntesDeConstruirContexto test
 ```
 
-Envía un evento JSON válido a `shipments.created` como indica el README y observa `routes.requested`. Detén esa aplicación y repite con el perfil Rabbit:
-
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=rabbit
-```
-
-Usa el README para publicar desde la consola RabbitMQ y observar la cola; envía después el caso `XX` y examina el destino de error. La suite de test binder no reemplaza estos pasos.
-
-
-Para comprobar «Probar en memoria y después contra el broker», consulta: `examples/spring-stream-rutaflow/src/main/resources/application.yml`. Desde `examples/spring-stream-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Puedes mostrar la salida del test binder y, cuando ejecutas brokers, registrar por separado el mensaje, el destino y el fallo para cada perfil.
-
-**Fallo deliberado:** Afirma que el test binder demuestra que la cola Rabbit existe o que el tópico Kafka recibió bytes. **Diagnóstico:** esas afirmaciones requieren el broker y una observación de su destino; separa ambas evidencias.
-
-**3. Entiende**
-
-La abstracción permite compartir función y modelo de mensaje. El routing, la retención, la DLQ y las confirmaciones requieren decisiones específicas por broker y perfil.
-
-**4. Cierra**
-
-Entrega la prueba de función y una lista breve de lo que todavía debes observar con broker real.
-
-**Fuentes oficiales:** [abstracción Binder de Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html), [testing binder](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html), [Kafka binder](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/), [RabbitMQ binder](https://docs.spring.io/spring-cloud-stream/reference/rabbit/spring-cloud-stream-binder-rabbit.html) y [manejo de mensajes en Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-error-handling.html).
-
-**Transferencia al proyecto integrador:** deja cada binding con destino, grupo, binder, reintentos y destino de error explícitos; conserva una función de negocio testeable sin broker y añade evidencia de integración separada para los brokers desplegados.
-
-
-```bash
-./mvnw test
-```
-
-**Aplicación y decisión:** Límite del binder de prueba: ejecuta la función y sus bindings en memoria; no acredita offsets ni confirmaciones de un broker real. Elige el perfil del transporte de RutaFlow según retención, reentrega y capacidad operativa, conservando pruebas de contrato compartidas.
-
-### Tema 7: Kafka Streams con Spring para transformar eventos
-
-**Duración estimada:** 50 min.
-**Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
-**¿Por qué es importante?** Una salida de prueba en memoria no comprueba despliegue ni restauración de estado en un clúster.
-**Laboratorio:** examples/spring-kafka-streams-rutaflow/. Requiere Java 25.
-
-#### Subtema 7.1 · Filtrar sin cambiar la clave del pedido · 10 min
-
-**1. Contexto**
-
-KStream procesa registros nuevos de un tópico. La key es el ID del pedido y el value su estado; solo DESPACHADO debe salir.
-
-**2. Hazlo tú**
-
-Abre src/main/java/academia/rutaflow/streams/PedidosTopology.java:
-
-```text
-KStream<String, String> input = builder.stream(
-        INPUT, Consumed.with(Serdes.String(), Serdes.String()));
-KStream<String, String> dispatched = input
-        .filter((pedidoId, estado) -> "DESPACHADO".equals(estado));
-dispatched.to(OUTPUT, Produced.with(Serdes.String(), Serdes.String()));
-```
-
-Desde el laboratorio ejecuta:
-
-```bash
-./mvnw -Dtest=PedidosTopologyTest#filtraEstadosYConservaLaClaveEnLaSalida test
-```
-
-**Resultado esperado:** PENDIENTE no aparece; DESPACHADO conserva key y value.
-
-**Fallo deliberado:** En una copia, cambia el filtro para aceptar PENDIENTE. **Diagnóstico:** La prueba falla porque recibe el registro que esperaba descartar.
-
-**3. Entiende**
-
-filter descarta registros que no cumplen el predicado; no cambia el registro que pasa ni sustituye su key.
-
-**4. Cierra**
-
-Di cuál es la key, cuál el value y qué estado permite la salida.
-
-#### Subtema 7.2 · Contar por estado dentro de una ventana · 15 min
-
-**1. Contexto**
-
-Una agregación necesita una clave de agrupación y estado local. Aquí los despachos se agrupan por estado en ventanas de un minuto con diez segundos de gracia.
-
-**2. Hazlo tú**
-
-En PedidosTopology.pedidosDespachados localiza:
-
-```text
-dispatched
-        .groupBy((pedidoId, estado) -> estado,
-                Grouped.with(Serdes.String(), Serdes.String()))
-        .windowedBy(TimeWindows.ofSizeAndGrace(
-                Duration.ofMinutes(1), Duration.ofSeconds(10)))
-        .count(Materialized.as("conteo-despachados-por-minuto"))
-```
-
-Ejecuta el test con timestamps controlados:
-
-```bash
-./mvnw -Dtest=PedidosTopologyTest#actualizaConteoPorVentanaConTiempoControlado test
-```
-
-
-Para comprobar «Contar por estado dentro de una ventana», consulta: `examples/spring-kafka-streams-rutaflow/src/main/java/academia/rutaflow/streams/PedidosTopology.java`. Desde `examples/spring-kafka-streams-rutaflow` repite la comprobación:
-
-```bash
-./mvnw -q test
-```
-
-**Resultado esperado:** Dos despachos en la misma ventana producen conteos 1 y 2 para DESPACHADO.
-
-**Fallo deliberado:** En una copia, agrupa por pedidoId en vez de estado. **Diagnóstico:** El test deja de observar el segundo valor 2 porque cada pedido queda en su propio grupo.
-
-**3. Entiende**
-
-El resultado de una agregación es estado actualizado, no una lista de eventos originales. Kafka Streams guarda el store y usa un changelog para reconstruirlo; este test no prueba recuperación de un broker real.
-
-**4. Cierra**
-
-Explica qué representa la key del conteo y qué cambiarías para medir otra ventana.
-
-#### Subtema 7.3 · Probar la topología sin confundirla con el clúster · 10 min
-
-**1. Contexto**
-
-TopologyTestDriver ejecuta el grafo dentro del proceso. Acepta entradas con timestamps controlados, pero no abre conexión a Kafka ni prueba ACL, particiones, ni el arranque de Spring.
-
-**2. Hazlo tú**
-
-Abre src/test/java/academia/rutaflow/streams/PedidosTopologyTest.java. Comprueba que el test construye PedidosTopology, fija application.id y usa pipeInput. Ejecuta:
-
-```bash
-./mvnw clean test
-```
-
-**Resultado esperado:** Pasan dos pruebas: filtro/key y conteo por ventana. La suite no comprueba que los tópicos existan en el broker.
-
-**Fallo deliberado:** Anota ACL, particiones y creación de tópicos como requisitos que el test driver no verifica. **Diagnóstico:** Explica cómo comprobarías cada uno con el broker real.
-
-**3. Entiende**
-
-El test rápido valida lógica determinista; la topología necesita además una prueba con el clúster y las políticas que operará.
-
-**4. Cierra**
-
-Enumera qué verifica TopologyTestDriver y dos cosas que requieren Kafka real.
-
-#### Subtema 7.4 · Configurar Spring y el application.id · 15 min
-
-**1. Contexto**
-
-Spring crea y administra la topología cuando kafka-streams está en el classpath y se activa EnableKafkaStreams. application.id identifica la aplicación y su grupo lógico.
-
-**2. Hazlo tú**
-
-Compara la anotación EnableKafkaStreams en PedidosTopology.java, la dependencia kafka-streams en pom.xml y spring.kafka.streams.application-id en src/main/resources/application.yml. El README del laboratorio incluye comandos para levantar Kafka, crear tópicos, publicar tres registros y observar las salidas.
-
-Desde examples/spring-kafka-streams-rutaflow ejecuta:
-
-```bash
-./mvnw spring-boot:run
-```
-
-**Resultado esperado:** Con Kafka disponible, la aplicación procesa pedidos y publica los valores filtrados y el conteo. Si el broker no está disponible, el arranque no prueba integración.
-
-**Fallo deliberado:** En una copia cambia el nombre del tópico INPUT pero publica al nombre anterior. **Diagnóstico:** No llega salida; compara el nombre configurado y el destino de entrada.
-
-**3. Entiende**
-
-application.id, bootstrap servers, SerDes y estado local son decisiones de operación. En producción define particiones, permisos, retención de changelogs y almacenamiento local.
-
-**4. Cierra**
-
-Enumera los tópicos visibles y explica por qué una aplicación aislada necesita un application.id propio.
-
-**Fuentes oficiales:** [Kafka Streams en Spring Boot 4.1](https://docs.spring.io/spring-boot/4.1/reference/messaging/kafka.html), [integración Kafka Streams de Spring Kafka](https://docs.spring.io/spring-kafka/reference/streams.html), [DSL Kafka Streams 4.2](https://kafka.apache.org/42/documentation/streams/developer-guide/dsl-api/) y [TopologyTestDriver](https://kafka.apache.org/42/streams/developer-guide/testing/).
-
-**Transferencia al proyecto integrador:** conserva una key estable por pedido, separa evento original de proyección agregada y registra application.id, SerDes, tópicos internos y política de estado.
-
-
-**Aplicación y decisión:** Límite del test driver: observa registros y estado con tiempo controlado, sin broker, rebalanceo o ACL. Usa el conteo por ventana en el proyecto integrador solo después de definir tiempo de evento, retención y política para llegadas tardías.
-
-### Tema 8: Avro y Schema Registry para contratos de eventos
-
-**Duración estimada:** 50 min.
-**Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.
-**¿Por qué es importante?** Un cambio de campos puede romper consumidores que siguen leyendo eventos creados con una versión anterior.
-**Laboratorio:** examples/spring-avro-rutaflow/. Para Registry real se requiere Docker.
-
-#### Subtema 8.1 · Definir el evento en un archivo Avro · 10 min
-
-**1. Contexto**
-
-Avro describe el nombre del record y sus campos en un esquema. Los bytes Avro no incluyen nombres de campos: para leerlos se necesita el esquema que los escribió.
-
-**2. Hazlo tú**
-
-Abre src/main/avro/PedidoDespachado-v1.avsc:
-
-```json
-{
-  "type": "record",
-  "name": "PedidoDespachado",
-  "namespace": "academia.eventos",
-  "fields": [
-    {"name": "pedidoId", "type": "string"},
-    {"name": "estado", "type": "string"}
-  ]
+**Resultado esperado:** el documento de A aparece y el de B se excluye, aunque ambos contienen «Reembolso». `Document` conserva texto y metadatos; el campo `empresa` expresa una etiqueta de acceso que el backend debe haber asignado de forma confiable.
+
+**Fallo deliberado:** quita el filtro por empresa de `recuperar`. **Diagnóstico:** la colección contiene también el documento de B y la prueba falla. Restaura el filtro; no intentes compensarlo añadiendo «ignora datos de B» al prompt.
+
+**Entiende:** **analogía:** en una biblioteca, encontrar la sección adecuada no da permiso para abrir cualquier expediente. El límite de esa comparación es que también hay que controlar ingestión, cambios de permisos y almacenamiento. El parámetro `empresaAutorizada` debe venir de la sesión del servidor; este test lo suministra directamente y no implementa autenticación.
+
+<details>
+<summary>Código completo de la recuperación local y sus cuatro pruebas</summary>
+
+Conserva este archivo como `src/test/java/academia/RagScopeTest.java`; comparte el `pom.xml` del tema anterior.
+
+```java
+package academia;
+import org.junit.jupiter.api.Test;
+import org.springframework.ai.document.Document;
+import java.util.List;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
+
+class RagScopeTest {
+    // Recuperador léxico didáctico: no simula embeddings ni búsqueda vectorial.
+    List<Document> recuperar(String empresaAutorizada, String termino, List<Document> corpus) {
+        if (termino.isBlank()) return List.of();
+        return corpus.stream()
+            .filter(d -> empresaAutorizada.equals(d.getMetadata().get("empresa")))
+            .filter(d -> d.getText().toLowerCase(java.util.Locale.ROOT)
+                .contains(termino.toLowerCase(java.util.Locale.ROOT)))
+            .limit(2).toList();
+    }
+    @Test void filtraAntesDeConstruirContexto() {
+        var corpus = List.of(
+            new Document("Reembolso: revisar comprobante", Map.of("empresa", "A")),
+            new Document("Reembolso secreto de B", Map.of("empresa", "B")));
+        var docs = recuperar("A", "reembolso", corpus);
+        assertEquals(1, docs.size());
+        assertFalse(docs.getFirst().getText().contains("secreto"));
+        assertEquals("A", docs.getFirst().getMetadata().get("empresa"));
+    }
+    @Test void sinEvidenciaNoSeInventaContexto() {
+        assertTrue(recuperar("A", "", List.of(new Document("Reembolso", Map.of("empresa", "A")))).isEmpty());
+        assertTrue(recuperar("A", "factura", List.of(new Document("GPS", Map.of("empresa", "A")))).isEmpty());
+    }
+    @Test void filtraAntesDeLimitarYConservaReferencias() {
+        var corpus = List.of(
+            new Document("b-1", "Reembolso ajeno 1", Map.of("empresa", "B")),
+            new Document("b-2", "Reembolso ajeno 2", Map.of("empresa", "B")),
+            new Document("a-1", "Reembolso autorizado 1", Map.of("empresa", "A")),
+            new Document("a-2", "Reembolso autorizado 2", Map.of("empresa", "A")),
+            new Document("a-3", "Reembolso autorizado 3", Map.of("empresa", "A")));
+        var docs = recuperar("A", "REEMBOLSO", corpus);
+        assertEquals(List.of("a-1", "a-2"), docs.stream().map(Document::getId).toList());
+        assertTrue(docs.stream().allMatch(d -> "A".equals(d.getMetadata().get("empresa"))));
+    }
+    @Test void documentoSinEmpresaNoSeCompartePorDefecto() {
+        var corpus = List.of(new Document("Reembolso sin propietario", Map.of()));
+        assertTrue(recuperar("A", "reembolso", corpus).isEmpty());
+    }
 }
 ```
 
-Ejecuta la prueba que escribe con v1 y lee con v2:
+</details>
+
+**Cierra:** conserva la colección autorizada, el fallo al quitar el filtro y su corrección. Explica por qué filtrar después de enviar el contexto al modelo llega demasiado tarde.
+
+#### Subtema 7.2 · Conserva un resultado vacío cuando no hay evidencia · 8 min
+
+**Contexto:** no todas las preguntas tienen respuesta en el corpus. Generar texto sin reconocer esa ausencia puede convertir una suposición en una afirmación sobre la empresa.
+
+**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java` y lee `sinEvidenciaNoSeInventaContexto`. Ejecuta:
 
 ```bash
-cd examples/spring-avro-rutaflow
-./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorV2RellenaElCampoAusenteConSuDefault test
+./mvnw -q -Dtest=RagScopeTest#sinEvidenciaNoSeInventaContexto test
 ```
 
-**Resultado esperado:** Se conservan pedidoId y estado; el campo nuevo se completa con null según el esquema lector.
+**Resultado esperado:** pregunta vacía y término ausente producen una lista vacía. El test no llama a un generador; solo verifica que el recuperador no inventa documentos. La salida de búsqueda no equivale a una respuesta validada.
 
-**Fallo deliberado:** Cambia en una copia el nombre del record o namespace solo en el esquema lector. **Diagnóstico:** Avro no puede reconciliar los records y la prueba de lectura falla.
+**Fallo deliberado:** cambia la rama `termino.isBlank()` por `return corpus;`. **Diagnóstico:** la pregunta vacía recibe el documento de prueba, aunque no debería recuperar nada, y el test falla. Restaura `return List.of()`. El corpus no vacío permite distinguir vacío por política de vacío por falta de documentos.
 
-**3. Entiende**
+**Entiende:** esta prueba muestra por qué debes elegir entradas que distingan el comportamiento correcto del incorrecto. En una integración real define abstención o solicitud de más datos cuando no hay evidencia autorizada. Esa política debe comprobarse antes de atribuir una respuesta al conocimiento de la empresa.
 
-El esquema no es un comentario al lado del JSON: determina cómo interpretar el dato binario y resolver campos del escritor frente al lector.
+**Cierra:** guarda el resultado del caso con corpus no vacío para pregunta vacía. Como ejercicio independiente añade una búsqueda que solo coincide con B y exige vacío para A; comprueba que relevancia y autorización se aplican juntas.
 
-**4. Cierra**
+#### Subtema 7.3 · Limita resultados después de filtrar y conserva IDs · 10 min
 
-Identifica el namespace, nombre y campos del evento v1.
+**Contexto:** limitar primero puede consumir todos los espacios con documentos ajenos y ocultar evidencia válida. Además, conservar IDs permite rastrear de dónde salió el contexto seleccionado.
 
-#### Subtema 8.2 · Añadir un campo compatible con registros anteriores · 15 min
-
-**1. Contexto**
-
-Al desplegar productores por etapas, algunos eventos antiguos no contienen los campos nuevos. Un default del lector permite completar un campo ausente durante la resolución.
-
-**2. Hazlo tú**
-
-Compara src/main/avro/PedidoDespachado-v1.avsc con v2:
-
-```json
-{"name": "zonaEntrega", "type": ["null", "string"], "default": null}
-```
-
-Ejecuta la prueba:
+**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java`. `filtraAntesDeLimitarYConservaReferencias` coloca dos documentos de B antes de tres de A. Ejecuta:
 
 ```bash
-./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorV2RellenaElCampoAusenteConSuDefault test
+./mvnw -q -Dtest=RagScopeTest#filtraAntesDeLimitarYConservaReferencias test
 ```
 
-Luego ejecuta el caso que muestra qué pasa cuando el lector exige el campo sin default:
+**Resultado esperado:** exactamente `a-1` y `a-2`, ambos de A, aun buscando REEMBOLSO en mayúsculas. `Locale.ROOT` hace explícita la normalización; `.limit(2)` actúa sobre documentos ya permitidos y coincidentes.
+
+**Fallo deliberado:** mueve `.limit(2)` inmediatamente después de `corpus.stream()`. **Diagnóstico:** solo inspeccionas los dos documentos iniciales de B, que luego se excluyen, y el resultado queda vacío. Restaura el orden filtro de permisos → coincidencia → límite.
+
+**Entiende:** el orden del corpus decide cuáles aparecen aquí; no hay ranking semántico. Un embedding representa contenido como un vector y un vector store puede buscar similitud, pero esos componentes no se ejecutan en este laboratorio. Conservar un ID facilita trazabilidad; no demuestra que el documento sea correcto, vigente o que respalde la afirmación generada.
+
+**Cierra:** registra IDs y textos recuperados. Añade una versión o fecha al corpus de tu proyecto integrador y explica qué volverías a evaluar al cambiar documentos, particionado o modelo de embeddings.
+
+#### Subtema 7.4 · Excluye documentos sin empresa y delimita la siguiente prueba · 9 min
+
+**Contexto:** un documento sin etiqueta de empresa no debe compartirse por defecto. También puede contener instrucciones maliciosas: estar autorizado para leer texto no le otorga autoridad para cambiar permisos o ejecutar herramientas.
+
+**Hazlo tú:** abre `src/test/java/academia/RagScopeTest.java` y ejecuta:
 
 ```bash
-./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorNoPuedeExigirUnCampoQueNoExisteEnElRegistroAntiguo test
+./mvnw -q -Dtest=RagScopeTest#documentoSinEmpresaNoSeCompartePorDefecto test
 ```
 
-**Resultado esperado:** v2 lee el registro escrito por v1 y usa zonaEntrega=null. El esquema incompatible produce AvroTypeException en lectura.
+**Resultado esperado:** la lista queda vacía para el documento sin `empresa`. La comparación con A no coincide con un metadato ausente.
 
-**Fallo deliberado:** En una copia quita default y deja zonaEntrega como string requerido. **Diagnóstico:** La primera prueba deja de poder leer el registro viejo. Restaura v2 nullable con default null.
+**Fallo deliberado:** cambia el filtro para permitir documentos con `get("empresa") == null` además de los de A. **Diagnóstico:** el documento sin propietario aparece y el test falla; restaura el filtro estricto.
 
-**3. Entiende**
+**Entiende:** no se ha demostrado resistencia a prompt injection: el test no ejecuta un modelo ni interpreta instrucciones del documento. Para la siguiente fase con VectorStore y QuestionAnswerAdvisor define primero filtros de sesión, corpus con IDs conocidos, modelo/dimensiones de embeddings, topK y umbral. Mide recuperación por separado de fidelidad de la respuesta; registra coste y latencia solo cuando exista ejecución real.
 
-Avro usa el default del esquema lector cuando el escritor no tenía ese campo. En este ejemplo se usa `["null", "string"]` y default `null`. En Avro 1.12 el default debe corresponder a un miembro de la unión; no es una regla universal que ese miembro deba ser el primero. Revisa también qué admiten las herramientas de los consumidores. El default ayuda a leer; no hace que el campo desaparezca de registros escritos con v2.
+**Cierra:** crea `evaluacion-rag.md` en tu copia con cinco preguntas: respondible por A, solo respondible por B, sin respuesta, evidencia contradictoria y documento con instrucción maliciosa. Para cada una declara IDs permitidos y cuándo abstenerse. No marques los cinco casos como aprobados hasta ejecutar la integración correspondiente.
 
-**4. Cierra**
+**Hito del tema:** conserva filtrado por empresa, ausencia de evidencia, selección de IDs con límite posterior y exclusión sin propietario. Adjunta tu caso independiente y plan de evaluación. Las cuatro pruebas publicadas verifican fronteras locales; no acreditan búsqueda vectorial, generación ni seguridad completa de un sistema RAG.
 
-Explica qué esquema escribió el dato, cuál lo leyó y de dónde salió null.
+**Fuente primaria:** [Spring AI: RAG, QuestionAnswerAdvisor y filtros](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
 
-#### Subtema 8.3 · Serializar usando un Registry de prueba en memoria · 10 min
-
-**1. Contexto**
-
-El serializer de Confluent registra o recupera el esquema y escribe un identificador junto al payload Avro. El deserializer usa ese identificador para encontrar el esquema escritor. El test de este laboratorio usa un Registry simulado en memoria.
-
-**2. Hazlo tú**
-
-Abre src/test/java/academia/rutaflow/avro/SchemaRegistrySerdeTest.java. Localiza schema.registry.url con mock://, KafkaAvroSerializer y KafkaAvroDeserializer. Ejecuta:
-
-```bash
-./mvnw -Dtest=SchemaRegistrySerdeTest test
-```
-
-**Resultado esperado:** El serializer y deserializer recuperan pedidoId y estado, y el payload usa el encabezado de wire format de Confluent.
-
-**Fallo deliberado:** En una copia usa URLs mock distintas para serializer y deserializer. **Diagnóstico:** el deserializer no encuentra el esquema registrado y falla. Restaura el mismo scope.
-
-**3. Entiende**
-
-El mock prueba la biblioteca de serde y el encuadre del payload, pero no prueba HTTP, almacenamiento en _schemas ni compatibilidad configurada en un Schema Registry desplegado.
-
-**4. Cierra**
-
-Nombra qué identificador incluye el wire format y qué servicio resuelve ese ID al leer.
-
-#### Subtema 8.4 · Registrar versiones y consultar compatibilidad real · 15 min
-
-**1. Contexto**
-
-Schema Registry guarda versiones por subject y aplica el nivel de compatibilidad configurado para ese subject o el valor global. Un test con MockSchemaRegistry no prueba esas políticas del servidor.
-
-**2. Hazlo tú**
-
-Desde examples/spring-avro-rutaflow sigue README.md para iniciar el overlay de Schema Registry local y preparar los archivos JSON para la API. Configura el subject pedidos-value como BACKWARD, registra v1, consulta v2 con el endpoint de compatibilidad, regístralo y consulta el esquema incompatible. No publiques la variante incompatible.
-
-```bash
-docker compose -f ../spring-kafka-rutaflow/compose.yaml -f compose.registry.yaml up -d
-curl http://localhost:18081/config
-```
-
-**Resultado esperado:** v2 con zonaEntrega nullable/default se informa compatible; el campo string requerido sin default se informa incompatible. El README separa la verificación REST del test de serde mock.
-
-**Fallo deliberado:** Envía el payload v2 como esquema v1 o consulta otro subject. **Diagnóstico:** compatibilidad se evalúa por subject y contra la versión configurada; verifica pedidos-value y el cuerpo enviado.
-
-**3. Entiende**
-
-La respuesta de compatibilidad no certifica que todos los consumidores tengan código correcto. También prueba lectura cruzada con datos viejos y valida la integración de los serializadores con el Registry real.
-
-**4. Cierra**
-
-Entrega las versiones v1/v2, respuesta de compatibilidad y el resultado local de lectura Avro.
-
-**Fuentes oficiales:** [especificación Avro 1.12: defaults y resolución lector/escritor](https://avro.apache.org/docs/1.12.0/specification/), [API de Schema Registry](https://docs.confluent.io/platform/current/schema-registry/develop/api.html), [evolución y compatibilidad](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html), [Avro SerDe de Confluent](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html) y [compatibilidad Kafka/Confluent 7.9](https://docs.confluent.io/platform/7.9/installation/versions-interoperability.html).
-
-**Transferencia al proyecto integrador:** versiona el .avsc con el código, acuerda subject y compatibilidad con los consumidores, ejecuta lectura cruzada y registra la respuesta de Registry antes de desplegar un productor nuevo.
-
-
-**Aplicación y decisión:** En el proyecto integrador, versiona el esquema del evento antes de desplegar un productor nuevo y prueba lectura de datos antiguos. Separa el test de resolución Avro del Registry HTTP real; aprobar el primero no acredita compatibilidad configurada por subject.
-
-### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
-
-Este tema continúa la comparación Kafka/RabbitMQ y el trabajo con binders de T5–T6. Aquí usamos Spring AMQP directamente para ver el contrato de una cola y el ciclo de una entrega.
-
-#### Subtema 9.1 · Declarar exchange, cola, binding y DLQ · 10 min
-
-**1. Contexto**
-
-Una guía de envío entra al exchange `rutaflow.dispatch`. La routing key elige la cola de trabajo; un rechazo permanente sale por la DLX hacia la cola de mensajes rechazados.
-
-**2. Hazlo tú**
-
-Desde `examples/spring-amqp-rutaflow`, abre `src/main/java/academia/rutaflow/amqp/RabbitTopology.java`. Lee `dispatchExchange`, `dispatchQueue`, `dispatchBinding` y sus equivalentes de DLX. La cola principal es durable y declara la dead-letter exchange y su routing key.
-
-Ejecuta las pruebas de topología sin iniciar RabbitMQ:
-
-```bash
-./mvnw -Dtest=RabbitTopologyTest test
-```
-
-**Resultado esperado:** Pasan dos pruebas. Verás el nombre de cada cola, la clave del binding y los argumentos `x-dead-letter-exchange` / `x-dead-letter-routing-key`.
-
-**Fallo deliberado:** Cambia `ROUTING_KEY` a `dispatch.wrong` sin cambiar el test. Debe fallar la aserción del binding. **Diagnóstico:** el binding usa una clave que no coincide con el contrato esperado. Restaura `dispatch.requested`.
-
-**3. Entiende**
-
-Un exchange no almacena mensajes. El binding conecta el exchange con una cola según una clave. Una cola durable conserva su definición al reiniciar el broker; para que el mensaje sobreviva también debe publicarse como persistente. Esta práctica no configura persistencia explícita del mensaje.
-
-**4. Cierra**
-
-Dibuja el recorrido del envío válido y del rechazo permanente, anotando exchange, clave, cola y DLX.
-
-#### Subtema 9.2 · Publicar y distinguir confirm de return · 10 min
-
-**1. Contexto**
-
-El productor necesita saber si el broker aceptó la publicación y si el mensaje encontró una cola. Son preguntas separadas: publisher confirm no significa que el consumidor haya terminado, y un mensaje sin binding puede ser devuelto.
-
-**2. Hazlo tú**
-
-Desde `examples/spring-amqp-rutaflow`, levanta RabbitMQ y ejecuta la aplicación:
-
-```bash
-docker compose up -d --wait
-./mvnw spring-boot:run -Dspring-boot.run.arguments="--tracking-code=RF-1200"
-```
-
-Abre `src/main/resources/application.yml` y `src/main/java/academia/rutaflow/amqp/DispatchPublisher.java`. La configuración activa confirms correlated y returns; el template usa `mandatory`. El publicador espera el confirm correlacionado y revisa el mensaje retornado.
-
-**Resultado esperado:** La consola muestra `publicado y enrutado=RF-1200`; la cola `dispatch.requested` aparece en RabbitMQ Management (`http://localhost:15672`, usuario/clave `guest`).
-
-**Fallo deliberado:** En una copia cambia el routing key usado por `DispatchPublisher` a `dispatch.missing`. El broker puede confirmar la publicación al exchange y a la vez devolverla porque no encontró una cola. **Diagnóstico:** el confirm fue positivo, pero `CorrelationData` contiene el mensaje retornado; la aplicación debe reportar que no hubo ruta. Restaura `dispatch.requested`.
-
-**3. Entiende**
-
-El confirm cubre la publicación entre el productor y el broker. `mandatory` más publisher returns permite detectar que ningún binding aceptó el mensaje. Ninguno confirma el resultado de negocio del consumidor. Si el productor reintenta tras perder una confirmación, el mismo envío puede aparecer más de una vez; la idempotencia de negocio se resuelve aparte.
-
-**4. Cierra**
-
-Registra qué observaste en un envío normal y en el routing key incorrecto. Explica por qué un confirm positivo no prueba que se creó la guía.
-
-#### Subtema 9.3 · Confirmar después del trabajo y mandar fallos permanentes a DLQ · 10 min
-
-**1. Contexto**
-
-Con ack manual, el consumidor decide cuándo RabbitMQ puede retirar la entrega. Si confirma antes de completar el trabajo, una caída puede perderlo; si no confirma y el canal se cierra, el broker puede entregarlo otra vez.
-
-**2. Hazlo tú**
-
-Abre `src/main/java/academia/rutaflow/amqp/DispatchListener.java` y `DispatchService.java`. El listener valida y procesa antes de `basicAck`. Para un código inválido usa `basicNack(tag, false, false)`; la cola tiene DLX configurada.
-
-Ejecuta las pruebas unitarias:
-
-```bash
-./mvnw -Dtest=DispatchListenerTest test
-```
-
-**Resultado esperado:** Pasan dos pruebas: un código válido llama al servicio y confirma el tag; una entrada inválida se rechaza sin requeue.
-
-Con RabbitMQ activo, ejecuta la aplicación con un código inválido:
-
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.arguments="--tracking-code=sin-formato"
-```
-
-En Management, observa que la publicación fue enrutada a la cola de trabajo y que el rechazo aparece en `dispatch.rejected`.
-
-**Fallo deliberado:** Cambia el tercer argumento de `basicNack` a `true`. La prueba de rechazo debe fallar: el mensaje se reencola en vez de seguir la ruta de DLX, lo que puede repetir indefinidamente un error permanente. **Diagnóstico:** compara el tercer argumento con la expectativa `requeue=false` de `DispatchListenerTest`. Restáuralo a `false`.
-
-**3. Entiende**
-
-`deliveryTag` identifica una entrega en su canal; el ack debe usar ese mismo canal. `requeue=false` envía el mensaje a la DLX si la cola tiene esa configuración; sin DLX, RabbitMQ lo descarta. Una caída después de guardar y antes del ack puede causar una redelivery, así que una aplicación real necesita idempotencia persistente. Este laboratorio solo imprime la guía: no prueba una escritura duradera ni deduplicación.
-
-**4. Cierra**
-
-Anota el orden de validar, guardar y confirmar. Explica qué debe persistir antes del ack y qué evidencia falta para afirmar que el trabajo es idempotente.
-
-#### Subtema 9.4 · Limitar entregas en vuelo con prefetch · 10 min
-
-**1. Contexto**
-
-Un consumidor puede recibir más mensajes de los que procesa a la vez. `prefetch` limita las entregas sin ack en vuelo por consumidor/canal según la configuración del broker, y evita acumular una cantidad ilimitada en memoria.
-
-**2. Hazlo tú**
-
-Desde `examples/spring-amqp-rutaflow`, revisa `spring.rabbitmq.listener.simple.prefetch: 5` en `src/main/resources/application.yml`. Inicia el broker y la aplicación. En RabbitMQ Management abre la cola `dispatch.requested` y su consumidor; identifica el prefetch anunciado.
-
-Para observar entregas pendientes, coloca un breakpoint en `DispatchListener.java` justo antes de `channel.basicAck`, publica varios códigos válidos y observa `Unacknowledged` en la cola. Repite después de cambiar `prefetch` a `1`; no conserves el breakpoint ni el cambio al cerrar.
-
-**Resultado esperado:** Con ack pausado, el límite observado sigue el valor configurado; al confirmar entregas se liberan espacios para que lleguen más. Sin broker y pausa del consumidor, el test unitario no demuestra este comportamiento de red.
-
-**Fallo deliberado:** Configura `prefetch: 0` y observa que significa sin límite, no “cero mensajes”. **Diagnóstico:** la cola deja de aplicar el límite del número de entregas sin ack; vuelve a `5`.
-
-**3. Entiende**
-
-Un valor bajo limita trabajo pendiente y memoria, pero puede reducir el rendimiento cuando hay latencia. Uno alto puede mejorar el uso de consumidores rápidos, pero reserva más entregas para cada consumidor y puede empeorar el reparto. Cinco es un valor didáctico, no una recomendación universal; mídelo con la carga y el tiempo de procesamiento reales.
-
-**4. Cierra**
-
-Entrega una captura o registro de prefetch y mensajes sin ack para los valores 1 y 5. Añade cuánto tardó la prueba y qué dato medirías antes de elegir uno en producción.
-
-**Prerrequisitos del tema:** Spring Boot y AMQP básico; Docker disponible para los ejercicios con broker. **Verificación local:** `./mvnw test` cubre la topología declarada y la decisión ack/nack mediante pruebas unitarias; no sustituye la práctica RabbitMQ en vivo.
-
-**Fuentes oficiales:** [Spring Boot AMQP](https://docs.spring.io/spring-boot/reference/messaging/amqp.html), [Spring AMQP: conexión, confirms y returns](https://docs.spring.io/spring-amqp/reference/amqp/connections.html), [RabbitMQ: confirms y acknowledgements](https://www.rabbitmq.com/docs/confirms).
-
-**Transferencia a RutaFlow:** antes de confirmar una entrega, persiste el resultado con una clave idempotente. En una práctica posterior integra RabbitMQ con una base de datos y prueba caída entre commit y ack.
-
-**¿Por qué es importante?** El destino, el límite de entregas pendientes y el momento del ack deciden si un trabajo se pierde, se repite o queda atascado.
-
-**Aplicación y decisión:** En el proyecto integrador, confirma después de persistir el efecto y guarda una clave idempotente para la redelivery. El laboratorio AMQP no prueba deduplicación durable; una confirmación de publicación no acredita procesamiento del consumidor.
-
-### Tema 10: JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones · Avanzado · 45 min
-
-**Prerrequisito:** temas «RabbitMQ con Spring AMQP» y «Kafka frente a RabbitMQ» de este módulo.
-
-**Al finalizar podrás:** enviar y recibir mensajes por una cola JMS con `JmsTemplate` y `@JmsListener` sobre ActiveMQ Artemis, y comprobar que un mensaje que falla vuelve a la cola gracias a la sesión transaccional.
-
-**¿Por qué es importante?** JMS es el estándar de mensajería de Java empresarial. Muchos sistemas bancarios y logísticos existentes lo usan. Integrarse con ellos exige conocer su modelo, que no es igual al de Kafka ni al de AMQP.
+### Tema 8: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
 
 #### Paso 1 · Objetivo y preparación
-
-Usa Spring Boot 4.1.2 y JDK 25 en `academia-spring` (paquete `com.example.demo`), agrega `spring-boot-starter-artemis` y levanta el broker con Docker: `docker run -d --name artemis -p 61616:61616 -p 8161:8161 -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis`.
+Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un `ChatClient` sin copiar su código. **Prerrequisitos:** el Tema 6 de este módulo (ChatClient y herramientas con `@Tool`), REST con Spring MVC y JDK 25 o superior.
 
 #### Paso 2 · Contexto y caso real
-
-El sistema de facturación de un cliente de RutaFlow solo acepta pedidos por una cola JMS. Cada envío entregado debe generar exactamente un mensaje de facturación, incluso si el consumidor falla a la mitad.
+En el Tema 6 la herramienta vivía dentro de la misma aplicación que el chat. Ahora el equipo de soporte, un asistente de escritorio y un agente de IA quieren consultar el estado de un envío. Si cada uno copia el código de la herramienta, tendrás tres versiones distintas de la misma regla. **MCP** (Model Context Protocol) es un protocolo abierto para que un servidor publique herramientas, recursos y prompts, y para que cualquier cliente compatible los descubra y los llame. **¿Por qué es importante?** Una sola herramienta, una sola regla de autorización y un solo lugar para corregirla.
 
 #### Paso 3 · Teoría, modelo mental y analogía
+**Conceptos clave:** servidor MCP, cliente MCP, herramienta (`tool`), descubrimiento (`tools/list`), invocación (`tools/call`), transporte Streamable HTTP.
 
-**Conceptos clave:** JMS, cola (punto a punto), tópico (publicar/suscribir), `JmsTemplate`, `@JmsListener`, sesión transaccional, reentrega, cola de mensajes muertos (DLQ).
+Piensa en tres piezas. El **servidor MCP** es tu aplicación Spring Boot: publica métodos anotados con `@McpTool`. El **cliente MCP** es otra aplicación (o un IDE, o un agente) que se conecta al servidor. Primero pregunta qué herramientas hay (`tools/list`) y recibe nombre, descripción y el esquema JSON de los parámetros. Después llama a una (`tools/call`) con argumentos. El modelo de IA nunca entra a tu base de datos: solo pide que se ejecute una herramienta, y es tu servidor el que decide si la ejecuta.
 
-JMS define dos modelos:
+**Analogía:** un servidor MCP es como el menú de un restaurante con los ingredientes de cada plato. El cliente lee el menú (descubrimiento) y pide un plato con sus opciones (invocación). La cocina sigue decidiendo qué sirve y a quién. La analogía se rompe en un punto: el menú de MCP se lee en tiempo de ejecución, así que una herramienta nueva aparece sin cambiar el código del cliente.
 
-- **Cola:** cada mensaje lo procesa **un solo** consumidor. Para trabajo que se reparte (facturar un envío).
-- **Tópico:** cada suscriptor recibe una copia. Para avisar a varios sistemas.
+**Límite de uso:** por defecto los transportes HTTP de MCP **no tienen autenticación**: cualquiera que alcance el endpoint puede listar e invocar todas las herramientas. No lo expongas fuera de `localhost` sin Spring Security delante.
 
-Spring Boot configura la conexión a **Artemis** con `spring.artemis.*`. `JmsTemplate.convertAndSend` envía y `@JmsListener` recibe.
-
-Con `spring.jms.listener.session.transacted=true`, si el método del listener lanza una excepción, la sesión **revierte** y el broker **reentrega** el mensaje. Después de varios intentos, Artemis lo mueve a la cola `DLQ` para que no bloquee a los demás.
-
-**Analogía:** una cola JMS es la ventanilla de un banco con un turnero: cada turno lo atiende un solo cajero, y si el cajero se levanta sin terminar, el turno vuelve a la fila. La analogía falla en que, tras varios intentos fallidos, el turno se aparta a otra fila (DLQ) para revisión.
-
-**Límite de uso:** JMS no es un log de eventos: un mensaje consumido desaparece y no se puede releer como en Kafka. La reentrega implica que el consumidor puede ver un mensaje dos veces: hazlo idempotente.
+**Diagrama:**
 
 ```mermaid
-flowchart LR
-    P["EntregaService<br/>JmsTemplate"] -->|"facturacion.pedidos"| Q[("Cola Artemis")]
-    Q --> L["@JmsListener<br/>sesión transaccional"]
-    L -->|"excepción: rollback"| Q
-    Q -->|"tras N intentos"| D[("DLQ")]
+sequenceDiagram
+    participant C as Cliente MCP (ChatClient)
+    participant S as Servidor MCP (Spring Boot)
+    participant D as Servicio de envíos
+    C->>S: POST /mcp tools/list
+    S-->>C: estado_envio(codigo) + esquema JSON
+    C->>S: POST /mcp tools/call estado_envio {codigo: ENV-42}
+    S->>D: autoriza y consulta ENV-42
+    D-->>S: CREADO
+    S-->>C: "Estado: CREADO"
 ```
 
 #### Paso 4 · Demostración guiada desde cero
+Crea dos proyectos con Spring Initializr (Spring Boot 4, Java 25): `rutaflow-mcp-server` y `rutaflow-mcp-client`.
 
-Archivo `academia-spring/src/main/resources/application.properties`:
+Archivo `rutaflow-mcp-server/pom.xml` (dependencia que agrega el servidor; la versión la fija el BOM de Spring AI 2.0):
 
-```properties
-spring.artemis.mode=native
-spring.artemis.broker-url=tcp://localhost:61616
-spring.artemis.user=admin
-spring.artemis.password=admin
-spring.jms.listener.session.transacted=true
+```xml
+<dependency>
+  <groupId>org.springframework.ai</groupId>
+  <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+</dependency>
 ```
 
-Archivo `academia-spring/src/main/java/com/example/demo/facturacion/Facturacion.java` (dentro de `com.example.demo`, para que el escaneo registre el listener):
+Archivo `rutaflow-mcp-server/src/main/resources/application.yml`:
+
+```yaml
+spring:
+  ai:
+    mcp:
+      server:
+        name: rutaflow-envios
+        version: 1.0.0
+        protocol: STREAMABLE   # SSE quedó obsoleto en Spring AI 2.0
+        type: SYNC
+        annotation-scanner:
+          enabled: true
+```
+
+Archivo `rutaflow-mcp-server/src/main/java/academia/EnvioTools.java`:
 
 ```java
-package com.example.demo.facturacion;
+package academia;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
+import java.util.Map;
+import org.springframework.ai.mcp.annotation.McpTool;
+import org.springframework.ai.mcp.annotation.McpToolParam;
 import org.springframework.stereotype.Component;
 
 @Component
-class Facturacion implements CommandLineRunner {
-    private final JmsTemplate jms;
-    private final AtomicInteger intentos = new AtomicInteger();
+class EnvioTools {
 
-    Facturacion(JmsTemplate jms) { this.jms = jms; }
+    // Fuente de datos de ejemplo; en RutaFlow sería el repositorio de envíos.
+    private final Map<String, String> estados = Map.of("ENV-42", "CREADO", "ENV-43", "ENTREGADO");
 
-    @Override
-    public void run(String... args) {
-        jms.convertAndSend("facturacion.pedidos", "ENV-42;5000");
-        System.out.println("enviado ENV-42");
-    }
-
-    @JmsListener(destination = "facturacion.pedidos")
-    void facturar(String pedido) {
-        int intento = intentos.incrementAndGet();
-        System.out.println("intento " + intento + " para " + pedido);
-        if (intento == 1) throw new IllegalStateException("el sistema de facturación no respondió");
-        System.out.println("facturado " + pedido);
+    @McpTool(name = "estado_envio", description = "Devuelve el estado actual de un envío por su código")
+    String estadoEnvio(@McpToolParam(description = "Código del envío, por ejemplo ENV-42", required = true) String codigo) {
+        // La regla vive en el servidor: un código desconocido es un error explícito, no un texto inventado.
+        String estado = estados.get(codigo);
+        if (estado == null) {
+            throw new IllegalArgumentException("Envío no encontrado: " + codigo);
+        }
+        return "Estado: " + estado;
     }
 }
 ```
 
-Ejecútalo:
+Arranca el servidor y prueba el descubrimiento con el inspector oficial de MCP, desde otra terminal:
 
 ```bash
-docker run -d --name artemis -p 61616:61616 -p 8161:8161 \
-  -e ARTEMIS_USER=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis
-./mvnw spring-boot:run
+cd rutaflow-mcp-server && ./mvnw spring-boot:run
+npx @modelcontextprotocol/inspector
 ```
 
-**Explicación por bloques:** Las propiedades apuntan al broker en modo `native` y activan sesiones transaccionales para los listeners. Al arrancar, `run` envía un pedido a la cola. El listener simula una caída en el primer intento lanzando una excepción: la sesión revierte y Artemis vuelve a entregar el mismo mensaje. En el segundo intento, el pedido se factura. Si fallara siempre, después de los intentos configurados en el broker el mensaje terminaría en `DLQ`.
+En el inspector elige transporte **Streamable HTTP**, URL `http://localhost:8080/mcp`, pulsa **List Tools** y luego llama `estado_envio` con `codigo = ENV-42`.
 
-**Resultado esperado:**
+**Resultado esperado:** la lista muestra `estado_envio` con su descripción y un esquema que exige `codigo` de tipo `string`; la llamada responde `Estado: CREADO`.
 
-```text
-enviado ENV-42
-intento 1 para ENV-42;5000
-... Execution of JMS message listener failed ... el sistema de facturación no respondió
-intento 2 para ENV-42;5000
-facturado ENV-42;5000
+Ahora el cliente. Archivo `rutaflow-mcp-client/src/main/resources/application.yml`:
+
+```yaml
+server:
+  port: 8081
+spring:
+  ai:
+    mcp:
+      client:
+        type: SYNC
+        streamable-http:
+          connections:
+            rutaflow:
+              url: http://localhost:8080   # el endpoint /mcp es el valor por defecto
 ```
 
-**Fallo deliberado:** cambia `spring.jms.listener.session.transacted` a `false`. **Error esperado:** solo aparece «intento 1» y el pedido nunca se factura. **Diagnóstico:** sin transacción, el mensaje se confirmó al entregarse y la excepción no lo devuelve a la cola. Usa sesiones transaccionales y un consumidor idempotente.
+Archivo `rutaflow-mcp-client/src/main/java/academia/AsistenteController.java` (el cliente necesita además el starter `spring-ai-starter-mcp-client` y el starter del modelo que uses, que crea el `ChatClient.Builder`):
+
+```java
+package academia;
+
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+class AsistenteController {
+
+    private final ChatClient chatClient;
+
+    // Las herramientas llegan del servidor MCP: este proyecto no contiene el código de EnvioTools.
+    AsistenteController(ChatClient.Builder builder, SyncMcpToolCallbackProvider herramientasMcp) {
+        this.chatClient = builder.defaultToolCallbacks(herramientasMcp).build();
+    }
+
+    @GetMapping("/preguntar")
+    String preguntar(@RequestParam String q) {
+        return chatClient.prompt(q).call().content();
+    }
+}
+```
+
+```bash
+curl "http://localhost:8081/preguntar?q=¿En%20qué%20estado%20está%20ENV-42?"
+```
+
+**Explicación por bloques:** el starter `spring-ai-starter-mcp-server-webmvc` publica el endpoint `POST /mcp`; `annotation-scanner.enabled` hace que Spring encuentre `@McpTool` y genere el esquema JSON a partir de la firma del método y de `@McpToolParam`; en el cliente, la conexión `rutaflow` descubre las herramientas al arrancar y `SyncMcpToolCallbackProvider` las entrega al `ChatClient` como si fueran locales.
+
+**Fallo deliberado:** apaga el servidor y vuelve a arrancar el cliente. **Diagnóstico:** el cliente falla al iniciar porque no puede inicializar la conexión MCP `rutaflow`; el síntoma no es una mala respuesta del modelo sino un error de conexión. Levanta el servidor y repite. Segundo fallo: llama `estado_envio` con `ENV-99` desde el inspector: recibes el error `Envío no encontrado: ENV-99`, que demuestra que la regla está en el servidor.
 
 #### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el ejemplo y busca la cola `facturacion.pedidos` en la consola web de Artemis (http://localhost:8161).
-2. **Variación:** haz que el listener falle siempre y encuentra el mensaje en la cola `DLQ`.
-3. **Diagnóstico:** reproduce el fallo deliberado sin transacciones.
-4. **Integración:** publica en un tópico con `jms.setPubSubDomain(true)` y crea dos listeners que reciban el mismo mensaje.
-5. **Diseño:** escribe cómo harías idempotente la facturación para que una reentrega no cobre dos veces.
-
-**Pista:** si un mensaje «desaparece» después de un error, revisa si la sesión del listener es transaccional.
+Agrega una segunda herramienta `envios_por_estado(estado)` que devuelva los códigos con ese estado. **Pista:** no toques el cliente; reinícialo y comprueba en el inspector que la herramienta nueva aparece sola en `tools/list`.
 
 #### Paso 6 · Práctica independiente
-
-Escribe una prueba con Testcontainers (`ArtemisContainer`) que envíe un pedido, haga fallar el primer intento y compruebe que el segundo lo factura.
+Protege el endpoint `/mcp` del servidor con Spring Security (por ejemplo, un token en una cabecera) y demuestra con el inspector que sin token `tools/list` responde 401 y con token responde la lista.
 
 #### Paso 7 · Cierre
+Entregá la lista de herramientas vista en el inspector, la respuesta `Estado: CREADO`, el error del cliente con el servidor apagado y el 401 del Paso 6. Explicá con tus palabras por qué MCP evita copiar herramientas entre aplicaciones. **Errores comunes:** dejar `/mcp` público, devolver texto inventado cuando el dato no existe en vez de un error, y confiar en que el modelo decida permisos. **Cuándo no usarlo:** si la herramienta solo la usa una aplicación, el `@Tool` local del Tema 6 es más simple. **Siguiente paso:** el proyecto integrador expone sus consultas de envíos por MCP.
 
-- [ ] Explicas la diferencia entre cola y tópico.
-- [ ] El registro muestra el primer intento fallido y el segundo exitoso.
-- [ ] Reprodujiste la pérdida del mensaje sin transacción.
-- [ ] Sabes dónde termina un mensaje que siempre falla.
+**Transferencia al proyecto integrador «RutaFlow»:** publica `estado_envio` desde el servicio de envíos como servidor MCP protegido y consúmelo desde el asistente de soporte.
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confirmar mensajes antes de procesarlos, suponer que cada mensaje llega una sola vez y usar JMS como si fuera un log de eventos. **Siguiente paso:** el tema «Spring Cloud Stream y binders» abstrae el broker para cambiar entre RabbitMQ y Kafka sin tocar el código.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en RutaFlow, envía cada entrega confirmada a la cola JMS del cliente con sesiones transaccionales y una tabla de idempotencia por código de envío.
-
-**Fuente oficial:** [Spring Boot — JMS](https://docs.spring.io/spring-boot/reference/messaging/jms.html) y [Apache ActiveMQ Artemis — Documentation](https://activemq.apache.org/components/artemis/documentation/).
-
+**Fuente oficial:** [Spring AI — MCP Server Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-server-boot-starter-docs.html) y [MCP Client Boot Starter](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html).

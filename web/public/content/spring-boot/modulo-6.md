@@ -3,15 +3,15 @@
 Este módulo compara pruebas de MVC, persistencia e integración. Cada tema debe indicar qué capas ejecuta y qué deja fuera; la evidencia funcional está en las respuestas y fallos observados.
 
 
-**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
 ### Tema 1: Probar un controller con `@WebMvcTest`
 
-Reutiliza la API de tareas construida en M2 y la seguridad de M4. **¿Por qué es importante?** Un fallo del controller debe poder detectarse sin levantar PostgreSQL ni recorrer todas las capas. Este tema prueba la web sin llamar al repositorio y no crea otra aplicación ni otro servicio.
+Reutiliza la API de tareas construida en M2 y la seguridad de M5. **¿Por qué es importante?** Un fallo del controller debe poder detectarse sin levantar PostgreSQL ni recorrer todas las capas. Este tema prueba la web sin llamar al repositorio y no crea otra aplicación ni otro servicio.
 
-#### Subtema 6.1 · Recortar la prueba a la web · 10 min
+#### Subtema 1.1 · Recortar la prueba a la web · 10 min
 
 **Contexto:** Un test de controller debe poder comprobar ruta, JSON y respuesta sin conectarse a PostgreSQL. `@WebMvcTest(TareaController.class)` prepara MVC y ese controller. No registra automáticamente `@Service`; declara el colaborador simulado con `@MockitoBean`.
 
@@ -39,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class TareaControllerSliceTest {
     @Autowired MockMvc mockMvc;
     @MockitoBean ServicioTareas servicio;
-    @MockitoBean JwtService jwtService;
 
     @Test
     void creaTareaYDevuelve201() throws Exception {
@@ -72,7 +71,7 @@ Ejecuta desde la raíz del proyecto:
 
 **Cierra:** Registra status y campos observados y escribe qué dependencia quedó simulada.
 
-#### Subtema 6.2 · Ver la validación y el error JSON · 10 min
+#### Subtema 1.2 · Ver la validación y el error JSON · 10 min
 
 **Contexto:** Una respuesta inválida también forma parte del contrato HTTP. El proyecto ya tiene `@Valid` en `TareaController` y `GlobalExceptionHandler` convierte el error de `@NotBlank` en el `ApiError` acordado (`codigo`, `mensaje`, `campos`).
 
@@ -103,7 +102,7 @@ Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaC
 
 **Cierra:** Conserva el caso válido y el 400 con mensaje de campo, ambos correctos.
 
-#### Subtema 6.3 · Diagnosticar una dependencia que falta · 10 min
+#### Subtema 1.3 · Diagnosticar una dependencia que falta · 10 min
 
 **Contexto:** Un slice no significa “Spring simula todas las dependencias”. El controller todavía necesita un bean que satisfaga `ServicioTareas`.
 
@@ -128,7 +127,7 @@ ServicioTareas servicio;
 
 #### Entiende y cierra
 
-`MockMvc` envía una petición de prueba a la infraestructura MVC sin abrir un puerto. `@WebMvcTest` incorpora controller, conversión JSON, validación y advice relevante; el mock decide qué devuelve el colaborador. En Boot 4 los imports son `org.springframework.boot.webmvc.test.autoconfigure.*`, y `@MockitoBean` viene de Spring Test. `@AutoConfigureMockMvc(addFilters = false)` se usa aquí porque aislamos el contrato del controller; por ello estos métodos **no** prueban JWT ni autorización. Esa cobertura pertenece a M4 y debe mantenerse aparte. El `JwtService` simulado satisface la dependencia del filtro detectado por el slice, aunque los filtros no se añadan a MockMvc.
+`MockMvc` envía una petición de prueba a la infraestructura MVC sin abrir un puerto. `@WebMvcTest` incorpora controller, conversión JSON, validación y advice relevante; el mock decide qué devuelve el colaborador. En Boot 4 los imports son `org.springframework.boot.webmvc.test.autoconfigure.*`, y `@MockitoBean` viene de Spring Test. `@AutoConfigureMockMvc(addFilters = false)` se usa aquí porque aislamos el contrato del controller; por ello estos métodos **no** prueban JWT ni autorización. Esa cobertura pertenece a M5 y debe mantenerse aparte.
 
 **Evidencia para avanzar:** dos métodos pasan, el fallo por retirar el mock se identifica y revierte, y puedes explicar qué cubre esta prueba y qué queda fuera. No uses este slice para afirmar que repositorio, base de datos, seguridad o todas las capas funcionan juntas; para eso se necesitan pruebas de integración apropiadas. Documentación primaria: [Spring Boot 4.1.2 — `@WebMvcTest`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/WebMvcTest.html) y [Spring Boot 4.1.2 — `@AutoConfigureMockMvc`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/webmvc/test/autoconfigure/AutoConfigureMockMvc.html).
 
@@ -139,7 +138,7 @@ ServicioTareas servicio;
 
 **¿Por qué es importante?** El repositorio puede parecer correcto en H2 y fallar con el motor usado en producción. Este slice carga entidades y repositorios; Testcontainers añade una instancia desechable del PostgreSQL elegido.
 
-#### Subtema 6.4 · Conectar el slice a un PostgreSQL desechable · 10 min
+#### Subtema 2.1 · Conectar el slice a un PostgreSQL desechable · 10 min
 
 **Contexto:** `@DataJpaTest` configura JPA y repositorios, y suele elegir una base embebida si está disponible. Para probar PostgreSQL de verdad, el test debe enlazar URL, usuario y contraseña del contenedor antes de que Spring cree el `DataSource`.
 
@@ -223,7 +222,7 @@ Ejecuta el test desde la raíz del proyecto:
 
 **Cierra:** Conserva compilación correcta y la configuración de URL dinámica antes de iniciar el contenedor.
 
-#### Subtema 6.5 · Comprobar motor y operación del repositorio · 10 min
+#### Subtema 2.2 · Comprobar motor y operación del repositorio · 10 min
 
 **Contexto:** Que el test se llame “PostgreSQL” no prueba qué base abrió Spring. Comprueba el producto por JDBC y luego guarda y consulta una tarea con el repositorio real.
 
@@ -266,7 +265,7 @@ Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaR
 
 **Cierra:** Guarda motor informado, entidad persistida y consulta que la recupera.
 
-#### Subtema 6.6 · Detectar que el test cayó en H2 · 10 min
+#### Subtema 2.3 · Detectar que el test cayó en H2 · 10 min
 
 **Contexto:** Si no publicas las propiedades del contenedor, `@DataJpaTest` puede usar H2 y darte una falsa sensación de compatibilidad.
 
@@ -298,9 +297,9 @@ Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaR
 
 **¿Por qué es importante?** Un controller y un repositorio pueden pasar sus pruebas por separado y aun así fallar al conectarse. Una prueba de contexto completo comprueba un flujo crítico atravesando la aplicación configurada.
 
-#### Subtema 6.7 · Crear y consultar con las capas reales · 10 min
+#### Subtema 3.1 · Crear y consultar con las capas reales · 10 min
 
-**Contexto:** M6 T1 simuló `ServicioTareas`; M6 T2 aisló el repositorio con PostgreSQL. Ahora conecta controller, filtro JWT, servicio y repositorio. Para este ejemplo, las pruebas usan H2 configurado en `src/test/resources/application.properties`.
+**Contexto:** M6 T1 simuló `ServicioTareas`; M6 T2 aisló el repositorio con PostgreSQL. Ahora conecta controller, resource server JWT, servicio y repositorio. Para este ejemplo, las pruebas usan H2 configurado en `src/test/resources/application.properties`.
 
 **Hazlo tú:** Crea `src/test/java/com/example/demo/TareaFlowEndToEndTest.java`:
 
@@ -364,7 +363,7 @@ Ejecuta desde la raíz del proyecto:
 
 **Cierra:** Conserva ID creado y JSON del GET que recupera la misma tarea.
 
-#### Subtema 6.8 · Separar error de autenticación y flujo válido · 10 min
+#### Subtema 3.2 · Separar error de autenticación y flujo válido · 10 min
 
 **Contexto:** Un caso autenticado que funciona no prueba el rechazo de peticiones anónimas.
 
@@ -391,7 +390,7 @@ Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaF
 
 **Cierra:** Guarda por separado el flujo autenticado y el rechazo anónimo.
 
-#### Subtema 6.9 · Ver qué integración detecta el test · 10 min
+#### Subtema 3.3 · Ver qué integración detecta el test · 10 min
 
 **Contexto:** Un `201 Created` puede ocultar que el servicio nunca guardó los datos.
 
@@ -418,7 +417,269 @@ Ejecuta solo `./mvnw -q -Dtest=TareaFlowEndToEndTest#creaConJwtYLeeLaTareaPersis
 
 `@SpringBootTest` crea el contexto de la aplicación desde `DemoApplication`. Con `@AutoConfigureMockMvc`, usa el contexto completo y MockMvc, pero no abre un puerto. El test confirma que varias piezas del backend colaboran en una operación. Los unit tests aíslan lógica pequeña; los slices prueban MVC o persistencia; esta prueba verifica el cableado de un flujo. Conserva pocas pruebas de este tipo y elige rutas críticas: tienen más componentes que arrancar y sus fallos requieren investigar varias capas. Para probar un servidor real, certificados o puertos, usa `@SpringBootTest(webEnvironment = RANDOM_PORT)` con un cliente HTTP.
 
-**Evidencia para avanzar:** los dos métodos pasan, el token real atraviesa el filtro, el POST se lee después de persistirse y el fallo por saltar el repositorio se diagnostica y revierte. La base de este ejemplo es H2; la prueba PostgreSQL de M6 T2 cubre el motor real. Documentación primaria: [Spring Boot 4.1.2 — `@SpringBootTest` y pruebas MVC](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html) y [Spring Framework — MockMvc](https://docs.spring.io/spring/reference/testing/mockmvc.html).
+**Evidencia para avanzar:** los dos métodos pasan, el token real atraviesa el resource server, el POST se lee después de persistirse y el fallo por saltar el repositorio se diagnostica y revierte. La base de este ejemplo es H2; la prueba PostgreSQL de M6 T2 cubre el motor real. Documentación primaria: [Spring Boot 4.1.2 — `@SpringBootTest` y pruebas MVC](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html) y [Spring Framework — MockMvc](https://docs.spring.io/spring/reference/testing/mockmvc.html).
 
 **Aplicación y decisión:** Práctica del proyecto integrador: demuestra que una petición rechazada no crea una fila. La diferencia entre flujo MockMvc y HTTP de red importa: pasar el primero no verifica proxy, TLS ni configuración del puerto publicado.
 
+### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Intermedio · 35 min
+
+Al terminar, podrás escribir el flujo del Tema 3 con `RestTestClient`, ejecutarlo primero contra MockMvc y luego contra un servidor real en un puerto aleatorio, y reemplazar un `TestRestTemplate` heredado.
+
+**¿Por qué es importante?** En Spring Boot 4, `@SpringBootTest` ya no crea automáticamente un `TestRestTemplate`, y la guía de migración recomienda `RestTestClient`. Es una sola API fluida (petición → `exchange()` → expectativas) que funciona igual sobre MockMvc o sobre HTTP real: puedes empezar rápido en memoria y cambiar a red cuando necesites probar el puerto, los filtros del contenedor o la serialización completa.
+
+**Prerrequisitos:** Tema 3 de este módulo (`TareaFlowEndToEndTest`) y el `JwtService` del Módulo 5. Usa JDK 25 y Spring Boot 4.1.2.
+
+#### Subtema X.1 · Escribe el flujo con `RestTestClient` sobre MockMvc · 10 min
+
+**Contexto:** con MockMvc encadenas `perform(...).andExpect(...)` y extraes el JSON con `JsonPath` a mano. `RestTestClient` mantiene la misma infraestructura en memoria, pero con una API de cliente HTTP.
+
+**Hazlo tú:** añade a `pom.xml` el módulo de pruebas que contiene la autoconfiguración (sin versión; la fija el BOM de Boot):
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-resttestclient</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Crea `src/test/java/com/example/demo/TareaRestTestClientTest.java`:
+
+```java
+package com.example.demo;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.client.RestTestClient;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@AutoConfigureRestTestClient
+class TareaRestTestClientTest {
+    @Autowired RestTestClient client;
+    @Autowired JwtService jwtService;
+
+    @Test
+    void creaYLeeLaTareaConUnCliente() {
+        String bearer = "Bearer " + jwtService.generar("curso@rutaflow.dev", "DRIVER");
+
+        TareaDTO creada = client.post().uri("/api/tareas")
+            .header("Authorization", bearer)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(new CrearTareaRequest("Caja térmica", 2))
+            .exchange()
+            .expectStatus().isCreated()
+            .expectBody(TareaDTO.class)
+            .returnResult()
+            .getResponseBody();
+        assertNotNull(creada);
+
+        client.get().uri("/api/tareas/{id}", creada.id())
+            .header("Authorization", bearer)
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.titulo").isEqualTo("Caja térmica");
+    }
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=TareaRestTestClientTest test`.
+
+**Resultado esperado:** verde. El cuerpo se convierte de `TareaDTO` a JSON con el `JsonMapper` de Boot y de vuelta, sin `JsonPath.read` manual.
+
+**Fallo deliberado:** quita `@AutoConfigureRestTestClient`. **Error esperado:** el contexto falla con `No qualifying bean of type 'org.springframework.test.web.servlet.client.RestTestClient'`. **Diagnóstico:** el cliente no se crea por defecto; la anotación lo registra. Restáurala.
+
+**Entiende:** con `@AutoConfigureMockMvc` presente, `RestTestClient` usa MockMvc como "servidor": no abre puerto y comparte el contexto de la prueba. `expectBody(TareaDTO.class)` deserializa; `expectBody()` sin tipo permite `jsonPath(...)`.
+
+**Cierra:** compara el número de líneas con `TareaFlowEndToEndTest` y anota qué parte se simplificó.
+
+#### Subtema X.2 · Ejecuta la misma prueba contra un servidor real · 10 min
+
+**Contexto:** MockMvc no abre sockets: no prueba el puerto, la compresión ni los filtros que solo existen en el contenedor de servlets. Cambiar a servidor real con `RestTestClient` es cambiar una anotación, no reescribir la prueba.
+
+**Hazlo tú:** copia la clase como `TareaRestTestClientServidorTest.java` y cambia solo la cabecera de la clase:
+
+```java
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureRestTestClient
+class TareaRestTestClientServidorTest {
+    // mismo cuerpo que TareaRestTestClientTest
+}
+```
+
+Ejecuta `./mvnw -q -Dtest=TareaRestTestClientServidorTest test`.
+
+**Resultado esperado:** verde. En el log aparece `Tomcat started on port` con un puerto distinto de 8080; el cliente resuelve las rutas relativas contra ese puerto.
+
+**Fallo deliberado:** añade `@Transactional` (de `org.springframework.transaction.annotation`) a la clase y una segunda prueba que cuente tareas esperando 0 al final. **Error esperado:** la cuenta no vuelve a 0. **Diagnóstico:** con servidor real, la petición se atiende en otro hilo y en otra transacción; el rollback de la prueba no deshace lo que hizo el servidor. Quita `@Transactional` y limpia los datos explícitamente si lo necesitas.
+
+**Entiende:** `RANDOM_PORT` evita conflictos entre ejecuciones paralelas. Úsalo para pocas pruebas críticas: arrancar Tomcat cuesta más y los datos persisten entre pruebas.
+
+**Cierra:** registra el puerto usado y la diferencia de transacciones entre los dos modos.
+
+#### Subtema X.3 · Reemplaza un `TestRestTemplate` heredado · 8 min
+
+**Contexto:** encontrarás proyectos de Boot 3 con `@Autowired TestRestTemplate`. Al subir a Boot 4 esas pruebas dejan de arrancar.
+
+**Hazlo tú:** en una prueba temporal con `RANDOM_PORT`, escribe `@Autowired org.springframework.boot.resttestclient.TestRestTemplate rest;` sin ninguna anotación adicional y ejecuta.
+
+**Resultado esperado:** **error:** `No qualifying bean of type '...TestRestTemplate'`. Boot 4 solo lo crea con `@AutoConfigureTestRestTemplate`, y además necesita `spring-boot-restclient` en tiempo de ejecución.
+
+**Fallo deliberado:** usa el paquete antiguo `org.springframework.boot.test.web.client.TestRestTemplate`. **Error esperado:** `package org.springframework.boot.test.web.client does not exist` al compilar. **Diagnóstico:** la clase se movió a `org.springframework.boot.resttestclient`.
+
+**Entiende:** para código nuevo, migra a `RestTestClient`: misma idea, expectativas integradas y dos modos (MockMvc o red) con la misma API. `TestRestTemplate` se mantiene para no romper suites grandes de golpe. Borra la prueba temporal.
+
+**Cierra:** anota los dos pasos mínimos para que una prueba antigua compile en Boot 4.
+
+**Ejercicio:** añade a `TareaRestTestClientTest` una prueba que verifique el `401` sin token y que la respuesta incluya la cabecera `WWW-Authenticate`. Predice qué método de expectativas usarás.
+
+<details>
+<summary>Solución</summary>
+
+```java
+@Test
+void sinTokenResponde401ConDesafioBearer() {
+    client.get().uri("/api/tareas")
+        .exchange()
+        .expectStatus().isUnauthorized()
+        .expectHeader().exists("WWW-Authenticate");
+}
+```
+
+`expectHeader()` agrupa las comprobaciones de cabeceras igual que `expectStatus()` agrupa las de estado. La cabecera la escribe el resource server del Módulo 5.
+
+</details>
+
+**Hito del tema:**
+
+- [ ] Ejecuté el flujo crear-y-leer con `RestTestClient` sobre MockMvc.
+- [ ] Ejecuté la misma prueba con servidor real en `RANDOM_PORT`.
+- [ ] Provoqué el fallo de `@Transactional` con servidor real y lo expliqué.
+- [ ] Identifiqué los cambios necesarios para un `TestRestTemplate` heredado en Boot 4.
+
+**Fuentes oficiales:** [Spring Boot — Testing Spring Boot applications (`RestTestClient`)](https://docs.spring.io/spring-boot/reference/testing/spring-boot-applications.html), [Spring Framework — `RestTestClient`](https://docs.spring.io/spring-framework/reference/testing/resttestclient.html) y [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide).
+
+**Proyecto integrador:** en RutaFlow, deja una sola prueba `RANDOM_PORT` para el flujo de crear envío y el resto en MockMvc. **Límite:** ninguna de las dos pruebas verifica TLS ni el proxy de producción; eso se comprueba en el despliegue (Módulo 19).
+
+### Tema 5: Contenedores Testcontainers reutilizados entre clases
+
+**Objetivo observable:** hacer que dos clases JUnit consulten el mismo PostgreSQL Testcontainers dentro de una ejecución de pruebas y comparar el ID real observado por cada una.
+
+**¿Por qué es importante?** Crear contenedores cuesta tiempo. Un singleton puede evitar arranques repetidos cuando varias clases necesitan la misma base; también significa que esas pruebas comparten estado y ciclo de vida.
+
+**Antes de empezar:** conocer Testcontainers básico (Módulo 6). El laboratorio `examples/testcontainers-singleton-rutaflow/` usa Testcontainers 2.0.5, dos clases JUnit y Postgres. Solo ejecuta `SELECT 1`, no comparte filas modificadas.
+
+**Comando:** desde esa carpeta, Docker compatible ejecuta `./mvnw -q test`. En macOS con Podman, sigue los comandos exactos del README para apuntar al socket local y desactivar Ryuk rootless.
+
+```bash
+cd examples/testcontainers-singleton-rutaflow
+./mvnw -q test
+```
+
+#### Subtema 5.1: Arranca el singleton una sola vez · 8 min
+
+**Contexto:** `@Container` estático comparte el contenedor entre métodos de una clase. El patrón singleton manual permite compartirlo entre varias clases que heredan una base común.
+
+**Hazlo tú:** Abre `src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Encuentra el campo estático y el bloque de arranque:
+
+```java
+static final PostgreSQLContainer POSTGRES = new PostgreSQLContainer("postgres:16-alpine");
+
+static {
+    POSTGRES.start();
+}
+```
+
+**Resultado esperado:** El contenedor comienza al cargar la clase base y las dos clases lectoras heredan la misma referencia.
+
+**Fallo deliberado:** Quita temporalmente `POSTGRES.start()` y ejecuta la suite. **Diagnóstico:** Las dos clases fallan con `Mapped port can only be obtained after the container is started`. Restaura el bloque y vuelve a probar.
+
+**Entiende:** Una sola cocina prepara comida para dos mesas; ambas dependen de que esa cocina exista. El cierre ocurre cuando termina la JVM de tests.
+
+**Cierra:** Señala por qué esta base no lleva las anotaciones `@Testcontainers` y `@Container`.
+
+#### Subtema 5.2: Comprueba la base desde cada clase · 8 min
+
+**Contexto:** Que un ID exista no confirma que PostgreSQL acepte consultas. Cada clase ejecuta una consulta pequeña y guarda el ID que observó.
+
+**Hazlo tú:** Abre `FirstRepositoryTest.java` y `SecondRepositoryTest.java`; ambas llaman al método heredado `queryAndRecordContainerId()`.
+
+```java
+try (Connection connection = DriverManager.getConnection(
+        POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
+     Statement statement = connection.createStatement();
+     ResultSet result = statement.executeQuery("SELECT 1")) {
+    assertThat(result.next()).isTrue();
+    assertThat(result.getInt(1)).isEqualTo(1);
+}
+```
+
+Corre `./mvnw -q test` y compara las dos líneas `usa containerId=`.
+
+**Resultado esperado:** Ambas consultas pasan y muestran el mismo ID de contenedor. Al terminar la segunda clase, el `@AfterAll` heredado verifica la igualdad sin depender del orden de las clases.
+
+**Fallo deliberado:** Cambia una de las consultas de `SELECT 1` a `SELECT columna_que_no_existe`. **Diagnóstico:** Solo la clase que ejecuta esa consulta falla. Restaura `SELECT 1` y corre la suite completa.
+
+**Entiende:** El ID igual en ambos logs es la evidencia de que las clases accedieron al mismo contenedor en esa JVM. No mide cuánto tiempo se ahorró.
+
+**Cierra:** Guarda el reporte JUnit y los IDs iguales de la ejecución actual.
+
+#### Subtema 5.3: Aísla los datos compartidos · 8 min
+
+**Contexto:** Las clases comparten la base junto con el contenedor. Una prueba que inserta filas puede alterar lo que observa la siguiente.
+
+**Hazlo tú:** Lee `junit-platform.properties` y confirma que el paralelismo de Jupiter está apagado. Inspecciona las dos pruebas: usan `SELECT 1` y no cambian filas.
+
+
+Para comprobar «Aísla los datos compartidos», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** Las dos clases pasan en secuencia y no necesitan limpiar datos.
+
+**Fallo deliberado:** En `SharedPostgres.queryAndRecordContainerId`, guarda temporalmente el texto `id-falso` en lugar del ID real para `SecondRepositoryTest`. **Diagnóstico:** La consulta todavía pasa, pero la comprobación `@AfterAll` falla al encontrar IDs distintos. Restaura el ID real y confirma la suite verde.
+
+**Entiende:** **Límite:** singleton no significa base limpia por clase. Si cambias datos, limpia cada prueba con claves únicas, transacciones realmente aisladas o esquemas por clase.
+
+**Cierra:** Escribe qué limpieza necesitaría tu caso de prueba si insertara una entrega.
+
+#### Subtema 5.4: Decide si conviene compartir · 8 min
+
+**Contexto:** El singleton comparte el ciclo de vida dentro de una JVM; el modo `withReuse(true)` trata de conservar contenedores entre ejecuciones locales y tiene una configuración diferente.
+
+**Hazlo tú:** Lee el README del laboratorio y la guía oficial de ciclo manual. Busca las diferencias entre `@Container` estático por clase, el singleton manual entre clases y la reutilización persistente local.
+
+
+Para comprobar «Decide si conviene compartir», consulta: `examples/testcontainers-singleton-rutaflow/src/test/java/academia/rutaflow/containers/SharedPostgres.java`. Desde `examples/testcontainers-singleton-rutaflow` repite la comprobación:
+
+```bash
+./mvnw -q test
+```
+
+**Resultado esperado:** Puedes decir qué alcance comparte cada patrón y cuándo debes limpiar filas o evitar forks paralelos.
+
+**Fallo deliberado:** Ejecuta cada clase por separado con `./mvnw -q -Dtest=FirstRepositoryTest test` y luego `./mvnw -q -Dtest=SecondRepositoryTest test`. **Diagnóstico:** Los IDs cambian porque son dos ejecuciones/JVM distintas; el singleton solo comparte dentro de la ejecución conjunta. Después vuelve a correr `./mvnw -q test` para comprobar un ID compartido.
+
+**Entiende:** Usa singleton si has medido que el arranque repetido domina el tiempo de pruebas y puedes aislar estado. Para pocas clases, conserva el ciclo de vida administrado por JUnit.
+
+**Cierra:** Evidencia: ambas consultas verdes, dos IDs reales iguales y una razón concreta para usar o no el patrón en el proyecto integrador.
+
+**Transferencia al proyecto integrador:** úsalo solo si varias suites comparten el mismo servicio externo y cada prueba conserva aislamiento de datos. La prueba actual no demuestra ahorro de tiempo; mide tu pipeline antes de decidir.
+
+**Fuentes oficiales:** [Testcontainers: ciclo manual y singleton](https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/), [integración JUnit 5](https://java.testcontainers.org/test_framework_integration/junit_5/) y [configuración Podman](https://java.testcontainers.org/supported_docker_environment/).
+
+
+```bash
+./mvnw -q -Dtest=FirstRepositoryTest test
+```

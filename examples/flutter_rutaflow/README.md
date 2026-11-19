@@ -11,14 +11,14 @@ lib/
 │   ├── models.dart                     # Modelos JSON (Tema 2)
 │   └── api_client.dart                 # Cliente Dio con interceptors (Tema 1, 5)
 └── features/
-    └── deliveries/
-        ├── domain/
-        │   └── delivery_providers.dart # Riverpod providers (Tema 3)
-        ├── data/
-        │   └── delivery_repository.dart
-        └── presentation/
-            ├── delivery_list_screen.dart    # Lista con Riverpod (Tema 4)
-            └── delivery_detail_screen.dart  # Detalle + actualización (Tema 6, 9)
+    ├── deliveries/
+    │   ├── domain/
+    │   │   └── delivery_providers.dart # Riverpod providers (Tema 3)
+    │   └── presentation/
+    │       ├── delivery_list_screen.dart    # Lista con Riverpod (Tema 4)
+    │       └── delivery_detail_screen.dart  # Detalle + actualización (Tema 6, 9)
+    └── shift/
+        └── shift_provider.dart         # Jornada con Notifier (probada en test/)
 ```
 
 ## Temas Integrados
@@ -71,6 +71,8 @@ lib/
 ```bash
 cd examples/flutter_rutaflow
 flutter pub get
+dart run build_runner build --delete-conflicting-outputs   # genera lib/core/models.g.dart
+flutter test
 flutter run -d <device>
 ```
 

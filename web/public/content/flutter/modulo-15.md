@@ -222,30 +222,79 @@ Sin `RepaintBoundary`, una región que cambia puede forzar el repintado de widge
 
 #### Paso 4 · Demostración guiada
 
-Aplica el siguiente bloque en el método `build` de `lib/presentation/lista_envios.dart`, donde ya existen `envios` y `TarjetaEnvio`. Desde la raíz del proyecto ejecuta `flutter run --profile` en un dispositivo físico; abre DevTools y compara los repintados antes y después de actualizar un envío.
+Reemplaza `lib/main.dart` por esta lista: cada fila tiene su propio `RepaintBoundary` con la guía como `Key`, y marcar un envío lo mueve al final. Desde la raíz del proyecto ejecuta `flutter run --profile` en un dispositivo físico; abre DevTools y compara los repintados antes y después de actualizar un envío.
 
 ```dart
-ListView.builder(
-  itemCount: envios.length,
-  itemBuilder: (context, i) => RepaintBoundary(
-    key: ValueKey(envios[i].id),
-    child: TarjetaEnvio(envio: envios[i]),
-  ),
-)
-```
+import 'package:flutter/material.dart';
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+void main() => runApp(const MaterialApp(home: ListaEnvios()));
+
+class Envio {
+  const Envio(this.id);
+  final String id;
+}
+
+class ListaEnvios extends StatefulWidget {
+  const ListaEnvios({super.key});
+
+  @override
+  State<ListaEnvios> createState() => _ListaEnviosState();
+}
+
+class _ListaEnviosState extends State<ListaEnvios> {
+  final envios = [for (var i = 1; i <= 50; i++) Envio('RF-${4400 + i}')];
+
+  // Los entregados pasan al final: la lista se reordena.
+  void marcar(Envio envio) => setState(() => envios..remove(envio)..add(envio));
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Envíos')),
+        body: ListView(children: [
+          for (final envio in envios)
+            RepaintBoundary(
+              key: ValueKey(envio.id),
+              child: TarjetaEnvio(envio: envio, onEntregado: () => marcar(envio)),
+            ),
+        ]),
+      );
+}
+
+class TarjetaEnvio extends StatefulWidget {
+  const TarjetaEnvio({required this.envio, required this.onEntregado, super.key});
+  final Envio envio;
+  final VoidCallback onEntregado;
+
+  @override
+  State<TarjetaEnvio> createState() => _TarjetaEnvioState();
+}
+
+class _TarjetaEnvioState extends State<TarjetaEnvio> {
+  bool entregado = false; // estado visual propio de la fila
+
+  @override
+  Widget build(BuildContext context) => CheckboxListTile(
+        title: Text(widget.envio.id),
+        value: entregado,
+        onChanged: entregado
+            ? null
+            : (_) {
+                setState(() => entregado = true);
+                widget.onEntregado();
+              },
+      );
+}
+```
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
-flutter run
+flutter run --profile
 ```
-Para las pruebas de widget: `flutter test`.
 
 Resultado esperado: el DevTools Performance overlay muestra, al marcar un envío como entregado, que solo el `RepaintBoundary` de ESE ítem se repinta (resaltado en el overlay de "repaint rainbow"), no la lista completa.
 
-**Fallo deliberado:** quita `RepaintBoundary` y cambia `ValueKey(envios[i].id)` por `ValueKey(i)` (el índice, no el id real). Al marcar un envío como entregado (lo que puede reordenar la lista, moviendo los entregados al final), Flutter asocia el estado visual al ÍNDICE, no al envío real, y el checkbox de "entregado" aparece marcado en la fila equivocada tras el reordenamiento.
+**Fallo deliberado:** quita `RepaintBoundary`, pon la `Key` en `TarjetaEnvio` y cambia `ValueKey(envio.id)` por `ValueKey(envios.indexOf(envio))` (el índice, no el id real). Al marcar un envío como entregado (lo que puede reordenar la lista, moviendo los entregados al final), Flutter asocia el estado visual al ÍNDICE, no al envío real, y el checkbox de "entregado" aparece marcado en la fila equivocada tras el reordenamiento.
 
 #### Paso 5 · Práctica guiada
 Pista: medí con el profiler ANTES de aplicar cualquier corrección — sin una medición base, no podés confirmar después que la corrección realmente redujo el trabajo de repintado.
@@ -285,8 +334,14 @@ flutter create ejemplo
 // lib/domain/envio.dart — SIN ningún import de Dio, http, ni UI
 class Envio { final String id; final String estado; Envio(this.id, this.estado); }
 abstract class EnvioRepository { Future<Envio> obtener(String id); }
+```
 
+Crea `lib/application/marcar_entregado.dart`, que solo conoce el dominio:
+
+```dart
 // lib/application/marcar_entregado.dart
+import '../domain/envio.dart';
+
 class MarcarEntregadoUseCase {
   final EnvioRepository repo;
   MarcarEntregadoUseCase(this.repo);
@@ -342,7 +397,6 @@ arb-dir: lib/l10n
 template-arb-file: app_es.arb
 output-localization-file: app_localizations.dart
 output-class: AppLocalizations
-synthetic-package: false
 ```
 
 Crea `lib/l10n/app_es.arb`:
@@ -641,14 +695,21 @@ Archivo `lib/main.dart` (inicializa Firebase antes de arrancar la app):
 
 ```dart
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'firebase_options.dart'; // generado por flutterfire configure
-import 'app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const App());
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const MaterialApp(home: Scaffold(body: Center(child: Text('RutaFlow'))));
 }
 ```
 

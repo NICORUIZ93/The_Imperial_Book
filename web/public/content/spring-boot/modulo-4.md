@@ -1,1046 +1,877 @@
-# Módulo 4: Spring Security
+# Módulo 4: Persistencia con Spring Data JPA
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `MockMvc` real contra un contexto de Spring real, para que cada código de estado HTTP (200/401/403) sea comprobable, no solo descrito.
+Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2. Ejecuta los ejemplos con la base H2 de pruebas; el test comprueba datos reales, no repositorios simulados.
 
+**Prerrequisito sin Spring:** el lado propietario de una relación, las cascadas y el conteo básico de N+1 se enseñan una sola vez, en [Java M16 T1–T2](/curso/java/16), con el mismo laboratorio `examples/java-jpa-lab`. Aquí se usa ese modelo mental y se añade lo propio de Spring Data: repositorios derivados, `@EntityGraph`, páginas DTO y migraciones.
 
-**Referencia ejecutable al terminar los módulos 2–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
-### Tema 1: SecurityFilterChain moderno
+### Tema 1: Entidades y repositorios derivados
 
-Al terminar, podrás añadir Spring Security al backend `academia-spring`, separar una ruta pública de las protegidas y probar la regla con MockMvc. Este tema usa HTTP Basic para mostrar la cadena de filtros; el siguiente añade JWT.
+Al terminar, podrás probar que una entidad se guarda y se recupera, escribir un método de búsqueda a partir de propiedades reales y reconocer cuándo una consulta JPQL queda más clara. El tema usa `Tarea(titulo, prioridad, ubicacionInterna)` que ya existe en `academia-spring`.
 
-Prerrequisitos: API y pruebas de Spring Boot Módulos 1–3.
+**¿Por qué es importante?** Una consulta mal nombrada puede impedir que el servicio arranque; probar con datos reales permite localizar el error antes de conectar la API con otros servicios.
 
-**¿Por qué es importante?** La ruta de salud debe responder a un balanceador sin credencial; las operaciones con datos de clientes deben exigir una identidad. Una regla equivocada puede dejar pública toda la API.
+Prerrequisitos: Temas 1–6 del módulo 2. En particular, existe `TareaRepository extends JpaRepository<Tarea, Long>`, H2 está configurado y el proyecto incluye `spring-boot-starter-data-jpa-test`.
 
 ```mermaid
 flowchart LR
-  A["GET /public/health"] --> B["permitAll: 200"]
-  C["GET /api/entregas sin usuario"] --> D["401"]
-  E["GET /api/entregas con identidad"] --> F["200"]
+  A["Tarea en Java"] -->|saveAndFlush| B[("H2 de prueba")]
+  B -->|findById / consulta| C["Resultado comprobado por el test"]
 ```
 
-#### Subtema 4.1 · Proteger rutas del backend · 10 min
+#### Subtema 1.1 · Guardar y recuperar una entidad · 8 min
 
-**Contexto:** Spring Boot ya sirve tareas y documentación OpenAPI. Agrega la seguridad al mismo proyecto para que la regla viva junto al backend real.
+**Contexto:** Antes de filtrar una lista, comprueba el viaje más pequeño: Java guarda una tarea, la base asigna su ID y luego el repositorio la busca. Así separas un problema de persistencia de un problema de consulta.
 
-**Hazlo tú:** En `pom.xml`, añade el starter de aplicación dentro de `<dependencies>`:
+**Hazlo tú:** En `academia-spring`, agrega a `<dependencies>` de `pom.xml` el starter del slice JPA de Boot 4, si todavía no existe:
 
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
-```
-
-Crea `src/main/java/com/example/demo/SecurityConfig.java`:
-
-```java
-package com.example.demo;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
-@Configuration
-public class SecurityConfig {
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**").permitAll()
-                .anyRequest().authenticated())
-            .httpBasic(Customizer.withDefaults())
-            .build();
-    }
-}
-```
-
-Crea `src/main/java/com/example/demo/RutasController.java`:
-
-```java
-package com.example.demo;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class RutasController {
-    @GetMapping("/public/health")
-    public String salud() { return "OK"; }
-
-    @GetMapping("/api/entregas")
-    public String entregas() { return "entregas confidenciales"; }
-}
-```
-
-**Resultado esperado:** desde la raíz, `./mvnw -q -Dtest=SecurityFilterChainTest test` aún no aplica porque el test se crea en el siguiente subtema. Comprueba al menos que `./mvnw -q compile` termina correctamente.
-
-**Fallo deliberado y diagnóstico:** cambia `.authenticated()` por `.permitAll()` y arranca el backend. La aplicación inicia, pero esa regla hace pública cualquier ruta restante; el test del siguiente subtema debe detectar el problema. Restáurala a `.authenticated()` antes de continuar.
-
-**Entiende:** el filtro revisa cada petición antes de que llegue al controller. `permitAll()` deja pasar sin identidad; `authenticated()` exige una identidad ya comprobada; HTTP Basic pide usuario y contraseña mediante el encabezado de autenticación. CSRF queda habilitado con su valor seguro por defecto.
-
-**Cierra:** deja la regla privada en `.authenticated()` y guarda los nombres de las dos rutas que acabas de crear.
-
-#### Subtema 4.2 · Verificar 200, 401 y usuario autenticado · 10 min
-
-**Contexto:** Compilar no demuestra que la cadena se aplique. Usa MockMvc con los filtros del contexto para pedir la ruta pública y la protegida.
-
-**Hazlo tú:** En `pom.xml`, añade el starter de pruebas a `<dependencies>`:
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security-test</artifactId>
+    <artifactId>spring-boot-starter-data-jpa-test</artifactId>
     <scope>test</scope>
 </dependency>
 ```
 
-Agrega también el soporte MVC de pruebas; `@AutoConfigureMockMvc` pertenece a este módulo en Boot 4:
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webmvc-test</artifactId>
-    <scope>test</scope>
-</dependency>
-```
-
-Crea `src/test/java/com/example/demo/SecurityFilterChainTest.java`:
+No basta con el starter general de pruebas para disponer de todos los slices modulares. Crea `src/test/java/com/example/demo/TareaRepositoryTest.java`:
 
 ```java
 package com.example.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class SecurityFilterChainTest {
-    @Autowired MockMvc mockMvc;
+@DataJpaTest
+class TareaRepositoryTest {
+    @Autowired TareaRepository tareas;
 
     @Test
-    void publicaDejaPasarSinCredencial() throws Exception {
-        mockMvc.perform(get("/public/health")).andExpect(status().isOk());
+    void guardaYRecuperaLaTarea() {
+        Tarea guardada = tareas.saveAndFlush(
+            new Tarea("Revisar paquete", 2, "BODEGA-A")
+        );
+
+        Tarea leida = tareas.findById(guardada.getId()).orElseThrow();
+
+        assertThat(leida.getTitulo()).isEqualTo("Revisar paquete");
+        assertThat(leida.getPrioridad()).isEqualTo(2);
+    }
+}
+```
+
+Desde la raíz del proyecto, ejecuta:
+
+```bash
+./mvnw -q -Dtest=TareaRepositoryTest test
+```
+
+**Salida esperada:** el comando termina con código 0 y Maven informa `BUILD SUCCESS`. El test obliga a escribir y leer en H2; `saveAndFlush` envía el cambio antes de buscarlo.
+
+**Fallo deliberado y diagnóstico:** cambia `isEqualTo(2)` por `isEqualTo(9)` y repite el comando. El test falla con una comparación esperada 9 frente a actual 2. Eso indica que la lectura sí ocurrió y que el valor esperado del test es incorrecto. Restáuralo a 2.
+
+**Entiende:** `@DataJpaTest` (en Boot 4 se importa desde `org.springframework.boot.data.jpa.test.autoconfigure`) prepara las piezas de persistencia y una base de prueba; no arranca toda la API. `JpaRepository` ya aporta `saveAndFlush` y `findById`. El ID se genera al guardar, por eso se consulta con `guardada.getId()`. La [guía oficial de pruebas de Spring Boot](https://docs.spring.io/spring-boot/4.1/reference/testing/spring-boot-applications.html) confirma que este slice busca entidades, configura repositorios JPA y usa una base embebida disponible.
+
+**Cierra:** conserva el test verde. Puedes mostrar el ID generado y los dos valores leídos; eso es evidencia de ida y vuelta, no solo de que el proyecto compila.
+
+#### Subtema 1.2 · Filtrar con el nombre del método · 10 min
+
+**Contexto:** La API ya guarda `prioridad`. El listado necesita devolver tareas cuya prioridad sea al menos el mínimo recibido, sin escribir una consulta para una comparación sencilla.
+
+**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, agrega el método señalado:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
+}
+```
+
+En `src/test/java/com/example/demo/TareaRepositoryTest.java`, conserva el test de guardado e imports del subtema anterior. Añade este método antes de la llave final de la clase:
+
+```java
+@Test
+void filtraPrioridadMinimaIncluyendoElLimite() {
+    tareas.save(new Tarea("Sobre", 1, "A"));
+    tareas.save(new Tarea("Caja", 2, "B"));
+    tareas.save(new Tarea("Pallet", 3, "C"));
+    tareas.flush();
+
+    var resultado = tareas.findByPrioridadGreaterThanEqual(2);
+
+    assertThat(resultado).extracting(Tarea::getTitulo)
+        .containsExactlyInAnyOrder("Caja", "Pallet");
+}
+```
+
+Ejecuta desde la raíz del proyecto:
+
+```bash
+./mvnw -q -Dtest=TareaRepositoryTest test
+```
+
+**Salida esperada:** `BUILD SUCCESS`; aparecen Caja y Pallet, pero no Sobre. El sufijo `GreaterThanEqual` incluye el valor límite 2.
+
+**Fallo deliberado y diagnóstico:** cambia `findByPrioridadGreaterThanEqual` a `findByPrioridGreaterThanEqual` en la interfaz y cambia igual la llamada en el test para que el código compile. Al arrancar, Spring muestra `PropertyReferenceException` porque no encuentra `priorid` en `Tarea` y sugiere `prioridad`. La consulta se valida desde el nombre de propiedad; restaura ambas apariciones y ejecuta otra vez.
+
+**Entiende:** Spring Data separa `findBy` del nombre de la propiedad y del operador. La forma de la consulta se lee así:
+
+```text
+findBy | Prioridad | GreaterThanEqual
+buscar | campo    | mayor o igual
+```
+
+El nombre debe corresponder al atributo Java (`prioridad`), no al nombre de columna ni al nombre que llega en JSON. La lista se escribe con `List<Tarea>` porque el filtro puede devolver varias filas.
+
+**Cierra:** entrega el test verde y señala cuál resultado prueba que el límite es inclusivo. La referencia oficial lista los operadores y explica cómo Spring Data interpreta nombres de métodos: [Spring Data JPA — Query methods](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+
+#### Subtema 1.3 · Escribir JPQL cuando ayuda a leer · 10 min
+
+**Contexto:** El nombre derivado anterior es corto y claro. Cuando la consulta requiere una condición expresada con más detalle, puedes escribir JPQL; JPQL usa nombres de entidades y atributos Java, no nombres directos de tablas y columnas.
+
+**Hazlo tú:** En `src/main/java/com/example/demo/TareaRepository.java`, declara ambos caminos para comparar sus resultados:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface TareaRepository extends JpaRepository<Tarea, Long> {
+    List<Tarea> findByPrioridadGreaterThanEqual(int minimo);
+
+    @Query("select t from Tarea t where t.prioridad >= :minimo")
+    List<Tarea> buscarPrioridadMinima(@Param("minimo") int minimo);
+}
+```
+
+Dentro de `TareaRepositoryTest`, añade este método antes de la última llave:
+
+```java
+@Test
+void jpqlYMetodoDerivadoDevuelvenLasMismasTareas() {
+    tareas.save(new Tarea("Sobre", 1, "A"));
+    tareas.save(new Tarea("Caja", 2, "B"));
+    tareas.save(new Tarea("Pallet", 3, "C"));
+    tareas.flush();
+
+    var derivado = tareas.findByPrioridadGreaterThanEqual(2);
+    var jpql = tareas.buscarPrioridadMinima(2);
+
+    assertThat(jpql).extracting(Tarea::getTitulo)
+        .containsExactlyInAnyOrderElementsOf(
+            derivado.stream().map(Tarea::getTitulo).toList()
+        );
+}
+```
+
+Ejecuta desde la raíz del proyecto:
+
+```bash
+./mvnw -q -Dtest=TareaRepositoryTest test
+```
+
+**Salida esperada:** `BUILD SUCCESS`; las dos consultas encuentran las mismas tareas. Si agregas este método al test existente, conserva los imports de la prueba anterior.
+
+**Fallo deliberado y diagnóstico:** escribe `t.priorid` en la cadena de `@Query` y ejecuta el test. Spring no reconoce ese atributo JPQL y el contexto falla al crear el repositorio con `QueryCreationException: Query validation failed`. El nombre válido es `prioridad`, como en la propiedad Java. Corrígelo y vuelve a ejecutar.
+
+**Entiende:** JPQL consulta entidades (`Tarea t`) y sus propiedades (`t.prioridad`); el proveedor JPA lo traduce a SQL para la base configurada. `@Param` conecta el marcador `:minimo` con el argumento Java. Prefiere un método derivado cuando se entiende de un vistazo; usa `@Query` cuando el nombre se vuelve difícil de leer o necesitas expresar una forma que la convención no cubre. Ninguno da control total del SQL físico: JPQL y SQL son lenguajes distintos.
+
+**Cierra:** conserva las dos pruebas y explica con un ejemplo cuándo elegirías cada versión. Para pasar a una relación entre entidades, revisa el siguiente tema sobre N+1. Referencia oficial: [Spring Data JPA — declarar consultas](https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html).
+
+La entidad y el repositorio de esta práctica continúan en el proyecto integrador del track. La estructura atómica describe actividades verificables; no certifica por sí sola dominio profesional.
+
+### Tema 2: El problema N+1 y su corrección
+
+En este tema añadimos `Cliente` y `Pedido` al proyecto `academia-spring` ya existente. Así probamos una relación propia sin alterar la entidad `Tarea` que usa el mapper del API.
+
+**¿Por qué es importante?** Una página que carga clientes y luego consulta los pedidos de cada uno puede hacer muchas llamadas a la base. Con pocos datos parece rápida; al crecer la lista, cada consulta adicional añade demora.
+
+```mermaid
+flowchart LR
+  A["findAll: 1 consulta"] --> B["cada colección pedidos: 1 consulta"]
+  B --> C["3 clientes: 1 + 3 = 4"]
+  D["LEFT JOIN FETCH"] --> E["clientes y pedidos: 1 consulta"]
+```
+
+#### Subtema 2.1 · Relacionar clientes y pedidos y medir · 12 min
+
+**Contexto:** Una ficha de cliente muestra sus pedidos. La relación debe decir quién es el dueño de la referencia y permitir contar las consultas reales sin confundirlas con las escrituras de datos.
+
+**Hazlo tú:** En `academia-spring`, crea estos archivos en `src/main/java/com/example/demo/`.
+
+`Cliente.java`:
+
+```java
+package com.example.demo;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Getter;
+
+@Getter
+@Entity
+@Table(name = "clientes")
+public class Cliente {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nombre;
+
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Pedido> pedidos = new ArrayList<>();
+
+    protected Cliente() {}
+
+    public Cliente(String nombre) {
+        this.nombre = nombre;
+    }
+}
+```
+
+`Pedido.java`:
+
+```java
+package com.example.demo;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+
+@Getter
+@Entity
+@Table(name = "pedidos")
+public class Pedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    protected Pedido() {}
+
+    public Pedido(String codigo, Cliente cliente) {
+        this.codigo = codigo;
+        this.cliente = cliente;
+    }
+}
+```
+
+Crea los repositorios `ClienteRepository.java` y `PedidoRepository.java` en la misma carpeta:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
+}
+```
+
+```java
+package com.example.demo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PedidoRepository extends JpaRepository<Pedido, Long> {}
+```
+
+Crea `src/test/java/com/example/demo/NMasUnoTest.java`:
+
+```java
+package com.example.demo;
+
+import jakarta.persistence.EntityManager;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
+class NMasUnoTest {
+    @Autowired ClienteRepository clientes;
+    @Autowired PedidoRepository pedidos;
+    @Autowired EntityManager entityManager;
+    @Autowired SessionFactory sessionFactory;
+
+    private void crearTresClientesConPedido() {
+        for (int i = 1; i <= 3; i++) {
+            Cliente cliente = clientes.save(new Cliente("Cliente " + i));
+            pedidos.save(new Pedido("RF-" + i, cliente));
+        }
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
-    void protegidaRechazaSolicitudAnonima() throws Exception {
-        mockMvc.perform(get("/api/entregas")).andExpect(status().isUnauthorized());
+    void laCargaPerezosaHaceUnaConsultaPorCadaColeccion() {
+        crearTresClientesConPedido();
+        Statistics stats = sessionFactory.getStatistics();
+        stats.clear();
+
+        for (Cliente cliente : clientes.buscarSinPedidos()) {
+            assertThat(cliente.getPedidos()).hasSize(1);
+        }
+
+        assertThat(stats.getPrepareStatementCount()).isEqualTo(4L);
+    }
+}
+```
+
+Desde la raíz, ejecuta:
+
+```bash
+./mvnw -q -Dtest=NMasUnoTest test
+```
+
+**Resultado esperado:** `BUILD SUCCESS`; la aserción muestra cuatro sentencias preparadas: una para `buscarSinPedidos()` y tres para cargar las colecciones. El contador se limpia después de guardar y vaciar el contexto.
+
+**Fallo deliberado y diagnóstico:** cambia `mappedBy = "cliente"` por `mappedBy = "clientee"` en `Cliente.java`. El contexto de persistencia falla al iniciar porque el nombre no coincide con ningún atributo de `Pedido`. Restaura `cliente`.
+
+**Entiende:** `Pedido.cliente` guarda la clave foránea `cliente_id`; `Cliente.pedidos` es el lado inverso y `mappedBy` nombra el atributo dueño. `LAZY` significa que la colección se busca al accederla. `getPrepareStatementCount()` mide sentencias SQL preparadas, incluidas las consultas de carga perezosa; `getQueryExecutionCount()` no es el contador que queremos para estas consultas de colección.
+
+**Cierra:** registra el número 4 y explica qué sentencia corresponde al `+1` y cuáles a las tres colecciones.
+
+#### Subtema 2.2 · Cargar la relación con `JOIN FETCH` · 10 min
+
+**Contexto:** Ya mediste la repetición. Ahora cambia la consulta que carga la página para pedir clientes y pedidos juntos cuando sabes que mostrarás ambos.
+
+**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` con la versión completa:
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
+
+    @Query("select distinct c from Cliente c left join fetch c.pedidos")
+    List<Cliente> buscarTodosConPedidos();
+}
+```
+
+En `src/test/java/com/example/demo/NMasUnoTest.java`, añade este método dentro de la clase:
+
+```java
+@Test
+void joinFetchCargaLosPedidosEnLaConsultaPrincipal() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
+
+    for (Cliente cliente : clientes.buscarTodosConPedidos()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
     }
 
-    @Test
-    @WithMockUser
-    void protegidaAceptaLaIdentidadDePrueba() throws Exception {
-        mockMvc.perform(get("/api/entregas")).andExpect(status().isOk());
-    }
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
 }
 ```
 
 Ejecuta desde la raíz:
 
 ```bash
-./mvnw -q -Dtest=SecurityFilterChainTest test
+./mvnw -q -Dtest=NMasUnoTest test
 ```
 
-**Resultado esperado:** los tres tests pasan: público `200`, anónimo protegido `401`, identidad de prueba `200`.
+**Resultado esperado:** los dos tests pasan; el recorrido normal preparó 4 sentencias y el método con `left join fetch` preparó 1.
 
-**Fallo deliberado y diagnóstico:** cambia `.anyRequest().authenticated()` a `.anyRequest().permitAll()` y repite el comando. El test anónimo falla con `expected 401 but was 200`: el controller responde, pero la cadena ya no frena a quien llega sin identidad. Restaura `.authenticated()`.
+**Fallo deliberado y diagnóstico:** quita la palabra `fetch` y deja `left join c.pedidos`. Ejecuta el test: la relación no se inicializa junto con el cliente y la medición vuelve a mostrar 4 sentencias. Restaura `fetch`.
 
-**Entiende:** `@WithMockUser` crea un principal solo para la prueba; no verifica una contraseña ni comprueba un proveedor de usuarios. MockMvc sí ejecuta la cadena de filtros real. La [guía de Spring Security sobre usuarios de prueba](https://docs.spring.io/spring-security/reference/servlet/test/mockmvc/authentication.html) aclara el alcance de esta anotación.
+**Entiende:** `join fetch` le pide a JPA que traiga el atributo relacionado en la consulta que devuelve el cliente. `left` conserva también clientes que todavía no tienen pedidos. `distinct` expresa que cada cliente debe aparecer una vez en el resultado aunque tenga varios pedidos.
 
-**Cierra:** conserva la salida verde y la prueba fallida/restaurada. La anotación `@AutoConfigureMockMvc` en Boot 4 se importa desde `org.springframework.boot.webmvc.test.autoconfigure`; el starter de seguridad de prueba entrega `@WithMockUser`.
+**Cierra:** entrega las mediciones 4 y 1. La guía de Hibernate explica el [fetch join y las asociaciones](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#hql-explicit-association-joins).
 
-#### Subtema 4.3 · Decidir qué rutas son públicas · 10 min
+#### Subtema 2.3 · Elegir `@EntityGraph` y revisar el límite · 10 min
 
-**Contexto:** Al proteger todo lo que no esté en `/public/**`, la prueba OpenAPI existente también recibe `401`. Decide explícitamente si el documento debe estar abierto en este entorno de aprendizaje.
+**Contexto:** Puedes declarar qué relación se carga sin escribir el `JOIN` en una cadena JPQL. Compara esa opción cuando la consulta de repositorio ya tiene un nombre que quieres conservar.
 
-**Hazlo tú:** En `src/main/java/com/example/demo/SecurityConfig.java`, conserva los imports y la clase. Reemplaza únicamente el método `filterChain`:
-
-```java
-@Bean
-SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/public/**",
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html"
-            ).permitAll()
-            .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults())
-        .build();
-}
-```
-
-Desde la raíz, prueba primero el contrato que ya existe y luego la suite:
-
-Antes de ejecutar, añade a `src/main/java/com/example/demo/RutasController.java` el import `org.springframework.web.bind.annotation.PathVariable` y este método dentro de la clase:
-
-```java
-@GetMapping("/api/entregas/{id}")
-public String entrega(@PathVariable long id) {
-    return "entrega " + id;
-}
-```
-
-Añade también estos dos métodos a `SecurityFilterChainTest.java`:
-
-```java
-@Test
-void subrutaTambienRechazaSolicitudAnonima() throws Exception {
-    mockMvc.perform(get("/api/entregas/42")).andExpect(status().isUnauthorized());
-}
-
-@Test
-@WithMockUser
-void subrutaAceptaIdentidadDePrueba() throws Exception {
-    mockMvc.perform(get("/api/entregas/42")).andExpect(status().isOk());
-}
-```
-
-```bash
-./mvnw -q -Dtest=ContratoOpenApiTest test
-./mvnw -q clean test
-```
-
-**Resultado esperado:** OpenAPI devuelve `200` sin credencial; las pruebas confirman que `/api/entregas` y `/api/entregas/42` devuelven `401` sin identidad y `200` con un usuario de prueba. La suite completa pasa.
-
-**Fallo deliberado y diagnóstico:** quita `"/v3/api-docs/**"` de la lista y ejecuta `./mvnw -q -Dtest=ContratoOpenApiTest test`. El test obtiene `401` en vez de `200`, porque el contrato documental ahora cae en `.anyRequest().authenticated()`. Restaura el matcher.
-
-**Entiende:** una regla pública es una decisión sobre información, no solo una forma de arreglar tests. La documentación se deja abierta para el curso; en una API real, revisa si su esquema revela rutas o datos que convenga restringir. **Límite:** HTTP Basic envía credenciales en cada petición; úsalo solo por HTTPS fuera de pruebas locales. No desactives CSRF a ciegas; aquí se conserva porque la cadena aún admite autenticación Basic.
-
-**Cierra:** guarda la suite verde. **Práctica:** en los dos tests de subruta, cambia `/api/entregas/42` por `/api/entregas/43` y ejecuta `./mvnw -q -Dtest=SecurityFilterChainTest test`; anónima debe seguir en `401` y con `@WithMockUser` en `200`. Enumera las rutas que decidiste dejar públicas. El siguiente tema sustituye HTTP Basic por validación de JWT y agrega autorización por rol.
-
-El filtro que definiste protege el backend acumulativo del proyecto integrador; una marca de test confirma esta regla de rutas, no una revisión de todos los controles de acceso del producto.
-
-### Tema 2: Filtro JWT y autorización por rol
-
-Al terminar, podrás firmar y validar un JWT, conectarlo a la cadena de Spring Security y restringir una operación por rol. El backend de los Temas 1–3 sigue siendo `academia-spring`.
-
-**¿Por qué es importante?** Una firma válida prueba quién emitió el token y que no se alteró; la autorización separa qué operaciones puede ejecutar cada usuario. Si el filtro no entra en la cadena o el rol se traduce mal, la API puede rechazar a todos o abrir acciones sensibles.
-
-#### Subtema 4.4 · Firmar y validar un token · 10 min
-
-**Contexto:** el Tema 1 dejó las rutas privadas con HTTP Basic. Ahora el cliente enviará un token firmado en cada llamada; no guardaremos una sesión en el servidor.
-
-**Hazlo tú:** desde `academia-spring`, añade a `pom.xml` las dependencias de JJWT. Usa la misma versión para los tres módulos:
-
-```xml
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-api</artifactId>
-    <version>0.13.0</version>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-impl</artifactId>
-    <version>0.13.0</version>
-    <scope>runtime</scope>
-</dependency>
-<dependency>
-    <groupId>io.jsonwebtoken</groupId>
-    <artifactId>jjwt-jackson</artifactId>
-    <version>0.13.0</version>
-    <scope>runtime</scope>
-</dependency>
-```
-
-En `src/main/resources/application.properties`, lee el secreto de una variable de entorno. No escribas la clave en Java ni en Git:
-
-```properties
-security.jwt.secret-base64=${JWT_SECRET_BASE64}
-```
-
-En una terminal local, genera una clave de 32 bytes y arranca los comandos Maven desde `academia-spring`:
-
-```bash
-export JWT_SECRET_BASE64="$(openssl rand -base64 32)"
-./mvnw -q compile
-```
-
-Crea `src/main/java/com/example/demo/JwtService.java`:
+**Hazlo tú:** Reemplaza `src/main/java/com/example/demo/ClienteRepository.java` por la versión completa que conserva las consultas anteriores y aplica `@EntityGraph` al `findAll()` heredado:
 
 ```java
 package com.example.demo;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import java.time.Instant;
-import java.util.Date;
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-@Service
-public class JwtService {
-    private final SecretKey key;
-
-    public JwtService(@Value("${security.jwt.secret-base64}") String secretBase64) {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretBase64));
-    }
-
-    public String generar(String usuario, String rol) {
-        Instant ahora = Instant.now();
-        return Jwts.builder()
-            .subject(usuario)
-            .claim("rol", rol)
-            .issuedAt(Date.from(ahora))
-            .expiration(Date.from(ahora.plusSeconds(900)))
-            .signWith(key)
-            .compact();
-    }
-
-    public Claims validar(String token) {
-        return Jwts.parser().verifyWith(key).build()
-            .parseSignedClaims(token).getPayload();
-    }
-}
-```
-
-Crea `src/test/java/com/example/demo/JwtServiceTest.java` para probar el firmante sin iniciar Spring:
-
-```java
-package com.example.demo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
-
-class JwtServiceTest {
-    private static final String CLAVE_DE_PRUEBA = "VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=";
-
-    @Test
-    void tokenFirmadoConservaUsuarioYRol() {
-        var service = new JwtService(CLAVE_DE_PRUEBA);
-        var claims = service.validar(service.generar("ana-1", "ADMIN"));
-        assertEquals("ana-1", claims.getSubject());
-        assertEquals("ADMIN", claims.get("rol", String.class));
-    }
-}
-```
-
-**Resultado esperado:** `./mvnw -q -Dtest=JwtServiceTest test` pasa. Un token generado dura 15 minutos; `validar` solo devuelve sus claims después de comprobar firma y vencimiento.
-
-**Fallo deliberado y diagnóstico:** cambia temporalmente `.signWith(key)` por `.signWith(Keys.hmacShaKeyFor(new byte[32]))` y ejecuta `./mvnw -q -Dtest=JwtServiceTest test`. El test lanza error al validar el token recién firmado: compara la clave de firma con la de verificación y restaura `.signWith(key)`.
-
-**Entiende:** Base64 representa los bytes de la clave; no la cifra ni la vuelve secreta. JJWT necesita una clave aleatoria con longitud suficiente y recomienda no convertir una frase común con `getBytes()`. `verifyWith` fija la clave de verificación; `parseSignedClaims` también comprueba las fechas estándar del token. **Analogía:** firma y verificación son una cerradura y su llave compartida. Referencia primaria: [JJWT — instalación y firmas](https://github.com/jwtk/jjwt#installation).
-
-**Cierra:** guarda `JwtService` y comprueba que el valor real de producción no quedó escrito en archivos versionados.
-
-#### Subtema 4.5 · Poner el filtro dentro de Spring Security · 10 min
-
-**Contexto:** validar una cadena no protege rutas por sí solo. Spring debe ejecutar el filtro antes de autorización y crear la identidad de la petición.
-
-**Hazlo tú:** crea `src/main/java/com/example/demo/JwtFilter.java`:
-
-```java
-package com.example.demo;
-
-import io.jsonwebtoken.JwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-@Component
-public class JwtFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
+public interface ClienteRepository extends JpaRepository<Cliente, Long> {
+    @Query("select c from Cliente c")
+    List<Cliente> buscarSinPedidos();
 
-    public JwtFilter(JwtService jwtService) { this.jwtService = jwtService; }
+    @Query("select distinct c from Cliente c left join fetch c.pedidos")
+    List<Cliente> buscarTodosConPedidos();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            try {
-                var claims = jwtService.validar(header.substring(7));
-                String rol = claims.get("rol", String.class);
-                var authentication = new UsernamePasswordAuthenticationToken(
-                    claims.getSubject(), null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                context.setAuthentication(authentication);
-                SecurityContextHolder.setContext(context);
-            } catch (JwtException | IllegalArgumentException tokenInvalido) {
-                SecurityContextHolder.clearContext();
-            }
-        }
-        chain.doFilter(request, response);
-    }
+    @EntityGraph(attributePaths = "pedidos")
+    List<Cliente> findAll();
 }
 ```
 
-Reemplaza el método `filterChain` de `src/main/java/com/example/demo/SecurityConfig.java`. Conserva los imports de clase y añade los que aparecen aquí; el `FilterRegistrationBean` desactiva el registro automático del servlet para evitar ejecutar el filtro dos veces:
+En `NMasUnoTest.java`, añade:
 
 ```java
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+@Test
+void entityGraphCargaLosPedidosEnLaConsulta() {
+    crearTresClientesConPedido();
+    Statistics stats = sessionFactory.getStatistics();
+    stats.clear();
 
-@EnableMethodSecurity
-@Configuration
-public class SecurityConfig {
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
-        return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .formLogin(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .anyRequest().authenticated())
-            .exceptionHandling(errors -> errors.authenticationEntryPoint(
-                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+    for (Cliente cliente : clientes.findAll()) {
+        assertThat(cliente.getPedidos()).hasSize(1);
     }
 
-    @Bean
-    FilterRegistrationBean<JwtFilter> desactivarRegistroDelServlet(JwtFilter jwtFilter) {
-        var registration = new FilterRegistrationBean<>(jwtFilter);
-        registration.setEnabled(false);
-        return registration;
-    }
+    assertThat(stats.getPrepareStatementCount()).isEqualTo(1L);
 }
 ```
 
-Agrega a `src/main/java/com/example/demo/AdminController.java` una operación que exija rol:
+Ejecuta desde la raíz:
+
+```bash
+./mvnw -q -Dtest=NMasUnoTest test
+```
+
+**Resultado esperado:** pasan los tres tests. El fetch plan explícito de `@EntityGraph` evita las tres lecturas posteriores para esta relación.
+
+**Fallo deliberado y diagnóstico:** cambia `attributePaths = "pedidos"` por `attributePaths = "pedido"`. El test falla al ejecutar `findAll()` con `Unable to locate Attribute ... [pedido] on ... Cliente`; `pedido` no coincide con la propiedad `pedidos`. Restaura el plural.
+
+**Entiende:** `JOIN FETCH` deja visible la forma JPQL; `@EntityGraph` declara atributos a cargar en el método. Ambos resuelven este acceso concreto. Una colección grande puede multiplicar filas y `JOIN FETCH` de colección junto con paginación requiere cuidado; mide el caso real y evita cargar relaciones que la pantalla no usa. [Spring Data JPA — `@EntityGraph`](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html).
+
+**Cierra:** guarda los tres resultados de la prueba y explica por qué no cambiarías todo a `EAGER`. **Práctica:** en `crearTresClientesConPedido()` cambia el límite del bucle a 4 y ajusta la prueba perezosa a `5L`; ambas pruebas con carga previa deben seguir en `1L`. Ejecuta `./mvnw -q -Dtest=NMasUnoTest test` y luego restaura el límite y la aserción. Integra `Cliente` y `Pedido` al backend acumulativo y lleva la medición al proyecto integrador cuando uses una lista real. El tema siguiente versiona el esquema para que estas dos tablas tengan cambios reproducibles.
+
+### Tema 3: Más allá del N+1: el límite de LAZY y páginas DTO
+**Meta:** reproducir el límite de una asociación `LAZY` cuando el contexto de persistencia ya se cerró y resolver la pantalla de resumen con una página DTO que selecciona solo dos campos.
+
+**¿Por qué es importante?** El Tema 2 corrigió el N+1 con `JOIN FETCH`/`@EntityGraph`. Falta el otro extremo: qué pasa cuando la respuesta HTTP toca una relación que nunca se cargó, y cómo paginar sin traer entidades completas.
+
+**Prerrequisitos:** Tema 2 de este módulo y [Java M16 T1–T2](/curso/java/16) (lado propietario, `LAZY`/`EAGER` y conteo de N+1 con el mismo laboratorio `examples/java-jpa-lab`, sin Spring). Este tema no repite esas prácticas.
+
+**Evidencia final:** la prueba que espera `LazyInitializationException` al cerrar el `EntityManager` y una página de resumen con dos campos, su total y la señal de página siguiente.
+
+#### Subtema 3.1 · Reconoce el límite de LAZY y EAGER · 8 min
+
+**Contexto:** Una relación `LAZY` puede consultarse mientras el contexto de persistencia sigue abierto. Si entregas una entidad con una asociación sin cargar y cierras ese contexto, ya no hay sesión que pueda buscarla.
+
+**Hazlo tú:** Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java`. Ejecuta la prueba que escribe en un contexto, vuelve a leer en otro y cierra el segundo antes de tocar el cliente:
+
+```bash
+./mvnw -Dtest=PedidoJpaLabTest#accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro test
+```
+
+**Resultado esperado:** el test espera `LazyInitializationException` al leer `pedido.getCliente().getNombre()` después de cerrar el EntityManager.
+
+**Fallo deliberado:** Mueve la lectura de `getNombre()` antes de `lectura.close()`. La prueba deja de recibir la excepción; devuelve el acceso a después del cierre. **Diagnóstico:** el proxy sí pudo cargar la asociación mientras el EntityManager seguía abierto.
+
+**Entiende:** JPA define `EAGER` como requisito de carga inmediata y `LAZY` como sugerencia que el proveedor puede cumplir. `ManyToOne` es EAGER por defecto; en este modelo se pidió LAZY. No soluciones el error cargando todo EAGER: crea una consulta o DTO para el caso de uso y construye la respuesta dentro de la transacción.
+
+**Cierra:** Di en qué línea termina la sesión y qué dato debe salir ya preparado para la respuesta HTTP.
+
+#### Subtema 3.2 · Pagina una vista pequeña con DTO · 10 min
+
+**Contexto:** El resumen de pedidos solo presenta referencia y nombre. Cargar entidades completas y sus relaciones trae datos que la fila no muestra.
+
+**Hazlo tú:** El laboratorio contiene `PedidoResumen`, un `record` con esos dos campos, y este método en `PedidoRepository`:
 
 ```java
-package com.example.demo;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class AdminController {
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @DeleteMapping("/api/entregas/{id}")
-    public void eliminar(@PathVariable long id) { }
-}
+@Query("select new academia.pedidos.PedidoResumen(p.referencia, p.cliente.nombre) "
+    + "from Pedido p order by p.referencia")
+Page<PedidoResumen> listarResumenes(Pageable pageable);
 ```
 
-**Resultado esperado:** `./mvnw -q compile` compila el filtro y la regla de rol. La cadena sigue permitiendo salud y OpenAPI; las rutas restantes requieren identidad.
+Ejecuta la prueba que solicita dos elementos de una página de tres:
 
-**Fallo deliberado y diagnóstico:** quita `/public/**` de los `requestMatchers` y ejecuta `./mvnw -q -Dtest=SecurityFilterChainTest test`. La ruta de salud deja de ser pública y el test obtiene `401` en vez de `200`; revisa la regla de rutas y restaura el matcher.
-
-**Entiende:** `OncePerRequestFilter` lee el encabezado una vez. `SecurityContextHolder` guarda la identidad para esta petición. `ROLE_ADMIN` es una autoridad; `@EnableMethodSecurity` activa `@PreAuthorize`. Sin identidad, la regla responde `401`; una identidad sin autoridad suficiente recibe `403`. En la práctica, el filtro revisa la credencial en la entrada y `@PreAuthorize` revisa el permiso de esta operación.
-
-**Cierra:** deja el filtro integrado con `addFilterBefore` y los tests del Tema 1 verdes.
-
-#### Subtema 4.6 · Probar identidad, rol y firma · 10 min
-
-**Contexto:** un `@WithMockUser` prueba una regla con identidad simulada, pero no prueba el JWT. Este test firma y valida tokens reales con el servicio del subtema 4.4.
-
-**Hazlo tú:** crea `src/test/resources/application.properties` con una clave de prueba de 32 bytes. Este valor solo es para tests; producción usa `JWT_SECRET_BASE64`:
-
-```properties
-security.jwt.secret-base64=VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=
+```bash
+./mvnw -Dtest=PedidoJpaLabTest#paginaResumenConSoloLasColumnasQueNecesitaLaLista test
 ```
 
-Crea `src/test/java/com/example/demo/JwtFilterTest.java`:
+**Resultado esperado:** la página contiene dos pares referencia/nombre, declara tres resultados totales y señala que hay otra página. Hibernate emite la consulta de datos y una consulta de conteo.
 
-```java
-package com.example.demo;
+**Fallo deliberado:** Cambia `p.cliente.nombre` por `p.cliente.apellido` en el JPQL. La consulta falla porque `Cliente` no tiene ese atributo. **Diagnóstico:** Hibernate no puede resolver `apellido` en `Cliente`. Restaura `nombre`.
 
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
+**Entiende:** Un DTO devuelve solo lo que consume la pantalla. `Page` también suele requerir contar resultados; si ese conteo pesa, evalúa `Slice` o una estrategia específica. Una página DTO evita paginar una colección cargada con `JOIN FETCH` y reduce columnas, pero mide el plan con datos representativos.
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+**Cierra:** En el proyecto integrador de RutaFlow, define una consulta resumida paginada y otra de detalle. Adjunta SQL, tamaño de página y campos elegidos. No presentes los conteos de H2 como una medición de producción.
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class JwtFilterTest {
-    @Autowired MockMvc mockMvc;
-    @Autowired JwtService jwtService;
+**Fuentes primarias:** [Jakarta Persistence 3.2: `@ManyToOne` y estrategias de carga](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html); [Spring Data JPA: proyecciones](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html).
 
-    @Test
-    void sinTokenResponde401() throws Exception {
-        mockMvc.perform(delete("/api/entregas/42")).andExpect(status().isUnauthorized());
-    }
+### Tema 4: Migraciones con Flyway
 
-    @Test
-    void rolDriverResponde403() throws Exception {
-        String token = jwtService.generar("conductor-7", "DRIVER");
-        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + token))
-            .andExpect(status().isForbidden());
-    }
+Al cerrar este tema, el mismo backend `academia-spring` crea las tablas desde archivos SQL versionados y Hibernate solo confirma que el modelo Java coincide con ese esquema.
 
-    @Test
-    void rolAdminResponde200() throws Exception {
-        String token = jwtService.generar("admin-1", "ADMIN");
-        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + token))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void firmaAlteradaResponde401() throws Exception {
-        String[] partes = jwtService.generar("admin-1", "ADMIN").split("\\.");
-        String primerCaracter = partes[2].charAt(0) == 'A' ? "B" : "A";
-        String tokenAlterado = partes[0] + "." + partes[1] + "." + primerCaracter + partes[2].substring(1);
-        mockMvc.perform(delete("/api/entregas/42").header("Authorization", "Bearer " + tokenAlterado))
-            .andExpect(status().isUnauthorized());
-    }
-}
-```
-
-Desde la raíz del proyecto ejecuta `./mvnw -q -Dtest=JwtFilterTest test` y después `./mvnw -q clean test`.
-
-**Resultado esperado:** los cuatro tests específicos pasan: `401` sin token, `403` para `DRIVER`, `200` para `ADMIN`, y `401` cuando cambia un carácter de la firma. La suite completa conserva también las pruebas de JPA, Flyway y OpenAPI.
-
-**Fallo deliberado y diagnóstico:** cambia `"ROLE_" + rol` por `rol` en `JwtFilter` y ejecuta `./mvnw -q -Dtest=JwtFilterTest#rolAdminResponde200 test`. Obtendrás `403` en lugar de `200`: el controller pide `ROLE_ADMIN`, pero el filtro ya no añade el prefijo. Restaura el prefijo.
-
-**Entiende:** un JWT firmado no está cifrado: no pongas contraseñas ni secretos en sus claims. El HMAC usa el mismo secreto para firmar y verificar; en microservicios reales, repartir ese secreto a cada API también permitiría que cada API emita tokens. Normalmente un proveedor de identidad firma y los servicios validan con claves públicas/JWKS; Spring Security incluye un resource server JWT para ese caso: [Spring Security — JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
-
-**Práctica:** agrega un segundo método que exija `ROLE_DRIVER` y confirma que el mismo token ADMIN obtiene `403` allí. **Cuándo no usar este filtro casero:** si la API valida tokens emitidos por un proveedor de identidad, prefiere el resource server oficial de Spring Security. **Cierra:** conserva la suite verde y la salida del test de firma alterada. En el proyecto integrador, el login del Módulo 4 Tema 5 debe reutilizar `JwtService`; no guardes claves en el repositorio.
-
----
-
-### Tema 3: CORS y CSRF
-
-Al terminar, podrás permitir desde qué sitios web se llama la API y decidir cuándo proteger las peticiones contra CSRF. Continúa el proyecto integrador `academia-spring` con JWT en `Authorization`.
+**¿Por qué es importante?** Si cada ambiente crea o modifica tablas de forma distinta, un cambio puede funcionar localmente y fallar al desplegar. Una migración versionada deja visible qué cambió y en qué orden se aplicó.
 
 ```mermaid
 flowchart LR
-  B["Navegador: Origin"] --> O["OPTIONS sin JWT"]
-  O -->|origen, método y cabeceras permitidos| R["Petición real con Authorization: Bearer"]
-  O -->|regla CORS no coincide| X["403: el navegador no continúa"]
-  R --> J["Filtro JWT autentica"] --> A["Regla de rol autoriza"]
-  C["Cookie de sesión automática"] --> S["CSRF necesario"]
+  A["V1: tablas de la API"] --> B["Flyway registra V1"]
+  B --> C["Hibernate valida entidades"]
+  C --> D["V2: índice nuevo"]
 ```
 
-**¿Por qué es importante?** CORS deja que el navegador de tu frontend lea la API; CSRF evita cambios que un navegador podría enviar usando credenciales que adjunta solo, como una cookie. Son problemas distintos: CORS no autentica usuarios ni reemplaza permisos.
+#### Subtema 4.1 · Crear el esquema con V1 · 12 min
 
-#### Subtema 4.7 · Permitir un origen y responder al preflight · 10 min
+**Contexto:** `academia-spring` ya tiene las entidades `Tarea`, `Cliente` y `Pedido`. Ahora el repositorio debe poder recrear sus tres tablas al partir de una base vacía.
 
-**Contexto:** el navegador suele enviar primero una petición `OPTIONS` cuando el frontend usa `Authorization` o un método como `DELETE`. Esa petición previa normalmente no lleva el JWT; Spring debe revisar CORS antes de exigir autenticación.
+**Hazlo tú:** En `pom.xml`, añade a `<dependencies>` el starter administrado por Spring Boot:
 
-**Hazlo tú:** en `src/main/java/com/example/demo/CorsConfig.java`, configura el único sitio web aprobado y los métodos/cabeceras que usa el cliente:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-flyway</artifactId>
+</dependency>
+```
+
+En `src/main/resources/application.yml`, reemplaza `create-drop` por `validate`:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+```
+
+Crea `src/main/resources/db/migration/V1__crear_esquema_inicial.sql`:
+
+```sql
+CREATE TABLE tareas (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    titulo VARCHAR(255),
+    prioridad INTEGER NOT NULL,
+    nota_interna VARCHAR(255),
+    ubicacion_interna VARCHAR(255)
+);
+
+CREATE TABLE clientes (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nombre VARCHAR(255)
+);
+
+CREATE TABLE pedidos (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    codigo VARCHAR(255),
+    cliente_id BIGINT NOT NULL,
+    CONSTRAINT fk_pedidos_clientes FOREIGN KEY (cliente_id) REFERENCES clientes (id)
+);
+```
+
+Crea `src/test/java/com/example/demo/MigracionesTest.java`:
 
 ```java
 package com.example.demo;
 
-import java.util.List;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-@Configuration
-public class CorsConfig {
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://web.academia.dev"));
-        config.setAllowedMethods(List.of("GET", "POST", "DELETE"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(false);
-        config.setMaxAge(3600L);
-
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
-        return source;
-    }
-}
-```
-
-En `src/main/java/com/example/demo/SecurityConfig.java`, añade `.cors(cors -> {})` antes de `.csrf(...)`; conserva el resto de la cadena JWT del Tema 2. Spring Security toma la configuración del `CorsConfigurationSource` y procesa CORS antes de autenticar.
-
-Crea `src/test/java/com/example/demo/CorsConfigTest.java`:
-
-```java
-package com.example.demo;
-
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class CorsConfigTest {
-    @Autowired MockMvc mockMvc;
+@DataJpaTest
+class MigracionesTest {
+    @Autowired Flyway flyway;
+    @Autowired TareaRepository tareas;
 
     @Test
-    void preflightPermitidoDevuelveOrigenYMetodo() throws Exception {
-        mockMvc.perform(options("/api/entregas/42")
-                .header("Origin", "https://web.academia.dev")
-                .header("Access-Control-Request-Method", "DELETE")
-                .header("Access-Control-Request-Headers", "Authorization"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"))
-            .andExpect(header().string("Access-Control-Allow-Methods",
-                org.hamcrest.Matchers.containsString("DELETE")))
-            .andExpect(header().string("Access-Control-Allow-Headers",
-                org.hamcrest.Matchers.containsString("Authorization")));
+    void flywayRegistroLaMigracionInicial() {
+        assertThat(flyway.info().applied())
+            .extracting(migration -> migration.getVersion().getVersion())
+            .contains("1");
     }
 
     @Test
-    void preflightDeOrigenAjenoRecibe403() throws Exception {
-        mockMvc.perform(options("/api/entregas/42")
-                .header("Origin", "https://sitio-no-autorizado.dev")
-                .header("Access-Control-Request-Method", "DELETE"))
-            .andExpect(status().isForbidden())
-            .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    void laTablaCreadaPorFlywayAceptaUnaTarea() {
+        Tarea guardada = tareas.saveAndFlush(
+            new Tarea("Probar esquema", 2, "BODEGA-A")
+        );
+        assertThat(tareas.findById(guardada.getId())).isPresent();
     }
 }
 ```
 
-Desde la raíz de `academia-spring`, ejecuta:
-
-```bash
-./mvnw -q -Dtest=CorsConfigTest test
-```
-
-**Resultado esperado:** los dos tests pasan: el origen aprobado recibe `Access-Control-Allow-Origin`; el origen ajeno recibe `403` y no recibe permiso CORS.
-
-**Fallo deliberado y diagnóstico:** cambia `setAllowedOrigins(List.of("https://web.academia.dev"))` por `setAllowedOrigins(List.of("*"))` y ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeOrigenAjenoRecibe403 test`. Obtendrás `200` en vez de `403`: la lista ya acepta cualquier sitio. Restaura el origen exacto.
-
-**Entiende:** `Origin` identifica protocolo, host y puerto. `OPTIONS` pregunta si después puede salir el `DELETE`; el navegador aplica la decisión. Una herramienta como Postman puede enviar la petición aunque el servidor devuelva otra política. Referencias primarias: [Spring Security — integración CORS](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html) y [Spring Framework — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html).
-
-**Cierra:** anota los orígenes y métodos que necesita el frontend. CORS limita acceso desde navegadores; no impide llamadas directas desde otros servidores.
-
-#### Subtema 4.8 · Llamar con el JWT y decidir CSRF · 10 min
-
-**Contexto:** autorizar el preflight no prueba todavía la petición real. El frontend manda el JWT en un encabezado `Authorization`; el filtro del Tema 2 valida identidad y rol después de que CORS permita ese origen.
-
-**Hazlo tú:** añade este test a `CorsConfigTest.java`. Comprueba una operación `DELETE` real con un token ADMIN válido y `Origin` aprobado:
-
-```java
-@Autowired JwtService jwtService;
-
-@Test
-void deleteConJwtDevuelveElHeaderCors() throws Exception {
-    String token = jwtService.generar("admin-1", "ADMIN");
-    mockMvc.perform(delete("/api/entregas/42")
-            .header("Origin", "https://web.academia.dev")
-            .header("Authorization", "Bearer " + token))
-        .andExpect(status().isOk())
-        .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"));
-}
-```
-
-Añade los imports estáticos `delete` y `status` si todavía no están. Ejecuta `./mvnw -q -Dtest=CorsConfigTest test`.
-
-**Resultado esperado:** la petición real devuelve `200` y el header de origen aprobado. El preflight no lleva token; la petición `DELETE` posterior sí. MockMvc verifica la respuesta del servidor, pero no reemplaza una prueba en navegador.
-
-**Fallo deliberado y diagnóstico:** quita `"Authorization"` de `setAllowedHeaders(...)` y ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightPermitidoInformaOrigenYHeaders test`. Spring devuelve `403` porque el navegador pregunta permiso para enviar ese encabezado; restaura `"Authorization"`.
-
-**Entiende:** CSRF importa cuando el navegador agrega la credencial sin que el código de la página tenga que presentarla; eso sucede con cookies de sesión. Aquí la API no usa sesión, y JavaScript debe enviar el JWT explícitamente en `Authorization`, por eso el Tema 2 desactiva CSRF. Si guardas el JWT en una cookie enviada automáticamente, vuelve a evaluar CSRF y el modo `SameSite`; el hecho de que sea JWT no lo exime.
-
-**Práctica:** cambia el encabezado por un origen ajeno y comprueba que el navegador no podría leer la respuesta aunque el endpoint responda internamente. No confundas ese bloqueo del navegador con un `401` o un `403` de autorización.
-
-**Cierra:** conserva los tests de preflight y petición real en verde.
-
-#### Subtema 4.9 · Ajustar métodos y detectar configuraciones amplias · 10 min
-
-**Contexto:** un origen aprobado tampoco debería poder invocar métodos que el frontend no usa. CORS limita el intercambio del navegador a los métodos y cabeceras declarados.
-
-**Hazlo tú:** añade a `CorsConfigTest.java` una prueba que solicite `PATCH`, método que el cliente no tiene permitido:
-
-```java
-@Test
-void preflightDeMetodoNoListadoRecibe403() throws Exception {
-    mockMvc.perform(options("/api/entregas/42")
-            .header("Origin", "https://web.academia.dev")
-            .header("Access-Control-Request-Method", "PATCH"))
-        .andExpect(status().isForbidden());
-}
-```
-
-Ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeMetodoNoListadoRecibe403 test`.
-
-**Resultado esperado:** `403`; la configuración permite `GET`, `POST` y `DELETE`, pero no `PATCH`.
-
-**Fallo deliberado y diagnóstico:** cambia `setAllowedMethods(List.of("GET", "POST", "DELETE"))` por `setAllowedMethods(List.of("*"))` y repite el test. Falla porque `PATCH` ahora queda permitido: compara los métodos de la petición con la lista y restaura los tres métodos explícitos.
-
-**Entiende:** dar permiso CORS a un origen no le da acceso al endpoint; JWT y `@PreAuthorize` siguen decidiendo autenticación y rol. Evita `*` si no es necesario. Si habilitas cookies con `allowCredentials(true)`, limita todavía más orígenes y cabeceras; Spring no permite combinar credenciales con `allowedOrigins("*")`.
-
-**Práctica:** agrega a la configuración solo un segundo origen real de staging y comprueba preflight para ambos. Explica si cada ambiente necesita `GET`, `POST` o `DELETE`.
-
-**Límite:** CORS solo controla navegadores. No es una barrera para Postman, `curl` ni una petición servidor a servidor.
-
-**Cierra:** entrega los tres resultados de preflight y el `DELETE` autenticado. Referencias: [Spring Security — CORS](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html) y [Spring Security — CSRF](https://docs.spring.io/spring-security/reference/features/exploits/csrf.html).
-
----
-
-### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter
-
-**Meta:** configurar un cliente saliente de Spring Boot 4 que rechace direcciones internas, poner límites al tiempo de conexión y comprobar que no sigue redirecciones. Esto reduce una vía de SSRF en ese cliente; no convierte en segura cualquier URL ni reemplaza reglas de salida de red.
-
-**¿Por qué es importante?** Una función que obtiene una imagen o consulta un webhook por una URL recibida puede terminar conectándose a servicios internos. El control se coloca en el cliente HTTP usado para hacer la petición. Si el endpoint usa otro cliente, proxy o SDK, este filtro no lo cubre.
-
-#### Subtema 4.10 · Crear un RestClient con límites · 10 min
-
-**Contexto:** `InetAddressFilter.externalAddresses()` permite direcciones externas y excluye direcciones internas conocidas. Combínalo con timeouts y redirects desactivados. La allowlist de hosts de negocio y las reglas de egreso siguen siendo controles útiles: una IP pública también puede ser un destino que tu aplicación no debería consultar.
-
-**Hazlo tú:** Desde la raíz, copia el laboratorio autocontenido y entra en él:
-
-```bash
-cp -R examples/spring-ssrf /tmp/ssrf-lab
-cd /tmp/ssrf-lab
-./mvnw -q -DskipTests package
-```
-
-Abre `src/main/java/com/academia/SafeClient.java`. Allí `SafeClient.externalOnly()` crea un `RestClient` JDK con el filtro, timeout de conexión y lectura de dos segundos, y `DONT_FOLLOW` para redirects. Sigue esos métodos desde `SafeClient.create(...)` hasta `ClientHttpRequestFactoryBuilder.jdk()`.
-
-**Resultado esperado:** Maven termina con código `0`; el laboratorio compila con Spring Boot `4.1.2` y JDK `25`.
-
-**Fallo deliberado y diagnóstico:** cambia temporalmente `externalAddresses()` por `all()` en `externalOnly()` y ejecuta `./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer test`. La prueba falla porque ahora la petición llega al servidor local en vez de lanzar `FilteredHostException`. Restaura `externalAddresses()`.
-
-**Entiende:** el filtro pertenece a la configuración del cliente saliente; no inspecciona automáticamente todas las peticiones de la aplicación. Los timeouts limitan cuánto espera el cliente. `DONT_FOLLOW` evita que una respuesta lo redirija a otra URL sin una nueva decisión explícita.
-
-**Cierra:** señala las tres opciones en `SafeClient` y describe cuál limita destino, espera y redirección.
-
-#### Subtema 4.11 · Probar destinos internos con un servidor local · 10 min
-
-**Contexto:** una prueba que solo comprueba una excepción podría pasar porque el servidor estaba apagado. El control positivo debe demostrar que el mismo servidor sí responde cuando se permite la dirección local.
-
-**Hazlo tú:** Ejecuta desde `examples/spring-ssrf`:
-
-```bash
-./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer,SafeClientTest#excludesInternalAndMetadataRangesWithoutConnecting test
-```
-
-Lee `src/test/java/com/academia/SafeClientTest.java`: el servidor escucha solo en `127.0.0.1` en un puerto efímero. Primero el cliente filtrado debe lanzar `FilteredHostException` y el contador debe quedar en cero; luego el control con `InetAddressFilter.all()` recibe `local fixture`. La segunda prueba clasifica loopback, red privada, link-local `169.254.169.254`, IPv6 loopback y una IP externa conocida sin abrir conexiones.
-
-**Resultado esperado:** las dos pruebas pasan; el rechazo no es un timeout y el control positivo confirma que el servidor estaba disponible. No se llama a servicios cloud ni a terceros.
-
-**Fallo deliberado y diagnóstico:** elimina temporalmente la aserción `assertEquals(0, received.get())` y cambia `externalAddresses()` por `all()`. Ejecuta el comando otra vez: verás que el test pierde la garantía de que la petición se detuvo antes de llegar al servidor. Restaura ambos cambios.
-
-**Entiende:** el rechazo de `169.254.169.254` aquí se prueba como clasificación de dirección; no se solicita ese destino real. DNS y transporte tienen detalles propios, así que no presentes esta prueba como cobertura de DNS rebinding.
-
-**Cierra:** explica por qué la prueba necesita tanto el contador en cero como el control que alcanza el servidor.
-
-#### Subtema 4.12 · Impedir redirects y definir el límite de protección · 10 min
-
-**Contexto:** incluso una primera URL aceptable puede responder con una redirección a otro destino. El laboratorio verifica la decisión del cliente en una pareja de servidores locales.
-
-**Hazlo tú:** ejecuta el caso de redirección:
-
-```bash
-./mvnw -q -Dtest=SafeClientTest#doesNotFollowRedirectToAnotherAddress test
-```
-
-El primer servidor devuelve `302` apuntando al segundo; el cliente debe devolver `302` y el contador del servidor destino debe permanecer en cero. Para cerrar el tema, ejecuta toda la suite:
+Desde la raíz del proyecto ejecuta:
 
 ```bash
 ./mvnw -q clean test
 ```
 
-**Resultado esperado:** tres pruebas pasan. Si tu producto necesita redirects, valida cada destino y limita la cantidad de saltos con una estrategia explícita antes de habilitarlos.
+**Resultado esperado:** `BUILD SUCCESS`. Flyway crea las tablas antes de que Hibernate valide las tres entidades; el test también guarda y vuelve a buscar una tarea.
 
-**Fallo deliberado y diagnóstico:** cambia `HttpRedirects.DONT_FOLLOW` por `HttpRedirects.FOLLOW` en `SafeClient.java` y repite el primer comando. La prueba falla porque obtiene `200` y el servidor destino recibe la solicitud. Restaura `DONT_FOLLOW` y confirma el test verde.
+**Fallo deliberado y diagnóstico:** cambia `ubicacion_interna VARCHAR(255)` por `ubicacion_extra VARCHAR(255)` en V1 y vuelve a ejecutar `./mvnw -q clean test`. Hibernate falla con `Schema validation: missing column [ubicacion_interna] in table [tareas]`: el nombre del SQL ya no coincide con el atributo de la entidad. Restaura `ubicacion_interna`.
 
-**Entiende:** este filtro solo se aplica a clientes construidos con estos ajustes. Cuando se usa un proxy que resuelve el host por su cuenta, hay que configurar la política de destinos en el proxy o en el egreso de red. Una IP externa aún puede ser indeseada; combina este filtro con una allowlist de hosts/servicios cuando el caso lo requiera. Fuentes: [API oficial de InetAddressFilter](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/InetAddressFilter.html), [API oficial de HttpClientSettings](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/http/client/HttpClientSettings.html) y [notas de Spring Boot 4.1](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1-Release-Notes).
+**Entiende:** `spring-boot-starter-flyway` ejecuta migraciones al iniciar; H2 en memoria es compatible con este starter. `V1__crear_esquema_inicial.sql` significa versión 1, separador doble guion bajo y descripción. Hibernate no cambia el esquema con `validate`; solo compara el mapeo con lo que Flyway creó. **Límite:** esta prueba ejecuta el SQL en H2; antes de desplegarlo, comprueba también la migración contra el motor de base de datos del ambiente final. [Spring Boot — inicialización con Flyway](https://docs.spring.io/spring-boot/4.1/how-to/data-initialization.html).
 
-**Cierra:** conserva la suite verde y resume qué limita el filtro y qué parte debe cubrir el proxy o la red. No afirmes que un test local certifica el control de todos los destinos de producción.
+**Cierra:** deja el test verde y conserva V1 como la definición revisable de las tablas actuales. La documentación de Flyway explica que las migraciones versionadas se aplican una vez y se registran en su tabla de historial: [Flyway — Versioned migrations](https://documentation.red-gate.com/fd/versioned-migrations-273973333.html).
 
----
+#### Subtema 4.2 · Aplicar un cambio nuevo con V2 · 10 min
 
-**Aplicación y decisión:** En el proyecto integrador, aplica el filtro IP también al destino resuelto y controla redirects; validar solo la cadena inicial no limita una redirección posterior. El laboratorio local no acredita todas las condiciones DNS ni una política de red del despliegue.
+**Contexto:** El equipo quiere buscar por prioridad con frecuencia. Agregar un índice cambia el esquema aunque no cambie el JSON ni los campos Java.
 
-### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
+**Hazlo tú:** Crea `src/main/resources/db/migration/V2__indice_prioridad_tareas.sql`:
 
-Al final podrás encadenar el login, la emisión del JWT del subtema 4.4 y el acceso protegido del subtema 4.5. Conserva el paquete `com.example.demo` y una única clase `JwtService`.
-
-**¿Por qué es importante?** Una contraseña correcta debe producir un token; ese token debe identificar al mismo usuario en cada petición siguiente. Si se omite cualquiera de las dos verificaciones, una API puede autenticar mal o abrir rutas privadas.
-
-```mermaid
-sequenceDiagram
-  Cliente->>API: POST /api/auth/login (email + contraseña)
-  API->>API: PasswordEncoder.matches
-  API->>JwtService: generar(email, rol)
-  API-->>Cliente: 200 { token }
-  Cliente->>API: GET /api/usuarios sin token
-  API-->>Cliente: 401
-  Cliente->>API: GET /api/usuarios con Bearer
-  API-->>Cliente: 200 { email, rol }
+```sql
+CREATE INDEX idx_tareas_prioridad ON tareas(prioridad);
 ```
 
-#### Subtema 4.13 · Comparar la contraseña sin guardarla en texto plano · 10 min
-
-**Contexto:** `JwtService` ya firma el token y `JwtFilter` ya comprueba su firma. El login solo decide si las credenciales permiten pedir ese token.
-
-**Hazlo tú:** En `src/main/java/com/example/demo/SecurityConfig.java`, registra el comparador que usa Spring Security:
+En `MigracionesTest.java`, añade este método dentro de la clase:
 
 ```java
-@Bean
-PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+@Test
+void flywayAplicoV1YV2EnOrden() {
+    assertThat(flyway.info().applied())
+        .extracting(migration -> migration.getVersion().getVersion())
+        .contains("1", "2");
+    assertThat(flyway.info().current().getVersion().getVersion()).isEqualTo("2");
 }
 ```
 
-Añade estos imports si faltan:
-
-```java
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-```
-
-Crea `src/main/java/com/example/demo/LoginRequest.java`:
-
-```java
-package com.example.demo;
-
-public record LoginRequest(String email, String password) {}
-```
-
-Crea `src/main/java/com/example/demo/AuthController.java`:
-
-```java
-package com.example.demo;
-
-import java.util.Map;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-    private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
-    private final String emailDemo = "ana@rutaflow.dev";
-    private final String hashDemo;
-
-    public AuthController(JwtService jwtService, PasswordEncoder passwordEncoder) {
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-        this.hashDemo = passwordEncoder.encode("clave-larga-segura");
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
-        String email = request.email() == null ? "" : request.email();
-        String password = request.password() == null ? "" : request.password();
-        if (!emailDemo.equals(email) || !passwordEncoder.matches(password, hashDemo)) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
-        }
-        return ResponseEntity.ok(Map.of("token", jwtService.generar(email, "ADMIN")));
-    }
-}
-```
-
-`hashDemo` vive en memoria para que este ejemplo se pueda ejecutar sin una base de usuarios. En una aplicación real se carga el hash persistido de la cuenta; no se vuelve a guardar ni a comparar la contraseña en texto plano. El usuario de demostración es `ana@rutaflow.dev` / `clave-larga-segura`.
-
-**Resultado esperado:** `./mvnw -q compile` termina sin errores. Para probar el login, el `SecurityFilterChain` debe dejar pasar `/api/auth/**` antes de exigir identidad.
-
-**Fallo deliberado y diagnóstico:** cambia el email de demostración en el código por `otra@rutaflow.dev` y ejecuta el test de login válido del subtema siguiente. La respuesta será `401`: revisa qué compara `emailDemo.equals(email)` y restaura el correo.
-
-**Entiende:** BCrypt guarda un hash con salt. `matches(textoIngresado, hashGuardado)` compara la entrada contra ese hash; no hay que “desencriptarlo”. `JwtService` se reutiliza: no crees una segunda clase ni otra clave. Referencias: [Spring Security — Password Storage](https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html) y [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
-
-**Cierra:** encuentra el punto donde se compara la contraseña y el punto donde solo después se firma el token.
-
-#### Subtema 4.14 · Usar el token en una ruta protegida · 10 min
-
-**Contexto:** el filtro JWT del subtema 4.5 coloca el correo en la identidad de la petición. Devuelve ese correo para ver que el token emitido y la ruta usan el mismo usuario.
-
-**Hazlo tú:** Crea `src/main/java/com/example/demo/UsuariosController.java`:
-
-```java
-package com.example.demo;
-
-import java.util.Map;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class UsuariosController {
-    @GetMapping("/api/usuarios")
-    public Map<String, String> usuarioActual(Authentication authentication) {
-        String rol = authentication.getAuthorities().iterator().next().getAuthority();
-        return Map.of("email", authentication.getName(), "rol", rol);
-    }
-}
-```
-
-En `src/main/java/com/example/demo/SecurityConfig.java`, permite solo el endpoint de login y conserva las demás rutas protegidas:
-
-```java
-.requestMatchers("/api/auth/**", "/public/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-.anyRequest().authenticated())
-```
-
-En `src/test/resources/application.properties`, usa la clave de prueba ya usada por `JwtFilterTest` (no es una clave de producción):
-
-```properties
-security.jwt.secret-base64=VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=
-```
-
-Crea `src/test/java/com/example/demo/LoginFlowTest.java` y añade la prueba que encadena login → token → ruta protegida:
-
-```java
-package com.example.demo;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class LoginFlowTest {
-    @Autowired MockMvc mockMvc;
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    @Test
-    void loginEntregaTokenQueAbreLaRutaProtegida() throws Exception {
-        String body = """
-            {"email":"ana@rutaflow.dev","password":"clave-larga-segura"}
-            """;
-        String respuesta = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON).content(body))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
-        JsonNode token = mapper.readTree(respuesta).get("token");
-        assertTrue(token != null && !token.asText().isBlank());
-
-        mockMvc.perform(get("/api/usuarios")).andExpect(status().isUnauthorized());
-        var protegida = mockMvc.perform(get("/api/usuarios")
-                .header("Authorization", "Bearer " + token.asText()))
-            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertEquals("ana@rutaflow.dev", mapper.readTree(protegida).get("email").asText());
-        assertEquals("ROLE_ADMIN", mapper.readTree(protegida).get("rol").asText());
-    }
-}
-```
-
-Ejecuta desde la raíz de `academia-spring`:
+Ejecuta desde la raíz:
 
 ```bash
-./mvnw -q -Dtest=LoginFlowTest test
+./mvnw -q clean test
 ```
 
-**Resultado esperado:** el test ve `200` en el login, `401` al pedir `/api/usuarios` sin token y `200` con el bearer emitido. El correo de la respuesta protegida coincide con el usuario autenticado.
+**Resultado esperado:** pasan las pruebas anteriores y la nueva; `Flyway.info()` muestra V1 y V2 como aplicadas, con V2 como versión actual.
 
-**Fallo deliberado y diagnóstico:** quita `/api/auth/**` de los matchers públicos y vuelve a ejecutar el test. El propio login recibe `401`; restablece el matcher público.
+**Fallo deliberado y diagnóstico:** en V2 cambia `tareas` por `tareaas` y ejecuta el comando. H2 informa `Table "TAREAAS" not found`; el nombre no coincide con el creado en V1. Restaura `tareas` y vuelve a ejecutar.
 
-**Entiende:** el cliente extrae el token de la respuesta y lo envía como `Authorization: Bearer ...`. El filtro valida la firma y establece la identidad; el controller no vuelve a leer la contraseña.
+**Entiende:** el índice acelera ciertos filtros a cambio de espacio y trabajo adicional al insertar o cambiar filas. La migración tiene una versión nueva; Flyway registra cada aplicación en `flyway_schema_history`. `clean test` parte de `target` limpio, lo que también retira recursos de migración eliminados durante este laboratorio.
 
-**Cierra:** conserva el token generado en la variable de la prueba; no lo pegues en el código como una credencial fija.
+**Cierra:** guarda la prueba que muestra V1 y V2. Anota que este índice es una hipótesis que debe medirse con consultas y volumen representativos antes de llevarlo a producción.
 
-#### Subtema 4.15 · Rechazar credenciales incorrectas · 10 min
+#### Subtema 4.3 · Diagnosticar versiones repetidas · 8 min
 
-**Contexto:** el token solo se emite si coinciden correo y contraseña. Para quien llama, ambos errores deben dar el mismo estado y mensaje para no revelar qué correo existe.
+**Contexto:** Dos ramas pueden agregar por accidente archivos con la misma versión. Detecta ese choque antes de desplegar.
 
-**Hazlo tú:** En `LoginFlowTest.java`, agrega estas pruebas:
+**Hazlo tú:** Crea temporalmente `src/main/resources/db/migration/V2__otra.sql`:
+
+```sql
+SELECT 1;
+```
+
+Ejecuta:
+
+```bash
+./mvnw -q clean test
+```
+
+**Resultado esperado:** el arranque falla con `Found more than one migration with version 2`. Flyway ve dos archivos V2, aunque uno solo tenga `SELECT 1`.
+
+**Fallo deliberado y diagnóstico:** el duplicado anterior es el fallo. Diagnostícalo listando `src/main/resources/db/migration/`; deben verse V1 y una sola V2. Borra `V2__otra.sql` y ejecuta otra vez `./mvnw -q clean test`.
+
+**Entiende:** una migración versionada se aplica una vez y su contenido queda vinculado a un checksum. No edites una migración que ya compartiste o desplegaste; prepara `V3__...sql` para un cambio posterior. Así el historial sigue explicando qué esquema recibió cada versión. [Flyway — historial y validación](https://documentation.red-gate.com/flyway/flyway-concepts/migrations/flyway-schema-history-table).
+
+**Cierra:** conserva una ejecución verde tras quitar el duplicado y explica por qué el próximo cambio debe ser V3. Este backend acumulativo ya combina DTO/API, JPA, medición N+1 y esquema versionado para el proyecto integrador.
+
+### Tema 5: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min
+
+**Prerrequisito:** tema «Entidades y repositorios derivados» de este módulo.
+
+**Al finalizar podrás:** guardar un envío con sus paradas como un solo documento, consultarlo con métodos derivados y una agregación simple, y decidir cuándo un modelo de documentos encaja mejor que uno relacional.
+
+**¿Por qué es importante?** Algunos datos se leen siempre juntos: un envío con su historial de posiciones. En una base relacional eso son varias tablas y uniones; en MongoDB es un documento. Elegir bien el modelo simplifica el código y las consultas.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Spring Boot 4.1.2 y JDK 25 en `academia-spring` (paquete `com.example.demo`), agrega `spring-boot-starter-data-mongodb` y usa Docker para levantar MongoDB: `docker run -d --name mongo -p 27017:27017 mongo:8`.
+
+#### Paso 2 · Contexto y caso real
+
+El historial de eventos de cada envío de RutaFlow (creado, en bodega, en ruta, entregado) crecía en una tabla de millones de filas unida al envío. La pantalla de seguimiento hacía tres consultas. Con un documento por envío que contiene su historial, basta una lectura.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** documento, colección, `@Document`, `@Id`, documento embebido, `MongoRepository`, consulta derivada, agregación.
+
+MongoDB guarda **documentos** (parecidos a JSON) en **colecciones**. Un documento puede contener listas y objetos **embebidos**, así que un envío y sus eventos viajan juntos.
+
+Spring Data MongoDB funciona como Spring Data JPA: anotas la clase con `@Document`, creas una interfaz que extiende `MongoRepository` y los **métodos derivados** (`findByEstado`) se convierten en consultas.
+
+| Encaja con documentos | Encaja con relacional |
+|---|---|
+| datos que se leen juntos (envío + historial) | datos compartidos entre muchas entidades |
+| estructura que cambia entre registros | transacciones entre muchas tablas |
+| lectura rápida por clave | reportes con muchas uniones |
+
+**Analogía:** un documento es una carpeta física con todo el expediente del envío adentro; una base relacional es un archivador donde cada tipo de papel va en su cajón y se juntan al consultar. La analogía falla en que, si muchos expedientes comparten el mismo papel, copiarlo en cada carpeta vuelve difícil mantenerlo al día.
+
+**Límite de uso:** un documento tiene un límite de 16 MB: no embebas listas que crecen sin fin (todas las posiciones GPS de un año). No uses MongoDB para datos con muchas relaciones y reportes complejos solo porque «no tiene esquema».
+
+```mermaid
+flowchart LR
+    subgraph D["documento envios: ENV-42"]
+      C["codigo, estado, ciudad"]
+      H["eventos: [creado, en_bodega, en_ruta]"]
+    end
+    R["EnvioRepository.findByEstado"] --> D
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-spring/src/main/java/com/example/demo/envios/Envio.java` (dentro de `com.example.demo`, para que el escaneo lo encuentre):
 
 ```java
-@Test
-void passwordIncorrectaNoEmiteToken() throws Exception {
-    String body = """
-        {"email":"ana@rutaflow.dev","password":"incorrecta"}
-        """;
-    var respuesta = mockMvc.perform(post("/api/auth/login")
-            .contentType(MediaType.APPLICATION_JSON).content(body))
-        .andExpect(status().isUnauthorized())
-        .andReturn().getResponse();
-    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
-}
+package com.example.demo.envios;
 
-@Test
-void emailDesconocidoUsaElMismoError() throws Exception {
-    String body = """
-        {"email":"nadie@rutaflow.dev","password":"incorrecta"}
-        """;
-    var respuesta = mockMvc.perform(post("/api/auth/login")
-            .contentType(MediaType.APPLICATION_JSON).content(body))
-        .andExpect(status().isUnauthorized())
-        .andReturn().getResponse();
-    assertEquals("{\"error\":\"Credenciales inválidas\"}", respuesta.getContentAsString());
+import java.time.Instant;
+import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("envios")
+public record Envio(@Id String codigo, String estado, String ciudad, List<Evento> eventos) {
+    public record Evento(String tipo, Instant cuando) {} // embebido: viaja con el envío
 }
 ```
 
-**Resultado esperado:** `./mvnw -q clean test` termina sin errores; los cuatro recorridos pasan: login válido, ruta sin token, ruta con token y credenciales incorrectas.
+Archivo `academia-spring/src/main/java/com/example/demo/envios/EnvioRepository.java`:
 
-**Fallo deliberado y diagnóstico:** cambia temporalmente la llamada a `passwordEncoder.matches(password, hashDemo)` por `passwordEncoder.matches("otra", hashDemo)`. `loginEntregaTokenQueAbreLaRutaProtegida` falla en el primer `200` esperado porque el servidor responde `401`. Restaura la entrada `password`.
+```java
+package com.example.demo.envios;
 
-**Entiende:** estos tests verifican estado, cuerpo y recorrido entre componentes; el usuario y hash en memoria son datos de laboratorio. En producción conecta el lookup con persistencia y configura rate limiting, TLS, secretos y política de sesión según el sistema. Dar el mismo error no garantiza que dos caminos tarden lo mismo; el laboratorio no verifica tiempos ni reemplaza el mecanismo estándar de autenticación de una aplicación real.
+import java.util.List;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-**Cierra:** ejecuta la suite completa y escribe de memoria el recorrido: comparar hash → firmar con `JwtService` → extraer token → validar token → autorizar ruta. Fuentes: [Spring Security — Password Storage](https://docs.spring.io/spring-security/reference/features/authentication/password-storage.html) y [Spring Security — Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/index.html).
+public interface EnvioRepository extends MongoRepository<Envio, String> {
+    List<Envio> findByEstadoAndCiudad(String estado, String ciudad); // consulta derivada
 
----
+    @Aggregation(pipeline = { "{ $group: { _id: '$estado', total: { $sum: 1 } } }", "{ $sort: { _id: 1 } }" })
+    List<ConteoPorEstado> contarPorEstado();
 
----
-Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
+    record ConteoPorEstado(String id, long total) {}
+}
+```
 
-**Aplicación y decisión:** Límite de este login: firmar y verificar un JWT no implementa por sí solo revocación, recuperación de cuenta ni protección del almacenamiento del cliente. Conserva las reglas de autorización por recurso aunque el token sea válido.
+Archivo `academia-spring/src/main/java/com/example/demo/envios/CargaInicial.java`:
+
+```java
+package com.example.demo.envios;
+
+import java.time.Instant;
+import java.util.List;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+@Component
+class CargaInicial implements CommandLineRunner {
+    private final EnvioRepository repositorio;
+    CargaInicial(EnvioRepository repositorio) { this.repositorio = repositorio; }
+
+    @Override
+    public void run(String... args) {
+        repositorio.deleteAll();
+        repositorio.saveAll(List.of(
+            new Envio("ENV-42", "EN_RUTA", "bogota", List.of(new Envio.Evento("CREADO", Instant.now()))),
+            new Envio("ENV-43", "EN_RUTA", "medellin", List.of()),
+            new Envio("ENV-44", "ENTREGADO", "bogota", List.of())));
+        System.out.println("En ruta en Bogotá: " + repositorio.findByEstadoAndCiudad("EN_RUTA", "bogota").size());
+        repositorio.contarPorEstado().forEach(c -> System.out.println(c.id() + ": " + c.total()));
+    }
+}
+```
+
+Archivo `academia-spring/src/main/resources/application.properties`:
+
+```properties
+# Desde Spring Boot 4.0 la conexión usa el prefijo spring.mongodb (antes spring.data.mongodb)
+spring.mongodb.uri=mongodb://localhost:27017/rutaflow
+```
+
+Ejecútalo:
+
+```bash
+docker run -d --name mongo -p 27017:27017 mongo:8
+./mvnw spring-boot:run
+docker exec mongo mongosh rutaflow --quiet --eval 'db.envios.findOne({_id: "ENV-42"})'
+```
+
+**Explicación por bloques:** `Envio` es un record con `@Document`: el código es el `_id` y la lista de eventos se guarda dentro del mismo documento. `EnvioRepository` declara una consulta derivada por estado y ciudad y una agregación que agrupa por estado y cuenta. `CargaInicial` limpia la colección, guarda tres envíos e imprime los resultados. Con `mongosh` ves el documento tal como quedó, con los eventos adentro.
+
+**Resultado esperado:**
+
+```text
+En ruta en Bogotá: 1
+ENTREGADO: 1
+EN_RUTA: 2
+mongosh muestra { _id: 'ENV-42', estado: 'EN_RUTA', ciudad: 'bogota', eventos: [ { tipo: 'CREADO', ... } ], _class: ... }
+```
+
+**Fallo deliberado:** detén el contenedor con `docker stop mongo` y arranca la aplicación. **Error esperado:** después de unos 30 segundos, `MongoTimeoutException: Timed out after 30000 ms while waiting to connect`. **Diagnóstico:** el driver espera a que el servidor esté disponible antes de fallar. Levanta MongoDB o baja `serverSelectionTimeoutMS` en la URI para fallar más rápido en desarrollo.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta la carga y comprueba el documento en `mongosh`.
+2. **Variación:** agrega `findByEventosTipo(String tipo)` y busca envíos con evento `CREADO`.
+3. **Diagnóstico:** reproduce el fallo deliberado y ajusta el tiempo de espera.
+4. **Integración:** crea un índice en `estado` y `ciudad` con `@CompoundIndex` y revisa `explain()` en `mongosh`.
+5. **Diseño:** decide qué datos de RutaFlow pondrías en MongoDB y cuáles en PostgreSQL, con la tabla de criterios.
+
+**Pista:** si una lista dentro del documento crece sin límite, sácala a otra colección.
+
+#### Paso 6 · Práctica independiente
+
+Escribe una prueba con Testcontainers (`MongoDBContainer`) que guarde un envío con dos eventos y compruebe la consulta derivada y la agregación.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué es un documento embebido y cuándo conviene.
+- [ ] La carga imprime los conteos esperados.
+- [ ] Reprodujiste el tiempo de espera de conexión.
+- [ ] Decides entre documentos y relacional con criterios.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** embeber listas que crecen sin fin, usar documentos para datos muy relacionados y no crear índices para las consultas frecuentes. **Siguiente paso:** el tema «El problema N+1 y su corrección» muestra el costo equivalente en el mundo relacional.
+
+**Transferencia al proyecto integrador «RutaFlow»:** guarda el historial de eventos de cada envío de RutaFlow como documento en MongoDB y mantén las tarifas y clientes en PostgreSQL.
+
+**Fuente oficial:** [Spring Data MongoDB — Reference](https://docs.spring.io/spring-data/mongodb/reference/) y [MongoDB — Data Modeling](https://www.mongodb.com/docs/manual/data-modeling/).
 
 ## Laboratorio práctico
 
-**Objetivo del laboratorio:** construir una API protegida con JWT y rutas con autorización por rol.
+**Objetivo:** llevar el backend acumulativo desde la entidad hasta un esquema reproducible y medir un acceso relacionado.
 
-**Requisitos previos:** Módulos 0-3 completados.
+| Paso | Evidencia que guardas | Resultado |
+|---|---|---|
+| 1 | `TareaRepositoryTest` y consultas del Tema 1 | ida y vuelta, filtro derivado y JPQL pasan |
+| 2 | `NMasUnoTest` | 4 sentencias perezosas frente a 1 con `JOIN FETCH` o `@EntityGraph` |
+| 3 | V1 y V2 en `src/main/resources/db/migration/` | Flyway registra ambas y Hibernate valida el mapeo |
+| 4 | `./mvnw -q clean test` | suite verde desde un `target` limpio |
 
-| Paso | Acción | Código | Explicación |
-|---|---|---|---|
-| 1 | Configurar el `SecurityFilterChain` | Ver Tema 1 | `/api/**` autenticado, `/public/**` permitido |
-| 2 | Implementar el filtro JWT | Ver Tema 2 | Valida el token real en cada request |
-| 3 | Agregar `@PreAuthorize("hasRole('ADMIN')")` | Ver Tema 2 | Verifica el 403 real sin ese rol |
-| 4 | Configurar CORS para el frontend | Ver Tema 3 | Solo el origen esperado, no `"*"` |
-| 5 | Documentar cuándo CSRF es relevante | Ver Tema 3 | Y por qué se deshabilita en esta API |
-| 6 | Configurar `InetAddressFilter` en el cliente HTTP | Ver Tema 4 | Rechaza direcciones internas en ese cliente saliente; combina con reglas de egreso |
-
-**Verificación:** comprueba con MockMvc los contratos HTTP de roles y tokens. Para SSRF ejecuta el laboratorio separado `examples/spring-ssrf`: su servidor local confirma bloqueo de loopback antes de conectar; la dirección de metadatos se clasifica sin intentar acceder a ella. Este ensayo no valida todos los clientes ni las reglas de salida del despliegue.
-
-**Errores comunes y soluciones**
-
-- **Deshabilitar CSRF en una aplicación que usa sesiones basadas en cookies.** CSRF sigue siendo relevante en ese caso; solo deshabilítalo en APIs stateless con JWT.
-- **Configurar CORS con `allowedOrigins("*")` en producción.** Restringe explícitamente a los orígenes reales esperados.
-- **Olvidar `OncePerRequestFilter` para el filtro JWT.** Sin él, el filtro podría ejecutarse más de una vez por petición en ciertas configuraciones de servlets anidados.
-- **Afirmar que una validación de URL o este filtro por sí solos detienen DNS rebinding.** Restringe hosts aceptados cuando el caso lo permite y configura el proxy o egreso de red; prueba el comportamiento del cliente usado en producción.
+No uses el número de sentencias de tres filas como un benchmark de producción; aquí demuestra dónde aparecen las consultas y cómo comparar las dos estrategias.
 
 ---

@@ -1,7 +1,7 @@
-# Tareas: referencia acumulativa de los módulos 2–7
+# Tareas: referencia acumulativa de los módulos 2 y 4–7
 
 Este proyecto reúne el estado final de la API: DTO y MapStruct, JPA, Flyway,
-validación, errores HTTP, JWT, CORS y Actuator. Incluye paginación validada,
+validación, errores HTTP, JWT validado con el resource server de Spring Security, CORS y Actuator. Incluye paginación validada,
 OpenAPI publicado y el ejercicio de campo interno `notaInterna`, excluido del DTO. Usa Java 25 y las versiones fijadas
 en `pom.xml`. Es una referencia para comparar tu trabajo al terminar los módulos;
 contiene cambios posteriores a las primeras prácticas y no sustituye construirlas

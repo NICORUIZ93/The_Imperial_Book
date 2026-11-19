@@ -76,7 +76,7 @@ Docker». En el repositorio, `foundations/modulo-12.md` es solo Electrónica (17
 de Fundamentos está en **M8 T4** (`foundations/modulo-8.md:324`), y es el que se cita aquí.
 
 Estos temas no se mueven; se enlazan para no duplicarlos:
-- Spring Boot M11 T1 (capas del JAR) y M11 T4 (Buildpacks), desde M4 T1.
+- Spring Boot M19 T1 (capas del JAR) y M11 T4 (Buildpacks), desde M4 T1.
 - DevOps M11 T1 (escaneo), desde M8 T5.
 - DevOps M14 T3 (procedencia), desde M8 T3.
 - DevOps M18 (VPS), desde M12 T3.
@@ -136,7 +136,7 @@ para que sea un contenedor.
 ### M4 · Builds profesionales con BuildKit
 **Objetivo:** producir una imagen pequeña, reproducible y multiplataforma.
 **Origen:** DevOps M2 T1, M2 T3 y M15 T1.
-- T1 · Multi-stage para Spring Boot: etapa de build con Maven y runtime con JRE (enlaza Spring Boot M11 T1) · 45 min
+- T1 · Multi-stage para Spring Boot: etapa de build con Maven y runtime con JRE (enlaza Spring Boot M19 T1) · 45 min
 - T2 · Elegir la imagen base: completa, slim, distroless y Docker Hardened Images · 40 min
 - T3 · `RUN --mount=type=cache` y `--mount=type=secret` · 40 min
 - T4 · `buildx` multiplataforma: amd64 y arm64 desde un Mac con Apple Silicon · 40 min

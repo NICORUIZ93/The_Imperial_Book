@@ -59,21 +59,62 @@ En el proyecto integrador RutaFlow, esta animación vive en `lib/features/delive
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-AnimatedContainer(
-  duration: Duration(milliseconds: 300),
-  height: expandida ? 160 : 72,
-  child: expandida ? DetalleCompacto(envio: envio) : null,
-)
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(
+      home: Scaffold(body: SafeArea(child: TarjetaEnvio(envio: Envio('RF-4471', 'Calle 80 #12-34')))),
+    ));
+
+class Envio {
+  const Envio(this.guia, this.direccion);
+  final String guia;
+  final String direccion;
+}
+
+class TarjetaEnvio extends StatefulWidget {
+  const TarjetaEnvio({required this.envio, super.key});
+  final Envio envio;
+
+  @override
+  State<TarjetaEnvio> createState() => _TarjetaEnvioState();
+}
+
+class _TarjetaEnvioState extends State<TarjetaEnvio> {
+  bool expandida = false;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () => setState(() => expandida = !expandida),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: expandida ? 160 : 72,
+          color: Colors.indigo.shade50,
+          padding: const EdgeInsets.all(12),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(widget.envio.guia),
+            if (expandida) Expanded(child: DetalleCompacto(envio: widget.envio)),
+          ]),
+        ),
+      );
+}
+
+class DetalleCompacto extends StatelessWidget {
+  const DetalleCompacto({required this.envio, super.key});
+  final Envio envio;
+
+  @override
+  Widget build(BuildContext context) => Text('Dirección: ${envio.direccion}');
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: tocar `TarjetaEnvio` cambia `expandida` y la altura del contenedor se interpola suavemente de 72 a 160 píxeles en 300ms, sin ningún código explícito de animación.
 
@@ -203,21 +244,48 @@ En el proyecto integrador RutaFlow, `TarjetaEnvio` vive en `lib/features/deliver
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
-Row(children: [
-  const Icon(Icons.local_shipping), // estático: Flutter lo omite en reconstrucciones futuras
-  Text(envio.guia),
-  RepaintBoundary(child: IndicadorSincronizando()), // aísla su repintura del resto de la tarjeta
-])
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(
+      home: Scaffold(body: Center(child: TarjetaEnvio(envio: Envio('RF-4471')))),
+    ));
+
+class Envio {
+  const Envio(this.guia);
+  final String guia;
+}
+
+class TarjetaEnvio extends StatelessWidget {
+  const TarjetaEnvio({required this.envio, super.key});
+  final Envio envio;
+
+  @override
+  Widget build(BuildContext context) => Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        const Icon(Icons.local_shipping), // estático: Flutter lo omite en reconstrucciones futuras
+        Text(envio.guia),
+        const RepaintBoundary(child: IndicadorSincronizando()), // aísla su repintura del resto de la tarjeta
+      ]);
+}
+
+class IndicadorSincronizando extends StatelessWidget {
+  const IndicadorSincronizando({super.key});
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: grabando de nuevo con DevTools, el ícono `const` ya no aparece en la lista de widgets reconstruidos en cada frame; el `IndicadorSincronizando` sigue animándose normalmente, pero su repintura ya no obliga a repintar el resto de `TarjetaEnvio`.
 

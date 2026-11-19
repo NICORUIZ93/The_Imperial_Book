@@ -6,7 +6,7 @@
 ### Tema 1: Pipeline Gradle multiplataforma en CI
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a configurar un pipeline de CI que compile y pruebe el módulo `shared` contra el target Android y el target iOS en cada push, usando un runner macOS específicamente para iOS. Prerrequisitos: JDK 27 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»), y acceso a un runner CI con macOS.
+Al finalizar vas a configurar un pipeline de CI que compile y pruebe el módulo `shared` contra el target Android y el target iOS en cada push, usando un runner macOS específicamente para iOS. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»), y acceso a un runner CI con macOS.
 
 #### Paso 2 · Contexto y caso real
 Un cambio en `commonMain` compiló perfectamente en el pipeline que solo corría `assembleDebug` de Android, se mergeó a `main`, y recién se descubrió roto para iOS tres días después, cuando alguien intentó hacer un build de release.
@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
-          java-version: '27'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: ./gradlew :shared:allTests   # en Linux ejecuta los tests de JVM y Android; los de iOS se omiten
   build-android:
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
-          java-version: '27'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: ./gradlew :androidApp:assembleDebug
   build-ios:
@@ -82,12 +82,12 @@ jobs:
       - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
-          java-version: '27'
+          java-version: '25'
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - run: ./gradlew :shared:iosSimulatorArm64Test :shared:linkDebugFrameworkIosArm64
 ```
 
-**Explicación por bloques:** `on:` dispara el workflow en cada push a `main` y en cada pull request. Cada job necesita `runs-on` (la máquina) y sus propios pasos de preparación, porque los jobs no comparten disco: `actions/checkout` descarga el código, `actions/setup-java` instala el JDK 27 y `gradle/actions/setup-gradle` configura la caché de Gradle. Las acciones se fijan por el SHA completo del commit (con la versión en un comentario) porque una etiqueta como `v7` se puede mover a otro código; un SHA no. `needs: test-common` hace que los builds de plataforma esperen a que pasen los tests comunes. En Linux, `allTests` no puede ejecutar los tests de iOS; por eso `build-ios` ejecuta `iosSimulatorArm64Test` en macOS además de enlazar el framework.
+**Explicación por bloques:** `on:` dispara el workflow en cada push a `main` y en cada pull request. Cada job necesita `runs-on` (la máquina) y sus propios pasos de preparación, porque los jobs no comparten disco: `actions/checkout` descarga el código, `actions/setup-java` instala el JDK 25 y `gradle/actions/setup-gradle` configura la caché de Gradle. Las acciones se fijan por el SHA completo del commit (con la versión en un comentario) porque una etiqueta como `v7` se puede mover a otro código; un SHA no. `needs: test-common` hace que los builds de plataforma esperen a que pasen los tests comunes. En Linux, `allTests` no puede ejecutar los tests de iOS; por eso `build-ios` ejecuta `iosSimulatorArm64Test` en macOS además de enlazar el framework.
 
 **Ejecuta el ejemplo** (en un proyecto KMP con Gradle; `commonTest` es un *source set*, no una tarea, y `allTests` ejecuta sus pruebas en cada destino declarado):
 

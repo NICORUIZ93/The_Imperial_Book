@@ -140,6 +140,8 @@ Explica por qué este stream se cierra como un archivo. Fuente oficial: [Path y 
 
 ### Tema 2: Serialización con Jackson
 
+**Versión:** este tema usa Jackson 2 (`com.fasterxml.jackson`), que aún traen muchas librerías. Spring Boot 4 usa Jackson 3 (`tools.jackson`), con excepciones no comprobadas y otros valores por defecto; las diferencias se practican en [Spring Boot M2 T7](/curso/spring-boot/2).
+
 **¿Por qué es importante?** Los servicios intercambian JSON; convertirlo con tipos claros hace más fácil detectar datos inválidos.
 
 #### Subtema 2.1: Convierte un record a JSON y de vuelta · 10 min

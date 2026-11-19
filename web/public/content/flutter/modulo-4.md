@@ -53,23 +53,54 @@ En el proyecto integrador RutaFlow, el prop drilling de este tema vive en `lib/f
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: Scaffold(body: SafeArea(child: App()))));
+
+class App extends StatefulWidget {
+  const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
 class _AppState extends State<App> {
   int pendientes = 3;
+
+  @override
   Widget build(BuildContext context) => Column(children: [
-    BarraSuperior(pendientes: pendientes), // prop drilling: pasado manualmente
-    ListaEnvios(onEntregado: () => setState(() => pendientes--)),
-  ]);
+        BarraSuperior(pendientes: pendientes), // prop drilling: pasado manualmente
+        ListaEnvios(onEntregado: () => setState(() => pendientes--)),
+      ]);
+}
+
+class BarraSuperior extends StatelessWidget {
+  const BarraSuperior({required this.pendientes, super.key});
+  final int pendientes;
+
+  @override
+  Widget build(BuildContext context) =>
+      Padding(padding: const EdgeInsets.all(16), child: Text('$pendientes pendientes'));
+}
+
+class ListaEnvios extends StatelessWidget {
+  const ListaEnvios({required this.onEntregado, super.key});
+  final VoidCallback onEntregado;
+
+  @override
+  Widget build(BuildContext context) =>
+      FilledButton(onPressed: onEntregado, child: const Text('Marcar una entrega'));
 }
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: `pendientes` vive en `_AppState` y se pasa manualmente como prop hacia abajo a ambos widgets — funciona, pero cualquier widget nuevo que necesite leer `pendientes` en un nivel más profundo del árbol exigiría repetir ese mismo reenvío manual por cada nivel intermedio.
 
@@ -347,6 +378,9 @@ Límite de la decisión: Bloc/Cubit no conviene para un contador trivial de un s
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 class PendientesCubit extends Cubit<int> {
   PendientesCubit() : super(3);
   void entregado() {
@@ -354,19 +388,37 @@ class PendientesCubit extends Cubit<int> {
   }
 }
 
-BlocBuilder<PendientesCubit, int>(
-  builder: (context, pendientes) => Text("$pendientes pendientes"),
-)
+void main() => runApp(MaterialApp(
+      home: BlocProvider(create: (_) => PendientesCubit(), child: const PantallaPendientes()),
+    ));
+
+class PantallaPendientes extends StatelessWidget {
+  const PantallaPendientes({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: BlocBuilder<PendientesCubit, int>(
+            builder: (context, pendientes) => Text("$pendientes pendientes"),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.read<PendientesCubit>().entregado(),
+          child: const Icon(Icons.check),
+        ),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add flutter_bloc
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: llamar a `entregado()` disminuye el contador en uno, pero nunca por debajo de 0 (la guarda `if (state > 0)` lo impide); esa regla puede testearse de forma completamente aislada instanciando `PendientesCubit()` directamente, sin renderizar ningún widget.
 
@@ -545,23 +597,53 @@ stateDiagram-v2
 
 #### Paso 4 · Demostración guiada desde cero
 ```dart
+import 'package:flutter/material.dart';
+import 'package:formz/formz.dart';
+
 enum ReasonError { empty }
+
 final class ReasonInput extends FormzInput<String, ReasonError> {
   const ReasonInput.pure() : super.pure('');
   const ReasonInput.dirty([super.value = '']) : super.dirty();
   @override
   ReasonError? validator(String value) => value.isEmpty ? ReasonError.empty : null;
 }
+
+void main() => runApp(const MaterialApp(
+      home: Scaffold(body: Padding(padding: EdgeInsets.all(16), child: CampoMotivo())),
+    ));
+
+class CampoMotivo extends StatefulWidget {
+  const CampoMotivo({super.key});
+
+  @override
+  State<CampoMotivo> createState() => _CampoMotivoState();
+}
+
+class _CampoMotivoState extends State<CampoMotivo> {
+  ReasonInput motivo = const ReasonInput.pure();
+
+  @override
+  Widget build(BuildContext context) => TextField(
+        decoration: InputDecoration(
+          labelText: 'Motivo',
+          // `displayError` es null mientras la entrada siga pure.
+          errorText: motivo.displayError == ReasonError.empty ? 'Escribe un motivo' : null,
+        ),
+        onChanged: (valor) => setState(() => motivo = ReasonInput.dirty(valor)),
+      );
+}
 ```
 
-**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, pega el widget en `lib/main.dart` y arráncalo en un emulador o dispositivo):
+**Ejecuta el ejemplo** (crea un proyecto Flutter desde cero, reemplaza `lib/main.dart` por el archivo completo de arriba y arráncalo en un emulador o dispositivo):
 
 ```bash
 flutter create demo_flutter
 cd demo_flutter
+flutter pub add formz
 flutter run
 ```
-Para las pruebas de widget: `flutter test`.
+Si después ejecutas `flutter test`, borra antes `test/widget_test.dart`: prueba el contador de la plantilla, que ya no existe.
 
 Resultado esperado: un `ReasonInput.pure()` sin que el usuario haya escrito nada no muestra ningún error todavía (porque está "pure"); en cuanto el usuario escribe algo y se convierte en `ReasonInput.dirty(valor)`, el validador corre y puebla el error correspondiente si el valor sigue vacío.
 

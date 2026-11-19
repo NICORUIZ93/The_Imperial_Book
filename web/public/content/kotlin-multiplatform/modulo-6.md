@@ -60,6 +60,20 @@ INSERT INTO Tarea(id, titulo, completada) VALUES (?, ?, ?);
 
 **Explicación línea por línea:** `CREATE TABLE Tarea (...)` declara el esquema real de SQL; `completada INTEGER AS Boolean` le indica a SQLDelight que, aunque SQLite almacena la columna como `INTEGER` (SQLite no tiene un tipo boolean nativo), el campo generado en la clase Kotlin `Tarea` sea `Boolean` — el mismo tipo que `completada` tiene en la entidad de dominio desde el Módulo 3/4, en vez del `Long` crudo que SQLDelight generaría por defecto para una columna `INTEGER` sin esa anotación; esa conversión requiere un `ColumnAdapter<Boolean, Long>` explícito al construir `Database(...)`, agregado a continuación. `selectTodas:` y `insertar:` son nombres de query que SQLDelight usa para generar funciones Kotlin correspondientes (`tareaQueries.selectTodas()`, `tareaQueries.insertar(...)`), cada una tipada según las columnas reales de la tabla.
 
+SQLDelight solo genera código si el módulo aplica su plugin y declara la base de datos. En `shared/build.gradle.kts`, añade `id("app.cash.sqldelight") version "<versión>"` dentro de `plugins { }` (la estable de [github.com/sqldelight/sqldelight/releases](https://github.com/sqldelight/sqldelight/releases); usa esa misma versión para `runtime` y para los drivers) y, al final del archivo, este bloque:
+
+```kotlin
+sqldelight {
+    databases {
+        create("Database") {               // nombre de la clase generada: Database
+            packageName.set("com.academia.kmp")
+        }
+    }
+}
+```
+
+El nombre `Database` fija también el de las tareas de generación: `generateCommonMainDatabaseInterface` genera el código de `commonMain`.
+
 Agrega el driver JDBC de pruebas (`app.cash.sqldelight:sqlite-driver`, JVM puro, la técnica oficial de SQLDelight para probar queries de `commonMain` sin depender de Android/iOS) al `sourceSet` `jvmTest` de `build.gradle.kts`, y crea el test real en Kotlin que ejecuta el esquema y las queries contra SQLite de verdad:
 
 ```kotlin
@@ -110,7 +124,7 @@ class TareaQueriesTest {
 
 ```bash
 # Gradle falla en generación de código, antes de compilar ningún test
-./gradlew :shared:generateCommonMainTareaInterface
+./gradlew :shared:generateCommonMainDatabaseInterface
 ```
 
 El build FALLA antes de llegar a compilar ningún test, con un error de SQLDelight que señala la línea exacta de `Tarea.sq`: `Unknown column: tituloo` — diagnostica confirmando que este es precisamente el punto del Paso 3: un ORM dinámico sin verificación en compilación dejaría pasar esa misma columna mal escrita hasta que el código que la usa corriera en producción con datos reales; SQLDelight la rechaza en la tarea de generación de código, antes de que exista siquiera un `.class` compilado. Revierte el cambio a `SELECT * FROM Tarea;` antes de continuar.

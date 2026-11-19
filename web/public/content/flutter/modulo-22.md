@@ -287,7 +287,7 @@ El consentimiento y las opciones dependen de jurisdicción, configuración de pr
 El flujo UMP de Google actualiza información de consentimiento, muestra el formulario requerido y permite comprobar `canRequestAds()`. Ejecuta el chequeo en cada arranque y evita enviar solicitudes duplicadas. La app debe ofrecer un acceso para cambiar privacidad cuando corresponda; la elegibilidad técnica del SDK no reemplaza el análisis legal/político de la app.
 
 #### Paso 4 · Demostración guiada
-UMP forma parte de la API Flutter de `google_mobile_ads`; no agregues un paquete UMP separado. Implementa un coordinador de arranque y adapta el callback oficial a `Future` con `Completer`:
+UMP forma parte de la API Flutter de `google_mobile_ads`; no agregues un paquete UMP separado. Implementa un coordinador de arranque en `lib/ads/ads_startup.dart` y adapta el callback oficial a `Future` con `Completer`:
 
 ```dart
 abstract interface class ConsentGateway {

@@ -28,7 +28,7 @@ no un registro durable.
 Una saga no hace rollback automático ni aislamiento ACID entre servicios. Si
 una compensación falla, esta demo se interrumpe y no persiste qué quedó
 pendiente. La recuperación durable, los reintentos idempotentes y el outbox
-quedan fuera de este laboratorio; M15 T7 trabaja la compensación que falla.
+quedan fuera de este laboratorio; Spring Boot M17 T7 trabaja la compensación que falla.
 
 ## Alternativa Gradle
 
