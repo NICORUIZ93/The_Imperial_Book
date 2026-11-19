@@ -44,7 +44,7 @@ export class TrackOverviewComponent {
   });
   readonly nextModuleId = computed(() => {
     const track = this.track();
-    return track ? this.progressService.nextPendingModuleId(track.id, track.modules.length) : 0;
+    return track ? this.progressService.nextPendingModuleId(track.id, track.modules.map(module => module.id)) : 0;
   });
   readonly groups = computed<ModuleGroup[]>(() => {
     const track = this.track();

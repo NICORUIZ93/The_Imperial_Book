@@ -74,7 +74,7 @@ export class CourseCatalogComponent {
       outcome: track.modules.at(-1)?.deliverable ?? 'Proyecto final de la ruta.',
       category: TRACK_GUIDES[track.id].category,
       topicCount: Object.values(this.topicIndex.data()[track.id] ?? {}).reduce((n, topics) => n + topics.length, 0),
-      nextModuleId: this.progressService.nextPendingModuleId(track.id, track.modules.length),
+      nextModuleId: this.progressService.nextPendingModuleId(track.id, track.modules.map(module => module.id)),
       guide: TRACK_GUIDES[track.id],
     }))
   );
