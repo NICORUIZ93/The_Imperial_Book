@@ -15,3 +15,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | hecho |
 | [015](015-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
 | [016](016-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |
+| [017](017-cursos-nuevos.md) | Cursos nuevos: Docker, Kubernetes, Diseño de sistemas y Microservicios completo | en curso |

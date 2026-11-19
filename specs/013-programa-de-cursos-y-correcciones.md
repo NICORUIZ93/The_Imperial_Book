@@ -38,10 +38,14 @@ editorial con el «estado final» del libro (Parte 2).
 - **P6** `pendiente` — Temas nuevos: Strangler, BFF, CQRS, despliegue *ramped* y cumplimiento legal, con la
   plantilla nueva y código ejecutado.
   Verificación: `grep -rq "Strangler" web/public/content/microservices && grep -rq "Ley 1581" web/public/content/foundations`
-- **P7** `pendiente` — Temarios de los cursos nuevos y de Microservicios completo, aprobados por el dueño.
+- **P7** `hecho` — Temarios de los cursos nuevos y de Microservicios completo, aprobados por el dueño.
   Verificación: `grep -q "Temarios aprobados por el dueño" specs/013-programa-de-cursos-y-correcciones.md`
 
 
 ## Hallazgo de la auditoría que corrige la limpieza 011
 
 Cloud M0–M1 usan el `docker-compose.yml` de la raíz; la limpieza 011 lo borró. Vuelve a la raíz como laboratorio citado (criterio C2 de specs/011 actualizado).
+
+## Temarios aprobados por el dueño
+
+El 2026-11-18 el dueño aprobó los temarios de [Docker](../docs/temarios/docker.md), [Kubernetes](../docs/temarios/kubernetes.md), [Diseño de sistemas](../docs/temarios/diseno-de-sistemas.md) y [Microservicios completo](../docs/temarios/microservicios.md). Los de **IA aplicada** y **Blockchain** quedan sin aprobar: no se escriben lecciones de esos cursos. Las lecciones se escriben en specs/017.
