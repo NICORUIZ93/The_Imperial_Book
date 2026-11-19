@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: async/await sobre promesas
+### Tema 1: async/await sobre promesas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -97,7 +97,7 @@ Ya usas `await` para dependencias y combinadores para concurrencia. El siguiente
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Encadena consulta y normalización mediante async/await. Prueba que el indicador de carga termina tanto con éxito como con error y que la UI no trata una promesa como si fuera el resultado.
 
-### Tema 2: try/catch en flujos asíncronos
+### Tema 2: try/catch en flujos asíncronos · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -188,7 +188,7 @@ Ya manejas errores donde existe contexto para decidir y propagas los demás con 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Captura errores en la frontera del cliente y conserva su causa para diagnóstico. Prueba JSON inválido y HTTP fallido por separado, mostrando mensajes útiles sin revelar el cuerpo completo de error.
 
-### Tema 3: fetch API y AbortController
+### Tema 3: fetch API y AbortController · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -265,7 +265,7 @@ Cada campo de búsqueda o filtro en vivo del proyecto integrador (SPA sin framew
 
 **Errores comunes:** reutilizar una señal abortada; mostrar cancelación como error; creer que ignorar una respuesta cancela la red; no limpiar listeners asociados.
 
-### Tema 4: Reintentos y timeouts manuales
+### Tema 4: Reintentos y timeouts manuales · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -348,7 +348,7 @@ Ya aplicas resiliencia sin convertir reintentos en duplicación o tormenta de tr
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Añade un plazo a la consulta y reintentos limitados para fallos recuperables. Usa reloj controlado y comprueba que cancelar una guía impide iniciar el siguiente intento pendiente.
 
-### Tema 5: Generadores — function*, yield y yield*
+### Tema 5: Generadores — function*, yield y yield* · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -440,7 +440,7 @@ Ya puedes producir datos bajo demanda y reconocer cuándo un array completo es i
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Recorre páginas de eventos con un generador que preserve orden y fin de datos. Interrumpe la iteración y comprueba que no solicita páginas adicionales que el usuario ya no necesita.
 
-### Tema 6: Proxies y Reflect
+### Tema 6: Proxies y Reflect · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -536,7 +536,7 @@ Ahora distingues una intercepción transversal de una regla de dominio y sabes d
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Experimenta con un proxy de diagnóstico del store en una rama del widget. Verifica lecturas y escrituras interceptadas y compara con una API explícita antes de aceptar esa complejidad.
 
-### Tema 7: Streams web: leer una respuesta de fetch por partes · Intermedio · 40 min
+### Tema 7: Streams web: leer una respuesta de fetch por partes · Avanzado · 45 min
 
 **Prerrequisito:** tema «fetch API y AbortController» de este módulo.
 

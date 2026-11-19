@@ -63,7 +63,7 @@
     {
       "track": "javascript",
       "module": 14,
-      "topic": 15,
+      "topic": 13,
       "capture": "pendiente",
       "reason": "Necesita Node.js 24 o Chrome 134 (gestión explícita de recursos); el entorno de generación tiene Node 22. Capturar `node recursos.mjs` con Node 24."
     },

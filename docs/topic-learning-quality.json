@@ -21213,7 +21213,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: Tres formas de escribir una función",
+        "topic": "Tema 4: Desestructuración, valores por defecto y rest · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21235,7 +21235,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Parámetros por defecto y rest/spread",
+        "topic": "Tema 1: Control de flujo — if, switch y loops · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21257,7 +21257,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Funciones de orden superior",
+        "topic": "Tema 2: Tres formas de escribir una función · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21279,7 +21279,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Control de flujo — if, switch y loops",
+        "topic": "Tema 6: IIFE y el objeto arguments · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21301,7 +21301,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: IIFE y el objeto arguments",
+        "topic": "Tema 3: Parámetros por defecto y rest/spread · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21323,7 +21323,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 6: Desestructuración, valores por defecto y rest",
+        "topic": "Tema 5: Funciones de orden superior · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21455,7 +21455,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Tipos básicos, interfaces y type aliases",
+        "topic": "Tema 1: Tipos básicos, interfaces y type aliases · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21477,7 +21477,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Generics",
+        "topic": "Tema 3: tsconfig esencial y modo strict · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21499,7 +21499,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: Narrowing y union types",
+        "topic": "Tema 4: Generics · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21521,7 +21521,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 4: tsconfig esencial y modo strict",
+        "topic": "Tema 2: Narrowing y union types · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21543,7 +21543,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+        "topic": "Tema 6: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21565,7 +21565,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 6: Decoradores estándar de TypeScript 5",
+        "topic": "Tema 5: Decoradores estándar de TypeScript 5 · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21763,7 +21763,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: TypeScript avanzado",
+        "topic": "Tema 1: TypeScript avanzado · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21785,7 +21785,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: Workers y ejecución fuera del hilo principal",
+        "topic": "Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21807,7 +21807,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Bundlers y optimización",
+        "topic": "Tema 3: Bundlers y optimización · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21829,7 +21829,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: Accesibilidad web",
+        "topic": "Tema 4: Accesibilidad web · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21851,7 +21851,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: WebAssembly con Rust o C",
+        "topic": "Tema 6: Geolocalización, permisos y precisión GPS · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21873,7 +21873,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: Web3 y machine learning en navegador",
+        "topic": "Tema 7: sessionStorage, cookies e IndexedDB · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21895,7 +21895,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 7: Geolocalización, permisos y precisión GPS",
+        "topic": "Tema 8: Expresiones regulares avanzadas y Unicode · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21917,7 +21917,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 8: sessionStorage, cookies e IndexedDB",
+        "topic": "Tema 9: Patrones Factory, Strategy, Observer y Pub/Sub · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21939,7 +21939,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 9: Expresiones regulares avanzadas y Unicode",
+        "topic": "Tema 10: WebSocket y comunicación en tiempo real · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21961,7 +21961,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub",
+        "topic": "Tema 12: ECMAScript moderno, Temporal e iterator helpers · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -21983,7 +21983,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 11: Service Workers, PWA y estrategias de caché",
+        "topic": "Tema 13: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22005,7 +22005,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 12: WebSocket y comunicación en tiempo real",
+        "topic": "Tema 14: WebAssembly con Rust o C · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22027,7 +22027,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 13: Typed Arrays, ArrayBuffer y DataView",
+        "topic": "Tema 15: Service Workers, PWA y estrategias de caché · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22049,7 +22049,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 14: ECMAScript moderno, Temporal e iterator helpers",
+        "topic": "Tema 5: Web3 y machine learning en navegador · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22071,7 +22071,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min",
+        "topic": "Tema 11: Typed Arrays, ArrayBuffer y DataView · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22335,7 +22335,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: map, filter, reduce, find, some/every",
+        "topic": "Tema 1: map, filter, reduce, find, some/every · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22357,7 +22357,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Set y Map frente a Array y Object",
+        "topic": "Tema 2: Set y Map frente a Array y Object · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22379,7 +22379,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: Inmutabilidad y actualización de estructuras anidadas",
+        "topic": "Tema 3: Inmutabilidad y actualización de estructuras anidadas · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22401,7 +22401,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: WeakMap y WeakSet",
+        "topic": "Tema 5: WeakMap y WeakSet · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22423,7 +22423,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 5: Métodos inmutables modernos",
+        "topic": "Tema 4: Métodos inmutables modernos · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22885,7 +22885,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: Selección y manipulación del DOM",
+        "topic": "Tema 1: Selección y manipulación del DOM · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22907,7 +22907,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Delegación de eventos",
+        "topic": "Tema 2: Delegación de eventos · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22929,7 +22929,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Formularios y validación nativa",
+        "topic": "Tema 3: Formularios y validación nativa · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22951,7 +22951,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: Web APIs — localStorage e IntersectionObserver",
+        "topic": "Tema 7: requestAnimationFrame y requestIdleCallback · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22973,7 +22973,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 5: ResizeObserver y MutationObserver",
+        "topic": "Tema 4: Formularios accesibles: validar, anunciar y conservar la entrada · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -22995,7 +22995,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 6: requestAnimationFrame y requestIdleCallback",
+        "topic": "Tema 5: Web APIs — localStorage e IntersectionObserver · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23017,7 +23017,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada",
+        "topic": "Tema 6: ResizeObserver y MutationObserver · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23039,7 +23039,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: Unit testing con Vitest",
+        "topic": "Tema 1: Unit testing con Vitest · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23061,7 +23061,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Mocks, spies y fakes",
+        "topic": "Tema 4: Mockear fetch · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23083,7 +23083,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Mockear fetch",
+        "topic": "Tema 2: ESLint, Prettier y cobertura de código · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -23105,7 +23105,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 4: ESLint, Prettier y cobertura de código",
+        "topic": "Tema 3: Mocks, spies y fakes · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: map, filter, reduce, find, some/every
+### Tema 1: map, filter, reduce, find, some/every · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -78,7 +78,7 @@ Ya eliges transformación, selección, acumulación, búsqueda o comprobación s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Filtra eventos públicos, localiza el más reciente y calcula cantidades por estado sin mutar la respuesta. Prueba historial vacío y duplicado, conservando una salida esperada para cada caso.
 
-### Tema 2: Set y Map frente a Array y Object
+### Tema 2: Set y Map frente a Array y Object · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -163,7 +163,7 @@ Ya eliges estructuras por semántica y no por costumbre. El siguiente tema actua
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Deduplica eventos por identificador y mantén su acceso directo en un Map. Inserta dos eventos con igual contenido pero distinto id y verifica que no los elimina por una comparación incorrecta.
 
-### Tema 3: Inmutabilidad y actualización de estructuras anidadas
+### Tema 3: Inmutabilidad y actualización de estructuras anidadas · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -236,80 +236,7 @@ Ya conservas historia y copias únicamente niveles modificados. El siguiente tem
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Actualiza una guía dentro del estado sin modificar el snapshot previo. Una prueba debe comparar ambos historiales y demostrar que los consumidores pueden detectar el cambio de referencia.
 
-### Tema 4: WeakMap y WeakSet
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás asociar metadatos débiles a objetos y explicar por qué no se pueden enumerar ni usar como almacenamiento de negocio.
-
-**Conocimiento previo:** `Map`, `Set`, referencias y noción básica de recolección de basura.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** El proyecto puede asociar diagnósticos temporales a objetos de lectura. Un `Map` los mantendría vivos; `WeakMap` no impide su recolección cuando desaparecen las demás referencias.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** referencias débiles, prevención de fugas de memoria, claves no enumerables.
-
-`WeakMap` y `WeakSet` son variantes de `Map` y `Set` con una diferencia crucial: mantienen referencias "débiles" a sus claves (en el caso de `WeakMap`) o a sus valores (en el caso de `WeakSet`), lo que significa que si no existe ninguna otra referencia activa a un objeto usado como clave, el recolector de basura puede liberar la memoria de ese objeto, y su entrada correspondiente en el `WeakMap`/`WeakSet` desaparece automáticamente, sin necesidad de eliminarla manualmente. Un `Map` normal, en cambio, mantiene una referencia "fuerte" a sus claves, impidiendo que el recolector de basura las libere mientras el `Map` siga existiendo, incluso si ninguna otra parte del programa las necesita ya.
-
-Esta diferencia tiene una aplicación práctica concreta: asociar metadatos adicionales a objetos (por ejemplo, datos de caché o de seguimiento) sin impedir que esos objetos se liberen de memoria cuando ya no se necesiten en ningún otro lugar del programa. Usar un `Map` normal para este propósito crearía una fuga de memoria silenciosa: los objetos nunca se liberarían mientras el `Map` exista, aunque el resto del programa ya no tenga ninguna otra referencia a ellos, porque el propio `Map` los mantendría vivos artificialmente.
-
-Una limitación importante de `WeakMap` y `WeakSet` es que no son iterables y no exponen un método para conocer su tamaño (`size`): precisamente porque sus contenidos pueden desaparecer automáticamente en cualquier momento (cuando el recolector de basura decide liberar una clave sin otras referencias), permitir iterar sobre ellos o consultar su tamaño produciría un comportamiento no determinista e impredecible, así que el lenguaje deliberadamente no expone esas capacidades para estas estructuras.
-
-En la práctica cotidiana, `WeakMap` y `WeakSet` son herramientas de uso relativamente especializado (frameworks y bibliotecas internas los usan con frecuencia para asociar metadatos a objetos DOM sin impedir su recolección cuando se eliminan de la página), pero entender su existencia y su propósito específico —prevenir fugas de memoria en asociaciones de metadatos— es valioso incluso si su uso directo en código de aplicación cotidiano es menos frecuente que `Map` y `Set` normales.
-
-**Analogía:** un `Map` normal es como una lista de invitados a un evento que, una vez escrita, obliga a mantener reservado el lugar de cada invitado indefinidamente aunque cancelen su asistencia; un `WeakMap` es como una lista que automáticamente borra el nombre de un invitado en cuanto esa persona deja de existir en cualquier otro registro del sistema, liberando su lugar sin intervención manual.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    OBJECT["objeto de vida corta"] --> APP["referencia de la aplicación"]
-    OBJECT -. "clave débil" .-> WEAK["WeakMap: metadatos"]
-    APP -->|"se elimina"| GC["elegible para recolección"]
-    WEAK -. "no impide liberar" .-> GC
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea el ejemplo independiente y guarda `src/index.js`:
-
-```bash
-mkdir ejemplo-weak
-cd ejemplo-weak
-npm init -y
-mkdir src
-```
-
-```javascript
-const diagnosticos = new WeakMap();
-const guia = { codigo: 'RF-101' };
-diagnosticos.set(guia, { revisado: true });
-console.log(diagnosticos.get(guia));
-console.log(diagnosticos.has(guia));
-```
-
-Ejecuta `node src/index.js`. Resultado esperado: el objeto `{ revisado: true }` y `true`. **Fallo deliberado:** ejecuta `diagnosticos.set('RF-102', {})`; aparecerá `TypeError` porque las claves deben ser objetos. No intentes verificar la recolección de basura; su momento no es determinista.
-
-#### Paso 5 · Práctica guiada
-
-Usa `WeakSet` para marcar objetos ya validados. **Pista:** solo admite objetos; prueba primero una cadena y diagnostica el `TypeError`.
-
-#### Paso 6 · Práctica independiente
-
-Compara una asociación de diagnósticos con `Map` y `WeakMap`. Documenta cuál permite listar, cuál conoce tamaño y cuál conviene para auditoría persistente. No intentes forzar el recolector.
-
-#### Paso 7 · Cierre
-
-Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
-
-**Errores comunes:** esperar `size`; usar claves primitivas; guardar información que debe listarse; afirmar cuándo ocurrirá la recolección.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Asocia metadatos internos a elementos del widget sin almacenarlos en una lista global permanente. Desmonta una instancia y revisa que no queda una colección fuerte que retenga todos sus nodos.
-
-### Tema 5: Métodos inmutables modernos
+### Tema 4: Métodos inmutables modernos · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -388,6 +315,79 @@ Completaste colecciones funcionales conservando versiones auditables. El siguien
 ---
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Ordena una copia del historial para mostrar lo más reciente primero. Verifica que otra vista conserva el orden original recibido de la API y que la operación no altera su arreglo compartido.
+
+### Tema 5: WeakMap y WeakSet · Avanzado · 35 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás asociar metadatos débiles a objetos y explicar por qué no se pueden enumerar ni usar como almacenamiento de negocio.
+
+**Conocimiento previo:** `Map`, `Set`, referencias y noción básica de recolección de basura.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** El proyecto puede asociar diagnósticos temporales a objetos de lectura. Un `Map` los mantendría vivos; `WeakMap` no impide su recolección cuando desaparecen las demás referencias.
+
+#### Paso 3 · Teoría con analogía
+
+**Conceptos clave:** referencias débiles, prevención de fugas de memoria, claves no enumerables.
+
+`WeakMap` y `WeakSet` son variantes de `Map` y `Set` con una diferencia crucial: mantienen referencias "débiles" a sus claves (en el caso de `WeakMap`) o a sus valores (en el caso de `WeakSet`), lo que significa que si no existe ninguna otra referencia activa a un objeto usado como clave, el recolector de basura puede liberar la memoria de ese objeto, y su entrada correspondiente en el `WeakMap`/`WeakSet` desaparece automáticamente, sin necesidad de eliminarla manualmente. Un `Map` normal, en cambio, mantiene una referencia "fuerte" a sus claves, impidiendo que el recolector de basura las libere mientras el `Map` siga existiendo, incluso si ninguna otra parte del programa las necesita ya.
+
+Esta diferencia tiene una aplicación práctica concreta: asociar metadatos adicionales a objetos (por ejemplo, datos de caché o de seguimiento) sin impedir que esos objetos se liberen de memoria cuando ya no se necesiten en ningún otro lugar del programa. Usar un `Map` normal para este propósito crearía una fuga de memoria silenciosa: los objetos nunca se liberarían mientras el `Map` exista, aunque el resto del programa ya no tenga ninguna otra referencia a ellos, porque el propio `Map` los mantendría vivos artificialmente.
+
+Una limitación importante de `WeakMap` y `WeakSet` es que no son iterables y no exponen un método para conocer su tamaño (`size`): precisamente porque sus contenidos pueden desaparecer automáticamente en cualquier momento (cuando el recolector de basura decide liberar una clave sin otras referencias), permitir iterar sobre ellos o consultar su tamaño produciría un comportamiento no determinista e impredecible, así que el lenguaje deliberadamente no expone esas capacidades para estas estructuras.
+
+En la práctica cotidiana, `WeakMap` y `WeakSet` son herramientas de uso relativamente especializado (frameworks y bibliotecas internas los usan con frecuencia para asociar metadatos a objetos DOM sin impedir su recolección cuando se eliminan de la página), pero entender su existencia y su propósito específico —prevenir fugas de memoria en asociaciones de metadatos— es valioso incluso si su uso directo en código de aplicación cotidiano es menos frecuente que `Map` y `Set` normales.
+
+**Analogía:** un `Map` normal es como una lista de invitados a un evento que, una vez escrita, obliga a mantener reservado el lugar de cada invitado indefinidamente aunque cancelen su asistencia; un `WeakMap` es como una lista que automáticamente borra el nombre de un invitado en cuanto esa persona deja de existir en cualquier otro registro del sistema, liberando su lugar sin intervención manual.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    OBJECT["objeto de vida corta"] --> APP["referencia de la aplicación"]
+    OBJECT -. "clave débil" .-> WEAK["WeakMap: metadatos"]
+    APP -->|"se elimina"| GC["elegible para recolección"]
+    WEAK -. "no impide liberar" .-> GC
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Desde una carpeta vacía crea el ejemplo independiente y guarda `src/index.js`:
+
+```bash
+mkdir ejemplo-weak
+cd ejemplo-weak
+npm init -y
+mkdir src
+```
+
+```javascript
+const diagnosticos = new WeakMap();
+const guia = { codigo: 'RF-101' };
+diagnosticos.set(guia, { revisado: true });
+console.log(diagnosticos.get(guia));
+console.log(diagnosticos.has(guia));
+```
+
+Ejecuta `node src/index.js`. Resultado esperado: el objeto `{ revisado: true }` y `true`. **Fallo deliberado:** ejecuta `diagnosticos.set('RF-102', {})`; aparecerá `TypeError` porque las claves deben ser objetos. No intentes verificar la recolección de basura; su momento no es determinista.
+
+#### Paso 5 · Práctica guiada
+
+Usa `WeakSet` para marcar objetos ya validados. **Pista:** solo admite objetos; prueba primero una cadena y diagnostica el `TypeError`.
+
+#### Paso 6 · Práctica independiente
+
+Compara una asociación de diagnósticos con `Map` y `WeakMap`. Documenta cuál permite listar, cuál conoce tamaño y cuál conviene para auditoría persistente. No intentes forzar el recolector.
+
+#### Paso 7 · Cierre
+
+Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
+
+**Errores comunes:** esperar `size`; usar claves primitivas; guardar información que debe listarse; afirmar cuándo ocurrirá la recolección.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Asocia metadatos internos a elementos del widget sin almacenarlos en una lista global permanente. Desmonta una instancia y revisa que no queda una colección fuerte que retenga todos sus nodos.
 
 ## Construcción guiada del capítulo
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: ESM frente a CommonJS
+### Tema 1: ESM frente a CommonJS · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -123,7 +123,7 @@ Ya puedes dividir responsabilidades con el formato estándar del lenguaje y diag
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Publica el cliente de seguimiento con un formato de módulos declarado. Prueba su importación en el entorno elegido y evita depender de que una herramienta convierta silenciosamente CommonJS y ESM.
 
-### Tema 2: Tree-shaking y code-splitting
+### Tema 2: Tree-shaking y code-splitting · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -245,7 +245,7 @@ Ahora diferencias quitar código imposible de alcanzar de aplazar código que s�
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa utilidades puras del módulo que monta el DOM. Comprueba el bundle de un consumidor que solo usa el cliente y confirma que no incluye la interfaz completa.
 
-### Tema 3: Vite y esbuild
+### Tema 3: Vite y esbuild · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -364,7 +364,7 @@ Ya puedes distinguir el servidor ágil de desarrollo del artefacto optimizado de
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Arranca el widget con Vite y genera su build. Prueba el resultado servido como archivos estáticos, verificando rutas de recursos cuando se integra bajo un subdirectorio.
 
-### Tema 4: package.json — exports, type y scripts
+### Tema 4: package.json — exports, type y scripts · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -470,7 +470,7 @@ Ya puedes leer `package.json` como contrato técnico y no como archivo incidenta
 
 **Límites y decisión de uso:** Exports limita entradas públicas del paquete, pero no protege secretos incluidos en el artefacto. Inspecciona los archivos empaquetados y prueba importación desde un consumidor limpio; el workspace puede ocultar dependencias faltantes.
 
-### Tema 5: import() dinámico e import.meta
+### Tema 5: import() dinámico e import.meta · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -571,7 +571,7 @@ Ya puedes convertir una capacidad opcional en un límite de carga observable y r
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Carga el módulo del mapa solo al solicitarlo y resuelve sus recursos con una base explícita. Prueba descarga fallida y ofrece la vista textual sin bloquear las consultas siguientes.
 
-### Tema 6: Webpack, Rollup y Babel/SWC
+### Tema 6: Webpack, Rollup y Babel/SWC · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

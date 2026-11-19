@@ -4214,28 +4214,28 @@
     ],
     "1": [
       {
+        "title": "Control de flujo — if, switch y loops",
+        "fragment": "tema-1-control-de-flujo-if-switch-y-loops"
+      },
+      {
         "title": "Tres formas de escribir una función",
-        "fragment": "tema-1-tres-formas-de-escribir-una-funcion"
+        "fragment": "tema-2-tres-formas-de-escribir-una-funcion"
       },
       {
         "title": "Parámetros por defecto y rest/spread",
-        "fragment": "tema-2-parametros-por-defecto-y-rest-spread"
-      },
-      {
-        "title": "Funciones de orden superior",
-        "fragment": "tema-3-funciones-de-orden-superior"
-      },
-      {
-        "title": "Control de flujo — if, switch y loops",
-        "fragment": "tema-4-control-de-flujo-if-switch-y-loops"
-      },
-      {
-        "title": "IIFE y el objeto arguments",
-        "fragment": "tema-5-iife-y-el-objeto-arguments"
+        "fragment": "tema-3-parametros-por-defecto-y-rest-spread"
       },
       {
         "title": "Desestructuración, valores por defecto y rest",
-        "fragment": "tema-6-desestructuracion-valores-por-defecto-y-rest"
+        "fragment": "tema-4-desestructuracion-valores-por-defecto-y-rest"
+      },
+      {
+        "title": "Funciones de orden superior",
+        "fragment": "tema-5-funciones-de-orden-superior"
+      },
+      {
+        "title": "IIFE y el objeto arguments",
+        "fragment": "tema-6-iife-y-el-objeto-arguments"
       }
     ],
     "10": [
@@ -4266,24 +4266,24 @@
         "fragment": "tema-1-tipos-basicos-interfaces-y-type-aliases"
       },
       {
-        "title": "Generics",
-        "fragment": "tema-2-generics"
-      },
-      {
         "title": "Narrowing y union types",
-        "fragment": "tema-3-narrowing-y-union-types"
+        "fragment": "tema-2-narrowing-y-union-types"
       },
       {
         "title": "tsconfig esencial y modo strict",
-        "fragment": "tema-4-tsconfig-esencial-y-modo-strict"
+        "fragment": "tema-3-tsconfig-esencial-y-modo-strict"
       },
       {
-        "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
-        "fragment": "tema-5-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
+        "title": "Generics",
+        "fragment": "tema-4-generics"
       },
       {
         "title": "Decoradores estándar de TypeScript 5",
-        "fragment": "tema-6-decoradores-estandar-de-typescript-5"
+        "fragment": "tema-5-decoradores-estandar-de-typescript-5"
+      },
+      {
+        "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
+        "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
       }
     ],
     "12": [
@@ -4340,48 +4340,48 @@
         "fragment": "tema-4-accesibilidad-web"
       },
       {
-        "title": "WebAssembly con Rust o C",
-        "fragment": "tema-5-webassembly-con-rust-o-c"
-      },
-      {
         "title": "Web3 y machine learning en navegador",
-        "fragment": "tema-6-web3-y-machine-learning-en-navegador"
+        "fragment": "tema-5-web3-y-machine-learning-en-navegador"
       },
       {
         "title": "Geolocalización, permisos y precisión GPS",
-        "fragment": "tema-7-geolocalizacion-permisos-y-precision-gps"
+        "fragment": "tema-6-geolocalizacion-permisos-y-precision-gps"
       },
       {
         "title": "sessionStorage, cookies e IndexedDB",
-        "fragment": "tema-8-sessionstorage-cookies-e-indexeddb"
+        "fragment": "tema-7-sessionstorage-cookies-e-indexeddb"
       },
       {
         "title": "Expresiones regulares avanzadas y Unicode",
-        "fragment": "tema-9-expresiones-regulares-avanzadas-y-unicode"
+        "fragment": "tema-8-expresiones-regulares-avanzadas-y-unicode"
       },
       {
         "title": "Patrones Factory, Strategy, Observer y Pub/Sub",
-        "fragment": "tema-10-patrones-factory-strategy-observer-y-pub-sub"
-      },
-      {
-        "title": "Service Workers, PWA y estrategias de caché",
-        "fragment": "tema-11-service-workers-pwa-y-estrategias-de-cache"
+        "fragment": "tema-9-patrones-factory-strategy-observer-y-pub-sub"
       },
       {
         "title": "WebSocket y comunicación en tiempo real",
-        "fragment": "tema-12-websocket-y-comunicacion-en-tiempo-real"
+        "fragment": "tema-10-websocket-y-comunicacion-en-tiempo-real"
       },
       {
         "title": "Typed Arrays, ArrayBuffer y DataView",
-        "fragment": "tema-13-typed-arrays-arraybuffer-y-dataview"
+        "fragment": "tema-11-typed-arrays-arraybuffer-y-dataview"
       },
       {
         "title": "ECMAScript moderno, Temporal e iterator helpers",
-        "fragment": "tema-14-ecmascript-moderno-temporal-e-iterator-helpers"
+        "fragment": "tema-12-ecmascript-moderno-temporal-e-iterator-helpers"
       },
       {
         "title": "Gestión explícita de recursos: using, await using y DisposableStack",
-        "fragment": "tema-15-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+        "fragment": "tema-13-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+      },
+      {
+        "title": "WebAssembly con Rust o C",
+        "fragment": "tema-14-webassembly-con-rust-o-c"
+      },
+      {
+        "title": "Service Workers, PWA y estrategias de caché",
+        "fragment": "tema-15-service-workers-pwa-y-estrategias-de-cache"
       }
     ],
     "2": [
@@ -4446,12 +4446,12 @@
         "fragment": "tema-3-inmutabilidad-y-actualizacion-de-estructuras-anidadas"
       },
       {
-        "title": "WeakMap y WeakSet",
-        "fragment": "tema-4-weakmap-y-weakset"
+        "title": "Métodos inmutables modernos",
+        "fragment": "tema-4-metodos-inmutables-modernos"
       },
       {
-        "title": "Métodos inmutables modernos",
-        "fragment": "tema-5-metodos-inmutables-modernos"
+        "title": "WeakMap y WeakSet",
+        "fragment": "tema-5-weakmap-y-weakset"
       }
     ],
     "5": [
@@ -4554,20 +4554,20 @@
         "fragment": "tema-3-formularios-y-validacion-nativa"
       },
       {
+        "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
+        "fragment": "tema-4-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
+      },
+      {
         "title": "Web APIs — localStorage e IntersectionObserver",
-        "fragment": "tema-4-web-apis-localstorage-e-intersectionobserver"
+        "fragment": "tema-5-web-apis-localstorage-e-intersectionobserver"
       },
       {
         "title": "ResizeObserver y MutationObserver",
-        "fragment": "tema-5-resizeobserver-y-mutationobserver"
+        "fragment": "tema-6-resizeobserver-y-mutationobserver"
       },
       {
         "title": "requestAnimationFrame y requestIdleCallback",
-        "fragment": "tema-6-requestanimationframe-y-requestidlecallback"
-      },
-      {
-        "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
-        "fragment": "tema-7-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
+        "fragment": "tema-7-requestanimationframe-y-requestidlecallback"
       }
     ],
     "9": [
@@ -4576,16 +4576,16 @@
         "fragment": "tema-1-unit-testing-con-vitest"
       },
       {
+        "title": "ESLint, Prettier y cobertura de código",
+        "fragment": "tema-2-eslint-prettier-y-cobertura-de-codigo"
+      },
+      {
         "title": "Mocks, spies y fakes",
-        "fragment": "tema-2-mocks-spies-y-fakes"
+        "fragment": "tema-3-mocks-spies-y-fakes"
       },
       {
         "title": "Mockear fetch",
-        "fragment": "tema-3-mockear-fetch"
-      },
-      {
-        "title": "ESLint, Prettier y cobertura de código",
-        "fragment": "tema-4-eslint-prettier-y-cobertura-de-codigo"
+        "fragment": "tema-4-mockear-fetch"
       }
     ]
   },

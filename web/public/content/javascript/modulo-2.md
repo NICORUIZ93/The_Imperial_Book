@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Scope léxico y closures
+### Tema 1: Scope léxico y closures · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -87,7 +87,7 @@ Ya encapsulas estado por instancia y sabes que privacidad no implica inmutabilid
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Crea una instancia del widget con su guía encerrada en un closure. Monta otra instancia y verifica que sus cambios no comparten estado accidentalmente a través de una variable global.
 
-### Tema 2: Hoisting y Temporal Dead Zone
+### Tema 2: Hoisting y Temporal Dead Zone · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -169,7 +169,7 @@ Ya distingues hoisting de inicialización. El siguiente tema muestra cómo cada 
 
 **Límites y decisión de uso:** Conocer hoisting explica un fallo, pero depender de inicialización implícita vuelve frágil el flujo. Declara y valida dependencias antes de usarlas; cambiar a var para evitar la zona temporal muerta puede sustituir un error claro por undefined.
 
-### Tema 3: Call stack y contexto de ejecución
+### Tema 3: Call stack y contexto de ejecución · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -256,7 +256,7 @@ Ya conviertes una traza en una historia de ejecución. El siguiente tema explica
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Traza la secuencia de llamadas desde submit hasta presentación del resultado. Provoca un error dentro del transformador y conserva un stack que permita ubicar la función responsable.
 
-### Tema 4: this según el modo de invocación
+### Tema 4: this según el modo de invocación · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -340,7 +340,7 @@ Ya separas scope léxico de receptor dinámico. El siguiente tema compara factor
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Registra un método del controlador como manejador y comprueba su contexto. Prueba la corrección con bind o una función envolvente y verifica que desmontar elimina exactamente el manejador registrado.
 
-### Tema 5: Module pattern y factory functions
+### Tema 5: Module pattern y factory functions · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -432,7 +432,7 @@ Ya puedes crear componentes pequeños por composición e inyección. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Expón una fábrica con montar, consultar y destruir como interfaz mínima. Una prueba debe demostrar que destruir cancela trabajo pendiente y que el consumidor no modifica directamente el estado privado.
 
-### Tema 6: Execution Context, Scope Chain y Lexical Environment
+### Tema 6: Execution Context, Scope Chain y Lexical Environment · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El Event Loop
+### Tema 1: El Event Loop · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -82,7 +82,7 @@ Ya predices orden y distingues concurrencia de paralelismo. El siguiente tema re
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Predice el orden de spinner, promesa resuelta y timer durante una consulta. Verifica la secuencia en una prueba y evita usar un retraso arbitrario como garantía de que los datos ya llegaron.
 
-### Tema 2: Promesas
+### Tema 2: Promesas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -182,7 +182,7 @@ Ya modelas una operación futura con estado final inmutable y cadenas claras. El
 
 **Límites y decisión de uso:** Una Promise representa un resultado futuro; no incluye cancelación universal del trabajo que la originó. Conecta un mecanismo de cancelación de la operación y trata el rechazo, sin asumir que dejar de esperar detiene sus efectos.
 
-### Tema 3: Promise.all, allSettled, race y any
+### Tema 3: Promise.all, allSettled, race y any · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -266,7 +266,7 @@ Ya eliges combinadores por semántica de negocio y no por conveniencia. El sigui
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Combina estado e información opcional de seguimiento con la política de fallo adecuada. Prueba una dependencia rechazada y documenta si debe ocultar todo el resultado o solo su sección secundaria.
 
-### Tema 4: El motor V8 — JIT y AST
+### Tema 4: El motor V8 — JIT y AST · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -351,7 +351,7 @@ Ya separas semántica ECMAScript de decisiones internas de V8. El siguiente tema
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Mide una transformación del historial después de calentamiento con entradas equivalentes. Conserva resultados y evita reescribir código legible basándote en una única ejecución del motor.
 
-### Tema 5: Stack, Heap y Garbage Collection
+### Tema 5: Stack, Heap y Garbage Collection · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

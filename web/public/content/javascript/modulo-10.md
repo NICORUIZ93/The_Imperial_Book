@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Debounce y throttle
+### Tema 1: Debounce y throttle · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -111,7 +111,7 @@ Ya puedes limitar frecuencia según intención, no por moda. El siguiente tema e
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aplica debounce a la búsqueda y throttle a una observación de scroll. Usa reloj controlado para contar consultas y actualizaciones; la última búsqueda debe ejecutarse aunque el usuario deje de escribir.
 
-### Tema 2: Memoización
+### Tema 2: Memoización · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -199,7 +199,7 @@ Ya puedes intercambiar cómputo por memoria de forma explícita y limitada. El s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Memoiza únicamente una transformación costosa del historial con entradas inmutables. Cambia un evento y verifica que no reutiliza un resultado obsoleto; registra memoria y tiempo antes de conservar la optimización.
 
-### Tema 3: Web Workers para trabajo pesado
+### Tema 3: Web Workers para trabajo pesado · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -293,7 +293,7 @@ Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo. El s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Procesa un historial grande en un Worker sin bloquear el campo de búsqueda. Cambia de guía durante el cálculo y descarta el resultado antiguo mediante un identificador de solicitud.
 
-### Tema 4: Profiling con DevTools
+### Tema 4: Profiling con DevTools · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -396,7 +396,7 @@ Ya puedes tratar rendimiento como experimento reproducible. El siguiente tema co
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Perfila abrir el historial y ordenar eventos con un conjunto reproducible. Guarda la traza antes y después de una mejora y confirma que el resultado y la interacción por teclado permanecen iguales.
 
-### Tema 5: Core Web Vitals
+### Tema 5: Core Web Vitals · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

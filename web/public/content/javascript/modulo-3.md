@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Prototype chain y Object.create
+### Tema 1: Prototype chain y Object.create · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -87,7 +87,7 @@ Ya entiendes herencia como delegación dinámica. El siguiente tema expresa el m
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Distingue propiedades propias de los datos de seguimiento de las heredadas. Prueba un objeto con prototipo inesperado y valida campos explícitos antes de convertirlo en un modelo público.
 
-### Tema 2: class, extends y super
+### Tema 2: class, extends y super · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -183,7 +183,7 @@ Ya sabes que `class` organiza prototipos y que `extends` expresa un contrato fue
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Implementa una abstracción pequeña para clientes de seguimiento solo si comparten contrato. Prueba una implementación HTTP y otra falsa sin exigir herencia a los objetos de datos.
 
-### Tema 3: Getters, setters y propiedades computadas
+### Tema 3: Getters, setters y propiedades computadas · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -276,7 +276,7 @@ Ya distingues propiedades derivadas de operaciones que cambian estado. El siguie
 
 **Límites y decisión de uso:** Un getter que consulta red o modifica estado hace costosa e impredecible una lectura aparente. Mantén cálculos baratos y sin efectos o utiliza un método explícito que comunique trabajo asíncrono y posibles fallos.
 
-### Tema 4: Encapsulación con campos privados (#campo)
+### Tema 4: Encapsulación con campos privados (#campo) · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -378,7 +378,7 @@ Completaste objetos y clases con invariantes impuestas por el motor. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Protege el controlador de peticiones pendientes con un campo privado. Prueba su interfaz pública y confirma que consultar una nueva guía cancela la anterior sin exponer el mecanismo interno.
 
-### Tema 5: Symbol y objetos iterables propios
+### Tema 5: Symbol y objetos iterables propios · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear claves únicas con `Symbol`, implementar el protocolo de iteración con `Symbol.iterator` y con generadores, y lograr que tus objetos funcionen con `for...of`, spread y desestructuración. Prerrequisitos: Tema 2 de este módulo (clases) y Módulo 6, Tema 5 (generadores).

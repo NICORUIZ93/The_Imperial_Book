@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Selección y manipulación del DOM
+### Tema 1: Selección y manipulación del DOM · Intermedio · 45 min
 
 #### De datos a una vista segura
 
@@ -129,7 +129,7 @@ Ya puedes convertir datos en una vista segura y predecible. El siguiente tema a�
 
 **Fuentes oficiales:** [MDN — Document Object Model](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model) y [MDN — DocumentFragment](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment).
 
-### Tema 2: Delegación de eventos
+### Tema 2: Delegación de eventos · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -239,7 +239,7 @@ Ya puedes mantener interacción estable aunque cambie la colección. El siguient
 
 **Límites y decisión de uso:** La delegación depende de propagación y del origen efectivo del evento. Filtra el ancestro apropiado y comprueba que pertenece al contenedor; no asumas que target es siempre el botón ni que todos los eventos burbujean.
 
-### Tema 3: Formularios y validación nativa
+### Tema 3: Formularios y validación nativa · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -341,7 +341,72 @@ Ya puedes ofrecer feedback inmediato sin confundirlo con seguridad del servidor.
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Valida la guía con controles nativos y asocia el error al campo. Prueba envío por Enter, campo vacío y guía válida, comprobando que ninguna ruta de interacción evita la validación.
 
-### Tema 4: Web APIs — localStorage e IntersectionObserver
+### Tema 4: Formularios accesibles: validar, anunciar y conservar la entrada · Intermedio · 40 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar implementarás un formulario que muestra un estado comprensible sin borrar lo escrito cuando hay un error. **Prerrequisitos:** HTML semántico, funciones, eventos y propiedades del DOM. Usa una carpeta vacía; es un ejemplo independiente que funciona sin paquetes.
+
+#### Paso 2 · Contexto y caso real
+En el proyecto integrador de entregas, un código mal escrito no debe obligar al cliente a empezar otra vez. **¿Por qué es importante?** Un error que solo cambia el color de un borde no explica qué corregir ni necesariamente se anuncia a quien usa un lector de pantalla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El evento `submit` representa la intención de enviar tanto al pulsar Enter como al activar el botón. `preventDefault` evita navegar mientras validamos localmente. `textContent` inserta texto, sin interpretar HTML enviado por una persona. `role="status"` comunica cambios no urgentes; `aria-describedby` relaciona el campo con su explicación.
+
+**Analogía:** el formulario es una ventanilla que devuelve el documento con una nota legible, no una que lo destruye al encontrar una errata. El límite es que la validación local no demuestra que el código exista ni autoriza a leer una entrega; eso pertenece al servidor.
+
+#### Paso 4 · Demostración guiada desde cero
+```bash
+mkdir formulario-accesible
+cd formulario-accesible
+```
+Crea `index.html`:
+```html
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Validar código</title>
+<form id="consulta" novalidate>
+  <label for="codigo">Código de envío</label>
+  <input id="codigo" aria-describedby="ayuda estado" required>
+  <p id="ayuda">Usa ENV- seguido de dígitos, por ejemplo ENV-42.</p>
+  <button>Comprobar formato</button>
+  <p id="estado" role="status"></p>
+</form>
+<script type="module" src="formulario.js"></script>
+</html>
+```
+Crea `formulario.js`:
+```javascript
+const form = document.querySelector('#consulta');
+const input = document.querySelector('#codigo');
+const status = document.querySelector('#estado');
+form.addEventListener('submit', event => {
+  event.preventDefault(); // Conserva la página y el texto recibido.
+  const code = input.value.trim();
+  const valid = /^ENV-\d+$/.test(code);
+  input.setAttribute('aria-invalid', String(!valid));
+  status.textContent = valid
+    ? `Formato válido: ${code}. Aún no se consultó una entrega.`
+    : 'Corrige el código: debe empezar por ENV- y terminar en dígitos.';
+  if (!valid) input.focus();
+});
+```
+```bash
+python3 -m http.server 8000
+```
+Abre `http://localhost:8000`. **Resultado esperado:** `ENV-42` confirma el formato; `42` muestra corrección, conserva el texto y devuelve foco al campo. Explica cada bloque: selección de elementos, manejo del envío, comprobación del patrón y actualización del mensaje. Windows puede usar `py` para el servidor.
+
+#### Paso 5 · Práctica guiada
+**Fallo deliberado:** elimina `preventDefault`. Envía el formulario y observa que la navegación interrumpe el mensaje. **Pista:** el problema está en el comportamiento predeterminado de enviar, no en la expresión regular. Repón la línea y prueba también Enter.
+
+#### Paso 6 · Práctica independiente
+Distingue código vacío de código con formato incorrecto usando mensajes distintos. Comprueba vacío, espacios, `ENV-42`, `ENV-` y texto con etiquetas HTML: todo se muestra como texto y nunca como contenido ejecutable.
+
+#### Paso 7 · Cierre
+El siguiente tema puede conectar esta intención con Fetch y un servidor real. **Errores comunes:** validar solo con click, borrar el campo tras un error y utilizar `innerHTML` para mensajes de usuario. **Límites y decisión de uso:** el patrón define el formato de este ejemplo, no una regla universal ni un control de acceso.
+
+**Fuentes oficiales:** [MDN submit](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) y [status](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role).
+### Tema 5: Web APIs — localStorage e IntersectionObserver · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -445,7 +510,7 @@ Ya puedes conservar una preferencia y reaccionar eficientemente a visibilidad. E
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Persiste solo la preferencia visual y carga secciones secundarias cuando sean necesarias. Prueba almacenamiento no disponible y desmontaje del observador para que ambos fallos sean recuperables.
 
-### Tema 5: ResizeObserver y MutationObserver
+### Tema 6: ResizeObserver y MutationObserver · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -538,7 +603,7 @@ Ya puedes observar señales que no controlas sin recurrir a polling y liberar re
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Reacciona a cambios de tamaño del contenedor sin observar todo el documento. Prueba redimensionamiento repetido y demuestra que actualizar el estilo no crea un ciclo infinito de observaciones.
 
-### Tema 6: requestAnimationFrame y requestIdleCallback
+### Tema 7: requestAnimationFrame y requestIdleCallback · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -560,7 +625,7 @@ El mapa del proyecto recibe posiciones discretas y necesita una transición comp
 
 Elegir entre estos dos mecanismos según la naturaleza del trabajo —visualmente crítico y sincronizado con el repintado (`requestAnimationFrame`) frente a genuinamente prescindible y de baja prioridad (`requestIdleCallback`)— es importante para no congestionar innecesariamente el hilo principal de JavaScript con trabajo que compite por los mismos recursos que la interactividad y la fluidez visual que el usuario percibe directamente, una consideración de rendimiento particularmente relevante en aplicaciones con animaciones complejas o con volúmenes grandes de procesamiento de datos en segundo plano.
 
-Ambas APIs, junto con los observadores del Tema 5, forman parte de un conjunto más amplio de herramientas del navegador diseñadas específicamente para que el código de la aplicación pueda cooperar de forma eficiente con el ciclo de renderizado y con la disponibilidad real de recursos del navegador, en vez de competir ciegamente por el hilo único de JavaScript sin ninguna consideración de prioridad o de sincronización con el repintado visual real.
+Ambas APIs, junto con los observadores del Tema 6, forman parte de un conjunto más amplio de herramientas del navegador diseñadas específicamente para que el código de la aplicación pueda cooperar de forma eficiente con el ciclo de renderizado y con la disponibilidad real de recursos del navegador, en vez de competir ciegamente por el hilo único de JavaScript sin ninguna consideración de prioridad o de sincronización con el repintado visual real.
 
 **Analogía:** `requestAnimationFrame` es como sincronizar cada paso de un bailarín exactamente con el compás de la música (el ciclo de repintado del navegador), garantizando que cada movimiento se vea fluido y en el momento correcto; `requestIdleCallback` es como aprovechar los momentos de pausa genuina entre tareas urgentes de un equipo de trabajo para adelantar tareas de baja prioridad que pueden esperar, sin interrumpir nunca el trabajo urgente cuando este llega.
 
@@ -683,68 +748,3 @@ Ya puedes cooperar con el ciclo visual y asignar prioridad según impacto para e
 
 ## Laboratorio de transferencia
 
-### Tema 7: Formularios accesibles: validar, anunciar y conservar la entrada
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar implementarás un formulario que muestra un estado comprensible sin borrar lo escrito cuando hay un error. **Prerrequisitos:** HTML semántico, funciones, eventos y propiedades del DOM. Usa una carpeta vacía; es un ejemplo independiente que funciona sin paquetes.
-
-#### Paso 2 · Contexto y caso real
-En el proyecto integrador de entregas, un código mal escrito no debe obligar al cliente a empezar otra vez. **¿Por qué es importante?** Un error que solo cambia el color de un borde no explica qué corregir ni necesariamente se anuncia a quien usa un lector de pantalla.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El evento `submit` representa la intención de enviar tanto al pulsar Enter como al activar el botón. `preventDefault` evita navegar mientras validamos localmente. `textContent` inserta texto, sin interpretar HTML enviado por una persona. `role="status"` comunica cambios no urgentes; `aria-describedby` relaciona el campo con su explicación.
-
-**Analogía:** el formulario es una ventanilla que devuelve el documento con una nota legible, no una que lo destruye al encontrar una errata. El límite es que la validación local no demuestra que el código exista ni autoriza a leer una entrega; eso pertenece al servidor.
-
-#### Paso 4 · Demostración guiada desde cero
-```bash
-mkdir formulario-accesible
-cd formulario-accesible
-```
-Crea `index.html`:
-```html
-<!doctype html>
-<html lang="es">
-<meta charset="utf-8">
-<title>Validar código</title>
-<form id="consulta" novalidate>
-  <label for="codigo">Código de envío</label>
-  <input id="codigo" aria-describedby="ayuda estado" required>
-  <p id="ayuda">Usa ENV- seguido de dígitos, por ejemplo ENV-42.</p>
-  <button>Comprobar formato</button>
-  <p id="estado" role="status"></p>
-</form>
-<script type="module" src="formulario.js"></script>
-</html>
-```
-Crea `formulario.js`:
-```javascript
-const form = document.querySelector('#consulta');
-const input = document.querySelector('#codigo');
-const status = document.querySelector('#estado');
-form.addEventListener('submit', event => {
-  event.preventDefault(); // Conserva la página y el texto recibido.
-  const code = input.value.trim();
-  const valid = /^ENV-\d+$/.test(code);
-  input.setAttribute('aria-invalid', String(!valid));
-  status.textContent = valid
-    ? `Formato válido: ${code}. Aún no se consultó una entrega.`
-    : 'Corrige el código: debe empezar por ENV- y terminar en dígitos.';
-  if (!valid) input.focus();
-});
-```
-```bash
-python3 -m http.server 8000
-```
-Abre `http://localhost:8000`. **Resultado esperado:** `ENV-42` confirma el formato; `42` muestra corrección, conserva el texto y devuelve foco al campo. Explica cada bloque: selección de elementos, manejo del envío, comprobación del patrón y actualización del mensaje. Windows puede usar `py` para el servidor.
-
-#### Paso 5 · Práctica guiada
-**Fallo deliberado:** elimina `preventDefault`. Envía el formulario y observa que la navegación interrumpe el mensaje. **Pista:** el problema está en el comportamiento predeterminado de enviar, no en la expresión regular. Repón la línea y prueba también Enter.
-
-#### Paso 6 · Práctica independiente
-Distingue código vacío de código con formato incorrecto usando mensajes distintos. Comprueba vacío, espacios, `ENV-42`, `ENV-` y texto con etiquetas HTML: todo se muestra como texto y nunca como contenido ejecutable.
-
-#### Paso 7 · Cierre
-El siguiente tema puede conectar esta intención con Fetch y un servidor real. **Errores comunes:** validar solo con click, borrar el campo tras un error y utilizar `innerHTML` para mensajes de usuario. **Límites y decisión de uso:** el patrón define el formato de este ejemplo, no una regla universal ni un control de acceso.
-
-**Fuentes oficiales:** [MDN submit](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) y [status](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/status_role).

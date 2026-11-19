@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Tipos básicos, interfaces y type aliases
+### Tema 1: Tipos básicos, interfaces y type aliases · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -105,97 +105,7 @@ Ya puedes hacer que estados imposibles fallen antes de ejecutar. El siguiente te
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Define un tipo de respuesta pública que excluya dirección y teléfono. Una prueba de transformación debe demostrar que el widget solo recibe guía, estado e historial permitido.
 
-### Tema 2: Generics
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás crear una abstracción genérica que preserve la relación entre entidad e identificador, usar inferencia y añadir restricciones solo cuando sean necesarias. Implementarás un repositorio en memoria tipado para guías del proyecto.
-
-**Prerrequisitos:** interfaces, Promesas, `Map` y tipos unión. Si una función siempre trabaja únicamente con `Guia`, mantenla concreta; generic no significa automáticamente mejor diseño.
-
-#### Paso 2 · Contexto y caso real
-
-El proyecto necesita repositorios para guías y rutas con operaciones parecidas, pero no debe permitir guardar un usuario en el almacén de guías. El parámetro `T` expresará qué entidad entra y sale; `Id` conservará el tipo de búsqueda.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** funciones y tipos parametrizados, inferencia automática de tipo genérico.
-
-Los generics permiten escribir funciones, interfaces y clases que funcionan con cualquier tipo, sin sacrificar la seguridad de tipos específica de cada uso concreto: `function primero<T>(lista: T[]): T | undefined { return lista[0]; }` define una función que acepta un array de cualquier tipo `T` (un parámetro de tipo, no un valor), y devuelve un valor de ese mismo tipo `T` (o `undefined` si el array está vacío), preservando la relación de tipo entre la entrada y la salida: invocar `primero([1, 2, 3])` produce un resultado tipado como `number | undefined`, mientras que invocar `primero(["a", "b"])` produce un resultado tipado como `string | undefined`, sin necesidad de escribir una versión separada de la función para cada tipo posible de array.
-
-En la mayoría de los casos, no es necesario especificar explícitamente el tipo genérico al invocar una función genérica (`primero<number>([1,2,3])`); TypeScript infiere automáticamente `T` a partir de los argumentos proporcionados en la llamada, y solo es necesario especificarlo explícitamente en casos donde la inferencia automática sería ambigua o insuficiente para determinar el tipo con precisión (por ejemplo, al invocar una función genérica sin ningún argumento cuyo tipo dependa de `T`, donde no hay ninguna pista disponible en la llamada para inferir el tipo automáticamente).
-
-Sin generics, la alternativa sería usar `any` (renunciando a toda verificación de tipo, perdiendo por completo la seguridad que TypeScript ofrece) o escribir una versión separada y duplicada de la función para cada tipo específico necesario (una violación directa del principio de no repetir código, y una carga de mantenimiento creciente a medida que se necesitan más tipos). Los generics resuelven exactamente esta tensión: preservan la reutilización de código genérico sin sacrificar ninguna precisión de tipo específica para cada uso concreto de esa función genérica.
-
-Los generics se extienden más allá de funciones simples a interfaces y clases completas (`interface Caja<T> { contenido: T; }`), y son la base sobre la que se construyen tipos utilitarios extremadamente comunes en código TypeScript real, como `Array<T>` (la propia notación genérica de array), `Promise<T>` (una promesa que resuelve con un valor de tipo `T` específico), y `Map<K, V>` (con tipos de clave y valor genéricos independientes), todos ejemplos de tipos genéricos ya integrados en el propio lenguaje que se usan constantemente sin necesariamente notar explícitamente que son, en efecto, generics.
-
-**Analogía:** una función genérica es como una plantilla de contrato legal con espacios en blanco marcados consistentemente (`[NOMBRE]`, `[NOMBRE]` de nuevo en otra cláusula), donde rellenar todos los espacios con el mismo valor específico (por ejemplo, "Juan Pérez") en cada uso concreto del contrato mantiene la consistencia interna del documento, sin necesidad de redactar un contrato completamente distinto para cada persona que lo firme.
-
-**¿Por qué es importante?** Los generics permiten escribir código verdaderamente reutilizable sin sacrificar seguridad de tipos, y son omnipresentes en TypeScript real (incluyendo tipos integrados del lenguaje como `Array`, `Promise` y `Map`), haciendo indispensable entenderlos para leer y escribir TypeScript idiomático con fluidez.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `ejemplo-generics-ts`, instala TypeScript y crea `src` y después `src/repositorio.ts`:
-
-```bash
-mkdir ejemplo-generics-ts
-cd ejemplo-generics-ts
-npm init -y
-npm install -D typescript
-mkdir src
-```
-
-```ts
-export interface Repositorio<T, Id> {
-  obtener(id: Id): Promise<T | undefined>;
-  guardar(id: Id, entidad: T): Promise<void>;
-}
-
-export class RepositorioMemoria<T, Id> implements Repositorio<T, Id> {
-  private readonly datos = new Map<Id, T>();
-
-  async obtener(id: Id): Promise<T | undefined> {
-    return this.datos.get(id);
-  }
-
-  async guardar(id: Id, entidad: T): Promise<void> {
-    // El mismo T usado al crear el repositorio controla cada escritura.
-    this.datos.set(id, entidad);
-  }
-}
-```
-
-En `src/main.ts`, instancia `new RepositorioMemoria<Guia, string>()`, guarda una guía y asigna la búsqueda a `Guia | undefined`.
-
-```bash
-npx tsc --noEmit
-```
-
-**Resultado esperado:** cero diagnósticos; TypeScript infiere que buscar por string produce `Promise<Guia | undefined>` y rechaza ids numéricos.
-
-**Fallo deliberado:** intenta `repositorio.guardar("U-1", { nombre: "Ana" })`. El compilador muestra propiedades faltantes de `Guia`; no uses `as Guia` para silenciarlo, corrige el repositorio o la entidad.
-
-#### Paso 5 · Práctica guiada
-
-Crea `Pagina<T>` con `items`, `total` y `siguienteCursor`, y devuelve `Pagina<Guia>`. **Pista:** `T` cambia los elementos, mientras metadatos permanecen iguales.
-
-#### Paso 6 · Práctica independiente
-
-Implementa repositorios de Ruta y Guia, prueba inferencia y agrega `T extends { numero: string }` únicamente a una función que realmente lee `numero`. Explica cada parámetro de tipo con una frase.
-
-#### Paso 7 · Cierre
-
-Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega.
-
-Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada entidad del proyecto integrador (SPA sin framework, Módulo 12): un repositorio de guías y otro de rutas, cada uno tipado con su propia entidad, sin duplicar la lógica de `Map` subyacente.
-
-**Cuándo no usarlo:** si el proyecto solo maneja una única entidad y nunca necesitará una segunda variante del mismo repositorio, un generic agrega una letra de tipo (`T`) e indirección sin beneficio real; escribe la clase concreta (`RepositorioGuias`) hasta que aparezca una segunda entidad que realmente comparta la misma forma.
-
-**Errores comunes:** crear letras genéricas sin relación; usar `any`; imponer constraints innecesarios; especificar tipos que el compilador infiere; confundir tipo genérico con valor disponible en runtime.
-
-**Fuentes oficiales:** [TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html) y [Type Inference](https://www.typescriptlang.org/docs/handbook/type-inference.html).
-
-### Tema 3: Narrowing y union types
+### Tema 2: Narrowing y union types · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -287,7 +197,7 @@ Esta unión discriminada (`EventoGuia`) es la forma en la que el proyecto integr
 
 **Fuentes oficiales:** [TypeScript Handbook — Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) y [Union Exhaustiveness](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#union-exhaustiveness-checking).
 
-### Tema 4: tsconfig esencial y modo strict
+### Tema 3: tsconfig esencial y modo strict · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -420,136 +330,97 @@ Ya puedes separar garantías estáticas de validación externa y mantener strict
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Activa comprobaciones estrictas y corrige un acceso a una entrega potencialmente ausente. El build debe rechazar ese acceso hasta que exista una rama explícita para respuesta vacía.
 
-### Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies
+### Tema 4: Generics · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás declarar sobrecargas de funciones, derivar tipos con `Omit`, `Pick` y tipos mapeados, filtrar propiedades con tipos condicionales, construir nombres con tipos de plantilla y validar objetos con `satisfies` sin perder sus tipos literales. Prerrequisitos: Temas 1 a 4 de este módulo.
+
+Al finalizar podrás crear una abstracción genérica que preserve la relación entre entidad e identificador, usar inferencia y añadir restricciones solo cuando sean necesarias. Implementarás un repositorio en memoria tipado para guías del proyecto.
+
+**Prerrequisitos:** interfaces, Promesas, `Map` y tipos unión. Si una función siempre trabaja únicamente con `Guia`, mantenla concreta; generic no significa automáticamente mejor diseño.
 
 #### Paso 2 · Contexto y caso real
-En el seguimiento público de RutaFlow existía `Envio` y una copia manual `EnvioPublico` sin el costo interno; al agregar un campo se actualizó una y no la otra. El libro *TypeScript, curso práctico* de la biblioteca dedica capítulos a tipos avanzados porque son el caso real que evita duplicar definiciones en proyectos grandes.
+
+El proyecto necesita repositorios para guías y rutas con operaciones parecidas, pero no debe permitir guardar un usuario en el almacén de guías. El parámetro `T` expresará qué entidad entra y sale; `Id` conservará el tipo de búsqueda.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Una **sobrecarga** declara varias firmas públicas para una implementación, de modo que el tipo de retorno depende de cómo se llama. Un **tipo mapeado** (`{ [K in keyof T]: ... }`) recorre las claves de otro tipo; `Omit` y `Pick` son tipos mapeados de la librería estándar. Un **tipo condicional** (`T extends U ? X : Y`) elige según una condición, y con `as` puede filtrar claves. Un **tipo de plantilla** (`` `al${Capitalize<Evento>}` ``) genera uniones de textos. `satisfies` comprueba que un valor cumple un tipo **sin ampliar** su tipo inferido, a diferencia de una anotación (`: Record<string, number>`), que pierde las claves concretas.
 
-**Analogía:** los tipos mapeados son una plantilla de formulario que se genera sola a partir del original: si el original cambia, el formulario también.
+**Conceptos clave:** funciones y tipos parametrizados, inferencia automática de tipo genérico.
 
-**Diagrama:**
+Los generics permiten escribir funciones, interfaces y clases que funcionan con cualquier tipo, sin sacrificar la seguridad de tipos específica de cada uso concreto: `function primero<T>(lista: T[]): T | undefined { return lista[0]; }` define una función que acepta un array de cualquier tipo `T` (un parámetro de tipo, no un valor), y devuelve un valor de ese mismo tipo `T` (o `undefined` si el array está vacío), preservando la relación de tipo entre la entrada y la salida: invocar `primero([1, 2, 3])` produce un resultado tipado como `number | undefined`, mientras que invocar `primero(["a", "b"])` produce un resultado tipado como `string | undefined`, sin necesidad de escribir una versión separada de la función para cada tipo posible de array.
 
-```mermaid
-flowchart LR
-    E[Envio] --> O[Omit costoInterno: EnvioPublico]
-    E --> F[Formulario de Pick guia y kilos]
-    E --> S[SoloTexto: guia y destino]
-    T[tarifas satisfies Record] --> K[keyof: Bogotá o Medellín]
-```
+En la mayoría de los casos, no es necesario especificar explícitamente el tipo genérico al invocar una función genérica (`primero<number>([1,2,3])`); TypeScript infiere automáticamente `T` a partir de los argumentos proporcionados en la llamada, y solo es necesario especificarlo explícitamente en casos donde la inferencia automática sería ambigua o insuficiente para determinar el tipo con precisión (por ejemplo, al invocar una función genérica sin ningún argumento cuyo tipo dependa de `T`, donde no hay ninguna pista disponible en la llamada para inferir el tipo automáticamente).
 
-**¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
-**Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
-**Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
-**Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
+Sin generics, la alternativa sería usar `any` (renunciando a toda verificación de tipo, perdiendo por completo la seguridad que TypeScript ofrece) o escribir una versión separada y duplicada de la función para cada tipo específico necesario (una violación directa del principio de no repetir código, y una carga de mantenimiento creciente a medida que se necesitan más tipos). Los generics resuelven exactamente esta tensión: preservan la reutilización de código genérico sin sacrificar ninguna precisión de tipo específica para cada uso concreto de esa función genérica.
 
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** anotar un objeto literal con un tipo amplio (`Record<string, number>`) cuando `satisfies` conservaría sus claves literales, perdiendo así la comprobación en tiempo de compilación; apilar varios niveles de tipos condicionales anidados donde una interfaz explícita se leería mejor.
+Los generics se extienden más allá de funciones simples a interfaces y clases completas (`interface Caja<T> { contenido: T; }`), y son la base sobre la que se construyen tipos utilitarios extremadamente comunes en código TypeScript real, como `Array<T>` (la propia notación genérica de array), `Promise<T>` (una promesa que resuelve con un valor de tipo `T` específico), y `Map<K, V>` (con tipos de clave y valor genéricos independientes), todos ejemplos de tipos genéricos ya integrados en el propio lenguaje que se usan constantemente sin necesariamente notar explícitamente que son, en efecto, generics.
+
+**Analogía:** una función genérica es como una plantilla de contrato legal con espacios en blanco marcados consistentemente (`[NOMBRE]`, `[NOMBRE]` de nuevo en otra cláusula), donde rellenar todos los espacios con el mismo valor específico (por ejemplo, "Juan Pérez") en cada uso concreto del contrato mantiene la consistencia interna del documento, sin necesidad de redactar un contrato completamente distinto para cada persona que lo firme.
+
+**¿Por qué es importante?** Los generics permiten escribir código verdaderamente reutilizable sin sacrificar seguridad de tipos, y son omnipresentes en TypeScript real (incluyendo tipos integrados del lenguaje como `Array`, `Promise` y `Map`), haciendo indispensable entenderlos para leer y escribir TypeScript idiomático con fluidez.
 
 #### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+Desde una carpeta vacía crea `ejemplo-generics-ts`, instala TypeScript y crea `src` y después `src/repositorio.ts`:
 
 ```bash
-mkdir ts-avanzado && cd ts-avanzado
-npm init -y && npm install -D typescript@5
+mkdir ejemplo-generics-ts
+cd ejemplo-generics-ts
+npm init -y
+npm install -D typescript
 mkdir src
 ```
 
-Crea `tsconfig.json`:
+```ts
+export interface Repositorio<T, Id> {
+  obtener(id: Id): Promise<T | undefined>;
+  guardar(id: Id, entidad: T): Promise<void>;
+}
 
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "nodenext",
-    "strict": true,
-    "outDir": "dist",
-    "rootDir": "src"
+export class RepositorioMemoria<T, Id> implements Repositorio<T, Id> {
+  private readonly datos = new Map<Id, T>();
+
+  async obtener(id: Id): Promise<T | undefined> {
+    return this.datos.get(id);
+  }
+
+  async guardar(id: Id, entidad: T): Promise<void> {
+    // El mismo T usado al crear el repositorio controla cada escritura.
+    this.datos.set(id, entidad);
   }
 }
 ```
 
-Crea `src/tipos-avanzados.ts`:
-
-```typescript
-// 1) Sobrecargas: varias firmas públicas, una implementación
-function buscar(guia: string): string;
-function buscar(guias: string[]): string[];
-function buscar(entrada: string | string[]): string | string[] {
-  const estado = (g: string) => `${g}: en ruta`;
-  return Array.isArray(entrada) ? entrada.map(estado) : estado(entrada);
-}
-const uno: string = buscar('BO-1');            // el tipo de retorno depende de la firma usada
-const varios: string[] = buscar(['BO-2', 'BO-3']);
-
-// 2) Tipos mapeados: derivar tipos de otros en lugar de copiarlos
-interface Envio { guia: string; kilos: number; destino: string; costoInterno: number }
-type EnvioPublico = Omit<Envio, 'costoInterno'>;
-type Formulario<T> = { [K in keyof T]: { valor: T[K]; error?: string } };
-const formulario: Formulario<Pick<Envio, 'guia' | 'kilos'>> = {
-  guia: { valor: 'BO-4' },
-  kilos: { valor: 0, error: 'debe ser positivo' },
-};
-
-// 3) Tipos condicionales y de plantilla
-type Evento = 'creado' | 'despachado' | 'entregado';
-type Manejador = `al${Capitalize<Evento>}`;            // 'alCreado' | 'alDespachado' | 'alEntregado'
-type SoloTexto<T> = { [K in keyof T as T[K] extends string ? K : never]: T[K] };
-const textos: SoloTexto<Envio> = { guia: 'BO-5', destino: 'Cali' };
-
-// 4) satisfies: valida la forma sin perder el tipo literal más preciso
-const tarifas = {
-  Bogotá: 5000,
-  Medellín: 7000,
-} satisfies Record<string, number>;
-type CiudadConTarifa = keyof typeof tarifas;           // 'Bogotá' | 'Medellín', no string
-const ciudad: CiudadConTarifa = 'Medellín';
-
-const publico: EnvioPublico = { guia: 'BO-6', kilos: 2, destino: 'Bogotá' };
-const manejadores: Record<Manejador, () => string> = {
-  alCreado: () => 'notificar a bodega',
-  alDespachado: () => 'notificar al cliente',
-  alEntregado: () => 'cerrar la guía',
-};
-console.log(uno, varios);
-console.log(formulario.kilos.error, Object.keys(textos), tarifas[ciudad]);
-console.log(Object.keys(publico), manejadores.alEntregado());
-```
-
-**Ejecuta el ejemplo:**
+En `src/main.ts`, instancia `new RepositorioMemoria<Guia, string>()`, guarda una guía y asigna la búsqueda a `Guia | undefined`.
 
 ```bash
-npx tsc && node dist/tipos-avanzados.js
+npx tsc --noEmit
 ```
 
-**Resultado esperado:**
+**Resultado esperado:** cero diagnósticos; TypeScript infiere que buscar por string produce `Promise<Guia | undefined>` y rechaza ids numéricos.
 
-```text
-BO-1: en ruta [ 'BO-2: en ruta', 'BO-3: en ruta' ]
-debe ser positivo [ 'guia', 'destino' ] 7000
-[ 'guia', 'kilos', 'destino' ] cerrar la guía
-```
-
-Los tipos desaparecen al compilar: lo que imprime `node` son los valores. El valor de los tipos está en los errores que el compilador evita.
-
-**Fallo deliberado:** Cambia `const ciudad: CiudadConTarifa = 'Medellín';` por `'Cali'`. `npx tsc` responde `error TS2322: Type '"Cali"' is not assignable to type '"Bogotá" | "Medellín"'.` Si en vez de `satisfies` anotas `const tarifas: Record<string, number>`, el error desaparece: la anotación amplió las claves a `string` y perdiste la comprobación.
+**Fallo deliberado:** intenta `repositorio.guardar("U-1", { nombre: "Ana" })`. El compilador muestra propiedades faltantes de `Guia`; no uses `as Guia` para silenciarlo, corrige el repositorio o la entidad.
 
 #### Paso 5 · Práctica guiada
-Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `number` de `T` y úsalo con `Envio`. **Pista:** combina un tipo mapeado con `as` y una intersección: `{ [K in keyof T as T[K] extends number ? K : never]?: T[K] } & { [K in keyof T as T[K] extends number ? never : K]: T[K] }`.
+
+Crea `Pagina<T>` con `items`, `total` y `siguienteCursor`, y devuelve `Pagina<Guia>`. **Pista:** `T` cambia los elementos, mientras metadatos permanecen iguales.
 
 #### Paso 6 · Práctica independiente
-Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
+
+Implementa repositorios de Ruta y Guia, prueba inferencia y agrega `T extends { numero: string }` únicamente a una función que realmente lee `numero`. Explica cada parámetro de tipo con una frase.
 
 #### Paso 7 · Cierre
 
+Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega.
 
-### Tema 6: Decoradores estándar de TypeScript 5
+Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada entidad del proyecto integrador (SPA sin framework, Módulo 12): un repositorio de guías y otro de rutas, cada uno tipado con su propia entidad, sin duplicar la lógica de `Map` subyacente.
+
+**Cuándo no usarlo:** si el proyecto solo maneja una única entidad y nunca necesitará una segunda variante del mismo repositorio, un generic agrega una letra de tipo (`T`) e indirección sin beneficio real; escribe la clase concreta (`RepositorioGuias`) hasta que aparezca una segunda entidad que realmente comparta la misma forma.
+
+**Errores comunes:** crear letras genéricas sin relación; usar `any`; imponer constraints innecesarios; especificar tipos que el compilador infiere; confundir tipo genérico con valor disponible en runtime.
+
+**Fuentes oficiales:** [TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html) y [Type Inference](https://www.typescriptlang.org/docs/handbook/type-inference.html).
+
+### Tema 5: Decoradores estándar de TypeScript 5 · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
@@ -675,6 +546,135 @@ Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un 
 
 #### Paso 6 · Práctica independiente
 Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
+
+#### Paso 7 · Cierre
+
+
+### Tema 6: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies · Experto · 50 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás declarar sobrecargas de funciones, derivar tipos con `Omit`, `Pick` y tipos mapeados, filtrar propiedades con tipos condicionales, construir nombres con tipos de plantilla y validar objetos con `satisfies` sin perder sus tipos literales. Prerrequisitos: Temas 1 a 4 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En el seguimiento público de RutaFlow existía `Envio` y una copia manual `EnvioPublico` sin el costo interno; al agregar un campo se actualizó una y no la otra. El libro *TypeScript, curso práctico* de la biblioteca dedica capítulos a tipos avanzados porque son el caso real que evita duplicar definiciones en proyectos grandes.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una **sobrecarga** declara varias firmas públicas para una implementación, de modo que el tipo de retorno depende de cómo se llama. Un **tipo mapeado** (`{ [K in keyof T]: ... }`) recorre las claves de otro tipo; `Omit` y `Pick` son tipos mapeados de la librería estándar. Un **tipo condicional** (`T extends U ? X : Y`) elige según una condición, y con `as` puede filtrar claves. Un **tipo de plantilla** (`` `al${Capitalize<Evento>}` ``) genera uniones de textos. `satisfies` comprueba que un valor cumple un tipo **sin ampliar** su tipo inferido, a diferencia de una anotación (`: Record<string, number>`), que pierde las claves concretas.
+
+**Analogía:** los tipos mapeados son una plantilla de formulario que se genera sola a partir del original: si el original cambia, el formulario también.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    E[Envio] --> O[Omit costoInterno: EnvioPublico]
+    E --> F[Formulario de Pick guia y kilos]
+    E --> S[SoloTexto: guia y destino]
+    T[tarifas satisfies Record] --> K[keyof: Bogotá o Medellín]
+```
+
+**¿Por qué es importante?** porque derivar tipos en lugar de copiarlos mantiene sincronizados frontend, backend y contratos a medida que el modelo crece.
+**Fuente oficial:** [TypeScript Handbook: Mapped Types](https://www.typescriptlang.org/docs/handbook/2/mapped-types.html), [TypeScript Handbook: Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html), [TypeScript 4.9: satisfies](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html).
+**Conceptos clave:** sobrecarga, tipo mapeado, `keyof`, `Omit` y `Pick`, tipo condicional, remapeo con `as`, tipo de plantilla, `satisfies`.
+**Cuándo no usarlo:** no conviertas el código en un rompecabezas de tipos: si un tipo necesita varios niveles de condicionales para entenderse, probablemente una interfaz explícita es mejor.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** deriva el tipo público del envío del tipo interno con `Omit` para que nunca se exponga el costo.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** anotar un objeto literal con un tipo amplio (`Record<string, number>`) cuando `satisfies` conservaría sus claves literales, perdiendo así la comprobación en tiempo de compilación; apilar varios niveles de tipos condicionales anidados donde una interfaz explícita se leería mejor.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir ts-avanzado && cd ts-avanzado
+npm init -y && npm install -D typescript@5
+mkdir src
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
+```
+
+Crea `src/tipos-avanzados.ts`:
+
+```typescript
+// 1) Sobrecargas: varias firmas públicas, una implementación
+function buscar(guia: string): string;
+function buscar(guias: string[]): string[];
+function buscar(entrada: string | string[]): string | string[] {
+  const estado = (g: string) => `${g}: en ruta`;
+  return Array.isArray(entrada) ? entrada.map(estado) : estado(entrada);
+}
+const uno: string = buscar('BO-1');            // el tipo de retorno depende de la firma usada
+const varios: string[] = buscar(['BO-2', 'BO-3']);
+
+// 2) Tipos mapeados: derivar tipos de otros en lugar de copiarlos
+interface Envio { guia: string; kilos: number; destino: string; costoInterno: number }
+type EnvioPublico = Omit<Envio, 'costoInterno'>;
+type Formulario<T> = { [K in keyof T]: { valor: T[K]; error?: string } };
+const formulario: Formulario<Pick<Envio, 'guia' | 'kilos'>> = {
+  guia: { valor: 'BO-4' },
+  kilos: { valor: 0, error: 'debe ser positivo' },
+};
+
+// 3) Tipos condicionales y de plantilla
+type Evento = 'creado' | 'despachado' | 'entregado';
+type Manejador = `al${Capitalize<Evento>}`;            // 'alCreado' | 'alDespachado' | 'alEntregado'
+type SoloTexto<T> = { [K in keyof T as T[K] extends string ? K : never]: T[K] };
+const textos: SoloTexto<Envio> = { guia: 'BO-5', destino: 'Cali' };
+
+// 4) satisfies: valida la forma sin perder el tipo literal más preciso
+const tarifas = {
+  Bogotá: 5000,
+  Medellín: 7000,
+} satisfies Record<string, number>;
+type CiudadConTarifa = keyof typeof tarifas;           // 'Bogotá' | 'Medellín', no string
+const ciudad: CiudadConTarifa = 'Medellín';
+
+const publico: EnvioPublico = { guia: 'BO-6', kilos: 2, destino: 'Bogotá' };
+const manejadores: Record<Manejador, () => string> = {
+  alCreado: () => 'notificar a bodega',
+  alDespachado: () => 'notificar al cliente',
+  alEntregado: () => 'cerrar la guía',
+};
+console.log(uno, varios);
+console.log(formulario.kilos.error, Object.keys(textos), tarifas[ciudad]);
+console.log(Object.keys(publico), manejadores.alEntregado());
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+npx tsc && node dist/tipos-avanzados.js
+```
+
+**Resultado esperado:**
+
+```text
+BO-1: en ruta [ 'BO-2: en ruta', 'BO-3: en ruta' ]
+debe ser positivo [ 'guia', 'destino' ] 7000
+[ 'guia', 'kilos', 'destino' ] cerrar la guía
+```
+
+Los tipos desaparecen al compilar: lo que imprime `node` son los valores. El valor de los tipos está en los errores que el compilador evita.
+
+**Fallo deliberado:** Cambia `const ciudad: CiudadConTarifa = 'Medellín';` por `'Cali'`. `npx tsc` responde `error TS2322: Type '"Cali"' is not assignable to type '"Bogotá" | "Medellín"'.` Si en vez de `satisfies` anotas `const tarifas: Record<string, number>`, el error desaparece: la anotación amplió las claves a `string` y perdiste la comprobación.
+
+#### Paso 5 · Práctica guiada
+Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `number` de `T` y úsalo con `Envio`. **Pista:** combina un tipo mapeado con `as` y una intersección: `{ [K in keyof T as T[K] extends number ? K : never]?: T[K] } & { [K in keyof T as T[K] extends number ? never : K]: T[K] }`.
+
+#### Paso 6 · Práctica independiente
+Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
 
 #### Paso 7 · Cierre
 

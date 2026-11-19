@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: TypeScript avanzado
+### Tema 1: TypeScript avanzado · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -127,7 +127,7 @@ Ya puedes hacer que evolución del dominio revele consumidores incompletos. El s
 
 **Límites y decisión de uso:** Los tipos de TypeScript se eliminan al ejecutar y no validan respuestas externas. Combina contratos estáticos con validación en las fronteras; una aserción de tipo no transforma un dato inválido en uno correcto.
 
-### Tema 2: Workers y ejecución fuera del hilo principal
+### Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -260,7 +260,7 @@ Ya puedes operar un protocolo fuera del hilo con límites runtime. El siguiente 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Traslada el cálculo de estadísticas del historial a un Worker. Mide que la entrada sigue respondiendo y prueba cancelar una consulta para que sus estadísticas no aparezcan bajo otra guía.
 
-### Tema 3: Bundlers y optimización
+### Tema 3: Bundlers y optimización · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -391,7 +391,7 @@ Ya puedes relacionar grafo, entrega y experiencia en vez de “hacer chunks”. 
 
 **Límites y decisión de uso:** Reducir bytes no basta si aumentas peticiones, trabajo de parseo o latencia al abrir una función. Mide recorridos reales y compatibilidad antes de dividir módulos o añadir transformaciones que dificulten depuración.
 
-### Tema 4: Accesibilidad web
+### Tema 4: Accesibilidad web · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -537,7 +537,938 @@ Ya puedes verificar operabilidad y comunicación, no solo atributos. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Completa búsqueda y lectura del historial con teclado y lector de pantalla. Verifica anuncio del resultado y foco tras un error, sin depender únicamente de colores para distinguir estados.
 
-### Tema 5: WebAssembly con Rust o C
+### Tema 5: Web3 y machine learning en navegador · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás construir una puntuación local explicable, probar fronteras/sesgo y decidir si ML o una red distribuida resuelven un requisito real. Crearás una señal de riesgo del proyecto que nunca sanciona automáticamente.
+
+**Prerrequisitos:** funciones puras, estadística descriptiva básica, privacidad y threat modeling. Este laboratorio no es un modelo predictivo validado ni una recomendación laboral; usa datos sintéticos.
+
+#### Paso 2 · Contexto y caso real
+
+Batería baja, GPS impreciso y retraso pueden sugerir que una entrega necesita asistencia, pero también reflejan dispositivo, cobertura o zona. El proyecto mostrará factores y permitirá revisión humana; no enviará ubicación a un tercero.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** cómputo local explicable, privacidad por diseño, blockchain como integridad (no veracidad) de datos.
+
+Un modelo de riesgo simple que corre completamente en el navegador del usuario (sin enviar ubicación ni batería a ningún servidor) preserva la privacidad por diseño, a costa de no poder aprovechar el cómputo o los datos agregados de un servidor central; "blockchain" no es sinónimo automático de "datos confiables" — solo garantiza que los datos YA escritos no se alteran retroactivamente, no que lo escrito originalmente fuera correcto.
+
+**Analogía:** es como un termómetro doméstico que nunca envía tu temperatura a ningún lado (privacidad total, pero sin el panorama epidemiológico que tendría un hospital agregando miles de lecturas); un libro de actas notariado prueba que una página no se reescribió después, no que lo que se escribió originalmente fuera verdad.
+
+**¿Por qué es importante?** Un modelo local explicable preserva privacidad y da factores verificables, pero no reemplaza decisión humana; confundir "blockchain" con "dato verificado" ignora que la integridad retroactiva no implica veracidad original.
+
+**Casos de uso reales:** mostrar los factores que componen una puntuación de riesgo, nunca solo el número final; comparar grupos sintéticos por zona/dispositivo para detectar sesgo sin exponer datos reales; documentar por qué una base de datos firmada puede resolver el mismo problema de integridad sin la complejidad de una red distribuida.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+  I[battery, accuracy, minutesLate] --> R["deliveryRisk(): cálculo 100% local"]
+  R --> S["score + factores explicables"]
+  S --> H["Revisión humana, nunca sanción automática"]
+  R -.->|nunca sale del navegador| Net["red/servidor externo"]
+```
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-6
+cd ejemplo-js-modulo-14-tema-6
+npm init -y
+npm install --save-dev tsx typescript
+```
+
+Crea `src/risk/delivery-risk.ts`:
+
+```ts
+interface RiskInput { battery: number; accuracyMeters: number; minutesLate: number }
+
+export function deliveryRisk(input: RiskInput): number {
+  // Modelo local explicable; no envía ubicación ni batería a un tercero.
+  const batteryRisk = input.battery < 15 ? 0.35 : 0;
+  const gpsRisk = input.accuracyMeters > 80 ? 0.35 : 0;
+  const delayRisk = Math.min(input.minutesLate / 120, 0.3);
+  return Number((batteryRisk + gpsRisk + delayRisk).toFixed(2));
+}
+
+console.log(deliveryRisk({ battery: 10, accuracyMeters: 120, minutesLate: 30 }));
+```
+
+Ejecuta:
+
+```bash
+npx tsx src/risk/delivery-risk.ts
+```
+
+**Resultado esperado:** `0.95` (`batteryRisk=0.35` porque `10<15`, `gpsRisk=0.35` porque `120>80`, `delayRisk=min(30/120,0.3)=0.25`, suma `0.95`) y factores explicables; ningún dato sale del navegador.
+
+**Fallo deliberado:** pasa batería `-1` o precisión `NaN`. Sin validación se produce una puntuación aparentemente legítima. Rechaza rangos inválidos antes de calcular y añade regresión.
+
+#### Paso 5 · Práctica guiada
+
+Devuelve `{ score, factors }` y compara grupos sintéticos por zona/dispositivo. **Pista:** una correlación no prueba culpa; busca diferencias de error y falsos positivos.
+
+#### Paso 6 · Práctica independiente
+
+Compara regla explícita con un modelo pequeño local: precisión, latencia, tamaño, privacidad y explicabilidad. Escribe un ADR separado para Web3 que exija múltiples organizaciones sin autoridad común y contraste con base de datos firmada.
+
+#### Paso 7 · Cierre
+
+Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. El siguiente tema tratará GPS como dato sensible con incertidumbre.
+
+**Errores comunes:** llamar IA a una regla; automatizar sanciones; usar datos personales sin propósito/consentimiento; confundir blockchain con integridad; introducir dependencias pesadas antes de validar valor.
+
+**Fuentes oficiales:** [TensorFlow.js — Guides](https://www.tensorflow.org/js/guide), [WebNN API](https://www.w3.org/TR/webnn/) y [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Construye una demostración opcional de clasificación local de incidencias con datos sintéticos. Mide errores y tiempo de carga; no permitas que una predicción cambie por sí sola el estado operativo de una entrega.
+
+### Tema 6: Geolocalización, permisos y precisión GPS · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás solicitar ubicación con consentimiento, interpretar precisión y cancelar el seguimiento sin convertir una coordenada imprecisa en una decisión logística.
+
+**Conocimiento previo:** Promesas/callbacks, permisos, fechas y ciclo de vida. Geolocation requiere HTTPS o localhost y una acción visible; prepara un fallback manual.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** El proyecto necesita posición para mostrar avance, pero la API puede ser rechazada, tardar, entregar datos antiguos o reportar una precisión de cientos de metros. La ubicación es un dato sensible y debe pedirse solo mientras una función visible la necesita.
+
+Este incremento del proyecto inicia seguimiento únicamente al pulsar “Compartir ubicación”, muestra margen/tiempo y destruye el watch al salir de la entrega.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** una coordenada es como una dirección comunicada por radio junto con un margen de error; “estoy aquí” sin precisión ni momento de medición no es una evidencia suficiente.
+
+**Conceptos clave:** `getCurrentPosition` obtiene una muestra; `watchPosition` observa cambios; `accuracy` expresa radio estimado en metros; `Permissions API` consulta estado; `clearWatch` detiene el sensor.
+
+```mermaid
+flowchart LR
+    ACTION["persona inicia seguimiento"] --> PERMISSION{"permiso"}
+    PERMISSION -->|"granted"| WATCH["watchPosition"] --> VALIDATE["precisión + antigüedad"] --> MAP["actualizar mapa"]
+    PERMISSION -->|"denied"| FALLBACK["entrada manual / explicación"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-7
+cd ejemplo-js-modulo-14-tema-7
+npm create vite@latest . -- --template vanilla
+npm install
+```
+
+Crea `src/location/watch-location.js`:
+
+```js
+export function iniciarUbicacion({ onPosition, onError }) {
+  if (!('geolocation' in navigator)) throw new Error('Geolocalización no disponible');
+  const id = navigator.geolocation.watchPosition(
+    ({ coords, timestamp }) => onPosition({
+      // Precisión y captura viajan con la coordenada; no son metadatos opcionales.
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      accuracyMeters: coords.accuracy,
+      capturedAt: new Date(timestamp).toISOString(),
+    }),
+    onError,
+    { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 },
+  );
+  return () => navigator.geolocation.clearWatch(id);
+}
+```
+
+Sustituye `src/main.js` para solicitar el permiso solo tras una acción explícita:
+
+```js
+import { iniciarUbicacion } from './location/watch-location';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Seguimiento de entrega</h1>
+  <button id="share">Compartir ubicación</button>
+  <p id="position" role="status">Ubicación no compartida</p>
+  <label>Coordenada manual <input id="manual" placeholder="4.6, -74.1"></label>
+`;
+let detener = () => {};
+document.querySelector('#share').addEventListener('click', () => {
+  detener();
+  detener = iniciarUbicacion({
+    onPosition: ({ latitude, longitude, accuracyMeters, capturedAt }) => {
+      document.querySelector('#position').textContent =
+        `${latitude}, ${longitude}; precisión ±${accuracyMeters} m; ${capturedAt}`;
+    },
+    onError: (error) => {
+      document.querySelector('#position').textContent =
+        `No se pudo obtener la ubicación (${error.code}); usa la entrada manual.`;
+    },
+  });
+});
+window.addEventListener('pagehide', () => detener(), { once: true });
+```
+
+Ejecuta sobre HTTPS o localhost:
+
+```bash
+npm run dev
+```
+
+**Resultado esperado:** tras acción explícita y permiso concedido se muestran posición, precisión y hora; al desmontar deja de actualizarse.
+
+**Fallo deliberado:** simula `PERMISSION_DENIED` en DevTools. Debe aparecer explicación y entrada manual, sin reintentos automáticos que vuelvan a pedir permiso.
+
+#### Paso 5 · Práctica guiada
+
+Simula los tres códigos de error y presenta alternativas. **Pista:** diferencia `PERMISSION_DENIED`, `POSITION_UNAVAILABLE` y `TIMEOUT`.
+
+#### Paso 6 · Práctica independiente
+
+Rechaza para asignación automática muestras con más de 30 segundos o precisión peor que 100 m, pero permite mostrarlas como “aproximadas”. Prueba cleanup y batería.
+
+#### Paso 7 · Cierre
+
+Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El siguiente tema estudia qué datos pueden persistirse en cada almacén.
+
+**Errores comunes:** iniciar `watchPosition` al cargar; omitir `clearWatch`; tratar muestra vieja como actual; ocultar precisión; pedir high accuracy sin justificar batería.
+
+**Fuentes oficiales:** [MDN — Geolocation API](https://developer.mozilla.org/docs/Web/API/Geolocation_API) y [Permissions API](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Solicita ubicación solo al activar una función que la necesita y ofrece búsqueda manual. Prueba permiso denegado y baja precisión; el widget debe comunicar incertidumbre sin inventar una posición exacta.
+
+### Tema 7: sessionStorage, cookies e IndexedDB · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás elegir almacenamiento según vida útil, tamaño, consulta y riesgo, y construir un borrador offline sin guardar credenciales accesibles a JavaScript.
+
+**Conocimiento previo:** JSON, Promesas, transacciones y amenazas XSS/CSRF. Prueba siempre datos ausentes, corruptos y migraciones; el navegador puede borrar almacenamiento.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** `localStorage`, `sessionStorage`, cookies e IndexedDB no son alternativas equivalentes. Elegir por costumbre puede bloquear la UI, perder datos al cerrar una pestaña o exponer tokens ante XSS.
+
+El proyecto conservará un borrador por pestaña y una cola offline estructurada con claves idempotentes, pero la sesión se manejará con cookie segura emitida por el servidor.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** `sessionStorage` es una mesa de trabajo de una pestaña; una cookie es una credencial que el navegador puede adjuntar a solicitudes; IndexedDB es un archivo estructurado local con transacciones.
+
+**Conceptos clave:** `sessionStorage` vive por pestaña; cookies `HttpOnly` no son legibles desde JS; `SameSite` reduce CSRF; IndexedDB guarda objetos y consultas asíncronas; cualquier almacenamiento cliente puede borrarse.
+
+| Necesidad | Opción | Límite principal |
+|---|---|---|
+| borrador de una pestaña | `sessionStorage` | desaparece al cerrar |
+| sesión enviada al servidor | cookie `HttpOnly; Secure; SameSite` | requiere diseño CSRF |
+| cola offline estructurada | IndexedDB | API transaccional y migraciones |
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-8
+cd ejemplo-js-modulo-14-tema-8
+npm create vite@latest . -- --template vanilla
+npm install
+```
+
+Crea `src/storage/delivery-draft.js`:
+
+```js
+const KEY = 'app:delivery-draft';
+export const saveDraft = (draft) => sessionStorage.setItem(KEY, JSON.stringify(draft));
+export function loadDraft() {
+  try {
+    // Incluso el almacenamiento propio se trata como dato externo al leer.
+    return JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
+  } catch {
+    sessionStorage.removeItem(KEY);
+    return null;
+  }
+}
+```
+
+Sustituye `src/main.js` por un formulario mínimo que guarda y recupera el borrador:
+
+```js
+import { loadDraft, saveDraft } from './storage/delivery-draft';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Borrador de entrega</h1>
+  <label>Destinatario <input id="recipient" autocomplete="off"></label>
+  <p id="storage-status" role="status"></p>
+`;
+const input = document.querySelector('#recipient');
+input.value = loadDraft()?.recipient ?? '';
+input.addEventListener('input', () => {
+  saveDraft({ recipient: input.value });
+  document.querySelector('#storage-status').textContent = 'Borrador guardado en esta pestaña';
+});
+```
+
+```bash
+npm run dev
+```
+
+Escribe un destinatario y recarga la página.
+
+**Resultado esperado:** el borrador sobrevive a una recarga de la misma pestaña, pero no se comparte con otra sesión independiente.
+
+**Fallo deliberado:** escribe `{mal-json` bajo la clave desde DevTools. `loadDraft` se recupera con `null`, elimina corrupción y la pantalla continúa.
+
+#### Paso 5 · Práctica guiada
+
+Crea una base IndexedDB `academia-offline` y almacena confirmaciones con clave idempotente. **Pista:** resuelve la Promesa solo en `transaction.oncomplete`, no cuando termina una única request.
+
+#### Paso 6 · Práctica independiente
+
+Migra versión 1 a 2 agregando `createdAt`, prueba cuota, transacción abortada y reenvío idempotente. Documenta cookie `HttpOnly; Secure; SameSite` del servidor sin intentar crear HttpOnly desde JS.
+
+#### Paso 7 · Cierre
+
+La persistencia se elige por semántica y amenaza, no por comodidad. El próximo tema validará formatos textuales complejos.
+
+**Errores comunes:** guardar access tokens en almacenamiento legible; usar localStorage para colecciones grandes; ignorar transacciones/versiones; asumir persistencia permanente; confundir SameSite con solución total de CSRF.
+
+**Fuentes oficiales:** [MDN — Web Storage](https://developer.mozilla.org/docs/Web/API/Web_Storage_API), [IndexedDB](https://developer.mozilla.org/docs/Web/API/IndexedDB_API) y [Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Elige almacenamiento para una preferencia de idioma y para un borrador no sensible. Prueba pestaña nueva, recarga y limpieza; no persistas credenciales ni historial privado por comodidad.
+
+### Tema 8: Expresiones regulares avanzadas y Unicode · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás construir y probar una expresión regular con grupos, anclas y Unicode, medir backtracking y reconocer cuándo un parser explícito es más seguro.
+
+**Prerrequisitos:** strings, normalización Unicode, performance.now y pruebas. Define primero una gramática de código; una regex no debe inventar la regla.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Los identificadores logísticos y entradas textuales necesitan validación consistente, pero una regex compleja puede aceptar formatos incorrectos o causar consumo excesivo de CPU con backtracking catastrófico.
+
+El proyecto parseará códigos públicos `CO-2026-000123` y conservará política de normalización separada de validación.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** una regex es una plantilla de inspección para etiquetas; funciona bien cuando el formato es regular, pero no reemplaza abrir y comprender un documento con gramática anidada.
+
+**Conceptos clave:** grupos capturan partes; grupos nombrados documentan; lookahead verifica sin consumir; flags `u`/`v` tratan Unicode correctamente; anclas definen toda la entrada.
+
+Cuando un fragmento de la expresión proviene de datos dinámicos (una búsqueda escrita por la persona usuaria, por ejemplo), insertarlo sin escapar permite que caracteres como `.`, `*` o `(` se interpreten como metacaracteres y rompan o manipulen la gramática esperada. Desde ECMAScript 2025 (Node.js 24 o superior; en Node.js 22 obtienes `TypeError: RegExp.escape is not a function`), `RegExp.escape(texto)` devuelve el texto con todos los metacaracteres escapados, reemplazando la función utilitaria casera que la mayoría de proyectos mantenía para este propósito:
+
+```javascript
+const busqueda = 'CO-2026 (urgente)';
+const patronSeguro = new RegExp(RegExp.escape(busqueda), 'u');
+patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" actúe como grupo
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-9
+cd ejemplo-js-modulo-14-tema-9
+npm init -y
+npm install --save-dev tsx typescript
+```
+
+Crea `src/validation/tracking-code.js`:
+
+```js
+const TRACKING_CODE = /^(?<country>[A-Z]{2})-(?<year>\d{4})-(?<sequence>\d{6})$/u;
+export function parseTrackingCode(value) {
+  // Las anclas obligan a que toda la entrada cumpla la gramática.
+  const match = TRACKING_CODE.exec(value.normalize('NFC'));
+  if (!match?.groups) throw new TypeError('Código esperado: CO-2026-000123');
+  return { ...match.groups, year: Number(match.groups.year) };
+}
+```
+
+Crea `src/demo.ts` con casos válidos e inválidos:
+
+```ts
+import { parseTrackingCode } from './validation/tracking-code.js';
+
+console.log(parseTrackingCode('CO-2026-000123'));
+for (const invalid of ['prefijo-CO-2026-000123', 'CO-2026-123']) {
+  try {
+    parseTrackingCode(invalid);
+  } catch (error) {
+    console.log(`${invalid}: ${(error as Error).message}`);
+  }
+}
+```
+
+Ejecuta:
+
+```bash
+npx tsx src/demo.ts
+```
+
+**Resultado esperado:** `CO-2026-000123` produce `{ country: 'CO', year: 2026, sequence: '000123' }` y las cadenas parciales se rechazan con el mensaje del contrato.
+
+**Fallo deliberado:** mide `/^(a+)+$/` contra `"a".repeat(n) + "!"` incrementando n. El tiempo crece peligrosamente por backtracking; reemplázala por una condición lineal o regex sin cuantificadores anidados.
+
+#### Paso 5 · Práctica guiada
+
+Añade casos con espacios y minúsculas antes de decidir si normalizarlos. **Pista:** separar normalización de validación hace visible la política.
+
+#### Paso 6 · Práctica independiente
+
+Prueba Unicode compuesto, límites y 10 000 caracteres; crea benchmark y compara parser manual. Documenta máximo de entrada y timeout/cancelación donde aplique.
+
+#### Paso 7 · Cierre
+
+Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguiente tema organiza comportamientos mediante patrones deliberados.
+
+**Errores comunes:** parsear HTML/JSON; olvidar anclas; ignorar flag u/v; normalizar ocultamente; aceptar regex ilegible sin casos límite; procesar entrada ilimitada.
+
+**Fuentes oficiales:** [MDN — Regular expressions](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_expressions) y [Unicode escapes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Valida el formato público de una guía y normaliza texto de búsqueda según el contrato. Prueba caracteres Unicode y entradas largas, evitando que una expresión regular bloquee la interacción.
+
+### Tema 9: Patrones Factory, Strategy, Observer y Pub/Sub · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás reconocer Factory, Strategy, Observer y Pub/Sub, implementar una política intercambiable y justificar por qué no necesitas Singleton global para compartir estado.
+
+**Conocimiento previo:** funciones de primera clase, módulos, closures y pruebas. Parte del problema y sus fuerzas; no agregues una clase solo para poder nombrar un patrón.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Un patrón nombra una solución recurrente y sus consecuencias. Aplicarlo sin problema real añade capas, dependencias invisibles y dificultad de prueba.
+
+El proyecto debe elegir una ruta por tiempo, batería o peajes sin modificar el planificador cada vez; Strategy representa esa variación explícita.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** Factory construye vehículos, Strategy cambia la regla de ruta, Observer notifica a quienes miran un tablero y Pub/Sub usa una central que desacopla emisores y receptores.
+
+**Conceptos clave:** Factory encapsula creación; Strategy intercambia algoritmos; Observer conoce suscriptores directos; Pub/Sub usa un canal intermediario; Singleton impone una instancia y estado global.
+
+```mermaid
+classDiagram
+    class RoutePlanner { +plan(delivery, strategy) }
+    class FastestStrategy { +calculate(delivery) }
+    class LowBatteryStrategy { +calculate(delivery) }
+    RoutePlanner --> FastestStrategy
+    RoutePlanner --> LowBatteryStrategy
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-10
+cd ejemplo-js-modulo-14-tema-10
+npm init -y
+npm install --save-dev tsx typescript
+```
+
+Crea `src/routing/route-strategy.js`:
+
+```js
+export const strategies = {
+  fastest: ({ routes }) => routes.toSorted((a, b) => a.minutes - b.minutes)[0],
+  lowBattery: ({ routes }) => routes.toSorted((a, b) => a.energy - b.energy)[0],
+};
+export function planRoute(delivery, strategy) {
+  // El planificador depende del contrato función, no de estrategias concretas.
+  if (typeof strategy !== 'function') throw new TypeError('Strategy requerida');
+  return strategy(delivery);
+}
+```
+
+Crea `src/demo.ts` con dos rutas y ambas estrategias:
+
+```ts
+import { planRoute, strategies } from './routing/route-strategy.js';
+
+const delivery = {
+  routes: [
+    { id: 'rápida', minutes: 20, energy: 40 },
+    { id: 'ahorro', minutes: 35, energy: 12 },
+  ],
+};
+console.log(planRoute(delivery, strategies.fastest).id);
+console.log(planRoute(delivery, strategies.lowBattery).id);
+```
+
+Ejecuta:
+
+```bash
+npx tsx src/demo.ts
+```
+
+**Resultado esperado:** imprime `rápida` y después `ahorro`; cada Strategy selecciona una ruta distinta sin modificar `planRoute`.
+
+**Fallo deliberado:** pasa `"fastest"` directamente en vez de resolver la factory. `planRoute` lanza `Strategy requerida`; corrige la frontera para traducir nombres a funciones y rechazar claves desconocidas.
+
+#### Paso 5 · Práctica guiada
+
+Agrega `avoidTolls` registrándola en la factory `strategies`. **Pista:** la función central no debe contener otro `if` por estrategia.
+
+#### Paso 6 · Práctica independiente
+
+Implementa Observer con unsubscribe y compáralo con Pub/Sub para eventos entre módulos. Prueba cleanup, nombres y orden; documenta cuándo una llamada directa es más clara.
+
+#### Paso 7 · Cierre
+
+Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque ampliará plataforma offline, tiempo real y datos binarios.
+
+**Errores comunes:** convertir todo en Singleton; if central creciente; Observer sin unsubscribe; bus global sin contratos; patrones que agregan capas sin variación real.
+
+**Fuentes oficiales:** [web.dev — Design patterns](https://web.dev/learn/design-patterns/) y [MDN — Working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa la selección del cliente, el formato del estado y la publicación de cambios. Prueba dos instancias del widget y verifica que sus suscriptores se liberan al desmontar.
+
+### Tema 10: WebSocket y comunicación en tiempo real · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás abrir un WebSocket, validar mensajes, mantener heartbeat y reconectar con backoff sin duplicar suscripciones.
+
+**Prerrequisitos:** eventos, JSON, temporizadores, backoff e idempotencia. Usa servidor local; define autenticación y autorización en servidor, no confíes en la conexión abierta.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** El seguimiento en vivo no debe consultar la API cada segundo. WebSocket mantiene un canal bidireccional, pero introduce conexión persistente, orden, duplicados, autenticación y recuperación.
+
+El proyecto mantendrá un socket por vista/servicio, validará cada evento y deduplicará `event.id` al reconectar.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** HTTP es enviar cartas independientes; WebSocket es una llamada abierta. Si la llamada se corta, necesitas saber qué conversación recuperar y qué mensajes ya procesaste.
+
+**Conceptos clave:** handshake inicia sobre HTTP; estados `CONNECTING/OPEN/CLOSING/CLOSED`; mensajes son datos no confiables; heartbeat detecta conexiones muertas; backoff evita tormentas; SSE es alternativa unidireccional más simple.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-12
+cd ejemplo-js-modulo-14-tema-12
+npm create vite@latest . -- --template vanilla
+npm install
+npm install --save-dev ws
+npm pkg set scripts.socket="node server/socket.mjs"
+```
+
+Crea `src/realtime/tracking-socket.js`:
+
+```js
+export function connectTracking(url, { onEvent, onState }) {
+  const socket = new WebSocket(url);
+  socket.addEventListener('open', () => onState('connected'));
+  socket.addEventListener('message', ({ data }) => {
+    try {
+      const event = JSON.parse(data); // El canal autenticado sigue enviando datos no confiables.
+      if (typeof event.id !== 'string' || typeof event.type !== 'string') return;
+      onEvent(event);
+    } catch { onState('invalid-message'); }
+  });
+  socket.addEventListener('close', () => onState('disconnected'));
+  socket.addEventListener('error', () => socket.close());
+  return () => socket.close(1000, 'view-unmounted');
+}
+```
+
+Crea `server/socket.mjs`:
+
+```js
+import { WebSocketServer } from 'ws';
+
+const server = new WebSocketServer({ port: 8080 });
+server.on('connection', (socket) => {
+  socket.send(JSON.stringify({
+    id: 'evt-1',
+    type: 'tracking.updated',
+    status: 'in-transit',
+  }));
+  socket.on('message', (message) => socket.send(message.toString()));
+});
+console.log('WebSocket local en ws://localhost:8080');
+```
+
+Sustituye `src/main.js`:
+
+```js
+import { connectTracking } from './realtime/tracking-socket';
+
+document.querySelector('#app').innerHTML = `
+  <h1>Seguimiento en vivo</h1>
+  <p id="connection" role="status">connecting</p>
+  <ul id="events"></ul>
+`;
+const disconnect = connectTracking('ws://localhost:8080', {
+  onState: (state) => { document.querySelector('#connection').textContent = state; },
+  onEvent: (event) => {
+    const item = document.createElement('li');
+    item.textContent = `${event.id}: ${event.type}`;
+    document.querySelector('#events').append(item);
+  },
+});
+window.addEventListener('pagehide', disconnect, { once: true });
+```
+
+Ejecuta servidor y app:
+
+```bash
+npm run socket
+```
+
+Mantén esa terminal abierta y en otra terminal, desde la misma carpeta:
+
+```bash
+npm run dev
+```
+
+**Resultado esperado:** UI anuncia conexión, procesa JSON válido, marca inválido sin caer y se desconecta al destruir.
+
+**Fallo deliberado:** agrega temporalmente `socket.send('{mal-json')` dentro del handler `connection` del servidor. Sin `try/catch` el handler lanza y pierde el evento; con frontera informa `invalid-message` y mantiene conexión.
+
+#### Paso 5 · Práctica guiada
+
+Añade reconexión exponencial con jitter y límite. **Pista:** cancela temporizador al destruir y reinicia intento solo tras conexión estable.
+
+#### Paso 6 · Práctica independiente
+
+Añade heartbeat, deduplicación, resume token y estados offline/auth. Compara SSE cuando solo se reciben eventos y prueba conexiones repetidas.
+
+#### Paso 7 · Cierre
+
+El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tema trabajará con bytes.
+
+**Errores comunes:** socket por render; reconectar sin límite; confiar JSON; no deduplicar; heartbeat sin timeout; olvidar cleanup o autorización.
+
+**Fuentes oficiales:** [MDN — WebSocket](https://developer.mozilla.org/docs/Web/API/WebSocket) y [WHATWG WebSockets](https://websockets.spec.whatwg.org/).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Recibe eventos públicos con versión o secuencia y recupera el estado al reconectar. Simula duplicados y desorden: el historial visible no debe retroceder ni mostrar dos veces el mismo evento.
+
+### Tema 11: Typed Arrays, ArrayBuffer y DataView · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás interpretar un paquete binario con endianness explícito, validar fronteras y elegir entre `Uint8Array` y `DataView`.
+
+**Conocimiento previo:** representación binaria, enteros con signo, Workers y pruebas. Define el protocolo byte por byte antes de decodificar.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** GPS, imágenes, archivos y protocolos pueden entregar bytes, no JSON. Interpretarlos con tamaño u orden incorrecto produce valores corruptos difíciles de diagnosticar.
+
+El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-endian; el decoder será la frontera hacia dominio.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** `ArrayBuffer` es una cinta de bytes; Typed Array coloca una regla uniforme sobre ella; DataView permite leer campos de tamaños distintos indicando el sentido de lectura.
+
+**Conceptos clave:** buffer reserva memoria; una vista no copia; `byteOffset` ubica; endianness define orden; transferencia a Worker puede mover propiedad sin copiar; los límites deben validarse.
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-13
+cd ejemplo-js-modulo-14-tema-13
+npm init -y
+npm install --save-dev tsx typescript
+```
+
+Crea `src/binary/decode-gps.js`:
+
+```js
+export function decodeGps(buffer) {
+  if (!(buffer instanceof ArrayBuffer) || buffer.byteLength !== 8) {
+    throw new RangeError('Paquete GPS esperado: 8 bytes');
+  }
+  const view = new DataView(buffer);
+  return {
+    // false declara big-endian; el protocolo no depende de la máquina.
+    latitudeE6: view.getInt32(0, false),
+    longitudeE6: view.getInt32(4, false),
+  };
+}
+```
+
+Crea `src/demo.ts` para escribir dos enteros big-endian y decodificarlos:
+
+```ts
+import { decodeGps } from './binary/decode-gps.js';
+
+const buffer = new ArrayBuffer(8);
+const view = new DataView(buffer);
+view.setInt32(0, 4_600_000, false);
+view.setInt32(4, -74_100_000, false);
+console.log(decodeGps(buffer));
+try {
+  decodeGps(new ArrayBuffer(7));
+} catch (error) {
+  console.log((error as Error).message);
+}
+```
+
+Ejecuta:
+
+```bash
+npx tsx src/demo.ts
+```
+
+**Resultado esperado:** imprime `{ latitudeE6: 4600000, longitudeE6: -74100000 }`; el buffer inválido lanza `RangeError` con `Paquete GPS esperado: 8 bytes`.
+
+**Fallo deliberado:** cambia `false` por `true`. Los bytes se interpretan little-endian y producen coordenadas corruptas; restaura orden del protocolo, no ajustes valores a mano.
+
+#### Paso 5 · Práctica guiada
+
+Añade versión y flags con `Uint8Array`, manteniendo coordenadas con DataView. **Pista:** valida longitud antes de cada offset y documenta unidad/escala.
+
+#### Paso 6 · Práctica independiente
+
+Transfiere buffer a Worker, comprueba original detached y mide frente a copiar. Prueba extremos Int32, offset y paquete truncado.
+
+#### Paso 7 · Cierre
+
+Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente tema separará características estables de propuestas experimentales.
+
+**Errores comunes:** usar buffer.length; asumir offset cero; omitir endianness; no validar tamaño; transferir y reutilizar buffer detached; olvidar escala/unidad.
+
+**Fuentes oficiales:** [MDN — Typed arrays](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Typed_arrays), [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) y [DataView](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Decodifica un mensaje binario de posición con longitud y endianness explícitos. Prueba un buffer truncado y verifica que se rechaza antes de convertir bytes incompletos en coordenadas visibles.
+
+### Tema 12: ECMAScript moderno, Temporal e iterator helpers · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás verificar el estado de una característica, usar alternativas estables y aislar `Temporal`, iterator helpers y gestión explícita de recursos detrás de compatibilidad comprobada.
+
+**Prerrequisitos:** especificación TC39, feature detection, Intl, iteradores y bundling. Define runtimes objetivo y consulta fuentes oficiales; Stage 4 no implica soporte inmediato universal.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** ECMAScript evoluciona. Enseñar una propuesta como universal puede romper producción; ignorar características nuevas mantiene soluciones complejas cuando el runtime ya ofrece una mejor.
+
+El proyecto formateará instantes mediante un adaptador estable y cargará polyfill solo cuando el análisis de soporte/coste lo justifique.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** TC39 es una línea de certificación: una pieza en prototipo no se instala en toda la flota; Stage 4 indica que está lista para entrar en la especificación, pero todavía debes verificar los vehículos reales.
+
+**Conceptos clave:** especificación y soporte son distintos; feature detection supera version sniffing; `Temporal` modela instante/zona/fecha civil; iterator helpers procesan perezosamente; `using`/`await using` expresa liberación determinista cuando el runtime lo soporta.
+
+Un caso frecuente de iterador asíncrono es recorrer páginas sucesivas de una API y materializarlas en un array. Antes de ECMAScript 2026 esto exigía un bucle manual `for await...of` acumulando resultados. `Array.fromAsync(iterableAsincrono)` hace esa conversión directamente, análogo a `Array.from` pero esperando cada valor producido, y ya forma parte estable de la especificación —sin que la inclusión en el estándar garantice soporte en todos los runtimes. El adaptador de `Temporal` conserva feature detection por esa diferencia entre especificación e implementación—:
+
+```javascript
+async function* paginasDeEntregas() {
+  yield { codigo: 'RF-101' };
+  yield { codigo: 'RF-102' };
+}
+
+const entregas = await Array.fromAsync(paginasDeEntregas());
+console.log(entregas.length); // 2
+```
+
+```mermaid
+flowchart LR
+    NEED["necesidad"] --> STATUS["estado TC39 / estándar"] --> SUPPORT["soporte objetivo"] --> COST["polyfill y tamaño"] --> ADAPTER["adaptador con fallback"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-14
+cd ejemplo-js-modulo-14-tema-14
+npm init -y
+npm install --save-dev tsx typescript
+```
+
+Crea `src/platform/time.js`:
+
+```js
+export function formatDeliveryInstant(iso, timeZone, locale = 'es-CO') {
+  const instant = new Date(iso);
+  // Date + Intl constituye el fallback estable del contrato de presentación.
+  if (Number.isNaN(instant.getTime())) throw new TypeError('Instante inválido');
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone }).format(instant);
+}
+
+export const supportsTemporal = () => typeof globalThis.Temporal !== 'undefined';
+```
+
+Crea `src/demo.ts`:
+
+```ts
+import { formatDeliveryInstant, supportsTemporal } from './platform/time.js';
+
+const iso = '2026-07-15T18:30:00Z';
+console.log('Bogotá:', formatDeliveryInstant(iso, 'America/Bogota'));
+console.log('Madrid:', formatDeliveryInstant(iso, 'Europe/Madrid'));
+console.log('Temporal disponible:', supportsTemporal());
+```
+
+Ejecuta con un instante y dos zonas:
+
+```bash
+npx tsx src/demo.ts
+```
+
+**Resultado esperado:** ambas salidas representan el mismo instante con horas locales diferentes; `Temporal disponible` informa `true` o `false` según la capacidad real del runtime.
+
+**Fallo deliberado:** usa `Temporal.Instant.from` sin feature detection en un runtime sin soporte. Obtendrás ReferenceError; restaura adaptador y carga polyfill de forma condicionada.
+
+#### Paso 5 · Práctica guiada
+
+Consulta compatibilidad antes de cargar un polyfill Temporal. **Pista:** usa import dinámico y mide coste del chunk, zona y horario de verano.
+
+#### Paso 6 · Práctica independiente
+
+Implementa secuencia perezosa con iterator helpers cuando existan y generadores como fallback; prueba ambos. Evalúa `using`/DisposableStack solo con soporte y necesidad de cleanup determinista.
+
+#### Paso 7 · Cierre
+
+Adoptar novedades es una decisión verificable. Con esto el track incorpora las brechas principales; el siguiente trabajo amplía Node y demás tracks.
+
+**Errores comunes:** copiar novedades por año; confundir Stage con soporte; cargar polyfill inicial innecesario; usar Date para fecha civil futura sin zona; no probar fallback.
+
+**Fuentes oficiales:** [TC39 — Proposals](https://github.com/tc39/proposals), [ECMAScript specification](https://tc39.es/ecma262/) y [ECMA-402](https://tc39.es/ecma402/).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla las APIs modernas usadas para tiempo o iteración y comprueba disponibilidad en los navegadores objetivo. Prueba la alternativa configurada sin modificar el orden ni las fechas del historial.
+
+### Tema 13: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
+
+**Prerrequisito:** temas «try/catch en flujos asíncronos» (módulo 6) y «ECMAScript moderno, Temporal e iterator helpers» de este módulo.
+
+**Al finalizar podrás:** liberar conexiones y archivos automáticamente al salir de un bloque con `using` y `await using`, y agrupar varias limpiezas con `DisposableStack`.
+
+**¿Por qué es importante?** Olvidar cerrar una conexión o un archivo agota recursos y produce fallos lentos y difíciles de reproducir. `using` hace que la limpieza ocurra siempre, incluso si hay un `return` o una excepción.
+
+#### Paso 1 · Objetivo y preparación
+
+Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior. Comprueba tu versión con `node --version`. Crea la carpeta `academia-labs/javascript/recursos`.
+
+#### Paso 2 · Contexto y caso real
+
+El exportador de reportes de RutaFlow abre una conexión a la base de rutas y un archivo CSV. Antes usaba `try/finally` en cada función. Cuando alguien agregó un `return` temprano olvidó el `finally`, y el archivo quedó abierto hasta que el proceso se reinició.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** recurso, `Symbol.dispose`, `Symbol.asyncDispose`, `using`, `await using`, `DisposableStack`, orden inverso de liberación.
+
+Un objeto es **desechable** si tiene un método `[Symbol.dispose]()`. Si lo declaras con `using`, el motor llama ese método al salir del bloque, pase lo que pase. `await using` hace lo mismo con `[Symbol.asyncDispose]()`, que devuelve una promesa, y espera a que termine.
+
+Si declaras varios recursos en el mismo bloque, se liberan en **orden inverso**: el último en abrirse es el primero en cerrarse. Así una conexión se cierra antes que el archivo que la usaba.
+
+`DisposableStack` agrupa limpiezas: `use(recurso)` registra un desechable y `defer(fn)` registra una función cualquiera. Al liberar la pila, ejecuta todo en orden inverso.
+
+**Analogía:** `using` es la regla de una cocina: quien saca una olla la lava antes de salir, aunque lo llamen de urgencia. La analogía falla en que el motor no olvida nunca: la limpieza ocurre también si hay una excepción.
+
+**Límite de uso:** `using` solo sirve para recursos cuyo tiempo de vida termina con el bloque. Si el recurso debe vivir más (un pool de conexiones de toda la aplicación), no lo declares con `using`. En motores antiguos la sintaxis no existe: verifica la versión antes de usarla en una librería.
+
+```mermaid
+sequenceDiagram
+    participant F as exportar()
+    participant A as archivo (await using)
+    participant P as pila (DisposableStack)
+    F->>A: abre reporte.csv
+    F->>P: use(cache) y defer(borrar temporales)
+    Note over F: termina el bloque
+    F->>P: libera en orden inverso: cierra cache, borra temporales
+    F->>A: await cierra reporte.csv
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-labs/javascript/recursos/recursos.mjs`:
+
+```js
+class Conexion {
+  constructor(nombre) {
+    this.nombre = nombre;
+    console.log(`abre ${nombre}`);
+  }
+  consultar() {
+    return `datos de ${this.nombre}`;
+  }
+  [Symbol.dispose]() {
+    console.log(`cierra ${this.nombre}`);
+  }
+}
+
+class Archivo {
+  constructor(ruta) {
+    this.ruta = ruta;
+    console.log(`abre ${ruta}`);
+  }
+  async [Symbol.asyncDispose]() {
+    await new Promise((listo) => setTimeout(listo, 10)); // simula vaciar el búfer a disco
+    console.log(`cierra ${this.ruta}`);
+  }
+}
+
+function leerRuta() {
+  using db = new Conexion('rutas-db');
+  return db.consultar(); // db se cierra después de calcular el valor de retorno
+}
+
+async function exportar() {
+  await using archivo = new Archivo('reporte.csv');
+  using pila = new DisposableStack();
+  pila.defer(() => console.log('borra temporales'));
+  const cache = pila.use(new Conexion('cache'));
+  console.log(cache.consultar());
+}
+
+console.log(leerRuta());
+await exportar();
+```
+
+Ejecútalo con Node.js 24 o superior:
+
+```bash
+cd academia-labs/javascript/recursos
+node recursos.mjs
+```
+
+**Explicación por bloques:** `Conexion` es desechable porque implementa `[Symbol.dispose]`; `Archivo` es desechable de forma asíncrona con `[Symbol.asyncDispose]`. En `leerRuta`, `using db` garantiza el cierre después de calcular el `return`, por eso «cierra rutas-db» sale antes que «datos de rutas-db». En `exportar`, la pila se declara después del archivo, así que se libera primero: dentro de ella, `cache` se registró después del `defer`, por eso se cierra antes de borrar temporales. Por último, `await using` espera a que el archivo termine de cerrarse.
+
+**Resultado esperado:**
+
+```text
+abre rutas-db
+cierra rutas-db
+datos de rutas-db
+abre reporte.csv
+abre cache
+datos de cache
+cierra cache
+borra temporales
+cierra reporte.csv
+```
+
+**Fallo deliberado:** en `exportar`, cambia `await using archivo` por `using archivo`. **Error esperado:** `TypeError` porque `Archivo` no tiene `[Symbol.dispose]`, solo la versión asíncrona. **Diagnóstico:** un recurso que se cierra con una promesa necesita `await using`. Vuelve a escribir `await using`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el archivo y relaciona cada línea con la instrucción que la produce.
+2. **Variación:** lanza un `throw new Error("falla")` dentro de `exportar` después del `console.log` y comprueba que los tres recursos igual se cierran.
+3. **Diagnóstico:** reproduce el fallo deliberado y explica la diferencia entre `Symbol.dispose` y `Symbol.asyncDispose`.
+4. **Integración:** agrega a la pila un segundo `defer` que imprima «registra métrica» y predice en qué lugar aparece.
+5. **Diseño:** escribe la misma función `exportar` con `try/finally` y compara cuántas líneas necesitas.
+
+**Pista:** para predecir el orden de cierre, lee las declaraciones de abajo hacia arriba.
+
+#### Paso 6 · Práctica independiente
+
+Crea un `Temporizador` desechable que en el constructor guarde `performance.now()` y en `[Symbol.dispose]` imprima cuántos milisegundos duró el bloque. Úsalo con `using` para medir `leerRuta()`.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas qué método llama `using` y cuál `await using`.
+- [ ] Predices el orden de las nueve líneas antes de ejecutar.
+- [ ] Reprodujiste el `TypeError` del fallo deliberado.
+- [ ] Sabes cuándo no usar `using` (recursos que viven toda la aplicación).
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un recurso que solo tiene `asyncDispose`, declarar con `using` un pool global y olvidar que el orden de cierre es inverso. **Siguiente paso:** el tema «Typed Arrays, ArrayBuffer y DataView» trabaja con búferes que también conviene liberar a tiempo.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
+
+**Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
+### Tema 14: WebAssembly con Rust o C · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -678,489 +1609,7 @@ Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El si
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla un cálculo candidato a WebAssembly detrás de una función con alternativa JavaScript. Compara resultados y coste de transferencia con datos iguales antes de justificar su incorporación al widget.
 
-### Tema 6: Web3 y machine learning en navegador
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir una puntuación local explicable, probar fronteras/sesgo y decidir si ML o una red distribuida resuelven un requisito real. Crearás una señal de riesgo del proyecto que nunca sanciona automáticamente.
-
-**Prerrequisitos:** funciones puras, estadística descriptiva básica, privacidad y threat modeling. Este laboratorio no es un modelo predictivo validado ni una recomendación laboral; usa datos sintéticos.
-
-#### Paso 2 · Contexto y caso real
-
-Batería baja, GPS impreciso y retraso pueden sugerir que una entrega necesita asistencia, pero también reflejan dispositivo, cobertura o zona. El proyecto mostrará factores y permitirá revisión humana; no enviará ubicación a un tercero.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** cómputo local explicable, privacidad por diseño, blockchain como integridad (no veracidad) de datos.
-
-Un modelo de riesgo simple que corre completamente en el navegador del usuario (sin enviar ubicación ni batería a ningún servidor) preserva la privacidad por diseño, a costa de no poder aprovechar el cómputo o los datos agregados de un servidor central; "blockchain" no es sinónimo automático de "datos confiables" — solo garantiza que los datos YA escritos no se alteran retroactivamente, no que lo escrito originalmente fuera correcto.
-
-**Analogía:** es como un termómetro doméstico que nunca envía tu temperatura a ningún lado (privacidad total, pero sin el panorama epidemiológico que tendría un hospital agregando miles de lecturas); un libro de actas notariado prueba que una página no se reescribió después, no que lo que se escribió originalmente fuera verdad.
-
-**¿Por qué es importante?** Un modelo local explicable preserva privacidad y da factores verificables, pero no reemplaza decisión humana; confundir "blockchain" con "dato verificado" ignora que la integridad retroactiva no implica veracidad original.
-
-**Casos de uso reales:** mostrar los factores que componen una puntuación de riesgo, nunca solo el número final; comparar grupos sintéticos por zona/dispositivo para detectar sesgo sin exponer datos reales; documentar por qué una base de datos firmada puede resolver el mismo problema de integridad sin la complejidad de una red distribuida.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-  I[battery, accuracy, minutesLate] --> R["deliveryRisk(): cálculo 100% local"]
-  R --> S["score + factores explicables"]
-  S --> H["Revisión humana, nunca sanción automática"]
-  R -.->|nunca sale del navegador| Net["red/servidor externo"]
-```
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-6
-cd ejemplo-js-modulo-14-tema-6
-npm init -y
-npm install --save-dev tsx typescript
-```
-
-Crea `src/risk/delivery-risk.ts`:
-
-```ts
-interface RiskInput { battery: number; accuracyMeters: number; minutesLate: number }
-
-export function deliveryRisk(input: RiskInput): number {
-  // Modelo local explicable; no envía ubicación ni batería a un tercero.
-  const batteryRisk = input.battery < 15 ? 0.35 : 0;
-  const gpsRisk = input.accuracyMeters > 80 ? 0.35 : 0;
-  const delayRisk = Math.min(input.minutesLate / 120, 0.3);
-  return Number((batteryRisk + gpsRisk + delayRisk).toFixed(2));
-}
-
-console.log(deliveryRisk({ battery: 10, accuracyMeters: 120, minutesLate: 30 }));
-```
-
-Ejecuta:
-
-```bash
-npx tsx src/risk/delivery-risk.ts
-```
-
-**Resultado esperado:** `0.95` (`batteryRisk=0.35` porque `10<15`, `gpsRisk=0.35` porque `120>80`, `delayRisk=min(30/120,0.3)=0.25`, suma `0.95`) y factores explicables; ningún dato sale del navegador.
-
-**Fallo deliberado:** pasa batería `-1` o precisión `NaN`. Sin validación se produce una puntuación aparentemente legítima. Rechaza rangos inválidos antes de calcular y añade regresión.
-
-#### Paso 5 · Práctica guiada
-
-Devuelve `{ score, factors }` y compara grupos sintéticos por zona/dispositivo. **Pista:** una correlación no prueba culpa; busca diferencias de error y falsos positivos.
-
-#### Paso 6 · Práctica independiente
-
-Compara regla explícita con un modelo pequeño local: precisión, latencia, tamaño, privacidad y explicabilidad. Escribe un ADR separado para Web3 que exija múltiples organizaciones sin autoridad común y contraste con base de datos firmada.
-
-#### Paso 7 · Cierre
-
-Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. El siguiente tema tratará GPS como dato sensible con incertidumbre.
-
-**Errores comunes:** llamar IA a una regla; automatizar sanciones; usar datos personales sin propósito/consentimiento; confundir blockchain con integridad; introducir dependencias pesadas antes de validar valor.
-
-**Fuentes oficiales:** [TensorFlow.js — Guides](https://www.tensorflow.org/js/guide), [WebNN API](https://www.w3.org/TR/webnn/) y [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Construye una demostración opcional de clasificación local de incidencias con datos sintéticos. Mide errores y tiempo de carga; no permitas que una predicción cambie por sí sola el estado operativo de una entrega.
-
-### Tema 7: Geolocalización, permisos y precisión GPS
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás solicitar ubicación con consentimiento, interpretar precisión y cancelar el seguimiento sin convertir una coordenada imprecisa en una decisión logística.
-
-**Conocimiento previo:** Promesas/callbacks, permisos, fechas y ciclo de vida. Geolocation requiere HTTPS o localhost y una acción visible; prepara un fallback manual.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** El proyecto necesita posición para mostrar avance, pero la API puede ser rechazada, tardar, entregar datos antiguos o reportar una precisión de cientos de metros. La ubicación es un dato sensible y debe pedirse solo mientras una función visible la necesita.
-
-Este incremento del proyecto inicia seguimiento únicamente al pulsar “Compartir ubicación”, muestra margen/tiempo y destruye el watch al salir de la entrega.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** una coordenada es como una dirección comunicada por radio junto con un margen de error; “estoy aquí” sin precisión ni momento de medición no es una evidencia suficiente.
-
-**Conceptos clave:** `getCurrentPosition` obtiene una muestra; `watchPosition` observa cambios; `accuracy` expresa radio estimado en metros; `Permissions API` consulta estado; `clearWatch` detiene el sensor.
-
-```mermaid
-flowchart LR
-    ACTION["persona inicia seguimiento"] --> PERMISSION{"permiso"}
-    PERMISSION -->|"granted"| WATCH["watchPosition"] --> VALIDATE["precisión + antigüedad"] --> MAP["actualizar mapa"]
-    PERMISSION -->|"denied"| FALLBACK["entrada manual / explicación"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-7
-cd ejemplo-js-modulo-14-tema-7
-npm create vite@latest . -- --template vanilla
-npm install
-```
-
-Crea `src/location/watch-location.js`:
-
-```js
-export function iniciarUbicacion({ onPosition, onError }) {
-  if (!('geolocation' in navigator)) throw new Error('Geolocalización no disponible');
-  const id = navigator.geolocation.watchPosition(
-    ({ coords, timestamp }) => onPosition({
-      // Precisión y captura viajan con la coordenada; no son metadatos opcionales.
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      accuracyMeters: coords.accuracy,
-      capturedAt: new Date(timestamp).toISOString(),
-    }),
-    onError,
-    { enableHighAccuracy: true, timeout: 10_000, maximumAge: 5_000 },
-  );
-  return () => navigator.geolocation.clearWatch(id);
-}
-```
-
-Sustituye `src/main.js` para solicitar el permiso solo tras una acción explícita:
-
-```js
-import { iniciarUbicacion } from './location/watch-location';
-
-document.querySelector('#app').innerHTML = `
-  <h1>Seguimiento de entrega</h1>
-  <button id="share">Compartir ubicación</button>
-  <p id="position" role="status">Ubicación no compartida</p>
-  <label>Coordenada manual <input id="manual" placeholder="4.6, -74.1"></label>
-`;
-let detener = () => {};
-document.querySelector('#share').addEventListener('click', () => {
-  detener();
-  detener = iniciarUbicacion({
-    onPosition: ({ latitude, longitude, accuracyMeters, capturedAt }) => {
-      document.querySelector('#position').textContent =
-        `${latitude}, ${longitude}; precisión ±${accuracyMeters} m; ${capturedAt}`;
-    },
-    onError: (error) => {
-      document.querySelector('#position').textContent =
-        `No se pudo obtener la ubicación (${error.code}); usa la entrada manual.`;
-    },
-  });
-});
-window.addEventListener('pagehide', () => detener(), { once: true });
-```
-
-Ejecuta sobre HTTPS o localhost:
-
-```bash
-npm run dev
-```
-
-**Resultado esperado:** tras acción explícita y permiso concedido se muestran posición, precisión y hora; al desmontar deja de actualizarse.
-
-**Fallo deliberado:** simula `PERMISSION_DENIED` en DevTools. Debe aparecer explicación y entrada manual, sin reintentos automáticos que vuelvan a pedir permiso.
-
-#### Paso 5 · Práctica guiada
-
-Simula los tres códigos de error y presenta alternativas. **Pista:** diferencia `PERMISSION_DENIED`, `POSITION_UNAVAILABLE` y `TIMEOUT`.
-
-#### Paso 6 · Práctica independiente
-
-Rechaza para asignación automática muestras con más de 30 segundos o precisión peor que 100 m, pero permite mostrarlas como “aproximadas”. Prueba cleanup y batería.
-
-#### Paso 7 · Cierre
-
-Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El siguiente tema estudia qué datos pueden persistirse en cada almacén.
-
-**Errores comunes:** iniciar `watchPosition` al cargar; omitir `clearWatch`; tratar muestra vieja como actual; ocultar precisión; pedir high accuracy sin justificar batería.
-
-**Fuentes oficiales:** [MDN — Geolocation API](https://developer.mozilla.org/docs/Web/API/Geolocation_API) y [Permissions API](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Solicita ubicación solo al activar una función que la necesita y ofrece búsqueda manual. Prueba permiso denegado y baja precisión; el widget debe comunicar incertidumbre sin inventar una posición exacta.
-
-### Tema 8: sessionStorage, cookies e IndexedDB
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás elegir almacenamiento según vida útil, tamaño, consulta y riesgo, y construir un borrador offline sin guardar credenciales accesibles a JavaScript.
-
-**Conocimiento previo:** JSON, Promesas, transacciones y amenazas XSS/CSRF. Prueba siempre datos ausentes, corruptos y migraciones; el navegador puede borrar almacenamiento.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** `localStorage`, `sessionStorage`, cookies e IndexedDB no son alternativas equivalentes. Elegir por costumbre puede bloquear la UI, perder datos al cerrar una pestaña o exponer tokens ante XSS.
-
-El proyecto conservará un borrador por pestaña y una cola offline estructurada con claves idempotentes, pero la sesión se manejará con cookie segura emitida por el servidor.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** `sessionStorage` es una mesa de trabajo de una pestaña; una cookie es una credencial que el navegador puede adjuntar a solicitudes; IndexedDB es un archivo estructurado local con transacciones.
-
-**Conceptos clave:** `sessionStorage` vive por pestaña; cookies `HttpOnly` no son legibles desde JS; `SameSite` reduce CSRF; IndexedDB guarda objetos y consultas asíncronas; cualquier almacenamiento cliente puede borrarse.
-
-| Necesidad | Opción | Límite principal |
-|---|---|---|
-| borrador de una pestaña | `sessionStorage` | desaparece al cerrar |
-| sesión enviada al servidor | cookie `HttpOnly; Secure; SameSite` | requiere diseño CSRF |
-| cola offline estructurada | IndexedDB | API transaccional y migraciones |
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-8
-cd ejemplo-js-modulo-14-tema-8
-npm create vite@latest . -- --template vanilla
-npm install
-```
-
-Crea `src/storage/delivery-draft.js`:
-
-```js
-const KEY = 'app:delivery-draft';
-export const saveDraft = (draft) => sessionStorage.setItem(KEY, JSON.stringify(draft));
-export function loadDraft() {
-  try {
-    // Incluso el almacenamiento propio se trata como dato externo al leer.
-    return JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
-  } catch {
-    sessionStorage.removeItem(KEY);
-    return null;
-  }
-}
-```
-
-Sustituye `src/main.js` por un formulario mínimo que guarda y recupera el borrador:
-
-```js
-import { loadDraft, saveDraft } from './storage/delivery-draft';
-
-document.querySelector('#app').innerHTML = `
-  <h1>Borrador de entrega</h1>
-  <label>Destinatario <input id="recipient" autocomplete="off"></label>
-  <p id="storage-status" role="status"></p>
-`;
-const input = document.querySelector('#recipient');
-input.value = loadDraft()?.recipient ?? '';
-input.addEventListener('input', () => {
-  saveDraft({ recipient: input.value });
-  document.querySelector('#storage-status').textContent = 'Borrador guardado en esta pestaña';
-});
-```
-
-```bash
-npm run dev
-```
-
-Escribe un destinatario y recarga la página.
-
-**Resultado esperado:** el borrador sobrevive a una recarga de la misma pestaña, pero no se comparte con otra sesión independiente.
-
-**Fallo deliberado:** escribe `{mal-json` bajo la clave desde DevTools. `loadDraft` se recupera con `null`, elimina corrupción y la pantalla continúa.
-
-#### Paso 5 · Práctica guiada
-
-Crea una base IndexedDB `academia-offline` y almacena confirmaciones con clave idempotente. **Pista:** resuelve la Promesa solo en `transaction.oncomplete`, no cuando termina una única request.
-
-#### Paso 6 · Práctica independiente
-
-Migra versión 1 a 2 agregando `createdAt`, prueba cuota, transacción abortada y reenvío idempotente. Documenta cookie `HttpOnly; Secure; SameSite` del servidor sin intentar crear HttpOnly desde JS.
-
-#### Paso 7 · Cierre
-
-La persistencia se elige por semántica y amenaza, no por comodidad. El próximo tema validará formatos textuales complejos.
-
-**Errores comunes:** guardar access tokens en almacenamiento legible; usar localStorage para colecciones grandes; ignorar transacciones/versiones; asumir persistencia permanente; confundir SameSite con solución total de CSRF.
-
-**Fuentes oficiales:** [MDN — Web Storage](https://developer.mozilla.org/docs/Web/API/Web_Storage_API), [IndexedDB](https://developer.mozilla.org/docs/Web/API/IndexedDB_API) y [Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Elige almacenamiento para una preferencia de idioma y para un borrador no sensible. Prueba pestaña nueva, recarga y limpieza; no persistas credenciales ni historial privado por comodidad.
-
-### Tema 9: Expresiones regulares avanzadas y Unicode
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás construir y probar una expresión regular con grupos, anclas y Unicode, medir backtracking y reconocer cuándo un parser explícito es más seguro.
-
-**Prerrequisitos:** strings, normalización Unicode, performance.now y pruebas. Define primero una gramática de código; una regex no debe inventar la regla.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Los identificadores logísticos y entradas textuales necesitan validación consistente, pero una regex compleja puede aceptar formatos incorrectos o causar consumo excesivo de CPU con backtracking catastrófico.
-
-El proyecto parseará códigos públicos `CO-2026-000123` y conservará política de normalización separada de validación.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** una regex es una plantilla de inspección para etiquetas; funciona bien cuando el formato es regular, pero no reemplaza abrir y comprender un documento con gramática anidada.
-
-**Conceptos clave:** grupos capturan partes; grupos nombrados documentan; lookahead verifica sin consumir; flags `u`/`v` tratan Unicode correctamente; anclas definen toda la entrada.
-
-Cuando un fragmento de la expresión proviene de datos dinámicos (una búsqueda escrita por la persona usuaria, por ejemplo), insertarlo sin escapar permite que caracteres como `.`, `*` o `(` se interpreten como metacaracteres y rompan o manipulen la gramática esperada. Desde ECMAScript 2025 (Node.js 24 o superior; en Node.js 22 obtienes `TypeError: RegExp.escape is not a function`), `RegExp.escape(texto)` devuelve el texto con todos los metacaracteres escapados, reemplazando la función utilitaria casera que la mayoría de proyectos mantenía para este propósito:
-
-```javascript
-const busqueda = 'CO-2026 (urgente)';
-const patronSeguro = new RegExp(RegExp.escape(busqueda), 'u');
-patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" actúe como grupo
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-9
-cd ejemplo-js-modulo-14-tema-9
-npm init -y
-npm install --save-dev tsx typescript
-```
-
-Crea `src/validation/tracking-code.js`:
-
-```js
-const TRACKING_CODE = /^(?<country>[A-Z]{2})-(?<year>\d{4})-(?<sequence>\d{6})$/u;
-export function parseTrackingCode(value) {
-  // Las anclas obligan a que toda la entrada cumpla la gramática.
-  const match = TRACKING_CODE.exec(value.normalize('NFC'));
-  if (!match?.groups) throw new TypeError('Código esperado: CO-2026-000123');
-  return { ...match.groups, year: Number(match.groups.year) };
-}
-```
-
-Crea `src/demo.ts` con casos válidos e inválidos:
-
-```ts
-import { parseTrackingCode } from './validation/tracking-code.js';
-
-console.log(parseTrackingCode('CO-2026-000123'));
-for (const invalid of ['prefijo-CO-2026-000123', 'CO-2026-123']) {
-  try {
-    parseTrackingCode(invalid);
-  } catch (error) {
-    console.log(`${invalid}: ${(error as Error).message}`);
-  }
-}
-```
-
-Ejecuta:
-
-```bash
-npx tsx src/demo.ts
-```
-
-**Resultado esperado:** `CO-2026-000123` produce `{ country: 'CO', year: 2026, sequence: '000123' }` y las cadenas parciales se rechazan con el mensaje del contrato.
-
-**Fallo deliberado:** mide `/^(a+)+$/` contra `"a".repeat(n) + "!"` incrementando n. El tiempo crece peligrosamente por backtracking; reemplázala por una condición lineal o regex sin cuantificadores anidados.
-
-#### Paso 5 · Práctica guiada
-
-Añade casos con espacios y minúsculas antes de decidir si normalizarlos. **Pista:** separar normalización de validación hace visible la política.
-
-#### Paso 6 · Práctica independiente
-
-Prueba Unicode compuesto, límites y 10 000 caracteres; crea benchmark y compara parser manual. Documenta máximo de entrada y timeout/cancelación donde aplique.
-
-#### Paso 7 · Cierre
-
-Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguiente tema organiza comportamientos mediante patrones deliberados.
-
-**Errores comunes:** parsear HTML/JSON; olvidar anclas; ignorar flag u/v; normalizar ocultamente; aceptar regex ilegible sin casos límite; procesar entrada ilimitada.
-
-**Fuentes oficiales:** [MDN — Regular expressions](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Regular_expressions) y [Unicode escapes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Valida el formato público de una guía y normaliza texto de búsqueda según el contrato. Prueba caracteres Unicode y entradas largas, evitando que una expresión regular bloquee la interacción.
-
-### Tema 10: Patrones Factory, Strategy, Observer y Pub/Sub
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás reconocer Factory, Strategy, Observer y Pub/Sub, implementar una política intercambiable y justificar por qué no necesitas Singleton global para compartir estado.
-
-**Conocimiento previo:** funciones de primera clase, módulos, closures y pruebas. Parte del problema y sus fuerzas; no agregues una clase solo para poder nombrar un patrón.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un patrón nombra una solución recurrente y sus consecuencias. Aplicarlo sin problema real añade capas, dependencias invisibles y dificultad de prueba.
-
-El proyecto debe elegir una ruta por tiempo, batería o peajes sin modificar el planificador cada vez; Strategy representa esa variación explícita.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** Factory construye vehículos, Strategy cambia la regla de ruta, Observer notifica a quienes miran un tablero y Pub/Sub usa una central que desacopla emisores y receptores.
-
-**Conceptos clave:** Factory encapsula creación; Strategy intercambia algoritmos; Observer conoce suscriptores directos; Pub/Sub usa un canal intermediario; Singleton impone una instancia y estado global.
-
-```mermaid
-classDiagram
-    class RoutePlanner { +plan(delivery, strategy) }
-    class FastestStrategy { +calculate(delivery) }
-    class LowBatteryStrategy { +calculate(delivery) }
-    RoutePlanner --> FastestStrategy
-    RoutePlanner --> LowBatteryStrategy
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-10
-cd ejemplo-js-modulo-14-tema-10
-npm init -y
-npm install --save-dev tsx typescript
-```
-
-Crea `src/routing/route-strategy.js`:
-
-```js
-export const strategies = {
-  fastest: ({ routes }) => routes.toSorted((a, b) => a.minutes - b.minutes)[0],
-  lowBattery: ({ routes }) => routes.toSorted((a, b) => a.energy - b.energy)[0],
-};
-export function planRoute(delivery, strategy) {
-  // El planificador depende del contrato función, no de estrategias concretas.
-  if (typeof strategy !== 'function') throw new TypeError('Strategy requerida');
-  return strategy(delivery);
-}
-```
-
-Crea `src/demo.ts` con dos rutas y ambas estrategias:
-
-```ts
-import { planRoute, strategies } from './routing/route-strategy.js';
-
-const delivery = {
-  routes: [
-    { id: 'rápida', minutes: 20, energy: 40 },
-    { id: 'ahorro', minutes: 35, energy: 12 },
-  ],
-};
-console.log(planRoute(delivery, strategies.fastest).id);
-console.log(planRoute(delivery, strategies.lowBattery).id);
-```
-
-Ejecuta:
-
-```bash
-npx tsx src/demo.ts
-```
-
-**Resultado esperado:** imprime `rápida` y después `ahorro`; cada Strategy selecciona una ruta distinta sin modificar `planRoute`.
-
-**Fallo deliberado:** pasa `"fastest"` directamente en vez de resolver la factory. `planRoute` lanza `Strategy requerida`; corrige la frontera para traducir nombres a funciones y rechazar claves desconocidas.
-
-#### Paso 5 · Práctica guiada
-
-Agrega `avoidTolls` registrándola en la factory `strategies`. **Pista:** la función central no debe contener otro `if` por estrategia.
-
-#### Paso 6 · Práctica independiente
-
-Implementa Observer con unsubscribe y compáralo con Pub/Sub para eventos entre módulos. Prueba cleanup, nombres y orden; documenta cuándo una llamada directa es más clara.
-
-#### Paso 7 · Cierre
-
-Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque ampliará plataforma offline, tiempo real y datos binarios.
-
-**Errores comunes:** convertir todo en Singleton; if central creciente; Observer sin unsubscribe; bus global sin contratos; patrones que agregan capas sin variación real.
-
-**Fuentes oficiales:** [web.dev — Design patterns](https://web.dev/learn/design-patterns/) y [MDN — Working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa la selección del cliente, el formato del estado y la publicación de cambios. Prueba dos instancias del widget y verifica que sus suscriptores se liberan al desmontar.
-
-### Tema 11: Service Workers, PWA y estrategias de caché
+### Tema 15: Service Workers, PWA y estrategias de caché · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1285,452 +1734,3 @@ Ya puedes separar disponibilidad offline de confirmación remota. El siguiente t
 
 **Límites y decisión de uso:** La caché del Service Worker puede servir datos obsoletos y conservar recursos de una versión anterior. Define actualización y recuperación; no reutilices respuestas privadas entre sesiones ni ocultes la falta de red con un estado presentado como actual.
 
-### Tema 12: WebSocket y comunicación en tiempo real
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás abrir un WebSocket, validar mensajes, mantener heartbeat y reconectar con backoff sin duplicar suscripciones.
-
-**Prerrequisitos:** eventos, JSON, temporizadores, backoff e idempotencia. Usa servidor local; define autenticación y autorización en servidor, no confíes en la conexión abierta.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** El seguimiento en vivo no debe consultar la API cada segundo. WebSocket mantiene un canal bidireccional, pero introduce conexión persistente, orden, duplicados, autenticación y recuperación.
-
-El proyecto mantendrá un socket por vista/servicio, validará cada evento y deduplicará `event.id` al reconectar.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** HTTP es enviar cartas independientes; WebSocket es una llamada abierta. Si la llamada se corta, necesitas saber qué conversación recuperar y qué mensajes ya procesaste.
-
-**Conceptos clave:** handshake inicia sobre HTTP; estados `CONNECTING/OPEN/CLOSING/CLOSED`; mensajes son datos no confiables; heartbeat detecta conexiones muertas; backoff evita tormentas; SSE es alternativa unidireccional más simple.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-12
-cd ejemplo-js-modulo-14-tema-12
-npm create vite@latest . -- --template vanilla
-npm install
-npm install --save-dev ws
-npm pkg set scripts.socket="node server/socket.mjs"
-```
-
-Crea `src/realtime/tracking-socket.js`:
-
-```js
-export function connectTracking(url, { onEvent, onState }) {
-  const socket = new WebSocket(url);
-  socket.addEventListener('open', () => onState('connected'));
-  socket.addEventListener('message', ({ data }) => {
-    try {
-      const event = JSON.parse(data); // El canal autenticado sigue enviando datos no confiables.
-      if (typeof event.id !== 'string' || typeof event.type !== 'string') return;
-      onEvent(event);
-    } catch { onState('invalid-message'); }
-  });
-  socket.addEventListener('close', () => onState('disconnected'));
-  socket.addEventListener('error', () => socket.close());
-  return () => socket.close(1000, 'view-unmounted');
-}
-```
-
-Crea `server/socket.mjs`:
-
-```js
-import { WebSocketServer } from 'ws';
-
-const server = new WebSocketServer({ port: 8080 });
-server.on('connection', (socket) => {
-  socket.send(JSON.stringify({
-    id: 'evt-1',
-    type: 'tracking.updated',
-    status: 'in-transit',
-  }));
-  socket.on('message', (message) => socket.send(message.toString()));
-});
-console.log('WebSocket local en ws://localhost:8080');
-```
-
-Sustituye `src/main.js`:
-
-```js
-import { connectTracking } from './realtime/tracking-socket';
-
-document.querySelector('#app').innerHTML = `
-  <h1>Seguimiento en vivo</h1>
-  <p id="connection" role="status">connecting</p>
-  <ul id="events"></ul>
-`;
-const disconnect = connectTracking('ws://localhost:8080', {
-  onState: (state) => { document.querySelector('#connection').textContent = state; },
-  onEvent: (event) => {
-    const item = document.createElement('li');
-    item.textContent = `${event.id}: ${event.type}`;
-    document.querySelector('#events').append(item);
-  },
-});
-window.addEventListener('pagehide', disconnect, { once: true });
-```
-
-Ejecuta servidor y app:
-
-```bash
-npm run socket
-```
-
-Mantén esa terminal abierta y en otra terminal, desde la misma carpeta:
-
-```bash
-npm run dev
-```
-
-**Resultado esperado:** UI anuncia conexión, procesa JSON válido, marca inválido sin caer y se desconecta al destruir.
-
-**Fallo deliberado:** agrega temporalmente `socket.send('{mal-json')` dentro del handler `connection` del servidor. Sin `try/catch` el handler lanza y pierde el evento; con frontera informa `invalid-message` y mantiene conexión.
-
-#### Paso 5 · Práctica guiada
-
-Añade reconexión exponencial con jitter y límite. **Pista:** cancela temporizador al destruir y reinicia intento solo tras conexión estable.
-
-#### Paso 6 · Práctica independiente
-
-Añade heartbeat, deduplicación, resume token y estados offline/auth. Compara SSE cuando solo se reciben eventos y prueba conexiones repetidas.
-
-#### Paso 7 · Cierre
-
-El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tema trabajará con bytes.
-
-**Errores comunes:** socket por render; reconectar sin límite; confiar JSON; no deduplicar; heartbeat sin timeout; olvidar cleanup o autorización.
-
-**Fuentes oficiales:** [MDN — WebSocket](https://developer.mozilla.org/docs/Web/API/WebSocket) y [WHATWG WebSockets](https://websockets.spec.whatwg.org/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Recibe eventos públicos con versión o secuencia y recupera el estado al reconectar. Simula duplicados y desorden: el historial visible no debe retroceder ni mostrar dos veces el mismo evento.
-
-### Tema 13: Typed Arrays, ArrayBuffer y DataView
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás interpretar un paquete binario con endianness explícito, validar fronteras y elegir entre `Uint8Array` y `DataView`.
-
-**Conocimiento previo:** representación binaria, enteros con signo, Workers y pruebas. Define el protocolo byte por byte antes de decodificar.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** GPS, imágenes, archivos y protocolos pueden entregar bytes, no JSON. Interpretarlos con tamaño u orden incorrecto produce valores corruptos difíciles de diagnosticar.
-
-El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-endian; el decoder será la frontera hacia dominio.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** `ArrayBuffer` es una cinta de bytes; Typed Array coloca una regla uniforme sobre ella; DataView permite leer campos de tamaños distintos indicando el sentido de lectura.
-
-**Conceptos clave:** buffer reserva memoria; una vista no copia; `byteOffset` ubica; endianness define orden; transferencia a Worker puede mover propiedad sin copiar; los límites deben validarse.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-13
-cd ejemplo-js-modulo-14-tema-13
-npm init -y
-npm install --save-dev tsx typescript
-```
-
-Crea `src/binary/decode-gps.js`:
-
-```js
-export function decodeGps(buffer) {
-  if (!(buffer instanceof ArrayBuffer) || buffer.byteLength !== 8) {
-    throw new RangeError('Paquete GPS esperado: 8 bytes');
-  }
-  const view = new DataView(buffer);
-  return {
-    // false declara big-endian; el protocolo no depende de la máquina.
-    latitudeE6: view.getInt32(0, false),
-    longitudeE6: view.getInt32(4, false),
-  };
-}
-```
-
-Crea `src/demo.ts` para escribir dos enteros big-endian y decodificarlos:
-
-```ts
-import { decodeGps } from './binary/decode-gps.js';
-
-const buffer = new ArrayBuffer(8);
-const view = new DataView(buffer);
-view.setInt32(0, 4_600_000, false);
-view.setInt32(4, -74_100_000, false);
-console.log(decodeGps(buffer));
-try {
-  decodeGps(new ArrayBuffer(7));
-} catch (error) {
-  console.log((error as Error).message);
-}
-```
-
-Ejecuta:
-
-```bash
-npx tsx src/demo.ts
-```
-
-**Resultado esperado:** imprime `{ latitudeE6: 4600000, longitudeE6: -74100000 }`; el buffer inválido lanza `RangeError` con `Paquete GPS esperado: 8 bytes`.
-
-**Fallo deliberado:** cambia `false` por `true`. Los bytes se interpretan little-endian y producen coordenadas corruptas; restaura orden del protocolo, no ajustes valores a mano.
-
-#### Paso 5 · Práctica guiada
-
-Añade versión y flags con `Uint8Array`, manteniendo coordenadas con DataView. **Pista:** valida longitud antes de cada offset y documenta unidad/escala.
-
-#### Paso 6 · Práctica independiente
-
-Transfiere buffer a Worker, comprueba original detached y mide frente a copiar. Prueba extremos Int32, offset y paquete truncado.
-
-#### Paso 7 · Cierre
-
-Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente tema separará características estables de propuestas experimentales.
-
-**Errores comunes:** usar buffer.length; asumir offset cero; omitir endianness; no validar tamaño; transferir y reutilizar buffer detached; olvidar escala/unidad.
-
-**Fuentes oficiales:** [MDN — Typed arrays](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Typed_arrays), [ArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) y [DataView](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Decodifica un mensaje binario de posición con longitud y endianness explícitos. Prueba un buffer truncado y verifica que se rechaza antes de convertir bytes incompletos en coordenadas visibles.
-
-### Tema 14: ECMAScript moderno, Temporal e iterator helpers
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás verificar el estado de una característica, usar alternativas estables y aislar `Temporal`, iterator helpers y gestión explícita de recursos detrás de compatibilidad comprobada.
-
-**Prerrequisitos:** especificación TC39, feature detection, Intl, iteradores y bundling. Define runtimes objetivo y consulta fuentes oficiales; Stage 4 no implica soporte inmediato universal.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** ECMAScript evoluciona. Enseñar una propuesta como universal puede romper producción; ignorar características nuevas mantiene soluciones complejas cuando el runtime ya ofrece una mejor.
-
-El proyecto formateará instantes mediante un adaptador estable y cargará polyfill solo cuando el análisis de soporte/coste lo justifique.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** TC39 es una línea de certificación: una pieza en prototipo no se instala en toda la flota; Stage 4 indica que está lista para entrar en la especificación, pero todavía debes verificar los vehículos reales.
-
-**Conceptos clave:** especificación y soporte son distintos; feature detection supera version sniffing; `Temporal` modela instante/zona/fecha civil; iterator helpers procesan perezosamente; `using`/`await using` expresa liberación determinista cuando el runtime lo soporta.
-
-Un caso frecuente de iterador asíncrono es recorrer páginas sucesivas de una API y materializarlas en un array. Antes de ECMAScript 2026 esto exigía un bucle manual `for await...of` acumulando resultados. `Array.fromAsync(iterableAsincrono)` hace esa conversión directamente, análogo a `Array.from` pero esperando cada valor producido, y ya forma parte estable de la especificación —sin que la inclusión en el estándar garantice soporte en todos los runtimes. El adaptador de `Temporal` conserva feature detection por esa diferencia entre especificación e implementación—:
-
-```javascript
-async function* paginasDeEntregas() {
-  yield { codigo: 'RF-101' };
-  yield { codigo: 'RF-102' };
-}
-
-const entregas = await Array.fromAsync(paginasDeEntregas());
-console.log(entregas.length); // 2
-```
-
-```mermaid
-flowchart LR
-    NEED["necesidad"] --> STATUS["estado TC39 / estándar"] --> SUPPORT["soporte objetivo"] --> COST["polyfill y tamaño"] --> ADAPTER["adaptador con fallback"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-14
-cd ejemplo-js-modulo-14-tema-14
-npm init -y
-npm install --save-dev tsx typescript
-```
-
-Crea `src/platform/time.js`:
-
-```js
-export function formatDeliveryInstant(iso, timeZone, locale = 'es-CO') {
-  const instant = new Date(iso);
-  // Date + Intl constituye el fallback estable del contrato de presentación.
-  if (Number.isNaN(instant.getTime())) throw new TypeError('Instante inválido');
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone }).format(instant);
-}
-
-export const supportsTemporal = () => typeof globalThis.Temporal !== 'undefined';
-```
-
-Crea `src/demo.ts`:
-
-```ts
-import { formatDeliveryInstant, supportsTemporal } from './platform/time.js';
-
-const iso = '2026-07-15T18:30:00Z';
-console.log('Bogotá:', formatDeliveryInstant(iso, 'America/Bogota'));
-console.log('Madrid:', formatDeliveryInstant(iso, 'Europe/Madrid'));
-console.log('Temporal disponible:', supportsTemporal());
-```
-
-Ejecuta con un instante y dos zonas:
-
-```bash
-npx tsx src/demo.ts
-```
-
-**Resultado esperado:** ambas salidas representan el mismo instante con horas locales diferentes; `Temporal disponible` informa `true` o `false` según la capacidad real del runtime.
-
-**Fallo deliberado:** usa `Temporal.Instant.from` sin feature detection en un runtime sin soporte. Obtendrás ReferenceError; restaura adaptador y carga polyfill de forma condicionada.
-
-#### Paso 5 · Práctica guiada
-
-Consulta compatibilidad antes de cargar un polyfill Temporal. **Pista:** usa import dinámico y mide coste del chunk, zona y horario de verano.
-
-#### Paso 6 · Práctica independiente
-
-Implementa secuencia perezosa con iterator helpers cuando existan y generadores como fallback; prueba ambos. Evalúa `using`/DisposableStack solo con soporte y necesidad de cleanup determinista.
-
-#### Paso 7 · Cierre
-
-Adoptar novedades es una decisión verificable. Con esto el track incorpora las brechas principales; el siguiente trabajo amplía Node y demás tracks.
-
-**Errores comunes:** copiar novedades por año; confundir Stage con soporte; cargar polyfill inicial innecesario; usar Date para fecha civil futura sin zona; no probar fallback.
-
-**Fuentes oficiales:** [TC39 — Proposals](https://github.com/tc39/proposals), [ECMAScript specification](https://tc39.es/ecma262/) y [ECMA-402](https://tc39.es/ecma402/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla las APIs modernas usadas para tiempo o iteración y comprueba disponibilidad en los navegadores objetivo. Prueba la alternativa configurada sin modificar el orden ni las fechas del historial.
-
-### Tema 15: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
-
-**Prerrequisito:** temas «try/catch en flujos asíncronos» (módulo 6) y «ECMAScript moderno, Temporal e iterator helpers» de este módulo.
-
-**Al finalizar podrás:** liberar conexiones y archivos automáticamente al salir de un bloque con `using` y `await using`, y agrupar varias limpiezas con `DisposableStack`.
-
-**¿Por qué es importante?** Olvidar cerrar una conexión o un archivo agota recursos y produce fallos lentos y difíciles de reproducir. `using` hace que la limpieza ocurra siempre, incluso si hay un `return` o una excepción.
-
-#### Paso 1 · Objetivo y preparación
-
-Necesitas un motor que soporte la gestión explícita de recursos: Node.js 24 o superior, o Chrome 134 o superior. Comprueba tu versión con `node --version`. Crea la carpeta `academia-labs/javascript/recursos`.
-
-#### Paso 2 · Contexto y caso real
-
-El exportador de reportes de RutaFlow abre una conexión a la base de rutas y un archivo CSV. Antes usaba `try/finally` en cada función. Cuando alguien agregó un `return` temprano olvidó el `finally`, y el archivo quedó abierto hasta que el proceso se reinició.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** recurso, `Symbol.dispose`, `Symbol.asyncDispose`, `using`, `await using`, `DisposableStack`, orden inverso de liberación.
-
-Un objeto es **desechable** si tiene un método `[Symbol.dispose]()`. Si lo declaras con `using`, el motor llama ese método al salir del bloque, pase lo que pase. `await using` hace lo mismo con `[Symbol.asyncDispose]()`, que devuelve una promesa, y espera a que termine.
-
-Si declaras varios recursos en el mismo bloque, se liberan en **orden inverso**: el último en abrirse es el primero en cerrarse. Así una conexión se cierra antes que el archivo que la usaba.
-
-`DisposableStack` agrupa limpiezas: `use(recurso)` registra un desechable y `defer(fn)` registra una función cualquiera. Al liberar la pila, ejecuta todo en orden inverso.
-
-**Analogía:** `using` es la regla de una cocina: quien saca una olla la lava antes de salir, aunque lo llamen de urgencia. La analogía falla en que el motor no olvida nunca: la limpieza ocurre también si hay una excepción.
-
-**Límite de uso:** `using` solo sirve para recursos cuyo tiempo de vida termina con el bloque. Si el recurso debe vivir más (un pool de conexiones de toda la aplicación), no lo declares con `using`. En motores antiguos la sintaxis no existe: verifica la versión antes de usarla en una librería.
-
-```mermaid
-sequenceDiagram
-    participant F as exportar()
-    participant A as archivo (await using)
-    participant P as pila (DisposableStack)
-    F->>A: abre reporte.csv
-    F->>P: use(cache) y defer(borrar temporales)
-    Note over F: termina el bloque
-    F->>P: libera en orden inverso: cierra cache, borra temporales
-    F->>A: await cierra reporte.csv
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `academia-labs/javascript/recursos/recursos.mjs`:
-
-```js
-class Conexion {
-  constructor(nombre) {
-    this.nombre = nombre;
-    console.log(`abre ${nombre}`);
-  }
-  consultar() {
-    return `datos de ${this.nombre}`;
-  }
-  [Symbol.dispose]() {
-    console.log(`cierra ${this.nombre}`);
-  }
-}
-
-class Archivo {
-  constructor(ruta) {
-    this.ruta = ruta;
-    console.log(`abre ${ruta}`);
-  }
-  async [Symbol.asyncDispose]() {
-    await new Promise((listo) => setTimeout(listo, 10)); // simula vaciar el búfer a disco
-    console.log(`cierra ${this.ruta}`);
-  }
-}
-
-function leerRuta() {
-  using db = new Conexion('rutas-db');
-  return db.consultar(); // db se cierra después de calcular el valor de retorno
-}
-
-async function exportar() {
-  await using archivo = new Archivo('reporte.csv');
-  using pila = new DisposableStack();
-  pila.defer(() => console.log('borra temporales'));
-  const cache = pila.use(new Conexion('cache'));
-  console.log(cache.consultar());
-}
-
-console.log(leerRuta());
-await exportar();
-```
-
-Ejecútalo con Node.js 24 o superior:
-
-```bash
-cd academia-labs/javascript/recursos
-node recursos.mjs
-```
-
-**Explicación por bloques:** `Conexion` es desechable porque implementa `[Symbol.dispose]`; `Archivo` es desechable de forma asíncrona con `[Symbol.asyncDispose]`. En `leerRuta`, `using db` garantiza el cierre después de calcular el `return`, por eso «cierra rutas-db» sale antes que «datos de rutas-db». En `exportar`, la pila se declara después del archivo, así que se libera primero: dentro de ella, `cache` se registró después del `defer`, por eso se cierra antes de borrar temporales. Por último, `await using` espera a que el archivo termine de cerrarse.
-
-**Resultado esperado:**
-
-```text
-abre rutas-db
-cierra rutas-db
-datos de rutas-db
-abre reporte.csv
-abre cache
-datos de cache
-cierra cache
-borra temporales
-cierra reporte.csv
-```
-
-**Fallo deliberado:** en `exportar`, cambia `await using archivo` por `using archivo`. **Error esperado:** `TypeError` porque `Archivo` no tiene `[Symbol.dispose]`, solo la versión asíncrona. **Diagnóstico:** un recurso que se cierra con una promesa necesita `await using`. Vuelve a escribir `await using`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el archivo y relaciona cada línea con la instrucción que la produce.
-2. **Variación:** lanza un `throw new Error("falla")` dentro de `exportar` después del `console.log` y comprueba que los tres recursos igual se cierran.
-3. **Diagnóstico:** reproduce el fallo deliberado y explica la diferencia entre `Symbol.dispose` y `Symbol.asyncDispose`.
-4. **Integración:** agrega a la pila un segundo `defer` que imprima «registra métrica» y predice en qué lugar aparece.
-5. **Diseño:** escribe la misma función `exportar` con `try/finally` y compara cuántas líneas necesitas.
-
-**Pista:** para predecir el orden de cierre, lee las declaraciones de abajo hacia arriba.
-
-#### Paso 6 · Práctica independiente
-
-Crea un `Temporizador` desechable que en el constructor guarde `performance.now()` y en `[Symbol.dispose]` imprima cuántos milisegundos duró el bloque. Úsalo con `using` para medir `leerRuta()`.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas qué método llama `using` y cuál `await using`.
-- [ ] Predices el orden de las nueve líneas antes de ejecutar.
-- [ ] Reprodujiste el `TypeError` del fallo deliberado.
-- [ ] Sabes cuándo no usar `using` (recursos que viven toda la aplicación).
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un recurso que solo tiene `asyncDispose`, declarar con `using` un pool global y olvidar que el orden de cierre es inverso. **Siguiente paso:** el tema «Typed Arrays, ArrayBuffer y DataView» trabaja con búferes que también conviene liberar a tiempo.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
-
-**Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).

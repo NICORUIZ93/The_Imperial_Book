@@ -66,7 +66,7 @@ academia-javascript/
 └── src/
 ```
 
-### Tema 1: Variables — `const`, `let` y `var`
+### Tema 1: Variables — `const`, `let` y `var` · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -149,7 +149,7 @@ Aprendiste a comunicar intención con `const` y `let`. El próximo tema explica 
 
 **Límites y decisión de uso:** Const impide reasignar la referencia, no modificar las propiedades del objeto referenciado. Para snapshots, crea estructuras nuevas y controla mutaciones anidadas; la [referencia de const](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) distingue ambos comportamientos.
 
-### Tema 2: Tipos primitivos y `typeof`
+### Tema 2: Tipos primitivos y `typeof` · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -219,7 +219,7 @@ Distinguir estos tipos primitivos es la base para el proyecto integrador de este
 
 **Errores comunes:** asumir que `typeof null` es `'null'`; detectar arrays con `typeof`; mezclar `number` y `bigint` en una operación.
 
-### Tema 3: Conversión, coerción e igualdad
+### Tema 3: Conversión, coerción e igualdad · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -289,7 +289,7 @@ Convertir explícitamente en la frontera (nunca confiar en `==`) es exactamente 
 
 **Errores comunes:** usar `==` para evitar convertir; aceptar el resultado `NaN`; confundir `Number('')`, que produce cero, con una entrada válida.
 
-### Tema 4: Template literals y mensajes seguros
+### Tema 4: Template literals y mensajes seguros · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -353,7 +353,7 @@ Renderizar datos con `textContent` en vez de interpolar HTML crudo es exactament
 
 **Errores comunes:** usar comillas normales; asumir que interpolar hace seguro el HTML; emplear `||` cuando cero o cadena vacía son datos válidos.
 
-### Tema 5: JavaScript en navegador y Node.js
+### Tema 5: JavaScript en navegador y Node.js · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

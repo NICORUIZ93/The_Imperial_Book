@@ -1,7 +1,7 @@
 # Reordenar los temas: Node.js y la deuda de orden de los otros cursos, 2026-11-19
 
 **Petición:** «quiero que revises cada tema cada curso y reorganices de manera mejora ordenada cada tema».
-**Alcance elegido:** *curso completo por curso*. El primer lote cierra Node.js (14 capítulos, 78 temas). El segundo lote cierra los 10 capítulos que los demás cursos dejaban declarados como incumplidos. Los otros 15 cursos siguen esperando su lote completo: ese trabajo no es mover temas, es **etiquetarlos** (ver «Deuda que queda» al final).
+**Alcance elegido:** *curso completo por curso*. Tres lotes en este documento: Node.js reordenado por completo (14 capítulos, 78 temas), los 10 capítulos que los demás cursos dejaban declarados como incumplidos, y JavaScript como curso completo etiquetado y ordenado (15 capítulos, 92 temas). Quedan 13 cursos sin etiquetar; ver «Deuda que queda» al final.
 
 ## Qué se midió antes de tocar nada
 
@@ -163,10 +163,83 @@ Android 15 `1,2,3,4,5,7,8,6,9` · Angular 14 `1,2,3,4,6,5` · Flutter 7 `1,2,3,4
 
 Ejemplo: `python3 scripts/reorder_track_topics.py --track microservices --module 1 --order 1,2,3,4,5,6,7,8,9,10,11,13,14,12 --apply`. Cada inversa está verificada: aplicada tras el orden del lote devuelve la numeración original. Después hay que deshacer a mano las 6 líneas de referencias de Microservicios 1 y las dos etiquetas de nivel (DevOps 2 → Básico, Flutter 1 → Intermedio), y cerrar con `--write-exceptions`, los generadores y `./scripts/validate.sh`.
 
+## Tercer lote: JavaScript, un curso completo (92 temas)
+
+Aquí el trabajo no era mover temas: era **etiquetarlos**. De los 92 temas del curso, 88 no declaraban nivel ni duración, así que la puerta de orden no tenía nada que juzgar y cualquier reordenado habría sido adivinar. El lote tiene dos pasos, en este orden: etiquetar los 92 desde la evidencia del propio tema y, con las etiquetas puestas, ordenar los capítulos que aún no cumplían.
+
+### De dónde sale cada etiqueta
+
+Cada tema de JavaScript declara en su Paso 1 lo que da por sabido, con `**Prerrequisitos:**` o `**Conocimiento previo:**`. Volcados los 92 (con su volumen de código del laboratorio, medido en líneas), el nivel se decidió por esa declaración:
+
+- **Básico** — el previo es sintaxis y herramientas inmediatas (terminal, variables, tipos, funciones) y el laboratorio es un archivo pequeño.
+- **Intermedio** — pide ya varias piezas combinadas (closures + objetos + módulos, DOM + eventos + ESM) y escribe una estructura.
+- **Avanzado** — trata la maquinaria: el motor, el recolector de basura, el modelo de ejecución, proxies, generadores, streams, herramientas de build, observadores, rendimiento medido.
+- **Experto** — decidir con consecuencias: el proyecto integrador cerrado y los temas de nivel de tipos que exigen juzgar un diseño.
+
+La duración sigue esa banda (30 · 35 · 40 · 45 · 50 min) y sube un tramo cuando el laboratorio del tema pesa claramente más que la mediana del capítulo (por ejemplo, Symbol con 63 líneas de código → Avanzado · 50 min; los temas del capítulo Master, que parten de 45).
+
+**Una etiqueta existente sí cambió:** el capítulo 6 tenía «Streams web: leer una respuesta de fetch por partes» declarado como Intermedio · 40 min. Con el mismo criterio del resto del curso es Avanzado · 45 min: su laboratorio (48 líneas, el mayor del capítulo) escribe un `TransformStream` propio y decodifica la respuesta por trozos, y sus cuatro temas anteriores ya son Avanzado. Es la única declaración previa que se corrige, y se corrige por incoherente con el criterio, no para hacer pasar la puerta.
+
+### Qué movió y qué no
+
+Nueve capítulos ya eran coherentes una vez etiquetados (0, 2, 3, 5, 6, 7, 10, 12, 13): solo recibieron sus etiquetas. Seis se reordenaron:
+
+| Capítulo | Orden aplicado | Orden final |
+|---|---|---|
+| 1 «Operadores, control de flujo y funciones» | `4,1,2,6,3,5` | Control de flujo → Tres formas de escribir una función → Parámetros por defecto y rest/spread → **Desestructuración** → Funciones de orden superior → IIFE y `arguments` |
+| 4 «Arrays y estructuras de datos funcionales» | `1,2,3,5,4` | map/filter/reduce → Set y Map → Inmutabilidad → **Métodos inmutables modernos** → WeakMap y WeakSet |
+| 8 «El DOM y eventos del navegador» | `1,2,3,7,4,5,6` | Selección y manipulación → Delegación de eventos → Formularios y validación nativa → **Formularios accesibles** → Web APIs → ResizeObserver y MutationObserver → requestAnimationFrame |
+| 9 «Testing y calidad de código» | `1,4,2,3` | Vitest → **ESLint, Prettier y cobertura** → Mocks, spies y fakes → Mockear fetch |
+| 11 «TypeScript esencial» | `1,3,4,2,6,5` | Tipos básicos → **Narrowing y uniones** → **tsconfig y strict** → **Generics** → **Decoradores** → TypeScript avanzado |
+| 14 «JavaScript Master» | `1,2,3,4,6,7,8,9,10,12,13,14,15,5,11` | Los doce primeros se conservan; **WebAssembly** y **Service Workers/PWA** cierran el capítulo |
+
+Las razones, leídas de los propios previos:
+
+- **Capítulo 1:** el tema de desestructuración no declaraba previo y estaba el último, detrás de IIFE; es sintaxis sobre objetos y se apoya en rest/spread, así que va justo después. Control de flujo (Básico) abre el capítulo porque functions y loops se usan en todo lo demás.
+- **Capítulo 4:** WeakMap pide «noción básica de recolección de basura», que el curso enseña en el capítulo 5; los métodos inmutables modernos solo piden inmutabilidad, así que pasan delante.
+- **Capítulo 8:** «Formularios accesibles» declara que es un ejemplo independiente con HTML semántico, eventos y DOM, y estaba cerrado como Avanzado tras los observadores; con su nivel real (Intermedio) acompaña al tema de formularios.
+- **Capítulo 9:** ESLint y cobertura piden «npm, Vitest y una suite verde», no mocks; van en posición 2, antes de mocks y de mockear fetch.
+- **Capítulo 11:** Generics pide «tipos unión» y tsconfig pide «narrowing», pero ambos estaban detrás de los temas que los enseñan. Con eso corregido, el orden queda Tipos → Narrowing → tsconfig → Generics → Decoradores → TypeScript avanzado (Experto).
+- **Capítulo 14:** WebAssembly pide Rust y medición, y Service Workers piden build de producción y HTTP caching; son los dos Experto del capítulo y cierran la lista. El resto conserva su orden de atlas.
+
+### Tres citas escritas con número quedaron mal
+
+JavaScript no usa puentes «Siguiente tema», pero tres temas citan por número en la prosa y el movimiento los descolocó:
+
+- `javascript/modulo-1.md:203`: «el objeto `arguments` (que se discutirá en el Tema 5)» → **Tema 6**.
+- `javascript/modulo-1.md:400`: «usando rest, como se vio en el Tema 2» → **Tema 3**.
+- `javascript/modulo-8.md:628`: «los observadores del Tema 5» → **Tema 6**.
+
+Recomprobado después sobre los 15 capítulos: ningún `«título» … de este módulo` apunta a un tema que quede después del que depende de él, y no queda ninguna cita numérica descolocada.
+
+## Lo que nota el lector con JavaScript etiquetado
+
+- **90 de los 92 enlaces de temas cambian**, y no por el reordenado: el nivel y la duración viven dentro de la cabecera, que es de donde se calcula el fragmento. Etiquetar un tema cambia su URL y su clave de «tema leído» aunque no se mueva. Solo conservan enlace los dos temas que ya venían etiquetados igual (capítulo 7, temas 7 y 8).
+- Consecuencia directa: **quien tuviera marcado un tema de JavaScript como leído pierde esa marca** en 90 de los 92. El progreso de capítulo no se toca.
+- Esto es un coste del programa, no de este lote: repetir la operación en los otros 13 cursos sin etiquetar (1.122 temas) cambiaría prácticamente todos sus enlaces. La alternativa es sacar el nivel y la duración de la cabecera —que el fragmento y la clave de progreso se calculen sobre el título sin etiqueta— y entonces etiquetar sin penalizar a nadie. Queda como decisión del dueño del proyecto antes de seguir.
+
+## Verificación del tercer lote
+
+- `python3 scripts/audit_topic_order.py --check` → salida 0 y **«1.420 temas, 1.122 sin nivel declarado, 0 módulos con incidencias»**: 88 etiquetas nuevas (los 88 temas que no la tenían; 4 ya venían etiquetados, uno de ellos reetiquetado).
+- Simulación previa al movimiento: aplicado cada orden, los 15 capítulos salen con niveles no decrecientes y con todo prerrequisito interno por delante. Después de aplicar, los 6 capítulos reordenados se comprobaron otra vez sobre el archivo real.
+- Integridad: contra `git show HEAD:` en los 15 archivos, el cuerpo es idéntico salvo las cabeceras y **exactamente las 3 líneas de citas** listadas arriba.
+- Regenerados `topic-index.json` y el catálogo; el remapeo de registros lo hizo la propia herramienta (`docs/topic-learning-quality.json` reescrito en los 6 capítulos; `specs/visual-aids-scope.json`, 1 entrada movida en el capítulo 14). Total intacto: **16 rutas · 289 módulos · 1.420 temas**.
+- `./scripts/validate.sh` → salida 0; `validate_specs`: 43 criterios, 36 `hecho` y 7 `pendiente`.
+- Prueba específica que podría romper el etiquetado (`ruta: presenta los niveles como orientación, no como certificación`, que exige que la visión general de JavaScript no muestre la palabra «Experto`) → pasa en escritorio y móvil: la portada del curso no lista niveles de tema, así que etiquetar no la contamina.
+- `PLAYWRIGHT_CHANNEL=chrome npx playwright test --workers=1` en `web/` → **83 de 84**; la única que falla es la misma de siempre (`modo libro: salir del modo devuelve el capítulo completo y persiste la elección`, solo en móvil), ya documentada en `docs/cambios-2026-11-19.md`.
+- Navegador (puerto 4212): el capítulo 14 de JavaScript lista sus 15 temas con el orden nuevo — WebAssembly en 1.14 y Service Workers en 1.15 —, la navegación Anterior/Siguiente muestra ya «TypeScript avanzado · Avanzado · 45 min» y cero `.lesson-error`.
+
+## Cómo revertir el tercer lote
+
+Deshacer los seis movimientos con su inversa (`python3 scripts/reorder_track_topics.py --track javascript --module 1 --order 2,3,5,1,6,4 --apply`, etc.) y borrar las etiquetas devolviendo cada cabecera a su texto sin ` · Nivel · XX min`, salvo las cuatro originales: capítulo 6 tema 7 (Intermedio · 40 min), capítulo 7 temas 7 (Avanzado · 45) y 8 (Avanzado · 45) y capítulo 14 tema 15 (Avanzado · 40). Las tres citas numéricas vuelven a Tema 5, Tema 2 y Tema 5. Cerrar con los generadores y `./scripts/validate.sh`.
+
+Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la numeración original): capítulo 1 `2,3,5,1,6,4` · capítulo 4 `1,2,3,5,4` · capítulo 8 `1,2,3,5,6,7,4` · capítulo 9 `1,3,4,2` · capítulo 11 `1,4,2,3,6,5` · capítulo 14 `1,2,3,4,14,5,6,7,8,9,15,10,11,12,13`.
+
 ## Deuda que queda
 
-- **1.210 de los 1.420 temas (85 %) no declaran nivel ni duración.** Es el trabajo previo en cada curso: sin etiqueta la puerta de nivel no tiene nada que juzgar y reordenar sería adivinar. Medido tema a tema, solo dos cursos están completos: Node.js (78/78) y Microservicios (24/24); el resto anda entre 0 y 16 etiquetas por curso (JavaScript 4/92, React 6/64, control-1 0/70, rutaflow 0/29).
-- Por eso los 15 cursos restantes necesitan primero una pasada editorial de etiquetado —nivel y minutos leídos del propio texto de cada tema— y después su reordenado. El siguiente candidato natural es **JavaScript**: es la base de Node y comparte su vocabulario.
-- Lo cerrado aquí son solo las incidencias que el auditor ya podía ver gracias a los temas etiquetados sueltos. Un curso completo reorganizado, en el sentido estricto, es Node.js.
+- **1.122 de los 1.420 temas (79 %) siguen sin nivel ni duración declarados.** Tras JavaScript, solo tres cursos están completos: Node.js (78/78), Microservicios (24/24) y JavaScript (92/92). Los demás andan entre 0 y 16 etiquetas: React 6/64, iOS 13/69, Java 16/117, Kotlin Multiplatform 10/66, control-1 0/70, rutaflow 0/29.
+- El patrón de este lote es el que queda para los 13 cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. Antes de repetirlo 13 veces conviene decidir lo del enlace: mientras el nivel esté dentro de la cabecera, etiquetar cambia la URL del tema y borra su marca de leído.
+- Los dos cursos ya completos del todo (Node y Microservicios) y JavaScript no tienen incidencias declaradas: sus capítulos cumplen las dos reglas.
+
 
 
