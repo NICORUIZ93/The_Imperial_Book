@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: Rutas anidadas y layouts compartidos
+### Tema 1: Rutas anidadas y layouts compartidos · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a anidar `/envios` y `/envios/:id` bajo un layout compartido (`LayoutEnvios`, con la barra de filtros de zona) sin duplicar esa barra en cada vista. Prerrequisitos: Módulo 4 completo.
@@ -135,7 +135,7 @@ Corrige el Paso 5 volviendo a anidar ambas rutas bajo `LayoutEnvios`, y agrega u
 #### Paso 7 · Cierre
 Entrega la estructura anidada del Paso 4, la pérdida de estado provocada en el Paso 5, y la tercera ruta hija del Paso 6; explica por qué anidar rutas (en vez de duplicar el layout en rutas independientes) preserva el estado del layout compartido entre navegaciones. Siguiente paso: estudia loaders para evitar el parpadeo de carga. Errores comunes: duplicar el layout en rutas independientes en vez de anidarlas, olvidar el `<Outlet />` dentro del layout (las rutas hijas nunca se renderizarían), y anidar rutas que en realidad no comparten ningún layout real. Fuentes oficiales: https://reactrouter.com/start/data/route-object y https://reactrouter.com/start/framework/routing.
 
-### Tema 2: Loaders — datos antes de renderizar
+### Tema 2: Loaders — datos antes de renderizar · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cargar los datos de `/envios/:id` con un loader de React Router, en vez de un `fetch` dentro de un `useEffect`, para eliminar el parpadeo de "cargando...". Prerrequisitos: Tema 1 de este módulo.
@@ -246,7 +246,7 @@ Corrige el Paso 5 devolviendo la URL correcta, y agrega un `errorElement` espec�
 #### Paso 7 · Cierre
 Entrega el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explica por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas y code-splitting. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
 
-### Tema 3: Rutas protegidas y code-splitting por ruta
+### Tema 3: Rutas protegidas y code-splitting por ruta · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger la ruta `/admin` de RutaFlow (solo para supervisores) y a cargarla con `React.lazy` para que su código no forme parte del bundle inicial. Prerrequisitos: Tema 2 de este módulo.

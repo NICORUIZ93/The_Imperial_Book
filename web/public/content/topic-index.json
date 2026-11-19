@@ -5352,20 +5352,20 @@
         "fragment": "tema-1-usestate-y-actualizaciones-funcionales"
       },
       {
-        "title": "Render frente a commit",
-        "fragment": "tema-2-render-frente-a-commit"
-      },
-      {
-        "title": "Batching de actualizaciones",
-        "fragment": "tema-3-batching-de-actualizaciones"
-      },
-      {
         "title": "Componentes controlados",
-        "fragment": "tema-4-componentes-controlados"
+        "fragment": "tema-2-componentes-controlados"
       },
       {
         "title": "Componentes puros y el estado como instantánea",
-        "fragment": "tema-5-componentes-puros-y-el-estado-como-instantanea"
+        "fragment": "tema-3-componentes-puros-y-el-estado-como-instantanea"
+      },
+      {
+        "title": "Render frente a commit",
+        "fragment": "tema-4-render-frente-a-commit"
+      },
+      {
+        "title": "Batching de actualizaciones",
+        "fragment": "tema-5-batching-de-actualizaciones"
       }
     ],
     "10": [
@@ -5494,16 +5494,16 @@
     ],
     "3": [
       {
+        "title": "Eventos sintéticos",
+        "fragment": "tema-1-eventos-sinteticos"
+      },
+      {
         "title": "React Hook Form y el problema del re-render por tecla",
-        "fragment": "tema-1-react-hook-form-y-el-problema-del-re-render-por-tecla"
+        "fragment": "tema-2-react-hook-form-y-el-problema-del-re-render-por-tecla"
       },
       {
         "title": "Validación con zod y formularios multi-paso",
-        "fragment": "tema-2-validacion-con-zod-y-formularios-multi-paso"
-      },
-      {
-        "title": "Eventos sintéticos",
-        "fragment": "tema-3-eventos-sinteticos"
+        "fragment": "tema-3-validacion-con-zod-y-formularios-multi-paso"
       },
       {
         "title": "Formularios con Actions: useActionState y useOptimistic",
@@ -5594,16 +5594,16 @@
         "fragment": "tema-2-react-memo-con-criterio"
       },
       {
+        "title": "Suspense y React.lazy — carga diferida del lado cliente",
+        "fragment": "tema-3-suspense-y-react-lazy-carga-diferida-del-lado-cliente"
+      },
+      {
         "title": "Virtualización y code-splitting",
-        "fragment": "tema-3-virtualizacion-y-code-splitting"
+        "fragment": "tema-4-virtualizacion-y-code-splitting"
       },
       {
         "title": "useTransition, useDeferredValue y Fiber",
-        "fragment": "tema-4-usetransition-usedeferredvalue-y-fiber"
-      },
-      {
-        "title": "Suspense y React.lazy — carga diferida del lado cliente",
-        "fragment": "tema-5-suspense-y-react-lazy-carga-diferida-del-lado-cliente"
+        "fragment": "tema-5-usetransition-usedeferredvalue-y-fiber"
       },
       {
         "title": "El hook use: leer una promesa con Suspense y un contexto de forma condicional",

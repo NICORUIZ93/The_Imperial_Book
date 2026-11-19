@@ -26831,7 +26831,7 @@
     "react": [
       {
         "module": 0,
-        "topic": "Tema 1: JSX es azúcar sintáctica sobre createElement",
+        "topic": "Tema 1: JSX es azúcar sintáctica sobre createElement · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26853,7 +26853,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Listas con key estable",
+        "topic": "Tema 2: Listas con key estable · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26875,7 +26875,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Composición sobre herencia, y Fragments",
+        "topic": "Tema 3: Composición sobre herencia, y Fragments · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26897,7 +26897,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Renderizado condicional y estilos",
+        "topic": "Tema 4: Renderizado condicional y estilos · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26919,7 +26919,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: useState y actualizaciones funcionales",
+        "topic": "Tema 1: useState y actualizaciones funcionales · Básico · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26941,7 +26941,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Render frente a commit",
+        "topic": "Tema 4: Render frente a commit · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26963,7 +26963,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Batching de actualizaciones",
+        "topic": "Tema 5: Batching de actualizaciones · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -26985,7 +26985,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 4: Componentes controlados",
+        "topic": "Tema 2: Componentes controlados · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27007,7 +27007,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min",
+        "topic": "Tema 3: Componentes puros y el estado como instantánea · Básico · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27029,7 +27029,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: Server Components por defecto",
+        "topic": "Tema 1: Server Components por defecto · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27051,7 +27051,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 2: use client para interactividad",
+        "topic": "Tema 2: use client para interactividad · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27073,7 +27073,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 3: Streaming con Suspense en el servidor",
+        "topic": "Tema 3: Streaming con Suspense en el servidor · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27095,7 +27095,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 4: Server Actions",
+        "topic": "Tema 4: Server Actions · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27117,7 +27117,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Tipado de props y children",
+        "topic": "Tema 1: Tipado de props y children · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27139,7 +27139,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Hooks genéricos",
+        "topic": "Tema 2: Hooks genéricos · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27161,7 +27161,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: Eventos tipados y componentes polimórficos",
+        "topic": "Tema 3: Eventos tipados y componentes polimórficos · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27183,7 +27183,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Estructura del proyecto integrador",
+        "topic": "Tema 1: Estructura del proyecto integrador · Avanzado · 55 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27205,7 +27205,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Integrando rutas, TanStack Query y Zustand",
+        "topic": "Tema 2: Integrando rutas, TanStack Query y Zustand · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27227,7 +27227,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 3: useTareas — hook dedicado con TanStack Query",
+        "topic": "Tema 3: useEnvios — hook dedicado con TanStack Query · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27249,7 +27249,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: Diseñar estados de carga, error y recuperación",
+        "topic": "Tema 1: Diseñar estados de carga, error y recuperación · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27271,7 +27271,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: La composición visual debe conservar semántica y foco",
+        "topic": "Tema 2: La composición visual debe conservar semántica y foco · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27293,7 +27293,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 3: Cliente y servidor forman una sola frontera de seguridad",
+        "topic": "Tema 3: Cliente y servidor forman una sola frontera de seguridad · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27315,7 +27315,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 4: Hidratación determinista, idioma y releases medibles",
+        "topic": "Tema 4: Hidratación determinista, idioma y releases medibles · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27337,7 +27337,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min",
+        "topic": "Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Experto · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27359,7 +27359,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: Server Components y streaming",
+        "topic": "Tema 1: Server Components y streaming · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27381,7 +27381,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: Server Actions y seguridad",
+        "topic": "Tema 2: Server Actions y seguridad · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27403,7 +27403,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Next.js ISR, Metadata y Middleware",
+        "topic": "Tema 3: Next.js ISR, Metadata y Proxy (antes Middleware) · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27425,7 +27425,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: Optimización de imágenes y fuentes",
+        "topic": "Tema 4: Optimización de imágenes y fuentes · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27447,7 +27447,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: Accesibilidad y React Aria",
+        "topic": "Tema 5: Accesibilidad y React Aria · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27469,7 +27469,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: i18n, pluralización y RTL",
+        "topic": "Tema 6: i18n, pluralización y RTL · Experto · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27491,7 +27491,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: useEffect — dependencias y limpieza",
+        "topic": "Tema 1: useEffect — dependencias y limpieza · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27513,7 +27513,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: useRef — valores mutables sin re-render",
+        "topic": "Tema 2: useRef — valores mutables sin re-render · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27535,7 +27535,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: useMemo y useCallback con criterio",
+        "topic": "Tema 3: useMemo y useCallback con criterio · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27557,7 +27557,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle",
+        "topic": "Tema 4: Reglas de los hooks, useReducer y useImperativeHandle · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27579,7 +27579,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app",
+        "topic": "Tema 5: Error Boundaries — contener errores de render sin romper toda la app · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27601,7 +27601,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual",
+        "topic": "Tema 6: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27645,7 +27645,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 1: React Hook Form y el problema del re-render por tecla",
+        "topic": "Tema 3: Validación con zod y formularios multi-paso · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27667,7 +27667,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 2: Validación con zod y formularios multi-paso",
+        "topic": "Tema 1: Eventos sintéticos · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27689,7 +27689,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 3: Eventos sintéticos",
+        "topic": "Tema 2: React Hook Form y el problema del re-render por tecla · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27733,7 +27733,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: createContext y useContext",
+        "topic": "Tema 1: createContext y useContext · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27755,7 +27755,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Cuándo Context es suficiente y cuándo no",
+        "topic": "Tema 2: Cuándo Context es suficiente y cuándo no · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27777,7 +27777,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: Componentes compuestos, render props y hooks personalizados",
+        "topic": "Tema 3: Componentes compuestos, render props y hooks personalizados · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27799,7 +27799,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 1: Rutas anidadas y layouts compartidos",
+        "topic": "Tema 1: Rutas anidadas y layouts compartidos · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27821,7 +27821,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: Loaders — datos antes de renderizar",
+        "topic": "Tema 2: Loaders — datos antes de renderizar · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27843,7 +27843,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 3: Rutas protegidas y code-splitting por ruta",
+        "topic": "Tema 3: Rutas protegidas y code-splitting por ruta · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27865,7 +27865,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: useQuery y el problema que resuelve",
+        "topic": "Tema 1: useQuery y el problema que resuelve · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27887,7 +27887,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: Mutations e invalidación",
+        "topic": "Tema 2: Mutations e invalidación · Intermedio · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27909,7 +27909,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: Optimistic updates",
+        "topic": "Tema 3: Optimistic updates · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27931,7 +27931,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: Zustand — stores mínimos sin boilerplate",
+        "topic": "Tema 1: Zustand — stores mínimos sin boilerplate · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27953,7 +27953,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: Redux Toolkit — slices y ceremonia",
+        "topic": "Tema 2: Redux Toolkit — slices y ceremonia · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27975,7 +27975,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto",
+        "topic": "Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -27997,7 +27997,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 4: Jotai, Recoil y XState como alternativas",
+        "topic": "Tema 4: Jotai y XState como alternativas · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28019,7 +28019,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: Queries por rol, no por clase CSS",
+        "topic": "Tema 1: Queries por rol, no por clase CSS · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28041,7 +28041,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Mock Service Worker (MSW)",
+        "topic": "Tema 2: Mock Service Worker (MSW) · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28063,7 +28063,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: Testing de hooks personalizados",
+        "topic": "Tema 3: Testing de hooks personalizados · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28085,7 +28085,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: Medir antes de optimizar",
+        "topic": "Tema 1: Medir antes de optimizar · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28107,7 +28107,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: React.memo con criterio",
+        "topic": "Tema 2: React.memo con criterio · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28129,7 +28129,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Virtualización y code-splitting",
+        "topic": "Tema 5: useTransition, useDeferredValue y Fiber · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28151,7 +28151,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 4: useTransition, useDeferredValue y Fiber",
+        "topic": "Tema 3: Suspense y React.lazy — carga diferida del lado cliente · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -28173,7 +28173,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 5: Suspense y React.lazy — carga diferida del lado cliente",
+        "topic": "Tema 4: Virtualización y code-splitting · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,

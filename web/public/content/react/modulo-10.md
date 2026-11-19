@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** todo este módulo trabaja en el proyecto Next.js `app` que creas en el Tema 1 (Server Components, `"use client"`, streaming y Server Actions necesitan un framework con soporte de React Server Components; un proyecto Vite sin esa integración no los ejecuta). Arráncalo con `npm run dev` y abre `http://localhost:3000`; la comprobación se hace en el navegador y con `npm run build`.
 
-### Tema 1: Server Components por defecto
+### Tema 1: Server Components por defecto · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás evaluar React Server Components desde cero. Prerrequisitos: Node.js LTS, npm y editor. Verifica node --version y npm --version.
@@ -94,7 +94,7 @@ Añade Suspense, una Server Action con validación, estado pending y una medici�
 Guarda build, capturas y métricas; como siguiente paso estudia despliegue. Errores comunes: enviar secretos al cliente, usar hooks en servidor, mutar sin autorización y asumir que streaming arregla consultas lentas. Fuentes oficiales: https://nextjs.org/docs/app y https://react.dev/reference/rsc/server-components.
 **Implicación práctica:** Separar servidor y cliente mejora rendimiento, seguridad y claridad de responsabilidades.
 
-### Tema 2: use client para interactividad
+### Tema 2: use client para interactividad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a marcar `BotonConfirmarEntrega` con `"use client"` porque usa `useState`, mientras `PaginaEnvio` (su padre) permanece como Server Component. Prerrequisitos: Tema 1 de este módulo.
@@ -224,7 +224,7 @@ Corrige el Paso 5 devolviendo `"use client"` únicamente a `BotonConfirmarEntreg
 Entrega la frontera correctamente ubicada del Paso 4, el error provocado al marcar la página completa en el Paso 5, y la medición comparativa del Paso 6; explica por qué colocar `"use client"` lo más profundo posible en el árbol maximiza la proporción de código que permanece exclusivamente en el servidor. Siguiente paso: estudia streaming con Suspense. Errores comunes: marcar una página completa como cliente cuando solo un botón necesita interactividad, olvidar `"use client"` en un componente que sí usa hooks, e importar transitivamente un módulo cliente-only desde un Server Component. Fuentes oficiales: https://react.dev/reference/rsc/use-client y https://nextjs.org/docs/app/building-your-application/rendering/client-components.
 **Implicación práctica:** `"use client"` es obligatorio para cualquier componente que use hooks de estado o manejadores de eventos interactivos; colocar ese límite lo más profundo posible maximiza el código que permanece exclusivamente en el servidor.
 
-### Tema 3: Streaming con Suspense en el servidor
+### Tema 3: Streaming con Suspense en el servidor · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver la sección de "historial de ubicaciones" de `PaginaEnvio` (una consulta lenta) en `Suspense`, para que el resto de la página se muestre sin esperarla. Prerrequisitos: Tema 2 de este módulo.
@@ -291,7 +291,7 @@ Corrige el Paso 5 restaurando el `Suspense`, y agrega un segundo `Suspense` inde
 #### Paso 7 · Cierre
 Entrega el streaming con una sección lenta del Paso 4, el bloqueo total provocado en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué envolver cada sección lenta en su propio `Suspense` (en vez de uno solo envolviendo toda la página) permite que cada una aparezca en cuanto esté lista, independientemente de las demás. Siguiente paso: estudia Server Actions para procesar formularios sin un endpoint API separado. Errores comunes: no envolver ninguna sección lenta en Suspense, envolver toda la página en un único Suspense perdiendo el beneficio de mostrar lo que ya está listo, y asumir que Suspense acelera la consulta lenta en sí (solo cambia cuándo se muestra, no cuánto tarda). Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 
-### Tema 4: Server Actions
+### Tema 4: Server Actions · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar `confirmarEntregaAction` como Server Action, invocada directamente desde un `<form>` sin que escribas una ruta API propia, y a tratarla como lo que es: un endpoint POST público que Next.js crea por ti. Prerrequisitos: Tema 3 de este módulo.

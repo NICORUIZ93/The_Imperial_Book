@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: Zustand — stores mínimos sin boilerplate
+### Tema 1: Zustand — stores mínimos sin boilerplate · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un store de Zustand para el filtro de zona de RutaFlow (`useFiltroStore`), compartido entre `BarraFiltro` y `PanelEnvios` sin ningún Provider. Prerrequisitos: Módulo 6 completo.
@@ -116,7 +116,7 @@ Corrige el Paso 5 devolviendo `PanelEnvios` a leer `useFiltroStore`, y agrega un
 Entrega el store compartido del Paso 4, la divergencia por estado duplicado del Paso 5, y el tercer consumidor del Paso 6; explica por qué tener dos fuentes de verdad para el mismo dato es el mismo problema de fondo que una base de datos duplicada sin sincronización, solo que a escala de un componente. Siguiente paso: estudia Redux Toolkit para comparar la ceremonia. Errores comunes: duplicar en estado local un valor que ya vive en el store global, suscribirse al store completo en vez de seleccionar la porción necesaria, y usar un store global para un valor que solo necesita un único componente. Fuente oficial: https://zustand.docs.pmnd.rs/.
 **Implicación práctica:** La suscripción selectiva de Zustand evita re-renders innecesarios, y un store único como fuente de verdad evita la divergencia que ocurre cuando el mismo dato vive duplicado en dos lugares.
 
-### Tema 2: Redux Toolkit — slices y ceremonia
+### Tema 2: Redux Toolkit — slices y ceremonia · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reimplementar el store de filtro de zona del Tema 1 con Redux Toolkit, para comparar directamente la cantidad de código y ceremonia frente a Zustand. Prerrequisitos: Tema 1 de este módulo.
@@ -219,7 +219,7 @@ Corregí el Paso 5 devolviendo el selector específico (`state => state.filtro.z
 Entregá la implementación con Redux Toolkit del Paso 4, el selector de granularidad gruesa detectado en el Paso 5, y la corrección del Paso 6; contá explícitamente cuántas piezas adicionales necesitó Redux Toolkit frente a la única función de Zustand del Tema 1 para el mismo caso. Siguiente paso: estudia cuándo ninguno de los dos es necesario. Errores comunes: usar un selector que lee más del slice de lo que el componente realmente necesita, adoptar Redux Toolkit "porque es el estándar" sin medir el costo real de ceremonia, y olvidar envolver la aplicación con el `Provider` de Redux. Fuentes oficiales: https://redux-toolkit.js.org/tutorials/quick-start y https://react-redux.js.org/api/hooks.
 **Implicación práctica:** Redux Toolkit reduce el boilerplate del Redux clásico, pero sigue trayendo más ceremonia estructural que Zustand para el mismo caso, una diferencia medible y no solo una preferencia estilística.
 
-### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto
+### Tema 3: Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a clasificar cada pieza de estado del panel de RutaFlow (lista de envíos, filtro de zona, modal de confirmación abierto) según si pertenece a TanStack Query, a Zustand, o a un simple `useState` local. Prerrequisitos: Tema 2 de este módulo.
@@ -293,7 +293,7 @@ Corrige el Paso 5 quitando `envios` y `setEnvios` del store de Zustand por compl
 Entrega la mezcla incorrecta del Paso 4, las dos fuentes divergentes provocadas en el Paso 5, y el store limpio del Paso 6; explica con tus propias palabras por qué "centralizar todo en un solo store" ignora que el estado de servidor y el de cliente tienen ciclos de vida fundamentalmente distintos. Siguiente paso: estudia Jotai y XState como alternativas para casos específicos. Errores comunes: guardar datos de una API dentro de un store de estado de cliente, mantener dos fuentes de verdad para el mismo dato remoto, e introducir cualquier librería de estado global para un valor que solo necesita un componente y sus hijos directos. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/does-this-replace-client-state y https://zustand.docs.pmnd.rs/.
 **Implicación práctica:** Separar estado de servidor (TanStack Query) de estado de cliente (Zustand) evita reimplementar manualmente capacidades que TanStack Query ya ofrece, y evita que el mismo dato remoto tenga dos fuentes de verdad divergentes.
 
-### Tema 4: Jotai y XState como alternativas
+### Tema 4: Jotai y XState como alternativas · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar con XState el ciclo de vida de una confirmación de entrega (inactivo → confirmando → éxito/error), rechazando explícitamente transiciones inválidas que un `useReducer` simple no impediría. Prerrequisitos: Tema 3 de este módulo.

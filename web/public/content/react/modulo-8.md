@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** en este módulo trabajas sobre todo con `npm test`, dentro del proyecto `mi-react` del módulo 0, que ya tiene Vitest, Testing Library, `user-event`, jsdom y `toBeInTheDocument` configurados («Prepara las pruebas» del módulo 0). Cada tema te da el componente y su prueba completos.
 
-### Tema 1: Queries por rol, no por clase CSS
+### Tema 1: Queries por rol, no por clase CSS · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a testear el botón "Confirmar entrega" de RutaFlow consultándolo por su rol accesible, en vez de por una clase CSS. Prerrequisitos: Módulo 3 completo.
@@ -111,7 +111,7 @@ Confirma que la versión del Paso 4 (con `getByRole`) sigue pasando sin ningún 
 #### Paso 7 · Cierre
 Entrega el test resiliente del Paso 4, la comparación con el selector de clase roto del Paso 5, y la confirmación del Paso 6; explica qué detalle de implementación cambió y por qué no debería haber roto ningún test de comportamiento. Siguiente paso: estudia cómo interceptar la llamada de red real con MSW. Errores comunes: consultar por clase CSS o estructura del DOM en vez de por rol/texto, usar `getByText` con un texto que cambia seguido por copywriting en vez de un rol estable, y usar `container.querySelector` como escape hatch habitual en vez de ocasional. Fuentes oficiales: https://testing-library.com/docs/react-testing-library/intro/ y https://testing-library.com/docs/queries/byrole/.
 
-### Tema 2: Mock Service Worker (MSW)
+### Tema 2: Mock Service Worker (MSW) · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a interceptar con MSW la llamada real que `confirmarEntrega` hace a `/api/envios/:id/confirmar`, para testear el flujo completo sin un backend real corriendo. Prerrequisitos: Tema 1 de este módulo.
@@ -223,7 +223,7 @@ Corrige el Paso 5 restaurando `afterEach(() => server.resetHandlers())`, y agreg
 #### Paso 7 · Cierre
 Entrega el handler de éxito interceptado del Paso 4, el handler de error sin reset identificado en el Paso 5, y la prueba del caso de error del Paso 6; explica por qué `resetHandlers()` entre pruebas es tan importante como el propio handler que define el comportamiento simulado. Siguiente paso: estudia cómo testear un hook personalizado aislado. Errores comunes: olvidar `server.resetHandlers()` entre pruebas, testear solo el camino feliz sin el caso de error de red, y definir handlers tan genéricos que interceptan peticiones que la prueba no pretendía simular. Fuentes oficiales: https://mswjs.io/docs/ y https://mswjs.io/docs/api/setup-server.
 
-### Tema 3: Testing de hooks personalizados
+### Tema 3: Testing de hooks personalizados · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a testear `useFiltroZona` (un hook personalizado que envuelve el store de Zustand del Módulo 7) con `renderHook`, sin necesidad de un componente visual. Prerrequisitos: Tema 2 de este módulo.

@@ -13,7 +13,7 @@ npm install
 
 Cada ejemplo reemplaza `src/App.tsx`. `npm run dev` lo sirve en `http://localhost:5173` (sin revisar tipos); `npm run build` ejecuta `tsc -b` y **es la prueba de este módulo**: falla si hay un error de tipos.
 
-### Tema 1: Tipado de props y children
+### Tema 1: Tipado de props y children · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a tipar las props de `EnvioCard` con una `interface`, incluyendo `children: React.ReactNode` para aceptar contenido adicional opcional dentro de la tarjeta. Prerrequisitos: Módulo 0 completo.
@@ -119,7 +119,7 @@ Corregí el Paso 5 devolviendo `guia: string`, y agregá una segunda prop opcion
 #### Paso 7 · Cierre
 Entregá `EnvioCard` tipada del Paso 4, el `any` que oculta el error del Paso 5, y la prop opcional del Paso 6; explicá por qué `any` no es "un tipo más flexible" sino la desactivación completa de la verificación de tipos para ese valor. Siguiente paso: estudia hooks genéricos. Errores comunes: usar `any` para evitar pensar el tipo correcto, tipar `children` como `React.ReactElement` cuando el componente acepta contenido arbitrario, y marcar como opcional una prop que en realidad siempre debería proporcionarse. Fuentes oficiales: https://react.dev/learn/typescript y https://www.typescriptlang.org/docs/handbook/2/objects.html.
 
-### Tema 2: Hooks genéricos
+### Tema 2: Hooks genéricos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir `useLocalStorage<T>` genérico y usarlo tanto para persistir el filtro de zona (`string`) como las columnas visibles de una tabla (un array), sin duplicar la implementación. Prerrequisitos: Tema 1 de este módulo.
@@ -206,7 +206,7 @@ Corregí el Paso 5 especificando explícitamente el parámetro de tipo (`useLoca
 Entregá el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explicá cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
 **Implicación práctica:** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
 
-### Tema 3: Eventos tipados y componentes polimórficos
+### Tema 3: Eventos tipados y componentes polimórficos · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a tipar el manejador de cambio del campo de búsqueda de guía con `React.ChangeEvent<HTMLInputElement>`, y a construir un `Boton` polimórfico que pueda renderizarse como `<button>` o como `<a>`. Prerrequisitos: Tema 2 de este módulo.

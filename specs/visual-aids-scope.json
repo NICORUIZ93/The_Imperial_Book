@@ -173,7 +173,7 @@
     {
       "track": "react",
       "module": 1,
-      "topic": 5,
+      "topic": 3,
       "capture": "pendiente",
       "reason": "Necesita un proyecto React 19 con Vite y un navegador; el entorno de generación no ejecuta la interfaz. Capturar `npm run dev` y la pantalla del navegador en la Mac del proyecto."
     },

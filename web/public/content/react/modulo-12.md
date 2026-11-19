@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** el integrador se construye dentro del proyecto `mi-react` del módulo 0 (Vitest ya configurado); `npm run dev` lo sirve en `http://localhost:5173` y `npm test` ejecuta su prueba del flujo crítico. Si el puerto cambia, usa el que imprima la terminal. Todo el integrador usa un único dominio: envíos.
 
-### Tema 1: Estructura del proyecto integrador
+### Tema 1: Estructura del proyecto integrador · Avanzado · 55 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a organizar el proyecto integrador de RutaFlow en `features/envios/` y `features/auth/`, separando ambos del store de Zustand reservado solo para UI. Prerrequisitos: módulos 0-11 completos.
@@ -338,7 +338,7 @@ Corrige el Paso 5 quitando el estado de sesión de `uiStore.js`, dejando que `us
 #### Paso 7 · Cierre
 Entrega la estructura organizada por feature del Paso 4, la duplicación de fuente de verdad provocada en el Paso 5, y la revisión del Paso 6; explica por qué integrar todos los módulos del track en un solo proyecto expone violaciones de organización que un módulo aislado nunca mostraría. Siguiente paso: integra rutas, TanStack Query y Zustand coordinadamente. Errores comunes: mezclar features sin un punto de integración explícito, duplicar en un store de UI un dato que ya tiene una fuente de verdad propia, y organizar carpetas por tipo de archivo en vez de por dominio. Fuentes oficiales: https://react.dev/learn/thinking-in-react y https://tanstack.com/query/latest/docs/framework/react/overview.
 
-### Tema 2: Integrando rutas, TanStack Query y Zustand
+### Tema 2: Integrando rutas, TanStack Query y Zustand · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger las rutas de `features/envios/` con `RutaProtegida` (que usa `useAuth`), mientras `useEnvios` (Tema 3) gestiona su propio ciclo de cache sin ninguna interferencia del store de Zustand. Prerrequisitos: Tema 1 de este módulo.
@@ -401,7 +401,7 @@ Corrige el Paso 5 devolviendo `useEnvios()` dentro de `ListaEnvios` (bajo `RutaP
 Entrega la integración correctamente ordenada del Paso 4, la petición indebida provocada en el Paso 5, y la corrección confirmada del Paso 6; explica por qué el orden en el árbol de componentes determina cuándo efectivamente se dispara una consulta de datos. Siguiente paso: estudia useEnvios en profundidad. Errores comunes: disparar consultas de datos sensibles antes de verificar autenticación, mezclar el store de Zustand con lógica de autenticación que ya tiene su propia fuente en `useAuth`, y duplicar el layout de rutas protegidas en cada vista individual. Fuentes oficiales: https://reactrouter.com/start/framework/routing y https://tanstack.com/query/latest/docs/framework/react/overview.
 **Implicación práctica:** El orden de envoltura en el árbol de componentes determina si una consulta de datos se dispara antes o después de verificar autenticación, con implicancias reales de seguridad y de tráfico de red innecesario.
 
-### Tema 3: useEnvios — hook dedicado con TanStack Query
+### Tema 3: useEnvios — hook dedicado con TanStack Query · Experto · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a encapsular `useQuery` detrás de `useEnvios()`, de forma que ningún componente de la feature necesite conocer la `queryKey` ni la `queryFn` reales. Prerrequisitos: Tema 2 de este módulo.

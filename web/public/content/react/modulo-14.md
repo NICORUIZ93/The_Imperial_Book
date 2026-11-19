@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Server Components y streaming
+### Tema 1: Server Components y streaming · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `app/envios/page.tsx` como Server Component que hace streaming de una sección lenta con `Suspense`, en vez de bloquear toda la página hasta que todo esté listo. **Prerrequisitos:** Node.js LTS, npm y un proyecto Next.js con App Router; confirma `npx next --version`.
@@ -119,7 +119,7 @@ Agregá una segunda sección lenta (por ejemplo `EstadisticasEnvio`) con su prop
 #### Paso 7 · Cierre
 Entrega la página con streaming del Paso 4, el bloqueo total reproducido en el Paso 5, y las dos secciones independientes del Paso 6; explica por qué el streaming ocurre por límite `Suspense`, no por página completa. Como siguiente paso, estudia Server Actions para las mutaciones de esos mismos datos. Errores comunes: hacer `await` de algo lento fuera de cualquier `Suspense`, anulando el streaming de todo lo demás; marcar un componente como `'use client'` sin necesitarlo, perdiendo el beneficio de no enviar su JavaScript. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming.
 
-### Tema 2: Server Actions y seguridad
+### Tema 2: Server Actions y seguridad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir una Server Action `marcarEntregado` que valida su entrada con `zod` y verifica en el servidor que el operador tiene permiso sobre ESE envío, y vas a reproducir el fallo de confiar en el id que envía el cliente sin revalidar el permiso. **Prerrequisitos:** Tema 1 de este módulo.
@@ -232,7 +232,7 @@ Restaura el filtro de `operadorId`, y agrega una prueba con una sesión simulada
 #### Paso 7 · Cierre
 Entrega la acción autorizada del Paso 4, el envío ajeno modificado sin autorización del Paso 5, y las dos pruebas del Paso 6; explica por qué validar la forma de los datos con `zod` no es lo mismo que autorizar la operación sobre un recurso específico. Como siguiente paso, estudia ISR y Middleware para proteger rutas completas, no solo acciones puntuales. Errores comunes: confiar en cualquier dato que llega del cliente (incluidos ids en campos ocultos) sin revalidar permisos en el servidor; registrar tokens de sesión completos en logs de error. Fuente oficial: https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security.
 
-### Tema 3: Next.js ISR, Metadata y Proxy (antes Middleware)
+### Tema 3: Next.js ISR, Metadata y Proxy (antes Middleware) · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. **Prerrequisitos:** Next.js con App Router y autenticación del tema anterior. Este ejemplo usa Next.js 16, runtime Node y la configuración tradicional de caché, sin `cacheComponents`; en Next.js 15 la convención equivalente es `middleware.ts` con función `middleware`.
@@ -335,7 +335,7 @@ Entrega las respuestas y explica la diferencia entre navegación, autorización 
 
 **Límites y decisión de uso:** Esta ficha estática demuestra regeneración del HTML. Al conectar datos reales debes definir caché e invalidación de esa fuente y mantener toda información privada fuera de esta ruta pública.
 
-### Tema 4: Optimización de imágenes y fuentes
+### Tema 4: Optimización de imágenes y fuentes · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `app/components/Photo.tsx` con `next/image` y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con `next/font` en vez de un `<link>` bloqueante, midiendo el CLS antes y después. **Prerrequisitos:** Tema 3 de este módulo.
@@ -395,7 +395,7 @@ Restaurá `next/image`, y además compará: quitá temporalmente `next/font` en 
 #### Paso 7 · Cierre
 Entrega la foto sin salto de layout del Paso 4, el CLS alto reproducido con `<img>` plano del Paso 5, y la comparación de FCP entre `next/font` y un `<link>` externo del Paso 6; explica por qué reservar espacio de antemano es lo que elimina el salto, no el formato del archivo de imagen. Como siguiente paso, estudia accesibilidad con React Aria para esa misma página. Errores comunes: usar `<img>` plano sin `width`/`height` donde `next/image` ya está disponible; cargar una fuente externa bloqueante cuando `next/font` puede autohospedarla. Fuente oficial: https://nextjs.org/docs/app/building-your-application/optimizing/images y https://nextjs.org/docs/app/building-your-application/optimizing/fonts.
 
-### Tema 5: Accesibilidad y React Aria
+### Tema 5: Accesibilidad y React Aria · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `app/components/Dialog.tsx` con `useDialog` de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un `<div>` plano que es invisible para un lector de pantalla. **Prerrequisitos:** Tema 4 de este módulo.
@@ -460,7 +460,7 @@ Restaurá los props de `useDialog`, agregá `useModal`/`FocusScope` para confirm
 #### Paso 7 · Cierre
 Entrega el diálogo accesible del Paso 4, la pérdida de semántica confirmada en el árbol de accesibilidad del Paso 5, y el atrapado de foco más la prueba con `jest-axe` del Paso 6; explica por qué un componente puede verse idéntico y a la vez ser invisible para un lector de pantalla. Como siguiente paso, estudia i18n para que los textos de ese mismo diálogo sean traducibles. Errores comunes: confiar en que "se ve bien" es lo mismo que "es accesible"; reinventar el atrapado de foco a mano en vez de usar `useModal`/`FocusScope`. Fuente oficial: https://react-spectrum.adobe.com/react-aria/useDialog.html.
 
-### Tema 6: i18n, pluralización y RTL
+### Tema 6: i18n, pluralización y RTL · Experto · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar `next-intl` para `/[locale]/envios/[id]` con un mensaje pluralizado correctamente ("1 envío" vs. "3 envíos") y `dir="rtl"` para un locale árabe, y vas a reproducir el fallo de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 5 de este módulo.

@@ -1,7 +1,7 @@
 # Reordenar los temas: Node.js y la deuda de orden de los otros cursos, 2026-11-19
 
 **Petición:** «quiero que revises cada tema cada curso y reorganices de manera mejora ordenada cada tema».
-**Alcance elegido:** *curso completo por curso*. Tres lotes en este documento: Node.js reordenado por completo (14 capítulos, 78 temas), los 10 capítulos que los demás cursos dejaban declarados como incumplidos, y JavaScript como curso completo etiquetado y ordenado (15 capítulos, 92 temas). Quedan 13 cursos sin etiquetar; ver «Deuda que queda» al final.
+**Alcance elegido:** *curso completo por curso*. Cuatro lotes en este documento: Node.js reordenado por completo (14 capítulos, 78 temas), los 10 capítulos que los demás cursos dejaban declarados como incumplidos, JavaScript como curso completo etiquetado y ordenado (15 capítulos, 92 temas) y React como curso completo etiquetado y ordenado (15 capítulos, 64 temas). Quedan 12 cursos sin etiquetar; ver «Deuda que queda» al final.
 
 ## Qué se midió antes de tocar nada
 
@@ -220,7 +220,7 @@ Recomprobado después sobre los 15 capítulos: ningún `«título» … de este 
 
 ## Verificación del tercer lote
 
-- `python3 scripts/audit_topic_order.py --check` → salida 0 y **«1.420 temas, 1.122 sin nivel declarado, 0 módulos con incidencias»**: 88 etiquetas nuevas (los 88 temas que no la tenían; 4 ya venían etiquetados, uno de ellos reetiquetado).
+- `python3 scripts/audit_topic_order.py --check` → salida 0 y **«1.420 temas, 1.122 sin nivel declarado, 0 módulos con incidencias»** (cifra de este lote; tras el de React son 1.064): 88 etiquetas nuevas (los 88 temas que no la tenían; 4 ya venían etiquetados, uno de ellos reetiquetado).
 - Simulación previa al movimiento: aplicado cada orden, los 15 capítulos salen con niveles no decrecientes y con todo prerrequisito interno por delante. Después de aplicar, los 6 capítulos reordenados se comprobaron otra vez sobre el archivo real.
 - Integridad: contra `git show HEAD:` en los 15 archivos, el cuerpo es idéntico salvo las cabeceras y **exactamente las 3 líneas de citas** listadas arriba.
 - Regenerados `topic-index.json` y el catálogo; el remapeo de registros lo hizo la propia herramienta (`docs/topic-learning-quality.json` reescrito en los 6 capítulos; `specs/visual-aids-scope.json`, 1 entrada movida en el capítulo 14). Total intacto: **16 rutas · 289 módulos · 1.420 temas**.
@@ -235,11 +235,76 @@ Deshacer los seis movimientos con su inversa (`python3 scripts/reorder_track_top
 
 Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la numeración original): capítulo 1 `2,3,5,1,6,4` · capítulo 4 `1,2,3,5,4` · capítulo 8 `1,2,3,5,6,7,4` · capítulo 9 `1,3,4,2` · capítulo 11 `1,4,2,3,6,5` · capítulo 14 `1,2,3,4,14,5,6,7,8,9,15,10,11,12,13`.
 
+## Cuarto lote: React, un curso completo (64 temas)
+
+Segundo curso entero después de Node. React tenía 6 de sus 64 temas etiquetados, así que el trabajo mayoritario es el mismo que en JavaScript: **leer el `Prerrequisitos` y el objetivo de cada tema y declararle nivel y duración**, y solo después mover lo que las etiquetas obligan a mover.
+
+Regla de etiquetado, idéntica a la de los lotes anteriores:
+
+| Nivel | Lo que el tema te hace hacer |
+|---|---|
+| Básico | Primer contacto con una primitiva del curso, sin librería externa y sin medir nada. |
+| Intermedio | Varias primitivas ya conocidas trabajando juntas, o una librería/herramienta nueva, o decidir con una medición delante. |
+| Avanzado | Interna del mecanismo, semántica de servidor, concurrencia, o un requisito de producción (seguridad, accesibilidad, migración). |
+| Experto | El tema que cierra un capítulo combinando todo bajo restricciones reales: frontera de seguridad, release medible, proyecto integrador. |
+
+Duración leída de la carga del propio tema (7 pasos, cantidad de código y de comprobaciones), entre 30 y 55 min; el capítulo 12, que es el proyecto, sube a 55.
+
+Con las etiquetas puestas, **tres capítulos incumplían la regla de nivel y se reordenaron; los doce restantes ya cumplían**. La etiqueta de nivel se escribe dentro de la cabecera, pero el enlace no la lleva: `scripts/build_web_topic_index.py:63` calcula el fragmento sobre `TOPIC_META.sub("", title)` y el lector hace el mismo recorte en `web/src/app/course/lesson-viewer.ts:84`, con el comentario explícito de la línea 741 («El sufijo · Nivel · Duración se excluye para conservar el fragmento»). **Etiquetar los 64 temas no cambió ni un enlace.**
+
+### Los tres capítulos reordenados
+
+La lista dice «en la posición nueva i pongo el tema que entonces llevaba el número orden[i]».
+
+| Capítulo | Orden aplicado | Orden final |
+|---|---|---|
+| React 1 «Estado local y el ciclo de render» | `1,4,5,2,3` | useState → **Componentes controlados** → **Componentes puros y el estado como instantánea** → Render frente a commit → Batching |
+| React 3 «Formularios y eventos» | `3,1,2,4` | **Eventos sintéticos** → React Hook Form → Validación con zod y multi-paso → Formularios con Actions |
+| React 9 «Performance en React» | `1,2,5,3,4,6,7` | Medir → React.memo → **Suspense y React.lazy** → Virtualización y code-splitting → useTransition/Fiber → el hook `use` → React Compiler |
+
+Las cadenas que motivan cada movimiento, leídas del contenido:
+
+- **React 1:** el interna del mecanismo (Render frente a commit, Batching, ambos Intermedio) estaba en las posiciones 2 y 3, por delante de los dos Básicos que las necesitan para tener sentido: escribir un campo controlado y entender que el estado es una instantánea. Ninguno de los dos temas de interna es prerrequisito de nada en el capítulo, así que bajan al final.
+- **React 3:** Eventos sintéticos (Básico) era el penúltimo, detrás de React Hook Form y de zod (Intermedio). Es el único tema del capítulo que no necesita librería ni proyecto previo: se entiende con el formulario del capítulo 2, y `preventDefault` es lo que React Hook Form luego abstrae. Sube a la posición 1.
+- **React 9:** Suspense y React.lazy (Intermedio) estaba quinto, por detrás de Virtualización y de useTransition/Fiber (Avanzado). La carga diferida es la técnica base que los dos Avanzado después aplican sobre datos ya medidos; sube a la posición 3, justo detrás de React.memo.
+
+### Dieciséis líneas de prosa quedaron mal por el movimiento
+
+La herramienta renumera cabeceras y remapea los registros, pero no reescribe el texto. React no usa puentes «Siguiente tema»; lo que cita por número son los `Prerrequisitos` y la tabla de comprobación del final de cada capítulo. Se corrigieron 6 líneas en el capítulo 1, 6 en el 3 y 4 en el 9:
+
+- Capítulo 1 (`react/modulo-1.md`): prerrequisito de Componentes controlados `Tema 3` → **Tema 1** (useState); prerrequisito de Batching `Tema 2` → **Tema 4** (Render frente a commit); y cuatro filas de la tabla final — input controlado y formulario controlado `Ver Tema 4` → **Tema 2**, los tres `setState` `Ver Tema 3` → **Tema 5**, explicar render frente a commit `Ver Tema 2` → **Tema 4**.
+- Capítulo 3 (`react/modulo-3.md`): prerrequisito de Eventos sintéticos `Tema 2 de este módulo` → **Módulo 2 completo** (queda como primer tema del capítulo, ya no tiene predecessor interno); prerrequisito de Validación con zod `Tema 1` → **Tema 2** (React Hook Form); tabla final — formulario con React Hook Form `Ver Tema 1` → **Tema 2**, schema de zod y formulario multi-paso `Ver Tema 2` → **Tema 3** cada una, y manejar el submit `Ver Tema 3` → **Tema 1**.
+- Capítulo 9 (`react/modulo-9.md`): prerrequisito de Suspense y React.lazy `Tema 3 de este módulo (code-splitting)` → **tema «Virtualización y code-splitting» de este módulo** (forma por título, que es la robusta); el ejercicio de dividir por ruta `del Tema 3 de este módulo` → **Tema 4**; prerrequisito de useTransition `Tema 3` → **Tema 4**; tabla final — virtualizar 10.000 elementos `Ver Tema 3` → **Tema 4**. La fila `Ver Tema 3` de `React.lazy` se queda como está: después del movimiento, el Tema 3 de este módulo es literalmente Suspense y React.lazy.
+
+Comprobado después sobre los 15 archivos: toda cita `«título» … de este módulo` apunta al tema que nombra, ninguna cita numérica interna apunta a un tema posterior al que depende de ella, y la única referencia entre capítulos con número (`Módulo 2, Tema 5`, el Error Boundary citado desde React 9 tema 3) sigue en su sitio porque el capítulo 2 no se movió.
+
+## Lo que nota el lector con React etiquetado
+
+- **10 de los 64 temas cambian de enlace**, todos por el reordenado y ninguno por etiquetar: 4 en el capítulo 1, 3 en el 3 y 3 en el 9. Los otros 54 conservan el suyo, incluidos los 12 capítulos que solo recibieron etiquetas. Medido comparando `topic-index.json` de antes y después del lote, no sobre la cabecera.
+- Quien tuviera marcado como leído uno de esos 10 pierde esa marca; el progreso de capítulo no se toca y un enlace antiguo no rompe: abre la portada del capítulo.
+- Nivel y duración ya se ven en cada cabecera de tema (`§ 9.3 Suspense y React.lazy — carga diferida del lado cliente · Intermedio · 40 min`), que es lo que la puerta de orden juzga.
+
+## Verificación del cuarto lote
+
+- `python3 scripts/audit_topic_order.py --check` → salida 0: **1.420 temas, 1.064 sin nivel declarado, 0 módulos con incidencias**. React pasa de 6 a 64 temas etiquetados y sus 15 capítulos cumplen las dos reglas sin tocar la lista de excepciones, que sigue vacía.
+- Integridad: contra `git show HEAD:` en los 15 archivos, mismo número de temas y multiset de líneas idéntico salvo las cabeceras renumeradas y las **exactas 16 líneas de citas** de arriba; en los 12 capítulos sin mover, cero diferencias de cuerpo.
+- Regenerados: `topic-index.json`, `curriculum-catalog.json`, `curriculum-stacks/react.json`, `specs/visual-aids-scope.json` (1 entrada movida en el capítulo 1) y `docs/topic-learning-quality.json` (59 filas de React con la cabecera ya etiquetada). Total intacto: **16 rutas · 289 módulos · 1.420 temas**.
+- `./scripts/validate.sh` → salida 0. `validate_specs`: 43 criterios, 36 `hecho` y 7 `pendiente`; etiquetar y reordenar React no cierra ningún criterio del prompt maestro.
+- `npm run build` en `web/` → salida 0. `PLAYWRIGHT_CHANNEL=chrome npx playwright test --workers=1` → **83 de 84**; falla solo la prueba preexistente de salida del modo libro en móvil.
+- Navegador sobre el servidor de desarrollo (puerto 4213): el capítulo 9 de React lista 9.1 Medir, 9.2 React.memo, 9.3 Suspense y React.lazy, 9.4 Virtualización, 9.5 useTransition, 9.6 el hook `use`, 9.7 React Compiler con niveles no decrecientes; el enlace directo `/curso/react/1/tema/5` abre «Batching de actualizaciones» con el prerrequisito ya corregido («tema «useState y actualizaciones funcionales» de este módulo»); el capítulo 3 abre con «Eventos sintéticos · Básico · 35 min». Cero `.lesson-error` y consola limpia salvo el aviso conocido de saneado de HTML de Angular.
+
+## Cómo revertir el cuarto lote
+
+Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la numeración original, en los dos sentidos): capítulo 1 `1,4,5,2,3` (es su propia inversa) · capítulo 3 `2,3,1,4` · capítulo 9 `1,2,4,5,3,6,7`.
+
+Ejemplo: `python3 scripts/reorder_track_topics.py --track react --module 9 --order 1,2,4,5,3,6,7 --apply`. Después hay que deshacer a mano las 16 líneas de citas de arriba (los `Prerrequisitos` y las tablas vuelven a los números antiguos) y quitar las 58 etiquetas nuevas devolviendo cada cabecera a su texto sin ` · Nivel · XX min`, salvo las seis originales: capítulo 1 tema 3 (Básico · 40), capítulo 2 tema 7 (Avanzado · 45), capítulo 3 tema 4 (Avanzado · 45), capítulo 9 temas 6 (Avanzado · 40) y 7 (Avanzado · 45), y capítulo 13 tema 5 (que este lote subió de Avanzado · 45 a Experto · 50 y debe volver a la primera). Cerrar con los generadores, `--write-exceptions` y `./scripts/validate.sh`.
+
 ## Deuda que queda
 
-- **1.122 de los 1.420 temas (79 %) siguen sin nivel ni duración declarados.** Tras JavaScript, solo tres cursos están completos: Node.js (78/78), Microservicios (24/24) y JavaScript (92/92). Los demás andan entre 0 y 16 etiquetas: React 6/64, iOS 13/69, Java 16/117, Kotlin Multiplatform 10/66, control-1 0/70, rutaflow 0/29.
-- El patrón de este lote es el que queda para los 13 cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. No hay ninguna decisión pendiente sobre los enlaces: como el fragmento se calcula sin el sufijo de nivel y duración, **etiquetar un curso entero no cambia ni un enlace ni borra ninguna marca de leído**. Lo único que mueve URLs es renumerar, y eso pasa solo en los capítulos que de verdad hace falta reordenar.
-- Los dos cursos ya completos del todo (Node y Microservicios) y JavaScript no tienen incidencias declaradas: sus capítulos cumplen las dos reglas.
+- **1.064 de los 1.420 temas (75 %) siguen sin nivel ni duración declarados.** Tras React, cuatro cursos están completos: Node.js (78/78), Microservicios (24/24), JavaScript (92/92) y React (64/64). Los otros doce andan entre 0 y 16 etiquetas: Java 16/117, Kotlin Multiplatform 10/66, iOS 13/69, control-1 0/70, rutaflow 0/29, Angular 7/78, Android 10/83, Fundamentos 2/103, Flutter 10/119, Spring Boot 9/121, DevOps 9/139, Cloud 12/168.
+- El patrón de los cuatro lotes es el que queda para los doce cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. No hay ninguna decisión pendiente sobre los enlaces: como el fragmento se calcula sin el sufijo de nivel y duración (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84`), **etiquetar un curso entero no cambia ni un enlace ni borra ninguna marca de leído**. Lo único que mueve URLs es renumerar, y eso pasa solo en los capítulos que de verdad hace falta reordenar: en React, 10 de 64; en JavaScript, 31 de 92.
+- El siguiente candidato natural es **Java**: es el curso con más etiquetas parciales puestas (16/117) y el más grande sin cerrar después de Cloud, así que su deuda de orden es la que más temas afecta.
+- Los cuatro cursos ya completos (Node, Microservicios, JavaScript y React) no tienen incidencias declaradas: sus capítulos cumplen las dos reglas, y la lista de excepciones sigue vacía.
 
 
 
