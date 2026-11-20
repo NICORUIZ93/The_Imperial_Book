@@ -74,6 +74,7 @@ Maven Central está bloqueado. Lo que no puedas ejecutar aquí queda completo y 
 python3 scripts/build_microservices_track.py
 python3 scripts/build_web_topic_index.py && python3 scripts/build_curriculum_catalog.py
 python3 scripts/validate_fichas.py --resumen     # tus módulos deben salir con ✔
+find examples/microservicios -name pom.xml -exec python3 -c "import xml.dom.minidom,sys;xml.dom.minidom.parse(sys.argv[1])" {} \;   # Maven rechaza «--» dentro de comentarios XML
 ./scripts/validate.sh && (cd web && npm test -- --watch=false)
 ```
 
