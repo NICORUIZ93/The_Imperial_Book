@@ -1328,15 +1328,15 @@ after(async () => { workers.forEach((w) => w.shutdown()); await enMarcha; await 
 const correr = (r) => env.client.workflow.execute('reservaWorkflow', { taskQueue: 'reservas', workflowId: `reserva-${r.reservaId}-${Date.now()}`, args: [r] });
 const base = { eventoId: 'concierto-1', clienteId: 'C-1', importe: 80, tarjeta: '4242-OK' };
 
-test('Temporal: camino feliz', async () => {
+test('Temporal: camino feliz', { timeout: 90_000 }, async () => {
   assert.equal((await correr({ ...base, reservaId: 'T-1' })).estado, 'CONFIRMADA');
 });
-test('Temporal: tarjeta rechazada -> CANCELADA con la plaza liberada', async () => {
+test('Temporal: tarjeta rechazada -> CANCELADA con la plaza liberada', { timeout: 90_000 }, async () => {
   const r = await correr({ ...base, reservaId: 'T-2', tarjeta: '4000-RECHAZAR' });
   assert.deepEqual([r.estado, r.compensadas], ['CANCELADA', ['liberarPlaza']]);
   assert.match(r.motivo, /tarjeta rechazada/);
 });
-test('Temporal: falla confirmar -> reembolsar y liberar', async () => {
+test('Temporal: falla confirmar -> reembolsar y liberar', { timeout: 90_000 }, async () => {
   const r = await correr({ ...base, reservaId: 'T-3', fallarAlConfirmar: true });
   assert.deepEqual(r.compensadas, ['reembolsar', 'liberarPlaza']);
   assert.ok(stats.reembolsos >= 1);

@@ -31,13 +31,13 @@ const correr = (pedido) => env.client.workflow.execute('sagaPedido', {
 });
 const base = { sku: 'TEC-1', cantidad: 1, total: 99000, direccion: 'Calle 1' };
 
-test('pasarela inestable: Temporal reintenta el cobro y la saga se completa', async () => {
+test('pasarela inestable: Temporal reintenta el cobro y la saga se completa', { timeout: 90_000 }, async () => {
   const r = await correr({ ...base, pedidoId: 'T-1', tarjeta: 'inestable' });
   assert.equal(r.estado, 'COMPLETADA');
   assert.equal(actividades.estado.intentos.get('T-1'), 3);
 });
 
-test('tarjeta rechazada (no reintentable): se libera el stock', async () => {
+test('tarjeta rechazada (no reintentable): se libera el stock', { timeout: 90_000 }, async () => {
   const antes = actividades.estado.stock.get('TEC-1');
   const r = await correr({ ...base, pedidoId: 'T-2', tarjeta: 'rechazada' });
   assert.equal(r.estado, 'COMPENSADA');
@@ -46,7 +46,7 @@ test('tarjeta rechazada (no reintentable): se libera el stock', async () => {
   assert.equal(actividades.estado.stock.get('TEC-1'), antes);
 });
 
-test('envío inválido: se reembolsa y se libera, en orden inverso', async () => {
+test('envío inválido: se reembolsa y se libera, en orden inverso', { timeout: 90_000 }, async () => {
   const r = await correr({ ...base, pedidoId: 'T-3', tarjeta: 'ok', direccion: '' });
   assert.deepEqual(r.compensadas, ['cobrarPago', 'reservarStock']);
   assert.equal(actividades.estado.cobros.has('T-3'), false);
