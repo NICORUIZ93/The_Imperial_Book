@@ -6,7 +6,7 @@ Vas a ofrecer un plan premium para RutaFlow, leer productos de las tiendas, proc
 
 ---
 
-### Tema 1: catálogo y flujo con `in_app_purchase`
+### Tema 1: catálogo y flujo con `in_app_purchase` · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar mostrarás productos del store y procesarás las actualizaciones con un listener activo. **Prerrequisitos:** futures, streams y configuración de aplicaciones Android/iOS. Crea un proyecto nuevo con `flutter create rutaflow_iap_lab`; agrega `in_app_purchase` con `flutter pub add in_app_purchase`.
@@ -97,7 +97,7 @@ sequenceDiagram
 
 ---
 
-### Tema 2: suscripciones Android, planes base y cambios
+### Tema 2: suscripciones Android, planes base y cambios · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar separarás una suscripción de su plan base y comprobarás los estados que afectan al acceso. **Prerrequisitos:** Tema 1, catálogo Play y conceptos de backend. Crea un proyecto nuevo con `flutter create play_subscription_lab` y el archivo `docs/play-subscription-catalog.md`.
@@ -153,7 +153,7 @@ stateDiagram-v2
 
 ---
 
-### Tema 3: suscripciones iOS con StoreKit
+### Tema 3: suscripciones iOS con StoreKit · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar organizarás planes de iOS y mostrarás el estado de la suscripción sin confundirlo con la configuración Android. **Prerrequisitos:** Tema 1, App Store Connect y Xcode/macOS. En un proyecto nuevo `flutter create ios_subscription_lab`, crea `docs/app-store-subscriptions.md`.
@@ -209,7 +209,63 @@ flowchart LR
 
 ---
 
-### Tema 4: restauración de compras y entitlement
+### Tema 4: pruebas de IAP en sandbox · Intermedio · 30 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar ejecutarás escenarios de compra sin cobrar a una cuenta de producción. **Prerrequisitos:** productos creados, app id correcto y listener. Crea `docs/iap-test-matrix.md` con un proyecto nuevo `flutter create iap_test_lab`.
+
+**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_5` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_5` y `flutter analyze`.
+
+#### Paso 2 · Contexto y caso real
+La compra puede completarse, cancelarse, quedar pendiente por aprobación familiar, fallar o reembolsarse. Probar solo el estado de éxito deja rutas que usuarios reales sí recorren.
+
+#### ¿Por qué es importante?
+Un flujo de pago que duplica un crédito o se cierra mientras está pendiente afecta dinero y confianza. Sandbox/licencia permite comprobar estados antes de operar en producción.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un test unitario usa un fake de interfaz de tienda para las reglas; sandbox/track interno conecta al proveedor y verifica producto, permisos y callback reales. Son niveles de evidencia distintos. No se debe probar clickeando anuncios o compras reales desde una cuenta de usuario.
+
+#### Paso 4 · Demostración guiada
+Escribe `docs/iap-test-matrix.md` con filas: purchased, pending, canceled, error, restored, duplicate, refund/expiry. Para cada caso apunta preparación, señal de `PurchaseStatus`, llamada backend y entitlement esperado. Añade test de widget con fake `PurchaseRepository` que reproduzca purchased y canceled.
+
+En Android agrega un license tester y usa la app publicada en un track de prueba. En Apple usa usuario Sandbox de App Store Connect o StoreKit Testing en Xcode; verifica que el bundle ID y los product IDs coinciden. Ejecuta `flutter test` para lógica y realiza el recorrido sandbox en dispositivo designado.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** anota sistema operativo, tipo de cuenta y track; una prueba fake no demuestra que la tienda sandbox complete una transacción.
+Comprueba que el producto sigue bloqueado mientras la compra está pending y no se cobra en sandbox. **Pista:** conserva logs que separen cancelación de excepción.
+
+#### Paso 6 · Práctica independiente
+Prueba doble emisión, timeout de backend después de aprobación del store y transacción que llega al siguiente arranque. El flujo debe reconciliar estado sin cobrar dos veces ni perder la compra.
+
+
+**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
+#### Paso 7 · Cierre y evidencia
+
+**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
+Entrega matriz con resultado y target por fila. El siguiente tema conecta validación de store al backend.
+
+**Prueba de diagnóstico.** Inyecta deliberadamente un `purchaseStream` repetido; la clave de transacción debe evitar una segunda entrega del producto.
+
+```bash
+flutter test test/features/purchases
+```
+
+**Resultado esperado:** los tests fake pasan; Android/iOS sandbox se reporta por separado con su sistema operativo. **Errores comunes:** contar prueba de widget como prueba de Play/App Store y omitir el estado pending. Fuentes oficiales: [Flutter in_app_purchase](https://pub.dev/packages/in_app_purchase), [Play test tracks](https://developer.android.com/google/play/billing/test), [StoreKit testing](https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox).
+
+**Proyecto propio:** `iap_test_lab`. **Cuándo promover a producción:** después de reconciliar todas las filas de la matriz y la revisión de pricing/políticas. Evidencia de aprendizaje: entrega tests fake y capturas de sandbox.
+
+```mermaid
+flowchart LR
+  Fake[Test unitario: reglas] --> Logic[Purchase handler]
+  Sandbox[Store de prueba] --> Platform[Plugin y callback real]
+  Logic --> Matrix[Resultados por estado]
+  Platform --> Matrix
+```
+
+---
+
+### Tema 5: restauración de compras y entitlement · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar recuperarás compras restaurables cuando la persona reinstala o cambia de dispositivo. **Prerrequisitos:** listener de compra, backend y diferencias entre consumible/no consumible. Crea `lib/features/purchases/restore_controller.dart` y un botón visible “Restaurar compras”.
@@ -274,66 +330,10 @@ sequenceDiagram
 
 ---
 
-### Tema 5: pruebas de IAP en sandbox
+### Tema 6: validación de transacciones en servidor · Experto · 40 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar ejecutarás escenarios de compra sin cobrar a una cuenta de producción. **Prerrequisitos:** productos creados, app id correcto y listener. Crea `docs/iap-test-matrix.md` con un proyecto nuevo `flutter create iap_test_lab`.
-
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_5` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_5` y `flutter analyze`.
-
-#### Paso 2 · Contexto y caso real
-La compra puede completarse, cancelarse, quedar pendiente por aprobación familiar, fallar o reembolsarse. Probar solo el estado de éxito deja rutas que usuarios reales sí recorren.
-
-#### ¿Por qué es importante?
-Un flujo de pago que duplica un crédito o se cierra mientras está pendiente afecta dinero y confianza. Sandbox/licencia permite comprobar estados antes de operar en producción.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un test unitario usa un fake de interfaz de tienda para las reglas; sandbox/track interno conecta al proveedor y verifica producto, permisos y callback reales. Son niveles de evidencia distintos. No se debe probar clickeando anuncios o compras reales desde una cuenta de usuario.
-
-#### Paso 4 · Demostración guiada
-Escribe `docs/iap-test-matrix.md` con filas: purchased, pending, canceled, error, restored, duplicate, refund/expiry. Para cada caso apunta preparación, señal de `PurchaseStatus`, llamada backend y entitlement esperado. Añade test de widget con fake `PurchaseRepository` que reproduzca purchased y canceled.
-
-En Android agrega un license tester y usa la app publicada en un track de prueba. En Apple usa usuario Sandbox de App Store Connect o StoreKit Testing en Xcode; verifica que el bundle ID y los product IDs coinciden. Ejecuta `flutter test` para lógica y realiza el recorrido sandbox en dispositivo designado.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** anota sistema operativo, tipo de cuenta y track; una prueba fake no demuestra que la tienda sandbox complete una transacción.
-Comprueba que el producto sigue bloqueado mientras la compra está pending y no se cobra en sandbox. **Pista:** conserva logs que separen cancelación de excepción.
-
-#### Paso 6 · Práctica independiente
-Prueba doble emisión, timeout de backend después de aprobación del store y transacción que llega al siguiente arranque. El flujo debe reconciliar estado sin cobrar dos veces ni perder la compra.
-
-
-**Fallo deliberado:** Repite deliberadamente una transacción/evento y comprueba que el estado no se duplica. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
-
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega matriz con resultado y target por fila. El siguiente tema conecta validación de store al backend.
-
-**Prueba de diagnóstico.** Inyecta deliberadamente un `purchaseStream` repetido; la clave de transacción debe evitar una segunda entrega del producto.
-
-```bash
-flutter test test/features/purchases
-```
-
-**Resultado esperado:** los tests fake pasan; Android/iOS sandbox se reporta por separado con su sistema operativo. **Errores comunes:** contar prueba de widget como prueba de Play/App Store y omitir el estado pending. Fuentes oficiales: [Flutter in_app_purchase](https://pub.dev/packages/in_app_purchase), [Play test tracks](https://developer.android.com/google/play/billing/test), [StoreKit testing](https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox).
-
-**Proyecto propio:** `iap_test_lab`. **Cuándo promover a producción:** después de reconciliar todas las filas de la matriz y la revisión de pricing/políticas. Evidencia de aprendizaje: entrega tests fake y capturas de sandbox.
-
-```mermaid
-flowchart LR
-  Fake[Test unitario: reglas] --> Logic[Purchase handler]
-  Sandbox[Store de prueba] --> Platform[Plugin y callback real]
-  Logic --> Matrix[Resultados por estado]
-  Platform --> Matrix
-```
-
----
-
-### Tema 6: validación de transacciones en servidor
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar verificarás una transacción con la tienda antes de habilitar premium y conciliarás renovaciones y reembolsos. **Prerrequisitos:** backend HTTP autenticado, storage transaccional y Módulo 10 de producción. Crea `docs/iap-server-contract.md`.
+Al finalizar verificarás una transacción con la tienda antes de habilitar premium y conciliarás renovaciones y reembolsos. **Prerrequisitos:** backend HTTP autenticado, storage transaccional y los dos módulos de producción de este curso (13 y 18). Crea `docs/iap-server-contract.md`.
 
 **Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_iap_6` y aplica solo los archivos de este tema; ejecuta después `cd flutter_iap_6` y `flutter analyze`.
 

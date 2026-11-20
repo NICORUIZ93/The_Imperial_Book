@@ -2530,12 +2530,12 @@
         "fragment": "tema-2-google-maps-y-localizacion-en-tiempo-real"
       },
       {
-        "title": "Socket.IO y actualización de rutas",
-        "fragment": "tema-3-socket-io-y-actualizacion-de-rutas"
+        "title": "Animaciones de localización",
+        "fragment": "tema-3-animaciones-de-localizacion"
       },
       {
-        "title": "Animaciones de localización",
-        "fragment": "tema-4-animaciones-de-localizacion"
+        "title": "Socket.IO y actualización de rutas",
+        "fragment": "tema-4-socket-io-y-actualizacion-de-rutas"
       },
       {
         "title": "Almacenamiento local, imágenes y offline",
@@ -2672,12 +2672,12 @@
         "fragment": "tema-2-mapa-y-permiso-de-ubicacion"
       },
       {
-        "title": "posiciones en tiempo real con Socket.IO",
-        "fragment": "tema-3-posiciones-en-tiempo-real-con-socket-io"
+        "title": "animar el marcador sin saltos",
+        "fragment": "tema-3-animar-el-marcador-sin-saltos"
       },
       {
-        "title": "animar el marcador sin saltos",
-        "fragment": "tema-4-animar-el-marcador-sin-saltos"
+        "title": "posiciones en tiempo real con Socket.IO",
+        "fragment": "tema-4-posiciones-en-tiempo-real-con-socket-io"
       },
       {
         "title": "confirmaciones offline y sincronización",
@@ -2708,20 +2708,20 @@
         "fragment": "tema-1-pruebas-unitarias-y-de-widget-con-flutter-test"
       },
       {
+        "title": "internacionalización y formatos locales",
+        "fragment": "tema-2-internacionalizacion-y-formatos-locales"
+      },
+      {
         "title": "golden e integración de un flujo real",
-        "fragment": "tema-2-golden-e-integracion-de-un-flujo-real"
+        "fragment": "tema-3-golden-e-integracion-de-un-flujo-real"
       },
       {
         "title": "perfilado y presupuesto de rendimiento",
-        "fragment": "tema-3-perfilado-y-presupuesto-de-rendimiento"
+        "fragment": "tema-4-perfilado-y-presupuesto-de-rendimiento"
       },
       {
         "title": "Clean Architecture y sustitución de dependencias",
-        "fragment": "tema-4-clean-architecture-y-sustitucion-de-dependencias"
-      },
-      {
-        "title": "internacionalización y formatos locales",
-        "fragment": "tema-5-internacionalizacion-y-formatos-locales"
+        "fragment": "tema-5-clean-architecture-y-sustitucion-de-dependencias"
       },
       {
         "title": "builds por plataforma, firma y entrega",
@@ -2742,12 +2742,12 @@
         "fragment": "tema-3-suscripciones-ios-con-storekit"
       },
       {
-        "title": "restauración de compras y entitlement",
-        "fragment": "tema-4-restauracion-de-compras-y-entitlement"
+        "title": "pruebas de IAP en sandbox",
+        "fragment": "tema-4-pruebas-de-iap-en-sandbox"
       },
       {
-        "title": "pruebas de IAP en sandbox",
-        "fragment": "tema-5-pruebas-de-iap-en-sandbox"
+        "title": "restauración de compras y entitlement",
+        "fragment": "tema-5-restauracion-de-compras-y-entitlement"
       },
       {
         "title": "validación de transacciones en servidor",
@@ -2768,12 +2768,12 @@
         "fragment": "tema-3-banners-interstitials-y-anuncios-recompensados"
       },
       {
-        "title": "consentimiento, privacidad y audiencias",
-        "fragment": "tema-4-consentimiento-privacidad-y-audiencias"
+        "title": "pruebas de anuncios y diagnóstico de no-fill",
+        "fragment": "tema-4-pruebas-de-anuncios-y-diagnostico-de-no-fill"
       },
       {
-        "title": "pruebas de anuncios y diagnóstico de no-fill",
-        "fragment": "tema-5-pruebas-de-anuncios-y-diagnostico-de-no-fill"
+        "title": "consentimiento, privacidad y audiencias",
+        "fragment": "tema-5-consentimiento-privacidad-y-audiencias"
       },
       {
         "title": "comparar AdMob, AppLovin MAX y Unity LevelPlay",

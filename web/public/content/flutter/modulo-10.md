@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: ThemeData con Material 3
+### Tema 1: ThemeData con Material 3 · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a centralizar el `ThemeData` de RutaFlow con Material 3 y `colorSchemeSeed`, confirmando que un solo color base deriva un esquema completo coherente en toda la app. Prerrequisitos: Módulo 9 completo.
@@ -71,7 +71,7 @@ Corregí el Paso 5 quitando el color hardcodeado y usando `Theme.of(context).col
 Entregá el `ThemeData` centralizado del Paso 4, la desincronización por color hardcodeado del Paso 5, y la corrección del Paso 6; explicá por qué hardcodear un color en un widget individual rompe la garantía de coherencia que `ThemeData` centralizado existe para dar. Siguiente paso: estudia cómo adaptar widgets entre Material y Cupertino. Errores comunes: hardcodear colores en widgets individuales en vez de leerlos del tema central, no definir `darkTheme` dejando la app sin un modo oscuro coherente, y no probar que `ThemeMode.system` efectivamente responde al cambio de preferencia del sistema. Fuentes oficiales: https://docs.flutter.dev/ui/design/material y https://api.flutter.dev/flutter/material/ThemeData-class.html.
 **Implicación práctica:** Centralizar el `ThemeData` con Material 3 garantiza coherencia visual en toda la app sin repetir configuración en cada widget.
 
-### Tema 2: Adaptación Material vs Cupertino
+### Tema 2: Adaptación Material vs Cupertino · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a adaptar el botón "Confirmar entrega" para mostrar `CupertinoButton` en iOS y `ElevatedButton` en Android, detectando la plataforma en tiempo de ejecución. Prerrequisitos: Tema 1 de este módulo.
@@ -140,7 +140,7 @@ Corregí el Paso 5 usando `debugDefaultTargetPlatformOverride` dentro del widget
 Entregá el botón adaptativo del Paso 4, el camino sin cobertura real en CI del Paso 5, y el override de plataforma en test del Paso 6; explicá por qué `Platform.isIOS` depende del sistema operativo real de ejecución, y por qué eso exige un mecanismo distinto para testear el camino Cupertino desde una máquina de CI que no es Apple. Siguiente paso: estudia Semantics y dark mode. Errores comunes: no testear ambos caminos de un widget adaptativo, asumir que el mismo estilo visual funciona igual de bien en ambas plataformas, y usar `Platform.isIOS` en código que corre en la web. Fuentes oficiales: https://docs.flutter.dev/platform-integration/ios/platform-adaptations y https://api.flutter.dev/flutter/cupertino/CupertinoButton-class.html.
 **Implicación práctica:** Adaptar Material/Cupertino según la plataforma hace que una app Flutter se sienta más nativa en cada sistema operativo, cumpliendo las expectativas visuales que los usuarios ya tienen formadas.
 
-### Tema 3: Accesibilidad con Semantics y dark mode
+### Tema 3: Accesibilidad con Semantics y dark mode · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar `Semantics` al ícono de "eliminar envío" de RutaFlow, y a probar la pantalla explícitamente en modo oscuro para detectar contrastes insuficientes. Prerrequisitos: Tema 2 de este módulo.

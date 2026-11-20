@@ -6,7 +6,7 @@ Este módulo convierte `rutaflow_driver` en una app que un equipo puede cambiar 
 
 ---
 
-### Tema 1: pruebas unitarias y de widget con Flutter Test
+### Tema 1: pruebas unitarias y de widget con Flutter Test · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar escribirás pruebas que protegen una regla de entrega y su resultado en pantalla. **Prerrequisitos:** Dart, widgets, callbacks y futures. Crea un proyecto nuevo con `flutter create flutter_master_lab` y ejecuta `flutter test` para confirmar la plantilla.
@@ -72,7 +72,68 @@ flowchart LR
 
 ---
 
-### Tema 2: golden e integración de un flujo real
+### Tema 2: internacionalización y formatos locales · Intermedio · 35 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar mostrarás textos y números del flujo de entrega según el idioma configurado. **Prerrequisitos:** MaterialApp, locale y assets. Crea un proyecto nuevo con `flutter create localized_delivery_lab`; configura `flutter_localizations` e `intl` desde `pubspec.yaml`; crea `lib/l10n/app_en.arb` y `lib/l10n/app_es.arb`.
+
+#### Paso 2 · Contexto y caso real
+La app incluye contadores, moneda, dirección y estados. Traducir solo los botones deja frases partidas y cantidades con formato incorrecto. Las reglas de moneda también pueden variar por país; el usuario debe ver claramente el total y su moneda.
+
+#### ¿Por qué es importante?
+El idioma influye en cuánto texto cabe y en cómo se entiende un precio o una hora. Centralizar mensajes evita traducciones inconsistentes y prepara lectores de pantalla para cada locale.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+ARB guarda claves y mensajes, `gen-l10n` genera una API tipada y `Localizations` elige el idioma. Los placeholders y plurales evitan concatenar palabras por idioma. Fechas y cantidades se formatean con locale; no se traducen manualmente con `if` en cada widget.
+
+#### Paso 4 · Demostración guiada
+En `pubspec.yaml` activa:
+
+```yaml
+flutter:
+  generate: true
+```
+
+Crea `l10n.yaml`:
+
+```yaml
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+```
+
+Añade la misma clave `deliveriesCount` en ambos ARB, con plural y placeholder. Configura `localizationsDelegates`, `supportedLocales: [Locale('en'), Locale('es')]` y usa `AppLocalizations.of(context)!.deliveriesCount(count)`. Ejecuta `flutter gen-l10n` y `flutter analyze`.
+
+#### Paso 5 · Práctica guiada
+Prueba plural 0, 1 y 2; cambia locale a español. **Pista:** completa ambas traducciones y evita usar el idioma del dispositivo como único test.
+
+#### Paso 6 · Práctica independiente
+Revisa texto largo en ancho móvil, lector de pantalla, formato de importe y fecha. Documenta el locale regional que asume la app y qué hace si llega uno no admitido.
+
+#### Paso 7 · Cierre y evidencia
+Entrega los dos ARB, `l10n.yaml` y capturas en ambos idiomas. El siguiente tema generará builds con los assets y configuración por target.
+
+**Prueba de diagnóstico.** Provoca deliberadamente un error quitando `deliveriesCount` de `app_es.arb`; la generación debe fallar o revelar el mensaje faltante antes de compilar la app. **Resultado esperado:** Flutter resuelve la frase por clave y plural en ambos idiomas.
+
+```bash
+flutter gen-l10n
+flutter analyze
+```
+
+**Errores comunes:** armar frases concatenando literales y probar solo el caso singular. Diagrama: `locale -> ARB -> API generada -> widget`. Fuentes oficiales: [internacionalización Flutter](https://docs.flutter.dev/ui/internationalization), [intl](https://pub.dev/packages/intl).
+
+**Proyecto propio:** `lib/l10n/`. **Cuándo agregar locale:** cuando existe traducción revisada para las claves visibles y formatos de región definidos. Evidencia de aprendizaje: entrega capturas de 0/1/2 en español e inglés.
+
+```mermaid
+flowchart LR
+  Locale[Idioma y región] --> ARB[Mensajes ARB]
+  ARB --> Gen[API tipada generada]
+  Gen --> UI[Texto accesible en pantalla]
+```
+
+---
+
+### Tema 3: golden e integración de un flujo real · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar revisarás un cambio visual y simularás el recorrido de confirmar parada. **Prerrequisitos:** widget tests, themes y navegación. Crea un proyecto nuevo con `flutter create delivery_integration_lab`; crea `test/goldens/stop_card_test.dart` y `integration_test/complete_delivery_test.dart`.
@@ -121,7 +182,7 @@ flowchart LR
 
 ---
 
-### Tema 3: perfilado y presupuesto de rendimiento
+### Tema 4: perfilado y presupuesto de rendimiento · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar medirás una interacción repetible en `profile` y decidirás qué corregir primero. **Prerrequisitos:** DevTools, `ListView.builder` y timing UI/raster. Crea un proyecto nuevo con `flutter create performance_review_lab`; agrega `lib/performance/route_benchmark.dart` y un recorrido con 500 paradas de fixture.
@@ -170,7 +231,7 @@ flowchart LR
 
 ---
 
-### Tema 4: Clean Architecture y sustitución de dependencias
+### Tema 5: Clean Architecture y sustitución de dependencias · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar separarás la regla de completar entrega del cliente HTTP y la pantalla. **Prerrequisitos:** clases, interfaces, tests y módulos Dart. Crea un proyecto nuevo con `flutter create architecture_delivery_lab`; en `lib/features/delivery/`, crea `domain`, `data` y `presentation` con un caso de uso concreto.
@@ -239,68 +300,7 @@ flowchart LR
 
 ---
 
-### Tema 5: internacionalización y formatos locales
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar mostrarás textos y números del flujo de entrega según el idioma configurado. **Prerrequisitos:** MaterialApp, locale y assets. Crea un proyecto nuevo con `flutter create localized_delivery_lab`; configura `flutter_localizations` e `intl` desde `pubspec.yaml`; crea `lib/l10n/app_en.arb` y `lib/l10n/app_es.arb`.
-
-#### Paso 2 · Contexto y caso real
-La app incluye contadores, moneda, dirección y estados. Traducir solo los botones deja frases partidas y cantidades con formato incorrecto. Las reglas de moneda también pueden variar por país; el usuario debe ver claramente el total y su moneda.
-
-#### ¿Por qué es importante?
-El idioma influye en cuánto texto cabe y en cómo se entiende un precio o una hora. Centralizar mensajes evita traducciones inconsistentes y prepara lectores de pantalla para cada locale.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-ARB guarda claves y mensajes, `gen-l10n` genera una API tipada y `Localizations` elige el idioma. Los placeholders y plurales evitan concatenar palabras por idioma. Fechas y cantidades se formatean con locale; no se traducen manualmente con `if` en cada widget.
-
-#### Paso 4 · Demostración guiada
-En `pubspec.yaml` activa:
-
-```yaml
-flutter:
-  generate: true
-```
-
-Crea `l10n.yaml`:
-
-```yaml
-arb-dir: lib/l10n
-template-arb-file: app_en.arb
-output-localization-file: app_localizations.dart
-```
-
-Añade la misma clave `deliveriesCount` en ambos ARB, con plural y placeholder. Configura `localizationsDelegates`, `supportedLocales: [Locale('en'), Locale('es')]` y usa `AppLocalizations.of(context)!.deliveriesCount(count)`. Ejecuta `flutter gen-l10n` y `flutter analyze`.
-
-#### Paso 5 · Práctica guiada
-Prueba plural 0, 1 y 2; cambia locale a español. **Pista:** completa ambas traducciones y evita usar el idioma del dispositivo como único test.
-
-#### Paso 6 · Práctica independiente
-Revisa texto largo en ancho móvil, lector de pantalla, formato de importe y fecha. Documenta el locale regional que asume la app y qué hace si llega uno no admitido.
-
-#### Paso 7 · Cierre y evidencia
-Entrega los dos ARB, `l10n.yaml` y capturas en ambos idiomas. El siguiente tema generará builds con los assets y configuración por target.
-
-**Prueba de diagnóstico.** Provoca deliberadamente un error quitando `deliveriesCount` de `app_es.arb`; la generación debe fallar o revelar el mensaje faltante antes de compilar la app. **Resultado esperado:** Flutter resuelve la frase por clave y plural en ambos idiomas.
-
-```bash
-flutter gen-l10n
-flutter analyze
-```
-
-**Errores comunes:** armar frases concatenando literales y probar solo el caso singular. Diagrama: `locale -> ARB -> API generada -> widget`. Fuentes oficiales: [internacionalización Flutter](https://docs.flutter.dev/ui/internationalization), [intl](https://pub.dev/packages/intl).
-
-**Proyecto propio:** `lib/l10n/`. **Cuándo agregar locale:** cuando existe traducción revisada para las claves visibles y formatos de región definidos. Evidencia de aprendizaje: entrega capturas de 0/1/2 en español e inglés.
-
-```mermaid
-flowchart LR
-  Locale[Idioma y región] --> ARB[Mensajes ARB]
-  ARB --> Gen[API tipada generada]
-  Gen --> UI[Texto accesible en pantalla]
-```
-
----
-
-### Tema 6: builds por plataforma, firma y entrega
+### Tema 6: builds por plataforma, firma y entrega · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar generarás un artefacto de desarrollo y una release adecuada a un target disponible, identificando lo que falta para distribuir. **Prerrequisitos:** builds Flutter, flavors y secretos/configuración. Crea un proyecto nuevo con `flutter create release_delivery_lab`; crea `docs/release-checklist.md` para `rutaflow_driver`.

@@ -6,7 +6,7 @@ Este módulo crea una pequeña biblioteca nativa para calcular el costo de una r
 
 ---
 
-### Tema 1: reconocer cuándo usar FFI y crear el paquete
+### Tema 1: reconocer cuándo usar FFI y crear el paquete · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar tendrás una biblioteca `native_add` que Dart puede importar y una primera función nativa comprobable. **Prerrequisitos:** Flutter, Dart (`flutter doctor`, `dart --version`) y un compilador C para tu plataforma. **Ejemplo independiente en proyecto nuevo:** crea el paquete desde una carpeta vacía:
@@ -64,7 +64,7 @@ Crea `src/route_cost.h` con `double route_cost(double km, double rate);` y `src/
 Errores comunes: elegir FFI solo por velocidad, confundir una llamada C con un plugin y suponer que funciona en Web.
 Entrega la estructura del paquete, el test que obtiene `42`, el error por símbolo incorrecto y tu función de tarifa. Explica cuándo preferirías un plugin o un canal de plataforma. **Proyecto integrador RutaFlow:** la biblioteca solo calcula; Dart valida los datos y muestra el precio en `lib/native_add.dart`. Siguiente tema: generar bindings tipados desde el header. Fuentes oficiales: [Flutter: enlazar código nativo](https://docs.flutter.dev/platform-integration/bind-native-code) y [desarrollo de paquetes FFI](https://docs.flutter.dev/packages-and-plugins/developing-packages#developing-ffi-packages).
 
-### Tema 2: generar bindings C seguros para Dart
+### Tema 2: generar bindings C seguros para Dart · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar llamarás una función C con argumentos y retorno tipados mediante bindings generados. **Prerrequisitos:** Tema 1, Dart FFI y un header C. **Ejemplo independiente:** en una carpeta vacía ejecuta `flutter create --template=package_ffi ffi_bindings_lab`; trabaja en `src/route_cost.h` dentro de ese paquete. Revisa `src/native_add.h` y `ffigen.yaml` antes de editar. Ejecuta `dart run ffigen --config ffigen.yaml` si la plantilla dejó la generación lista.
@@ -120,7 +120,7 @@ Agrega `double route_total(double km, double price_per_km)` al header, implement
 Errores comunes: editar el archivo generado a mano, desalinear signed/unsigned o cambiar el header sin regenerar.
 Entrega header, implementación, configuración, binding regenerado y pruebas de los límites. Explica con tus palabras por qué se mantienen separadas la firma C, la firma Dart y la API pública. **Proyecto integrador RutaFlow:** llama `route_zone` desde la fachada `lib/native_add.dart` y valida el parámetro antes de cruzar la frontera. Siguiente tema: usar una implementación escrita en Rust detrás de la misma ABI C. Fuentes oficiales: [Dart: interoperabilidad C](https://dart.dev/interop/c-interop) y [Flutter: generar bindings FFI](https://docs.flutter.dev/platform-integration/bind-native-code).
 
-### Tema 3: conectar una biblioteca Rust mediante una ABI C
+### Tema 3: conectar una biblioteca Rust mediante una ABI C · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar tendrás una función Rust exportada con ABI C y una nota de build para empaquetarla como código nativo. **Prerrequisitos:** Rust (`rustc --version`, `cargo --version`), Flutter y ABI C. **Ejemplo independiente:** crea `ffi_rust_lab` con `flutter create --template=package_ffi ffi_rust_lab` en una carpeta vacía. Trabaja en `src/lib.rs` del crate Rust que integra ese paquete. Si no tienes Rust instalado, estudia el contrato y entrega el header equivalente; no afirmes que ejecutaste el build.
@@ -166,7 +166,7 @@ Elige una operación del algoritmo de rutas que solo use enteros y flotantes. Ex
 Errores comunes: exportar tipos propios de Rust, olvidar la ABI C o declarar que todas las plataformas funcionan tras un solo build.
 Entrega la función Rust, header, configuración de crate, test de Rust y matriz de targets con evidencia disponible. Explica qué parte es Rust y qué parte es contrato C. **Proyecto integrador RutaFlow:** conecta la operación con `lib/route_core.dart`, manteniendo tipos C simples y el dueño de memoria documentado. Siguiente tema: compilar y distribuir bibliotecas nativas según el target. Fuentes oficiales: [Dart: build hooks y code assets](https://dart.dev/tools/hooks), [Flutter: FFI y build hooks](https://docs.flutter.dev/platform-integration/bind-native-code) y [Rust: referencia del lenguaje](https://doc.rust-lang.org/reference/).
 
-### Tema 4: compilar y empaquetar bibliotecas por plataforma
+### Tema 4: compilar y empaquetar bibliotecas por plataforma · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás identificar qué target produce tu build y qué biblioteca se empaqueta en ella. **Prerrequisitos:** build hooks, un target Flutter y su toolchain nativo. **Ejemplo independiente:** crea `ffi_target_lab` con `flutter create --template=package_ffi ffi_target_lab` en una carpeta vacía; inspecciona `hook/build.dart` y `pubspec.yaml`. Registra `flutter --version` y los targets disponibles con `flutter devices`.
@@ -208,7 +208,7 @@ Prepara una tabla con Android ARM64, iOS dispositivo, simulador iOS y desktop qu
 Errores comunes: tomar el artefacto del host como si fuera el de Android/iOS y contar una compilación como runtime probado.
 Entrega la salida de un target compilado y la matriz de targets restantes. Explica por qué `DynamicLibrary.open` manual no siempre es necesario con los code assets actuales. **Límite:** compilar un target solo acredita ese target; registra cada ABI en `docs/ffi-targets.md`. **Proyecto integrador RutaFlow:** incluye el dispositivo Android objetivo y deja como pendiente cualquier sistema que no hayas compilado. Siguiente tema: medir el costo de cruzar la frontera nativa y agrupar trabajo. Fuentes oficiales: [Flutter: bind native code](https://docs.flutter.dev/platform-integration/bind-native-code), [legacy FFI plugin y sus usos](https://docs.flutter.dev/platform-integration/legacy-ffi-plugin) y [Dart hooks](https://dart.dev/tools/hooks).
 
-### Tema 5: medir rendimiento y evitar bloquear la interfaz
+### Tema 5: medir rendimiento y evitar bloquear la interfaz · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar compararás una operación Dart con una nativa, medirás el tiempo y decidirás si FFI aporta valor. **Prerrequisitos:** Dart, una función FFI equivalente y Flutter DevTools. **Ejemplo independiente:** crea `ffi_benchmark_lab` con `flutter create --template=package_ffi ffi_benchmark_lab` en una carpeta vacía. Ejecuta el perfil en dispositivo físico cuando sea posible; una build debug no es una medida de rendimiento de producción.
@@ -256,7 +256,7 @@ Genera una entrada más grande y perfílala. Si el trabajo bloquea la interfaz, 
 Errores comunes: medir debug, usar entradas distintas y confundir una llamada síncrona con trabajo en segundo plano. **Límite:** si el algoritmo es pequeño o la llamada bloquea el isolate de UI, conserva Dart o mueve el trabajo a un isolate en vez de asumir que FFI siempre acelera la pantalla.
 Entrega el benchmark reproducible, resultados Dart/FFI por llamada y lote, captura del perfil y una decisión basada en datos. **Resultado esperado:** las dos implementaciones producen el mismo resultado numérico; reportas si el lote reduce tiempo sin exceder el presupuesto de frame. **Proyecto integrador RutaFlow:** conserva el perfil en `docs/ffi-benchmark.md` y decide si el cálculo del precio debe permanecer en Dart o pasar a nativo. Siguiente tema: hacer explícita la propiedad de memoria y evitar fugas. Fuentes oficiales: [Flutter DevTools: performance](https://docs.flutter.dev/tools/devtools/performance) y [Dart FFI](https://dart.dev/interop/c-interop).
 
-### Tema 6: propiedad de memoria, liberación y errores
+### Tema 6: propiedad de memoria, liberación y errores · Experto · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar envolverás un buffer nativo con liberación explícita y comprobarás que cada asignación tiene un camino de cierre. **Prerrequisitos:** tipos de puntero de `dart:ffi` y el paquete `ffi`. **Ejemplo independiente:** crea `ffi_memory_lab` con `flutter create --template=package_ffi ffi_memory_lab` en una carpeta vacía; luego crea `lib/native_int_buffer.dart`. Revisa las firmas del código generado antes de copiar imports.

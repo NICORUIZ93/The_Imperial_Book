@@ -6,7 +6,7 @@ Construirás una app de conductor desde una lista vacía hasta una entrega sincr
 
 ---
 
-### Tema 1: estado de la jornada con Riverpod
+### Tema 1: estado de la jornada con Riverpod · Intermedio · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Una sola fuente de estado evita que distintas pantallas muestren versiones distintas de la jornada.
@@ -90,7 +90,7 @@ Entrega las salidas de ambas pruebas y anota un caso que todavía falta, como ca
 
 **Proyecto integrador:** `ShiftNotifier` es el estado real que `examples/flutter_rutaflow/` comparte entre la pantalla de mapa, la lista de paradas y las notificaciones de entrega del conductor. **Límite:** usa un `NotifierProvider` compartido cuando varias pantallas necesitan leer y reaccionar al mismo estado; si el dato solo vive dentro de un único widget y nadie más lo consulta, un `StatefulWidget` local es más simple que levantar un provider global.
 
-### Tema 2: mapa y permiso de ubicación
+### Tema 2: mapa y permiso de ubicación · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar mostrarás la posición del conductor con permiso gradual y un estado comprensible si se niega. **Prerrequisitos:** Flutter y geolocalización. En un proyecto nuevo `flutter create route_map_lab`, añade `google_maps_flutter` y `geolocator` con `flutter pub add google_maps_flutter geolocator`.
@@ -160,7 +160,74 @@ Fuente oficial: guía de [configuración Google Maps Flutter](https://developers
 
 ---
 
-### Tema 3: posiciones en tiempo real con Socket.IO
+### Tema 3: animar el marcador sin saltos · Intermedio · 30 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar moverás un marcador entre puntos de manera legible y sin dibujar datos obsoletos. **Prerrequisitos:** `AnimationController`, `Tween` y coordenadas. En `live_route_lab`, crea `lib/features/map/position_tween.dart`.
+
+#### Paso 2 · Contexto y caso real
+El GPS emite a intervalos irregulares. Cambiar directamente de A a B puede saltar; animar cada evento sin cancelar el anterior puede dejar un marcador retrasado varios segundos.
+
+#### ¿Por qué es importante?
+Una animación debe ayudar a anticipar movimiento. Si acumula retraso o hace que el vehículo atraviese edificios, la suavidad engaña sobre la ubicación real.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Interpolar es dibujar puntos intermedios entre dos mediciones recientes. Limita duración, cancela la animación anterior al recibir un punto más nuevo y conserva el dato real separado del punto visual. No inventes una ruta curva si solo tienes dos coordenadas.
+
+#### Paso 4 · Demostración guiada
+Crea `lib/features/map/position_tween.dart`:
+
+```dart
+import 'package:flutter/animation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class PositionTween extends Tween<LatLng> {
+  PositionTween({required LatLng begin, required LatLng end})
+      : super(begin: begin, end: end);
+
+  @override
+  LatLng lerp(double t) => LatLng(
+        begin!.latitude + (end!.latitude - begin!.latitude) * t,
+        begin!.longitude + (end!.longitude - begin!.longitude) * t,
+      );
+}
+```
+
+Al recibir una posición nueva, crea un controller corto, actualiza el marker en `AnimatedBuilder` y llama `dispose` al retirar el widget. Como ejemplo independiente, crea el proyecto nuevo `position_tween_lab` con `flutter create position_tween_lab`; ejecuta el mismo fixture de dos puntos en emulador.
+
+#### Paso 5 · Práctica guiada
+Comprueba que una posición más reciente cancela el controller activo. **Pista:** `CurvedAnimation` cambia la sensación, pero no debe ocultar datos viejos; compara el marker con el punto real.
+
+#### Paso 6 · Práctica independiente
+Prueba un punto idéntico, un salto mayor al umbral y una pausa de señal. Para una pausa larga, mueve al punto nuevo sin animación prolongada y muestra la hora de actualización.
+
+#### Paso 7 · Cierre y evidencia
+Entrega el tween y un video/captura del mismo recorrido. El siguiente tema guardará las confirmaciones mientras no haya conexión.
+
+**Prueba de diagnóstico.** Provoca deliberadamente una duración de cinco segundos; la animación debe verse retrasada. Reduce el intervalo y comprueba que el marker alcanza el último dato.
+
+```bash
+flutter test test/features/map/position_tween_test.dart
+```
+
+**Errores comunes:** iniciar un controller por evento sin cancelar el anterior y tratar ubicación interpolada como GPS real. Diagrama: `punto real A -> interpolación visual -> punto real B`. Fuente: [Flutter animations](https://docs.flutter.dev/ui/animations).
+
+**Proyecto propio:** `position_tween_lab`. **Cuándo animar:** si la nueva posición llega pronto y no se está mostrando una ubicación obsoleta. **Fallos a vigilar:** no liberar el `AnimationController` o seguir animando tras una actualización nueva. Evidencia de aprendizaje: entrega una prueba con fixture de dos puntos.
+
+**Resultado esperado:** el marcador termina en el último dato aceptado; la animación solo cambia el dibujo intermedio.
+
+```mermaid
+flowchart LR
+  FixA[Posición A: GPS] --> Visual[Interpolación temporal]
+  FixB[Posición B: GPS] --> Visual
+  Visual --> Marker[Marcador actual]
+```
+
+Fuente oficial: [animaciones Flutter](https://docs.flutter.dev/ui/animations).
+
+---
+
+### Tema 4: posiciones en tiempo real con Socket.IO · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar conectarás una app Flutter a eventos de posición y distinguirás reconexión de una nueva sesión. **Prerrequisitos:** streams y HTTP. Crea `live_route_lab` con `flutter create live_route_lab` y añade `socket_io_client`.
@@ -234,74 +301,7 @@ Fuente oficial del paquete: [Socket.IO client Dart](https://pub.dev/packages/soc
 
 ---
 
-### Tema 4: animar el marcador sin saltos
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar moverás un marcador entre puntos de manera legible y sin dibujar datos obsoletos. **Prerrequisitos:** `AnimationController`, `Tween` y coordenadas. En `live_route_lab`, crea `lib/features/map/position_tween.dart`.
-
-#### Paso 2 · Contexto y caso real
-El GPS emite a intervalos irregulares. Cambiar directamente de A a B puede saltar; animar cada evento sin cancelar el anterior puede dejar un marcador retrasado varios segundos.
-
-#### ¿Por qué es importante?
-Una animación debe ayudar a anticipar movimiento. Si acumula retraso o hace que el vehículo atraviese edificios, la suavidad engaña sobre la ubicación real.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Interpolar es dibujar puntos intermedios entre dos mediciones recientes. Limita duración, cancela la animación anterior al recibir un punto más nuevo y conserva el dato real separado del punto visual. No inventes una ruta curva si solo tienes dos coordenadas.
-
-#### Paso 4 · Demostración guiada
-Crea `lib/features/map/position_tween.dart`:
-
-```dart
-import 'package:flutter/animation.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-class PositionTween extends Tween<LatLng> {
-  PositionTween({required LatLng begin, required LatLng end})
-      : super(begin: begin, end: end);
-
-  @override
-  LatLng lerp(double t) => LatLng(
-        begin!.latitude + (end!.latitude - begin!.latitude) * t,
-        begin!.longitude + (end!.longitude - begin!.longitude) * t,
-      );
-}
-```
-
-Al recibir una posición nueva, crea un controller corto, actualiza el marker en `AnimatedBuilder` y llama `dispose` al retirar el widget. Como ejemplo independiente, crea el proyecto nuevo `position_tween_lab` con `flutter create position_tween_lab`; ejecuta el mismo fixture de dos puntos en emulador.
-
-#### Paso 5 · Práctica guiada
-Comprueba que una posición más reciente cancela el controller activo. **Pista:** `CurvedAnimation` cambia la sensación, pero no debe ocultar datos viejos; compara el marker con el punto real.
-
-#### Paso 6 · Práctica independiente
-Prueba un punto idéntico, un salto mayor al umbral y una pausa de señal. Para una pausa larga, mueve al punto nuevo sin animación prolongada y muestra la hora de actualización.
-
-#### Paso 7 · Cierre y evidencia
-Entrega el tween y un video/captura del mismo recorrido. El siguiente tema guardará las confirmaciones mientras no haya conexión.
-
-**Prueba de diagnóstico.** Provoca deliberadamente una duración de cinco segundos; la animación debe verse retrasada. Reduce el intervalo y comprueba que el marker alcanza el último dato.
-
-```bash
-flutter test test/features/map/position_tween_test.dart
-```
-
-**Errores comunes:** iniciar un controller por evento sin cancelar el anterior y tratar ubicación interpolada como GPS real. Diagrama: `punto real A -> interpolación visual -> punto real B`. Fuente: [Flutter animations](https://docs.flutter.dev/ui/animations).
-
-**Proyecto propio:** `position_tween_lab`. **Cuándo animar:** si la nueva posición llega pronto y no se está mostrando una ubicación obsoleta. **Fallos a vigilar:** no liberar el `AnimationController` o seguir animando tras una actualización nueva. Evidencia de aprendizaje: entrega una prueba con fixture de dos puntos.
-
-**Resultado esperado:** el marcador termina en el último dato aceptado; la animación solo cambia el dibujo intermedio.
-
-```mermaid
-flowchart LR
-  FixA[Posición A: GPS] --> Visual[Interpolación temporal]
-  FixB[Posición B: GPS] --> Visual
-  Visual --> Marker[Marcador actual]
-```
-
-Fuente oficial: [animaciones Flutter](https://docs.flutter.dev/ui/animations).
-
----
-
-### Tema 5: confirmaciones offline y sincronización
+### Tema 5: confirmaciones offline y sincronización · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar registrarás una confirmación sin red y la sincronizarás sin duplicarla. **Prerrequisitos:** Future, JSON e idempotencia. Crea `lib/features/sync/outbox.dart` y un test con almacenamiento temporal.
@@ -365,7 +365,7 @@ Fuente oficial: [persistencia Flutter](https://docs.flutter.dev/cookbook/persist
 
 ---
 
-### Tema 6: carga de evidencia con Dio y notificaciones
+### Tema 6: carga de evidencia con Dio y notificaciones · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar subirás una evidencia con progreso y recibirás una asignación sin mezclar los dos flujos. **Prerrequisitos:** HTTP, permisos de archivo y push. Crea un proyecto nuevo de práctica con `flutter create evidence_delivery_lab`; añade `dio`, `image_picker` y `firebase_messaging` según las plataformas que vas a compilar.

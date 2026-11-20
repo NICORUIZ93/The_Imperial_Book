@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: setState y sus límites
+### Tema 1: setState y sus límites · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar por qué `setState` no alcanza para compartir el contador de "envíos pendientes" entre `BarraSuperior` y `ListaEnvios`, dos widgets que no son padre-hijo directo. Prerrequisitos: Módulo 3 completo.
@@ -83,7 +83,7 @@ Corregí el Paso 5 documentando por escrito en qué punto exacto el prop drillin
 Entregá el prop drilling funcional del Paso 4, el acoplamiento sin beneficio provocado en el Paso 5, y tu documentación del Paso 6; explicá en qué momento preciso decidirías migrar de `setState` a una solución de estado compartido. Siguiente paso: estudia Riverpod. Errores comunes: usar `setState` para estado que varios widgets distantes necesitan compartir, elevar estado a un ancestro común demasiado alto sin necesidad real todavía, y confundir prop drilling tedioso con un problema de rendimiento. Fuentes oficiales: https://docs.flutter.dev/data-and-backend/state-mgmt/simple y https://docs.flutter.dev/get-started/fwe/state-management.
 **Implicación práctica:** `setState` es suficiente para estado puramente local, pero se vuelve incómodo cuando widgets distantes necesitan compartir el mismo estado, requiriendo una solución más robusta.
 
-### Tema 2: Riverpod
+### Tema 2: Riverpod · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a migrar el contador de "envíos pendientes" del Tema 1 a un `NotifierProvider` de Riverpod, consumido desde `BarraSuperior` y `DetalleEnvio` sin ningún prop drilling. Prerrequisitos: Tema 1 de este módulo.
@@ -251,7 +251,7 @@ Corregí el Paso 5 devolviendo `ref.read(pendientesProvider.notifier).state--` d
 Entregá el provider compartido del Paso 4, el uso incorrecto de `watch` en un callback del Paso 5, y el tercer consumidor del Paso 6; explicá la diferencia entre `ref.watch` (suscribe a cambios, usar en `build`) y `ref.read` (lee una vez, usar en callbacks). Siguiente paso: estudia Bloc/Cubit como alternativa con más estructura. Errores comunes: confundir `ref.watch` con `ref.read` dentro de un callback, leer un provider que no fue declarado antes de usarlo, y no aprovechar la verificación en tiempo de compilación que Riverpod ofrece sobre Provider. Fuentes oficiales: https://riverpod.dev/docs/concepts2/providers y https://riverpod.dev/docs/concepts2/refs.
 **Implicación práctica:** Riverpod verifica providers en tiempo de compilación y permite compartir estado entre widgets distantes sin prop drilling manual, resolviendo directamente el problema del Tema 1.
 
-### Tema 3: Bloc/Cubit y otras alternativas
+### Tema 3: Bloc/Cubit y otras alternativas · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reimplementar el contador de "envíos pendientes" con un `Cubit`, separando explícitamente el evento ("se entregó un envío") del cambio de estado resultante. Prerrequisitos: Tema 2 de este módulo.
@@ -380,7 +380,7 @@ Corregí el Paso 5 restaurando la guarda, y escribí un test unitario que instan
 Entregá el Cubit con la guarda del Paso 4, el estado inválido provocado en el Paso 5, y el test unitario del Paso 6; explicá por qué poder testear esta regla sin renderizar ningún widget es una ventaja concreta de separar "evento" de "cambio de estado" de forma explícita. Siguiente paso: estudia formularios profesionales con Formz y Riverpod. Errores comunes: adoptar Bloc para una feature tan simple que no necesita esa ceremonia, omitir guardas de validez en el método que emite el nuevo estado, y testear un Cubit renderizando widgets en vez de instanciándolo directamente. Fuentes oficiales: https://bloclibrary.dev/bloc-concepts/ y https://bloclibrary.dev/testing/.
 **Implicación práctica:** Bloc/Cubit aporta un modelo de eventos predecible y fácil de testear de forma aislada para lógica con reglas de transición que deben protegerse explícitamente.
 
-### Tema 4: Formularios profesionales con Formz y Riverpod
+### Tema 4: Formularios profesionales con Formz y Riverpod · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir el formulario "No fue posible entregar" con entradas Formz tipadas (`ReasonInput`, `NoteInput`) y un `Notifier` de Riverpod que coordine validación y envío único. Prerrequisitos: módulos 0-3, Riverpod configurado.
@@ -574,7 +574,7 @@ Corregí el Paso 5 confirmando que la guarda `if (!state.isValid || state.submit
 #### Paso 7 · Cierre
 Entregá las entradas Formz tipadas y el Notifier del Paso 4, el envío duplicado provocado en el Paso 5, y el test de envío único del Paso 6; explicá por qué separar `isValid` (datos correctos) de `submitStatus` (datos ya guardados) evita confundir ambas cosas y previene envíos duplicados. Siguiente paso: cerrá el módulo documentando el criterio de elección entre setState, Riverpod y Bloc. Errores comunes: mostrar todos los errores de validación antes de que el usuario interactúe con el campo, no proteger `submit()` contra doble toque mientras una petición está en curso, y borrar los valores escritos cuando el servidor rechaza el envío. Fuentes oficiales: https://pub.dev/packages/formz y https://riverpod.dev/docs/concepts2/providers.
 
-### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones
+### Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás depender de abstracciones en vez de implementaciones, inyectarlas con proveedores de Riverpod y reemplazarlas en pruebas con `overrides`, sin red ni servidores. Prerrequisitos: Temas 2 y 3 de este módulo.

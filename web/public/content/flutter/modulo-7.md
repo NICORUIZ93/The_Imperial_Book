@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: MethodChannel
+### Tema 1: MethodChannel · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un `MethodChannel` que consulte el nivel de batería del dispositivo (el Paso 3 lo introduce con un canal más simple que lee la versión del sistema operativo), implementado tanto en Android (Kotlin) como en iOS (Swift). Prerrequisitos: Módulo 6 completo.
@@ -167,7 +167,7 @@ Corregí el Paso 5 implementando también el `FlutterMethodChannel` del lado de 
 #### Paso 7 · Cierre
 Entregá el MethodChannel funcionando en ambas plataformas del Paso 4, el `MissingPluginException` provocado en el Paso 5, y el manejo de método desconocido del Paso 6; explicá por qué un `MethodChannel` requiere implementación explícita en cada plataforma, sin que implementarlo en una sea suficiente para la otra. Siguiente paso: estudia plugins federados. Errores comunes: implementar el lado nativo en una sola plataforma y asumir que funciona en ambas, no manejar el caso de un método invocado que no existe del lado nativo, y usar `MethodChannel` para algo que ya resuelve un plugin publicado en pub.dev. Fuentes oficiales: https://docs.flutter.dev/platform-integration/platform-channels y https://api.flutter.dev/flutter/services/MethodChannel-class.html.
 
-### Tema 2: Plugins federados
+### Tema 2: Plugins federados · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a evaluar la estructura de `geolocator` (un plugin federado real) para entender cómo RutaFlow podría agregar soporte de una plataforma nueva sin tocar el paquete principal. Prerrequisitos: Tema 1 de este módulo.
@@ -227,7 +227,7 @@ Corregí el Paso 5 explicando por escrito por qué depender del paquete federado
 Entregá la estructura federada analizada del Paso 4, la decisión de copiar código desaconsejada en el Paso 5, y tu explicación del Paso 6; explicá por qué la arquitectura federada permite que la comunidad contribuya implementaciones de plataforma de forma independiente y descentralizada. Siguiente paso: estudia permisos de plataforma y cuándo escribir un platform channel propio. Errores comunes: copiar la lógica de un plugin federado en vez de depender de él, asumir que todas las plataformas de un plugin federado tienen el mismo nivel de soporte sin verificarlo, y modificar directamente el código de un paquete de terceros en vez de contribuir al repositorio real. Fuentes oficiales: https://docs.flutter.dev/packages-and-plugins/developing-packages#federated-plugins y https://pub.dev/packages/geolocator.
 **Implicación práctica:** Un plugin federado permite agregar soporte para una plataforma nueva sin modificar el paquete principal ni las implementaciones existentes de otras plataformas.
 
-### Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio
+### Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a solicitar el permiso de cámara para que el conductor pueda fotografiar una evidencia de entrega, manejando explícitamente tanto la concesión como el rechazo. Prerrequisitos: Tema 2 de este módulo.
@@ -295,7 +295,7 @@ Corregí el Paso 5 restaurando el `else` con un mensaje explícito, y agregá un
 Entregá el manejo de concesión/rechazo del Paso 4, el silencio sin feedback provocado en el Paso 5, y el tercer caso de rechazo permanente del Paso 6; explicá por qué un permiso denegado nunca debería dejar a la app sin ninguna respuesta visible para el usuario. Siguiente paso: estudia cámara, galería y carga multipart de una evidencia. Errores comunes: no manejar el caso de permiso denegado, no distinguir rechazo simple de rechazo permanente, y escribir un platform channel propio para pedir un permiso que un plugin ya publicado resuelve. Fuentes oficiales: https://pub.dev/packages/permission_handler y https://docs.flutter.dev/platform-integration/platform-channels.
 **Implicación práctica:** Manejar explícitamente el caso de permiso denegado evita fallos silenciosos; escribir un platform channel propio solo se justifica cuando no existe ya un plugin publicado que resuelva la necesidad.
 
-### Tema 4: Cámara, galería y carga multipart de una evidencia
+### Tema 4: Cámara, galería y carga multipart de una evidencia · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir el flujo de "evidencia de entrega": el conductor toma una fotografía, el dominio la valida (tamaño, formato) y el repositorio la sube con una clave de idempotencia. Prerrequisitos: Módulo 5 completo, `image_picker` instalado.

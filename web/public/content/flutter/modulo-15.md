@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: flutter test y WidgetTester
+### Tema 1: flutter test y WidgetTester · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un widget test con `WidgetTester` que confirme que `ListaEnvios` muestra "Sin envíos" cuando la lista está vacía, sin levantar un emulador. **Prerrequisitos:** Flutter estable y Dart; confirma `flutter doctor`.
@@ -76,7 +76,7 @@ Agrega un segundo test que confirme que, con al menos un envío en la lista, el 
 #### Paso 7 · Cierre
 Entrega el test del estado vacío del Paso 4, la aserción invertida del Paso 5, y el segundo test del estado con datos del Paso 6; explica por qué `WidgetTester` permite verificar el árbol de widgets sin el costo de un emulador real. Como siguiente paso, usa `pumpAndSettle` para probar interacciones asíncronas e integration tests de extremo a extremo. Errores comunes: usar `tester.pump()` una sola vez para un widget con animaciones o datos asíncronos que necesitan varios frames; probar implementación interna (variables privadas) en vez del resultado visible para el usuario. Fuentes oficiales: https://docs.flutter.dev/testing/overview y https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html.
 
-### Tema 2: pumpAndSettle, golden e integration tests
+### Tema 2: pumpAndSettle, golden e integration tests · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar `pumpAndSettle()` para esperar a que una animación de carga termine antes de verificar el resultado, y vas a reproducir el fallo clásico de un test que verifica demasiado pronto. **Prerrequisitos:** Tema 1 de este módulo.
@@ -203,7 +203,7 @@ Agrega un test que complete el Future con error y otro que desmonte el widget an
 #### Paso 7 · Cierre
 Entrega el test con `pumpAndSettle()` del Paso 4, la falla intermitente con `pump()` único del Paso 5, y el caso de animación infinita del Paso 6; explica por qué una falla intermitente en un test (no un fallo consistente) suele señalar una sincronización asíncrona faltante, no un bug aleatorio real. Como siguiente paso, mide el rendimiento de una lista con `RepaintBoundary` y Keys correctas. Errores comunes: usar un único `pump()` para estados asíncronos que necesitan varios frames; aplicar `pumpAndSettle()` a una pantalla con una animación intencionalmente infinita, sin un timeout explícito. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/integration-tests.
 
-### Tema 3: Rendimiento, RepaintBoundary y Keys
+### Tema 3: Rendimiento, RepaintBoundary y Keys · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir con DevTools cuántos widgets se repintan al actualizar un ítem de una lista de envíos, y vas a reducirlo con `RepaintBoundary` y una `Key` correcta. **Prerrequisitos:** Tema 2 de este módulo.
@@ -256,7 +256,7 @@ Corregí el Paso 5 restaurando `RepaintBoundary` y `ValueKey(envios[i].id)` (el 
 #### Paso 7 · Cierre
 Entrega la lista con `RepaintBoundary`/`Key` correcta del Paso 4, el checkbox en la fila equivocada del Paso 5, y la medición comparada del Paso 6; explica por qué medir con el profiler antes de optimizar evita invertir esfuerzo en un problema que no es el cuello de botella real. Como siguiente paso, aislá el dominio de negocio con Clean Architecture. Errores comunes: usar el índice de una lista como Key en vez de un identificador estable del dato real; optimizar con RepaintBoundary sin medir primero cuál widget realmente se repinta de más. Fuentes oficiales: https://docs.flutter.dev/perf/best-practices y https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html.
 
-### Tema 4: Clean Architecture
+### Tema 4: Clean Architecture · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a estructurar el dominio de envíos en capas (`domain`, `application`, `data`) con dependencias que solo apuntan hacia adentro, y vas a reproducir el error de que `domain` dependa de un detalle de infraestructura. **Prerrequisitos:** Tema 3 de este módulo.
@@ -308,7 +308,7 @@ Corregí el Paso 5 quitando el import de `dio` del dominio, implementando `Envio
 #### Paso 7 · Cierre
 Entrega las capas separadas del Paso 4, la dependencia de `Dio` filtrada al dominio del Paso 5, y el test aislado con repositorio falso del Paso 6; explica por qué la dirección de las dependencias (siempre hacia el centro) es lo que realmente define Clean Architecture, no solo tener carpetas con esos nombres. Como siguiente paso, hacé que esos textos sean traducibles con internacionalización completa. Errores comunes: crear carpetas `domain`/`application`/`data` sin hacer cumplir realmente la dirección de dependencias; agregar capas ceremoniales a un proyecto tan simple que no las necesita. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
 
-### Tema 5: Internacionalización completa
+### Tema 5: Internacionalización completa · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a traducir la pantalla de estado de un envío al español y al inglés con archivos `.arb`, y vas a reproducir el error de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 4 de este módulo.
@@ -414,7 +414,7 @@ Corregí el Paso 5 agregando `estadoEntregado` también a `app_en.arb`, y agrega
 #### Paso 7 · Cierre
 Entrega las traducciones funcionando del Paso 4, la clave faltante en un idioma del Paso 5, y el test de paridad de claves del Paso 6; explica por qué verificar automáticamente que ambos archivos `.arb` tengan las mismas claves evita descubrir una traducción faltante recién en producción. Como siguiente paso, generá y firmá el artefacto de build final. Errores comunes: agregar una clave de traducción a un solo idioma sin verificar los demás; formatear fechas o números manualmente en vez de usar las utilidades de `intl` sensibles al `Locale`. Fuentes oficiales: https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization y https://pub.dev/packages/intl.
 
-### Tema 6: Builds, firma y despliegue
+### Tema 6: Builds, firma y despliegue · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar generarás y verificarás un APK de laboratorio firmado explícitamente. **Prerrequisitos:** proyecto Flutter Android, JDK con `keytool` y Android SDK Build Tools con `apksigner` en PATH; confirma `flutter doctor` y `apksigner version`. No necesitas publicar nada en una tienda para esta práctica.
@@ -502,7 +502,7 @@ Entrega las salidas de verificación, el fallo y su corrección. Como siguiente 
 **Límites y decisión de uso:** Esta prueba acredita configuración y firma del APK local. No sustituye los requisitos de publicación, custodia, recuperación y pruebas en dispositivos de una distribución real.
 
 
-### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega
+### Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a actualizar la app de entregas a Flutter 3.50 (estable desde el 11 de noviembre de 2026, junto con Dart 3.14), aplicar las migraciones automáticas y comprobar con evidencia que no se rompió nada. **Prerrequisitos:** el Tema 1 de este módulo (pruebas con `flutter test`), Git y la app del proyecto integrador en una rama limpia.
@@ -600,7 +600,7 @@ Pasa los plugins de iOS de la app de CocoaPods a Swift Package Manager y documen
 
 **Fuente oficial:** [Flutter 3.50.0 release notes](https://docs.flutter.dev/release/release-notes/release-notes-3.50.0) y [cambios incompatibles de Flutter](https://docs.flutter.dev/release/breaking-changes).
 
-### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic
+### Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar a la app de entregas un asistente que resume las novedades de un envío con un modelo Gemini, usando el plugin oficial `firebase_ai`, y a proteger su uso. **Prerrequisitos:** Tema 7 de este módulo (app en Flutter 3.50), un proyecto de Firebase y el CLI `flutterfire`.

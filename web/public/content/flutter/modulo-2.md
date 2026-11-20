@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: MediaQuery vs LayoutBuilder
+### Tema 1: MediaQuery vs LayoutBuilder · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir el layout de `PanelEnvios` usando `LayoutBuilder` en vez de `MediaQuery`, porque el panel vive dentro de un `Row` lateral que no ocupa el ancho completo de la pantalla. Prerrequisitos: Módulo 1 completo.
@@ -88,7 +88,7 @@ Corregí el Paso 5 devolviendo el `LayoutBuilder`, y agregá un tercer caso de l
 Entregá el `LayoutBuilder` correctamente usado del Paso 4, el overflow provocado por `MediaQuery` del Paso 5, y la tercera variante del Paso 6; explicá cuándo el ancho total de la pantalla y el espacio disponible de un widget específico dejan de ser el mismo número. Siguiente paso: estudia cómo Flutter calcula tamaños con constraints. Errores comunes: usar `MediaQuery` para decidir el layout de un widget anidado que no ocupa toda la pantalla, anidar `LayoutBuilder` innecesariamente en widgets que sí ocupan la pantalla completa, y no probar el layout en al menos dos proporciones de pantalla distintas. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/LayoutBuilder-class.html y https://docs.flutter.dev/ui/layout/constraints.
 **Implicación práctica:** `LayoutBuilder` es más preciso que `MediaQuery` cuando el widget que decide su layout no ocupa toda la pantalla, dado que refleja el espacio real disponible para ese widget en su posición actual del árbol.
 
-### Tema 2: Cómo Flutter calcula tamaños
+### Tema 2: Cómo Flutter calcula tamaños · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a diagnosticar un error de "unbounded height" en `ListaEnvios` causado por anidar una `Column` dentro de otra sin límites, entendiendo el protocolo "constraints go down, sizes go up". Prerrequisitos: Tema 1 de este módulo.
@@ -161,7 +161,7 @@ Corregí el Paso 5 restaurando `Expanded`, y explicá por escrito, en tus propia
 Entregá el layout corregido con `Expanded` del Paso 4, el error de constraints no acotadas del Paso 5, y tu explicación escrita del Paso 6; explicá por qué entender el protocolo "constraints go down, sizes go up" permite diagnosticar este tipo de error leyendo el mensaje de la excepción, en vez de probar soluciones al azar. Siguiente paso: estudia breakpoints propios y SafeArea. Errores comunes: anidar un widget que ocupa todo el espacio disponible dentro de un padre que no impone límites, usar `Expanded` fuera de un `Row`/`Column`/`Flex`, y asumir que un `Container` sin tamaño explícito siempre se comporta igual sin importar su padre. Fuentes oficiales: https://docs.flutter.dev/ui/layout/constraints y https://docs.flutter.dev/ui/layout/box-constraints.
 **Implicación práctica:** Entender el protocolo "constraints go down, sizes go up" explica de forma predecible por qué un widget termina con el tamaño final que tiene, permitiendo diagnosticar errores de layout leyendo el mensaje real de la excepción.
 
-### Tema 3: Breakpoints propios y SafeArea
+### Tema 3: Breakpoints propios y SafeArea · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a centralizar la lógica de breakpoints de RutaFlow en una función `segunAncho()` reutilizable, y a envolver la pantalla principal con `SafeArea` para proteger el contenido del notch. Prerrequisitos: Tema 2 de este módulo.

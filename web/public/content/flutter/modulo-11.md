@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Builds de release para cada plataforma
+### Tema 1: Builds de release para cada plataforma · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a generar un `.aab` de release real con Flutter y a comprobar, con un script, que el artefacto y la versión cumplen los requisitos mínimos de publicación. Prerrequisitos: Flutter y Android SDK instalados; para el `.ipa` necesitás macOS con Xcode y certificados de firma.
@@ -97,7 +97,7 @@ Restaurá `1.0.0+1`, subí el build number a `1.0.0+2` y confirmá que el verifi
 #### Paso 7 · Cierre
 Entregá el `.aab` verificado, el error de versión del Paso 5 y la configuración de firma documentada del Paso 6; explicá por qué “una sola base de código” no elimina el trabajo específico de cada tienda. Siguiente paso: generar íconos y splash screens consistentes en el Tema 2. Errores comunes: publicar un build debug, omitir el build number, olvidar la firma de release y confundir el `.aab` con un APK instalable. **Fuentes oficiales:** https://docs.flutter.dev/deployment/android y https://docs.flutter.dev/deployment/ios.
 
-### Tema 2: Iconos y splash screens
+### Tema 2: Iconos y splash screens · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a validar, antes de generar variantes, que la imagen fuente de RutaFlow tiene la resolución mínima y que la configuración de íconos apunta a ella. Prerrequisitos: Python 3 con PyYAML y el Tema 1 de este módulo.
@@ -221,7 +221,7 @@ Restaurá la fuente de 1024×1024 y agregá la configuración de `flutter_native
 #### Paso 7 · Cierre
 Entregá la salida del Paso 4, el error de resolución del Paso 5 y la configuración de splash del Paso 6; explicá por qué la generación automática no mejora una fuente deficiente. Siguiente paso: automatizar el build y la publicación en el Tema 3. Errores comunes: usar una fuente de baja resolución, configurar una ruta inexistente y regenerar assets sin cambios en cada build. **Fuentes oficiales:** https://pub.dev/packages/flutter_launcher_icons y https://pub.dev/packages/flutter_native_splash.
 
-### Tema 3: CI/CD con Codemagic o Fastlane
+### Tema 3: CI/CD con Codemagic o Fastlane · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar un pipeline de Codemagic que automatice el build de release de RutaFlow para Android, con pasos separados específicos de esa plataforma. Prerrequisitos: Tema 2 de este módulo.
@@ -311,7 +311,7 @@ Corregí el Paso 5 definiendo el workflow `ios-release` con su propio script cor
 Entregá el workflow de Android del Paso 4, el workflow de iOS incorrecto por copiar el de Android en el Paso 5, y la corrección con el script apropiado del Paso 6; explicá por qué "compartir código" en Flutter no significa que los pasos de publicación también puedan compartirse sin modificación entre plataformas. Siguiente paso: cerrá el módulo integrando build, assets y CI/CD en un release real de RutaFlow. Errores comunes: copiar el mismo script de build entre workflows de plataformas distintas, no verificar que cada workflow produce el artefacto correcto para su tienda, y asumir que un solo pipeline elimina toda la especificidad de plataforma. Fuentes oficiales: https://docs.codemagic.io/flutter-configuration/flutter-projects/ y https://docs.flutter.dev/deployment/cd.
 **Implicación práctica:** Automatizar ambos builds con un solo pipeline ahorra esfuerzo manual repetido, pero no elimina la necesidad de pasos específicos y separados por plataforma.
 
-### Tema 4: Entornos y flavors con --dart-define-from-file
+### Tema 4: Entornos y flavors con --dart-define-from-file · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás compilar la misma app para desarrollo, QA y producción inyectando configuración con `--dart-define-from-file`, leerla con constantes de compilación y fallar rápido si falta un valor. Prerrequisitos: Temas 1 a 3 de este módulo.

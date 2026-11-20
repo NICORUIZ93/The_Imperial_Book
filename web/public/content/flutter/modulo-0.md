@@ -67,7 +67,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Sound null safety
+### Tema 1: Sound null safety · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar una entrega con campos que pueden faltar (`conductor`, `fotoConfirmacion`) usando tipos nullable explícitos, y a provocar y corregir el error del analizador cuando se accede a uno sin verificar. Prerrequisitos: Flutter SDK y Dart instalados; verifica `flutter --version` y `dart --version`.
@@ -184,7 +184,7 @@ Corregí el Paso 5 restaurando `conductor ?? "Sin conductor asignado"`, y agreg�
 Entregá el modelo `Delivery` con campos nullable del Paso 4, el crash reproducido por el `!` forzado del Paso 5, y la lista con ambos casos del Paso 6; explicá por qué declarar `conductor` como `String?` desde el modelo es mejor que descubrir su ausencia en tiempo de ejecución. Siguiente paso: estudia clases y mixins. Errores comunes: usar `!` por comodidad en vez de `??`/`?.`; declarar un campo como no-nullable cuando en la práctica puede faltar. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
 **Implicación práctica:** Declarar explícitamente qué campos pueden faltar desde el modelo evita descubrir esa ausencia como un crash en producción, en vez de como un error detectado durante el desarrollo.
 
-### Tema 2: Clases y mixins
+### Tema 2: Clases y mixins · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a compartir comportamiento (`rastrear()`) entre dos clases que no comparten una jerarquía de herencia natural usando un mixin, y a confirmar con el analizador qué pasa si falta el contrato que ese mixin exige. Prerrequisitos: Tema 1 de este módulo.
@@ -295,7 +295,7 @@ Corregí el Paso 5 volviendo a `class Vehiculo with Rastreable` (sin `extends`),
 Entregá `Conductor` y `Vehiculo` compartiendo `Rastreable` del Paso 4, el error del analizador al quitar `with` del Paso 4/5, y la tercera clase `Paquete` del Paso 6; explicá por qué un mixin resuelve esto mejor que forzar una relación `extends` artificial. Siguiente paso: estudia Futures y async/await. Errores comunes: usar `extends` para obtener comportamiento compartido cuando no hay relación «es un» real; mixins sin un contrato claro de qué esperan de la clase que los usa. Fuentes oficiales: https://docs.flutter.dev/get-started/install y https://dart.dev/language.
 **Implicación práctica:** Un mixin comparte comportamiento entre clases sin forzar una relación de herencia que no existe conceptualmente, evitando jerarquías artificiales solo para reutilizar código.
 
-### Tema 3: Futures, async/await y colecciones funcionales
+### Tema 3: Futures, async/await y colecciones funcionales · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a simular con `Future.delayed` la consulta de entregas de un conductor, y a filtrar/transformar esa lista con `where`/`map`/`fold` en vez de un bucle imperativo. Prerrequisitos: Tema 2 de este módulo.
@@ -406,7 +406,7 @@ Corregí el Paso 5 restaurando el filtro `where((e) => e.completada)`, y agregá
 Entregá la consulta asíncrona con `await` del Paso 4, el error de tipos al quitar `await` del Paso 4, y las transformaciones encadenadas del Paso 6; explicá por qué el analizador detecta el `await` faltante antes de ejecutar el programa, no como un crash en producción. Siguiente paso: estudia widgets. Errores comunes: olvidar `await` sobre un `Future`; sumar colecciones con un bucle mutable en vez de `fold`. Fuentes oficiales: https://docs.flutter.dev/get-started/install, [async](https://dart.dev/language/async) y [concurrencia/isolate](https://dart.dev/language/concurrency).
 **Implicación práctica:** `await` suspende sin bloquear mientras se espera un resultado futuro, y encadenar `where`/`map`/`fold` expresa transformaciones de colecciones como pasos declarativos legibles, sin una variable acumuladora mutable gestionada a mano.
 
-### Tema 4: Lints y estilo con analysis_options.yaml
+### Tema 4: Lints y estilo con analysis_options.yaml · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás configurar el analizador estático de Dart con `flutter_lints`, endurecerlo con modos estrictos, subir la severidad de una regla y usar `dart fix` para corregir automáticamente. Prerrequisitos: Temas 1 a 3 de este módulo.

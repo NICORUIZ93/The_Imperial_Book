@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: StatelessWidget vs StatefulWidget
+### Tema 1: StatelessWidget vs StatefulWidget · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a extraer `TarjetaEnvio` (guía y estado de un envío) como `StatelessWidget`, y a construir `ContadorIntentos` como `StatefulWidget` con un contador local. Prerrequisitos: Módulo 0 completo.
@@ -106,7 +106,7 @@ Corregí el Paso 5 explicando por qué un `StatelessWidget` no puede acumular es
 Entregá `TarjetaEnvio` y `ContadorIntentos` del Paso 4, el contador que nunca acumula del Paso 5, y la conversión a StatefulWidget del Paso 6; explicá por qué una variable local dentro de `build()` nunca puede servir como memoria persistente, sin importar en qué tipo de widget se declare. Siguiente paso: estudia Row, Column, Stack y el ciclo de vida de un StatefulWidget. Errores comunes: intentar mantener estado mutable con una variable local de `build()`, convertir un widget a `StatefulWidget` cuando nunca necesita estado propio, y mutar un campo fuera de `setState()` esperando que la UI se actualice igual. Fuentes oficiales: https://docs.flutter.dev/ui/widgets y https://api.flutter.dev/flutter/widgets/StatefulWidget-class.html.
 **Implicación práctica:** La distinción entre StatelessWidget y StatefulWidget determina si un widget puede mantener estado mutable propio persistente entre reconstrucciones; una variable local de `build()` nunca cumple ese rol.
 
-### Tema 2: Layout con Row, Column y Stack, y ciclo de vida
+### Tema 2: Layout con Row, Column y Stack, y ciclo de vida · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a componer `TarjetaEnvio` con `Row`/`Stack` para mostrar un ícono de "urgente" superpuesto, y a usar `initState`/`dispose` para gestionar un timer que refresca el tiempo relativo de la lista. Prerrequisitos: Tema 1 de este módulo.
@@ -252,7 +252,7 @@ Corregí el Paso 5 restaurando `_timer?.cancel()` en `dispose()`, y agregá una 
 Entregá el layout con Stack del Paso 4, los timers acumulados sin cancelar del Paso 5, y la verificación de `mounted` del Paso 6; explicá por qué todo recurso iniciado en `initState()` debe liberarse explícitamente en `dispose()`, sin excepciones. Siguiente paso: estudia Keys para listas reordenables. Errores comunes: iniciar un recurso en `initState()` sin liberarlo en `dispose()`, llamar `setState()` después de que el widget se desmontó, y anidar `Column` dentro de `Column` sin límites de altura. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/State-class.html y https://docs.flutter.dev/ui/widgets/layout.
 **Implicación práctica:** Los hooks del ciclo de vida son el mecanismo correcto para gestionar recursos sin fugas de memoria; omitir `dispose()` acumula recursos que siguen corriendo después de que la pantalla ya no existe.
 
-### Tema 3: Keys
+### Tema 3: Keys · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a corregir un bug de identidad en `ListaEnvios` reordenable, donde el estado de un checkbox "revisado" por fila se confunde al reordenar, usando `ValueKey` basada en el id del envío. Prerrequisitos: Tema 2 de este módulo.

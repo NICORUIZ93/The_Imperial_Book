@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: http vs dio
+### Tema 1: http vs dio · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a migrar la consulta de envíos de RutaFlow de `http` a `dio`, para poder cancelar una búsqueda en curso cuando el operador escribe una guía nueva. Prerrequisitos: Módulo 4 completo.
@@ -83,7 +83,7 @@ Corregí el Paso 5 migrando esa búsqueda a `dio` con `CancelToken`, y confirmá
 Entregá la búsqueda cancelable con `dio` del Paso 4, la respuesta obsoleta sobrescribiendo resultados del Paso 5, y la confirmación del Paso 6; explicá por qué `http` básico, al no ofrecer cancelación nativa, exigiría construir manualmente esa infraestructura si se insistiera en usarlo para este caso. Siguiente paso: estudia json_serializable para deserializar la respuesta de forma tipada. Errores comunes: usar `http` para casos que necesitan cancelación o interceptores sin medir el costo de construir eso manualmente, no cancelar peticiones obsoletas antes de disparar una nueva, y olvidar manejar el error específico de cancelación. Fuentes oficiales: https://pub.dev/packages/dio y https://pub.dev/packages/http.
 **Implicación práctica:** `dio` ofrece interceptores, cancelación y timeouts configurables como parte de su API central, capacidades que una app de tamaño real necesita y que `http` no ofrece nativamente.
 
-### Tema 2: json_serializable
+### Tema 2: json_serializable · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a generar el modelo `Envio` con `json_serializable`, detectando en tiempo de deserialización si la API devuelve un campo faltante o mal tipado. Prerrequisitos: Tema 1 de este módulo.
@@ -156,7 +156,7 @@ Corregí el Paso 5 devolviendo el campo a `required this.estado` tipado estricta
 Entregá el modelo generado del Paso 4, el error silenciado por el valor por defecto del Paso 5, y el test de deserialización del Paso 6; explicá por qué "evitar el error" con un valor por defecto en este caso oculta un problema real de datos en vez de resolverlo. Siguiente paso: estudia interceptores y estados explícitos. Errores comunes: usar valores por defecto para "evitar" errores de deserialización que en realidad señalan datos incompletos reales, parsear JSON manualmente sin ninguna verificación de tipo centralizada, y olvidar correr `build_runner` después de modificar un modelo anotado. Fuentes oficiales: https://pub.dev/packages/json_serializable y https://docs.flutter.dev/data-and-backend/serialization/json.
 **Implicación práctica:** Generar modelos con `json_serializable` es más seguro que parsear JSON manualmente porque un campo faltante o mal tipado falla de forma clara y explícita, en vez de propagar un error silencioso.
 
-### Tema 3: Interceptores y estados explícitos
+### Tema 3: Interceptores y estados explícitos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar un interceptor de autenticación a `dio` que inyecte el token del conductor en cada petición, y a modelar `EstadoEnvios` como una `sealed class` con los tres estados posibles. Prerrequisitos: Tema 2 de este módulo.
@@ -255,7 +255,7 @@ Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con
 **Implicación práctica:** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
 
-### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión
+### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar el inicio de sesión del conductor, guardar sus tokens de forma segura, renovar el token vencido sin que el usuario lo note y cerrar la sesión limpiando todo. **Prerrequisitos:** Tema 3 de este módulo (interceptores de `dio`) y un backend con `/auth/login` y `/auth/refresh` (el del proyecto integrador sirve).

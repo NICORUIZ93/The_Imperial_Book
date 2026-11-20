@@ -12119,7 +12119,7 @@
     "flutter": [
       {
         "module": 0,
-        "topic": "Tema 1: Sound null safety",
+        "topic": "Tema 1: Sound null safety · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12141,7 +12141,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 2: Clases y mixins",
+        "topic": "Tema 2: Clases y mixins · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12163,7 +12163,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 3: Futures, async/await y colecciones funcionales",
+        "topic": "Tema 3: Futures, async/await y colecciones funcionales · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12185,7 +12185,7 @@
       },
       {
         "module": 0,
-        "topic": "Tema 4: Lints y estilo con analysis_options.yaml",
+        "topic": "Tema 4: Lints y estilo con analysis_options.yaml · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12273,7 +12273,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 1: StatelessWidget vs StatefulWidget",
+        "topic": "Tema 1: StatelessWidget vs StatefulWidget · Básico · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12295,7 +12295,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 2: Layout con Row, Column y Stack, y ciclo de vida",
+        "topic": "Tema 2: Layout con Row, Column y Stack, y ciclo de vida · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12317,7 +12317,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 3: Keys",
+        "topic": "Tema 3: Keys · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12361,7 +12361,7 @@
       },
       {
         "module": 1,
-        "topic": "Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Intermedio · 40 min",
+        "topic": "Tema 5: Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12383,7 +12383,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 1: ThemeData con Material 3",
+        "topic": "Tema 1: ThemeData con Material 3 · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12405,7 +12405,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 2: Adaptación Material vs Cupertino",
+        "topic": "Tema 2: Adaptación Material vs Cupertino · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12427,7 +12427,7 @@
       },
       {
         "module": 10,
-        "topic": "Tema 3: Accesibilidad con Semantics y dark mode",
+        "topic": "Tema 3: Accesibilidad con Semantics y dark mode · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12449,7 +12449,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 1: Builds de release para cada plataforma",
+        "topic": "Tema 1: Builds de release para cada plataforma · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12471,7 +12471,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 2: Iconos y splash screens",
+        "topic": "Tema 2: Iconos y splash screens · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12493,7 +12493,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 3: CI/CD con Codemagic o Fastlane",
+        "topic": "Tema 3: CI/CD con Codemagic o Fastlane · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12515,7 +12515,7 @@
       },
       {
         "module": 11,
-        "topic": "Tema 4: Entornos y flavors con --dart-define-from-file",
+        "topic": "Tema 4: Entornos y flavors con --dart-define-from-file · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12559,7 +12559,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 1: Arquitectura por features y Clean Architecture",
+        "topic": "Tema 1: Arquitectura por features y Clean Architecture · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12581,7 +12581,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 2: Uniendo los módulos del track",
+        "topic": "Tema 2: Uniendo los módulos del track · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12603,7 +12603,7 @@
       },
       {
         "module": 12,
-        "topic": "Tema 3: Cierre del track",
+        "topic": "Tema 3: Retrospectiva del proyecto integrador · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12647,7 +12647,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 1: Una API Dart puede terminar en una frontera nativa",
+        "topic": "Tema 1: Una API Dart puede terminar en una frontera nativa · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12669,7 +12669,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 2: Los secretos no pertenecen al binario",
+        "topic": "Tema 2: Los secretos no pertenecen al binario · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12691,7 +12691,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 3: Fluidez se mide contra el presupuesto de cada frame",
+        "topic": "Tema 3: Fluidez se mide contra el presupuesto de cada frame · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12713,7 +12713,7 @@
       },
       {
         "module": 13,
-        "topic": "Tema 4: Producción exige protocolo, telemetría y contención",
+        "topic": "Tema 4: Producción exige protocolo, telemetría y contención · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12735,7 +12735,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 1: Diseño de pantallas y Riverpod",
+        "topic": "Tema 1: Diseño de pantallas y Riverpod · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12757,7 +12757,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 2: Google Maps y localización en tiempo real",
+        "topic": "Tema 2: Google Maps y localización en tiempo real · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12779,7 +12779,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 3: Socket.IO y actualización de rutas",
+        "topic": "Tema 4: Socket.IO y actualización de rutas · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12801,7 +12801,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 4: Animaciones de localización",
+        "topic": "Tema 3: Animaciones de localización · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12823,7 +12823,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 5: Almacenamiento local, imágenes y offline",
+        "topic": "Tema 5: Almacenamiento local, imágenes y offline · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12845,7 +12845,7 @@
       },
       {
         "module": 14,
-        "topic": "Tema 6: Dio y notificaciones push",
+        "topic": "Tema 6: Dio y notificaciones push · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12867,7 +12867,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 1: flutter test y WidgetTester",
+        "topic": "Tema 1: flutter test y WidgetTester · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12889,7 +12889,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 2: pumpAndSettle, golden e integration tests",
+        "topic": "Tema 2: pumpAndSettle, golden e integration tests · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12911,7 +12911,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 3: Rendimiento, RepaintBoundary y Keys",
+        "topic": "Tema 3: Rendimiento, RepaintBoundary y Keys · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12933,7 +12933,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 4: Clean Architecture",
+        "topic": "Tema 4: Clean Architecture · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12955,7 +12955,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 5: Internacionalización completa",
+        "topic": "Tema 5: Internacionalización completa · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12977,7 +12977,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 6: Builds, firma y despliegue",
+        "topic": "Tema 6: Builds, firma y despliegue · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -12999,7 +12999,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega",
+        "topic": "Tema 7: Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13021,7 +13021,7 @@
       },
       {
         "module": 15,
-        "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic",
+        "topic": "Tema 8: Integrar IA generativa en una app Flutter con Firebase AI Logic · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13043,7 +13043,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete",
+        "topic": "Tema 1: reconocer cuándo usar FFI y crear el paquete · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13065,7 +13065,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 2: generar bindings C seguros para Dart",
+        "topic": "Tema 2: generar bindings C seguros para Dart · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13087,7 +13087,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 3: conectar una biblioteca Rust mediante una ABI C",
+        "topic": "Tema 3: conectar una biblioteca Rust mediante una ABI C · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13109,7 +13109,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma",
+        "topic": "Tema 4: compilar y empaquetar bibliotecas por plataforma · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13131,7 +13131,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 5: medir rendimiento y evitar bloquear la interfaz",
+        "topic": "Tema 5: medir rendimiento y evitar bloquear la interfaz · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13153,7 +13153,7 @@
       },
       {
         "module": 16,
-        "topic": "Tema 6: propiedad de memoria, liberación y errores",
+        "topic": "Tema 6: propiedad de memoria, liberación y errores · Experto · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13175,7 +13175,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 1: macros de Dart y alternativas disponibles",
+        "topic": "Tema 1: macros de Dart y alternativas disponibles · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13197,7 +13197,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 2: generación avanzada con build_runner",
+        "topic": "Tema 2: generación avanzada con build_runner · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13219,7 +13219,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 3: reflexión limitada y registro tipado",
+        "topic": "Tema 3: reflexión limitada y registro tipado · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13241,7 +13241,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 4: recorrer el AST de Dart con analyzer",
+        "topic": "Tema 4: recorrer el AST de Dart con analyzer · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13263,7 +13263,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 5: crear un builder pequeño para build_runner",
+        "topic": "Tema 5: crear un builder pequeño para build_runner · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13285,7 +13285,7 @@
       },
       {
         "module": 17,
-        "topic": "Tema 6: diseñar y validar un paquete Dart",
+        "topic": "Tema 6: diseñar y validar un paquete Dart · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13307,7 +13307,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 1: la frontera entre Dart y el código nativo",
+        "topic": "Tema 1: la frontera entre Dart y el código nativo · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13329,7 +13329,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 2: secretos fuera del binario",
+        "topic": "Tema 2: secretos fuera del binario · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13351,7 +13351,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 3: fluidez y presupuesto de frames",
+        "topic": "Tema 3: fluidez y presupuesto de frames · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13373,7 +13373,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 4: protocolo, telemetría y contención",
+        "topic": "Tema 4: protocolo, telemetría y contención · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13395,7 +13395,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry",
+        "topic": "Tema 5: reportes de fallos con Crashlytics y Sentry · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13417,7 +13417,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 6: analítica con privacidad y consentimiento",
+        "topic": "Tema 6: analítica con privacidad y consentimiento · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13439,7 +13439,7 @@
       },
       {
         "module": 18,
-        "topic": "Tema 7: monitoreo de rendimiento en una versión publicada",
+        "topic": "Tema 7: monitoreo de rendimiento en una versión publicada · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13461,7 +13461,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 1: estado de la jornada con Riverpod",
+        "topic": "Tema 1: estado de la jornada con Riverpod · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13483,7 +13483,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 2: mapa y permiso de ubicación",
+        "topic": "Tema 2: mapa y permiso de ubicación · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13505,7 +13505,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 3: posiciones en tiempo real con Socket.IO",
+        "topic": "Tema 4: posiciones en tiempo real con Socket.IO · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13527,7 +13527,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 4: animar el marcador sin saltos",
+        "topic": "Tema 3: animar el marcador sin saltos · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13549,7 +13549,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 5: confirmaciones offline y sincronización",
+        "topic": "Tema 5: confirmaciones offline y sincronización · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13571,7 +13571,7 @@
       },
       {
         "module": 19,
-        "topic": "Tema 6: carga de evidencia con Dio y notificaciones",
+        "topic": "Tema 6: carga de evidencia con Dio y notificaciones · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13593,7 +13593,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 1: MediaQuery vs LayoutBuilder",
+        "topic": "Tema 1: MediaQuery vs LayoutBuilder · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13615,7 +13615,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 2: Cómo Flutter calcula tamaños",
+        "topic": "Tema 2: Cómo Flutter calcula tamaños · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13637,7 +13637,7 @@
       },
       {
         "module": 2,
-        "topic": "Tema 3: Breakpoints propios y SafeArea",
+        "topic": "Tema 3: Breakpoints propios y SafeArea · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13659,7 +13659,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 1: pruebas unitarias y de widget con Flutter Test",
+        "topic": "Tema 1: pruebas unitarias y de widget con Flutter Test · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13681,7 +13681,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 2: golden e integración de un flujo real",
+        "topic": "Tema 5: Clean Architecture y sustitución de dependencias · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13703,7 +13703,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 3: perfilado y presupuesto de rendimiento",
+        "topic": "Tema 2: internacionalización y formatos locales · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13725,7 +13725,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 4: Clean Architecture y sustitución de dependencias",
+        "topic": "Tema 3: golden e integración de un flujo real · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13747,7 +13747,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 5: internacionalización y formatos locales",
+        "topic": "Tema 4: perfilado y presupuesto de rendimiento · Avanzado · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13769,7 +13769,7 @@
       },
       {
         "module": 20,
-        "topic": "Tema 6: builds por plataforma, firma y entrega",
+        "topic": "Tema 6: builds por plataforma, firma y entrega · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13791,7 +13791,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 1: catálogo y flujo con `in_app_purchase`",
+        "topic": "Tema 1: catálogo y flujo con `in_app_purchase` · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13813,7 +13813,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 2: suscripciones Android, planes base y cambios",
+        "topic": "Tema 2: suscripciones Android, planes base y cambios · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13835,7 +13835,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 3: suscripciones iOS con StoreKit",
+        "topic": "Tema 3: suscripciones iOS con StoreKit · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13857,7 +13857,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 4: restauración de compras y entitlement",
+        "topic": "Tema 5: restauración de compras y entitlement · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13879,7 +13879,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 5: pruebas de IAP en sandbox",
+        "topic": "Tema 4: pruebas de IAP en sandbox · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13901,7 +13901,7 @@
       },
       {
         "module": 21,
-        "topic": "Tema 6: validación de transacciones en servidor",
+        "topic": "Tema 6: validación de transacciones en servidor · Experto · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13923,7 +13923,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 1: configurar AdMob y cargar el primer banner de prueba",
+        "topic": "Tema 1: configurar AdMob y cargar el primer banner de prueba · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13945,7 +13945,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 2: elegir mediación, bidding y waterfall",
+        "topic": "Tema 2: elegir mediación, bidding y waterfall · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13967,7 +13967,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 3: banners, interstitials y anuncios recompensados",
+        "topic": "Tema 3: banners, interstitials y anuncios recompensados · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -13989,7 +13989,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 4: consentimiento, privacidad y audiencias",
+        "topic": "Tema 5: consentimiento, privacidad y audiencias · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14011,7 +14011,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 5: pruebas de anuncios y diagnóstico de no-fill",
+        "topic": "Tema 4: pruebas de anuncios y diagnóstico de no-fill · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14033,7 +14033,7 @@
       },
       {
         "module": 22,
-        "topic": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay",
+        "topic": "Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14055,7 +14055,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 1: go_router: navegación como función de la URL",
+        "topic": "Tema 1: go_router: navegación como función de la URL · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14077,7 +14077,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 2: Guards y deep linking",
+        "topic": "Tema 2: Guards y deep linking · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14099,7 +14099,7 @@
       },
       {
         "module": 3,
-        "topic": "Tema 3: Transiciones personalizadas",
+        "topic": "Tema 3: Transiciones personalizadas · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14121,7 +14121,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 1: setState y sus límites",
+        "topic": "Tema 1: setState y sus límites · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14143,7 +14143,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 2: Riverpod",
+        "topic": "Tema 2: Riverpod · Intermedio · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14165,7 +14165,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 3: Bloc/Cubit y otras alternativas",
+        "topic": "Tema 3: Bloc/Cubit y otras alternativas · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14187,7 +14187,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 4: Formularios profesionales con Formz y Riverpod",
+        "topic": "Tema 4: Formularios profesionales con Formz y Riverpod · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14209,7 +14209,7 @@
       },
       {
         "module": 4,
-        "topic": "Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones",
+        "topic": "Tema 5: Inyección de dependencias con Riverpod: reemplazar implementaciones · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14231,7 +14231,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 1: http vs dio",
+        "topic": "Tema 1: http vs dio · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14253,7 +14253,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 2: json_serializable",
+        "topic": "Tema 2: json_serializable · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14275,7 +14275,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 3: Interceptores y estados explícitos",
+        "topic": "Tema 3: Interceptores y estados explícitos · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14297,7 +14297,7 @@
       },
       {
         "module": 5,
-        "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión",
+        "topic": "Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión · Avanzado · 50 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14319,7 +14319,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 1: shared_preferences",
+        "topic": "Tema 1: shared_preferences · Básico · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14341,7 +14341,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 2: sqflite vs Hive",
+        "topic": "Tema 2: sqflite vs Hive · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14363,7 +14363,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 3: Offline-first y Firebase",
+        "topic": "Tema 3: Offline-first y Firebase · Intermedio · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14385,7 +14385,7 @@
       },
       {
         "module": 6,
-        "topic": "Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación",
+        "topic": "Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14429,7 +14429,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 1: MethodChannel",
+        "topic": "Tema 1: MethodChannel · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14451,7 +14451,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 2: Plugins federados",
+        "topic": "Tema 2: Plugins federados · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14473,7 +14473,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio",
+        "topic": "Tema 3: Permisos de plataforma y cuándo escribir un platform channel propio · Avanzado · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14495,7 +14495,7 @@
       },
       {
         "module": 7,
-        "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia",
+        "topic": "Tema 4: Cámara, galería y carga multipart de una evidencia · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14561,7 +14561,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 1: Animaciones implícitas vs explícitas",
+        "topic": "Tema 1: Animaciones implícitas vs explícitas · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14583,7 +14583,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 2: Flutter DevTools y detección de jank",
+        "topic": "Tema 2: Flutter DevTools y detección de jank · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14605,7 +14605,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 3: const widgets, RepaintBoundary y shouldRepaint",
+        "topic": "Tema 3: const widgets, RepaintBoundary y shouldRepaint · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14627,7 +14627,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 4: Isolates — trabajo pesado sin congelar la interfaz",
+        "topic": "Tema 4: Isolates — trabajo pesado sin congelar la interfaz · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14649,7 +14649,7 @@
       },
       {
         "module": 8,
-        "topic": "Tema 5: CustomPainter: dibujar con Canvas sin repintar de más",
+        "topic": "Tema 5: CustomPainter: dibujar con Canvas sin repintar de más · Avanzado · 45 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14671,7 +14671,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 1: Unit tests y widget tests",
+        "topic": "Tema 1: Unit tests y widget tests · Intermedio · 35 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14693,7 +14693,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 2: Mocking con mocktail",
+        "topic": "Tema 2: Mocking con mocktail · Intermedio · 30 min",
         "criteria": {
           "explanation": true,
           "code": true,
@@ -14715,7 +14715,7 @@
       },
       {
         "module": 9,
-        "topic": "Tema 3: Integration tests",
+        "topic": "Tema 3: Integration tests · Avanzado · 40 min",
         "criteria": {
           "explanation": true,
           "code": true,

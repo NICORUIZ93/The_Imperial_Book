@@ -5,7 +5,7 @@ Compartir código no comparte automáticamente garantías. Flutter entrega una i
 
 ## Aprende construyendo
 
-### Tema 1: Una API Dart puede terminar en una frontera nativa
+### Tema 1: Una API Dart puede terminar en una frontera nativa · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a validar un deep link entrante de RutaFlow (`https://rutaflow.app/envios/<id>`) verificando esquema, host, ruta y autorización, antes de confiar en que puede abrir el envío correspondiente. Prerrequisitos: Módulo 7 completo.
@@ -100,7 +100,7 @@ Corregí el Paso 5 restaurando la verificación de `session.canRead(id)`, y agre
 #### Paso 7 · Cierre
 Entregá la función con las dos validaciones del Paso 4, el acceso indebido provocado en el Paso 5, y el test de autorización del Paso 6; explicá por qué verificar la asociación de dominio de un App Link/Universal Link no es lo mismo que verificar que el conductor puede leer un envío puntual. Siguiente paso: estudia por qué los secretos no pertenecen al binario. Errores comunes: confundir verificación de dominio con autorización de recurso, auditar solo `pubspec.yaml` sin revisar el manifest/entitlements resultantes del build, y mantener plugins sin uso real que amplían la superficie de permisos. Fuente oficial: https://docs.flutter.dev/ui/navigation/deep-linking.
 
-### Tema 2: Los secretos no pertenecen al binario
+### Tema 2: Los secretos no pertenecen al binario · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar `SessionVault` para guardar el refresh token del conductor delegando en Keychain/Keystore, y a confirmar que `logout()` borra tanto el token como la caché local relacionada. Prerrequisitos: Tema 1 de este módulo.
@@ -204,7 +204,7 @@ Corregí el Paso 5 restaurando `db.deleteCurrentAccountData()` y comprobá que l
 #### Paso 7 · Cierre
 Entregá `SessionVault` y `logout()` completos del Paso 4, la salida `cache=true` del fallo del Paso 5, y el test de cambio de cuenta del Paso 6; explicá por qué borrar el token sin borrar la caché local puede exponer la sesión anterior en un dispositivo compartido. Siguiente paso: estudia cómo medir y optimizar fluidez contra el presupuesto de cada frame. Errores comunes: guardar tokens en `.env` empacado o en storage sin cifrado dedicado, borrar el token sin borrar la caché local relacionada, y no redactar valores sensibles en logs/crash reports. Límites y decisión de uso: el almacenamiento seguro no vuelve confidencial un dato que la aplicación sigue enviando a logs o telemetría; la redacción y la retención se revisan aparte. Fuente oficial: https://docs.flutter.dev/cookbook/security.
 
-### Tema 3: Fluidez se mide contra el presupuesto de cada frame
+### Tema 3: Fluidez se mide contra el presupuesto de cada frame · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mover el parseo de un JSON grande de envíos históricos a un isolate separado con `compute`, para no bloquear el isolate de UI mientras se decodifica. Prerrequisitos: Tema 2 de este módulo.
@@ -287,7 +287,7 @@ Corregí el Paso 5 devolviendo la decodificación del JSON pequeño al isolate d
 Entregá la decodificación off-UI del Paso 4, el costo medido de mover trabajo pequeño a un isolate del Paso 5, y el criterio documentado del Paso 6; explicá por qué crear isolates para operaciones diminutas cuesta más de lo que ahorra. Siguiente paso: estudia qué exige producción en términos de protocolo y telemetría. Errores comunes: asumir que `async`/`await` paraleliza cálculo CPU-bound, mover operaciones triviales a un isolate sin medir el costo de coordinación, y no perfilar en modo profile sobre un dispositivo representativo. Fuente oficial: https://docs.flutter.dev/perf/isolates.
 **Implicación práctica:** Una app correcta que pierde frames sigue siendo una app defectuosa para el usuario; mover trabajo CPU-bound real a un isolate libera la UI, pero mover trabajo diminuto cuesta más de lo que ahorra.
 
-### Tema 4: Producción exige protocolo, telemetría y contención
+### Tema 4: Producción exige protocolo, telemetría y contención · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir una outbox con `PendingMutation` para la confirmación de entregas de RutaFlow, con una clave de idempotencia estable que sobrevive reintentos tras perder conectividad. Prerrequisitos: Tema 3 de este módulo.

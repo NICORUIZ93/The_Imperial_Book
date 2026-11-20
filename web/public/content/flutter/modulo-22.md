@@ -6,7 +6,7 @@ Integra anuncios en RutaFlow con límites claros: primero configuración de plat
 
 ---
 
-### Tema 1: configurar AdMob y cargar el primer banner de prueba
+### Tema 1: configurar AdMob y cargar el primer banner de prueba · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar inicializarás Google Mobile Ads en Android/iOS y mostrarás un banner de prueba que se libera correctamente. **Prerrequisitos:** Flutter 3.38.1 o superior, widgets y ciclo `initState`/`dispose`. Crea `flutter create admob_lab` y agrega `google_mobile_ads` con `flutter pub add google_mobile_ads`.
@@ -127,7 +127,7 @@ flutter run
 
 ---
 
-### Tema 2: elegir mediación, bidding y waterfall
+### Tema 2: elegir mediación, bidding y waterfall · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar compararás demanda directa, bidding y waterfall, y escribirás una decisión de mediación que pueda revisarse. **Prerrequisitos:** Tema 1 y nociones de latencia/medición. Crea `docs/ad-mediation-decision.md`.
@@ -185,7 +185,7 @@ flutter analyze
 
 ---
 
-### Tema 3: banners, interstitials y anuncios recompensados
+### Tema 3: banners, interstitials y anuncios recompensados · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar implementarás reglas de ubicación y ciclo de vida para banner, interstitial y rewarded sin interrumpir acciones críticas. **Prerrequisitos:** Tema 1 y navegación Flutter. Crea `lib/ads/ad_policy.dart`.
@@ -270,7 +270,66 @@ flutter test test/ads/ad_policy_test.dart
 
 ---
 
-### Tema 4: consentimiento, privacidad y audiencias
+### Tema 4: pruebas de anuncios y diagnóstico de no-fill · Intermedio · 30 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar separarás prueba local, validación de adapter e inventario de producción. **Prerrequisitos:** temas 1 y 2. Crea `docs/ad-test-matrix.md`.
+
+**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_ads_5` y aplica solo los archivos de este tema; ejecuta después `cd flutter_ads_5` y `flutter analyze`.
+
+#### Paso 2 · Contexto y caso real
+Durante desarrollo el equipo debe revisar layouts y callbacks sin generar actividad publicitaria real. Un anuncio live pulsado por desarrolladores puede generar tráfico inválido; utiliza unidades de prueba oficiales o dispositivos de prueba configurados.
+
+#### ¿Por qué es importante?
+Una captura prueba que un anuncio se dibujó, pero no verifica límites de frecuencia, consentimiento, rotación, adapter de cada red ni política de producción.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Prueba por capas: política pura con `flutter test`; integración visual con unidades de prueba; adapters con su suite; y luego revisión controlada en entorno de cuenta. `no fill` es un resultado válido: la app debe mantener su flujo y no esperar indefinidamente.
+
+#### Paso 4 · Demostración guiada
+Crea `docs/ad-test-matrix.md`:
+
+```markdown
+| Capa | Entorno | Qué observa | Evidencia |
+|---|---|---|---|
+| Regla local | flutter test, sin red | ubicación/recompensa | salida de tests |
+| SDK base | unidad oficial de prueba | carga, fallo, dispose | captura y log sin PII |
+| Mediación | test suite del proveedor | adapter init y versión | estado de cada adapter |
+| Cuenta controlada | dispositivo/cuenta autorizados | solicitud y política | fecha, país permitido, versión |
+```
+
+Al probar AdMob registra Android/iOS por separado. Para mediación revisa el estado de inicialización de cada adapter y ejecuta la suite de integración del proveedor; no confundas una unidad de prueba de AdMob con prueba de la demanda de una red externa.
+
+#### Paso 5 · Práctica guiada
+
+**Pista:** separa la política del SDK; fuerza no-fill en un fake antes de diagnosticar una respuesta de red real.
+Fuerza `onAdFailedToLoad` en un fake y comprueba que el resumen de entrega sigue usable. Añade timeout visual que no bloquee la pantalla y un log de código de error sin correo, ruta, cliente ni coordenadas.
+
+#### Paso 6 · Práctica independiente
+Rota el dispositivo, navega fuera durante la carga, desactiva red y prueba consentimiento denegado. Registra plataforma/versión SDK y resultado observado. No publiques claves ni IDs de cuenta en capturas públicas.
+
+
+**Fallo deliberado:** Fuerza no-fill o pérdida de red y confirma que el flujo de usuario sigue disponible. Diagnostica el mensaje y corrige la causa antes de continuar.
+#### Paso 7 · Cierre y evidencia
+
+**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
+Entrega matriz rellenada con “pasó”, “falló” o “no ejecutado” y la evidencia correspondiente. Si no hay dispositivo/cuenta/adapter, marca ese caso no ejecutado.
+
+**Prueba de diagnóstico.** Provoca no-fill o desconexión: la acción principal debe seguir funcionando y no debe conceder recompensa.
+
+```bash
+flutter test
+flutter analyze
+flutter run
+```
+
+**Resultado esperado:** tests locales reproducibles y casos de SDK con plataforma/ID de prueba declarados. **Errores comunes:** usar anuncio de producción en desarrollo, concluir mediación con una captura y clasificar todo fallo como no-fill sin leer el error. Diagrama: `test local -> SDK test -> adapter suite -> cuenta controlada`. Fuentes oficiales: [anuncios de prueba](https://developers.google.com/admob/flutter/test-ads), [test suite LevelPlay](https://docs.unity.com/en-us/grow/levelplay/sdk/flutter/integration-test-suite), [política de tráfico inválido](https://support.google.com/admob/answer/3342054?hl=en).
+
+**Proyecto propio:** `docs/ad-test-matrix.md`. **Cuándo marcar integración probada:** solo cuando la capa y plataforma se ejecutaron realmente. Evidencia: entrega matriz, logs reducidos y capturas de unidades de prueba.
+
+---
+
+### Tema 5: consentimiento, privacidad y audiencias · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar actualizarás el estado de consentimiento en cada inicio y pedirás anuncios solo si el SDK y las reglas aplicables lo permiten. **Prerrequisitos:** ciclo de vida Flutter, configuración nativa y nociones de datos personales. Crea `lib/privacy/ads_consent.dart`.
@@ -343,69 +402,10 @@ flutter test test/privacy/ads_startup_test.dart
 
 ---
 
-### Tema 5: pruebas de anuncios y diagnóstico de no-fill
+### Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar separarás prueba local, validación de adapter e inventario de producción. **Prerrequisitos:** temas 1 y 2. Crea `docs/ad-test-matrix.md`.
-
-**Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_ads_5` y aplica solo los archivos de este tema; ejecuta después `cd flutter_ads_5` y `flutter analyze`.
-
-#### Paso 2 · Contexto y caso real
-Durante desarrollo el equipo debe revisar layouts y callbacks sin generar actividad publicitaria real. Un anuncio live pulsado por desarrolladores puede generar tráfico inválido; utiliza unidades de prueba oficiales o dispositivos de prueba configurados.
-
-#### ¿Por qué es importante?
-Una captura prueba que un anuncio se dibujó, pero no verifica límites de frecuencia, consentimiento, rotación, adapter de cada red ni política de producción.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Prueba por capas: política pura con `flutter test`; integración visual con unidades de prueba; adapters con su suite; y luego revisión controlada en entorno de cuenta. `no fill` es un resultado válido: la app debe mantener su flujo y no esperar indefinidamente.
-
-#### Paso 4 · Demostración guiada
-Crea `docs/ad-test-matrix.md`:
-
-```markdown
-| Capa | Entorno | Qué observa | Evidencia |
-|---|---|---|---|
-| Regla local | flutter test, sin red | ubicación/recompensa | salida de tests |
-| SDK base | unidad oficial de prueba | carga, fallo, dispose | captura y log sin PII |
-| Mediación | test suite del proveedor | adapter init y versión | estado de cada adapter |
-| Cuenta controlada | dispositivo/cuenta autorizados | solicitud y política | fecha, país permitido, versión |
-```
-
-Al probar AdMob registra Android/iOS por separado. Para mediación revisa el estado de inicialización de cada adapter y ejecuta la suite de integración del proveedor; no confundas una unidad de prueba de AdMob con prueba de la demanda de una red externa.
-
-#### Paso 5 · Práctica guiada
-
-**Pista:** separa la política del SDK; fuerza no-fill en un fake antes de diagnosticar una respuesta de red real.
-Fuerza `onAdFailedToLoad` en un fake y comprueba que el resumen de entrega sigue usable. Añade timeout visual que no bloquee la pantalla y un log de código de error sin correo, ruta, cliente ni coordenadas.
-
-#### Paso 6 · Práctica independiente
-Rota el dispositivo, navega fuera durante la carga, desactiva red y prueba consentimiento denegado. Registra plataforma/versión SDK y resultado observado. No publiques claves ni IDs de cuenta en capturas públicas.
-
-
-**Fallo deliberado:** Fuerza no-fill o pérdida de red y confirma que el flujo de usuario sigue disponible. Diagnostica el mensaje y corrige la causa antes de continuar.
-#### Paso 7 · Cierre y evidencia
-
-**Evidencia de aprendizaje:** entrega el archivo y el resultado observado de las variantes correcta y fallida. El siguiente tema amplía esta habilidad hacia el siguiente punto del flujo.
-Entrega matriz rellenada con “pasó”, “falló” o “no ejecutado” y la evidencia correspondiente. Si no hay dispositivo/cuenta/adapter, marca ese caso no ejecutado.
-
-**Prueba de diagnóstico.** Provoca no-fill o desconexión: la acción principal debe seguir funcionando y no debe conceder recompensa.
-
-```bash
-flutter test
-flutter analyze
-flutter run
-```
-
-**Resultado esperado:** tests locales reproducibles y casos de SDK con plataforma/ID de prueba declarados. **Errores comunes:** usar anuncio de producción en desarrollo, concluir mediación con una captura y clasificar todo fallo como no-fill sin leer el error. Diagrama: `test local -> SDK test -> adapter suite -> cuenta controlada`. Fuentes oficiales: [anuncios de prueba](https://developers.google.com/admob/flutter/test-ads), [test suite LevelPlay](https://docs.unity.com/en-us/grow/levelplay/sdk/flutter/integration-test-suite), [política de tráfico inválido](https://support.google.com/admob/answer/3342054?hl=en).
-
-**Proyecto propio:** `docs/ad-test-matrix.md`. **Cuándo marcar integración probada:** solo cuando la capa y plataforma se ejecutaron realmente. Evidencia: entrega matriz, logs reducidos y capturas de unidades de prueba.
-
----
-
-### Tema 6: comparar AdMob, AppLovin MAX y Unity LevelPlay
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar documentarás una decisión de proveedor y un plan de salida que proteja el flujo del producto. **Prerrequisitos:** temas 2 y 5. Crea `docs/ad-provider-review.md`.
+Al finalizar documentarás una decisión de proveedor y un plan de salida que proteja el flujo del producto. **Prerrequisitos:** temas 2 y 4. Crea `docs/ad-provider-review.md`.
 
 **Ejemplo independiente:** parte de una carpeta vacía con `flutter create flutter_ads_6` y aplica solo los archivos de este tema; ejecuta después `cd flutter_ads_6` y `flutter analyze`.
 

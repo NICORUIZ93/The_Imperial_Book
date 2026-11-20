@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Unit tests y widget tests
+### Tema 1: Unit tests y widget tests · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un unit test de la regla "envío atrasado" y un widget test que confirme que `TarjetaEnvio` muestra la guía correcta. Prerrequisitos: Módulo 8 completo.
@@ -88,7 +88,7 @@ Corregí el Paso 5 agregando `await tester.pump()` inmediatamente después del `
 Entregá el unit test y el widget test del Paso 4, el fallo por `pump()` faltante del Paso 5, y la corrección del Paso 6; explicá por qué un widget test necesita simular explícitamente el ciclo de reconstrucción que un dispositivo real haría automáticamente. Siguiente paso: estudia cómo mockear dependencias con mocktail. Errores comunes: olvidar `tester.pump()` tras simular una interacción, escribir un widget test para lógica que en realidad es pura, y buscar widgets por texto visible cuando ese texto puede cambiar por copywriting. Fuentes oficiales: https://docs.flutter.dev/cookbook/testing/widget/introduction y https://docs.flutter.dev/testing/overview.
 **Implicación práctica:** Los widget tests verifican tanto el renderizado como la interacción en un entorno simulado considerablemente más rápido que un dispositivo real.
 
-### Tema 2: Mocking con mocktail
+### Tema 2: Mocking con mocktail · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mockear `EnviosRepository` con `mocktail` para testear `EnviosViewModel` sin hacer ninguna llamada de red real. Prerrequisitos: Tema 1 de este módulo.
@@ -164,7 +164,7 @@ Corregí el Paso 5 agregando el `when(...)` correspondiente antes de llamar a `c
 Entregá el mock configurado del Paso 4, el error por mock sin configurar del Paso 5, y el test del camino de error del Paso 6; explicá por qué que `mocktail` falle explícitamente ante un método sin configurar ayuda a detectar tests incompletos. Siguiente paso: estudia integration tests para el flujo completo end-to-end. Errores comunes: depender de una API real en un test que debería estar aislado, no configurar el comportamiento de un método del mock antes de invocarlo, y mockear solo el camino feliz sin probar el camino de error. Fuentes oficiales: https://pub.dev/packages/mocktail y https://docs.flutter.dev/cookbook/testing/unit/mocking.
 **Implicación práctica:** Aislar dependencias externas con `mocktail` hace los tests más rápidos y confiables, sin depender de la disponibilidad de servicios externos reales.
 
-### Tema 3: Integration tests
+### Tema 3: Integration tests · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un integration test que confirme en un dispositivo o emulador real el flujo completo de confirmar una entrega. Prerrequisitos: Tema 2 de este módulo.
