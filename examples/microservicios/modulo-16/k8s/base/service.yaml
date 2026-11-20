@@ -1,0 +1,15 @@
+# F083 · Service: un nombre y una IP estables delante de los pods con app=catalogo que estén LISTOS.
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogo
+  namespace: catalogo
+spec:
+  type: NodePort
+  selector:
+    app: catalogo
+  ports:
+    - name: http
+      port: 80            # dentro del clúster: http://catalogo.catalogo.svc.cluster.local
+      targetPort: http    # el puerto con nombre «http» del contenedor (8080)
+      nodePort: 30080     # fuera: http://localhost:30080 (kind/cluster.yaml lo publica en el Mac)

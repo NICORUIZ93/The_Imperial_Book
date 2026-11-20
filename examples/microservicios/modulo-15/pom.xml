@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Módulo 11 (modulo-15) · Agregador: "./mvnw test" ejecuta los tests de las 6 fichas (F075–F080).
+     Cada carpeta fNNN-* es un proyecto Maven autónomo con Spring Boot 4.1.3 y JDK 25.
+     Los tests usan los brokers de docker-compose.yml: arráncalos antes con docker compose up y la opción wait. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>modulo-15-laboratorios</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>f075-kafka-particiones</module>
+    <module>f076-exactly-once</module>
+    <module>f077-schema-registry-avro</module>
+    <module>f078-dead-letter-topics</module>
+    <module>f079-rabbitmq-confirms-dlq</module>
+    <module>f080-nats</module>
+  </modules>
+</project>

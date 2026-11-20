@@ -1,0 +1,19 @@
+# «helm test» crea este pod y espera a que termine: exit 0 = el Service responde con la versión esperada.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "catalogo.fullname" . }}-test
+  labels:
+    {{- include "catalogo.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  restartPolicy: Never
+  containers:
+    - name: wget
+      image: busybox:1.37.0
+      command: ["/bin/sh", "-c"]
+      args:
+        - wget -q -O- http://{{ include "catalogo.fullname" . }}:{{ .Values.service.port }}/api/info
+          | tr -d ' ' | grep '"version":"{{ .Values.image.tag | default .Chart.AppVersion }}"'

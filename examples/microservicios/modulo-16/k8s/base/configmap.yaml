@@ -1,0 +1,9 @@
+# F083 · Configuración NO secreta. Cada clave se convierte en una variable de entorno (envFrom).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalogo-config
+  namespace: catalogo
+data:
+  CATALOGO_MENSAJE: "Hola desde Kubernetes"
+  CATALOGO_COLOR: "k8s"

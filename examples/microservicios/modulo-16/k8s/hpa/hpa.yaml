@@ -1,0 +1,24 @@
+# F085 · HorizontalPodAutoscaler (autoscaling/v2): entre 2 y 5 réplicas, objetivo 50 % de la CPU PEDIDA.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalogo
+  namespace: catalogo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: catalogo
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+  behavior:
+    scaleDown:
+      # Por defecto espera 300 s antes de reducir; 30 s para que el laboratorio no sea eterno.
+      stabilizationWindowSeconds: 30

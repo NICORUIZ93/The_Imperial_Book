@@ -1,0 +1,21 @@
+{
+  // Módulo 14 · NestJS 12.5.1 con TypeScript 6.0.3. Compila f097–f100 a dist/ (npm run build).
+  // NestJS necesita decoradores "experimentales" y emitDecoratorMetadata: con ellos lee los tipos de los
+  // constructores (inyección de dependencias) y de los DTO (validación y OpenAPI). Node no puede quitar
+  // esos decoradores por sí solo (type stripping), por eso aquí sí se compila con tsc.
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false, // los DTO los rellena class-transformer, no un constructor
+    "useDefineForClassFields": false,      // si no, los campos sin valor de un DTO borran lo que puso class-transformer
+    "outDir": "dist",
+    "rootDir": ".",
+    "sourceMap": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["f097-nestjs/src", "f098-validacion/src", "f099-dtos/src", "f100-openapi/src"]
+}

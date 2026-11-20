@@ -1,0 +1,18 @@
+# F085 · Generador de carga: 4 bucles que piden 200 ms de CPU al catálogo sin parar.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: carga
+  namespace: catalogo
+spec:
+  restartPolicy: Never
+  containers:
+    - name: carga
+      image: busybox:1.37.0
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          for i in 1 2 3 4; do
+            (while true; do wget -q -O /dev/null "http://catalogo/api/cpu?ms=200"; done) &
+          done
+          wait

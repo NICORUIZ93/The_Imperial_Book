@@ -1,0 +1,28 @@
+# F088 · Tu propio servicio con GitOps: Argo CD instala el chart de Helm de este repositorio.
+# Cambia repoURL por TU fork (público, o registra credenciales con «argocd repo add»).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: catalogo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/TU-USUARIO/The_Imperial_Book.git
+    targetRevision: main
+    path: examples/microservicios/modulo-16/charts/catalogo
+    helm:
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: image.tag
+          value: "1.0.0"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: catalogo-gitops
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,7 @@
+# F086 · Chart de Helm del servicio «catalogo» (apiVersion v2: la que usan Helm 3 y Helm 4)
+apiVersion: v2
+name: catalogo
+description: Servicio catálogo del curso de microservicios (Spring Boot 4.1.3, JDK 25)
+type: application
+version: 0.1.0          # versión del CHART (cámbiala cuando cambien las plantillas)
+appVersion: "1.0.0"     # versión de la APLICACIÓN que despliega por defecto

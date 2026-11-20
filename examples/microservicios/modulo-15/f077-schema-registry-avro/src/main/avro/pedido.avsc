@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "Pedido",
+  "namespace": "academia.avro",
+  "doc": "Evento PedidoCreado, versión 1 del contrato",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "cliente", "type": "string"},
+    {"name": "totalCentavos", "type": "long", "doc": "Dinero en centavos: nunca double"}
+  ]
+}

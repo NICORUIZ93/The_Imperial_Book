@@ -1,0 +1,31 @@
+# Valores por defecto. Se sobrescriben con -f otro-values.yaml o --set clave=valor.
+replicaCount: 2
+
+image:
+  repository: academia/catalogo
+  tag: ""               # vacío = usa .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+config:
+  mensaje: "Hola desde Helm"
+  color: "helm"
+
+secret:
+  claveApi: "clave-de-laboratorio-no-es-secreta"
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50

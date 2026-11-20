@@ -1,0 +1,9 @@
+# F081 · ANTI-PATRÓN (solo para comparar tamaños y tiempos): una sola etapa con JDK + Maven + código fuente.
+#   docker build -f app/Dockerfile.ingenuo -t academia/catalogo:ingenuo app
+FROM maven:3.10.0-eclipse-temurin-25
+WORKDIR /fuente
+# Copia TODO de una vez: cualquier cambio en el código invalida la caché y vuelve a descargar las dependencias.
+COPY . .
+RUN mvn -B -q package -DskipTests
+# Corre como root, con shell, Maven, el JDK completo y el código fuente dentro de la imagen.
+CMD java -jar target/catalogo.jar

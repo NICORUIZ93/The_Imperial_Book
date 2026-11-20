@@ -128,7 +128,7 @@ ESTADO: completo
 | ☐ | `@opentelemetry/api` / `@opentelemetry/sdk-node` / `@opentelemetry/auto-instrumentations-node` | — | **1.10.0 / 0.301.2 / 0.83.1** | 2026-10-20 / 2026-11-12 / 2026-11-12 | |
 | ☐ | `pino` / `winston` | — | **10.4.0 / 3.19.0** | 2026-10-02 / 2025-12-07 | |
 | ☐ | `prom-client` | — | **15.1.3** | 2024-06-27 | |
-| ☐ | `clinic` (clinic.js) | — | **13.0.0** | 2023-06-28 | sin publicaciones desde 2023: su funcionamiento con Node 26 queda en `verificacion/microservicios/pendiente.md`; `perf_hooks` y `node --cpu-prof` son la alternativa integrada |
+| ☐ | `clinic` (clinic.js) | — | **13.0.0** | 2023-06-28 | sin publicaciones desde 2023: `doctor`, `flame` y `bubbleprof` funcionan con Node 26.13.1 en Linux (comprobado el 2026-11-19) si se exporta `NO_INSIGHT=1` (sin TTY, la pregunta de telemetría hace que salga sin hacer nada); `perf_hooks` y `node --cpu-prof` son la alternativa integrada (Módulo 13) |
 | ☐ | `@temporalio/client` / `@temporalio/worker` | — | **1.26.0** | 2026-11-17 | |
 | ☐ | `@kurrent/kurrentdb-client` (antes `@eventstore/db-client`, que no publica desde 2024-05-10) | — | **1.3.3** | 2026-11-19 | Módulo 22 |
 | ☐ | `snyk` (CLI) | — | **1.1309.0** | 2026-11-19 | `npx snyk --version` |
@@ -142,7 +142,7 @@ ESTADO: completo
 | ☐ | Confluent Schema Registry | — | **Confluent Platform 8.4.1** (Kafka 4.4.x; Java 17, 21 o 25) | 2026-10-27 | `GET /` del registry | https://docs.confluent.io/platform/current/installation/versions-interoperability.html |
 | ☐ | Debezium | — | **3.7.1.Final** (Kafka Connect 3.1+; Java 17+) | 2026-11-06 | `GET /connector-plugins` | https://debezium.io/releases/ |
 | ☐ | RabbitMQ | — | **4.4.1** | 2026-11-16 | `rabbitmq-diagnostics server_version` | https://www.rabbitmq.com/release-information |
-| ☐ | NATS Server | — | **v2.15.1** | 9 oct (año no visible) | `nats-server --version` | https://github.com/nats-io/nats-server/releases/latest |
+| ☐ | NATS Server | — | **v2.15.3** (imagen `nats:2.15.3-alpine`, Docker Hub 2026-11-12) | v2.15.1 el 9 oct; 2.15.3 en noviembre (año no visible) | `nats-server --version` | https://github.com/nats-io/nats-server/releases/latest |
 | ☐ | Redis Open Source | — | **8.10.2** | 17 sep (año no visible) | `redis-server --version` | https://redis.io/downloads/ · https://github.com/redis/redis/releases/latest |
 | ☐ | PostgreSQL | — | **18.7** | 18 GA 2025-09-25 | `psql --version` | https://www.postgresql.org/support/versioning/ |
 | ☐ | MySQL Community | — | **9.7.4 LTS** (la más nueva es la innovation 26.10.0; para un curso se prefiere la LTS más reciente, y Connector/J 26.10.0 soporta ambas) | — | `mysql --version` | https://dev.mysql.com/downloads/mysql/ |

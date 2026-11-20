@@ -1,0 +1,5 @@
+# El contexto de construcción es app/: no envíes al daemon lo que no hace falta (ni secretos).
+target/
+*.iml
+.idea/
+.env

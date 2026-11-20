@@ -1,0 +1,18 @@
+{
+  // Módulo 13 · F090 · TypeScript 6.0.3 en modo estricto. Solo comprueba tipos (noEmit):
+  // Node.js 26 ejecuta los .ts directamente quitando los tipos (type stripping).
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "strict": true,                       // activa strictNullChecks, noImplicitAny, strictFunctionTypes…
+    "noUncheckedIndexedAccess": true,     // arr[i] y obj[clave] pueden ser undefined
+    "exactOptionalPropertyTypes": true,
+    "erasableSyntaxOnly": true,           // prohíbe enum, namespace y parameter properties: Node no los sabe quitar
+    "verbatimModuleSyntax": true,         // obliga a `import type` para los tipos
+    "allowImportingTsExtensions": true,   // import './inventario.ts' (como lo pide Node)
+    "noEmit": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/productos/{id}": {
+      "get": {
+        "operationId": "CatalogoController_buscar",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "El producto",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductoDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "productos"
+        ]
+      }
+    },
+    "/productos": {
+      "post": {
+        "operationId": "CatalogoController_crear",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearProductoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductoDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos"
+          }
+        },
+        "tags": [
+          "productos"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Catálogo",
+    "description": "API de productos del curso Microservicios de Cero a Maestro",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "ProductoDto": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "Teclado mecánico",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "precio": {
+            "type": "number",
+            "example": 250000,
+            "minimum": 1,
+            "description": "Precio en pesos, sin decimales"
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "hardware",
+              "software"
+            ],
+            "example": "hardware"
+          },
+          "id": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "nombre",
+          "precio",
+          "categoria",
+          "id"
+        ]
+      },
+      "ErrorDto": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "No existe el producto 99"
+          },
+          "error": {
+            "type": "string",
+            "example": "Not Found"
+          }
+        },
+        "required": [
+          "statusCode",
+          "message",
+          "error"
+        ]
+      },
+      "CrearProductoDto": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "example": "Teclado mecánico",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "precio": {
+            "type": "number",
+            "example": 250000,
+            "minimum": 1,
+            "description": "Precio en pesos, sin decimales"
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "hardware",
+              "software"
+            ],
+            "example": "hardware"
+          }
+        },
+        "required": [
+          "nombre",
+          "precio",
+          "categoria"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+# F083 + F084 · Deployment: 2 réplicas del catálogo, configuración desde ConfigMap y Secret, y las 3 probes.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogo
+  namespace: catalogo
+  labels:
+    app: catalogo
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: catalogo
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0     # nunca baja de 2 pods listos durante una actualización
+      maxSurge: 1           # crea 1 pod nuevo, espera a que esté LISTO, retira 1 viejo
+  template:
+    metadata:
+      labels:
+        app: catalogo
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: catalogo
+          image: academia/catalogo:1.0.0
+          imagePullPolicy: IfNotPresent   # la imagen se cargó en kind con «kind load docker-image»
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: catalogo-config
+          env:
+            - name: CATALOGO_CLAVE_API
+              valueFrom:
+                secretKeyRef:
+                  name: catalogo-secreto
+                  key: clave-api
+            - name: CATALOGO_ARRANQUE_LENTO_SEGUNDOS
+              value: "5"
+          resources:
+            requests:
+              cpu: 100m        # lo que el scheduler reserva; el HPA calcula el % sobre esto
+              memory: 256Mi
+            limits:
+              memory: 512Mi    # si la JVM lo supera, el kernel mata el contenedor (OOMKilled)
+          # F084 · startupProbe: protege el arranque (hasta 30 x 2 s = 60 s) antes de que empiece la liveness.
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 2
+            failureThreshold: 30
+          # F084 · livenessProbe: ¿el proceso está sano? 3 fallos seguidos -> el kubelet REINICIA el contenedor.
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 5
+            failureThreshold: 3
+          # F084 · readinessProbe: ¿puede recibir tráfico? 2 fallos -> sale de los endpoints del Service (sin reinicio).
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 3
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              # Da 5 s a kube-proxy para retirar el pod de los endpoints antes del SIGTERM.
+              # La acción «sleep» no necesita un binario sleep en la imagen (distroless no lo tiene).
+              sleep:
+                seconds: 5

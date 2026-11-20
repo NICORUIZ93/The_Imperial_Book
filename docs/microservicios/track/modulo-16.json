@@ -1,0 +1,48 @@
+{
+  "id": 16,
+  "title": "Módulo 12 · Docker, Kubernetes y despliegue",
+  "shortTitle": "Docker, Kubernetes y despliegue",
+  "level": "Experto",
+  "duration": "22 h",
+  "color": "#0f766e",
+  "description": "Empaqueta un servicio Spring Boot en una imagen multi-stage distroless, orquéstalo con Docker Compose y despliégalo en Kubernetes (kind) con ConfigMaps, Secrets, probes y HPA; empaquétalo con Helm, publícalo con Blue-Green y Canary y gobiérnalo con GitOps en Argo CD.",
+  "concepts": [
+    "Dockerfile multi-stage, distroless",
+    "Docker Compose",
+    "Kubernetes: Deployments, Services, ConfigMaps, Secrets",
+    "Readiness/Liveness Probes",
+    "HPA",
+    "Helm",
+    "Blue-Green y Canary",
+    "GitOps con ArgoCD"
+  ],
+  "practice": [
+    "Construye una imagen distroless sin root ni shell que se apaga con SIGTERM",
+    "Levanta el servicio detrás de nginx con healthcheck en Java y un secreto como archivo",
+    "Despliega 2 réplicas en kind con ConfigMap y Secret y aplica un cambio con rollout restart",
+    "Saca un pod del Service con la readiness y reinícialo con la liveness",
+    "Escala de 2 a 5 réplicas con carga y metrics-server",
+    "Instala, actualiza, prueba y revierte el chart con Helm 4",
+    "Cambia de azul a verde con un selector y envía un 25 % al canario",
+    "Comprueba que Argo CD revierte un cambio manual con selfHeal"
+  ],
+  "questions": [
+    "¿Por qué el ENTRYPOINT debe ir en forma exec?",
+    "¿Qué hace Kubernetes cuando falla la liveness y cuando falla la readiness?",
+    "¿Por qué el HPA muestra <unknown>?",
+    "¿Helm o Kustomize?",
+    "¿Qué problema resuelve GitOps frente a kubectl apply desde CI?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Spring Boot 4.1.3",
+    "Docker Engine 29 + Compose v5",
+    "distroless java25-debian13",
+    "kind v0.33.0",
+    "Kubernetes 1.37.0",
+    "metrics-server v0.9.0",
+    "Helm 4.3.1",
+    "Argo CD v3.5.6"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-16 con ./verificar.sh en verde: imágenes 1.0.0 y 1.1.0, Compose healthy y las pruebas de Kubernetes, HPA, Helm, Blue-Green/Canary y Argo CD en un clúster kind."
+}
