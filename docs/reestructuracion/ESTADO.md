@@ -21,3 +21,6 @@ Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicio
 
 Decisiones del dueño sobre los temarios (2026-11-20): siempre la versión extendida, nunca la reducida.
 Gradle: 28 módulos y 166 temas. Java: 279 temas. Spring: 281 temas (Spring AI incluido).
+
+Temarios objetivo aprobados por el dueño (2026-11-20): Java (279 temas), Gradle (166) y Spring (281).
+La reescritura se prepara en `docs/reestructuracion/cursos/<curso>/` y se publica en la página por tramos completos.

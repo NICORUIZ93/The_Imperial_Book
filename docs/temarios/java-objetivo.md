@@ -1,5 +1,7 @@
 # Temario objetivo · Java (JDK 25), de cero a experto
 
+> **Aprobado por el dueño el 2026-11-20** (versión extendida). Decisiones: JPA/Hibernate pasa a Spring; los temas de Gradle pasan al curso de Gradle; Maven queda en dos temas.
+
 **Estado:** propuesta para aprobación del dueño (specs/021, Fase 3, criterio Z2). No hay lecciones escritas ni
 cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.
 **Fecha de revisión de fuentes:** 2026-11-20.

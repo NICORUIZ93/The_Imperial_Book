@@ -1,5 +1,7 @@
 # Temario objetivo · Spring (Spring Boot 4, Spring Framework 7)
 
+> **Aprobado por el dueño el 2026-11-20** (versión extendida). Decisiones: Spring Boot 4.1.x; JPA llega desde Java; Spring Cloud vive en Microservicios; Spring AI se queda (versión extendida).
+
 **Estado:** propuesta para aprobación del dueño (specs/021, Fase 3, criterio Z2). No hay lecciones escritas ni
 cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.
 **Fecha de revisión de fuentes:** 2026-11-20.
