@@ -471,9 +471,63 @@ node f176-fitness-functions/demo.js; echo "código de salida: $?"
 | Sumar 5 personas y entregar menos | De 21 a 66 canales de comunicación. | Equipos pequeños con interfaces explícitas. | Módulo 29 · Dimensionamiento de equipos |
 | Total vacío tras desplegar un solo servicio | DTO compartido cambió (`precio` → `valor`). | Contratos versionados; no compartas DTOs. | Módulo 30 · Monolito distribuido |
 
-### Módulos 31–32
+### Módulos 31–32 · conceptos clave
 
-**Pendiente.** El Módulo 31 (Migración desde monolito real, `modulo-35.md`) y el Módulo 32 (Proyecto Final y
-Comité de Arquitectura, `modulo-36.md`) aún no tienen fichas escritas; sus filas se añaden aquí cuando
-`python3 scripts/validate_fichas.py --resumen` los marque con ✔. Mientras tanto, para el Proyecto Final usa la
-plantilla de ADR y la rúbrica del Comité de [07-plantillas.md](07-plantillas.md).
+| Concepto | En una línea | Ficha |
+|---|---|---|
+| Strangler Fig con fachada | La puerta manda todo al monolito y se migra una parte cada vez; la regla compara rutas respetando el límite del segmento (igual, `/` o `?`). | Módulo 31 · Strangler Fig |
+| Coexistencia | El servicio nuevo no lee la base del monolito: recibe sus cambios por CDC u outbox, con capa anticorrupción y relevo idempotente; una conciliación vigila que cuadren. Nunca dobles escrituras. | Módulo 31 · Coexistencia monolito + servicios |
+| Métricas de éxito | Se mide el resultado, no el progreso («14 microservicios»): 5 métricas DORA (frecuencia, lead time, recuperación; tasa de fallo, rework) y SLO. | Módulo 31 · Métricas de éxito |
+| Deuda técnica | Prioriza por **hotspot** = revisiones × complejidad (y meses de recuperación), no por fealdad: lo que nadie toca no cobra intereses. | Módulo 31 · Deuda técnica |
+| Reserva con pago externo | Apartar, cobrar y confirmar; respuesta inmediata con número de reserva, compensación si falla e `Idempotency-Key` en el POST, propagada al proveedor. | Módulo 32 · Sistema de reservas con pago externo |
+| Saga en Temporal | El workflow solo importa `@temporalio/workflow` y código puro; las actividades se llaman con `proxyActivities`. | Módulo 32 · Saga orquestada con Temporal.io |
+| Gateway con rate limiting | API key + cubo de fichas **compartido en Redis** (script Lua atómico) entre réplicas; al pasarse, 429 con pista de cuándo volver. | Módulo 32 · API Gateway con rate limiting |
+| Test de carga | Gatling con criterios de aprobación (p99 < 300 ms y fallos < 1 %); varias API keys para no medir el limitador. | Módulo 32 · Test de carga con Gatling |
+| Restricción sobrevenida | Proveedor limitado a 20 peticiones/s: medir con la misma carga, comparar alternativas y elegir (cola a ritmo fijo de 18/s). | Módulo 32 · Restricción sobrevenida |
+| ADR del rediseño | Contexto medido, 2+ alternativas, consecuencias, fitness function y condición de revisión; `validar-adr.js` en el CI. | Módulo 32 · Rediseño documentado en ADR |
+| Defensa ante el Comité | Nueve criterios de 1 a 4: aprueba con ≥ 2.8 de media ponderada **y** ningún criterio en 1 (rúbrica en [07-plantillas.md](07-plantillas.md)). | Módulo 32 · Defensa ante Architecture Review Board |
+
+### Módulos 31–32 · comandos
+
+```bash
+# Migración desde monolito — Módulo 31 (examples/microservicios/modulo-35)
+node f177-strangler-fig/demo.js
+node f178-coexistencia/demo.js
+node f179-metricas-exito/metricas.js
+node f180-deuda-tecnica/hotspots.js
+node f180-deuda-tecnica/registro-deuda.js
+node f180-deuda-tecnica/decision.js
+
+# Proyecto Final — Módulo 32 (examples/microservicios/modulo-36)
+node f181-sistema-reservas/proveedor-pagos.js &          # :8090
+node f181-sistema-reservas/servicio-reservas.js &        # :8081
+curl -si localhost:8081/reservas -H 'content-type: application/json' -H 'idempotency-key: x1' \
+  -d '{"eventoId":"concierto-1","clienteId":"C-1","importe":80,"tarjeta":"4242-OK"}' | head -1
+node --test f182-saga-temporal/saga.test.js f182-saga-temporal/bundle.test.js
+temporal server start-dev                                # servidor + UI en http://localhost:8233
+node f182-saga-temporal/worker.js && node f182-saga-temporal/iniciar.js
+docker compose up -d --wait
+REDIS_URL=redis://localhost:6379 node f183-gateway-rate-limit/error-comun.js
+node f184-carga-gatling/arrancar-sistema.js &
+npx gatling run --sources-folder f184-carga-gatling/src --results-folder logs/gatling --simulation reservas tasa=60 segundos=20
+LIMITE_RPS=20 node f184-carga-gatling/arrancar-sistema.js &   # la restricción sobrevenida
+node f185-restriccion-sobrevenida/antes.js; node f185-restriccion-sobrevenida/despues.js
+node f186-adr/validar-adr.js f186-adr/adr/*.md
+node f187-defensa-arb/entregables.js
+node f187-defensa-arb/puntuar.js f187-defensa-arb/evaluacion-ejemplo.json
+```
+
+### Módulos 31–32 · errores frecuentes
+
+| Ves | Significa | Arreglo | Ficha |
+|---|---|---|---|
+| Una ruta vecina no migrada (`/api/pedidos-antiguos`) da 404 | La fachada usa `startsWith` sin respetar el segmento. | `coincide()` (igual, `/`, `?`) y un test por ruta vecina. | Módulo 31 · Strangler Fig |
+| Pedidos en el monolito que no están en el servicio nuevo | Doble escritura desde la aplicación. | Quítala; todo cambio sale por CDC u outbox; la conciliación como alarma. | Módulo 31 · Coexistencia monolito + servicios |
+| «Éxito: 14 microservicios» y todo va más lento | Se mide progreso, no resultado. | DORA y SLO arriba; el progreso, debajo. | Módulo 31 · Métricas de éxito |
+| Un mes reescribiendo «lo más feo» sin mejora | Priorizar por complejidad sola. | Ordenar por hotspot y meses de recuperación. | Módulo 31 · Deuda técnica |
+| Dos cargos por la misma entrada | Reintento del POST sin `Idempotency-Key`. | La app genera la clave por intento; el servicio la exige y la propaga. | Módulo 32 · Sistema de reservas |
+| El worker no arranca: módulos prohibidos en el workflow | El workflow llama a las actividades directamente. | `proxyActivities` y actividades registradas en el worker. | Módulo 32 · Saga orquestada con Temporal.io |
+| El socio pasa 30 peticiones con una ráfaga de 10 | Limitador en memoria con tres réplicas. | Cubo de fichas en Redis (`RedisRateLimiter` en Spring Cloud Gateway). | Módulo 32 · API Gateway con rate limiting |
+| ~48 % de errores en el test de carga | Una sola API key: Gatling mide el limitador. | Varias API keys en el feeder o una clave de pruebas con su cuota. | Módulo 32 · Test de carga con Gatling |
+| Más reintentos y el proveedor amenaza con bloquear | Tormenta de reintentos ante 429. | `Retry-After`, backoff con jitter y cola a ritmo fijo. | Módulo 32 · Restricción sobrevenida |
+| «Repetir defensa» con media 3,7 | Un criterio en 1 (clave del proveedor en el código). | Revisa los nueve criterios y cierra todo nivel 1 antes de la defensa. | Módulo 32 · Defensa ante Architecture Review Board |

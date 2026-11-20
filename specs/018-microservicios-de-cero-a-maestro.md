@@ -32,11 +32,11 @@ Reemplaza el temario de Microservicios de specs/017 (N4) y la forma de los temas
 
 ## Criterios
 
-- **M1** `pendiente` — Las 187 fichas existen y cumplen los 14 puntos y las reglas del prompt; están los
+- **M1** `hecho` — Las 187 fichas existen y cumplen los 14 puntos y las reglas del prompt; están los
   10 entregables, el glosario de 120 términos, los 3 ejercicios de «no usar microservicios» y un
   laboratorio por módulo.
   Verificación: `python3 scripts/validate_fichas.py`
-- **M2** `pendiente` — Los laboratorios del curso pasan en el Mac del dueño.
+- **M2** `en-curso` — Los laboratorios del curso pasan en el Mac del dueño.
   Verificación: `! grep -h "	FAIL	" verificacion/microservicios/resultados.tsv`
-- **M3** `pendiente` — El track generado coincide con los módulos escritos.
+- **M3** `hecho` — El track generado coincide con los módulos escritos.
   Verificación: `python3 scripts/build_microservices_track.py --check`

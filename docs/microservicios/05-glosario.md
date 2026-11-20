@@ -1,10 +1,10 @@
-# 5 · Glosario visual (145 términos)
+# 5 · Glosario visual (152 términos)
 
 > Entregable 5 del prompt del dueño. Cada término tiene una definición corta y un ícono de
 > **[Lucide](https://lucide.dev)** (licencia ISC, gratuita y de código abierto). Los nombres de ícono se
 > comprobaron uno por uno contra el paquete oficial `lucide-static` 1.76.0 del registro npm el 2026-11-19
-> (2404 íconos). Los 120 términos base vienen del prompt del dueño; los 25 que llevan la referencia en cursiva
-> (*Módulo N · ficha*) se añadieron desde las fichas de los Módulos 15–30, que es donde se explican a fondo.
+> (2404 íconos). Los 120 términos base vienen del prompt del dueño; los 32 que llevan la referencia en cursiva
+> (*Módulo N · ficha*) se añadieron desde las fichas de los Módulos 15–32, que es donde se explican a fondo.
 > Para insertar uno: `<i data-lucide="nombre"></i>` con `lucide` en web, o
 > `https://unpkg.com/lucide-static@1.76.0/icons/<nombre>.svg` como imagen.
 >
@@ -36,12 +36,14 @@
 | Caché | Copia rápida de datos usados con frecuencia para no volver a calcularlos o pedirlos. | `zap` |
 | Cache stampede | Avalancha de peticiones a la fuente cuando una entrada de caché muy usada expira a la vez para todos. | `users` |
 | Canary | Despliegue que envía primero un porcentaje pequeño del tráfico a la versión nueva y lo amplía si va bien. | `bird` |
+| Capa anticorrupción (ACL) | Único sitio que conoce el modelo del sistema legado y lo traduce al del servicio nuevo, para que este no herede sus nombres ni estados. *Módulo 31 · Coexistencia monolito + servicios.* | `shield-half` |
 | Cardinalidad | Número de combinaciones distintas de valores de etiquetas: cada una es una serie en Prometheus o un stream en Loki. Un id como etiqueta la dispara. *Módulo 21 · Prometheus client; Módulo 28 · Observability tax.* | `layers` |
 | Carga cognitiva | Cantidad de información que un equipo debe tener en la cabeza para trabajar con su software. | `brain` |
 | CDC (Change Data Capture) | Técnica que lee los cambios del log de la base de datos y los publica como eventos. | `database-zap` |
 | CI/CD | Integración y entrega continuas: cada cambio se compila, se prueba y se despliega de forma automática. | `infinity` |
 | Circuit Breaker | Patrón que corta las llamadas a un servicio que falla y las reintenta tras un tiempo de espera. | `power` |
 | Compensación | Acción que deshace el efecto de un paso ya confirmado en una saga. | `undo-2` |
+| Conciliación | Comparación periódica, campo a campo, de los datos del monolito y del servicio nuevo (faltantes, sobrantes, distintos) que alerta si no cuadran. *Módulo 31 · Coexistencia monolito + servicios.* | `scale-3d` |
 | Concurrencia optimista | Escribir solo si el dato sigue en la versión que leíste (versión esperada); si otro escribió antes, se rechaza y se vuelve a decidir. *Módulo 22 · Event Sourcing con EventStoreDB o MongoDB.* | `git-compare` |
 | Config Server | Servicio que entrega la configuración centralizada a los demás servicios. | `settings` |
 | ConfigMap | Objeto de Kubernetes que guarda configuración no secreta para los pods. | `file-cog` |
@@ -54,6 +56,7 @@
 | CORS | Regla del navegador que decide qué orígenes pueden llamar a tu API desde JavaScript. | `globe` |
 | CQRS | Separar el modelo que escribe (comandos) del modelo que lee (consultas). | `split` |
 | CRaC | Técnica de la JVM que guarda una aplicación ya arrancada en un checkpoint y la restaura en milisegundos. | `snowflake` |
+| Cubo de fichas (token bucket) | Limitador que repone fichas a un ritmo fijo y deja pasar una petición si queda al menos una; compartido en Redis vale para todas las réplicas del gateway. *Módulo 32 · API Gateway con rate limiting.* | `coins` |
 | Dead Letter Queue / Topic | Cola o topic donde van los mensajes que no se pudieron procesar tras varios intentos. | `inbox` |
 | Deadline | Hora límite que viaja con una llamada gRPC: al vencer, cliente y servidor dejan de trabajar para quien ya no espera. *Módulo 18 · gRPC con @grpc/grpc-js.* | `alarm-clock` |
 | Debezium | Herramienta de CDC que lee el log de la base (el WAL de PostgreSQL) y publica cada cambio en Kafka; con Outbox, publica la tabla de eventos. *Módulo 25 · Outbox Pattern + CDC con Debezium.* | `database-zap` |
@@ -73,14 +76,17 @@
 | Fallback | Respuesta alternativa que se devuelve cuando la operación principal falla. | `life-buoy` |
 | FinOps | Práctica que une ingeniería y finanzas para medir y optimizar el coste de la nube. | `piggy-bank` |
 | Fitness function | Prueba automática que mide si la arquitectura sigue cumpliendo una característica deseada. | `activity` |
+| Gatling | Herramienta de test de carga que simula muchos usuarios, cronometra cada respuesta (p99) e informa si se cumplen los criterios. *Módulo 32 · Test de carga con Gatling.* | `gauge` |
 | Git | Sistema de control de versiones que guarda el historial de cambios del código. | `git-commit-horizontal` |
 | GitOps | Operar la infraestructura declarándola en Git y dejando que un agente la sincronice. | `git-pull-request` |
 | GraalVM Native Image | Compilación anticipada de una aplicación Java a un ejecutable nativo que arranca en milisegundos. | `cpu` |
 | GraphQL | Lenguaje de consultas en el que el cliente pide exactamente los campos que necesita. | `share-2` |
 | gRPC | Framework de llamadas remotas sobre HTTP/2 con contratos en Protocol Buffers. | `radio` |
+| Hotspot | Código que se cambia mucho y es complejo (revisiones × complejidad): ahí es donde la deuda técnica cobra intereses. *Módulo 31 · Deuda técnica.* | `flame` |
 | HPA | Horizontal Pod Autoscaler: añade o quita pods según métricas como la CPU. | `trending-up` |
 | HTTP | Protocolo de petición y respuesta con el que hablan navegadores, APIs y servicios. | `arrow-left-right` |
 | Idempotencia | Propiedad de una operación que produce el mismo resultado aunque se ejecute varias veces. | `repeat` |
+| Idempotency-Key | Cabecera con una clave por intento de operación: si el cliente repite el POST, el servidor devuelve el mismo resultado en vez de crear otro. *Módulo 32 · Sistema de reservas con pago externo.* | `key-round` |
 | Inversión de control (IoC) | Principio por el que el framework, no tu código, crea y conecta los objetos. | `arrow-down-up` |
 | Inyección de dependencias | Entregar a un objeto lo que necesita desde fuera, en lugar de que lo cree él. | `syringe` |
 | Inyección NoSQL | Ataque en el que el JSON del usuario trae operadores (`$ne`, `$gt`) que MongoDB ejecuta como órdenes en lugar de tratarlos como datos. *Módulo 20 · Prevención de inyecciones NoSQL.* | `syringe` |
@@ -96,6 +102,7 @@
 | Logging estructurado | Escribir los logs como datos (por ejemplo JSON con campos) en lugar de texto libre. | `scroll-text` |
 | Maniobra inversa de Conway | Diseñar primero los equipos y su comunicación para obtener la arquitectura que quieres. *Módulo 29 · Ley de Conway.* | `arrow-left-right` |
 | Mensaje venenoso | Mensaje que falla siempre; si se reencola sin límite, se repite miles de veces y dispara la CPU. Se aparta a una cola de mensajes muertos. *Módulo 26 · RabbitMQ avanzado.* | `skull` |
+| Métricas DORA | Cinco métricas de entrega: frecuencia de despliegue, lead time y recuperación (throughput), y tasa de fallo y rework (inestabilidad). *Módulo 31 · Métricas de éxito.* | `activity` |
 | Microservicio | Servicio pequeño y desplegable por separado que se encarga de una capacidad de negocio. | `box` |
 | Middleware | Función que se ejecuta en la cadena de una petición antes de llegar al manejador final. | `between-horizontal-start` |
 | Modelo C4 | Diagramas de arquitectura por niveles de zoom (contexto, contenedores, componentes y código) con la misma notación en todos. *Módulo 24 · Modelo C4.* | `zoom-in` |
