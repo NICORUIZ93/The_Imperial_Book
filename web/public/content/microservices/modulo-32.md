@@ -32,9 +32,10 @@ partida de logs y métricas del tema 4 actualizan el modelo.
 **Qué se ejecutó aquí.** Todo: los 18 tests y los scripts de las cuatro fichas se ejecutaron con Node 26.13.1 y sus
 salidas están pegadas tal cual. Los datos de uso del right-sizing son **sintéticos** (generados con una semilla fija para
 que obtengas los mismos números); los precios son **reales**, de las páginas oficiales, y cada uno lleva su URL en
-`comun/precios.js`. Varios precios de AWS salen de los **ejemplos** de sus páginas (el NAT gateway, de US East Ohio; el
-tráfico entre zonas, del de VPC peering): están marcados y en `verificacion/microservicios/pendiente.md` para
-confirmarlos con la calculadora de AWS.
+`comun/precios.js`. Los de AWS se contrastaron el 2026-11-20 con sus páginas oficiales de precios (EKS, Lambda,
+Fargate, CloudWatch, X-Ray y el tráfico entre zonas, que AWS cobra en **cada sentido**). Queda **por confirmar** solo el
+NAT gateway: la página lo da en un ejemplo de US East (Ohio), no en la tabla de N. Virginia; está anotado en
+`verificacion/microservicios/pendiente.md`.
 
 **Cómo usar el laboratorio.** Con Node 26:
 
@@ -84,13 +85,13 @@ export const PRECIOS = {
   lambdaGbSegundo: { usd: 0.0000166667, fuente: 'https://aws.amazon.com/lambda/pricing/ (x86, primer tramo)' },
   lambdaGratisPeticiones: { cantidad: 1_000_000, fuente: 'https://aws.amazon.com/lambda/pricing/ (capa gratuita mensual)' },
   lambdaGratisGbSegundo: { cantidad: 400_000, fuente: 'https://aws.amazon.com/lambda/pricing/ (capa gratuita mensual)' },
-  natHora: { usd: 0.045, fuente: 'https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio)' },
-  natGb: { usd: 0.045, fuente: 'https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio)' },
-  entreZonasGb: { usd: 0.01, fuente: 'https://aws.amazon.com/vpc/pricing/ (VPC peering que cruza zonas de disponibilidad, por GB)' },
-  logsIngestaGb: { usd: 0.50, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (Logs, clase Standard, ejemplos)' },
-  logsAlmacenGbMes: { usd: 0.03, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (archivo de logs, ejemplos)' },
-  metricaMes: { usd: 0.30, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (métricas personalizadas, primeras 10 000)' },
-  millonTrazas: { usd: 5.00, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (X-Ray, trazas registradas, tras 100 000 gratis)' },
+  natHora: { usd: 0.045, fuente: 'https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio; por confirmar en la tabla de N. Virginia)' },
+  natGb: { usd: 0.045, fuente: 'https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio; por confirmar en la tabla de N. Virginia)' },
+  entreZonasGb: { usd: 0.01, fuente: 'https://aws.amazon.com/vpc/pricing/ (datos que cruzan zonas de disponibilidad en la misma región: por GB y en CADA sentido, entrada y salida)' },
+  logsIngestaGb: { usd: 0.50, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (Logs, ingesta; ejemplos de la página, basados en US East N. Virginia)' },
+  logsAlmacenGbMes: { usd: 0.03, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (almacenamiento de logs; ejemplos de la página, basados en US East N. Virginia)' },
+  metricaMes: { usd: 0.30, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (métricas personalizadas, primeras 10 000; ejemplos de la página, basados en US East N. Virginia)' },
+  millonTrazas: { usd: 5.00, fuente: 'https://aws.amazon.com/cloudwatch/pricing/ (X-Ray, 0.000005 USD por traza registrada en los ejemplos; primeras 100 000 gratis al mes)' },
 };
 
 export const usd = (n, decimales = 2) => `${n.toLocaleString('en-US', { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} USD`;
@@ -162,7 +163,8 @@ pedidos da el costo unitario.
   0.000001235 USD por GB. 730 h al mes.
 - **NAT gateway:** cobra por hora encendido **y** por GB procesado (0.045 USD/h y 0.045 USD/GB en el ejemplo de la
   página de VPC). Una arquitectura que pone uno por zona para alta disponibilidad paga tres.
-- **Tráfico entre zonas:** cada llamada de un servicio a una réplica en otra zona cruza la frontera y se paga por GB. Con
+- **Tráfico entre zonas:** cada llamada de un servicio a una réplica en otra zona cruza la frontera y se paga por GB **en cada sentido** (0.01 USD al que envía y 0.01 USD al que
+  recibe: 0.02 USD por GB que cruza). Con
   3 zonas y balanceo uniforme, unas **2 de cada 3** llamadas cruzan (`fraccionEntreZonas: 0.67`).
 - **Logs:** se paga por GB ingerido (0.50 USD/GB en CloudWatch Logs) y por GB almacenado al mes.
 - **Costo unitario:** total / (pedidos / 1000). Es la métrica que se presenta a negocio y la que una decisión de
@@ -177,8 +179,8 @@ pedidos da el costo unitario.
 | **Medición real** (Cost Explorer, OpenCost/Kubecost en Kubernetes, etiquetas de costo por equipo) | Lo que de verdad pagas, por servicio y equipo | Llega después de gastar | Operación: *showback* y *chargeback* |
 
 - **Los microservicios cuestan más por pedido** que un monolito con el mismo tráfico: más réplicas mínimas (alta
-  disponibilidad por servicio), más red (llamadas internas), más logs. En el laboratorio, 0.1321 frente a 0.0363 USD por
-  cada 1000 pedidos: **3,6 veces**. Lo que compran a cambio (despliegues independientes, equipos autónomos, escalar solo
+  disponibilidad por servicio), más red (llamadas internas), más logs. En el laboratorio, 0.1327 frente a 0.0363 USD por
+  cada 1000 pedidos: **3,7 veces**. Lo que compran a cambio (despliegues independientes, equipos autónomos, escalar solo
   lo que lo necesita) tiene que valer esa diferencia.
 - **Costos fijos frente a variables:** los NAT por hora, el plano de control de EKS (0.10 USD/h) y las réplicas
   mínimas no bajan cuando baja el tráfico. Con poco tráfico dominan la factura; con mucho, dominan los variables.
@@ -204,6 +206,7 @@ import { HORAS_MES, p, usd } from '../comun/precios.js';
 
 const SEG_MES = HORAS_MES * 3600;
 const GB = 1024 ** 3;
+const SENTIDOS_COBRADOS = 2;
 
 /** Devuelve las partidas mensuales en USD y el costo por cada 1000 pedidos. */
 export function costear(arq, { soloComputo = false } = {}) {
@@ -215,7 +218,8 @@ export function costear(arq, { soloComputo = false } = {}) {
     partidas['NAT gateway (horas)'] = r.natGateways * HORAS_MES * p('natHora');
     partidas['NAT gateway (GB)'] = r.gbSalientesMes * p('natGb');
     const gbInternos = arq.pedidosMes * r.llamadasInternasPorPedido * r.kbPorLlamada * 1024 / GB;
-    partidas['tráfico entre zonas'] = gbInternos * r.fraccionEntreZonas * p('entreZonasGb');
+    // AWS cobra el GB que cruza de zona dos veces: al que lo envía (salida) y al que lo recibe (entrada).
+    partidas['tráfico entre zonas'] = gbInternos * r.fraccionEntreZonas * p('entreZonasGb') * SENTIDOS_COBRADOS;
     const gbLogs = arq.pedidosMes * arq.logs.lineasPorPedido * arq.logs.bytesPorLinea / GB;
     partidas['logs (ingesta)'] = gbLogs * p('logsIngestaGb');
   }
@@ -292,16 +296,16 @@ Monolito modular (2 tareas) · 3,000,000 pedidos/mes
   TOTAL                      108.86 USD
   costo unitario: 0.0363 USD por cada 1000 pedidos
 Microservicios (6 servicios, 3 zonas) · 3,000,000 pedidos/mes
-  cómputo (Fargate)          270.30 USD   68.2 %
-  NAT gateway (horas)         98.55 USD   24.9 %
+  cómputo (Fargate)          270.30 USD   67.9 %
+  NAT gateway (horas)         98.55 USD   24.8 %
   NAT gateway (GB)             6.75 USD    1.7 %
-  tráfico entre zonas          1.84 USD    0.5 %
-  logs (ingesta)              18.86 USD    4.8 %
-  TOTAL                      396.30 USD
-  costo unitario: 0.1321 USD por cada 1000 pedidos
+  tráfico entre zonas          3.68 USD    0.9 %
+  logs (ingesta)              18.86 USD    4.7 %
+  TOTAL                      398.14 USD
+  costo unitario: 0.1327 USD por cada 1000 pedidos
 ```
 
-   **Captura comentada:** con el mismo tráfico, la arquitectura de microservicios cuesta **3,6 veces** más. El cómputo
+   **Captura comentada:** con el mismo tráfico, la arquitectura de microservicios cuesta **3,7 veces** más. El cómputo
    sigue siendo la partida mayor, pero casi un **25 %** son NAT gateways que cobran por estar encendidos, y los logs pasan de
    1.68 a 18.86 USD porque cada pedido deja 30 líneas en 6 servicios en lugar de 4 en uno.
 
@@ -390,8 +394,8 @@ Salida real de `node f165-modelo-costo/error-comun.js`:
 
 ```text
 presupuesto «solo cómputo»: 270.30 USD/mes
-modelo completo:            396.30 USD/mes
-infravaloración:            126.00 USD/mes (31.8 % de la factura)
+modelo completo:            398.14 USD/mes
+infravaloración:            127.84 USD/mes (32.1 % de la factura)
 ```
 
 **Diagnóstico visual:** en Cost Explorer agrupa por *servicio* y por *tipo de uso*: las barras de «EC2-Other» (donde
@@ -419,7 +423,7 @@ zona, logs en DEBUG) sin que ninguna decisión lleve su número, y descubrir la 
 ```json
 // MAL: el ADR dice «usaremos 3 réplicas por servicio en 3 zonas» y nada más.
 // BIEN: el ADR lleva el modelo y su resultado:
-{ "decision": "3 réplicas × 6 servicios en 3 zonas", "costoMes": 396.30, "costoPor1000Pedidos": 0.1321,
+{ "decision": "3 réplicas × 6 servicios en 3 zonas", "costoMes": 398.14, "costoPor1000Pedidos": 0.1327,
   "alternativa": "monolito modular, 2 tareas", "costoMesAlternativa": 108.86 }
 ```
 
@@ -1047,7 +1051,7 @@ Módulo 28, Lección 4 de 4 · Fase 3 · 75 min · Laboratorio `examples/microse
 
 - Logs estructurados con pino, métricas con etiquetas y trazas con OpenTelemetry (Módulo 21 o 10).
 - Histogramas de Prometheus (`_bucket`, `_sum`, `_count`) (Módulo 21).
-- Ficha 1 (el total de ejecución de 396.30 USD).
+- Ficha 1 (el total de ejecución de 398.14 USD).
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -1071,7 +1075,7 @@ flowchart LR
     R["30 M peticiones/mes"] --> L["LOGS<br/>líneas/petición × bytes/línea<br/>→ GB × (ingesta + meses de retención)"]
     R --> T["TRAZAS<br/>peticiones × muestreo<br/>→ millones × 5 USD"]
     E["etiquetas<br/>servicio × ruta × clase × ¿pod? × ¿user_id?"] --> M["MÉTRICAS<br/>combinaciones × métricas<br/>→ × 0,30 USD"]
-    L --> TOT["impuesto = total observabilidad /<br/>costo de ejecución (396,30 USD)"]
+    L --> TOT["impuesto = total observabilidad /<br/>costo de ejecución (398,14 USD)"]
     T --> TOT
     M --> TOT
 ```
@@ -1080,7 +1084,7 @@ flowchart LR
 bytes por línea, convertidos en gigabytes y multiplicados por la ingesta y los meses de retención) y trazas (peticiones
 por el porcentaje de muestreo, en millones por 5 dólares). Las etiquetas (servicio, ruta, clase de código y, si se
 añaden, pod o user_id) multiplican las combinaciones de métricas, que se cobran a 0,30 dólares cada una. Las tres
-partidas, divididas entre el costo de ejecución de 396,30 dólares, dan el impuesto de observabilidad.
+partidas, divididas entre el costo de ejecución de 398,14 dólares, dan el impuesto de observabilidad.
 
 #### 6. EXPLICACIÓN NIVEL 0
 
@@ -1194,7 +1198,7 @@ export const ESCENARIOS = {
   },
 };
 
-export function informe(computoMes = 396.30) {
+export function informe(computoMes = 398.14) {
   const lineas = [];
   for (const e of Object.values(ESCENARIOS)) {
     const f = factura(e);
@@ -1228,14 +1232,14 @@ Por defecto: INFO en todo, 100 % de trazas, etiqueta pod y código exacto
   logs: almacenamiento        43.09 USD
   métricas                12,960.00 USD
   trazas                     150.00 USD
-  TOTAL                   13,212.94 USD  -> 3334 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)
+  TOTAL                   13,212.94 USD  -> 3319 % de lo que cuesta ejecutar el sistema (398.14 USD, F165)
 Disciplinado: 1 línea por petición + WARN, 10 % de trazas, sin pod, clase de código
   301 bytes/línea · 432 métricas · muestreo 10 % · en Prometheus: 2,808 series del histograma de latencia
   logs: ingesta                5.05 USD
   logs: almacenamiento         0.30 USD
   métricas                   129.60 USD
   trazas                      15.00 USD
-  TOTAL                      149.95 USD  -> 38 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)
+  TOTAL                      149.95 USD  -> 38 % de lo que cuesta ejecutar el sistema (398.14 USD, F165)
 ```
 
    **Captura comentada:** el escenario por defecto cuesta **33 veces** lo que cuesta ejecutar el sistema, y casi todo

@@ -1,24 +1,24 @@
 == Node.js v26.13.1 · npm 10.9.9
 == Dependencias (ninguna: solo node:*)
 == Tests (node --test, 18 en total)
-✔ cómputo Fargate del monolito: 2 tareas × 730 h × (1 vCPU + 2 GB) (3.322486ms)
-✔ los microservicios cuestan más por pedido que el monolito con el mismo tráfico (0.320109ms)
-✔ NAT por horas: 3 gateways × 730 h × 0.045 USD (0.220374ms)
-✔ las partidas suman el total y el modelo completo supera al de solo cómputo (0.287527ms)
-✔ percentil: p95 de 1..100 es 95 (4.597463ms)
-✔ la memoria recomendada nunca queda por debajo del uso medido (0 OOMKilled) (24.715815ms)
-✔ pedidos está sobredimensionado y pagos infradimensionado (10.669221ms)
-✔ costo Autopilot: 1 vCPU y 1 GiB, 1 réplica, 730 h (0.207795ms)
-✔ el uso generado es reproducible (misma semilla, mismos datos) (3.927433ms)
-✔ Lambda: 1 millón de peticiones de 120 ms y 512 MB = 0.20 + 60 000 GB-s × 0.0000166667 (0.772574ms)
-✔ la capa gratuita cubre 1 millón de peticiones y 400 000 GB-s (0.959376ms)
-✔ en el break-even Lambda y Fargate (mínimo de tareas) cuestan lo mismo (0.18012ms)
-✔ Fargate escala por el pico: 1e9 pet/mes con pico ×3 necesita 20 tareas de 60 pet/s (0.138526ms)
-✔ un histograma con 10 límites expone 13 series por combinación (10 + +Inf, _sum, _count) (1.711723ms)
-✔ añadir una etiqueta multiplica las combinaciones (0.18886ms)
-✔ la línea de log se mide en bytes reales (UTF-8 + salto de línea) (0.153497ms)
-✔ el escenario disciplinado cuesta menos del 1,5 % del ingenuo (0.147738ms)
-✔ trazas: 30 millones al 10 % = 3 millones × 5 USD (0.12062ms)
+✔ cómputo Fargate del monolito: 2 tareas × 730 h × (1 vCPU + 2 GB) (2.922464ms)
+✔ los microservicios cuestan más por pedido que el monolito con el mismo tráfico (0.483517ms)
+✔ NAT por horas: 3 gateways × 730 h × 0.045 USD (0.270498ms)
+✔ las partidas suman el total y el modelo completo supera al de solo cómputo (0.443808ms)
+✔ percentil: p95 de 1..100 es 95 (2.06277ms)
+✔ la memoria recomendada nunca queda por debajo del uso medido (0 OOMKilled) (25.3997ms)
+✔ pedidos está sobredimensionado y pagos infradimensionado (10.372453ms)
+✔ costo Autopilot: 1 vCPU y 1 GiB, 1 réplica, 730 h (0.208522ms)
+✔ el uso generado es reproducible (misma semilla, mismos datos) (5.227632ms)
+✔ Lambda: 1 millón de peticiones de 120 ms y 512 MB = 0.20 + 60 000 GB-s × 0.0000166667 (0.690056ms)
+✔ la capa gratuita cubre 1 millón de peticiones y 400 000 GB-s (4.49214ms)
+✔ en el break-even Lambda y Fargate (mínimo de tareas) cuestan lo mismo (0.568233ms)
+✔ Fargate escala por el pico: 1e9 pet/mes con pico ×3 necesita 20 tareas de 60 pet/s (0.145925ms)
+✔ un histograma con 10 límites expone 13 series por combinación (10 + +Inf, _sum, _count) (1.58433ms)
+✔ añadir una etiqueta multiplica las combinaciones (0.142075ms)
+✔ la línea de log se mide en bytes reales (UTF-8 + salto de línea) (0.143976ms)
+✔ el escenario disciplinado cuesta menos del 1,5 % del ingenuo (0.146817ms)
+✔ trazas: 30 millones al 10 % = 3 millones × 5 USD (0.108475ms)
 ℹ tests 18
 ℹ suites 0
 ℹ pass 18
@@ -26,7 +26,7 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 266.060407
+ℹ duration_ms 284.471156
 == F165 · Modelo de costo cloud
 Monolito modular (2 tareas) · 3,000,000 pedidos/mes
   cómputo (Fargate)           72.08 USD   66.2 %
@@ -38,17 +38,17 @@ Monolito modular (2 tareas) · 3,000,000 pedidos/mes
   costo unitario: 0.0363 USD por cada 1000 pedidos
 ✔ F165 monolito
 Microservicios (6 servicios, 3 zonas) · 3,000,000 pedidos/mes
-  cómputo (Fargate)          270.30 USD   68.2 %
-  NAT gateway (horas)         98.55 USD   24.9 %
+  cómputo (Fargate)          270.30 USD   67.9 %
+  NAT gateway (horas)         98.55 USD   24.8 %
   NAT gateway (GB)             6.75 USD    1.7 %
-  tráfico entre zonas          1.84 USD    0.5 %
-  logs (ingesta)              18.86 USD    4.8 %
-  TOTAL                      396.30 USD
-  costo unitario: 0.1321 USD por cada 1000 pedidos
+  tráfico entre zonas          3.68 USD    0.9 %
+  logs (ingesta)              18.86 USD    4.7 %
+  TOTAL                      398.14 USD
+  costo unitario: 0.1327 USD por cada 1000 pedidos
 ✔ F165 microservicios
 presupuesto «solo cómputo»: 270.30 USD/mes
-modelo completo:            396.30 USD/mes
-infravaloración:            126.00 USD/mes (31.8 % de la factura)
+modelo completo:            398.14 USD/mes
+infravaloración:            127.84 USD/mes (32.1 % de la factura)
 ✔ F165 error común (solo cómputo)
 == F166 · Right-sizing
 servicio  réplicas  pide hoy           p95 CPU  máx mem   recomendado        costo hoy     costo nuevo
@@ -83,14 +83,14 @@ Por defecto: INFO en todo, 100 % de trazas, etiqueta pod y código exacto
   logs: almacenamiento        43.09 USD
   métricas                12,960.00 USD
   trazas                     150.00 USD
-  TOTAL                   13,212.94 USD  -> 3334 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)
+  TOTAL                   13,212.94 USD  -> 3319 % de lo que cuesta ejecutar el sistema (398.14 USD, F165)
 Disciplinado: 1 línea por petición + WARN, 10 % de trazas, sin pod, clase de código
   301 bytes/línea · 432 métricas · muestreo 10 % · en Prometheus: 2,808 series del histograma de latencia
   logs: ingesta                5.05 USD
   logs: almacenamiento         0.30 USD
   métricas                   129.60 USD
   trazas                      15.00 USD
-  TOTAL                      149.95 USD  -> 38 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)
+  TOTAL                      149.95 USD  -> 38 % de lo que cuesta ejecutar el sistema (398.14 USD, F165)
 ✔ F168 dos escenarios
 BIEN etiquetas acotadas         ->         2,808 series en Prometheus ·         432 métricas · cota CloudWatch       129.60 USD/mes
 MAL  + user_id (1 000 activos)  ->     2,808,000 series en Prometheus ·     432,000 métricas · cota CloudWatch   129,600.00 USD/mes

@@ -36,8 +36,8 @@ node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f1*/*.t
 
 echo "== F165 · Modelo de costo cloud"
 guion "F165 monolito" "node f165-modelo-costo/modelo.js f165-modelo-costo/monolito.json" 'TOTAL                      108.86 USD' 'costo unitario: 0.0363 USD por cada 1000 pedidos'
-guion "F165 microservicios" "node f165-modelo-costo/modelo.js f165-modelo-costo/microservicios.json" 'TOTAL                      396.30 USD' 'costo unitario: 0.1321 USD por cada 1000 pedidos'
-guion "F165 error común (solo cómputo)" "node f165-modelo-costo/error-comun.js" 'infravaloración:            126.00 USD/mes (31.8 % de la factura)'
+guion "F165 microservicios" "node f165-modelo-costo/modelo.js f165-modelo-costo/microservicios.json" 'TOTAL                      398.14 USD' 'costo unitario: 0.1327 USD por cada 1000 pedidos'
+guion "F165 error común (solo cómputo)" "node f165-modelo-costo/error-comun.js" 'infravaloración:            127.84 USD/mes (32.1 % de la factura)'
 
 echo "== F166 · Right-sizing"
 guion "F166 recomendación" "node f166-right-sizing/rightsizing.js" 'TOTAL al mes: 198.36 USD -> 78.84 USD · ahorro 119.52 USD (60.3 %)' 'pagos            2  0.25 vCPU/512 MiB'
