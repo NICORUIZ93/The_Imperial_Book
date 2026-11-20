@@ -5,7 +5,7 @@
 
 Cada tema construye una pieza real del backend de un sistema de entregas (`gestion-entregas`) y la verifica sin sustituir infraestructura por descripciones: MySQL real vía Testcontainers para datos espaciales, Hibernate Spatial con tipos JTS reales, JWT real con ownership verificado, STOMP real (el protocolo que Spring efectivamente implementa de forma nativa) y detección real de MIME para archivos subidos.
 
-### Tema 1: CRUD API y contratos
+### Tema 1: CRUD API y contratos · Intermedio · 35 min
 
 **¿Por qué es importante?** Cancelar sin borrar conserva evidencia útil para auditoría y evita que un reintento de red destruya información o cree un resultado distinto. En este laboratorio, `DELETE` marca el envío como cancelado; no borra la fila. Las claves para reintentar una creación se estudian en M13 T2.
 
@@ -98,7 +98,7 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 **Aplicación y decisión:** En el proyecto integrador, conserva la cancelación como transición y prueba la segunda petición sobre el mismo ID. Límite: idempotencia de DELETE no define por sí sola cómo resolver dos operaciones concurrentes ni la autorización del solicitante.
 
-### Tema 2: MySQL y datos espaciales
+### Tema 2: MySQL y datos espaciales · Avanzado · 35 min
 
 **¿Por qué es importante?** Una búsqueda de repartidores cercanos necesita distinguir coordenadas bien interpretadas de un filtro espacial rápido. El laboratorio ejecuta las consultas contra MySQL 8.0.36 real con Testcontainers, no contra H2.
 
@@ -228,7 +228,7 @@ Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/s
 
 **Aplicación y decisión:** En el proyecto integrador, fija orden de ejes y unidades antes de calcular distancias y conserva el EXPLAIN del caso real. Una distancia esférica no equivale a una ruta por carretera ni a tiempo de llegada.
 
-### Tema 3: JPA e Hibernate Spatial
+### Tema 3: JPA e Hibernate Spatial · Avanzado · 35 min
 
 **¿Por qué es importante?** La aplicación necesita trabajar con puntos GPS como datos tipados y conservar los cambios cuando dos conductores actualizan una posición casi al mismo tiempo. El laboratorio conecta JTS, Hibernate Spatial y MySQL real.
 
@@ -321,7 +321,7 @@ Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `
 
 **Aplicación y decisión:** En el proyecto integrador, mantén SRID y orden de coordenadas en el adaptador Spatial. Límite: persistir un Point con Hibernate no acredita que el índice elegido reduzca coste bajo la distribución real de datos.
 
-### Tema 4: JWT Bearer y autorización por roles
+### Tema 4: JWT Bearer y autorización por roles · Avanzado · 35 min
 
 **¿Por qué es importante?** Un rol autoriza una clase de acción; no demuestra que el recurso solicitado sea de esa persona. El laboratorio firma JWT con HS256, valida su firma y revisa el dueño de la jornada por separado.
 
@@ -411,7 +411,7 @@ Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-b
 
 ---
 
-### Tema 5: Tiempo real con STOMP
+### Tema 5: Tiempo real con STOMP · Avanzado · 40 min
 
 **Objetivo observable:** conectar un cliente STOMP por WebSocket, recibir una posición publicada a un topic y demostrar que una secuencia repetida se descarta.
 
@@ -516,7 +516,7 @@ Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`
 
 **Fuentes oficiales:** [Spring WebSocket y STOMP](https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html), [broker simple: límites y alternativas](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html).
 
-### Tema 6: Archivos y notificaciones push
+### Tema 6: Archivos y notificaciones push · Avanzado · 40 min
 
 **Objetivo observable:** aceptar una imagen decodificable de una lista permitida, guardar su contenido bajo una clave nueva y enviar un aviso solo tras el commit.
 

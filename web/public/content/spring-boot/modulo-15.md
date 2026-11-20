@@ -5,7 +5,7 @@
 
 Este módulo cierra el nivel "master" del track con ocho temas avanzados: backpressure medido con `reactor-test`, reutilización de contenedores Testcontainers, reglas con ArchUnit, Bulkhead y RateLimiter con Resilience4j, una saga con compensación, event sourcing con replay, recuperación de compensaciones fallidas y Clean Architecture con DDD táctico. Cada tema debe enlazar sus herramientas y pruebas reales; el inventario de herramientas no sustituye evidencia de ejecución.
 
-### Tema 1: Backpressure real en WebFlux con reactor-test
+### Tema 1: Backpressure real en WebFlux con reactor-test · Avanzado · 35 min
 
 **Objetivo observable:** usar `StepVerifier` para pedir elementos por tandas y comprobar los valores emitidos y las solicitudes que llegan al origen.
 
@@ -131,7 +131,7 @@ Ejecuta `./mvnw -q -Dtest=BackpressureDemandTest test`.
 
 **Fuentes oficiales:** [Project Reactor: testing](https://projectreactor.io/docs/core/release/reference/testing.html), [Project Reactor: backpressure y operadores](https://projectreactor.io/docs/core/release/reference/subscribe-backpressure.html) y [Reactive Streams: reglas de demanda](https://github.com/reactive-streams/reactive-streams-jvm).
 
-### Tema 2: Contenedores Testcontainers reutilizados entre clases
+### Tema 2: Contenedores Testcontainers reutilizados entre clases · Avanzado · 35 min
 
 **Objetivo observable:** hacer que dos clases JUnit consulten el mismo PostgreSQL Testcontainers dentro de una ejecución de pruebas y comparar el ID real observado por cada una.
 
@@ -244,7 +244,7 @@ Para comprobar «Decide si conviene compartir», consulta: `examples/testcontain
 ```bash
 ./mvnw -q -Dtest=FirstRepositoryTest test
 ```
-### Tema 3: Arquitectura hexagonal verificada con ArchUnit
+### Tema 3: Arquitectura hexagonal verificada con ArchUnit · Avanzado · 35 min
 
 **Objetivo observable:** agregar una regla ejecutable que bloquee dependencias desde `domain` y `application` hacia `infrastructure`.
 
@@ -352,7 +352,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html), [ArchUnit Getting Started](https://www.archunit.org/getting-started).
 
-### Tema 4: Bulkhead y RateLimiter de Resilience4j
+### Tema 4: Bulkhead y RateLimiter de Resilience4j · Avanzado · 35 min
 
 #### Subtema 15.4.1: Separa concurrencia de ritmo · 8 min
 
@@ -433,7 +433,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Fuentes oficiales:** [Resilience4j Bulkhead](https://resilience4j.readme.io/docs/bulkhead), [Resilience4j RateLimiter](https://resilience4j.readme.io/docs/ratelimiter).
 
-### Tema 5: Saga con compensación real
+### Tema 5: Saga con compensación real · Avanzado · 35 min
 
 #### Subtema 15.5.1: Dibuja los pasos del pedido · 8 min
 
@@ -525,7 +525,7 @@ Para comprobar «Delimita la demo y planea la recuperación», consulta: `exampl
 
 **Fuentes:** [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La referencia describe tanto coordinación por orquestación como coreografía y destaca que las compensaciones se diseñan explícitamente; este laboratorio solo ejercita la variante orquestada local.
 
-### Tema 6: Event Sourcing con replay real
+### Tema 6: Event Sourcing con replay real · Avanzado · 35 min
 
 #### Subtema 15.6.1: Guarda hechos, no solo el estado final · 8 min
 
@@ -611,7 +611,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
 
-### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 35 min
 
 #### Subtema 15.7.1: Conserva el trabajo pendiente · 8 min
 
@@ -783,7 +783,7 @@ class CompensacionTest(unittest.TestCase):
 if __name__=='__main__':unittest.main()
 ```
 
-### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework
+### Tema 8: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 35 min
 
 #### Subtema 15.8.1: Haz que el agregado proteja la regla · 8 min
 

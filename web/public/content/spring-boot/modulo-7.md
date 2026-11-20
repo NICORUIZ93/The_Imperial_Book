@@ -7,7 +7,7 @@ Actuator reúne señales técnicas y operativas. Cada práctica debe comprobar q
 
 ## Aprende construyendo
 
-### Tema 1: Actuator y health checks personalizados
+### Tema 1: Actuator y health checks personalizados · Intermedio · 30 min
 
 **¿Por qué es importante?** Actuator permite distinguir la salud del proceso de una dependencia que dejó de responder. Este ejemplo continúa `com.example.demo`, con seguridad JWT y MockMvc de los módulos anteriores.
 
@@ -202,7 +202,7 @@ Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator
 
 **Aplicación y decisión:** En el proyecto integrador, define qué dependencia afecta readiness y qué indicador informa solo diagnóstico. Prueba la caída sin reiniciar el proceso; una bandera de test no mide la latencia de un proveedor real.
 
-### Tema 2: Contar operaciones de negocio con Micrometer
+### Tema 2: Contar operaciones de negocio con Micrometer · Intermedio · 30 min
 
 **¿Por qué es importante?** La cantidad de tareas creadas responde una pregunta del negocio. Sin un contador visible, el equipo solo ve detalles técnicos y no puede seguir esa actividad durante una ventana de tiempo.
 
@@ -378,7 +378,7 @@ Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator
 
 **Aplicación y decisión:** En el proyecto integrador, usa el contador para observar creaciones y conserva la tabla como fuente de verdad. Límite: la métrica en memoria no se revierte necesariamente con un rollback y no es un libro contable durable.
 
-### Tema 3: Liveness y readiness sin reinicios en cadena
+### Tema 3: Liveness y readiness sin reinicios en cadena · Intermedio · 25 min
 
 **¿Por qué es importante?** Si falla un servicio externo, una sonda de liveness mal configurada puede reiniciar todas las instancias al mismo tiempo. Primero separa las dos preguntas: «¿el proceso puede seguir vivo?» y «¿esta instancia debe recibir tráfico ahora?». Al terminar, configurarás ambas señales y demostrarás su independencia con pruebas.
 

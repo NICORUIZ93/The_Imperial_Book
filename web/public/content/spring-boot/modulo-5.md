@@ -7,7 +7,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: @ConfigurationProperties tipado
+### Tema 1: @ConfigurationProperties tipado · Intermedio · 30 min
 
 **Meta:** agrupar la clave y el vencimiento de JWT que ya existen en el proyecto del Módulo 4, enlazarlos a un `record` validado y usarlos desde el mismo `JwtService`.
 
@@ -192,7 +192,7 @@ Añade `import java.time.Duration;` y conserva las aserciones existentes de usua
 
 ---
 
-### Tema 2: Fallar rápido al arranque
+### Tema 2: Fallar rápido al arranque · Intermedio · 30 min
 
 **Meta:** provocar y leer el fallo del contexto cuando falta el secreto JWT, y distinguirlo de un arranque correcto con una clave de prueba.
 
@@ -313,7 +313,7 @@ Archivo concreto para esta comprobación: `src/main/java/com/example/demo/JwtSet
 
 ---
 
-### Tema 3: Manejo global de excepciones consistente entre entornos
+### Tema 3: Manejo global de excepciones consistente entre entornos · Intermedio · 30 min
 
 **Meta:** añadir una regla de negocio al `GlobalExceptionHandler` del Módulo 2 y comprobar que reutiliza el `ApiError` que ya conoce el cliente.
 

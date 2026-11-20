@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Producers y consumers con Spring Kafka
+### Tema 1: Producers y consumers con Spring Kafka · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
@@ -157,7 +157,7 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 
 **Transferencia al proyecto integrador:** conecta el evento de envío con consumidores independientes y conserva el identificador del envío como clave para el procesamiento ordenado por partición.
 
-### Tema 2: Dead-letter queue
+### Tema 2: Dead-letter queue · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
@@ -266,7 +266,7 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 
 **Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
 
-### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once
+### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
@@ -458,7 +458,7 @@ Identifica qué fila ve cada nivel de aislamiento y di qué parte de la garantí
 
 **Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con clave estable y protege cada `eventId` en inbox. Describe la garantía y sus límites por cada frontera; no llames exactly-once a la operación total sin una transacción que cubra su entrada y salida.
 
-### Tema 4: Rebalanceo de consumer groups y asignación de particiones
+### Tema 4: Rebalanceo de consumer groups y asignación de particiones · Avanzado · 45 min
 
 **Duración estimada:** 45 min.
 
@@ -615,7 +615,7 @@ Anota una situación apropiada para membresía estática, el costo de un timeout
 
 **Fuentes oficiales:** [Rebalance listeners en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html), [configuración de consumidores Apache Kafka 4.2](https://kafka.apache.org/42/generated/consumer_config.html) y [protocolo de rebalanceo Apache Kafka 4.3](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/).
 
-### Tema 5: Kafka frente a RabbitMQ
+### Tema 5: Kafka frente a RabbitMQ · Avanzado · 45 min
 
 **Duración estimada:** 45 min.
 
@@ -753,7 +753,7 @@ Entrega una decisión breve para un flujo de reprocesamiento histórico y otra p
 
 **Transferencia al proyecto integrador:** documenta por evento quién lo necesita, si necesita copia independiente o competencia por trabajo, cuánto retenerlo, qué confirma publicación y qué confirma procesamiento, cómo reintenta y qué efecto idempotente protege una redelivery.
 
-### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ
+### Tema 6: Spring Cloud Stream y binders de Kafka/RabbitMQ · Avanzado · 45 min
 
 **Duración estimada:** 45 min.
 
@@ -933,7 +933,7 @@ Entrega la prueba de función y una lista breve de lo que todavía debes observa
 
 **Aplicación y decisión:** Límite del binder de prueba: ejecuta la función y sus bindings en memoria; no acredita offsets ni confirmaciones de un broker real. Elige el perfil del transporte de RutaFlow según retención, reentrega y capacidad operativa, conservando pruebas de contrato compartidas.
 
-### Tema 7: Kafka Streams con Spring para transformar eventos
+### Tema 7: Kafka Streams con Spring para transformar eventos · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
@@ -1081,7 +1081,7 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 
 **Aplicación y decisión:** Límite del test driver: observa registros y estado con tiempo controlado, sin broker, rebalanceo o ACL. Usa el conteo por ventana en el proyecto integrador solo después de definir tiempo de evento, retención y política para llegadas tardías.
 
-### Tema 8: Avro y Schema Registry para contratos de eventos
+### Tema 8: Avro y Schema Registry para contratos de eventos · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.
@@ -1227,7 +1227,7 @@ Entrega las versiones v1/v2, respuesta de compatibilidad y el resultado local de
 
 **Aplicación y decisión:** En el proyecto integrador, versiona el esquema del evento antes de desplegar un productor nuevo y prueba lectura de datos antiguos. Separa el test de resolución Avro del Registry HTTP real; aprobar el primero no acredita compatibilidad configurada por subject.
 
-### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch
+### Tema 9: RabbitMQ con Spring AMQP: routing, ack y prefetch · Avanzado · 40 min
 
 Este tema continúa la comparación Kafka/RabbitMQ y el trabajo con binders de T5–T6. Aquí usamos Spring AMQP directamente para ver el contrato de una cola y el ciclo de una entrega.
 

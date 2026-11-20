@@ -4,7 +4,7 @@
 
 Aplica las fronteras del módulo 22 a otro dominio de laboratorio, Pedidos y Notificaciones, con Spring Boot 4.1.2 y Spring Modulith 2.1.1, fijados en el POM del laboratorio. Trabajarás sobre `pedidos` y `notificaciones` reales, en lugar de imaginar paquetes vacíos. El registro JDBC usa H2 durante las pruebas. Un módulo es una frontera lógica dentro del proceso; no equivale a un microservicio.
 
-### Tema 1: módulos y límites entre paquetes
+### Tema 1: módulos y límites entre paquetes · Avanzado · 30 min
 
 **Meta:** detectar una dependencia de un módulo hacia una clase interna de otro.
 
@@ -88,7 +88,7 @@ cd practica-m23-t1
 
 **Fuente primaria:** [Spring Modulith: fundamentos](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
 
-### Tema 2: eventos entre módulos sin importar implementación
+### Tema 2: eventos entre módulos sin importar implementación · Avanzado · 30 min
 
 **Meta:** publicar un hecho de negocio y observar su reacción local después del commit.
 
@@ -172,7 +172,7 @@ cd practica-m23-t2
 
 **Fuente primaria:** [Spring Modulith: eventos](https://docs.spring.io/spring-modulith/reference/events.html)
 
-### Tema 3: documentación generada y mapa de dependencias
+### Tema 3: documentación generada y mapa de dependencias · Avanzado · 30 min
 
 **Meta:** generar PlantUML y fichas Asciidoc desde el modelo modular y contrastar una relación con un import.
 
@@ -256,7 +256,7 @@ cd practica-m23-t3
 
 **Fuente primaria:** [Spring Modulith: Documenter](https://docs.spring.io/spring-modulith/reference/documentation.html)
 
-### Tema 4: pruebas de integración por módulo
+### Tema 4: pruebas de integración por módulo · Avanzado · 30 min
 
 **Meta:** distinguir un test modular acotado del contexto completo y localizar qué evidencia produce cada uno.
 

@@ -7,7 +7,7 @@ Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades),
 
 ## Aprende construyendo
 
-### Tema 1: Por qué DTOs en vez de entidades directamente
+### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 35 min
 
 La API recibirá una tarea y devolverá una confirmación. La entidad representa cómo guardamos el dato; el DTO (objeto de transferencia) define qué mandamos por HTTP. Necesitas clases Java, constructores y una ruta REST.
 
@@ -249,7 +249,7 @@ El DTO mantiene estable la frontera HTTP aunque cambie la entidad. En este ejerc
 
 **Fuentes primarias:** [Spring MVC y cuerpos de petición](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html), [bases SQL y H2 en Spring Boot](https://docs.spring.io/spring-boot/reference/data/sql.html), [conceptos de repositorio en Spring Data](https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html).
 
-### Tema 2: Validación con Bean Validation y ResponseEntity
+### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 35 min
 
 Una petición HTTP puede estar bien escrita como JSON y aun así pedir algo inválido. En este tema agregarás validación al `POST` de tareas y usarás `ResponseEntity` para que el resultado indique qué ocurrió.
 
@@ -405,7 +405,7 @@ La validación del DTO protege la frontera de entrada. El código `400` informa 
 
 **Fuentes primarias:** [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [Jakarta Bean Validation](https://jakarta.ee/specifications/bean-validation/).
 
-### Tema 3: Manejo centralizado de errores con @ControllerAdvice
+### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 40 min
 
 El Tema 2 ya distingue éxito de error, pero la validación y una tarea ausente todavía producen cuerpos distintos. Harás que ambos errores compartan una forma simple y útil para quien llama la API.
 
@@ -609,7 +609,7 @@ No devuelvas `ex.getStackTrace()` ni mensajes de base de datos a la API. Si el p
 **Fuentes primarias:** [Spring MVC: manejadores de excepción](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-exceptionhandler.html), [Spring MVC: validación de argumentos](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html), [RFC 9457: Problem Details](https://www.rfc-editor.org/rfc/rfc9457).
 
 
-### Tema 4: Lombok y MapStruct sin exponer datos internos
+### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 35 min
 
 Ya tienes una entidad, un DTO y una API. En este tema reducirás los métodos repetidos y harás el mapeo con código Java que se genera al compilar.
 
@@ -844,7 +844,7 @@ Después ejecuta `./mvnw clean test` y el `curl` del Tema 1; comprueba que el JS
 
 **Fuentes primarias:** [Lombok: configuración Maven](https://projectlombok.org/setup/maven), [MapStruct 1.6.3: guía de referencia](https://mapstruct.org/documentation/stable/reference/pdf/mapstruct-reference-guide.pdf), [MapStruct: preguntas sobre Lombok](https://mapstruct.org/faq/).
 
-### Tema 5: OpenAPI con springdoc: el contrato como prueba
+### Tema 5: OpenAPI con springdoc: el contrato como prueba · Avanzado · 40 min
 
 La API de tareas ya responde con códigos y errores propios. Ahora publicarás ese contrato en OpenAPI y escribirás una prueba que detecte si deja de documentar una respuesta.
 
@@ -1068,7 +1068,7 @@ Compara la prueba de HTTP con `ContratoOpenApiTest`: una revisa lo que hace el s
 
 **Fuentes primarias:** [Springdoc: compatibilidad con Spring Boot y guía de uso](https://springdoc.org/), [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
 
-### Tema 6: Paginación HTTP con validación y un límite de recursos explícito
+### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Avanzado · 40 min
 
 La ruta de tareas aún no permite pedir pocos resultados. Conectarás una página del navegador a una consulta paginada de Spring Data y limitarás el tamaño de cada petición.
 

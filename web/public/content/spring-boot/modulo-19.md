@@ -11,7 +11,7 @@ Construirás un job que importa pedidos desde CSV, valida y transforma cada fila
 
 Compara los límites de transacción y el consumo de memoria con más de un chunk. No confundas `skip` con una salida silenciosa: cada fila excluida necesita causa y evidencia.
 
-### Tema 1: Job, Step, Tasklet y chunk processing
+### Tema 1: Job, Step, Tasklet y chunk processing · Intermedio · 35 min
 
 **Meta:** importar un CSV pequeño, filtrar una fila, guardar las válidas y reconocer qué trabajo hace cada parte de Spring Batch.
 
@@ -116,7 +116,7 @@ Lee `ImportJobTest.java`: consulta `pedido_importado` y compara referencias e im
 
 **Fuentes primarias:** [Spring Batch: procesamiento por chunks](https://docs.spring.io/spring-batch/reference/step/chunk-oriented-processing.html); [Spring Batch: configurar un Job](https://docs.spring.io/spring-batch/reference/job/configuring-job.html); [Spring Batch: Tasklet](https://docs.spring.io/spring-batch/reference/step/tasklet.html); [Spring Boot: Spring Batch y ejecución automática](https://docs.spring.io/spring-boot/reference/io/spring-batch.html).
 
-### Tema 2: Reinicio, JobParameters, retry, skip y listeners
+### Tema 2: Reinicio, JobParameters, retry, skip y listeners · Avanzado · 40 min
 
 **Meta:** reconocer una ejecución lógica, reanudar el job con sus parámetros y separar fallas temporales de filas que no se pueden procesar.
 

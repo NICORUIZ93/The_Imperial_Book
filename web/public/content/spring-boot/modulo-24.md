@@ -4,7 +4,7 @@
 
 El laboratorio fija Java 25 y Spring Boot 4.1.2. Todas las pruebas pasan por el schema y los resolvers reales con ExecutionGraphQlServiceTester. Los datos están en memoria y no hay autenticación; es un laboratorio local, no un backend listo para publicar. HTTP y WebSocket se verifican por separado del servicio GraphQL.
 
-### Tema 1: schema-first con tipos y consultas
+### Tema 1: schema-first con tipos y consultas · Intermedio · 30 min
 
 **Meta:** consultar una entrega declarada en el schema y observar el rechazo de un campo inexistente.
 
@@ -88,7 +88,7 @@ cd practica-m24-t1
 
 **Fuente primaria:** [Spring GraphQL: controladores anotados](https://docs.spring.io/spring-graphql/reference/controllers.html)
 
-### Tema 2: data fetchers, relaciones y problema N+1
+### Tema 2: data fetchers, relaciones y problema N+1 · Avanzado · 30 min
 
 **Meta:** resolver conductores de dos entregas mediante una sola invocación batch observada.
 
@@ -175,7 +175,7 @@ cd practica-m24-t2
 
 **Aplicación y decisión:** Límite de la demostración N+1: el contador mide llamadas al método batch, no consultas SQL ni tiempo ahorrado. Mantén autorización por empresa y mide el repositorio real antes de convertir ese conteo en una recomendación de rendimiento.
 
-### Tema 3: mutations y subscriptions
+### Tema 3: mutations y subscriptions · Avanzado · 30 min
 
 **Meta:** cambiar un estado permitido y recibir el cambio a través de una suscripción local.
 
@@ -259,7 +259,7 @@ cd practica-m24-t3
 
 **Fuente primaria:** [Spring GraphQL: subscriptions y controladores](https://docs.spring.io/spring-graphql/reference/controllers.html)
 
-### Tema 4: pruebas GraphQL con GraphQlTester
+### Tema 4: pruebas GraphQL con GraphQlTester · Avanzado · 30 min
 
 **Meta:** conservar casos positivos y negativos del contrato y distinguir ejecución directa de HTTP.
 

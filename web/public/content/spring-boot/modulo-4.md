@@ -7,7 +7,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: SecurityFilterChain moderno
+### Tema 1: SecurityFilterChain moderno · Intermedio · 30 min
 
 Al terminar, podrás añadir Spring Security al backend `academia-spring`, separar una ruta pública de las protegidas y probar la regla con MockMvc. Este tema usa HTTP Basic para mostrar la cadena de filtros; el siguiente añade JWT.
 
@@ -225,7 +225,7 @@ void subrutaAceptaIdentidadDePrueba() throws Exception {
 
 El filtro que definiste protege el backend acumulativo del proyecto integrador; una marca de test confirma esta regla de rutas, no una revisión de todos los controles de acceso del producto.
 
-### Tema 2: Filtro JWT y autorización por rol
+### Tema 2: Filtro JWT y autorización por rol · Intermedio · 30 min
 
 Al terminar, podrás firmar y validar un JWT, conectarlo a la cadena de Spring Security y restringir una operación por rol. El backend de los Temas 1–3 sigue siendo `academia-spring`.
 
@@ -529,7 +529,7 @@ Desde la raíz del proyecto ejecuta `./mvnw -q -Dtest=JwtFilterTest test` y desp
 
 ---
 
-### Tema 3: CORS y CSRF
+### Tema 3: CORS y CSRF · Intermedio · 30 min
 
 Al terminar, podrás permitir desde qué sitios web se llama la API y decidir cuándo proteger las peticiones contra CSRF. Continúa el proyecto integrador `academia-spring` con JWT en `Authorization`.
 
@@ -703,7 +703,7 @@ Ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeMetodoNoListadoRecibe403 tes
 
 ---
 
-### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter
+### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter · Avanzado · 30 min
 
 **Meta:** configurar un cliente saliente de Spring Boot 4 que rechace direcciones internas, poner límites al tiempo de conexión y comprobar que no sigue redirecciones. Esto reduce una vía de SSRF en ese cliente; no convierte en segura cualquier URL ni reemplaza reglas de salida de red.
 
@@ -779,7 +779,7 @@ El primer servidor devuelve `302` apuntando al segundo; el cliente debe devolver
 
 **Aplicación y decisión:** En el proyecto integrador, aplica el filtro IP también al destino resuelto y controla redirects; validar solo la cadena inicial no limita una redirección posterior. El laboratorio local no acredita todas las condiciones DNS ni una política de red del despliegue.
 
-### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida
+### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 30 min
 
 Al final podrás encadenar el login, la emisión del JWT del subtema 4.4 y el acceso protegido del subtema 4.5. Conserva el paquete `com.example.demo` y una única clase `JwtService`.
 

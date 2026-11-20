@@ -6,7 +6,7 @@ Vas a conectar el servicio de envíos con ruteo y notificaciones. El laboratorio
 
 **Cómo estudiar:** completa los cuatro pasos de cada subtema. Cada tema toma 20–45 min; sus subtemas toman 5–15 min.
 
-### Tema 1: Productor, tópico, key y consumidor
+### Tema 1: Productor, tópico, key y consumidor · Intermedio · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** La key y el grupo deciden qué servicio recibe el evento y qué orden puede conservar.
@@ -91,7 +91,7 @@ Conserva la salida del test y señala qué pareja de valores demuestra el orden.
 
 **Aplicación y decisión:** En el proyecto integrador, usa la key del envío para conservar orden por partición y registra el grupo de cada consumidor. Límite: ese orden no es global entre particiones ni prueba el orden de efectos de dos sistemas externos.
 
-### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia
+### Tema 2: Reintentos, DLT, entrega al menos una vez e idempotencia · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Reintentar con límite y deduplicar protege el servicio ante mensajes inválidos o repetidos.
@@ -176,7 +176,7 @@ Anota qué filas desaparecieron en el rollback y cuáles se crean al reintentar.
 
 **Aplicación y decisión:** En el proyecto integrador, distingue fallos transitorios y datos inválidos antes de reintentar. Mantén inbox con unicidad del evento y un procedimiento de replay desde DLT; llegar a DLT no significa resolver el incidente.
 
-### Tema 3: Outbox transaccional y flujo de negocio
+### Tema 3: Outbox transaccional y flujo de negocio · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Outbox permite recuperar el evento si la aplicación cae entre guardar el envío y publicarlo.

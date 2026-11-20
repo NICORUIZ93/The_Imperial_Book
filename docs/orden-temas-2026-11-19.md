@@ -546,13 +546,105 @@ Inversas verificadas (aplicar el orden del lote y luego su inversa devuelve la n
 
 Ejemplo: `python3 scripts/reorder_track_topics.py --track flutter --module 20 --order 1,3,4,5,2,6 --apply`. Después hay que deshacer a mano los dos números de arriba (el `temas 2 y 4` del capítulo 22 vuelve a `temas 2 y 5`) y quitar las 109 etiquetas nuevas devolviendo cada cabecera a su texto sin ` · Nivel · XX min`, salvo las diez originales (capítulo 0 temas 5, 6 y 7; capítulo 1 temas 4 y 5; capítulo 6 tema 5; capítulo 7 temas 5 y 6; capítulo 11 tema 5; capítulo 12 tema 4). Las tres cabeceras `#### Subtema 1.1/1.2/1.3` del capítulo 19 son el único formato de subtema que existe en el curso y viven en el tema 1, que no se movió: no hay que tocarlas. La corrección del capítulo 21 (`los dos módulos de producción de este curso (13 y 18)`) **no se revierte**: era un enlace falso a un capítulo que no trata de producción, no una consecuencia del orden. Cerrar con los generadores y `./scripts/validate.sh`.
 
+## Octavo lote: Spring Boot, un curso completo (121 temas)
+
+Spring Boot son **27 capítulos y 121 temas**, con nueve etiquetas puestas de antes. El lote declara las **112 que faltaban**: 112 etiquetas nuevas, 9 que ya estaban y se dejaron byte a byte como estaban, **0 niveles existentes subidos ni bajados**. Reparto final: 3 Básico, 40 Intermedio, 72 Avanzado, 6 Experto. Duraciones: 25 min (4 temas), 30 (33), 35 (38), 40 (28), 45 (11), 50 (5), 1 h 20 (1) y 1 h 30 (1).
+
+Las nueve etiquetas previas son el tema 4 de los capítulos 0, 3, 5, 7, 8 y 11, el tema 3 de los capítulos 18 y 26 y el tema 1 del capítulo 26. Ocho de las nueve viven **al final de su capítulo**, que es la posición del tema que cierra el capítulo; esa coincidencia es la que explica el resultado más llamativo del lote (abajo).
+
+Medido contra `HEAD`: el diff de contenido son **112 líneas añadidas y 112 quitadas en 26 archivos** (el capítulo 26 no aparece porque sus dos temas ya estaban etiquetados). Y quitando el sufijo de cada cabecera, **los 27 capítulos son idénticos línea por línea**: no hubo ni una sola frase que reescribir.
+
+### Las duraciones no se eligieron: se midieron
+
+**111 de los 121 temas** reparten su tiempo en sus propias cabeceras `#### Subtema … · NN min`. La regla del lote es sumar esos minutos y redondear **hacia arriba** al múltiplo de 5 siguiente —hacia abajo estaría prohibido, porque un tema no puede declarar menos tiempo que la suma de sus partes—.
+
+Esa regla no es una preferencia mía: **reproduce el número que el propio contenido ya declaraba en los 33 sitios donde los dos existen.**
+
+- 16 temas escriben `**Duración estimada:** NN min.` en su cuerpo. La suma de sus subtemas coincide **con las 16, exacta, sin redondear** (capítulo 8 temas 1 a 8: 35, 35, 50, 45, 45, 45, 50, 50; capítulo 10 tema 1: 35; capítulo 21 temas 1 a 3: 25, 30, 30; capítulo 25 temas 1 a 4: 25, 30, 30, 25).
+- 17 temas declaran un intervalo en la prosa del prerrequisito (`Duración: 30–40 min`, `35–45`, `45–60`, `40–50`, `35–40`). La suma redondeada cae **dentro de los 17 intervalos** (capítulo 10 temas 10, 11 y 12: 38→40, 42→45, 40 dentro de 35–45; capítulo 11 temas 1, 2 y 3: 40, 49→50, 40; capítulo 20 temas 5, 7 y 8: 34→35, 35, 36→40; capítulos 23 y 24, sus ocho temas: 30 dentro de 30–40).
+
+Los diez temas sin minutos en subtemas son los nueve ya etiquetados (se quedaron con su número) y **uno solo**, el tema 9 del capítulo de integraciones: «Model Context Protocol con Spring AI». No tiene subtemas —es el único tema del curso que usa `#### Paso 1…7`— ni declara duración. Se le puso **40 min** midiendo su volumen contra sus ocho hermanos de capítulo: 8.984 caracteres y 8 bloques de código, frente a los 9.184 caracteres y 8 bloques del tema 5, que declara 35–40 y suma 34. Es el único número del lote que no sale de la boca del propio tema, y por eso se nombra aquí.
+
+### Cero capítulos reordenados, y por qué no es una excusa
+
+Con las 121 etiquetas puestas, `audit_topic_order.py` no encuentra **ninguna escalera invertida en los 27 capítulos**. El curso se autoría ya escalonado y las etiquetas lo confirman en vez de desmentirlo. La escalera queda así (B = Básico, I = Intermedio, A = Avanzado, E = Experto; el número es la duración medida):
+
+| Capítulo | Orden de nivel y duración |
+|---|---|
+| 0 · Fundamentos de Spring | B·30 → I·30 → I·35 → I·45 |
+| 1 · CLI y estructura | B·30 → B·30 → I·35 |
+| 2 · REST con Spring Web | I·35 → I·35 → I·40 → I·35 → A·40 → A·40 |
+| 3 · Spring Data JPA | I·30 → I·35 → I·30 → I·45 |
+| 4 · Spring Security | I·30 → I·30 → I·30 → A·30 → A·30 |
+| 5 · Configuración y errores | I·30 → I·30 → I·30 → A·35 |
+| 6 · Testing | I·30 → A·30 → A·30 |
+| 7 · Actuator | I·30 → I·30 → I·25 → I·40 |
+| 8 · Mensajería Kafka/RabbitMQ | I·35 → I·35 → A·50 → A·45 → A·45 → A·45 → A·50 → A·50 → A·40 → A·45 |
+| 9 · WebFlux | I·40 → A·40 → A·40 |
+| 10 · Spring Cloud | I·35 → I·35 → I·30 → A·45 → A·40 → A·40 → A·35 → A·45 → A·45 → A·40 → A·45 → A·40 |
+| 11 · Empaquetado y despliegue | I·40 → A·50 → A·40 → A·40 |
+| 12 · Proyecto integrador | A·40 → A·40 → E·35 |
+| 13 · Consistencia distribuida | A·35 → A·40 → A·35 → A·40 |
+| 14 · Backend de entregas | I·35 → A·35 → A·35 → A·35 → A·40 → A·40 |
+| 15 · Spring Master | A·35 → A·35 → A·35 → A·35 → A·35 → A·35 → E·35 → E·35 |
+| 16 · JPA: Hibernate y N+1 | I·40 → A·35 |
+| 17 · JDBC y transacciones | I·35 → A·35 |
+| 18 · Backend seguro | A·35 → A·40 → E·50 |
+| 19 · Spring Batch | I·35 → A·40 |
+| 20 · Integraciones | I·35 → I·40 → A·40 → A·45 → A·35 → A·30 → A·35 → A·40 → A·40 |
+| 21 · Eventos con Kafka | I·25 → A·30 → A·30 |
+| 22 · Arquitectura | A·35 → A·35 → E·35 |
+| 23 · Spring Modulith | A·30 → A·30 → A·30 → A·30 |
+| 24 · Spring GraphQL | I·30 → A·30 → A·30 → A·30 |
+| 25 · Cloud Stream | I·25 → I·30 → A·30 → A·25 |
+| 26 · Concurrencia avanzada | A·80 → E·90 |
+
+Cero reordenados es un resultado que hay que ponerse a dudar, porque en los seis lotes anteriores hubo (3, 4, 6, 8, 5 y 10 capítulos). La sospecha legítima es que hubiera subido o bajado un nivel para que cuadrara. Dos capítulos son los únicos donde una etiqueta previa **impone el techo** del capítulo, y son los que revisé a fondo antes de dar el resultado por bueno:
+
+- **Capítulo 3 (Spring Data JPA).** Su tema 4, «Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos», está declarado Intermedio desde antes, así que ningún tema anterior puede pasar de Intermedio. El que tentaba era el tema 2, «El problema N+1 y su corrección». Leídas sus tres partes —relacionar clientes y pedidos y medir, cargar la relación con `JOIN FETCH`, elegir `@EntityGraph` y revisar el límite— el tema **presenta** el problema con dos herramientas concretas sobre el proyecto que el lector ya tiene; no decide nada por pantalla. La versión que sí mide y decide («LAZY, EAGER, N+1 y consultas de caso de uso», con «Pide el cliente que esta pantalla necesita») es el tema 2 del capítulo 16, y ahí sí se declaró Avanzado. Los dos son el mismo asunto en dos profundidades distintas, y la diferencia está en el texto, no en la comodidad.
+- **Capítulo 7 (Actuator).** Su tema 4, «Logging en Spring Boot», también está declarado Intermedio de antes. El que tentaba era el tema 3, «Liveness y readiness sin reinicios en cadena»: habilitar las sondas (5 min), revisar la dependencia solo en readiness (10) y probar estados distintos (10) — 25 min dentro de un servicio. La consecuencia de despliegue, que es lo que lo haría Avanzado, vive en el tema 3 del capítulo 11 («conectar Actuator con el Deployment», «evita reinicios en cascada», 40 min), y allí se declaró Avanzado.
+
+En los otros 25 capítulos no hay techo previo que respetar, así que el nivel salió solo del texto. Los tres extremos:
+
+- **Tres Básico**: el tema 1 del capítulo de fundamentos (declarar una interfaz, escribir una implementación y ver Spring conectarlas; su propio texto pide «clases, interfaces y constructores de Java» y nada más) y los temas 1 y 2 del capítulo de herramienta y configuración (generar el proyecto y encontrar sus piezas; leer una clave en YAML y en Properties y ver cuál gana desde la terminal).
+- **Cuatro Experto nuevos sobre los dos que había**: el tema 3 del capítulo integrador, porque su entrega es separar lo comprobado en local de lo que aún pide evidencia del entorno y dejar la ruta técnica siguiente; los temas 7 y 8 del capítulo Master, el primero porque trabaja sobre la compensación que **falla** (conservar el pendiente, confirmar efecto y estado juntos, reabrir sin duplicar, delimitar la recuperación) y el segundo porque el caso de uso manda sobre el framework; y el tema 3 del capítulo de arquitectura, donde se escriben tres registros de decisión con alternativas y consecuencias y un script que falla si falta alguna. Los dos previos son el tema 3 del capítulo de backend seguro (federación SAML con el proveedor de identidad de una empresa) y el tema 2 del capítulo de concurrencia (deadlocks y MDC).
+
+### Deuda que se vio en el lector al comprobar el lote
+
+Las líneas de prerrequisito de **36 frases en 11 capítulos** de Spring Boot —y **95 en todo el programa**— escriben los prerrequisitos con la notación `M8 T1 y M8 T2`. En el lector servido se ve literalmente así: «Prerrequisitos: M8 T1 y M8 T2. Proyecto continuo: guardar un envío, publicar su evento y procesarlo sin duplicar la proyección». Un alumno que no conozca la abreviatura no puede seguir ese enlace, y es justo la notación que el dueño del proyecto rechazó para hablar del curso. El auditor de citas sí la entiende (`scripts/audit_topic_citations.py` la reconoce como forma corta), así que la puerta no la señala: es un defecto de redacción, no de referencia. Reescribirlas a «los dos primeros temas de este capítulo» es un lote aparte, y hay que decidir el wording antes porque toca 95 líneas de dieciséis cursos.
+
+## Lo que nota el lector con Spring Boot etiquetado
+
+- **0 de los 121 temas cambian de enlace.** No hubo reordenado, y etiquetar no lo mueve nunca: `scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84` recortan el sufijo ` · Nivel · XX min` antes de calcular el fragmento. Medido, no deducido: regenerado el índice, **`web/public/content/topic-index.json` sale byte a byte idéntico** al de antes del lote, y lo mismo `curriculum-catalog.json`, `curriculum-stacks/spring-boot.json`, `docs/zero-to-master.md` y `docs/master-prompt-compliance.md`.
+- Lo que sí se ve es la etiqueta en cada cabecera del lector: `§ 0.1 Inversión de control y el contenedor de Spring · Básico · 30 min`, `§ 8.3 Transacciones Kafka y SQL: idempotencia y límites de exactly-once · Avanzado · 50 min`. En el tema 3 del capítulo de mensajería la cabecera y el cuerpo dicen lo mismo («Duración estimada: 50 min.»), que es la comprobación visible de la regla de arriba.
+- El orden de lectura no cambia para nadie: los 121 temas siguen numerados como estaban.
+
+## Verificación del octavo lote
+
+- `python3 scripts/audit_topic_order.py --check` → salida 0: **1.420 temas, 686 sin nivel declarado, 1 módulo con incidencias**. Spring Boot pasa de 9 a 121 temas etiquetados (798 → 686 sin declarar en todo el repositorio; −112, exacto). Su única incidencia en el auditor es la ajena: `java/20`, la excepción declarada del sexto lote.
+- `python3 scripts/audit_topic_citations.py --check` → salida 0: **1.218 citas numéricas en 289 capítulos, 0 rotas, 1 nota**, la misma nota de siempre (`spring-boot/26 tema 1`, una cita hacia adelante que avisa). Como el lote no movió ningún tema, no había nada que recalcular; las 36 citas `M<N> T<N>` del curso siguen apuntando a su tema.
+- Integridad de los cuerpos: comparado cada uno de los 27 capítulos contra `HEAD` y **normalizando solo el sufijo de las cabeceras, los 27 son idénticos línea por línea**. 0 frases reescritas, 0 números que mover.
+- Registros: `docs/topic-learning-quality.json` actualiza **112 de las 121 filas de Spring Boot** (las que ganaron el sufijo; las nueve previas ya coincidían con su cabecera). Comprobado fila por fila contra la cabecera real, emparejando por módulo y número de tema y no por posición: **0 desajustes**. `specs/visual-aids-scope.json`, **byte a byte idéntico** (indexa por número de tema y ningún número se movió). Total intacto: **16 rutas · 289 módulos · 1.420 temas**.
+- `./scripts/validate.sh` → **salida 0**. `validate_lesson_labs`: 59 laboratorios citados y presentes. `audit_visual_aids`: 109 temas en alcance, 0 problemas, 80 capturas pendientes (deuda previa de devops, cloud, ios, flutter y kotlin, no de este lote). `validate_specs`: 43 criterios, 36 `hecho` y 7 `pendiente`.
+- Navegador sobre el servidor de desarrollo (puerto 4214): `/curso/spring-boot/0/tema/1` muestra la cabecera con `· Básico · 30 min`; `/curso/spring-boot/8/tema/3` muestra `§ 8.3 … · Avanzado · 50 min` y debajo su propia «Duración estimada: 50 min.»; consola sin errores (solo el `vite connecting`, el aviso de modo desarrollo y el aviso previo de saneado de HTML de Angular, que aparece en todas las rutas). Capturas guardadas en `visualizations/springboot-cap0-tema1.png` y `visualizations/springboot-cap8-tema3.png`.
+
+## Cómo revertir el octavo lote
+
+No hay permutación que deshacer —el lote no movió ningún tema—. Revertir es quitar el sufijo a las 112 cabeceras que lo ganaron y devolver esas 112 filas del registro a su texto sin sufijo:
+
+1. Quitar de cada `### Tema N:` de `web/public/content/spring-boot/` el ` · Nivel · XX min` **salvo** en las nueve cabeceras previas (tema 4 de los capítulos 0, 3, 5, 7, 8 y 11; tema 3 de los capítulos 18 y 26; tema 1 del capítulo 26).
+2. `python3 scripts/build_web_topic_index.py && python3 scripts/build_curriculum_catalog.py && python3 scripts/build_zero_to_master_report.py && python3 scripts/audit_track_master_prompt.py`, y sincronizar las filas del registro como hizo el lote.
+3. `./scripts/validate.sh` — el auditor de orden debe volver a reportar **798 sin nivel declarado**.
+
 ## Deuda que queda
 
-- **798 de los 1.420 temas (56 %) siguen sin nivel ni duración declarados.** Tras Flutter, siete cursos están completos: Node.js (78/78), Microservicios (24/24), JavaScript (92/92), React (64/64), iOS (69/69), Java (117/117) y Flutter (119/119). Los otros nueve: Cloud 12/168, Spring Boot 9/121, DevOps 9/139, Android 10/83, Kotlin Multiplatform 10/66, Angular 7/78, Fundamentos 2/103, control-1 0/70, rutaflow 0/29.
-- El patrón de los siete lotes es el que queda para los nueve cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. Etiquetar no mueve ni un enlace (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84` recortan el sufijo antes de calcular el fragmento): en React 10 de 64, en JavaScript 31 de 92, en iOS 18 de 69, en Java 22 de 117 y en Flutter 12 de 119 cambiaron, y en los cinco casos la cifra es exactamente el número de temas renumerados.
-- **Sigue habiendo una sola excepción declarada en toda la historia del programa**: `docs/topic-order-exceptions.json` lista `java/20` con el motivo escrito en el sexto lote (la escalera de nivel choca con el prerrequisito `Temas 8–11` del tema 12). Flutter no añadió ninguna: sus cinco caídas se resolvieron todas moviendo contenido. Los otros seis cursos completos siguen sin incidencias declaradas.
-- El siguiente candidato natural es **Spring Boot** (9/121) o **DevOps** (9/139), y Cloud (12/168) queda para el final por tamaño.
+- **686 de los 1.420 temas (48 %) siguen sin nivel ni duración declarados.** Tras Spring Boot, ocho cursos están completos: Node.js (78/78), Microservicios (24/24), JavaScript (92/92), React (64/64), iOS (69/69), Java (117/117), Flutter (119/119) y Spring Boot (121/121). Los otros ocho: Cloud 12/168, DevOps 9/139, Android 10/83, Kotlin Multiplatform 10/66, Angular 7/78, Fundamentos 2/103, control-1 0/70, rutaflow 0/29.
+- El patrón de los ocho lotes es el que queda para los ocho cursos restantes: **etiquetar desde el propio texto y luego ordenar**, curso por curso. Etiquetar no mueve ni un enlace (`scripts/build_web_topic_index.py:63` y `web/src/app/course/lesson-viewer.ts:84` recortan el sufijo antes de calcular el fragmento): en React 10 de 64, en JavaScript 31 de 92, en iOS 18 de 69, en Java 22 de 117 y en Flutter 12 de 119 cambiaron, y en los cinco casos la cifra es exactamente el número de temas renumerados. Spring Boot es el primer lote en que esa cuenta da **0**, porque la escalera ya se cumplía en sus 27 capítulos.
+- **Sigue habiendo una sola excepción declarada en toda la historia del programa**: `docs/topic-order-exceptions.json` lista `java/20` con el motivo escrito en el sexto lote (la escalera de nivel choca con el prerrequisito `Temas 8–11` del tema 12). Flutter no añadió ninguna: sus cinco caídas se resolvieron todas moviendo contenido. Spring Boot tampoco necesitó ninguna. Los otros siete cursos completos siguen sin incidencias declaradas.
+- El siguiente candidato natural es **DevOps** (9/139), y Cloud (12/168) queda para el final por tamaño.
 - **Deuda propia de Flutter que deja vista este lote:** el capítulo 19 («Flutter para entregas: mapa, conexión y trabajo offline») construye todo su tema 1 sobre un proyecto prefabricado que ya está en el repositorio. Son **seis líneas del único archivo** (`web/public/content/flutter/modulo-19.md` líneas 5, 14, 22, 44, 66 y 91) que llaman «Proyecto continuo: `examples/flutter_rutaflow/`» y mandan al lector a abrir `shift_provider.dart` y su prueba en vez de escribirlos; las tres cabeceras `#### Subtema 1.1/1.2/1.3` del curso viven ahí. Son las **6 únicas menciones a `examples/` en los 23 capítulos** del curso y choca con la regla de que cada tema se hace desde cero en una carpeta vacía. El resto del curso ya cumple: 13 temas declaran explícitamente `Ejemplo independiente: … flutter create <algo>_lab` y ninguno más remite a código ajeno. Queda decidir si se reescribe el tema 1 del capítulo 19 hacia un proyecto propio del lector y qué se hace con el directorio.
+- **La misma deuda, en su versión grande, la deja vista Spring Boot.** **370 menciones a `examples/` repartidas en sus 26 capítulos**, que apuntan a **53 directorios prefabricados distintos** (47 de ellos `spring-*-rutaflow`), los 53 presentes en el repositorio. No son un caso aislado como el de Flutter: son la forma en que el curso entero plantea la práctica («**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa la copia del tema 1 de este capítulo»). Contradice la regla del dueño —cada tema desde cero, en carpeta vacía, con el código escrito a mano— y su arreglo es un lote de reescritura pedagógica, no de orden. La puerta `validate_lesson_labs` mide hoy lo contrario de lo que habría que medir: aprueba que los **59 directorios** que hay en `examples/` estén todos citados por alguna lección (los 53 de Spring Boot son una parte de esos 59; el resto los citan Node, Java, Flutter y los demás), así que mientras más laboratorios prefabricados se escriban, más verde sale.
+- **Deuda de redacción que el auditor de citas no puede señalar: la notación `M8 T1`.** **95 líneas en 4 cursos** escriben prerrequisitos y «siguiente tema» con esa abreviatura, 36 de ellas en 11 capítulos de Spring Boot. Es el formato que el dueño del proyecto rechazó explícitamente para hablar del curso, y un alumno que no la conoce no puede seguir el enlace. El reconocedor la acepta como referencia válida (`scripts/audit_topic_citations.py`, forma corta), así que la puerta está ciega: el defecto es de legibilidad, no de exactitud. Los 45 casos de Microservicios van entre paréntesis y después del título, que es la forma menos dañina; los de Spring Boot van solos, en la frase de prerrequisito. Reescribir las 95 es un lote aparte y hay que fijar antes el wording.
 - **Deuda que el auditor de citas deja vista y no gatea:** (a) las citas por título (`tema «X» de este módulo`) no se juzgan: hay 110 en el repositorio y 18 no coinciden con ninguna cabecera — Cloud 9, Flutter 3, Kotlin Multiplatform 2, Spring Boot 2, Angular 1, DevOps 1 —; (b) un `del Módulo 99` que no exista en el curso se salta en silencio; (c) las filas `Ver Tema N` se juzgan solo por existencia, así que un reordenado que las deje apuntando a un tema que sí existe pero es otro no salta en la puerta: en Java las nueve que había que mover se recalcularon con la permutación, no a ojo; (d) **las citas sin cualificar se saltan en `scripts/audit_topic_citations.py:155`**, y es la forma que Flutter prefiere para sus prerrequisitos (`**Prerrequisitos:** Tema 1, catálogo Play y conceptos de backend`): en el curso hay 7 dentro de los capítulos que este lote movió y hubo que repasarlas a mano, sin red. Ampliar el reconocedor para que asuma el capítulo propio cuando el número va suelto en una frase de prerrequisito es la mejora natural del auditor, pero cambiaría el alcance de lo que juzga y hay que medirlo antes de tocarlo.
 - **Deuda de dependencias entre capítulos, no dentro de uno** (el programa solo juzga el orden interno de cada capítulo): el capítulo 6 tema 2 necesita Maven, que se enseña en el capítulo 8; el capítulo 10 tema 3 necesita reflexión, que está en el capítulo 19; y el capítulo 9 tema 4 fija una base de JDK distinta (21) de la que usa el resto del curso (25 LTS / 27). Ninguna de las tres la detecta la puerta actual; hay que decidir si se reescribe el prerrequisito o se mueve el capítulo.
 - Siguen abiertos desde antes: la prueba de salida del modo libro en móvil (`web/e2e/academy.spec.ts:649`, falla en los 84/84 de todos los lotes), las 49 capturas huérfanas de Node y la fila `docs/requested-master-topics.json:82`.

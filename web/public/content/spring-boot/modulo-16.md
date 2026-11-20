@@ -11,7 +11,7 @@ Este módulo construye una API pequeña de pedidos y observa las consultas reale
 
 No arregles N+1 poniendo todas las asociaciones en `EAGER`: eso desplaza el costo y puede romper paginación. Registra la consulta y el plan elegido para cada endpoint.
 
-### Tema 1: Relaciones, lado propietario y ciclo de vida
+### Tema 1: Relaciones, lado propietario y ciclo de vida · Intermedio · 40 min
 
 **Meta:** guardar un cliente con pedidos y demostrar con SQL qué objeto escribe la clave foránea, qué propaga `PERSIST` y por qué el borrado necesita una decisión aparte. No hace falta instalar PostgreSQL: el laboratorio usa H2 en memoria.
 
@@ -116,7 +116,7 @@ Después abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLab
 **Cierra:** En el **proyecto integrador de RutaFlow**, registra en una nota breve: lado propietario, FK, operación que se propaga, regla de borrado y test que protege cada decisión. En el tema siguiente medirás cómo cargar asociaciones sin consultas inesperadas.
 
 **Fuente primaria:** [Jakarta Persistence 3.2 API: `@OneToMany`](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/OneToMany.html) documenta `mappedBy`, cascadas y `orphanRemoval`; [la especificación](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2) define las reglas de propiedad de la relación.
-### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso
+### Tema 2: LAZY, EAGER, N+1 y consultas de caso de uso · Avanzado · 35 min
 
 **Meta:** medir qué pasa cuando una lista toca una asociación, reducir consultas sin cambiar el resultado y escoger una forma de carga según la pantalla.
 

@@ -5,7 +5,7 @@
 
 Cada tema demuestra un patrón de Spring Cloud con verificación real: config server nativo servido por HTTP, `SimpleDiscoveryClient` real de Spring Cloud Commons, Gateway enrutando de verdad contra un backend embebido, un `CircuitBreaker` de Resilience4j abriéndose por conteo real de fallos, seguridad de recurso probada con el post-processor oficial de `spring-security-test`, y un deadline HTTP real medido en milisegundos. Continúa sobre el proyecto `demo-cloud`.
 
-### Tema 1: Config Server y service discovery
+### Tema 1: Config Server y service discovery · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un Config Server entrega valores por aplicación y perfil; un DiscoveryClient resuelve nombres de servicio a direcciones sin fijar la URL en cada consumidor.
@@ -199,7 +199,7 @@ flowchart LR
 
 **Aplicación y decisión:** En el proyecto integrador, decide qué configuración admite recarga y cuál exige reinicio. Límite: SimpleDiscoveryClient usa instancias declaradas; no es descubrimiento automático ni garantiza que el destino esté disponible.
 
-### Tema 2: Spring Cloud Gateway
+### Tema 2: Spring Cloud Gateway · Intermedio · 35 min
 
 El gateway recibe una petición y la reenvía al servicio elegido. En este tema vas a levantar dos procesos locales y comprobarlo con `curl`.
 
@@ -335,7 +335,7 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 
 **Aplicación y decisión:** En el proyecto integrador, el gateway enruta hacia servicios que siguen aplicando autorización por recurso. No concentres toda la seguridad en una ruta pública del gateway: un acceso interno puede saltarse ese punto de entrada.
 
-### Tema 3: Circuit breaker con Resilience4j
+### Tema 3: Circuit breaker con Resilience4j · Intermedio · 30 min
 
 **Duración:** 30 min. **Prerrequisitos:** Java `Supplier`, excepciones y códigos HTTP; M10 T1 da el contexto del servicio, pero Gateway no es requisito para comprender el circuito. El laboratorio usa Resilience4j 2.4.0 con Java 21+.
 **Proyecto continuo:** RutaFlow protege la consulta HTTP de pedidos cuando el servicio responde con error.
@@ -421,7 +421,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Fuentes oficiales:** [Resilience4j CircuitBreaker](https://resilience4j.readme.io/docs/circuitbreaker), [configuración de Resilience4j 2.4.0](https://github.com/resilience4j/resilience4j/blob/v2.4.0/resilience4j-circuitbreaker/src/main/java/io/github/resilience4j/circuitbreaker/CircuitBreakerConfig.java) y [Spring Cloud CircuitBreaker con Resilience4j](https://docs.spring.io/spring-cloud-circuitbreaker/reference/spring-cloud-circuitbreaker-resilience4j.html). El laboratorio integra el núcleo de Resilience4j como bean Spring; no usa el starter de Spring Cloud CircuitBreaker.
 
-### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
+### Tema 4: OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización · Avanzado · 45 min
 
 **Duración:** 45 min. **Prerrequisitos:** Spring Boot M4 de este track (Spring Security), métodos HTTP y lectura básica de JSON; M10 T2 se necesita para el cuarto subtema.
 
@@ -555,7 +555,7 @@ Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Ke
 
 **Aplicación y decisión:** En el proyecto integrador, conserva identidad verificada al reenviar el token y valida audiencia/issuer en el receptor. Límite: reenviar un Bearer no concede permiso para cualquier entrega ni acredita rotación de claves o cierre de sesión.
 
-### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno
+### Tema 5: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 40 min
 
 **Duración:** 40 min. **Prerrequisitos:** Módulo 9 (WebClient), Tema 1 de este módulo (service discovery).
 
@@ -714,7 +714,7 @@ Entrega las dos pruebas en verde, el nombre lógico resuelto y el resultado del 
 
 Los límites de espera son una pieza del presupuesto de latencia del proyecto integrador; se deben ajustar con observaciones del servicio, no por intuición.
 
-### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura
+### Tema 6: Spring gRPC, contrato HTTP/2 y evolución segura · Avanzado · 40 min
 
 **Duración:** 40 min. **Prerrequisito:** Tema 5 de este módulo. **Meta observable:** genera Java desde un `.proto`, publica un servicio Spring gRPC y llama al stub por un canal TCP local.
 
@@ -865,7 +865,7 @@ Entrega `./mvnw -q clean test` en verde y una propuesta de evolución con `reser
 ```bash
 ./mvnw -q clean test
 ```
-### Tema 7: DDD para decidir límites y propiedad de datos
+### Tema 7: DDD para decidir límites y propiedad de datos · Avanzado · 35 min
 
 **Duración:** 35 min. **Prerrequisito:** Módulo 3 de este track (entidades y JPA). **Meta observable:** protege una regla de negocio dentro de un agregado y explica qué contexto es dueño de esos datos.
 
@@ -1004,7 +1004,7 @@ Entrega los tests y una decisión explicada sobre qué módulo sería dueño de 
 
 **Fuentes:** [Fowler — Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) y el laboratorio ejecutable enlazado arriba.
 
-### Tema 8: Orquestar pedidos con Temporal y Spring Boot
+### Tema 8: Orquestar pedidos con Temporal y Spring Boot · Avanzado · 45 min
 
 **Objetivo observable:** ejecutar un Workflow que reserva inventario, asigna repartidor, cobra y notifica; comprobar reintentos limitados y compensaciones en orden inverso ante un fallo final.
 
@@ -1162,7 +1162,7 @@ Ejecuta toda la suite con `./mvnw -q clean test`. Entrega el código de salida y
 
 ---
 
-### Tema 9: Comprueba módulos antes de separar servicios
+### Tema 9: Comprueba módulos antes de separar servicios · Avanzado · 45 min
 
 **Objetivo observable:** verificar que Pedidos y Notificaciones no tengan ciclos ni accedan a paquetes internos, publicar `PedidoCreado` y observar que el módulo dependiente lo recibe.
 
@@ -1302,7 +1302,7 @@ Entrega el resultado de `verify()` y de las pruebas de evento. Si necesitas gara
 
 ---
 
-### Tema 10: Spring Cloud Bus para propagar cambios de configuración
+### Tema 10: Spring Cloud Bus para propagar cambios de configuración · Avanzado · 40 min
 
 Duración: 35–45 min. **Meta:** propagar un límite operacional entre dos instancias y comprobarlo con HTTP. El laboratorio runnable está en `examples/spring-cloud-bus-rutaflow/`. Usa Spring Boot 4.1.2 y Spring Cloud 2025.1.4; la matriz oficial indica compatibilidad del tren 2025.1 con Boot 4.1. No necesitas Config Server para este ejercicio: `busenv` añade un override temporal para demostrar el transporte. En un sistema real, conserva la configuración duradera en su fuente central.
 
@@ -1439,7 +1439,7 @@ Entrega la salida del script, el valor tras reinicio y un plan de acceso para pr
 
 **Aplicación y decisión:** En el proyecto integrador, registra qué propiedad cambió y qué instancias la recibieron antes de afirmar que la configuración convergió. Un build del ejemplo Cloud Bus no prueba por sí solo un evento propagado por RabbitMQ.
 
-### Tema 11: Micrometer Tracing entre servicios
+### Tema 11: Micrometer Tracing entre servicios · Avanzado · 45 min
 
 Duración: 35–45 min. **Meta:** seguir una petición desde Entregas hasta Inventario y comprobar que ambos procesos comparten trace ID. El laboratorio en `examples/spring-tracing-rutaflow/` usa Spring Boot 4.1.2, Micrometer Tracing, OpenTelemetry y Jaeger con OTLP. Spring Boot documenta `spring-boot-starter-opentelemetry` y sus propiedades de exportación; el cliente HTTP debe salir del `RestClient.Builder` autoconfigurado para propagar el contexto.
 
@@ -1588,7 +1588,7 @@ Entrega la misma traza con sampling activo, el resultado de sampling en cero y l
 
 **Aplicación y decisión:** En el proyecto integrador, sigue una solicitud entre Entregas e Inventario mediante el trace ID, manteniendo datos personales fuera de etiquetas. Límite: compilar el exporter no demuestra que Jaeger recibió spans; ejecuta la verificación de traza para acreditar exportación.
 
-### Tema 12: Contract testing entre productor y consumidor
+### Tema 12: Contract testing entre productor y consumidor · Avanzado · 40 min
 
 Duración: 35–45 min. **Meta:** comprobar el mismo JSON desde dos lados: pruebas generadas contra Conductores y prueba de Pedidos contra el stub publicado. El laboratorio `examples/spring-cloud-contract-rutaflow/` usa Spring Boot 4.1.2, Spring Cloud 2025.1.4 y Spring Cloud Contract 5.0.3. Los equipos acuerdan el contrato; en este ejemplo vive en el repositorio del productor.
 

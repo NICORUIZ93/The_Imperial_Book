@@ -4,7 +4,7 @@
 
 Cada Tema parte de una carpeta vacía, produce un artefacto concreto y lo verifica con un comando real.
 
-### Tema 1: Hexagonal: puertos que hablan el idioma del dominio
+### Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Avanzado · 35 min
 
 Al finalizar vas a separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y a compilar el caso de uso sin Spring ni JPA en el classpath.
 
@@ -180,7 +180,7 @@ Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaj
 
 **Fuente oficial:** [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/) y [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/).
 
-### Tema 2: C4: contexto, contenedores, componentes y código
+### Tema 2: C4: contexto, contenedores, componentes y código · Avanzado · 35 min
 
 Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
 
@@ -341,7 +341,7 @@ Siguiente paso: registrar por qué se eligió esta arquitectura. **Evidencia de 
 
 **Fuente oficial:** [C4 model](https://c4model.com/) y [Diagramas como código con Mermaid](https://mermaid.js.org/syntax/flowchart.html).
 
-### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias
+### Tema 3: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 35 min
 
 Al finalizar vas a escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y a validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
 

@@ -8,7 +8,7 @@ El laboratorio [`examples/spring-stream-rutaflow/`](https://github.com/NICORUIZ9
 
 Cada tema toma 20–45 min. Completa sus tres subtemas y el hito antes de avanzar.
 
-### Tema 1: bindings y destinations
+### Tema 1: bindings y destinations · Intermedio · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** Separar función y binding permite cambiar el broker sin duplicar la regla de negocio.
@@ -92,7 +92,7 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 
 **Aplicación y decisión:** En el proyecto integrador, conserva nombres lógicos de binding en código y destinos de broker en configuración. Límite: cambiar destination puede desconectar un consumidor sin cambiar una sola línea de la función.
 
-### Tema 2: binder Kafka y binder RabbitMQ
+### Tema 2: binder Kafka y binder RabbitMQ · Intermedio · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Probar ambos perfiles muestra qué comportamiento depende del broker elegido.
@@ -188,7 +188,7 @@ Entrega una comparación con una evidencia observada en cada broker.
 
 **Aplicación y decisión:** Práctica del proyecto integrador: ejecuta la misma entrada en perfiles separados y registra el tópico Kafka o exchange/cola Rabbit que recibió la salida. La diferencia de transporte no desaparece por compartir Function; el test binder no acredita esa ejecución de broker.
 
-### Tema 3: reintentos, error handler y dead-letter
+### Tema 3: reintentos, error handler y dead-letter · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Una política de reintentos evita ciclos infinitos y conserva los mensajes que requieren reparación.
@@ -271,7 +271,7 @@ Escribe qué persona o proceso revisaría el mensaje antes de reenviarlo.
 
 **Aplicación y decisión:** Práctica del proyecto integrador: clasifica un fallo transitorio y otro permanente, fija intentos y demuestra el destino final del evento. Límite: replay desde DLQ puede repetir efectos; conserva idempotencia y no reintentes errores de contrato indefinidamente.
 
-### Tema 4: test binder y límites de la prueba
+### Tema 4: test binder y límites de la prueba · Avanzado · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** Un test en memoria no detecta problemas de red o topología; declarar su límite evita falsa confianza.

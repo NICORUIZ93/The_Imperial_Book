@@ -6,7 +6,7 @@ Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2
 
 ## Aprende construyendo
 
-### Tema 1: Entidades y repositorios derivados
+### Tema 1: Entidades y repositorios derivados · Intermedio · 30 min
 
 Al terminar, podrás probar que una entidad se guarda y se recupera, escribir un método de búsqueda a partir de propiedades reales y reconocer cuándo una consulta JPQL queda más clara. El tema usa `Tarea(titulo, prioridad, ubicacionInterna)` que ya existe en `academia-spring`.
 
@@ -189,7 +189,7 @@ Ejecuta desde la raíz del proyecto:
 
 La entidad y el repositorio de esta práctica continúan en el proyecto integrador del track. La estructura atómica describe actividades verificables; no certifica por sí sola dominio profesional.
 
-### Tema 2: El problema N+1 y su corrección
+### Tema 2: El problema N+1 y su corrección · Intermedio · 35 min
 
 En este tema añadimos `Cliente` y `Pedido` al proyecto `academia-spring` ya existente. Así probamos una relación propia sin alterar la entidad `Tarea` que usa el mapper del API.
 
@@ -475,7 +475,7 @@ Ejecuta desde la raíz:
 
 **Cierra:** guarda los tres resultados de la prueba y explica por qué no cambiarías todo a `EAGER`. **Práctica:** en `crearTresClientesConPedido()` cambia el límite del bucle a 4 y ajusta la prueba perezosa a `5L`; ambas pruebas con carga previa deben seguir en `1L`. Ejecuta `./mvnw -q -Dtest=NMasUnoTest test` y luego restaura el límite y la aserción. Integra `Cliente` y `Pedido` al backend acumulativo y lleva la medición al proyecto integrador cuando uses una lista real. El tema siguiente versiona el esquema para que estas dos tablas tengan cambios reproducibles.
 
-### Tema 3: Migraciones con Flyway
+### Tema 3: Migraciones con Flyway · Intermedio · 30 min
 
 Al cerrar este tema, el mismo backend `academia-spring` crea las tablas desde archivos SQL versionados y Hibernate solo confirma que el modelo Java coincide con ese esquema.
 

@@ -210,7 +210,7 @@ Con esto tienes un proyecto mínimo reproducible. Ahora sí tiene sentido estudi
 
 Cada tema usa una prueba acorde con lo que enseña: `StepVerifier` verifica las señales de los publishers; un servidor HTTP de prueba se usa en las llamadas salientes. Continúa sobre `demo-reactive`, el proyecto construido en la sección anterior.
 
-### Tema 1: Mono y Flux
+### Tema 1: Mono y Flux · Intermedio · 40 min
 
 Este tema conecta el repositorio del proyecto `demo-reactive` con los tipos de Reactor. El laboratorio aislado comprueba sus señales sin base de datos ni servidor externo.
 
@@ -325,7 +325,7 @@ Entrega la salida de los cuatro tests y explica con tus palabras la diferencia e
 
 **Aplicación y decisión:** En el proyecto integrador, usa Mono para una respuesta y Flux para una secuencia solo cuando la cadena pueda conservar su contrato de demanda. El límite es explícito: un repositorio bloqueante sigue bloqueando aunque se envuelva en Mono; la prueba Reactor no demuestra rendimiento de producción.
 
-### Tema 2: WebClient y composición no bloqueante
+### Tema 2: WebClient y composición no bloqueante · Avanzado · 40 min
 
 Este tema consulta ubicación y luego tarifa: la segunda petición necesita la respuesta de la primera. El laboratorio usa un servidor HTTP local para que puedas ver ambas solicitudes.
 
@@ -442,7 +442,7 @@ Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Lu
 
 **Aplicación y decisión:** En el proyecto integrador, fija un timeout de la dependencia y comprueba el cuerpo de error del cliente HTTP. No mezcles block con el event loop; conservar composición no elimina la necesidad de límites de conexión y tratamiento de error.
 
-### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC
+### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min
 
 Este tema cierra la decisión con tres piezas ejecutables: una ruta que intenta bloquear el event loop, una consulta R2DBC real contra H2 y la forma de aislar una llamada bloqueante inevitable.
 

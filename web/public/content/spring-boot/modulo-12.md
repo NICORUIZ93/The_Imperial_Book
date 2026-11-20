@@ -5,7 +5,7 @@
 
 Los tres temas amplían incrementalmente el proyecto real `examples/spring-boot-integrador-rutaflow/`, combinando piezas ya estudiadas en el track: entidades y migraciones Flyway (Módulo 3), JWT y `@PreAuthorize` (Módulo 4), pruebas de integración con Testcontainers (Módulo 6) y una métrica de negocio de Actuator (Módulo 7). Cada tema comprueba cambios con código ejecutable y evidencia observable.
 
-### Tema 1: Arquitectura del microservicio integrador
+### Tema 1: Arquitectura del microservicio integrador · Avanzado · 40 min
 
 **Resultado del tema:** construirás y comprobarás un endpoint que valida una solicitud, pasa por controller → service → repository y guarda una entrega en PostgreSQL. Al final podrás explicar qué hace cada capa con evidencia de una petición HTTP y una fila guardada.
 
@@ -148,7 +148,7 @@ Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del l
 bash ./scripts/verify-integration.sh
 ```
 
-### Tema 2: Integra seguridad JWT y observabilidad
+### Tema 2: Integra seguridad JWT y observabilidad · Avanzado · 40 min
 
 **Resultado del tema:** protegerás la creación de entregas con un JWT firmado y el rol `USER`, conservarás la persistencia del Tema 1 y medirás cada creación exitosa con un contador visible en Actuator.
 
@@ -282,7 +282,7 @@ Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del l
 bash ./scripts/verify-integration.sh
 ```
 
-### Tema 3: Cierra el servicio con evidencia y próximos pasos
+### Tema 3: Cierra el servicio con evidencia y próximos pasos · Experto · 35 min
 
 **Resultado del tema:** ejecutarás una guardia automática de configuración, revisarás la suite completa y separarás lo comprobado en local de lo que todavía requiere evidencia del entorno de despliegue.
 
