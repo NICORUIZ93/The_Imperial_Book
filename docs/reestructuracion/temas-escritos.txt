@@ -178,3 +178,18 @@ microservicios/M32/T4;verificado
 microservicios/M32/T5;verificado
 microservicios/M32/T6;verificado
 microservicios/M32/T7;verificado
+# Java: piloto M0 y M1 (ejemplos ejecutados con JDK 25; falta correr el build con Gradle 9 en el Mac)
+java/M0/T1
+java/M0/T2
+java/M0/T3
+java/M0/T4
+java/M0/T5
+java/M0/T6
+java/M0/T7
+java/M1/T1
+java/M1/T2
+java/M1/T3
+java/M1/T4
+java/M1/T5
+java/M1/T6
+java/M1/T7
