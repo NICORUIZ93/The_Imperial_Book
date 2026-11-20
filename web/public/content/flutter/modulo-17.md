@@ -400,7 +400,14 @@ flowchart LR
 **¿Por qué es importante?** Un builder convierte una regla repetible del proyecto en salida compilable y fácil de revisar.
 
 #### Paso 4 · Demostración guiada
-Crea `lib/route_names.routes` con dos nombres, `delivery` y `pickup`. Crea `lib/route_catalog_builder.dart`:
+Crea `lib/route_names.routes`, la entrada del builder, con un nombre por línea:
+
+```text
+delivery
+pickup
+```
+
+Crea `lib/route_catalog_builder.dart`:
 
 ```dart
 import 'dart:convert';

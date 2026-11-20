@@ -35,7 +35,8 @@ BUILD = KIT / "build"
 
 CURSOS = ("flutter", "rutaflow")
 LANGS_CODIGO = {"dart"}
-LANGS_ARCHIVO = {"dart", "yaml", "json"}  # yaml/json solo si la lección les da ruta
+LANGS_ARCHIVO = {"dart", "yaml", "json", "text"}  # no-dart solo si la lección les da ruta
+EXT_TEXTO = (".routes",)  # entradas de builders en bloques ```text
 RAICES = ("lib", "test", "bin", "integration_test", "example", "tool")
 NOMBRES_GENERICOS = {"demo_flutter", "app", "ejemplo", "mi_primera_app", "demo_driver"}
 PAQUETES_SDK = {"flutter", "flutter_test", "flutter_driver", "flutter_localizations",
@@ -43,7 +44,7 @@ PAQUETES_SDK = {"flutter", "flutter_test", "flutter_driver", "flutter_localizati
 
 RE_FENCE = re.compile(r"^```(\w*)\s*$")
 RE_HEADING = re.compile(r"^(#{2,3})\s+(.*)")
-RE_RUTA = re.compile(r"^(?:[\w.-]+/)*[\w.-]+\.(?:dart|yaml|arb|json)$")
+RE_RUTA = re.compile(r"^(?:[\w.-]+/)*[\w.-]+\.(?:dart|yaml|arb|json|routes)$")
 RE_COMENTARIO_RUTA = re.compile(
     r"^\s*//\s*((?:[\w.-]+/)*[\w.-]+\.(?:dart|yaml|arb))(?:\s*$|\s+[(—–-].*$|\s*:.*$)")
 RE_COMENTARIO_RUTA_YAML = re.compile(r"^\s*#\s*((?:[\w.-]+/)*[\w.-]+\.yaml)\s*$")
@@ -536,7 +537,8 @@ def construir() -> tuple[list[Unidad], list[tuple[str, str, str]]]:
                         partes = [(b.desde_heredoc, b.cuerpo)]
                     if len(partes) == 1 and partes[0][0] is None:
                         candidatas = [r for r in rutas_en_texto(b.intro)
-                                      if (b.lang == "dart") == r.endswith(".dart")]
+                                      if (b.lang == "dart") == r.endswith(".dart")
+                                      and (b.lang != "text" or r.endswith(EXT_TEXTO))]
                         if "ruta" in dec:
                             partes = [(dec["ruta"], b.cuerpo)]
                         elif candidatas:

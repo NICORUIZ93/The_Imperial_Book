@@ -2479,6 +2479,26 @@
       }
     ]
   },
+  "docker": {
+    "0": [
+      {
+        "title": "Un contenedor es un proceso: namespaces PID, NET, MNT y UTS",
+        "fragment": "tema-1-un-contenedor-es-un-proceso-namespaces-pid-net-mnt-y-uts"
+      },
+      {
+        "title": "Límites con cgroups v2: memory.max y cpu.max",
+        "fragment": "tema-2-limites-con-cgroups-v2-memory-max-y-cpu-max"
+      },
+      {
+        "title": "Root dentro y fuera: capacidades y namespace de usuario",
+        "fragment": "tema-3-root-dentro-y-fuera-capacidades-y-namespace-de-usuario"
+      },
+      {
+        "title": "PID 1 y señales: por qué docker stop termina en 137",
+        "fragment": "tema-4-pid-1-y-senales-por-que-docker-stop-termina-en-137"
+      }
+    ]
+  },
   "flutter": {
     "0": [
       {
@@ -5086,54 +5106,6 @@
       {
         "title": "Separar mitos y verdades de Domain-Driven Design",
         "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
-      }
-    ],
-    "2": [
-      {
-        "title": "Contextos delimitados y mapa de contextos antes de cortar",
-        "fragment": "tema-1-contextos-delimitados-y-mapa-de-contextos-antes-de-cortar"
-      },
-      {
-        "title": "Elegir la primera costura: Cotización, con las señales de M1 T12",
-        "fragment": "tema-2-elegir-la-primera-costura-cotizacion-con-las-senales-de-m1-t12"
-      },
-      {
-        "title": "Strangler Fig: proxy de enrutamiento con `/cotizaciones` al servicio nuevo y el resto al monolito",
-        "fragment": "tema-3-strangler-fig-proxy-de-enrutamiento-con-cotizaciones-al-servicio-nuevo-y-el-resto-al-monolito"
-      },
-      {
-        "title": "Capa anticorrupción: traducir el modelo heredado sin contaminar el nuevo",
-        "fragment": "tema-4-capa-anticorrupcion-traducir-el-modelo-heredado-sin-contaminar-el-nuevo"
-      },
-      {
-        "title": "Ejecución en paralelo y comparación de respuestas antes del corte",
-        "fragment": "tema-5-ejecucion-en-paralelo-y-comparacion-de-respuestas-antes-del-corte"
-      },
-      {
-        "title": "Revertir el enrutamiento y retirar el código heredado",
-        "fragment": "tema-6-revertir-el-enrutamiento-y-retirar-el-codigo-heredado"
-      }
-    ],
-    "3": [
-      {
-        "title": "Gateway: enrutamiento y descarga de responsabilidades sin lógica de negocio",
-        "fragment": "tema-1-gateway-enrutamiento-y-descarga-de-responsabilidades-sin-logica-de-negocio"
-      },
-      {
-        "title": "BFF: un backend para la app del conductor y otro para la consola web",
-        "fragment": "tema-2-bff-un-backend-para-la-app-del-conductor-y-otro-para-la-consola-web"
-      },
-      {
-        "title": "Composición de API con presupuesto de deadline",
-        "fragment": "tema-3-composicion-de-api-con-presupuesto-de-deadline"
-      },
-      {
-        "title": "Respuesta degradada ante un fallo parcial",
-        "fragment": "tema-4-respuesta-degradada-ante-un-fallo-parcial"
-      },
-      {
-        "title": "Versionado y deprecación de la API pública (cabeceras `Deprecation` y `Sunset`)",
-        "fragment": "tema-5-versionado-y-deprecacion-de-la-api-publica-cabeceras-deprecation-y-sunset"
       }
     ]
   },

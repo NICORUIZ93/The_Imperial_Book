@@ -7,6 +7,7 @@
 #
 # Variables opcionales:
 #   TIMEOUT_UNIDAD=900   segundos máximos por unidad (create + pub + analyze + test)
+#   TIMEOUT_PASO=600     segundos máximos por paso (p. ej. build_runner)
 #   NO_EXTRAER=1         no regenerar build/ con extraer.py
 #   BUILD_WEB=1          además compila el laboratorio con `flutter build web`
 #
@@ -23,9 +24,10 @@ LOGS="$KIT/logs"
 RES="$KIT/resultados.tsv"
 FILTRO="${1:-}"
 TIMEOUT_UNIDAD="${TIMEOUT_UNIDAD:-900}"
+TIMEOUT_PASO="${TIMEOUT_PASO:-600}"
 TAB=$'\t'
 
-for herramienta in flutter dart python3 perl; do
+for herramienta in flutter dart python3 perl pkill mktemp; do
   if ! command -v "$herramienta" >/dev/null 2>&1; then
     echo "Falta '$herramienta' en el PATH." >&2
     exit 2
@@ -53,30 +55,53 @@ dart --disable-analytics >/dev/null 2>&1 || true
 
 printf 'curso\tarchivo:línea\testado\tdetalle\n' > "$RES"
 
-# limite SEGUNDOS cmd...  -> ejecuta en un grupo de procesos propio y lo mata al vencer (rc 124).
+# limite SEGUNDOS cmd...  -> ejecuta el comando en su propio grupo de procesos, sin stdin, y lo
+# mata (TERM y luego KILL a todo el grupo) al vencer el plazo; devuelve 124 en ese caso.
+# El vigía es un proceso aparte: no depende de que el comando colaborador termine ni de señales
+# entregadas a un proceso bloqueado en waitpid.
 limite() {
-  perl -e '
-    my $t = shift;
-    my $pid = fork();
-    die "fork: $!" unless defined $pid;
-    if ($pid == 0) { setpgrp(0, 0); exec @ARGV or exit 127; }
-    local $SIG{ALRM} = sub { kill "TERM", -$pid; sleep 3; kill "KILL", -$pid; exit 124; };
-    alarm $t;
-    waitpid($pid, 0);
-    exit(($? & 127) ? 128 + ($? & 127) : ($? >> 8));
-  ' "$@"
+  local seg="$1"; shift
+  local marca
+  marca="$(mktemp "${TMPDIR:-/tmp}/limite.XXXXXX")"
+  rm -f "$marca"
+  perl -e 'setpgrp(0, 0); exec @ARGV or exit 127;' "$@" </dev/null &
+  local pid=$!
+  (
+    sleep "$seg"
+    if kill -0 "$pid" 2>/dev/null; then
+      : >"$marca"
+      kill -TERM -"$pid" 2>/dev/null
+      sleep 5
+      kill -KILL -"$pid" 2>/dev/null
+    fi
+  ) </dev/null >/dev/null 2>&1 &
+  local vigia=$!
+  wait "$pid"
+  local rc=$?
+  pkill -P "$vigia" 2>/dev/null
+  kill "$vigia" 2>/dev/null
+  wait "$vigia" 2>/dev/null
+  if [ -f "$marca" ]; then
+    rm -f "$marca"
+    rc=124
+  fi
+  return "$rc"
 }
 
 # paso NOMBRE cmd...  (usa PROY, LOG, DEADLINE; deja la salida del paso en $PASO_LOG)
+# Cada paso tiene su propio límite: TIMEOUT_PASO o lo que quede de la unidad, lo que sea menor.
 paso() {
   local nombre="$1"; shift
   local resta=$(( DEADLINE - SECONDS ))
+  [ "$resta" -gt "$TIMEOUT_PASO" ] && resta="$TIMEOUT_PASO"
   [ "$resta" -lt 5 ] && resta=5
   PASO_LOG="$UDIR/_paso-$nombre.log"
+  printf '%s ' "$nombre" >&2   # progreso en consola: en qué paso va la unidad
+  echo "### [$nombre] (límite ${resta}s) \$ $*" >>"$LOG"   # visible en el log mientras corre
   ( cd "$PROY" && limite "$resta" "$@" ) >"$PASO_LOG" 2>&1 </dev/null
   local rc=$?
-  { echo "### [$nombre] \$ $*"; cat "$PASO_LOG"; echo "### rc=$rc"; echo; } >>"$LOG"
   [ "$rc" -eq 124 ] && echo "TIMEOUT tras ${resta}s" >>"$PASO_LOG"
+  { cat "$PASO_LOG"; echo "### rc=$rc"; echo; } >>"$LOG"
   return "$rc"
 }
 

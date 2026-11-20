@@ -21,5 +21,5 @@ dueño»). IA aplicada y Blockchain no están aprobados y no se escriben.
   Verificación: `test $(ls web/public/content/kubernetes/modulo-*.md | wc -l) -ge 16`
 - **N3** `pendiente` — Diseño de sistemas publicado con sus 10 módulos.
   Verificación: `test $(ls web/public/content/system-design/modulo-*.md | wc -l) -ge 10`
-- **N4** `pendiente` — Microservicios completo (12 módulos, con Strangler Fig, BFF y CQRS).
+- **N4** `pendiente` — Microservicios completo: reemplazado por specs/018 (prompt del dueño del 2026-11-19).
   Verificación: `test $(ls web/public/content/microservices/modulo-*.md | wc -l) -ge 12 && grep -rq "Strangler" web/public/content/microservices && grep -rq "CQRS" web/public/content/microservices`
