@@ -56,26 +56,26 @@ paso "npm ci" "" npm ci --no-audit --no-fund
 
 echo "== F152 · Outbox Pattern + CDC con Debezium"
 if hay localhost 5432; then
-  paso "F152 tests (PostgreSQL real)" "pass 5" node --test --test-reporter=spec f152-outbox/outbox.test.js
+  paso "F152 tests (PostgreSQL real)" "pass 5" node --test --test-force-exit --test-reporter=spec f152-outbox/outbox.test.js
   paso "F152 demo" "relay: 2 publicados · segunda vuelta: 0 pendientes" node f152-outbox/demo.js
   paso "F152 WAL decodificado" "table public.f152_outbox: INSERT:" node f152-outbox/cdc-wal.js
   paso "F152 error común: dual write" "MAL  → pedidos en la BD: 1 · eventos publicados: 0" node f152-outbox/error-comun.js
 else omite "F152 (PostgreSQL no responde en localhost:5432; usa --compose)"; fi
 if [ "$modo" = "--compose" ]; then
-  paso "F152 Debezium → Kafka" "pass 1" node --test --test-reporter=spec f152-outbox/debezium.infra.js
+  paso "F152 Debezium → Kafka" "pass 1" node --test --test-force-exit --test-reporter=spec f152-outbox/debezium.infra.js
 else omite "F152 con Debezium y Kafka (solo con --compose)"; fi
 
 echo "== F153 · Sagas orquestadas con Temporal.io"
-paso "F153 tests de la saga" "pass 5" node --test --test-reporter=spec f153-temporal/saga.test.js
+paso "F153 tests de la saga" "pass 5" node --test --test-force-exit --test-reporter=spec f153-temporal/saga.test.js
 paso "F153 error común: E/S en el workflow" "UnhandledSchemeError: Reading from \"node:fs\"" node f153-temporal/error-comun.js
 if [ "$modo" = "--compose" ] || [ -n "${TEMPORAL_ADDRESS:-}" ]; then
-  paso "F153 tests con servidor Temporal" "pass 3" node --test --test-reporter=spec f153-temporal/temporal.infra.js
+  paso "F153 tests con servidor Temporal" "pass 3" node --test --test-force-exit --test-reporter=spec f153-temporal/temporal.infra.js
 else omite "F153 con servidor Temporal (usa --compose o TEMPORAL_ADDRESS=host:7233)"; fi
 
 echo "== F154 · Idempotencia real en consumidores Kafka"
 paso "F154 error común: deduplicar por offset" "MAL  → clave partición+offset: puntos = 20" node f154-idempotencia/error-comun.js
 if hay localhost 5432; then
-  paso "F154 tests (PostgreSQL real)" "pass 4" node --test --test-reporter=spec f154-idempotencia/idempotencia.test.js
+  paso "F154 tests (PostgreSQL real)" "pass 4" node --test --test-force-exit --test-reporter=spec f154-idempotencia/idempotencia.test.js
   paso "F154 demo" "C-3 en paralelo ×5 → 1 procesado, 4 duplicados" node f154-idempotencia/demo.js
 else omite "F154 (PostgreSQL no responde en localhost:5432; usa --compose)"; fi
 if [ "$modo" = "--compose" ]; then
@@ -84,7 +84,7 @@ else omite "F154 con Kafka (solo con --compose)"; fi
 
 echo "== F155 · Exactly-once semantics en la práctica"
 if hay localhost 5432; then
-  paso "F155 tests (PostgreSQL real)" "pass 3" node --test --test-reporter=spec f155-exactly-once/exactly-once.test.js
+  paso "F155 tests (PostgreSQL real)" "pass 3" node --test --test-force-exit --test-reporter=spec f155-exactly-once/exactly-once.test.js
   paso "F155 demo" "saldo final = 500" node f155-exactly-once/demo.js
   paso "F155 error común: efecto externo" "correos enviados = 2 (duplicado)" node f155-exactly-once/error-comun.js
 else omite "F155 (PostgreSQL no responde en localhost:5432; usa --compose)"; fi
@@ -94,7 +94,7 @@ else omite "F155 con Kafka (solo con --compose)"; fi
 
 echo "== F156 · Two-Phase Commit: por qué no usar"
 if hay localhost 5432; then
-  paso "F156 tests (PostgreSQL real)" "pass 3" node --test --test-reporter=spec f156-2pc/dospc.test.js
+  paso "F156 tests (PostgreSQL real)" "pass 3" node --test --test-force-exit --test-reporter=spec f156-2pc/dospc.test.js
   paso "F156 demo" "otro cobro a ana: canceling statement due to lock timeout" node f156-2pc/demo.js
   paso "F156 error común: ROLLBACK tras PREPARE" "WARNING: there is no transaction in progress" node f156-2pc/error-comun.js
 else omite "F156 (PostgreSQL no responde en localhost:5432; usa --compose)"; fi

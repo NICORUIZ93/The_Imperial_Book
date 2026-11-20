@@ -953,7 +953,7 @@ muestra `ActivityTaskFailed` y después la actividad `liberarStock`.
 3. Con un servidor ya arrancado, ejecuta los tests de integración:
 
 ```bash
-TEMPORAL_ADDRESS=localhost:7233 node --test --test-reporter=spec f153-temporal/temporal.infra.js
+TEMPORAL_ADDRESS=localhost:7233 node --test --test-force-exit --test-reporter=spec f153-temporal/temporal.infra.js
 ```
 
 **Output esperado** (pendiente en el Mac): `ℹ tests 3` y `ℹ pass 3`.

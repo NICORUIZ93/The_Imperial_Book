@@ -54,30 +54,30 @@ echo "== Dependencias (npm ci con package-lock.json)"
 paso "npm ci" "" npm ci --no-audit --no-fund
 
 echo "== F157 · Kafka profundo: transacciones, EOS, Schema Registry"
-paso "F157 tests de compatibilidad y formato" "pass 5" node --test --test-reporter=spec f157-kafka-schema/schema.test.js
+paso "F157 tests de compatibilidad y formato" "pass 5" node --test --test-force-exit --test-reporter=spec f157-kafka-schema/schema.test.js
 paso "F157 demo" "consumidor v2 lee un mensaje v1: {\"id\":\"P-1\",\"total\":120000,\"moneda\":\"COP\"}" node f157-kafka-schema/demo.js
 paso "F157 error común: campo sin default" "no matching field for default-less" node f157-kafka-schema/error-comun.js
 if [ "$modo" = "--compose" ]; then
-  paso "F157 Schema Registry real" "pass 2" node --test --test-reporter=spec f157-kafka-schema/registry.infra.js
+  paso "F157 Schema Registry real" "pass 2" node --test --test-force-exit --test-reporter=spec f157-kafka-schema/registry.infra.js
   paso "F157 transacciones y fencing" "read_committed → f157.auditoria:P-1, f157.pedidos:P-1" node f157-kafka-schema/transacciones.js
 else omite "F157 con Kafka y Schema Registry (solo con --compose)"; fi
 
 echo "== F158 · RabbitMQ avanzado"
 if hay localhost 5672; then
-  paso "F158 tests (RabbitMQ real)" "pass 4" node --test --test-reporter=spec f158-rabbitmq/rabbitmq.test.js
+  paso "F158 tests (RabbitMQ real)" "pass 4" node --test --test-force-exit --test-reporter=spec f158-rabbitmq/rabbitmq.test.js
   paso "F158 demo" "en la DLQ: 2" node f158-rabbitmq/demo.js
   paso "F158 error común: requeue sin límite" "MAL  → 1 mensaje venenoso, más de 100 entregas en 1 s" node f158-rabbitmq/error-comun.js
 else omite "F158 (RabbitMQ no responde en localhost:5672; usa --compose)"; fi
 
 echo "== F159 · NATS"
 if hay localhost 4222; then
-  paso "F159 tests (NATS JetStream real)" "pass 5" node --test --test-reporter=spec f159-nats/nats.test.js
+  paso "F159 tests (NATS JetStream real)" "pass 5" node --test --test-force-exit --test-reporter=spec f159-nats/nats.test.js
   paso "F159 demo" "reservas: intentos 1 y 2 · stock final = 1" node f159-nats/demo.js
   paso "F159 error común: publish sin msgID" "MAL  → sin msgID:  2 mensajes para un solo pedido" node f159-nats/error-comun.js
 else omite "F159 (NATS no responde en localhost:4222; usa --compose)"; fi
 
 echo "== F160 · Event Notification vs Event-Carried State Transfer"
-paso "F160 tests" "pass 4" node --test --test-reporter=spec f160-ecst/ecst.test.js
+paso "F160 tests" "pass 4" node --test --test-force-exit --test-reporter=spec f160-ecst/ecst.test.js
 paso "F160 demo" "catálogo caído → ECST:         precio=140" node f160-ecst/demo.js
 paso "F160 error común: réplica sin versión" "MAL  → sin versión: precio = 120" node f160-ecst/error-comun.js
 

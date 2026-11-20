@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Módulo 32 · Proyecto final y Comité de Arquitectura (modulo-36, fichas F181–F187).
-# 1) Pista Node.js: npm ci, tests de node --test (Gatling incluido si hay Java) y los scripts de las siete fichas.
+# 1) Pista Node.js: npm ci, tests de node --test --test-force-exit (Gatling incluido si hay Java) y los scripts de las siete fichas.
 # 2) Redis real para el limitador (REDIS_URL, o Docker Compose con --compose, o un redis-server local en :16379).
 # 3) Gatling a 60 reservas/s: sin límite del proveedor (SLO en verde) y con la restricción sobrevenida (20/s).
 # 4) Temporal real (si hay TEMPORAL_ADDRESS o el CLI `temporal`) y pista Spring Boot (jdk/ siempre; Maven con --compose).
@@ -37,7 +37,7 @@ else echo "AVISO: falta Java (JDK 25: https://adoptium.net). Se omiten Gatling y
 
 echo "== 1. Pista Node.js"
 npm ci --no-audit --no-fund --silent || falla "npm ci"
-node --test --test-concurrency=1 --test-reporter=spec 'f18*/*.test.js' || falla "node --test (busca ✖ arriba)"
+node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f18*/*.test.js' || falla "node --test --test-force-exit (busca ✖ arriba)"
 guion "F181 demo" "node f181-sistema-reservas/demo.js" 'pago aprobado                             POST 202 /reservas/R-a1 -> CONFIRMADA' 'falla la confirmación                     POST 202 /reservas/R-c3 -> CANCELADA (el organizador canceló el evento)' 'proveedor: 3 cobros, 1 reembolso(s) · plazas libres: 0'
 guion "F181 error común (sin Idempotency-Key)" "node f181-sistema-reservas/error-comun.js" 'sin Idempotency-Key: reservas R-1, R-2 · cobros al cliente: 2' 'con Idempotency-Key: reservas R-compra-77 · cobros al cliente: 1'
 guion "F182 error común (red en el workflow)" "node f182-saga-temporal/error-comun.js" "importing the following disallowed modules:" "'@temporalio/activity'"
@@ -64,7 +64,7 @@ if [ -z "${redis_url}" ] && command -v redis-server > /dev/null 2>&1; then
 fi
 if [ -n "${redis_url}" ]; then
   echo "REDIS_URL=${redis_url}"
-  REDIS_URL="${redis_url}" node --test --test-reporter=spec f183-gateway-rate-limit/limitador-redis.infra.js || falla "limitador-redis.infra.js"
+  REDIS_URL="${redis_url}" node --test --test-force-exit --test-reporter=spec f183-gateway-rate-limit/limitador-redis.infra.js || falla "limitador-redis.infra.js"
   guion "F183 error común con Redis" "REDIS_URL=${redis_url} node f183-gateway-rate-limit/error-comun.js" '3 réplicas con LimitadorRedis:   10 de 100 aceptadas (contrato: 10)'
 else
   omite "Redis: ni REDIS_URL, ni --compose, ni redis-server (https://redis.io/downloads/)"
@@ -90,9 +90,9 @@ fi
 
 echo "== 4. Temporal real y pista Spring Boot"
 if [ -n "${TEMPORAL_ADDRESS:-}" ] || command -v temporal > /dev/null 2>&1; then
-  node --test --test-reporter=spec f182-saga-temporal/temporal.infra.js || falla "temporal.infra.js (¿temporal server start-dev en marcha o descarga bloqueada?)"
+  node --test --test-force-exit --test-reporter=spec f182-saga-temporal/temporal.infra.js || falla "temporal.infra.js (¿temporal server start-dev en marcha o descarga bloqueada?)"
 else
-  omite "Temporal real: define TEMPORAL_ADDRESS o instala el CLI (brew install temporal) y ejecuta node --test f182-saga-temporal/temporal.infra.js"
+  omite "Temporal real: define TEMPORAL_ADDRESS o instala el CLI (brew install temporal) y ejecuta node --test --test-force-exit f182-saga-temporal/temporal.infra.js"
 fi
 if [ "${hay_java}" = si ]; then
   guion "Spring jdk/SagaReserva" "java -Dstdout.encoding=UTF-8 spring/jdk/SagaReserva.java" 'R-3 CANCELADA (el organizador canceló el evento) compensadas=[reembolsar, liberarPlaza]'

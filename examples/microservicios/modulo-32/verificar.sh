@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Módulo 28 · FinOps y costo de arquitectura (modulo-32, fichas F165–F168).
-# Sin dependencias ni Docker: npm ci (lockfile vacío), 18 tests de node --test y los scripts de las cuatro fichas con
+# Sin dependencias ni Docker: npm ci (lockfile vacío), 18 tests de node --test --test-force-exit y los scripts de las cuatro fichas con
 # los precios oficiales de comun/precios.js. Si algo falla, sigue y lo reporta al final.
 # Uso: ./verificar.sh [--compose]. Requiere Node.js 26.13.1 LTS y npm; bash 3.2 de macOS sirve. Logs en logs/.
 set -u
@@ -32,7 +32,7 @@ echo "== Dependencias (ninguna: solo node:*)"
 npm ci --no-audit --no-fund --silent || falla "npm ci"
 
 echo "== Tests (node --test, 18 en total)"
-node --test --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test (busca ✖ arriba)"
+node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test --test-force-exit (busca ✖ arriba)"
 
 echo "== F165 · Modelo de costo cloud"
 guion "F165 monolito" "node f165-modelo-costo/modelo.js f165-modelo-costo/monolito.json" 'TOTAL                      108.86 USD' 'costo unitario: 0.0363 USD por cada 1000 pedidos'

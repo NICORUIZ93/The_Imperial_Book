@@ -64,24 +64,24 @@ echo "== Dependencias (npm ci con package-lock.json: pg 8.23.1)"
 paso "npm ci" "" npm ci --no-audit --no-fund
 
 echo "== F173 · Monolito distribuido"
-paso "F173 tests (servidores HTTP reales)" "pass 5" node --test --test-reporter=spec f173-monolito-distribuido/monolito.test.js
+paso "F173 tests (servidores HTTP reales)" "pass 5" node --test --test-force-exit --test-reporter=spec f173-monolito-distribuido/monolito.test.js
 paso "F173 demo" "2. Cae impuestos (a 2 saltos)  → error: pedidos: precios: /impuestos/TEC-1 → ECONNREFUSED" node f173-monolito-distribuido/demo.js
 paso "F173 error común: DTO compartido" "MAL  → precios v2 + pedidos v1: {\"sku\":\"TEC-1\",\"cantidad\":2,\"total\":null}" node f173-monolito-distribuido/error-comun.js
 
 echo "== F174 · Sobre-descomposición"
-paso "F174 tests" "pass 4" node --test --test-reporter=spec f174-sobre-descomposicion/nano.test.js
+paso "F174 tests" "pass 4" node --test --test-force-exit --test-reporter=spec f174-sobre-descomposicion/nano.test.js
 paso "F174 demo" "nanoservicios total=224910 (4 llamadas HTTP)" node f174-sobre-descomposicion/demo.js
 paso "F174 error común: un servicio por entidad" "MAL  → un servicio por entidad: 100 % de los cambios tocan varios servicios" node f174-sobre-descomposicion/error-comun.js
 
 echo "== F175 · Sagas innecesarias"
 if hay localhost 5432; then
-  paso "F175 tests (PostgreSQL real)" "pass 5" node --test --test-reporter=spec f175-sagas-innecesarias/sagas.test.js
+  paso "F175 tests (PostgreSQL real)" "pass 5" node --test --test-force-exit --test-reporter=spec f175-sagas-innecesarias/sagas.test.js
   paso "F175 demo" "Transacción: falla «cliente beto bloqueado» → stock=10 · pedidos={}" node f175-sagas-innecesarias/demo.js
   paso "F175 error común: compensación repetida" "MAL  → compensación repetida  : stock = 12 (había 10)" node f175-sagas-innecesarias/error-comun.js
 else omite "F175 (PostgreSQL no responde en localhost:5432; usa --compose)"; fi
 
 echo "== F176 · Fitness functions"
-paso "F176 tests" "pass 4" node --test --test-reporter=spec f176-fitness-functions/fitness.test.js
+paso "F176 tests" "pass 4" node --test --test-force-exit --test-reporter=spec f176-fitness-functions/fitness.test.js
 paso_falla "F176 demo: el build se detiene con ejemplo-roto" "4 violaciones: el build se detiene" node f176-fitness-functions/demo.js
 paso "F176 error común: regex ingenua" "MAL  → regex ingenua: 2 violaciones · no ve: servicios/envios/index.js" node f176-fitness-functions/error-comun.js
 

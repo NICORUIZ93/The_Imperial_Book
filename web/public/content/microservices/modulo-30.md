@@ -465,7 +465,7 @@ Lee los bytes: `00` es el byte de formato, `00000001` el id 1 en big-endian, y `
 
 ```bash
 docker compose up -d --wait kafka schema-registry
-node --test --test-reporter=spec f157-kafka-schema/registry.infra.js
+node --test --test-force-exit --test-reporter=spec f157-kafka-schema/registry.infra.js
 node f157-kafka-schema/transacciones.js
 curl -s http://localhost:8081/subjects
 ```

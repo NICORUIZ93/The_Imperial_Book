@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Módulo 31 · Migración desde monolito real (modulo-35, fichas F177–F180).
-# Sin dependencias ni Docker: npm ci (lockfile vacío), 17 tests de node --test y los scripts de las cuatro fichas.
+# Sin dependencias ni Docker: npm ci (lockfile vacío), 17 tests de node --test --test-force-exit y los scripts de las cuatro fichas.
 # F180 necesita git (genera un repositorio de ejemplo en un directorio temporal). Si algo falla, sigue y lo reporta al final.
 # Uso: ./verificar.sh [--compose]. Requiere Node.js 26.13.1 LTS, npm y git; bash 3.2 de macOS sirve. Logs en logs/.
 set -u
@@ -35,9 +35,9 @@ npm ci --no-audit --no-fund --silent || falla "npm ci"
 
 echo "== Tests (node --test)"
 if [ "$hay_git" = si ]; then
-  node --test --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test (busca ✖ arriba)"
+  node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test --test-force-exit (busca ✖ arriba)"
 else
-  node --test --test-concurrency=1 --test-reporter=spec 'f17*/*.test.js' || falla "node --test (busca ✖ arriba)"
+  node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f17*/*.test.js' || falla "node --test --test-force-exit (busca ✖ arriba)"
   omite "f180-deuda-tecnica/deuda.test.js (sin git)"
 fi
 

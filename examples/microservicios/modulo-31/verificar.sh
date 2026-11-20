@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Módulo 27 · Seguridad Zero-Trust (modulo-31, fichas F161–F164).
-# Sin Docker: npm ci, PKI de la malla con openssl, 18 tests de node --test y los ataques ANTES/DESPUÉS de cada ficha.
+# Sin Docker: npm ci, PKI de la malla con openssl, 18 tests de node --test --test-force-exit y los ataques ANTES/DESPUÉS de cada ficha.
 # Con PGURL=postgres://… además ejecuta el SQL de Vault contra un PostgreSQL real (test y error común de F163).
 # Con --compose: levanta hashicorp/vault:2.2.0 + postgres:18.7, configura el motor database y prueba una credencial
 # dinámica REAL (login, revocación, login rechazado). Si algo falla, sigue y lo reporta al final.
@@ -41,7 +41,7 @@ else
 fi
 
 echo "== Tests (node --test, 18 en total; el de PostgreSQL real solo con PGURL)"
-node --test --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test (busca ✖ arriba)"
+node --test --test-force-exit --test-concurrency=1 --test-reporter=spec 'f1*/*.test.js' || falla "node --test --test-force-exit (busca ✖ arriba)"
 
 echo "== F161 · mTLS con Istio/Linkerd"
 guion "F161 ataque antes-despues" "node f161-mtls/ataque.js" \
