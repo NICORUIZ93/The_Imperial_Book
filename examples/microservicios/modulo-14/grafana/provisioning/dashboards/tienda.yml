@@ -1,0 +1,10 @@
+# F073 · Dashboards como código: Grafana carga los JSON de /var/lib/grafana/dashboards.
+apiVersion: 1
+providers:
+  - name: tienda
+    folder: Tienda
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

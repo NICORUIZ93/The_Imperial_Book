@@ -1,0 +1,24 @@
+{
+  "title": "Pedidos (hecho a mano en la UI)",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Latencia promedio",
+      "datasource": "Prometheus",
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(http_server_requests_seconds_sum[1m])) / sum(rate(http_server_requests_seconds_count[1m]))" }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "p99 (promedio de instancias)",
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "targets": [
+        { "refId": "A", "expr": "avg(histogram_quantile(0.99, rate(http_server_requests_seconds_bucket[1m])))" }
+      ]
+    }
+  ]
+}

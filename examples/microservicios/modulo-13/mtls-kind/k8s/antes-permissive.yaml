@@ -1,0 +1,10 @@
+# ANTES (vulnerable a texto plano): PERMISSIVE acepta mTLS de quien tenga sidecar Y texto plano de quien no.
+# Es el modo por defecto de Istio; sirve para migrar, no para quedarse.
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: tienda
+spec:
+  mtls:
+    mode: PERMISSIVE

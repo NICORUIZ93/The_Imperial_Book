@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Módulo 10 (modulo-14) · Agregador: "./mvnw test" ejecuta los tests de F070, F071 (perfil otel) y F072.
+     F073 (Grafana) y F074 (reglas de Prometheus) no son Maven: ver README y verificar.sh. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>modulo-14-laboratorios</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>f070-micrometer-prometheus</module>
+    <module>f071-tracing</module>
+    <module>f072-logging-estructurado</module>
+  </modules>
+</project>

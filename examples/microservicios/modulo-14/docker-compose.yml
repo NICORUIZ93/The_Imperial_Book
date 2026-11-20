@@ -1,0 +1,42 @@
+# Módulo 10 (modulo-14) · Observabilidad
+# Arranca:  docker compose up -d --wait
+#   Prometheus :9090 (raspa f070 en host.docker.internal:8080) · Grafana :3000 (admin / admin-solo-dev)
+#   Jaeger UI :16686 + OTLP :4317/:4318 · Zipkin :9411
+# Detén:    docker compose down           (sin volúmenes: se pierden métricas y trazas)
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--web.enable-lifecycle"]
+    ports: ["9090:9090"]
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/reglas.yml:/etc/prometheus/reglas.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"      # en Linux; Docker Desktop (Mac) ya lo resuelve
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  grafana:
+    image: grafana/grafana:13.2.4
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin-solo-dev
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    ports: ["3000:3000"]
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q ok"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+  jaeger:
+    image: jaegertracing/jaeger:2.22.0
+    ports: ["16686:16686", "4317:4317", "4318:4318"]
+  zipkin:
+    image: openzipkin/zipkin:3.6.1
+    ports: ["9411:9411"]

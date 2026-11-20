@@ -1,0 +1,12 @@
+# "tienda": Istio inyecta el sidecar Envoy en cada pod nuevo. "legado": sin sidecar (un servicio viejo).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tienda
+  labels:
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: legado

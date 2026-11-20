@@ -1,0 +1,14 @@
+# F073 · Fuentes de datos creadas al arrancar Grafana (sin clics). El uid fijo lo usan los paneles.
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+  - name: Jaeger
+    uid: jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686

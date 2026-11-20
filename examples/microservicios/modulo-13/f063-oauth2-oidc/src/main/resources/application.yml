@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: f063-oauth2-oidc
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: tienda-web
+            client-secret: ${TIENDA_WEB_SECRETO:solo-dev-tienda-web}   # en producción: Vault (F068)
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid,profile,pedidos:leer
+        provider:
+          keycloak:
+            # Endpoints del realm "tienda" del laboratorio (Keycloak en :8180), escritos a mano.
+            # Con issuer-uri Spring los descubriría en /.well-known/openid-configuration, pero
+            # exigiría Keycloak encendido al arrancar (y en los tests).
+            authorization-uri: ${tienda.realm}/protocol/openid-connect/auth
+            token-uri: ${tienda.realm}/protocol/openid-connect/token
+            jwk-set-uri: ${tienda.realm}/protocol/openid-connect/certs
+            user-info-uri: ${tienda.realm}/protocol/openid-connect/userinfo
+            user-name-attribute: preferred_username
+tienda:
+  realm: ${KEYCLOAK_REALM_URL:http://localhost:8180/realms/tienda}
+server:
+  port: 8080
