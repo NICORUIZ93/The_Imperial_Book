@@ -32,6 +32,9 @@ python3 scripts/audit_topic_order.py --check
 echo "== Citas numéricas entre temas (existen, no se auto-citan, miran hacia atrás)"
 python3 scripts/audit_topic_citations.py --check
 
+echo "== Completitud de cada curso (capítulos registrados, etapas, capítulo Master, anclas)"
+python3 scripts/audit_course_completeness.py --check
+
 echo "== Laboratorios citados por las lecciones"
 python3 scripts/validate_lesson_labs.py
 
@@ -46,6 +49,6 @@ python3 scripts/build_zero_to_master_report.py --check
 python3 scripts/audit_track_master_prompt.py --check
 
 echo "== Specs"
-python3 scripts/validate_specs.py
+python3 scripts/validate_specs.py --run
 
 echo "validate.sh: ok"

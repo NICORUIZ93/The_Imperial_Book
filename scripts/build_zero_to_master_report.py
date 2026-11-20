@@ -50,20 +50,27 @@ def track_modules(track: str) -> list[dict]:
 def build() -> dict:
     index = json.loads(INDEX.read_text(encoding="utf-8"))
     quality = json.loads(QUALITY.read_text(encoding="utf-8"))["topics"]
-    master = {item["track"] for item in json.loads(MASTER_REGISTRY.read_text(encoding="utf-8"))["tracks"]}
+    requested = {item["track"]: item["module"]
+                 for item in json.loads(MASTER_REGISTRY.read_text(encoding="utf-8"))["tracks"]}
     rows = []
     for track in sorted(index):
         modules = track_modules(track)
         topics = quality.get(track, [])
         levels = {level: sum(1 for m in modules if m["level"] == level) for level in LEVELS}
         missing = [level for level in LEVELS if levels[level] == 0]
+        # Un capítulo Master solo cuenta si el contenido existe: el registro de temas pedidos
+        # señalaba un capítulo de Node que ya no está en main.
+        req = requested.get(track)
+        req_exists = req is not None and str(req) in index[track]
         rows.append({
             "track": track,
             "modules": len(index[track]),
             "topics": sum(len(v) for v in index[track].values()),
             "levels": levels,
             "missingLevels": missing,
-            "hasMasterModule": track in master or any("master" in m["title"].lower() for m in modules),
+            "hasMasterModule": req_exists or any("master" in m["title"].lower() for m in modules),
+            "masterModuleRequested": req,
+            "masterModuleMissing": req is not None and not req_exists,
             "visualTopics": sum(1 for t in topics if t["criteria"].get("visual")),
             "projectTopics": sum(1 for t in topics if t["criteria"].get("project")),
         })
@@ -90,6 +97,18 @@ def markdown(data: dict) -> str:
             f"{row['visualTopics']}/{row['topics']} | {row['projectTopics']}/{row['topics']} | "
             f"{', '.join(row['missingLevels']) or '—'} |"
         )
+    ghosts = [r for r in data["tracks"] if r["masterModuleMissing"]]
+    if ghosts:
+        lines += [
+            "",
+            "## Capítulos Master pedidos sin capítulo detrás",
+            "",
+            "`docs/requested-master-topics.json` registra estos capítulos, pero el contenido no existe;"
+            " la columna «Módulo Master» de la tabla ya no los cuenta:",
+            "",
+        ]
+        lines += [f"- `{r['track']}`: capítulo {r['masterModuleRequested']} declarado en el registro, "
+                  f"el curso termina en el capítulo {r['modules'] - 1}." for r in ghosts]
     lines += [
         "",
         "## Cómo se usa",

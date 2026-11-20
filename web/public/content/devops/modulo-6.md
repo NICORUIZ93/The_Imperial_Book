@@ -672,7 +672,7 @@ kubectl get pods -n ingress-nginx
 Despliega la API y publícala por nombre de host en `ingress.yaml`:
 
 ```bash
-kubectl create deployment mi-api --image=nginx:1.27-alpine --replicas=2
+kubectl create deployment mi-api --image=nginx:1.30-alpine --replicas=2
 kubectl expose deployment mi-api --port=80
 cat > ingress.yaml <<'EOF'
 apiVersion: networking.k8s.io/v1
@@ -780,7 +780,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: nginx:1.27
+          image: nginx:1.30
           resources:
             requests: { cpu: 100m, memory: 64Mi }
 ```
@@ -903,7 +903,7 @@ spec:
               topologyKey: kubernetes.io/hostname   # una réplica por nodo
       containers:
         - name: api
-          image: nginx:1.27
+          image: nginx:1.30
           resources:
             requests: { cpu: 100m, memory: 64Mi }
             limits: { memory: 128Mi }

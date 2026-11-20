@@ -54,7 +54,7 @@ Revisa `package.json`. Su forma relevante será similar a esta, aunque las versi
 ```json
 {
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22" },
   "scripts": {
     "start": "node src/main.js",
     "test": "vitest run"
@@ -438,7 +438,7 @@ mkdir scripts
 const major = Number(process.versions.node.split(".")[0]);
 
 if (major < 20) {
-  console.error(`Node ${process.version} no es compatible; usa Node 20 o superior`);
+  console.error(`Node ${process.version} no es compatible; usa Node 22 o superior`);
   process.exitCode = 1;
 } else {
   console.log(`Node compatible: ${process.version}`);
@@ -655,7 +655,7 @@ Crea `packages/tracking` con su propio manifiesto y una función pura que valide
 
 ### Tema 6: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min
 
-**Prerrequisito:** Node 20 o superior, npm y conocimiento de `package.json`, semver y lockfiles. Este tema no consume archivos creados en otros temas.
+**Prerrequisito:** Node 22 o superior, npm y conocimiento de `package.json`, semver y lockfiles. Este tema no consume archivos creados en otros temas.
 
 **Al terminar podrás:** preparar un paquete con `exports`, `files` y `engines`, revisar su tarball, instalarlo localmente y distinguir la publicación pública de un registro privado.
 
@@ -706,7 +706,7 @@ mkdir -p tarifas/src app
     ".": "./src/index.js"
   },
   "files": ["src"],
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22" },
   "license": "MIT"
 }
 ```

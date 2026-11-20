@@ -23,11 +23,15 @@ TOPIC = re.compile(r"^### Tema \d+[:.]", re.M)
 FENCE = re.compile(r"^```([\w+-]*)\s*$", re.M)
 
 CHECKS = {
-    "objetivos": r"al finalizar podr[aá]s|al terminar podr[aá]s|objetivo|qu[eé] podr[aá]s hacer",
+    "objetivos": r"al (?:finalizar|terminar)\s*,?\s*(?:vas a|podr[aá]s)|objetivo|qu[eé] podr[aá]s hacer",
     "motivacion": r"por qu[eé] (es importante|importa)|contexto y caso real|caso real",
-    "analogia": r"analog[ií]a",
+    "analogia": r"analog[ií]a|modelo mental",
     "codigo_y_resultado": None,  # se calcula aparte
-    "analisis": r"explicaci[oó]n (causal|por bloques|l[ií]nea)|paso a paso|qu[eé] hace cada|l[ií]nea \d",
+    # El formato de la casa explica el código en el Paso 3 (teoría, conceptos clave, mapa de
+    # subtemas) y en bloques como «Explicación del mecanismo», no solo con la frase «paso a paso».
+    "analisis": (r"explicaci[oó]n (causal|por bloques|l[ií]nea|del mecanismo|de c[oó]digo|de cada)"
+                 r"|conceptos clave|mapa de subtemas|modelo mental|desglose|paso a paso"
+                 r"|qu[eé] hace cada|c[oó]digo comentado|an[aá]lisis|línea \d"),
     "errores_comunes": r"errores? comunes|fallo deliberado|error esperado|diagn[oó]stico",
     "resumen": r"resumen|cierre|checklist|lo que aprendiste|en una frase",
     "ejercicios_con_solucion": None,  # se calcula aparte
@@ -49,7 +53,8 @@ def audit_topic(body: str) -> dict[str, bool]:
     langs = FENCE.findall(body)
     code_blocks = [l for l in langs[::2]]  # cada bloque abre y cierra
     has_code = any(l not in ("", "text", "mermaid", "markdown") for l in code_blocks)
-    res["codigo_y_resultado"] = has_code and bool(re.search(r"resultado esperado|salida esperada|deber[ií]as ver", low))
+    res["codigo_y_resultado"] = has_code and bool(re.search(
+        r"esperad[oa]|deber[ií]as ver|ver[aá]s|la (salida|consola|respuesta) (muestra|imprime|devuelve|dice)", low))
     has_ex = bool(re.search(r"ejercicio|pr[aá]ctica (guiada|independiente)|reto", low))
     has_sol = bool(re.search(r"<details|soluci[oó]n", low))
     res["ejercicios_con_solucion"] = has_ex and has_sol

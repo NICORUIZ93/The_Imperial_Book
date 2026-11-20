@@ -540,7 +540,7 @@ spec:
       image: node:22-alpine
       command: ["node", "-e", "require('http').createServer((q,r)=>r.end('app real, solo accesible via sidecar')).listen(3000)"]
     - name: sidecar-proxy
-      image: nginx:1.27-alpine
+      image: nginx:1.30-alpine
       ports: [{ containerPort: 8443 }]
 EOF
 kubectl apply -f pod-sidecar.yaml

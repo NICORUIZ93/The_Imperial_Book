@@ -6,7 +6,7 @@ RutaFlow empieza como un solo artefacto desplegable con módulos de Envíos y Fa
 
 ## Entorno reproducible
 
-Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/microservices/modular-rutaflow`; usa JDK 25 y Maven Wrapper. La demostración de ArchUnit incluye un proyecto independiente generado desde una carpeta limpia para que la prueba no dependa de avances ocultos.
+Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/microservices/modular-rutaflow`; usa JDK 27 y Maven Wrapper. La demostración de ArchUnit incluye un proyecto independiente generado desde una carpeta limpia para que la prueba no dependa de avances ocultos.
 
 ### Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min
 
@@ -16,7 +16,7 @@ Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/micr
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/clasificacion/{src,out,evidence}`. Debes distinguir proceso, puerto y frontera de red; ahora añadirás unidad lógica y unidad de despliegue.
+Usarás **JDK 27**. Crea `academia-labs/microservices/clasificacion/{src,out,evidence}`. Debes distinguir proceso, puerto y frontera de red; ahora añadirás unidad lógica y unidad de despliegue.
 
 #### Paso 2 · Contexto y caso real
 
@@ -113,7 +113,7 @@ Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Evaluar auton
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y la clasificación anterior. Crea `academia-labs/microservices/autonomia/{src,out,evidence}`. No necesitas Spring ni Docker: la decisión precede a la tecnología de despliegue.
+Usarás **JDK 27** y la clasificación anterior. Crea `academia-labs/microservices/autonomia/{src,out,evidence}`. No necesitas Spring ni Docker: la decisión precede a la tecnología de despliegue.
 
 #### Paso 2 · Contexto y caso real
 
@@ -201,7 +201,7 @@ Si fallas 2 o más puntos, vuelve a la matriz. **Siguiente tema:** «Agrupar có
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/cohesion/{src,out,evidence}` y copia `examples/professional-bridges/microservices/MedirCohesion.java` a `src/`.
+Usarás **JDK 27**. Crea `academia-labs/microservices/cohesion/{src,out,evidence}` y copia `examples/professional-bridges/microservices/MedirCohesion.java` a `src/`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -285,7 +285,7 @@ Si fallas 2 o más puntos, repite el inventario. **Siguiente tema:** «Proteger 
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y el límite propuesto. Crea `academia-labs/microservices/api-modulo/{src,out,evidence}` y copia `ProtegerApiModulo.java`.
+Usarás **JDK 27** y el límite propuesto. Crea `academia-labs/microservices/api-modulo/{src,out,evidence}` y copia `ProtegerApiModulo.java`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -375,7 +375,7 @@ Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/dominio-puro/{src,out,evidence}` y copia `CalcularTarifaPura.java`.
+Usarás **JDK 27**. Crea `academia-labs/microservices/dominio-puro/{src,out,evidence}` y copia `CalcularTarifaPura.java`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -456,7 +456,7 @@ Implementa recargo por zona con tabla de casos, límites y errores. Demuestra qu
 
 #### Paso 1 · Objetivo y preparación
 
-Crea `academia-labs/microservices/puertos/{src,out,evidence}` con **JDK 27.0.1** y copia `SustituirAdaptador.java`.
+Crea `academia-labs/microservices/puertos/{src,out,evidence}` con **JDK 27** y copia `SustituirAdaptador.java`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -540,7 +540,7 @@ Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y Graphviz opcional. Crea `academia-labs/microservices/grafo/{src,out,evidence}` y copia `DetectarCiclo.java`.
+Usarás **JDK 27** y Graphviz opcional. Crea `academia-labs/microservices/grafo/{src,out,evidence}` y copia `DetectarCiclo.java`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -913,7 +913,7 @@ Construye una matriz `riesgo → señal → fitness function → límite`. Inclu
 
 #### Paso 1 · Objetivo y preparación
 
-Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 27.0.1, el mismo del resto del curso, y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
+Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 27, el mismo del resto del curso, y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1047,7 +1047,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confundir contexto 
 
 #### Paso 1 · Objetivo y preparación
 
-Crea `academia-labs/microservices/senales/{src,out,evidence}` con **JDK 27.0.1** y copia `EvaluarExtraccion.java`.
+Crea `academia-labs/microservices/senales/{src,out,evidence}` con **JDK 27** y copia `EvaluarExtraccion.java`.
 
 #### Paso 2 · Contexto y caso real
 

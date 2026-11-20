@@ -9,7 +9,7 @@
 
 Al finalizar podrás crear y ejecutar un proyecto modular con ESM, reconocer un módulo CommonJS y diagnosticar el error que aparece al mezclar ambos formatos. Separarás el dominio de entregas del proyecto de su punto de entrada mediante exports nombrados.
 
-**Conocimiento previo:** funciones, objetos, rutas relativas y uso básico de la terminal. Necesitas Node.js 20 o posterior; compruébalo con `node --version`. Si el comando no existe, instala la versión LTS desde la fuente oficial antes de continuar.
+**Conocimiento previo:** funciones, objetos, rutas relativas y uso básico de la terminal. Necesitas Node.js 22 o posterior; compruébalo con `node --version`. Si el comando no existe, instala la versión LTS desde la fuente oficial antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 

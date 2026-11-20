@@ -34,7 +34,7 @@ Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java 
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve al curso Java, tema «Ejecutar el ciclo fuente-bytecode-proceso» antes de continuar.
+Usarás **JDK 27**. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve al curso Java, tema «Ejecutar el ciclo fuente-bytecode-proceso» antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 
@@ -162,7 +162,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. *
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor del tema «Ejecutar dos procesos Java y comprobar su socket HTTP»; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
+Usarás **JDK 27** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor del tema «Ejecutar dos procesos Java y comprobar su socket HTTP»; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
 
 #### Paso 2 · Contexto y caso real
 
@@ -351,7 +351,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desd
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**, tres terminales y los puertos locales 8082 y 8083. Crea una carpeta vacía `academia-labs/microservices/m0-t3/{src,out,evidence}`. Detén los procesos de T2 y verifica que ambos puertos estén libres antes de compilar; conserva la distinción entre timeout de una fase y presupuesto extremo a extremo.
+Usarás **JDK 27**, tres terminales y los puertos locales 8082 y 8083. Crea una carpeta vacía `academia-labs/microservices/m0-t3/{src,out,evidence}`. Detén los procesos de T2 y verifica que ambos puertos estén libres antes de compilar; conserva la distinción entre timeout de una fase y presupuesto extremo a extremo.
 
 #### Paso 2 · Contexto y caso real
 
@@ -557,7 +557,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Clasificar un
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**, `curl` y dos terminales. Crea una carpeta vacía `academia-labs/microservices/resultado-desconocido/{src,out,evidence}` y libera el puerto 8084. Debes comprender que un timeout describe lo observado por el cliente, no el estado final del servidor.
+Usarás **JDK 27**, `curl` y dos terminales. Crea una carpeta vacía `academia-labs/microservices/resultado-desconocido/{src,out,evidence}` y libera el puerto 8084. Debes comprender que un timeout describe lo observado por el cliente, no el estado final del servidor.
 
 #### Paso 2 · Contexto y caso real
 
@@ -645,7 +645,7 @@ Si fallas 2 o más puntos, vuelve a la demostración. **Siguiente tema:** «Evit
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**, `curl` y el puerto 8085. Crea `academia-labs/microservices/idempotencia/{src,out,evidence}` desde una carpeta vacía. Debes haber reproducido un resultado desconocido; una clave idempotente no elimina timeouts, sino que limita el efecto de repetir la misma intención.
+Usarás **JDK 27**, `curl` y el puerto 8085. Crea `academia-labs/microservices/idempotencia/{src,out,evidence}` desde una carpeta vacía. Debes haber reproducido un resultado desconocido; una clave idempotente no elimina timeouts, sino que limita el efecto de repetir la misma intención.
 
 #### Paso 2 · Contexto y caso real
 
@@ -807,7 +807,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar ord
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/relojes/{src,out,evidence}` desde una carpeta vacía. Debes distinguir «cuándo ocurrió según este host» de «cuánto tardó dentro de este proceso»; si aún usas un timeout como prueba de resultado, vuelve al tema «Clasificar un resultado desconocido antes de reintentar».
+Usarás **JDK 27**. Crea `academia-labs/microservices/relojes/{src,out,evidence}` desde una carpeta vacía. Debes distinguir «cuándo ocurrió según este host» de «cuánto tardó dentro de este proceso»; si aún usas un timeout como prueba de resultado, vuelve al tema «Clasificar un resultado desconocido antes de reintentar».
 
 #### Paso 2 · Contexto y caso real
 
@@ -898,7 +898,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar el 
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y una proyección en memoria. Crea `academia-labs/microservices/orden-agregado/{src,out,evidence}`. Debes saber que timestamps describen relojes y que una versión expresa la secuencia aceptada por el dominio.
+Usarás **JDK 27** y una proyección en memoria. Crea `academia-labs/microservices/orden-agregado/{src,out,evidence}`. Debes saber que timestamps describen relojes y que una versión expresa la secuencia aceptada por el dominio.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1001,7 +1001,7 @@ Si fallas 2 o más puntos, repite la secuencia. **Siguiente tema:** «Evoluciona
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y dos JSON. Crea `academia-labs/microservices/contratos/{src,out,evidence}`. Debes distinguir la versión del agregado de la versión del esquema: una ordena transiciones; la otra describe cómo interpretar bytes.
+Usarás **JDK 27** y dos JSON. Crea `academia-labs/microservices/contratos/{src,out,evidence}`. Debes distinguir la versión del agregado de la versión del esquema: una ordena transiciones; la otra describe cómo interpretar bytes.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1203,7 +1203,7 @@ Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Delimitar y r
 
 #### Paso 1 · Objetivo y preparación
 
-Usarás **JDK 27.0.1** y bytes UTF-8. Crea `academia-labs/microservices/framing/{src,out,evidence}`. Debes comprender que TCP entrega un flujo de bytes, no objetos ni fronteras de mensajes.
+Usarás **JDK 27** y bytes UTF-8. Crea `academia-labs/microservices/framing/{src,out,evidence}`. Debes comprender que TCP entrega un flujo de bytes, no objetos ni fronteras de mensajes.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1297,7 +1297,7 @@ Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Refutar falac
 
 #### Paso 1 · Objetivo y preparación
 
-Reutilizarás las evidencias de sockets, timeout, deadline, reconciliación, idempotencia, orden, contratos y límites. Crea `academia-labs/microservices/falacias/{src,out,evidence}` con **JDK 27.0.1**. Debes conservar salidas reales; una tabla sin experimento no refuta nada.
+Reutilizarás las evidencias de sockets, timeout, deadline, reconciliación, idempotencia, orden, contratos y límites. Crea `academia-labs/microservices/falacias/{src,out,evidence}` con **JDK 27**. Debes conservar salidas reales; una tabla sin experimento no refuta nada.
 
 #### Paso 2 · Contexto y caso real
 

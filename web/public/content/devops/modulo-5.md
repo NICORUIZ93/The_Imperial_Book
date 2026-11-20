@@ -58,7 +58,7 @@ services:
     image: node:22-alpine
     command: ["node", "-e", "require('http').createServer((q,r)=>r.end('version GREEN (v2)')).listen(3000)"]
   edge:
-    image: nginx:1.27-alpine
+    image: nginx:1.30-alpine
     ports: ["8080:80"]
     volumes: ["./nginx/activo.conf:/etc/nginx/conf.d/default.conf:ro"]
     depends_on: [blue, green]
@@ -156,7 +156,7 @@ services:
     image: node:22-alpine
     command: ["node", "-e", "require('http').createServer((q,r)=>r.end('v2 canary')).listen(3000)"]
   edge:
-    image: nginx:1.27-alpine
+    image: nginx:1.30-alpine
     ports: ["8081:80"]
     volumes: ["./nginx/canary.conf:/etc/nginx/conf.d/default.conf:ro"]
     depends_on: [v1, v2]
@@ -545,7 +545,7 @@ El siguiente paso es repetir el procedimiento con el orquestador y una migració
 Al finalizar distinguirás un experimento A/B de un canary y de un despliegue
 shadow, asignarás una variante de forma determinista y protegerás la respuesta
 real cuando una segunda versión solo observa tráfico. **Prerrequisitos:** los
-Temas 1–3 de este módulo, HTTP, una función y pruebas con Node.js 20 o superior.
+Temas 1–3 de este módulo, HTTP, una función y pruebas con Node.js 22 o superior.
 El ejemplo es independiente y no requiere Kubernetes, una cuenta cloud ni
 tráfico real.
 

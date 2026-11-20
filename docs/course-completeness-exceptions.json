@@ -1,0 +1,12 @@
+{
+  "source": "specs/013-programa-de-cursos-y-correcciones.md, decisión del dueño: «Se completa Microservicios (hoy 2 módulos): entran Strangler, BFF y CQRS, que faltaban»",
+  "updatedAt": "2026-11-19",
+  "tracks": [
+    {
+      "track": "microservices",
+      "motivos": {
+        "etapas sin capítulo": "El curso tiene dos capítulos y los dos son de Fundamentos: uno reproduce los fallos de repartir un programa en procesos, y el otro organiza un monolito modular y decide si extraer. Nunca se extrae un servicio, no hay back-end for front-end, no hay CQRS y no hay operación, que es lo que promete su tagline («límites, contratos, datos, fallos y operación distribuida»). Los capítulos que faltan están pedidos y aprobados en specs/013 (estrangulador, BFF y CQRS) y en el temario pendiente de aprobación del punto P7. La puerta deja de señalar el curso cuando sus cuatro etapas tengan capítulo detrás, y entonces se borra esta entrada."
+      }
+    }
+  ]
+}

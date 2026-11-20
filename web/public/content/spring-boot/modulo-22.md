@@ -14,7 +14,7 @@ Al finalizar vas a separar una regla de negocio de su infraestructura con un pue
 
 En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 20 o superior. Los comandos siguientes parten de esa carpeta.
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 22 o superior. Los comandos siguientes parten de esa carpeta.
 
 ```bash
 cp -R examples/spring-architecture-rutaflow practica-arquitectura
@@ -184,13 +184,13 @@ Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaj
 
 Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
 
-**Conocimiento previo:** Tema 1 de este módulo; Node.js 20 o superior (`node --version`).
+**Conocimiento previo:** Tema 1 de este módulo; Node.js 22 o superior (`node --version`).
 
 **¿Por qué es importante?** Un diagrama que nadie puede contrastar se convierte en decoración. En el proyecto integrador, el diagrama de contenedores se usa para decidir dónde vive la cola y quién escribe en la base; si el diagrama muestra un worker que el código no tiene, la decisión se toma sobre una ficción.
 
 C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 20 o superior. Los comandos siguientes parten de esa carpeta.
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 22 o superior. Los comandos siguientes parten de esa carpeta.
 
 ```bash
 cp -R examples/spring-architecture-rutaflow practica-arquitectura
@@ -345,13 +345,13 @@ Siguiente paso: registrar por qué se eligió esta arquitectura. **Evidencia de 
 
 Al finalizar vas a escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y a validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
 
-**Conocimiento previo:** Temas 1 y 2; Node.js 20 o superior.
+**Conocimiento previo:** Temas 1 y 2; Node.js 22 o superior.
 
 **¿Por qué es importante?** Dentro de un año, alguien preguntará por qué la asignación va por Kafka y no por una llamada directa. Sin un ADR, la respuesta se pierde y la decisión se revierte por moda. En el proyecto integrador, la elección de cola, base de datos y estrategia de reintentos debe poder revisarse sin depender de la memoria del equipo.
 
 Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 20 o superior. Los comandos siguientes parten de esa carpeta.
+**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 22 o superior. Los comandos siguientes parten de esa carpeta.
 
 ```bash
 cp -R examples/spring-architecture-rutaflow practica-arquitectura
