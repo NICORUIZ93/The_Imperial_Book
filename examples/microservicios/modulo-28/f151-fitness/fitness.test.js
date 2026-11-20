@@ -33,15 +33,23 @@ test('evaluar marca cada función con su límite', () => {
 test('con el servicio real: 200 pedidos sanos cumplen las tres funciones', async () => {
   const servidor = crearServidor().listen(0);
   await once(servidor, 'listening');
-  const base = `http://127.0.0.1:${servidor.address().port}`;
-  const leer = async () => parsear(await fetch(`${base}/metrics`).then((r) => r.text()));
-  const antes = await leer();
-  await Promise.all(Array.from({ length: 200 }, (_, i) => fetch(`${base}/pedidos/t${i}`).then((r) => r.text())));
-  const valores = medir(delta(antes, await leer()));
-  servidor.close();
-  assert.equal(valores.peticiones, 200);
-  assert.deepEqual(valores.destinos, ['inventario']);
-  assert.ok(evaluar(valores).every((r) => r.ok), JSON.stringify(valores));
+  try {
+    const base = `http://127.0.0.1:${servidor.address().port}`;
+    const leer = async () => parsear(await fetch(`${base}/metrics`).then((r) => r.text()));
+    const antes = await leer();
+    // En tandas de 20: 200 conexiones a la vez agotan la cola de escucha en macOS (ECONNRESET).
+    for (let i = 0; i < 200; i += 20) {
+      await Promise.all(Array.from({ length: 20 }, (_, j) => fetch(`${base}/pedidos/t${i + j}`).then((r) => r.text())));
+    }
+    const valores = medir(delta(antes, await leer()));
+    assert.equal(valores.peticiones, 200);
+    assert.deepEqual(valores.destinos, ['inventario']);
+    assert.ok(evaluar(valores).every((r) => r.ok), JSON.stringify(valores));
+  } finally {
+    // Cerrar SIEMPRE: si una petición falla y el servidor queda escuchando, el proceso de test no termina nunca.
+    servidor.closeAllConnections();
+    servidor.close();
+  }
 });
 
 test('las consultas PromQL filtran por job y usan rate en ventana de 5 minutos', () => {
