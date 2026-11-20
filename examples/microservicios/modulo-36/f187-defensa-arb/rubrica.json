@@ -1,0 +1,15 @@
+{
+  "fuente": "docs/microservicios/07-plantillas.md, sección 7.2 (Rúbrica del Comité de Arquitectura)",
+  "aprueba": { "mediaMinima": 2.8, "ningunCriterioEn": 1 },
+  "criterios": [
+    { "id": 1, "nombre": "Descomposición y límites", "peso": 0.15 },
+    { "id": 2, "nombre": "Consistencia y saga", "peso": 0.15 },
+    { "id": 3, "nombre": "Resiliencia", "peso": 0.10 },
+    { "id": 4, "nombre": "Seguridad", "peso": 0.10 },
+    { "id": 5, "nombre": "Observabilidad", "peso": 0.10 },
+    { "id": 6, "nombre": "Rendimiento y carga", "peso": 0.10 },
+    { "id": 7, "nombre": "Restricción sobrevenida y ADR", "peso": 0.15 },
+    { "id": 8, "nombre": "Costo (FinOps)", "peso": 0.05 },
+    { "id": 9, "nombre": "Comunicación y defensa", "peso": 0.10 }
+  ]
+}

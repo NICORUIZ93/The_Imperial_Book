@@ -1,0 +1,4 @@
+server:
+  port: 8090
+pagos:
+  limite-rps: ${LIMITE_RPS:1000000}   # LIMITE_RPS=20 activa la restricción sobrevenida (F185)

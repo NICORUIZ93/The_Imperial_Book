@@ -1,0 +1,33 @@
+{
+  "id": 35,
+  "title": "Módulo 31 · Migración desde monolito real",
+  "shortTitle": "Migración desde monolito real",
+  "level": "Experto",
+  "duration": "6 h",
+  "color": "#0f766e",
+  "description": "Migra un monolito sin pararlo: una fachada Strangler Fig que desvía tráfico ruta a ruta y por porcentaje pegajoso de clientes; la coexistencia de datos con captura de cambios, capa anticorrupción, relevo idempotente y conciliación; las cinco métricas DORA y una puerta de avance para decidir cada paso; y la deuda técnica medida con el historial de Git, que a veces dice que lo correcto es no usar microservicios.",
+  "concepts": [
+    "Strangler Fig",
+    "Coexistencia monolito + servicios",
+    "Métricas de éxito",
+    "Deuda técnica"
+  ],
+  "practice": [
+    "Pon una fachada delante del monolito que mande /api/pedidos al servicio nuevo para el 10 % de los clientes y lo demás al monolito",
+    "Sincroniza el monolito con el servicio nuevo con triggers de captura, una ACL y un relevo idempotente, y detecta divergencias con una conciliación",
+    "Calcula las cinco métricas DORA antes y después y deja que una puerta de avance decida si subes el porcentaje",
+    "Encuentra los hotspots de un repositorio con git log y decide, con datos, no extraer facturación a un microservicio"
+  ],
+  "questions": [
+    "Te piden migrar un monolito de diez años a microservicios. ¿Por dónde empiezas y cómo evitas un «big bang»?",
+    "Durante la migración, el monolito y el nuevo servicio necesitan los mismos datos. ¿Cómo los mantienes coherentes?",
+    "¿Cómo demuestras a dirección que una migración a microservicios está funcionando?",
+    "Tienes mucha deuda técnica y presión para pasar a microservicios. ¿Cómo decides qué pagar y qué extraer?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS (node:http, node:sqlite con SQLite 3.54.1)",
+    "Git 2.x",
+    "Métricas DORA (dora.dev)"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-35 con ./verificar.sh en verde (npm ci sin dependencias, 17 tests de node --test y los scripts de las fichas F177–F180, incluido el ejercicio de decisión cuya respuesta correcta es no usar microservicios)."
+}

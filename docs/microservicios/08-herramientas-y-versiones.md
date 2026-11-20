@@ -89,8 +89,8 @@ ESTADO: completo
 | ☐ | Tomcat embebido | — | **11.0.27** (gestionada) | — | log de arranque | ídem |
 | ☐ | GraalVM Community (Native Image) | — | **GraalVM CE para JDK 25** (línea 25.x; feature release del 2026-11-03) con Native Build Tools 1.1.14 | 2026-11-03 | `native-image --version` | https://www.graalvm.org/release-calendar/ · https://docs.spring.io/spring-boot/system-requirements.html |
 | ☐ | CRaC | — | **Azul Zulu 25 con CRaC** (CRaC completo solo en Linux x64/ARM64; en macOS y Windows es simulado, solo para desarrollo) | — | `java -XX:CRaCCheckpointTo=cr -version` | https://docs.azul.com/crac/azul-zulu-zing-crac-compared |
-| ☐ | Gatling | — | **3.16.1** | 16 nov (año no visible) | `mvn gatling:test` | https://github.com/gatling/gatling/releases/latest |
-| ☐ | Temporal Java SDK | — | **1.40.0** | 29 sep (año no visible) | árbol de dependencias | https://github.com/temporalio/sdk-java/releases/latest |
+| ☐ | Gatling | — | **3.16.1** · `gatling-maven-plugin` **4.21.12** | 3.16.1 el 2026-11-16 (`maven-metadata.xml` de `io.gatling:gatling-core`); plugin 4.21.12 el 2026-09-07 | `mvn gatling:test` | https://github.com/gatling/gatling/releases/latest · https://repo1.maven.org/maven2/io/gatling/gatling-maven-plugin/maven-metadata.xml |
+| ☐ | Temporal Java SDK (`temporal-sdk`, `temporal-testing`) | — | **1.41.1** (consultado el 2026-11-20; la *Latest release* de GitHub vista el 2026-11-19 era 1.40.0) | 2026-11-16 | árbol de dependencias | https://repo1.maven.org/maven2/io/temporal/temporal-sdk/maven-metadata.xml · https://github.com/temporalio/sdk-java/releases/latest |
 
 ## Fase 2 · Node.js (versiones del registro npm)
 
@@ -130,6 +130,7 @@ ESTADO: completo
 | ☐ | `@prometheus-io/client` (antes `prom-client`) | — | **0.16.1** | 2026-08-27 | npm marca `prom-client` 15.1.3 (2024-06-27) como deprecado: «prom-client has been replaced by @prometheus-io/client»; misma API (Módulo 21) |
 | ☐ | `clinic` (clinic.js) | — | **13.0.0** | 2023-06-28 | sin publicaciones desde 2023: `doctor`, `flame` y `bubbleprof` funcionan con Node 26.13.1 en Linux (comprobado el 2026-11-19) si se exporta `NO_INSIGHT=1` (sin TTY, la pregunta de telemetría hace que salga sin hacer nada); `perf_hooks` y `node --cpu-prof` son la alternativa integrada (Módulo 13) |
 | ☐ | `@temporalio/client` / `@temporalio/worker` | — | **1.26.0** | 2026-11-17 | |
+| ☐ | `@gatling.io/cli` / `@gatling.io/core` / `@gatling.io/http` (Gatling JS) | — | **3.16.101** (motor Gatling 3.16.1; necesita Java 17+ y descarga su bundle a `~/.gatling` la primera vez) | 2026-11-17 | Módulo 32 (consultado el 2026-11-20) |
 | ☐ | `@kurrent/kurrentdb-client` (antes `@eventstore/db-client`, que no publica desde 2024-05-10) | — | **1.3.3** | 2026-11-19 | Módulo 22 |
 | ☐ | `snyk` (CLI) | — | **1.1309.0** | 2026-11-19 | `npx snyk --version` |
 | ☐ | `vitest` (opcional) | — | **5.1.1** | 2026-11-18 | |

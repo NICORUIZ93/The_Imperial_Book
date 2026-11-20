@@ -1,0 +1,3 @@
+{ "estudiante": "Defensa con un criterio en 1", "fecha": "2026-11-20", "evaluadores": ["arquitecta principal", "SRE", "producto"],
+  "notas": { "1": 4, "2": 4, "3": 4, "4": 1, "5": 4, "6": 4, "7": 4, "8": 4, "9": 4 },
+  "preguntaConMasDudas": "¿Dónde guardas la clave del proveedor de pagos?" }

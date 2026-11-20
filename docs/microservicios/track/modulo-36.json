@@ -1,0 +1,41 @@
+{
+  "id": 36,
+  "title": "Módulo 32 · Proyecto Final y Comité de Arquitectura",
+  "shortTitle": "Proyecto Final y Comité de Arquitectura",
+  "level": "Experto",
+  "duration": "2 semanas (30 h)",
+  "color": "#0f766e",
+  "description": "El examen final es un sistema que funciona: reservas de entradas con un proveedor de pagos externo, una saga orquestada con Temporal y un API Gateway con rate limiting en Redis, en dos pistas por separado (Node.js y Spring Boot). Lo cargas con Gatling a 60 reservas/s, recibes una restricción sobrevenida (el proveedor limita a 20 peticiones/s), rediseñas el cobro con una cola a 18/s, lo documentas en un ADR con fitness function ejecutable y lo defiendes ante el Comité de Arquitectura con la rúbrica del curso.",
+  "concepts": [
+    "Sistema de reservas con pago externo",
+    "Saga orquestada con Temporal.io",
+    "API Gateway con rate limiting",
+    "Test de carga con Gatling",
+    "Restricción sobrevenida",
+    "Rediseño documentado en ADR",
+    "Defensa ante Architecture Review Board"
+  ],
+  "practice": [
+    "Construye la API de reservas con 202 Accepted e Idempotency-Key y comprueba que un POST repetido no cobra dos veces",
+    "Escribe la saga en Temporal (TypeScript y Java) con compensaciones en orden inverso y una cola propia para el cobro",
+    "Limita por API key con un cubo de fichas en Redis y demuestra que un limitador en memoria con 3 réplicas deja pasar el triple",
+    "Carga el sistema con Gatling a 60 reservas/s con aserciones de p99 y errores, y descubre que la API en verde esconde ventas perdidas",
+    "Mide el límite de 20 peticiones/s del proveedor, rediseña con una cola a 18/s y valida el ADR y su fitness function en CI",
+    "Prepara la defensa con la lista de entregables, el costo mensual y la hoja de puntuación del Comité"
+  ],
+  "questions": [
+    "Diseña la API de reservas de una ticketera que cobra con un proveedor externo. ¿Qué devuelve el POST y cómo evitas cobros duplicados?",
+    "¿Por qué orquestar la reserva con Temporal y no con eventos o con una transacción distribuida?",
+    "¿Cómo implementarías rate limiting por cliente en un gateway con varias réplicas?",
+    "¿Cómo diseñas un test de carga que sirva para decidir si un sistema está listo para un pico?",
+    "El proveedor de pagos anuncia un límite de 20 peticiones/s y tus picos son de 60 reservas/s. ¿Qué haces?",
+    "¿Qué debe tener un ADR para que sirva de algo dentro de un año?",
+    "¿Qué parte de tu sistema no debería ser un microservicio?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS, Express 5.3.0, Temporal TypeScript SDK 1.26.0, ioredis 6.0.0, Gatling JS 3.16.101",
+    "JDK 25, Spring Boot 4.1.3, Spring Cloud Gateway 5.0.4 (2025.1.4), Temporal Java SDK 1.41.1, Gatling 3.16.1 con gatling-maven-plugin 4.21.12",
+    "Redis 8.10.2 (Docker Compose) y Temporal Server 1.32.1 (temporal server start-dev)"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-36 con ./verificar.sh en verde (26 tests de node --test, los scripts de las fichas F181–F187, Redis real, Gatling a 60 reservas/s con y sin la restricción y las demos JDK; --compose añade Redis con Docker y los tests Maven de spring/), los ADR validados y la evaluación del Comité con 2.8 o más y ningún criterio en 1."
+}
