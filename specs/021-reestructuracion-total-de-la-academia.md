@@ -111,6 +111,13 @@ De cada fuente se toma la **lista de temas** (hechos), no su texto. El temario o
 deduplicada, ordenada de básico a experto, con una marca por tema: «ya está», «está pero básico» o «falta»,
 y de qué fuentes sale. El curso no se cierra hasta que no queda ningún «falta» sin decisión.
 
+**Alcance: todos los cursos.** El contraste con fuentes se hace para los 16 cursos actuales y los nuevos
+(Gradle, Docker, Kubernetes, Diseño de sistemas), no solo para los prioritarios. Orden de entrega de los
+temarios objetivo: Java, Gradle, Spring; luego Fundamentos, JavaScript, Node, React, Angular, Docker,
+Kubernetes, DevOps, Cloud, Microservicios (solo huecos), Android, Kotlin Multiplatform, iOS, Flutter,
+Control, Diseño de sistemas y RutaFlow (proyecto integrador: se rediseña al final sobre los cursos ya
+cerrados).
+
 ### Fase 3 · Plantilla y validador únicos
 Generalizar `scripts/validate_fichas.py` a todos los cursos: secciones obligatorias, diagrama con texto
 alternativo, código con versiones, salida esperada, práctica, nivel y minutos, y título único en toda la
@@ -134,6 +141,48 @@ Microservicios ya cumple la plantilla: solo se le quitan las repeticiones que el
 En cada curso: aplicar mapa y temario, pasar cada tema a la plantilla, añadir el diagrama o la imagen,
 ejecutar el código, dejar un laboratorio por módulo y la redirección de progreso
 (`web/src/app/module-renumbering.ts`) para que nadie pierda lo que ya leyó.
+
+#### Cómo mejora la explicación
+
+**En todos los cursos** (lo comprueba el validador de la Fase 3 y la revisión de la Fase 6):
+
+1. **Del porqué al cómo:** cada tema abre con el problema real que resuelve y qué pasa si no lo usas.
+2. **Tres niveles en el mismo tema:** nivel 0 (analogía y un ejemplo mínimo), intermedio (uso real con
+   varias piezas) y maestro (cómo funciona por dentro, límites, rendimiento, decisiones de diseño).
+3. **Un caso que crece:** cada curso tiene un proyecto guía que avanza módulo a módulo; los ejemplos
+   dejan de ser sueltos (`Foo`, «Hola mundo») y pasan a ser partes de ese sistema.
+4. **Código completo y ejecutado:** archivo con nombre y ruta, versiones, comando para correrlo y la
+   salida real pegada; explicación por bloques de lo que no es obvio.
+5. **Ver para entender:** un diagrama por tema (flujo, memoria, secuencia o arquitectura) con texto
+   alternativo; capturas reales de terminal o de la herramienta cuando el tema es de uso.
+6. **Lo que sale mal:** el error real con su mensaje, cómo se diagnostica paso a paso y cómo se corrige.
+7. **Practicar y comprobar:** mini-laboratorio con criterio de éxito verificable, y preguntas con
+   respuesta modelo (incluida una de entrevista).
+8. **Criterio:** cuándo usarlo, cuándo no, alternativas y costo.
+9. **Hilo entre temas:** cada tema dice de dónde viene y a dónde lleva, sin repetir lo ya enseñado.
+
+**Énfasis propio de cada curso:**
+
+| Curso | Cómo se explica mejor |
+|---|---|
+| Fundamentos | del problema cotidiano a la abstracción; todo se prueba en la terminal del estudiante; cada concepto (HTTP, Git, SQL, redes) con una traza real que se pueda leer línea a línea |
+| Java | modelo de memoria dibujado (pila, heap, referencias) en cada tema de lenguaje; bytecode con `javap` y JFR para mostrar qué hace la JVM; evolución del mismo ejemplo de Java 8 a 25; concurrencia con fallos reproducibles (carreras, bloqueos) |
+| Gradle | cada build se explica con su grafo de tareas y `--scan`/`--info`; se parte de un build roto o lento real y se arregla; siempre Kotlin DSL y multi-proyecto, no builds de juguete |
+| Spring | «la magia» abierta: qué beans crea la autoconfiguración y por qué (informe de condiciones, depurador), proxies y transacciones con traza; cada tema sobre el mismo servicio que crece hasta producción; pruebas en cada tema |
+| JavaScript | el motor a la vista: pila de llamadas, cola de tareas y microtareas dibujadas; cada rareza del lenguaje con su regla de la especificación; ejercicios en el navegador y en Node |
+| Node | el bucle de eventos y los streams medidos (no contados): perfiles, fugas y contrapresión reproducidas; un mismo servicio de la API mínima a producción |
+| React | modelo mental de render y reconciliación con el Profiler; cada hook con el fallo que causa usarlo mal; una app que crece (estado, datos, rutas, pruebas, rendimiento) |
+| Angular | detección de cambios y signals visualizados; inyección de dependencias con su árbol; la misma app que crece con pruebas y SSR |
+| Docker | qué es de verdad un contenedor (namespaces, cgroups, capas) inspeccionando imágenes reales; cada Dockerfile se mide (tamaño, tiempo, vulnerabilidades) antes y después |
+| Kubernetes | cada objeto se observa reconciliándose (`kubectl get -w`, eventos); fallos provocados (pod que no arranca, sonda mal puesta) y su diagnóstico; todo en kind |
+| DevOps | un mismo servicio recorre el pipeline completo; cada práctica con su métrica (DORA) y su incidente de ejemplo; herramientas reales, no descripciones |
+| Cloud | cada servicio primero en **Floci** (local, repetible) y luego «qué cambia en la nube real»: permisos, costo y límites; arquitecturas dibujadas y cotizadas |
+| Microservicios | ya cumple la plantilla; se mantiene Spring y Node por separado y se enlazan los temas espejo |
+| Android / Kotlin Multiplatform | ciclo de vida y recomposición visualizados; la misma app crece por capas; cada tema corre en emulador con captura real |
+| iOS | SwiftUI y concurrencia de Swift con diagramas de estado y de actores; la misma app crece; capturas reales del simulador |
+| Flutter | árbol de widgets, elementos y render objects dibujado; rendimiento medido con DevTools; la misma app crece |
+| Control | de la intuición física a la ecuación y a la simulación: cada concepto con su gráfica generada por código ejecutable y un sistema real (tanque, motor) |
+| Diseño de sistemas | cada diseño parte de requisitos y números (carga, latencia, costo), compara al menos dos alternativas y termina en un ADR |
 
 ### Fase 5 · Floci: una entrada, bien explicada
 Una lección de entrada «Nube en local con Floci» (qué es, cómo se levanta, cómo se comprueba, qué no
