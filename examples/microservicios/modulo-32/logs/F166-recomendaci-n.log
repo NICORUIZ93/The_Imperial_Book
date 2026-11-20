@@ -1,0 +1,5 @@
+servicio  réplicas  pide hoy           p95 CPU  máx mem   recomendado        costo hoy     costo nuevo
+pedidos          3  1 vCPU/2048 MiB      0.231   559 MiB  0.3 vCPU/704 MiB     119.02 USD     36.65 USD
+catalogo         3  0.5 vCPU/1024 MiB    0.091   268 MiB  0.15 vCPU/384 MiB     59.51 USD     18.66 USD
+pagos            2  0.25 vCPU/512 MiB    0.223   437 MiB  0.3 vCPU/576 MiB      19.84 USD     23.53 USD
+TOTAL al mes: 198.36 USD -> 78.84 USD · ahorro 119.52 USD (60.3 %)

@@ -1,0 +1,2 @@
+pedidos -> antifraude con el token canjeado para pagos: 401 {"error":"invalid_token","detalle":"aud=pagos"}
+diagnóstico (payload decodificado): aud=pagos act.sub=pedidos scope="pagos:cobrar"

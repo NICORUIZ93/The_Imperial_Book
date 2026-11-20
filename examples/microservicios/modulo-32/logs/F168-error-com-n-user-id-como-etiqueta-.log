@@ -1,0 +1,4 @@
+BIEN etiquetas acotadas         ->         2,808 series en Prometheus ·         432 métricas · cota CloudWatch       129.60 USD/mes
+MAL  + user_id (1 000 activos)  ->     2,808,000 series en Prometheus ·     432,000 métricas · cota CloudWatch   129,600.00 USD/mes
+MAL  + user_id (50 000 activos) ->   140,400,000 series en Prometheus ·  21,600,000 métricas · cota CloudWatch 6,480,000.00 USD/mes
+Arreglo: el user_id va en el LOG o en el atributo de la TRAZA (alta cardinalidad barata), nunca en la etiqueta.

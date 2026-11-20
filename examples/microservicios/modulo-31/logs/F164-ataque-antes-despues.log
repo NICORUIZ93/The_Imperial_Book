@@ -1,0 +1,10 @@
+== ANTES (vulnerable): política solo en el gateway del borde
+  catalogo -> gateway  POST /admin/ajustes        : 403 {"error":"gateway: prohibido"}
+  catalogo -> inventario directo POST /admin/ajustes: 200 {"ajustado":true,"stock":0}
+== DESPUÉS (seguro): sidecar en cada servicio, mTLS y política en el destino (denegar por defecto)
+  catalogo -> sidecar  POST /admin/ajustes        : 403 {"error":"RBAC: access denied","identidad":"spiffe://cluster.local/ns/tienda/sa/catalogo"}
+  catalogo -> sidecar  POST /reservas             : 403 {"error":"RBAC: access denied","identidad":"spiffe://cluster.local/ns/tienda/sa/catalogo"}
+  catalogo -> sidecar  GET /stock                 : 200 {"stock":10}
+  pedidos  -> sidecar  POST /reservas             : 200 {"reservado":true,"stock":9}
+  catalogo -> inventario directo (puerto de antes): rechazado en la conexión (ECONNREFUSED)
+  la app solo escucha en pod-inventario-…/app.sock (socket local del pod)

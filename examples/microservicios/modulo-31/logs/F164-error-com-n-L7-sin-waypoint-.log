@@ -1,0 +1,2 @@
+solo ztunnel (L4), política con métodos/rutas -> pedidos GET /stock: rechazado en la conexión (ECONNRESET)
+con waypoint (L7), misma política            -> pedidos GET /stock: 200 {"stock":10}

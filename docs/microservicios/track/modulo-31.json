@@ -1,0 +1,37 @@
+{
+  "id": 31,
+  "title": "Módulo 27 · Seguridad Zero-Trust",
+  "shortTitle": "Seguridad Zero-Trust",
+  "level": "Experto",
+  "duration": "8 h",
+  "color": "#0f766e",
+  "description": "Diseña como si el atacante ya estuviera dentro: identidad SPIFFE por certificado y autorización por identidad con denegar por defecto (Istio y Linkerd), Token Exchange RFC 8693 con delegación anidada y tokens ligados al certificado (RFC 8705), credenciales dinámicas de Vault que caducan y se revocan, y una malla de servicios que aplica la política en el destino (sidecar frente a ambient). Cada tema ataca a propósito una versión vulnerable y la compara con la segura.",
+  "concepts": [
+    "mTLS con Istio/Linkerd",
+    "Token Exchange (RFC 8693)",
+    "Vault",
+    "Service Mesh"
+  ],
+  "practice": [
+    "Demuestra que un pod con certificado válido de la malla recibe 403 cuando la política autoriza por identidad SPIFFE y no por cabecera",
+    "Canjea el token de un usuario por uno de 60 s para un solo destino, ligado al certificado de quien lo pidió, y comprueba que robado no sirve",
+    "Sustituye una contraseña estática por credenciales dinámicas de Vault y verifica en PostgreSQL que caducan y se revocan",
+    "Salta un gateway de perímetro llamando directamente a un servicio y ciérralo con un sidecar que deniega por defecto"
+  ],
+  "questions": [
+    "Tenemos Istio con mTLS STRICT en todo el clúster. ¿Estamos en Zero-Trust?",
+    "¿Cómo evitas que un token robado en un microservicio sirva para atacar a otro?",
+    "¿Qué ganas con secretos dinámicos frente a guardar la contraseña de la base de datos en Vault KV?",
+    "¿Cuándo introducirías un service mesh y cuándo no?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS",
+    "OpenSSL 3",
+    "pg 8.23.1",
+    "HashiCorp Vault 2.2.0",
+    "PostgreSQL 18.7",
+    "Istio 1.32",
+    "Linkerd edge-26.11.2"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-31 con ./verificar.sh en verde (npm ci, PKI con openssl, 18 tests de node --test y los ataques ANTES/DESPUÉS de las fichas F161–F164) y ./verificar.sh --compose con una credencial dinámica real de Vault 2.2.0 sobre PostgreSQL 18.7."
+}

@@ -1,0 +1,14 @@
+Por defecto: INFO en todo, 100 % de trazas, etiqueta pod y código exacto
+  357 bytes/línea · 43,200 métricas · muestreo 100 % · en Prometheus: 280,800 series del histograma de latencia
+  logs: ingesta               59.85 USD
+  logs: almacenamiento        43.09 USD
+  métricas                12,960.00 USD
+  trazas                     150.00 USD
+  TOTAL                   13,212.94 USD  -> 3334 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)
+Disciplinado: 1 línea por petición + WARN, 10 % de trazas, sin pod, clase de código
+  301 bytes/línea · 432 métricas · muestreo 10 % · en Prometheus: 2,808 series del histograma de latencia
+  logs: ingesta                5.05 USD
+  logs: almacenamiento         0.30 USD
+  métricas                   129.60 USD
+  trazas                      15.00 USD
+  TOTAL                      149.95 USD  -> 38 % de lo que cuesta ejecutar el sistema (396.30 USD, F165)

@@ -1,0 +1,13 @@
+== ANTES (vulnerable): una credencial estática compartida
+día 0 09:00  pedidos y pagos usan tienda/************; se filtra en un log
+día 0 09:00   el atacante la prueba              -> login ACEPTADO como tienda
+día 0 10:00   una hora después                   -> login ACEPTADO como tienda
+día 30 09:00  30 días después                    -> login ACEPTADO como tienda
+   ¿qué servicio la filtró? imposible saberlo: todos usan el mismo usuario
+== DESPUÉS (seguro): credenciales dinámicas de Vault, 1 h por instancia
+día 0 09:00  instancia 1 -> v-pedidos-278bda4a (lease 3600 s) · instancia 2 -> v-pedidos-2a13b61d
+día 0 09:00  se filtra la de la instancia 1 en un log
+día 0 09:00  el atacante la prueba               -> login ACEPTADO (sigue viva: vida máxima 1 h)
+día 0 10:00  una hora después (lease caducado)   -> login rechazado · rol borrado: true
+-- otro día, otro incidente: se revoca todo lo emitido para el rol pedidos
+día 0 09:05  incidente: revoke-prefix database/creds/pedidos -> login de v-pedidos-aaa6f626: rechazado · leases vivos: 0

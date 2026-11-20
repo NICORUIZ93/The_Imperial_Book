@@ -1,0 +1,14 @@
+{
+  "comentario": "Módulo 27 · F164 · política de la malla para inventario, con la semántica de una AuthorizationPolicy ALLOW de Istio: si ninguna regla coincide, se deniega (denegar por defecto).",
+  "servicio": "inventario",
+  "reglas": [
+    {
+      "de": ["spiffe://cluster.local/ns/tienda/sa/pedidos", "spiffe://cluster.local/ns/tienda/sa/catalogo"],
+      "a": { "metodos": ["GET"], "rutas": ["/stock"] }
+    },
+    {
+      "de": ["spiffe://cluster.local/ns/tienda/sa/pedidos"],
+      "a": { "metodos": ["POST"], "rutas": ["/reservas"] }
+    }
+  ]
+}

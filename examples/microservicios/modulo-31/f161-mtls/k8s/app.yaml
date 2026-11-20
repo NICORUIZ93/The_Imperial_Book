@@ -1,0 +1,74 @@
+# Módulo 27 · F161 y F164 · tienda mínima en kind: pagos (servidor Node), pedidos y catalogo (clientes).
+# Cada servicio tiene su ServiceAccount: de ella sale la identidad SPIFFE spiffe://cluster.local/ns/tienda/sa/<nombre>.
+# Imagen: node:26.13.1-alpine (wget de busybox para los clientes). El namespace lo crea probar.sh con su etiqueta.
+apiVersion: v1
+kind: ServiceAccount
+metadata: { name: pagos, namespace: tienda }
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: { name: pedidos, namespace: tienda }
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: { name: catalogo, namespace: tienda }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: pagos-app, namespace: tienda }
+data:
+  app.mjs: |
+    import http from 'node:http';
+    http.createServer((req, res) => {
+      res.writeHead(req.method === 'POST' && req.url === '/cobros' ? 200 : 404, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ cobrado: req.url === '/cobros' }));
+    }).listen(8080);
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: pagos, namespace: tienda }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: pagos } }
+  template:
+    metadata: { labels: { app: pagos } }
+    spec:
+      serviceAccountName: pagos
+      containers:
+      - name: pagos
+        image: node:26.13.1-alpine
+        command: ["node", "/app/app.mjs"]
+        ports: [{ name: http, containerPort: 8080 }]
+        volumeMounts: [{ name: app, mountPath: /app }]
+      volumes: [{ name: app, configMap: { name: pagos-app } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: pagos, namespace: tienda }
+spec:
+  selector: { app: pagos }
+  ports: [{ name: http, port: 8080, targetPort: http }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: pedidos, namespace: tienda }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: pedidos } }
+  template:
+    metadata: { labels: { app: pedidos } }
+    spec:
+      serviceAccountName: pedidos
+      containers: [{ name: pedidos, image: node:26.13.1-alpine, command: ["sleep", "infinity"] }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: catalogo, namespace: tienda }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: catalogo } }
+  template:
+    metadata: { labels: { app: catalogo } }
+    spec:
+      serviceAccountName: catalogo
+      containers: [{ name: catalogo, image: node:26.13.1-alpine, command: ["sleep", "infinity"] }]

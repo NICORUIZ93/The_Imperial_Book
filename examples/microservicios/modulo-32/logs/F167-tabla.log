@@ -1,0 +1,10 @@
+Carga: 120 ms y 512 MB por petición en Lambda · Fargate: tareas de 0.5 vCPU/1 GB, 60 pet/s cada una, mínimo 2, pico = media × 3
+peticiones/mes   Lambda        Fargate (tareas)      más barato
+          1e+5      0.12 USD     36.04 USD ( 2)   Lambda
+          1e+6      1.20 USD     36.04 USD ( 2)   Lambda
+          1e+7     12.00 USD     36.04 USD ( 2)   Lambda
+          3e+7     36.00 USD     36.04 USD ( 2)   Lambda
+          1e+8    120.00 USD     36.04 USD ( 2)   Fargate
+          3e+8    360.00 USD    108.12 USD ( 6)   Fargate
+          1e+9  1,200.00 USD    360.40 USD (20)   Fargate
+break-even: 30,033,610 peticiones/mes (11.4 peticiones/s de media)

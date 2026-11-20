@@ -1,0 +1,14 @@
+{
+  "nombre": "Microservicios (6 servicios, 3 zonas)",
+  "pedidosMes": 3000000,
+  "servicios": [
+    { "nombre": "gateway",    "tareas": 3, "vcpu": 0.5,  "gb": 1 },
+    { "nombre": "pedidos",    "tareas": 3, "vcpu": 0.5,  "gb": 1 },
+    { "nombre": "pagos",      "tareas": 3, "vcpu": 0.5,  "gb": 1 },
+    { "nombre": "inventario", "tareas": 3, "vcpu": 0.5,  "gb": 1 },
+    { "nombre": "catalogo",   "tareas": 3, "vcpu": 0.25, "gb": 0.5 },
+    { "nombre": "envios",     "tareas": 3, "vcpu": 0.25, "gb": 0.5 }
+  ],
+  "red": { "natGateways": 3, "gbSalientesMes": 150, "llamadasInternasPorPedido": 12, "kbPorLlamada": 8, "fraccionEntreZonas": 0.67 },
+  "logs": { "lineasPorPedido": 30, "bytesPorLinea": 450 }
+}

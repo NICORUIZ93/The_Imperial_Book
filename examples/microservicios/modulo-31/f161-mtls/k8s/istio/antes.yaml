@@ -1,0 +1,10 @@
+# Módulo 27 · F161 · ANTES (vulnerable): mTLS PERMISSIVE (acepta texto plano) y ninguna AuthorizationPolicy.
+# Sin políticas ALLOW, Istio permite todo: cualquier pod del clúster puede llamar a pagos.
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: tienda
+spec:
+  mtls:
+    mode: PERMISSIVE

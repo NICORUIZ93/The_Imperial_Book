@@ -1,0 +1,35 @@
+# Módulo 27 (modulo-31) · Seguridad Zero-Trust: solo la ficha F163 necesita infraestructura.
+#   docker compose up -d --wait
+#   ./f163-vault/vault/configurar.sh     -> motor database de Vault apuntando a PostgreSQL
+#   node f163-vault/real.js              -> credencial dinámica real: login OK, revocar, login rechazado
+#   docker compose down -v
+# Vault en modo dev (en memoria, sin TLS, token «root»): SOLO para aprender. Puertos 18200 y 15432 para no chocar
+# con un Vault o un PostgreSQL que ya tengas.
+services:
+  postgres:
+    image: postgres:18.7
+    environment:
+      POSTGRES_USER: vault_admin
+      POSTGRES_PASSWORD: solo-dev-vault
+      POSTGRES_DB: tienda
+    ports: ["15432:5432"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "vault_admin", "-d", "tienda"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  vault:
+    image: hashicorp/vault:2.2.0
+    cap_add: ["IPC_LOCK"]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports: ["18200:8200"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "vault", "status", "-address=http://127.0.0.1:8200"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
