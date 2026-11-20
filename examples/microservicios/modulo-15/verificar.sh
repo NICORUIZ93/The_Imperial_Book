@@ -49,7 +49,7 @@ contiene() {   # contiene "texto esperado" comando args...
   buscado=$(printf '%s' "$esperado" | tr -d ' \t')
   case "$compacta" in
     *"$buscado"*) return 0 ;;
-    *) echo "   (no aparece «$esperado»)"; return 1 ;;
+    *) echo "   (no aparece «${esperado}»)"; return 1 ;;
   esac
 }
 
@@ -57,7 +57,39 @@ paso "JDK 25" contiene 'version "25' java -version
 paso "Docker Compose v2" docker compose version
 paso "Simulador del particionador (murmur2 + RangeAssignor)" java -Dstdout.encoding=UTF-8 jdk/Particionador.java
 
-paso "Brokers healthy (docker compose up -d --wait)" docker compose up -d --wait
+diagnostico() {   # diagnostico servicio  -> estado y últimas líneas del log cuando un broker no arranca
+  echo "---- docker compose ps"
+  docker compose ps -a
+  echo "---- docker compose logs --tail 80 $1"
+  docker compose logs --tail 80 "$1"
+}
+
+brokers() {
+  docker compose up -d --wait kafka rabbitmq nats && return 0
+  diagnostico kafka
+  return 1
+}
+paso "Kafka, RabbitMQ y NATS healthy (docker compose up -d --wait)" brokers
+
+# Schema Registry se comprueba DESDE EL HOST (curl del Mac): no depende de qué herramientas traiga la imagen.
+registro() {
+  if ! docker compose up -d schema-registry; then
+    diagnostico schema-registry
+    return 1
+  fi
+  limite=$((SECONDS + 240))
+  while [ "$SECONDS" -lt "$limite" ]; do
+    if curl -fs http://localhost:8081/subjects >/dev/null 2>&1; then
+      echo "   Schema Registry responde en http://localhost:8081"
+      return 0
+    fi
+    sleep 3
+  done
+  echo "   Schema Registry no respondió en 240 s"
+  diagnostico schema-registry
+  return 1
+}
+paso "Schema Registry responde (hasta 240 s)" registro
 
 paso "F075 · Kafka: particionamiento y consumer groups" ./mvnw -q -pl f075-kafka-particiones test
 paso "F076 · Exactly-Once Semantics" ./mvnw -q -pl f076-exactly-once test

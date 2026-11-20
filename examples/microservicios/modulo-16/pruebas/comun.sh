@@ -30,8 +30,8 @@ contiene() {
   compacta=$(printf '%s' "$salida" | tr -d ' \t')
   buscado=$(printf '%s' "$esperado" | tr -d ' \t')
   case "$compacta" in
-    *"$buscado"*) ok "contiene «$esperado»"; return 0 ;;
-    *) echo "$salida" | head -20; mal "no contiene «$esperado»" ;;
+    *"$buscado"*) ok "contiene «${esperado}»"; return 0 ;;
+    *) echo "$salida" | head -20; mal "no contiene «${esperado}»" ;;
   esac
 }
 

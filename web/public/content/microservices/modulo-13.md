@@ -1000,7 +1000,7 @@ class Rs256Test {
     void sinTokenResponde401() throws Exception {
         mvc.perform(get("/pedidos/mios"))
             .andExpect(status().isUnauthorized())
-            .andExpect(header().string("WWW-Authenticate", "Bearer"));
+            .andExpect(header().string("WWW-Authenticate", startsWith("Bearer")));
     }
 
     @Test

@@ -43,11 +43,15 @@ paso() {
 version_de() {   # version_de "texto esperado" comando args...
   esperado=$1
   shift
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "   falta la herramienta '$1' en el PATH (macOS: brew install $1). Las fichas que la usan se marcan con ✘."
+    return 1
+  fi
   salida=$("$@" 2>&1)
   echo "$salida" | head -3
   case "$salida" in
     *"$esperado"*) return 0 ;;
-    *) echo "   (se esperaba «$esperado»)"; return 1 ;;
+    *) echo "   (se esperaba «${esperado}»)"; return 1 ;;
   esac
 }
 

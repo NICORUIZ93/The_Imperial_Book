@@ -11,7 +11,7 @@ if ! docker image inspect "$IMG" >/dev/null 2>&1; then
 fi
 
 usuario=$(docker image inspect -f '{{.Config.User}}' "$IMG")
-echo "   usuario de la imagen: «$usuario»"
+echo "   usuario de la imagen: «${usuario}»"
 case "$usuario" in
   ""|0|root|0:0) mal "la imagen corre como root" || fallos=$((fallos + 1)) ;;
   *) ok "no corre como root" ;;

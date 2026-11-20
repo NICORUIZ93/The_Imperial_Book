@@ -51,11 +51,15 @@ services:
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
       # Los esquemas se guardan en el topic interno _schemas de este Kafka
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:19092"
+      # Un solo broker: el topic interno _schemas con 1 réplica (por defecto pide 3).
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:8081/subjects >/dev/null"]
+      # 127.0.0.1 (no «localhost», que puede resolver a ::1). Si la imagen no trae curl, prueba el puerto con bash.
+      test: ["CMD-SHELL", "curl -fs http://127.0.0.1:8081/subjects >/dev/null 2>&1 || bash -c 'exec 3<>/dev/tcp/127.0.0.1/8081' 2>/dev/null"]
       interval: 5s
       timeout: 10s
-      retries: 30
+      retries: 40
+      start_period: 60s
 
   rabbitmq:
     image: rabbitmq:4.4.1-management

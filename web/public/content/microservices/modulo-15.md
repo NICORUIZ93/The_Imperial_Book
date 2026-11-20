@@ -108,11 +108,15 @@ services:
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
       # Los esquemas se guardan en el topic interno _schemas de este Kafka
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:19092"
+      # Un solo broker: el topic interno _schemas con 1 réplica (por defecto pide 3).
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:8081/subjects >/dev/null"]
+      # 127.0.0.1 (no «localhost», que puede resolver a ::1). Si la imagen no trae curl, prueba el puerto con bash.
+      test: ["CMD-SHELL", "curl -fs http://127.0.0.1:8081/subjects >/dev/null 2>&1 || bash -c 'exec 3<>/dev/tcp/127.0.0.1/8081' 2>/dev/null"]
       interval: 5s
       timeout: 10s
-      retries: 30
+      retries: 40
+      start_period: 60s
 
   rabbitmq:
     image: rabbitmq:4.4.1-management
@@ -1023,6 +1027,9 @@ escribes en una base de datos, esa parte no entra en la transacción de Kafka.
   con tabla de mensajes procesados en la misma transacción de la base de datos, o (2) Outbox + CDC (Módulo 25). Unir
   la transacción de Kafka con una de base de datos (`ChainedKafkaTransactionManager`) está obsoleto desde 2.7 y nunca
   fue un commit atómico de verdad (es *best effort*: se confirma una y luego la otra).
+- **Qué queda en el log tras un abort.** Solo lo que ya salió del productor. `send()` es asíncrono: deja el registro
+  en un búfer; `abortTransaction()` descarta los lotes no enviados y marca como abortados los que sí llegaron. Por eso
+  el listener del laboratorio espera el `get(...)`: para reproducir de verdad «se cayó después de escribir».
 - **Coste.** Cada transacción añade viajes al coordinador y marcadores en el log; los lectores `read_committed` no
   pueden leer más allá de la transacción abierta más antigua (LSO), así que una transacción larga **frena a todos los
   lectores** de esa partición. Mantén las transacciones cortas (un registro o un lote pequeño).
@@ -1152,6 +1159,7 @@ package academia.eos;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -1179,8 +1187,10 @@ public class ValidadorDePagos {
     }
 
     @KafkaListener(id = "validador", groupId = "validador", topics = Topicos.PAGOS)
-    void validar(ConsumerRecord<String, String> pago) {
-        kafka.send(Topicos.VALIDADOS, pago.key(), "VALIDADO:" + pago.value());
+    void validar(ConsumerRecord<String, String> pago) throws Exception {
+        // get(...) espera a que el broker tenga el registro. Sin esperar, send() solo lo deja en el búfer del
+        // productor, y un abort descarta los lotes que aún no salieron: no habría nada «a medias» que ver en el log.
+        kafka.send(Topicos.VALIDADOS, pago.key(), "VALIDADO:" + pago.value()).get(10, TimeUnit.SECONDS);
         log.info("enviado VALIDADO:{} (transacción abierta)", pago.value());
         if (pago.value().contains("caida") && yaFallaron.add(pago.key())) {
             // Caída DESPUÉS de escribir la salida y ANTES de confirmar: el caso que rompe «at-least-once».
@@ -1300,7 +1310,9 @@ read_uncommitted -> [VALIDADO:pago-3f9c1a2b-caida, VALIDADO:pago-3f9c1a2b-caida]
 ```
 
    **Captura comentada:** el listener se ejecutó **dos veces** (dos líneas «enviado»): la primera transacción se
-   abortó por la excepción y la segunda se confirmó. En el log del topic hay **dos** registros, pero el lector
+   abortó por la excepción y la segunda se confirmó. El `get(...)` tras el `send` importa: sin esperar al broker, el
+   registro del primer intento seguiría en el búfer del productor y el abort lo descartaría sin escribirlo (así
+   ocurrió en la primera verificación en el Mac: `read_uncommitted` veía 1, no 2). En el log del topic hay **dos** registros, pero el lector
    `read_committed` solo entrega el confirmado. Entre ambas líneas verás además el error del listener
    (`ListenerExecutionFailedException` con la causa «Caída simulada procesando pago-…»).
 
@@ -1484,6 +1496,10 @@ qué tipo. Ese acuerdo se llama **esquema**.
   versión anterior. Añadir un campo **con `default`** es compatible (al leer datos viejos se usa el default); añadir
   un campo **sin default**, no. `FORWARD` exige lo contrario (lo viejo lee lo nuevo) y `FULL`, ambas cosas; las
   variantes `_TRANSITIVE` comprueban contra **todas** las versiones, no solo la última.
+- **Paquetes de confianza de Avro.** Avro 1.12.2 valida cada clase que carga por nombre
+  (`ClassSecurityValidator`) y solo confía en un puñado de tipos de `java.lang` y `java.math`. Para tus clases
+  generadas debes declarar el paquete en la propiedad de sistema `org.apache.avro.SERIALIZABLE_PACKAGES`
+  (aquí `academia.avro`): el `pom.xml` la pasa a los tests con Surefire y `RegistroApp.main` la fija antes de arrancar.
 - **Spring Boot.** Se configuran los (de)serializadores por propiedades y `schema.registry.url` en
   `spring.kafka.producer.properties.*` y `spring.kafka.consumer.properties.*`. `specific.avro.reader=true` hace que el
   consumidor devuelva la clase generada en lugar de `GenericRecord`.
@@ -1589,6 +1605,18 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3** (Spring for Apache Kafka 4.1.3), **
           </execution>
         </executions>
       </plugin>
+      <!-- Avro 1.12.2 solo carga por nombre las clases de paquetes de confianza (ClassSecurityValidator):
+           sin esta propiedad de sistema falla con SecurityException «Forbidden academia.avro.Pedido!».
+           Aquí para los tests; RegistroApp la fija en main() para la aplicación. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <org.apache.avro.SERIALIZABLE_PACKAGES>academia.avro</org.apache.avro.SERIALIZABLE_PACKAGES>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -1644,6 +1672,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RegistroApp {
 
     public static void main(String[] args) {
+        // Avro 1.12.2 solo confía en los paquetes que le indiques (protección contra clases arbitrarias en un
+        // esquema). Debe fijarse ANTES de usar Avro; en producción, mejor como -D en el arranque de la JVM.
+        if (System.getProperty("org.apache.avro.SERIALIZABLE_PACKAGES") == null) {
+            System.setProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "academia.avro");
+        }
         SpringApplication.run(RegistroApp.class, args);
     }
 }
@@ -2014,7 +2047,20 @@ nadie le dice «conviértela en el formulario impreso de la clase `Pedido`», en
 existe en el classpath (`target/generated-sources/avro`) y que el `namespace` + `name` del esquema coinciden con el
 paquete y la clase.
 
-**Segundo error frecuente:** con `auto.register.schemas=true`, un productor publica un esquema incompatible y falla al
+**Segundo error frecuente:** al publicar, `SerializationException: Error serializing Avro message` con esta causa
+(mensaje real, obtenido en el Mac con Avro 1.12.2 antes de añadir la propiedad):
+
+```text
+java.lang.SecurityException: Forbidden academia.avro.Pedido! This class is not trusted to be included in Avro
+schemas. You may either use the system properties org.apache.avro.SERIALIZABLE_CLASSES and
+org.apache.avro.SERIALIZABLE_PACKAGES to set the comma separated list of the classes or packages you trust, or you
+can set them via the API (see org.apache.avro.util.ClassSecurityValidator).
+```
+
+Arreglo: `-Dorg.apache.avro.SERIALIZABLE_PACKAGES=academia.avro` en la JVM (en el laboratorio, Surefire y
+`RegistroApp.main`). No uses el comodín `*` fuera de un entorno controlado: desactiva la protección.
+
+**Tercer error frecuente:** con `auto.register.schemas=true`, un productor publica un esquema incompatible y falla al
 enviar con una `RestClientException` del registro con código **409** («Schema being registered is incompatible with an
 earlier schema for subject…»). El 409 es el registro haciendo su trabajo: no lo «arregles» bajando la compatibilidad a
 `NONE`.

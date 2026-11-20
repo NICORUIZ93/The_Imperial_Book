@@ -2,6 +2,7 @@ package academia.eos;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -29,8 +30,10 @@ public class ValidadorDePagos {
     }
 
     @KafkaListener(id = "validador", groupId = "validador", topics = Topicos.PAGOS)
-    void validar(ConsumerRecord<String, String> pago) {
-        kafka.send(Topicos.VALIDADOS, pago.key(), "VALIDADO:" + pago.value());
+    void validar(ConsumerRecord<String, String> pago) throws Exception {
+        // get(...) espera a que el broker tenga el registro. Sin esperar, send() solo lo deja en el búfer del
+        // productor, y un abort descarta los lotes que aún no salieron: no habría nada «a medias» que ver en el log.
+        kafka.send(Topicos.VALIDADOS, pago.key(), "VALIDADO:" + pago.value()).get(10, TimeUnit.SECONDS);
         log.info("enviado VALIDADO:{} (transacción abierta)", pago.value());
         if (pago.value().contains("caida") && yaFallaron.add(pago.key())) {
             // Caída DESPUÉS de escribir la salida y ANTES de confirmar: el caso que rompe «at-least-once».
