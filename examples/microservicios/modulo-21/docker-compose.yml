@@ -1,0 +1,14 @@
+# Módulo 17 · Consul 2.1.0 en modo desarrollo (un solo agente servidor, datos en memoria).
+# Uso: docker compose up -d --wait   ·   UI: http://localhost:8500   ·   Apagar: docker compose down -v
+name: modulo-21
+services:
+  consul:
+    image: hashicorp/consul:2.1.0
+    command: ["agent", "-dev", "-client=0.0.0.0", "-ui"]
+    ports:
+      - "8500:8500" # API HTTP y UI
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 2s
+      timeout: 2s
+      retries: 30

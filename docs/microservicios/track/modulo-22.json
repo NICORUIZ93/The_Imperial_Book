@@ -1,0 +1,46 @@
+{
+  "id": 22,
+  "title": "Módulo 18 · Comunicación",
+  "shortTitle": "Comunicación",
+  "level": "Integración",
+  "duration": "14 h",
+  "color": "#0f766e",
+  "description": "Conecta microservicios Node.js de las dos formas posibles. Síncrona: clientes REST con fetch y Axios, gRPC con @grpc/grpc-js y una API GraphQL con Apollo Server. Asíncrona: eventos con KafkaJS sobre Kafka, amqplib sobre RabbitMQ y NATS. Cierra con un experimento que mide latencia y disponibilidad para decidir cuándo usar cada una.",
+  "concepts": [
+    "REST con Axios/Fetch",
+    "gRPC con @grpc/grpc-js",
+    "GraphQL con Apollo Server",
+    "KafkaJS, amqplib",
+    "NATS",
+    "Sync vs async"
+  ],
+  "practice": [
+    "Escribe el mismo cliente REST con fetch y con Axios: timeout, id de correlación y errores traducidos",
+    "Define un contrato .proto y llama a un servidor gRPC con una llamada unaria, un stream y un deadline",
+    "Compón pedidos y clientes en un esquema GraphQL y elimina el problema N+1 con DataLoader",
+    "Publica y consume eventos con KafkaJS (clave y grupos) y con amqplib (exchange topic, confirms y ack manual)",
+    "Usa NATS para pub/sub con comodines, grupos de cola y petición/respuesta",
+    "Compara el mismo flujo síncrono y asíncrono tumbando una dependencia y decide con la tabla de criterios"
+  ],
+  "questions": [
+    "¿Qué diferencias hay entre fetch y Axios y qué no puede faltar en un cliente entre servicios?",
+    "¿Cuándo elegirías gRPC en lugar de REST entre microservicios?",
+    "¿Qué es el problema N+1 en GraphQL y cómo lo resuelves?",
+    "¿En qué se diferencian Kafka y RabbitMQ y cómo evitas procesar un mensaje dos veces?",
+    "¿Qué garantías de entrega ofrece NATS?",
+    "¿Cómo decides si una comunicación debe ser síncrona o asíncrona?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS",
+    "axios 1.21.1",
+    "@grpc/grpc-js 1.14.7",
+    "@apollo/server 5.5.2",
+    "kafkajs 2.2.4",
+    "amqplib 2.4.0",
+    "@nats-io/transport-node 3.5.0",
+    "Kafka 4.4.0",
+    "RabbitMQ 4.4.1",
+    "NATS Server 2.15.3"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-22 con ./verificar.sh en verde (npm ci, 32 tests de node --test y demos; con --compose, Kafka, RabbitMQ y NATS reales para las fichas F116 y F117)."
+}

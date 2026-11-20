@@ -1,0 +1,17 @@
+{
+  // Módulo 17 · TypeScript 6.0.3 solo como verificador de tipos (noEmit): Node.js 26 ejecuta los .ts
+  // directamente quitando los tipos (type stripping), por eso se exige sintaxis "borrable" y
+  // las importaciones llevan la extensión .ts.
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["f109-estructura"]
+}

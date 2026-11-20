@@ -1,0 +1,21 @@
+// Módulo 18 · F114 · El CONTRATO: se escribe primero y lo comparten cliente y servidor.
+syntax = "proto3";
+
+package academia.inventario.v1;
+
+service Inventario {
+  // Unaria: una petición, una respuesta (como una llamada REST).
+  rpc ConsultarExistencias (ConsultaRequest) returns (Existencias);
+  // Streaming de servidor: una petición, varias respuestas a lo largo del tiempo.
+  rpc SeguirExistencias (ConsultaRequest) returns (stream Existencias);
+}
+
+message ConsultaRequest {
+  string sku = 1; // el número (1) identifica el campo en el cable: NUNCA se reutiliza ni se cambia
+}
+
+message Existencias {
+  string sku = 1;
+  int32 disponibles = 2;
+  string bodega_origen = 3; // snake_case en el .proto → bodegaOrigen en JavaScript
+}
