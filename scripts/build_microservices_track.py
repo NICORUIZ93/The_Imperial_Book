@@ -2,7 +2,7 @@
 """Genera web/src/app/tracks/microservices.track.ts desde docs/microservicios/track/modulo-N.json (specs/018).
 
 Solo se publican los módulos que tienen su JSON y su lección `modulo-N.md`. Cada JSON tiene:
-{"id": 5, "title": "...", "shortTitle": "...", "level": "Fundamentos|Intermedio|Avanzado|Experto",
+{"id": 5, "title": "...", "shortTitle": "...", "level": "Fundamentos|Aplicación|Integración|Experto",
  "duration": "12 h", "color": "#0f766e", "description": "...", "concepts": [...], "practice": [...],
  "questions": [...], "tools": [...], "deliverable": "..."}
 

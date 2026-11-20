@@ -2,7 +2,7 @@
 # Módulo 2 · APIs REST y persistencia (modulo-6)
 # Levanta PostgreSQL 18.7 y MySQL 9.7.4 con Docker Compose, ejecuta los tests de las
 # 8 carpetas (F025–F031) con el Maven Wrapper y apaga los contenedores.
-# Uso: ./verificar.sh            (requiere JDK 25 LTS y Docker con Compose v2)
+# Uso: ./verificar.sh            (requiere JDK 25 LTS y Docker con Compose v5)
 set -u
 cd "$(dirname "$0")"
 java -version 2>&1 | head -1

@@ -1,0 +1,37 @@
+# Módulo 4 (modulo-8) · Caching y rendimiento
+# Arranca:   docker compose up -d --wait     (espera a que los 5 healthchecks estén "healthy")
+# Detén:     docker compose down              (sin volúmenes: los datos se pierden, a propósito)
+# Puertos:   6379 Redis principal (caché, colas, almacén con fencing) · 6380/6381/6382 nodos Redlock · 5432 PostgreSQL
+services:
+  redis:
+    image: redis:8.10.2
+    ports: ["6379:6379"]
+    healthcheck: &redis-salud
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  redis-a:            # tres nodos INDEPENDIENTES (sin réplica entre ellos): lo que pide Redlock
+    image: redis:8.10.2
+    ports: ["6380:6379"]
+    healthcheck: *redis-salud
+  redis-b:
+    image: redis:8.10.2
+    ports: ["6381:6379"]
+    healthcheck: *redis-salud
+  redis-c:
+    image: redis:8.10.2
+    ports: ["6382:6379"]
+    healthcheck: *redis-salud
+  postgres:
+    image: postgres:18.7
+    environment:
+      POSTGRES_USER: tienda
+      POSTGRES_PASSWORD: tienda
+      POSTGRES_DB: tienda
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U tienda -d tienda"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

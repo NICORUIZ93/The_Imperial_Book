@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -42,7 +42,7 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- Driver JDBC de MySQL 9.7.x -->
+    <!-- Driver JDBC de MySQL (Connector/J 26.10.x) -->
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>

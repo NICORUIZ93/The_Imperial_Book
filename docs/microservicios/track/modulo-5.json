@@ -1,0 +1,45 @@
+{
+  "id": 5,
+  "title": "Módulo 1 · Java moderno y Spring Boot esencial",
+  "shortTitle": "Java moderno y Spring Boot",
+  "level": "Aplicación",
+  "duration": "16 h",
+  "color": "#0f766e",
+  "description": "Usa Java 25 (records, streams, Optional, pattern matching, hilos virtuales) y domina el contenedor de Spring Boot 4.1: IoC, ciclo de vida de los beans, auto-configuración condicional, proyectos multi-módulo, perfiles, y arranque en milisegundos con CRaC y GraalVM Native Image.",
+  "concepts": [
+    "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
+    "Virtual Threads (Project Loom)",
+    "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
+    "Auto-configuración condicional, @Conditional, starters",
+    "Multi-module Spring Boot projects",
+    "Perfiles y configuración externalizada",
+    "CRaC (Coordinated Restore at Checkpoint)",
+    "GraalVM Native Image"
+  ],
+  "practice": [
+    "Calcula totales, agrupa y busca en un pedido con streams, records y Optional",
+    "Mide 1 000 esperas con un pool fijo frente a hilos virtuales y limita la concurrencia con Semaphore",
+    "Ordena las 8 fases del ciclo de vida de un bean con un test",
+    "Escribe una auto-configuración con condiciones y pruébala con ApplicationContextRunner",
+    "Separa dominio y API en módulos Maven y provoca un ciclo de dependencias",
+    "Configura dev y prod con perfiles, variables de entorno y validación al arrancar",
+    "Crea y restaura un checkpoint CRaC en Docker",
+    "Compila un binario nativo con GraalVM 25 y declara la reflexión con RuntimeHints"
+  ],
+  "questions": [
+    "¿Qué ventaja tiene una sealed interface frente a instanceof?",
+    "¿Por qué los hilos virtuales pueden agotar el pool de conexiones?",
+    "¿Por qué inyección por constructor?",
+    "¿Cómo cede una auto-configuración ante el bean del usuario?",
+    "¿Qué gana CRaC frente a Native Image y qué pierde?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Spring Boot 4.1.3",
+    "Maven Wrapper",
+    "Docker Compose",
+    "Azul Zulu CRaC 25",
+    "GraalVM CE 25"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-5 con ./verificar.sh en verde (8 proyectos Maven, 29 tests) y ./verificar.sh --docker para CRaC y el binario nativo."
+}
