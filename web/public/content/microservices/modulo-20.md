@@ -1534,6 +1534,10 @@ y el contrato generado (fragmento real: la primera interacción y los metadatos)
     "pact-js": {
       "version": "17.1.4"
     },
+    "pactRust": {
+      "ffi": "0.5.8",
+      "models": "1.3.16"
+    },
     "pactSpecification": {
       "version": "4.0"
     }
@@ -1544,13 +1548,23 @@ y el contrato generado (fragmento real: la primera interacción y los metadatos)
 }
 ```
 
-**Output esperado** (paso 2): el verificador de Pact imprime una línea por comprobación (texto real del
-verificador) y Jest termina con `Tests:       1 passed, 1 total`:
+**Output esperado** (paso 2, salida real en macOS con Node 26.13.1 y @pact-foundation/pact 17.1.4; el número de
+proceso, la hora y los milisegundos cambian, y en la terminal los `OK` salen en color):
 
 ```text
+Running one project: pact-proveedor
+(node:75838) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-20T04:33:31.630166Z  WARN ThreadId(11) pact_matching::metrics: 
+
+Please note:
+We are tracking events anonymously to gather important usage statistics like Pact version and operating system. To disable tracking, set the 'PACT_DO_NOT_TRACK' environment variable to 'true'.
+
+
+
 Verifying a pact between pedidos and inventario
 
-  una consulta de stock de TEC-001 (0s loading, 45ms verification)
+  una consulta de stock de TEC-001 (0s loading, 37ms verification)
      Given existe el producto TEC-001 con 3 unidades
     returns a response which
       has status code 200 (OK)
@@ -1558,20 +1572,71 @@ Verifying a pact between pedidos and inventario
         "Content-Type" with value "application/json" (OK)
       has a matching body (OK)
 
-  una consulta de stock de XXX-999 (0s loading, 16ms verification)
+  una consulta de stock de XXX-999 (0s loading, 2ms verification)
      Given no existe el producto XXX-999
     returns a response which
       has status code 404 (OK)
       has a matching body (OK)
+
+
+PASS pact-proveedor f107-pact/proveedor/inventario.pact.test.ts
+  inventario cumple los contratos de sus consumidores
+    ✓ verifica el contrato de pedidos (322 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
 ```
+
+Las primeras líneas no son errores. El aviso `DEP0060` lo produce `http-proxy` 1.18.1, una dependencia de
+@pact-foundation/pact que usa `require('util')._extend` (está en `node_modules/http-proxy/lib/http-proxy/index.js`).
+El `WARN … pact_matching::metrics` avisa de que el núcleo de Pact envía estadísticas de uso anónimas; desaparece con
+`PACT_DO_NOT_TRACK=true`, como dice el propio mensaje.
 
 **Output esperado** (paso 3): ver la sección 12 (`has a matching body (FAILED)` y código de salida 1).
 
-**Output esperado** (paso 4): `publish` confirma que publicó el pacto de `pedidos` (versión 1.0.0, rama `main`)
-para `inventario`; la verificación vuelve a terminar en `Tests:       1 passed, 1 total` y deja el resultado en el
-broker; `can-i-deploy` indica que los contratos entre `pedidos 1.0.0` e `inventario 1.0.0` están verificados y
-termina con código de salida 0 (compruébalo con `echo $?`). **Captura descrita:** en `http://localhost:9220` la
-tabla de integraciones muestra una fila *pedidos → inventario* con la última verificación en verde.
+**Output esperado** (paso 4, salida real con Pact Broker 2.124.0). `publish`:
+
+```text
+📨 Attempting to publish pact for consumer: pedidos against provider: inventario
+✅ Created pedidos version 1.0.0 with branch main
+Pact successfully published for pedidos version 1.0.0 and provider inventario.
+View the published pact at http://localhost:9220/pacts/provider/inventario/consumer/pedidos/version/1.0.0
+Events detected: contract_published, contract_content_changed (first time untagged pact published)
+Next steps:
+* Add Pact verification tests to the inventario build. See https://docs.pact.io/go/provider_verification
+* Configure separate inventario pact verification build and webhook to trigger it when the pact content changes. See https://docs.pact.io/go/webhooks
+```
+
+La verificación desde el broker imprime, antes del bloque `Verifying a pact…` del paso 2 (con los mismos avisos
+iniciales), por qué eligió ese contrato, y vuelve a terminar en `Tests:       1 passed, 1 total` (el identificador
+`pact-version` es un hash del contenido del contrato):
+
+```text
+The pact at http://localhost:9220/pacts/provider/inventario/consumer/pedidos/pact-version/44f1fb453db5f6f38368aec5e2e649cac231a82a is being verified because the pact content belongs to the consumer version matching the following criterion:
+    * latest version from branch 'main' (1.0.0)
+```
+
+`can-i-deploy` responde con la matriz y termina con código de salida 0 (compruébalo con `echo $?`):
+
+```text
+┌──────────┬───────────┬────────────┬───────────┬──────────┬────────┐
+│ CONSUMER ┆ C.VERSION ┆ PROVIDER   ┆ P.VERSION ┆ SUCCESS? ┆ RESULT │
+╞══════════╪═══════════╪════════════╪═══════════╪══════════╪════════╡
+│ pedidos  ┆ 1.0.0     ┆ inventario ┆ 1.0.0     ┆ true     ┆ 1      │
+└──────────┴───────────┴────────────┴───────────┴──────────┴────────┘
+
+VERIFICATION RESULTS
+--------------------
+1. http://localhost:9220/pacts/provider/inventario/consumer/pedidos/pact-version/44f1fb453db5f6f38368aec5e2e649cac231a82a/metadata/Y3ZuPTEuMC4w/verification-results/200 (success)
+
+
+All required verification results are published and successful
+
+
+✅ Computer says yes \o/
+```
+
+**Captura descrita:** en `http://localhost:9220` la tabla de integraciones muestra una fila *pedidos → inventario* con la última verificación en verde.
 
 **Captura comentada:** en el contrato, `matchingRules` es lo que escribieron `like` e `integer`: «`$.sku` de tipo
 texto, `$.disponible` entero». Los valores `TEC-001` y `3` son solo el ejemplo que devolvió el servidor falso. El
@@ -1615,10 +1680,10 @@ eliminarlo sin romper a pedidos; `disponible` sí está: la verificación falla 
 consumidor se rompe. Con Pact, ese cambio falla en el pipeline del proveedor. Paso 3 del laboratorio
 (`CAMPO_STOCK=cantidad`): el proveedor responde `{ "sku": …, "cantidad": 3, "bodega": … }`.
 
-**Cómo se ve** (texto real del verificador de Pact; Jest lo muestra y marca el test con `✕`):
+**Cómo se ve** (salida real del paso 3 en macOS; Jest la muestra y marca el test con `✕`):
 
 ```text
-  una consulta de stock de TEC-001 (0s loading, 55ms verification)
+  una consulta de stock de TEC-001 (0s loading, 11ms verification)
      Given existe el producto TEC-001 con 3 unidades
     returns a response which
       has status code 200 (OK)
@@ -1638,8 +1703,12 @@ Failures:
       "sku": "TEC-001"
 }
 
+
 There were 1 pact failures
 ```
+
+Debajo, pact-core 20.2.0 añade `ERROR (…): pact-core@20.2.0: Verification unsuccessful` y Jest termina con
+`✕ verifica el contrato de pedidos (195 ms)` y `Tests:       1 failed, 1 total`.
 
 **Diagnóstico visual:** lee tres cosas. *Entre quién*: «a pact between pedidos and inventario». *En qué
 interacción*: la consulta de stock de TEC-001. *Qué falta*: `Actual map is missing the following keys: disponible`,
@@ -1975,25 +2044,30 @@ describe('RepositorioDePedidos contra PostgreSQL real', () => {
 4. Rompe el SQL a propósito: en `repositorio-pedidos.ts` borra la línea que empieza por `ON CONFLICT`, repite el
    paso 1, lee el fallo y **deshaz el cambio**.
 
-**Output esperado** (paso 1; salida real con Node 26.13.1, jest 30.5.2 y testcontainers 12.2.2; el tiempo depende
-de si la imagen ya está descargada):
+**Output esperado** (paso 1; salida real en macOS con Docker Desktop (Docker Engine 29.9.3), Node 26.13.1, jest 30.5.2,
+testcontainers 12.2.2 y `postgres:18.7` ya descargada; el tiempo depende de la máquina y de si la imagen ya está
+descargada):
 
 ```text
-PASS contenedores f108-testcontainers/repositorio.test.ts (9.231 s)
+Running one project: contenedores
+PASS contenedores f108-testcontainers/repositorio.test.ts
   RepositorioDePedidos contra PostgreSQL real
-    ✓ el contenedor es un PostgreSQL de verdad, en un puerto que no es el 5432 del anfitrión (6 ms)
-    ✓ guardar y buscar conservan el jsonb (8 ms)
-    ✓ guardar dos veces el mismo id actualiza en lugar de duplicar (ON CONFLICT) (6 ms)
-    ✓ conSku busca dentro del jsonb con @> (6 ms)
-    ✓ resumen agrega con FILTER (6 ms)
-    ✓ la restricción CHECK de la base rechaza un total de 0 (6 ms)
+    ✓ el contenedor es un PostgreSQL de verdad, en un puerto que no es el 5432 del anfitrión (3 ms)
+    ✓ guardar y buscar conservan el jsonb (3 ms)
+    ✓ guardar dos veces el mismo id actualiza en lugar de duplicar (ON CONFLICT) (3 ms)
+    ✓ conSku busca dentro del jsonb con @> (2 ms)
+    ✓ resumen agrega con FILTER (3 ms)
+    ✓ la restricción CHECK de la base rechaza un total de 0 (2 ms)
 
 Test Suites: 1 passed, 1 total
 Tests:       6 passed, 6 total
 Snapshots:   0 total
-Time:        9.415 s
+Time:        2.766 s
 Ran all test suites.
 ```
+
+Si un archivo de test tarda más de 5 s, Jest añade su duración al final de la línea `PASS` (por ejemplo
+`(9.231 s)` en una máquina más lenta o con la imagen recién descargada).
 
 **Output esperado** (paso 2): dos líneas, una con la imagen `postgres:18.7` y un puerto alto del anfitrión que
 apunta al `5432/tcp` del contenedor (por ejemplo `0.0.0.0:55012->5432/tcp`; el número cambia en cada ejecución) y
@@ -2009,8 +2083,8 @@ otra con la imagen `testcontainers/ryuk`.
 con el error de PostgreSQL `duplicate key value violates unique constraint "pedidos_pkey"`; un doble en memoria
 basado en un `Map` nunca habría detectado ese cambio.
 
-**Captura comentada:** casi todo el tiempo (unos 9 s) es el arranque del contenedor en `beforeAll`; cada test tarda
-milisegundos. El primer test deja constancia de que hablas con un servidor real (`SHOW server_version`) y de que el
+**Captura comentada:** casi todo el tiempo (unos 3 s en el Mac; 9 s o más en máquinas más lentas) es el arranque del
+contenedor en `beforeAll`; cada test tarda milisegundos. El primer test deja constancia de que hablas con un servidor real (`SHOW server_version`) y de que el
 puerto lo eligió Docker.
 
 #### 11. VERIFICACIÓN

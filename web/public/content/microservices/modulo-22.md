@@ -855,6 +855,10 @@ NO-HAY   → code=5 (NOT_FOUND) details="No existe el SKU NO-HAY"
 LENTO    → code=4 (DEADLINE_EXCEEDED) details="Deadline exceeded after 0.301s,LB pick: 0.001s,remote_addr=127.0.0.1:50114"
 ```
 
+El detalle de `DEADLINE_EXCEEDED` lo arma grpc-js con lo que midió en esa llamada: en la corrida del Mac salió
+`details="Deadline exceeded after 0.300s,remote_addr=127.0.0.1:50114"`, sin el tramo `LB pick`. Lo que no cambia es
+el código, `4 (DEADLINE_EXCEEDED)`.
+
 **Output esperado** (paso 3, salida real con @grpc/grpc-js 1.14.7):
 
 ```text
@@ -1602,7 +1606,11 @@ grupo analitica leen las mismas particiones, cada uno con su propio offset.
   desde entonces no hay correcciones de errores ni de seguridad, ni soporte de lo que Kafka ha añadido después. Kafka
   4.0 retiró las versiones antiguas del protocolo (KIP-896) y estrenó un protocolo nuevo de grupos de consumidores
   (KIP-848) que KafkaJS no implementa. El curso lo enseña porque el temario lo pide y porque lo encontrarás en muchos
-  proyectos existentes; para un servicio nuevo evalúa primero las alternativas:
+  proyectos existentes. En la corrida real del laboratorio (macOS, Node.js 26.13.1, Kafka 4.4.0 en modo KRaft)
+  KafkaJS 2.2.4 **sí funcionó**: `admin.createTopics`, el productor idempotente y los consumidores con el protocolo
+  clásico de grupos pasaron los tests y la demo. Pero ya no está limpio: con Node 26 imprime un aviso
+  `TimeoutNegativeWarning` que nadie va a corregir en una versión publicada (sección 12). Para un servicio nuevo
+  evalúa primero las alternativas:
   1. **`@confluentinc/kafka-javascript`** (1.11.0, publicada el 2026-10-07): el cliente oficial de Confluent, con
      soporte comercial. Envuelve **librdkafka** (C), así que trae un binario nativo por plataforma, y ofrece una API
      **compatible con KafkaJS** (`require('@confluentinc/kafka-javascript').KafkaJS`) pensada para migrar: el código
@@ -1880,7 +1888,7 @@ for (const senal of ['SIGINT', 'SIGTERM']) process.on(senal, async () => { await
    ```
 5. Limpia: `docker compose down -v`.
 
-**Output esperado** (paso 2, terminal 1 y terminal 2; salida real):
+**Output esperado** (paso 2, terminal 1 y terminal 2; salida real en macOS con RabbitMQ 4.4.1):
 
 ```text
 facturacion esperando mensajes en facturacion.pedidos-creados…
@@ -1907,11 +1915,16 @@ facturacion ← pedido.creado (P-2)
 facturacion esperando mensajes en facturacion.pedidos-creados…
 ```
 
-**Output esperado** (paso 4; el productor, y después el consumidor del grupo `facturacion`: los eventos de P-1 salen
-siempre en orden y en la misma partición; la línea de P-3 puede aparecer antes, entre medias o después, porque está
-en otra partición. El grupo `analitica` imprime las mismas cuatro líneas):
+**Output esperado** (paso 4; salida real en macOS con Node.js 26.13.1, kafkajs 2.2.4 y Kafka 4.4.0. Primero el
+productor y después el consumidor del grupo `facturacion`: los eventos de P-1 salen siempre en orden y en la misma
+partición; la línea de P-3 puede aparecer antes, entre medias o después, porque está en otra partición. El grupo
+`analitica` imprime las mismas cuatro líneas. El número entre paréntesis es el PID y el número negativo cambia en
+cada ejecución; las tres primeras líneas son el aviso que explica la sección 12):
 
 ```text
+(node:77250) TimeoutNegativeWarning: -1795149271251 is a negative number.
+Timeout duration was set to 1.
+(Use `node --trace-warnings ...` to show where the warning was created)
 pedidos.eventos ← pedido.creado  clave=P-1 partición=0 offset=0
 pedidos.eventos ← pedido.creado  clave=P-3 partición=2 offset=0
 pedidos.eventos ← pedido.pagado  clave=P-1 partición=0 offset=1
@@ -1919,6 +1932,9 @@ pedidos.eventos ← pedido.enviado clave=P-1 partición=0 offset=2
 ```
 
 ```text
+(node:77254) TimeoutNegativeWarning: -1795149271473 is a negative number.
+Timeout duration was set to 1.
+(Use `node --trace-warnings ...` to show where the warning was created)
 facturacion esperando eventos…
 partición=0 offset=0 clave=P-1 pedido.creado → procesado
 partición=0 offset=1 clave=P-1 pedido.pagado → procesado
@@ -1931,7 +1947,9 @@ fue confirmado por el broker, pero ningún binding lo pedía y el exchange lo de
 «alguien lo recibió»). En la consola de RabbitMQ (`http://localhost:15672` → Queues) ves la cola con «Ready: 2» en el
 paso 3. En Kafka, la partición la decide el hash de la clave: con 3 particiones, `P-1` cae en la 0 y `P-3` en la 2;
 el consumidor tarda unos segundos en imprimir la primera línea porque antes se une al grupo. Que `analitica` reciba
-todo otra vez es la diferencia esencial con una cola: el log sigue ahí.
+todo otra vez es la diferencia esencial con una cola: el log sigue ahí. Al cortar el consumidor con Ctrl+C, kafkajs
+puede escribir una o dos líneas `ERROR` más (en la corrida real: `[Connection] Connection error: write after end` y
+`read ECONNRESET`): son peticiones que estaban en vuelo mientras se cerraba la conexión, no eventos perdidos.
 
 #### 11. VERIFICACIÓN
 
@@ -1941,7 +1959,7 @@ docker compose up -d --wait                                            # con bro
 node --test --test-reporter=spec f116-kafka-rabbit/rabbit.infra.js f116-kafka-rabbit/kafka.infra.js
 ```
 
-Salida real de `evento.test.js` y de `rabbit.infra.js`:
+Salida real de `evento.test.js` y de `rabbit.infra.js` (este, en macOS contra RabbitMQ 4.4.1):
 
 ```text
 ✔ el sobre lleva id único, tipo y fecha, y sobrevive al viaje como bytes (2.919696ms)
@@ -1954,11 +1972,29 @@ Salida real de `evento.test.js` y de `rabbit.infra.js`:
 ```
 
 ```text
-✔ el exchange topic enruta por tipo: la cola solo recibe pedido.creado (323.228623ms)
-✔ si el manejador falla, el mensaje se reentrega (redelivered) y no se pierde (97.250325ms)
-✔ la cola durable guarda los mensajes mientras el consumidor está apagado (99.686446ms)
+✔ el exchange topic enruta por tipo: la cola solo recibe pedido.creado (235.750625ms)
+✔ si el manejador falla, el mensaje se reentrega (redelivered) y no se pierde (35.627ms)
+✔ la cola durable guarda los mensajes mientras el consumidor está apagado (9.63025ms)
 ℹ tests 3
 ℹ pass 3
+ℹ fail 0
+```
+
+Y la de `kafka.infra.js` contra Kafka 4.4.0 recién arrancado (macOS, Node.js 26.13.1). Las dos líneas `ERROR` salen
+porque el broker acababa de arrancar y aún cargaba sus coordinadores internos; kafkajs reintenta solo y los tests
+pasan. Con el broker ya caliente no aparecen. Cada test tarda unos 8 s porque crea su topic y espera a unirse al
+grupo:
+
+```text
+(node:77033) TimeoutNegativeWarning: -1795149254154 is a negative number.
+Timeout duration was set to 1.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"level":"ERROR","timestamp":"2026-11-20T04:34:14.311Z","logger":"kafkajs","message":"[Connection] Response InitProducerId(key: 22, version: 1)","broker":"localhost:9092","clientId":"test","error":"The coordinator is loading and hence can't process requests for this group","correlationId":2,"size":20}
+{"level":"ERROR","timestamp":"2026-11-20T04:34:14.651Z","logger":"kafkajs","message":"[Connection] Response GroupCoordinator(key: 10, version: 2)","broker":"localhost:9092","clientId":"test","error":"The group coordinator is not available","correlationId":2,"size":55}
+✔ la misma clave va siempre a la misma partición y conserva el orden (8914.082875ms)
+✔ otro grupo de consumidores vuelve a leer TODO el topic (el log no se borra al consumir) (8035.887666ms)
+ℹ tests 2
+ℹ pass 2
 ℹ fail 0
 ```
 
@@ -2163,7 +2199,7 @@ await limpio.deleteExchange('demo.error-comun');
 await conexion.close();
 ```
 
-**Cómo se ve** (`node f116-kafka-rabbit/error-comun.js`, salida real con amqplib 2.4.0):
+**Cómo se ve** (`node f116-kafka-rabbit/error-comun.js`, salida real con amqplib 2.4.0 y RabbitMQ 4.4.1):
 
 ```text
 evento «error» del canal → Channel closed by server: 406 (PRECONDITION-FAILED) with message "PRECONDITION_FAILED - inequivalent arg 'type' for exchange 'demo.error-comun' in vhost '/': received 'topic' but current is 'direct'"
@@ -2195,6 +2231,31 @@ Mira el campo `broker` de cada línea. Si es el que configuraste (`localhost:909
 alcanzable. Si es **otro** nombre que tú no escribiste (un nombre interno de contenedor), el primer contacto funcionó
 y el fallo viene de la dirección que el broker **anuncia** (`advertised.listeners`): el cliente recibe esa dirección
 en los metadatos y la usa para todo lo demás.
+
+**Síntoma (Kafka con Node 24 o posterior):** todo funciona, pero cada proceso que usa kafkajs empieza con un aviso
+que asusta. **Cómo se ve** (salida real de `node f116-kafka-rabbit/kafka-productor.js` en macOS con Node.js 26.13.1 y
+kafkajs 2.2.4):
+
+```text
+(node:77250) TimeoutNegativeWarning: -1795149271251 is a negative number.
+Timeout duration was set to 1.
+(Use `node --trace-warnings ...` to show where the warning was created)
+```
+
+**Diagnóstico:** el aviso es de Node, no de Kafka. Node avisa cuando alguien llama a `setTimeout` con un retraso
+negativo y lo cambia por 1 ms. En kafkajs 2.2.4 la llamada está en `scheduleCheckPendingRequests()` de
+`node_modules/kafkajs/src/network/requestQueue/index.js`: calcula `scheduleAt = this.throttledUntil - Date.now()`, y
+`throttledUntil` vale `-1` mientras el broker no ha pedido frenar (`this.throttledUntil = -1` en el constructor). El
+resultado es «menos la hora actual en milisegundos»: por eso el número es enorme y cambia en cada ejecución
+(`-1795149271251` es −1 − `Date.now()` del 2026-11-20 a las 04:34:31 UTC). Con Node 22.23.5 el mismo `setTimeout` no
+imprime nada; con Node 24 y 26 sí. Es el issue
+[tulios/kafkajs#1751](https://github.com/tulios/kafkajs/issues/1751) («TimeoutNegativeWarning emitted when running on
+Node 24.0.1», abierto desde 2025-05-16), con dos *pull requests* de arreglo (#1755 y #1768) sin fusionar: como
+kafkajs no publica versiones desde 2023, no llegará una 2.2.5 que lo corrija. Es **inofensivo**: esperar 1 ms en lugar
+de un número negativo es lo que el código quería. **Arreglo:** no lo tapes con `--no-warnings`, que esconde también los
+avisos útiles. Si te molesta, silencia solo ese tipo con
+`node --disable-warning=TimeoutNegativeWarning f116-kafka-rabbit/kafka-productor.js` (o en `NODE_OPTIONS`); y si el
+servicio es nuevo, este aviso es otra razón para elegir un cliente mantenido (sección 8).
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -2452,17 +2513,17 @@ await nc.drain(); // procesa lo pendiente, cancela las suscripciones y cierra
 {"status":"ok"}
 ```
 
-**Output esperado** (paso 2, salida real; **el reparto entre `facturacion-A` y `facturacion-B` cambia en cada
+**Output esperado** (paso 2, salida real en macOS con NATS 2.15.3; **el reparto entre `facturacion-A` y `facturacion-B` cambia en cada
 ejecución**, lo fijo es que cada pedido aparece una sola vez en facturación):
 
 ```text
 conectado a localhost:4222
 auditoria   ← pedidos.creado {"pedidoId":"P-1"}
-facturacion-B ← P-1
+facturacion-A ← P-1
 auditoria   ← pedidos.creado {"pedidoId":"P-2"}
 facturacion-A ← P-2
 auditoria   ← pedidos.creado {"pedidoId":"P-3"}
-facturacion-A ← P-3
+facturacion-B ← P-3
 auditoria   ← pedidos.creado {"pedidoId":"P-4"}
 facturacion-A ← P-4
 auditoria   ← pedidos.cancelado {"pedidoId":"P-2"}

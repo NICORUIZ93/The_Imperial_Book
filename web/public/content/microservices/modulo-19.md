@@ -410,7 +410,7 @@ console.log('Desconectado · estado', mongoose.connection.readyState);
    docker compose start mongo
    ```
 
-**Output esperado** (paso 2):
+**Output esperado** (paso 2, salida real con Node 26.13.1, mongoose 9.12.2 y `mongo:9.0.8` en Docker):
 
 ```text
 Conectado a tienda · estado 1
@@ -509,11 +509,22 @@ test("strict: 'throw' rechaza campos que no están en el esquema", () => {
 });
 ```
 
-El segundo habla con MongoDB (con las bases arriba debe terminar en `ℹ pass 4`; si MongoDB está apagado, los cuatro
-tests aparecen como omitidos con `# sin MongoDB`):
+El segundo habla con MongoDB (si MongoDB está apagado, los cuatro tests aparecen como omitidos con `# sin MongoDB`):
 
 ```bash
 node --test --test-reporter=spec f101-mongoose/repositorio.test.js
+```
+
+Salida real con las bases arriba (MongoDB 9.0.8; los milisegundos cambian):
+
+```text
+✔ crear guarda el documento con _id y fechas (41.201375ms)
+✔ porEtiqueta filtra, ordena por precio y proyecta solo tres campos (6.946958ms)
+✔ el índice único rechaza un sku repetido con el código 11000 (3.092ms)
+✔ descontarStock es atómico: 5 compras simultáneas de 1 unidad con stock 3 → solo 3 lo logran (7.285166ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
 ```
 
 `f101-mongoose/repositorio.test.js`:
@@ -615,12 +626,16 @@ try {
 await mongoose.disconnect();
 ```
 
-**Cómo se ve** (salida real de `node f101-mongoose/error-buffering.js`, Node 26.13.1):
+**Cómo se ve** (salida real de `node f101-mongoose/error-buffering.js`, Node 26.13.1 en macOS):
 
 ```text
 1) MongooseError: Operation `productos.find()` buffering timed out after 2000ms
-2) MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27999
+2) MongooseServerSelectionError: connect ECONNREFUSED ::1:27999, connect ECONNREFUSED 127.0.0.1:27999
 ```
+
+En macOS `localhost` resuelve a la dirección IPv6 `::1` y a la IPv4 `127.0.0.1`, Node prueba las dos y el mensaje
+junta ambos intentos fallidos. En un Linux donde `localhost` solo resuelve a IPv4 verás únicamente
+`connect ECONNREFUSED 127.0.0.1:27999`. Es el mismo error.
 
 **Diagnóstico visual:** son dos mensajes distintos para dos causas distintas.
 
@@ -1056,7 +1071,7 @@ await prisma.$disconnect();
    cd examples/microservicios/modulo-19
    node f102-prisma-sequelize/sequelize-demo.js
    ```
-2. Genera el cliente de Prisma (descarga una vez los componentes de Prisma para tu sistema) y ejecuta su demo:
+2. Genera el cliente de Prisma y ejecuta su demo:
    ```bash
    npm run generate
    node --import tsx f102-prisma-sequelize/prisma-demo.ts
@@ -1081,9 +1096,20 @@ Transacción deshecha: SequelizeDatabaseError
 Email repetido: SequelizeUniqueConstraintError
 ```
 
-**Output esperado** (paso 2): `npm run generate` termina indicando que generó Prisma Client en
-`f102-prisma-sequelize/generated`, y la demo imprime las mismas tres primeras líneas y el mismo `¿Existe Luis? null`;
-solo cambian los nombres de los errores:
+**Output esperado** (paso 2, salida real con Prisma 7.10.1 contra PostgreSQL 18.7; los milisegundos cambian).
+Primero `npm run generate`:
+
+```text
+> modulo-15-persistencia-node@1.0.0 generate
+> prisma generate --schema f102-prisma-sequelize/prisma/schema.prisma
+
+Prisma schema loaded from f102-prisma-sequelize/prisma/schema.prisma.
+
+✔ Generated Prisma Client (7.10.1) to ./f102-prisma-sequelize/generated in 11ms
+```
+
+Y la demo imprime las mismas tres primeras líneas y el mismo `¿Existe Luis? null`; solo cambian los nombres de los
+errores:
 
 ```text
 Cliente creado con id 1
@@ -1124,12 +1150,23 @@ node --test --test-reporter=spec f102-prisma-sequelize/sequelize.test.js
 npm run generate && node --import tsx --test --test-reporter=spec f102-prisma-sequelize/prisma.test.ts
 ```
 
-Salida real de la primera orden (los milisegundos cambian); la segunda debe terminar igual, en `ℹ pass 3`:
+Salida real de la primera orden (los milisegundos cambian):
 
 ```text
 ✔ guarda un cliente con sus pedidos y los lee con un JOIN (160.940385ms)
 ✔ si un pedido falla, la transacción deshace también el cliente (20.895742ms)
 ✔ el email repetido produce SequelizeUniqueConstraintError (13.052976ms)
+ℹ tests 3
+ℹ pass 3
+ℹ fail 0
+```
+
+Salida real de la segunda (Prisma 7.10.1 contra PostgreSQL 18.7):
+
+```text
+✔ guarda un cliente con sus pedidos y los lee con la forma pedida (90.024208ms)
+✔ si un pedido falla, $transaction deshace también el cliente (18.36575ms)
+✔ el email repetido produce el error P2002 (restricción única) (7.43975ms)
 ℹ tests 3
 ℹ pass 3
 ℹ fail 0
@@ -1648,13 +1685,13 @@ bases.
 node --test --test-reporter=spec f103-database-per-service/aislamiento.test.js
 ```
 
-Salida real (los milisegundos cambian):
+Salida real con PostgreSQL 18.7 (los milisegundos cambian):
 
 ```text
-✔ un pedido se confirma reservando stock por la API de inventario (174.647932ms)
-✔ sin stock, inventario responde 409 y pedidos guarda el pedido como RECHAZADO (30.515396ms)
-✔ el usuario de pedidos NO puede conectarse a la base de inventario (ni al revés) (39.324674ms)
-✔ cada base contiene solo las tablas de su servicio (38.594729ms)
+✔ un pedido se confirma reservando stock por la API de inventario (68.555208ms)
+✔ sin stock, inventario responde 409 y pedidos guarda el pedido como RECHAZADO (2.7685ms)
+✔ el usuario de pedidos NO puede conectarse a la base de inventario (ni al revés) (9.052708ms)
+✔ cada base contiene solo las tablas de su servicio (16.99925ms)
 ℹ tests 4
 ℹ pass 4
 ℹ fail 0
@@ -2078,13 +2115,14 @@ await pool.end();
    docker compose exec postgres psql -U tienda -d f104 -c "SELECT count(*) FROM pg_stat_activity WHERE datname = 'f104'"
    ```
 
-**Output esperado** (paso 1, salida real con Node 26.13.1 y pg 8.23.1; los tiempos pueden variar ±100 ms):
+**Output esperado** (paso 1, salida real con Node 26.13.1, pg 8.23.1 y PostgreSQL 18.7 en Docker; los tiempos pueden
+variar ±100 ms):
 
 ```text
 — Pool: 20 consultas de 100 ms a la vez —
 max=1  → 2100 ms aprox. · en fila al empezar: 19 · conexiones abiertas: 1
 max=5  → 400 ms aprox. · en fila al empezar: 15 · conexiones abiertas: 5
-max=20 → 200 ms aprox. · en fila al empezar: 0 · conexiones abiertas: 20
+max=20 → 100 ms aprox. · en fila al empezar: 0 · conexiones abiertas: 20
 — Transacciones —
 Inicio: { ana: 100, luis: 50 }
 Ana → Luis 30 (COMMIT): { ana: 70, luis: 80 }
@@ -2114,7 +2152,8 @@ client del pool (BIEN): petición 1 rejected · petición 2 fulfilled · saldos 
 una), nunca más que el `max` del pool que esté midiendo la demo más uno.
 
 **Captura comentada:** con `max=1` las 20 consultas van de una en una (20 × 100 ms); con `max=5`, en 4 tandas; con
-`max=20`, todas a la vez, pero abrir 20 conexiones nuevas también cuesta (por eso 200 ms y no 100). En las
+`max=20`, todas a la vez. Abrir 20 conexiones nuevas también cuesta: en el Mac con PostgreSQL 18.7 el total se
+quedó en unos 100 ms, pero en una máquina más lenta o con la base en otra red verás 200 ms o más por ese coste. En las
 transacciones, «Ana → Eva 10» es el caso interesante: a Ana **ya se le habían descontado** 10 cuando el código
 descubrió que Eva no existe, y el `ROLLBACK` se los devolvió. La última línea muestra que tras 3 transacciones
 secuenciales el pool solo necesitó abrir 1 conexión y que quedó libre.
@@ -2125,14 +2164,14 @@ secuenciales el pool solo necesitó abrir 1 conexión y que quedó libre.
 node --test --test-reporter=spec f104-pool-transacciones/pool.test.js
 ```
 
-Salida real (los milisegundos cambian):
+Salida real con PostgreSQL 18.7 (los milisegundos cambian):
 
 ```text
-✔ con max=5, 20 consultas de 100 ms tardan unas 4 tandas y nunca hay más de 5 conexiones (453.052278ms)
-✔ una transferencia válida hace COMMIT de los dos UPDATE (13.713514ms)
-✔ si el saldo quedaría negativo, ROLLBACK deja todo como estaba (8.440029ms)
-✔ si falla el segundo paso, el primero también se deshace (8.901762ms)
-✔ después de 50 transferencias (la mitad fallidas) no queda ninguna conexión prestada (75.362137ms)
+✔ con max=5, 20 consultas de 100 ms tardan unas 4 tandas y nunca hay más de 5 conexiones (444.4955ms)
+✔ una transferencia válida hace COMMIT de los dos UPDATE (10.982792ms)
+✔ si el saldo quedaría negativo, ROLLBACK deja todo como estaba (5.571833ms)
+✔ si falla el segundo paso, el primero también se deshace (7.41375ms)
+✔ después de 50 transferencias (la mitad fallidas) no queda ninguna conexión prestada (36.165917ms)
 ℹ tests 5
 ℹ pass 5
 ℹ fail 0

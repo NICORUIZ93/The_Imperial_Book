@@ -1654,7 +1654,7 @@ for (let i = 1; i <= 4; i++) {
    docker compose down -v
    ```
 
-**Output esperado** (paso 2, una línea en cada terminal):
+**Output esperado** (paso 2, una línea en cada terminal; salida real en macOS con Consul 2.1.0):
 
 ```text
 catalogo-3111 registrado en Consul y escuchando en :3111
@@ -1662,7 +1662,8 @@ catalogo-3112 registrado en Consul y escuchando en :3112
 ```
 
 **Output esperado** (paso 3; Consul puede devolver las instancias en el otro orden, y entonces el reparto empieza por
-la 3112):
+la 3112). Las cuatro líneas de `cliente.js` son la salida real contra Consul 2.1.0; las dos de `jq` muestran la forma
+que tiene cada elemento:
 
 ```text
 {"id":"catalogo-3111","puerto":3111,"checks":["passing"]}
@@ -1673,7 +1674,8 @@ petición 3 → http://127.0.0.1:3111 → atendida por catalogo-3111
 petición 4 → http://127.0.0.1:3112 → atendida por catalogo-3112
 ```
 
-**Output esperado** (paso 4: primero el fallo dentro de la ventana del TTL, recortado; después, solo la 3112):
+**Output esperado** (paso 4: primero el fallo dentro de la ventana del TTL, recortado y obtenido en Linux; después,
+solo la 3112, salida real contra Consul 2.1.0):
 
 ```text
 [TypeError: fetch failed] {
@@ -1691,15 +1693,25 @@ petición 3 → http://127.0.0.1:3112 → atendida por catalogo-3112
 petición 4 → http://127.0.0.1:3112 → atendida por catalogo-3112
 ```
 
-**Output esperado** (paso 5: la terminal 2 imprime `catalogo-3112 dado de baja` y el cliente falla con un error propio):
+**Output esperado** (paso 5: la terminal 2 imprime `catalogo-3112 dado de baja` y el cliente falla con un error propio;
+salida real, recortada a la línea del error):
 
 ```text
 SinInstancias: No hay instancias sanas de "catalogo" en Consul
 ```
 
-**Captura comentada:** en la interfaz de Consul (Services → catalogo) ves dos instancias con un check verde llamado
-`Service 'catalogo' check`; tras el `kill -9`, la 3111 pasa a rojo a los 3 segundos, con la nota «TTL expired», y
-sigue listada (en rojo) hasta que Consul la borra pasado un minuto. El `ECONNREFUSED` del paso 4 es la **ventana de
+**Captura comentada:** el log del agente (`docker compose logs consul`) cuenta lo que pasó. En la corrida real del Mac
+(Consul 2.1.0) la 3111 pasó a `passing` a las 04:33:49.941; el `kill -9` llegó antes de su siguiente latido y,
+justo 3 segundos (el TTL) después, Consul escribió:
+
+```text
+2026-11-20T04:33:52.941Z [WARN]  agent: Check missed TTL, is now critical: check=service:catalogo-3111
+```
+
+Desde ese momento `?passing=true` ya no la devuelve. La instancia sigue en el catálogo, en estado `critical`, hasta que
+se cumple `deregistercriticalserviceafter: '1m'`; la documentación de la API de checks de Consul avisa de que el
+proceso que borra servicios críticos corre cada 30 segundos, así que puede tardar algo más del minuto. En la interfaz
+web (`http://localhost:8500`) la verás en rojo durante ese tiempo. El `ECONNREFUSED` del paso 4 es la **ventana de
 inconsistencia**: Consul todavía creía viva a la 3111 (si el turno cae en la 3112, la primera petición sale bien y
 falla la segunda). La baja con Ctrl+C, en cambio, es instantánea: por eso el apagado ordenado importa. En macOS,
 `errno` es `-61` en lugar de `-111`.
@@ -1718,6 +1730,18 @@ Salida real (con el doble en memoria):
 ✔ la baja voluntaria saca a la instancia del catálogo al instante (6.268847ms)
 ✔ una instancia que muere sin avisar deja de estar sana cuando vence su TTL (2507.218673ms)
 ✔ con Consul caído el localizador sirve la última lista conocida (5.833584ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
+```
+
+Salida real de la segunda orden (macOS, Consul 2.1.0 en Docker; los milisegundos cambian):
+
+```text
+✔ dos instancias se registran y el cliente reparte las peticiones por turnos (28.293875ms)
+✔ la baja voluntaria saca a la instancia del catálogo al instante (5.040833ms)
+✔ una instancia que muere sin avisar deja de estar sana cuando vence su TTL (2510.800083ms)
+✔ con Consul caído el localizador sirve la última lista conocida (9.818833ms)
 ℹ tests 4
 ℹ pass 4
 ℹ fail 0
@@ -2160,7 +2184,7 @@ for (const senal of ['SIGINT', 'SIGTERM']) {
    docker compose down -v
    ```
 
-**Output esperado** (paso 1, terminal 1):
+**Output esperado** (paso 1, terminal 1; salida real en macOS con Consul 2.1.0):
 
 ```text
 config/pedidos/pagos.timeoutMs = 1500
@@ -2180,7 +2204,7 @@ config/pedidos/pagos.timeoutMs = rapido
 {"pagos.timeoutMs":800,"pedidos.montoMaximo":3000000,"funciones.envioGratis":false}
 ```
 
-**Output esperado** (pasos 2 y 3, lo que aparece en la terminal 1 mientras tanto):
+**Output esperado** (pasos 2 y 3, lo que aparece en la terminal 1 mientras tanto; salida real con Consul 2.1.0):
 
 ```text
 recargada en caliente [pagos.timeoutMs]: {"pagos.timeoutMs":800,"pedidos.montoMaximo":3000000,"funciones.envioGratis":false}
@@ -2207,7 +2231,7 @@ sin conexión con Consul (consul: kv.get: connect ECONNREFUSED 127.0.0.1:8500); 
 
 **Captura comentada:** entre el `sembrar.js … 800` y la línea «recargada en caliente» pasan milisegundos: la consulta
 bloqueante ya estaba abierta y Consul la respondió en cuanto cambió el índice. El valor `rapido` quedó guardado en
-Consul (míralo en la interfaz: Key/Value → config/pedidos), pero **ninguna** instancia lo aplicó. El `250` de la
+Consul, pero **ninguna** instancia lo aplicó. El `250` de la
 variable de entorno ganó a Consul solo en esa instancia. Y con Consul apagado, el servicio siguió atendiendo con la
 última configuración buena (el Consul de este laboratorio corre en modo `-dev`, con los datos en memoria: al apagarlo
 se pierde lo sembrado).
@@ -2226,6 +2250,18 @@ Salida real (con el doble en memoria):
 ✔ valores inválidos y claves desconocidas se rechazan sin romper el resto (0.223232ms)
 ✔ lee del KV de Consul al arrancar (13.480193ms)
 ✔ recarga en caliente cuando cambia una clave y conserva el valor anterior si el nuevo es inválido (7.715927ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
+```
+
+Salida real de la segunda orden (macOS, Consul 2.1.0 en Docker; los milisegundos cambian):
+
+```text
+✔ capas: por defecto < Consul < entorno (0.539834ms)
+✔ valores inválidos y claves desconocidas se rechazan sin romper el resto (0.079167ms)
+✔ lee del KV de Consul al arrancar (7.051917ms)
+✔ recarga en caliente cuando cambia una clave y conserva el valor anterior si el nuevo es inválido (3.84625ms)
 ℹ tests 4
 ℹ pass 4
 ℹ fail 0
