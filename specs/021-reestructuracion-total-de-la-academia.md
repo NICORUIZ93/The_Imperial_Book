@@ -103,10 +103,12 @@ básico» o «falta».
 
 ## 5. Orden de los cursos
 
-1.º Java · 2.º Gradle (curso nuevo) · 3.º Spring · 4.º Microservicios (con Gradle; el más completo) ·
-después Fundamentos, JavaScript, Node, React, Angular, Docker (nuevo), Kubernetes (nuevo), DevOps, Cloud (con
-Floci), Android, Kotlin Multiplatform, iOS, Flutter, Control, Diseño de sistemas (nuevo) y RutaFlow (proyecto
-integrador, al final).
+Prioridad fijada por el dueño el 2026-11-20: 1.º Java · 2.º Spring Boot · 3.º Microservicios con Spring Boot
+(con Gradle; el más completo) · 4.º Flutter · 5.º iOS · 6.º Angular, que incluye completo el desarrollo nativo
+con Angular (aplicaciones móviles nativas hechas con Angular). Gradle (curso nuevo) se escribe junto a Java y
+Spring porque sus laboratorios lo usan. Después: Fundamentos, JavaScript, Node, React, Docker (nuevo),
+Kubernetes (nuevo), DevOps, Cloud (con Floci), Android, Kotlin Multiplatform, Control, Diseño de sistemas
+(nuevo) y RutaFlow (proyecto integrador, al final).
 
 **Microservicios (decisión del dueño, 2026-11-20):** es el curso insignia y debe ser el más completo de cero
 a experto. Su pista de Spring Boot se construye con **Gradle** (Kotlin DSL, wrapper y catálogo de versiones):
