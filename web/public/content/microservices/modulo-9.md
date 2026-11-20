@@ -1965,8 +1965,11 @@ class DoceFactoresTest {
 
     @Test
     void unaConfiguracionInvalidaImpideArrancar() {
+        // Argumentos de línea de comandos: tienen MÁS prioridad que application.properties.
+        // (Con .properties(...) serían «propiedades por defecto», la fuente de MENOS prioridad:
+        //  tienda.moneda=COP del archivo las taparía y la aplicación arrancaría sin error.)
         assertThatThrownBy(() -> new SpringApplicationBuilder(DoceFactoresApp.class)
-                .properties("server.port=0", "tienda.moneda=pesos").run().close())
+                .run("--server.port=0", "--tienda.moneda=pesos").close())
             .hasRootCauseInstanceOf(BindValidationException.class);
     }
 }
@@ -2020,6 +2023,20 @@ real):
 dentro del JAR. Revisa las propiedades efectivas con `/actuator/env` (en un entorno seguro) o busca `localhost` y
 `password` en `src/main/resources`. **Arreglo:** usa `${VARIABLE}` para todo lo que cambia por entorno, define las
 variables en el despliegue (Docker Compose, Kubernetes) y deja en el archivo solo valores por defecto inocuos.
+
+Otro error real, de la primera versión del test `unaConfiguracionInvalidaImpideArrancar` en el Mac:
+
+```text
+Expecting code to raise a throwable.
+```
+
+**Diagnóstico:** el test arrancaba la aplicación con `new SpringApplicationBuilder(...).properties("tienda.moneda=pesos")`,
+y `properties(...)` define **propiedades por defecto**, la fuente con **menos** prioridad de Spring Boot: el
+`tienda.moneda=COP` de `application.properties` la tapaba, la configuración era válida y la aplicación arrancaba sin
+lanzar nada. La validación sí estaba activa (`@Validated` y `spring-boot-starter-validation`). **Arreglo:** pasar el
+valor por una fuente con más prioridad que el archivo, como argumentos de línea de comandos
+(`.run("--tienda.moneda=pesos")`) o variables de entorno. Regla para recordar: línea de comandos > variables de
+entorno > `application.properties` > propiedades por defecto.
 
 #### 13. PREGUNTA DE ENTREVISTA
 

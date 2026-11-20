@@ -16,8 +16,10 @@ Lección: [`web/public/content/microservices/modulo-10.md`](../../../web/public/
 JDK 25 LTS (25.0.5) · Spring Boot 4.1.3 (Spring Framework 7.0.11, Jackson 3.1.8, Spring gRPC 1.1.2, grpc-java
 1.84.1, Protobuf Java 4.36.2, Spring for GraphQL 2.0.7 con graphql-java 25.1, Spring AMQP 4.1.3, Spring for Apache
 Kafka 4.1.3, kafka-clients 4.2.2) · Spring Cloud 2025.1.4 (OpenFeign 5.0.4) · imágenes `rabbitmq:4.4.1-management` y
-`apache/kafka:4.4.0` · Maven 3.9.11 por el wrapper. Para `f048-grpc/protobuf/demo-binario.sh`: `protoc`
-(`brew install protobuf`) o `pip install grpcio-tools==1.84.1`.
+`apache/kafka:4.4.0` · Maven 3.9.11 por el wrapper. Para `f048-grpc/protobuf/demo-binario.sh`: el `protoc` del
+PATH (`brew install protobuf`), el que descarga el build Maven de `f048-grpc` en `~/.m2` o, si no
+hay ninguno, un entorno virtual propio en `f048-grpc/protobuf/.venv` con `grpcio-tools==1.84.1` (ruedas para Python
+3.10–3.15) que el script crea solo.
 
 ## Ejecutar
 

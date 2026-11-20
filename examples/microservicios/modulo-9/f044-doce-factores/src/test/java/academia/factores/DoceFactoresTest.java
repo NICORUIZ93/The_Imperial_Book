@@ -36,8 +36,11 @@ class DoceFactoresTest {
 
     @Test
     void unaConfiguracionInvalidaImpideArrancar() {
+        // Argumentos de línea de comandos: tienen MÁS prioridad que application.properties.
+        // (Con .properties(...) serían «propiedades por defecto», la fuente de MENOS prioridad:
+        //  tienda.moneda=COP del archivo las taparía y la aplicación arrancaría sin error.)
         assertThatThrownBy(() -> new SpringApplicationBuilder(DoceFactoresApp.class)
-                .properties("server.port=0", "tienda.moneda=pesos").run().close())
+                .run("--server.port=0", "--tienda.moneda=pesos").close())
             .hasRootCauseInstanceOf(BindValidationException.class);
     }
 }

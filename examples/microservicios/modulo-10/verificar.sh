@@ -3,7 +3,7 @@
 # Levanta RabbitMQ 4.4.1 y Kafka 4.4.0 (F050), ejecuta los tests de las 5 fichas (F047–F051) con el
 # Maven Wrapper (-fae: un proyecto que falla no impide probar los demás), comprueba el contrato Protocol
 # Buffers de F048 y apaga los contenedores.
-# Uso: ./verificar.sh     (requiere JDK 25 LTS, Docker con Compose v2 y protoc o Python con grpcio-tools)
+# Uso: ./verificar.sh     (requiere JDK 25 LTS, Docker con Compose v2 y python3; protoc se busca solo)
 set -u
 cd "$(dirname "$0")"
 java -version 2>&1 | head -1
