@@ -20,3 +20,4 @@ microservices	modulo-19	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript
 microservices	modulo-20	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript 6.0.3, Docker)
 microservices	modulo-21	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript 6.0.3, Docker)
 microservices	modulo-22	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript 6.0.3, Docker)
+microservices	modulo-16	PASS	Mac del dueño 2026-11-19 (JDK 25.0.5, Docker 29.9.3, kind 0.33.0, kubectl 1.37.2, Helm 4)
