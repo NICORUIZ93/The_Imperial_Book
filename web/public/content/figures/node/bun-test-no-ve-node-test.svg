@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 770 465" width="770" height="465" role="img" aria-label="Captura de terminal: bun test filtra por nombre de archivo, no por la API">
+<title>Captura de terminal: bun test filtra por nombre de archivo, no por la API</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea se ejecuto en la imagen oficial del runtime (oven/bun:1, node:24, denoland/deno:2.9.8, rabbitmq:4-management) montando la carpeta del laboratorio en /app con NO_COLOR=1. Comandos en orden: bun test test/pedidos.node-test.mjs ; mv test/pedidos.node-test.mjs test/pedidos.test.mjs ; bun test test/pedidos.test.mjs. Codigo de salida final: 0.</desc>
+<rect width="770" height="465" rx="8" fill="#1e1f24"/>
+<rect width="770" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="770" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="385.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">bun test filtra por nombre de archivo, no por la API</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">bun test test/pedidos.node-test.mjs</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">bun test v1.4.5 (a7733435c)</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">The following filters did not match any test files:</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6"> test/pedidos.node-test.mjs</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">11 files were searched [4.00ms]</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">note: Tests need ".test", "_test_", ".spec" or "_spec_" in the filename (ex: "MyApp.test.ts")</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">Learn more about bun test: https://bun.com/docs/cli/test</text>
+<text x="18" y="232" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">mv test/pedidos.node-test.mjs test/pedidos.test.mjs</tspan></text>
+<text x="18" y="251" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">bun test test/pedidos.test.mjs</tspan></text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">bun test v1.4.5 (a7733435c)</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">test/pedidos.test.mjs:</text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">total=115</text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">(pass) precio final con recargo [0.74ms]</text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">(pass) recargo negativo se rechaza [0.20ms]</text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6"> 2 pass</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6"> 0 fail</text>
+<text x="18" y="441" style="white-space: pre" fill="#e6e6e6">Ran 2 tests across 1 file. [15.00ms]</text>
+</g>
+</svg>

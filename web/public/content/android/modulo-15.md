@@ -671,7 +671,128 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** subir la clave al r
 
 **Fuente oficial:** [Google — Maps Compose library](https://developers.google.com/maps/documentation/android-sdk/maps-compose) y [Google — Using API keys](https://developers.google.com/maps/documentation/android-sdk/get-api-key).
 
-### Tema 6: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min
+### Tema 6: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min
+
+**Prerrequisito:** tema «BroadcastReceiver: reaccionar a eventos del sistema» de este módulo.
+
+**Al finalizar podrás:** leer el acelerómetro con `SensorManager` dentro de un efecto de Compose, detectar un golpe fuerte calculando la magnitud y liberar el sensor al salir de la pantalla.
+
+**¿Por qué es importante?** Los sensores dan información que el GPS no da: si el teléfono cayó, si está en movimiento o hacia dónde apunta. Mal usados, también agotan la batería porque siguen activos en segundo plano.
+
+#### Paso 1 · Objetivo y preparación
+
+No necesitas permisos para el acelerómetro. Usa un dispositivo real o el emulador con **Extended controls > Virtual sensors** para mover el teléfono simulado.
+
+#### Paso 2 · Contexto y caso real
+
+RutaFlow transporta equipos frágiles. El cliente pidió registrar si el paquete sufrió un golpe durante el viaje. El teléfono del conductor, en el soporte del vehículo, sirve como detector aproximado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `SensorManager`, `Sensor.TYPE_ACCELEROMETER`, `SensorEventListener`, frecuencia de muestreo, magnitud, gravedad (9,8 m/s²), `DisposableEffect`.
+
+`SensorManager` da acceso a los sensores. Te registras con un `SensorEventListener` y una **frecuencia** (`SENSOR_DELAY_UI`, `SENSOR_DELAY_GAME`…). Cada lectura llega en `onSensorChanged` con los valores de los ejes x, y, z.
+
+El acelerómetro mide la aceleración en m/s², **incluida la gravedad**. En reposo, la **magnitud** `√(x² + y² + z²)` es cerca de 9,8. Un golpe produce un pico mucho mayor (por ejemplo, más de 25).
+
+En Compose, `DisposableEffect` registra el listener al entrar y lo **desregistra en `onDispose`**. Olvidar desregistrar deja el sensor encendido aunque la pantalla ya no exista.
+
+**Analogía:** el acelerómetro es un vaso de agua en el tablero: si el agua salta, hubo un golpe. La analogía falla en que el sensor también «ve» la gravedad todo el tiempo, por eso se mide la magnitud y no un eje solo.
+
+**Límite de uso:** el teléfono no está pegado al paquete: la medida es aproximada. No uses frecuencias altas sin necesidad. Para actividad física (caminar, conducir) usa la Activity Recognition API, que ya combina sensores.
+
+```mermaid
+flowchart LR
+    S["Acelerómetro"] -->|"onSensorChanged x,y,z"| M["magnitud = √(x²+y²+z²)"]
+    M --> D{"> 25 m/s²?"}
+    D -->|sí| G["registrar golpe"]
+    D -->|no| N["ignorar"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `app/src/main/java/co/rutaflow/conductor/sensores/DetectorGolpes.kt`:
+
+```kotlin
+package co.rutaflow.conductor.sensores
+
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import kotlin.math.sqrt
+
+@Composable
+fun DetectorGolpes(umbral: Float = 25f, alGolpe: (Float) -> Unit) {
+    val contexto = LocalContext.current
+    DisposableEffect(Unit) {
+        val gestor = contexto.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val acelerometro = gestor.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        val oyente = object : SensorEventListener {
+            override fun onSensorChanged(evento: SensorEvent) {
+                val (x, y, z) = evento.values
+                val magnitud = sqrt(x * x + y * y + z * z) // incluye la gravedad (~9.8)
+                if (magnitud > umbral) alGolpe(magnitud)
+            }
+            override fun onAccuracyChanged(sensor: Sensor, precision: Int) = Unit
+        }
+        if (acelerometro != null) gestor.registerListener(oyente, acelerometro, SensorManager.SENSOR_DELAY_GAME)
+        onDispose { gestor.unregisterListener(oyente) } // apaga el sensor al salir
+    }
+}
+```
+
+Ejecútalo:
+
+```bash
+./gradlew installDebug
+# en el emulador: Extended controls > Virtual sensors > Accelerometer, mueve bruscamente el dispositivo
+adb logcat -s Golpes
+```
+
+**Explicación por bloques:** `DetectorGolpes` no dibuja nada: solo administra el sensor mientras está en la pantalla. Al entrar, `DisposableEffect` obtiene el acelerómetro y registra el oyente con frecuencia de juego. Cada lectura calcula la magnitud; si supera el umbral, llama a `alGolpe` con el valor. Al salir, `onDispose` desregistra el oyente y el sensor deja de consumir. Si el dispositivo no tiene acelerómetro, no se registra nada.
+
+**Resultado esperado:**
+
+```text
+En reposo no se registra nada (magnitud cercana a 9.8).
+Al mover bruscamente el sensor virtual, `alGolpe` recibe un valor mayor que 25 y Logcat muestra, por ejemplo: I Golpes: golpe de 31.4 m/s²
+```
+
+**Fallo deliberado:** quita `onDispose { gestor.unregisterListener(oyente) }` y navega varias veces entre pantallas. **Error esperado:** Logcat muestra golpes repetidos desde pantallas que ya cerraste y el consumo de batería sube. **Diagnóstico:** cada visita registró un oyente nuevo y ninguno se quitó. Desregistra siempre en `onDispose`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** registra la magnitud en Logcat con el teléfono en reposo y anota el valor.
+2. **Variación:** cambia el umbral a 15 y observa cuántos falsos positivos aparecen al caminar.
+3. **Diagnóstico:** reproduce el fallo deliberado navegando entre pantallas.
+4. **Integración:** agrega el sensor de rotación (`TYPE_ROTATION_VECTOR`) y muestra hacia dónde apunta el teléfono.
+5. **Diseño:** escribe por qué esta medida es aproximada y cómo se lo explicarías al cliente.
+
+**Pista:** si ves golpes sin moverte, revisa cuántos oyentes registraste.
+
+#### Paso 6 · Práctica independiente
+
+Guarda cada golpe con hora y posición en Room, y muestra al final del viaje un resumen «2 golpes fuertes, el mayor de 34 m/s² en Calle 26».
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas por qué en reposo la magnitud es cercana a 9,8.
+- [ ] El detector registra golpes con el sensor virtual.
+- [ ] Reprodujiste el oyente que no se libera.
+- [ ] Sabes cuándo usar Activity Recognition en su lugar.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no desregistrar el oyente, usar la frecuencia más alta sin necesidad y mirar un solo eje en lugar de la magnitud. **Siguiente paso:** el tema siguiente conecta la app con dispositivos Bluetooth LE, como una báscula.
+
+**Transferencia al proyecto integrador «RutaFlow»:** registra en la app del conductor de RutaFlow los golpes fuertes durante el viaje de envíos frágiles y adjunta el resumen a la entrega.
+
+**Fuente oficial:** [Android Developers — Sensors overview](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview) y [Android Developers — Motion sensors](https://developer.android.com/develop/sensors-and-location/sensors/sensors_motion).
+
+### Tema 7: Geofencing: avisar al entrar en la zona de una parada · Avanzado · 45 min
 
 **Prerrequisito:** temas «Foreground Service de ubicación con FusedLocationProvider» y «BroadcastReceiver: reaccionar a eventos del sistema» de este módulo.
 
@@ -826,7 +947,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar radios de poco
 
 **Fuente oficial:** [Android Developers — Create and monitor geofences](https://developer.android.com/develop/sensors-and-location/location/geofencing).
 
-### Tema 7: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min
+### Tema 8: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min
 
 **Prerrequisito:** tema «Permisos en tiempo de ejecución y alternativas sin permisos» (módulo 16).
 
@@ -964,127 +1085,6 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar pedir el pe
 **Transferencia al proyecto integrador «RutaFlow»:** en la app del conductor de RutaFlow, escanea la guía y toma la foto de entrega con CameraX y ML Kit, y deja la escritura manual como respaldo.
 
 **Fuente oficial:** [Android Developers — CameraX overview](https://developer.android.com/media/camera/camerax) y [Google — ML Kit Barcode scanning](https://developers.google.com/ml-kit/vision/barcode-scanning/android).
-
-### Tema 8: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min
-
-**Prerrequisito:** tema «BroadcastReceiver: reaccionar a eventos del sistema» de este módulo.
-
-**Al finalizar podrás:** leer el acelerómetro con `SensorManager` dentro de un efecto de Compose, detectar un golpe fuerte calculando la magnitud y liberar el sensor al salir de la pantalla.
-
-**¿Por qué es importante?** Los sensores dan información que el GPS no da: si el teléfono cayó, si está en movimiento o hacia dónde apunta. Mal usados, también agotan la batería porque siguen activos en segundo plano.
-
-#### Paso 1 · Objetivo y preparación
-
-No necesitas permisos para el acelerómetro. Usa un dispositivo real o el emulador con **Extended controls > Virtual sensors** para mover el teléfono simulado.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow transporta equipos frágiles. El cliente pidió registrar si el paquete sufrió un golpe durante el viaje. El teléfono del conductor, en el soporte del vehículo, sirve como detector aproximado.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `SensorManager`, `Sensor.TYPE_ACCELEROMETER`, `SensorEventListener`, frecuencia de muestreo, magnitud, gravedad (9,8 m/s²), `DisposableEffect`.
-
-`SensorManager` da acceso a los sensores. Te registras con un `SensorEventListener` y una **frecuencia** (`SENSOR_DELAY_UI`, `SENSOR_DELAY_GAME`…). Cada lectura llega en `onSensorChanged` con los valores de los ejes x, y, z.
-
-El acelerómetro mide la aceleración en m/s², **incluida la gravedad**. En reposo, la **magnitud** `√(x² + y² + z²)` es cerca de 9,8. Un golpe produce un pico mucho mayor (por ejemplo, más de 25).
-
-En Compose, `DisposableEffect` registra el listener al entrar y lo **desregistra en `onDispose`**. Olvidar desregistrar deja el sensor encendido aunque la pantalla ya no exista.
-
-**Analogía:** el acelerómetro es un vaso de agua en el tablero: si el agua salta, hubo un golpe. La analogía falla en que el sensor también «ve» la gravedad todo el tiempo, por eso se mide la magnitud y no un eje solo.
-
-**Límite de uso:** el teléfono no está pegado al paquete: la medida es aproximada. No uses frecuencias altas sin necesidad. Para actividad física (caminar, conducir) usa la Activity Recognition API, que ya combina sensores.
-
-```mermaid
-flowchart LR
-    S["Acelerómetro"] -->|"onSensorChanged x,y,z"| M["magnitud = √(x²+y²+z²)"]
-    M --> D{"> 25 m/s²?"}
-    D -->|sí| G["registrar golpe"]
-    D -->|no| N["ignorar"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `app/src/main/java/co/rutaflow/conductor/sensores/DetectorGolpes.kt`:
-
-```kotlin
-package co.rutaflow.conductor.sensores
-
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalContext
-import kotlin.math.sqrt
-
-@Composable
-fun DetectorGolpes(umbral: Float = 25f, alGolpe: (Float) -> Unit) {
-    val contexto = LocalContext.current
-    DisposableEffect(Unit) {
-        val gestor = contexto.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val acelerometro = gestor.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        val oyente = object : SensorEventListener {
-            override fun onSensorChanged(evento: SensorEvent) {
-                val (x, y, z) = evento.values
-                val magnitud = sqrt(x * x + y * y + z * z) // incluye la gravedad (~9.8)
-                if (magnitud > umbral) alGolpe(magnitud)
-            }
-            override fun onAccuracyChanged(sensor: Sensor, precision: Int) = Unit
-        }
-        if (acelerometro != null) gestor.registerListener(oyente, acelerometro, SensorManager.SENSOR_DELAY_GAME)
-        onDispose { gestor.unregisterListener(oyente) } // apaga el sensor al salir
-    }
-}
-```
-
-Ejecútalo:
-
-```bash
-./gradlew installDebug
-# en el emulador: Extended controls > Virtual sensors > Accelerometer, mueve bruscamente el dispositivo
-adb logcat -s Golpes
-```
-
-**Explicación por bloques:** `DetectorGolpes` no dibuja nada: solo administra el sensor mientras está en la pantalla. Al entrar, `DisposableEffect` obtiene el acelerómetro y registra el oyente con frecuencia de juego. Cada lectura calcula la magnitud; si supera el umbral, llama a `alGolpe` con el valor. Al salir, `onDispose` desregistra el oyente y el sensor deja de consumir. Si el dispositivo no tiene acelerómetro, no se registra nada.
-
-**Resultado esperado:**
-
-```text
-En reposo no se registra nada (magnitud cercana a 9.8).
-Al mover bruscamente el sensor virtual, `alGolpe` recibe un valor mayor que 25 y Logcat muestra, por ejemplo: I Golpes: golpe de 31.4 m/s²
-```
-
-**Fallo deliberado:** quita `onDispose { gestor.unregisterListener(oyente) }` y navega varias veces entre pantallas. **Error esperado:** Logcat muestra golpes repetidos desde pantallas que ya cerraste y el consumo de batería sube. **Diagnóstico:** cada visita registró un oyente nuevo y ninguno se quitó. Desregistra siempre en `onDispose`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** registra la magnitud en Logcat con el teléfono en reposo y anota el valor.
-2. **Variación:** cambia el umbral a 15 y observa cuántos falsos positivos aparecen al caminar.
-3. **Diagnóstico:** reproduce el fallo deliberado navegando entre pantallas.
-4. **Integración:** agrega el sensor de rotación (`TYPE_ROTATION_VECTOR`) y muestra hacia dónde apunta el teléfono.
-5. **Diseño:** escribe por qué esta medida es aproximada y cómo se lo explicarías al cliente.
-
-**Pista:** si ves golpes sin moverte, revisa cuántos oyentes registraste.
-
-#### Paso 6 · Práctica independiente
-
-Guarda cada golpe con hora y posición en Room, y muestra al final del viaje un resumen «2 golpes fuertes, el mayor de 34 m/s² en Calle 26».
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas por qué en reposo la magnitud es cercana a 9,8.
-- [ ] El detector registra golpes con el sensor virtual.
-- [ ] Reprodujiste el oyente que no se libera.
-- [ ] Sabes cuándo usar Activity Recognition en su lugar.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no desregistrar el oyente, usar la frecuencia más alta sin necesidad y mirar un solo eje en lugar de la magnitud. **Siguiente paso:** el tema siguiente conecta la app con dispositivos Bluetooth LE, como una báscula.
-
-**Transferencia al proyecto integrador «RutaFlow»:** registra en la app del conductor de RutaFlow los golpes fuertes durante el viaje de envíos frágiles y adjunta el resumen a la entrega.
-
-**Fuente oficial:** [Android Developers — Sensors overview](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview) y [Android Developers — Motion sensors](https://developer.android.com/develop/sensors-and-location/sensors/sensors_motion).
 
 ### Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min
 

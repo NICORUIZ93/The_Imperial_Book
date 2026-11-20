@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 573 446" width="573" height="446" role="img" aria-label="Captura de terminal: la linea base: dieciseis capacidades de Node bajo Node 24">
+<title>Captura de terminal: la linea base: dieciseis capacidades de Node bajo Node 24</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea se ejecuto en la imagen oficial del runtime (oven/bun:1, node:24, denoland/deno:2.9.8, rabbitmq:4-management) montando la carpeta del laboratorio en /app con NO_COLOR=1. Comandos en orden: node --version ; node src/prueba.mjs. Codigo de salida final: 0.</desc>
+<rect width="573" height="446" rx="8" fill="#1e1f24"/>
+<rect width="573" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="573" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="286.5" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">la linea base: dieciseis capacidades de Node bajo Node 24</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node --version</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">v24.22.3</text>
+<text x="18" y="99" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node src/prueba.mjs</tspan></text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">OK    sqlite integrado              [{"a":1}]</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">OK    worker_threads                mensaje=7</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">OK    child_process spawn           4</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">OK    crypto scryptSync             4cf660bab067159b0dec4bf726678118</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">OK    zlib pipeline con createGzip  gz=46</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">OK    fs.watch recursivo            evento=sub/a.txt</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">OK    require de un ESM             require-esm-ok</text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">OK    http servidor y cliente       estado=200 cuerpo=ok</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">OK    AsyncLocalStorage             {"pedido":"p-17"}</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">OK    http2 servidor                respuesta=h2</text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">OK    dgram UDP                     puerto=36635</text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">OK    vm runInNewContext            3</text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">OK    cluster disponible            setupPrimary existe</text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">OK    module.register hooks ESM     register existe</text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6">OK    diagnostics_channel           publicado=p-17</text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6">OK    tls connect disponible        tls.connect existe</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">resumen=OK:16 FALLO:0 total:16</text>
+</g>
+</svg>

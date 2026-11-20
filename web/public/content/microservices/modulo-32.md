@@ -45,7 +45,7 @@ npm ci
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-32`**. El
-[README del laboratorio](../../../examples/microservicios/modulo-32/README.md) tiene el mapa de carpetas.
+`examples/microservicios/modulo-32/README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (sin dependencias; el `package-lock.json` existe para que `npm ci` funcione igual que en
 los demás módulos):

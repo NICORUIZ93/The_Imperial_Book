@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Routing manual con History API
+### Tema 1: Routing manual con History API · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -163,7 +163,7 @@ Este router manual es la última pieza estructural del proyecto integrador de es
 
 **Fuentes oficiales:** [MDN — History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) y [MDN — popstate](https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event).
 
-### Tema 2: Estado de aplicación con un store propio
+### Tema 2: Estado de aplicación con un store propio · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -292,7 +292,7 @@ Ya puedes coordinar estado sin variables globales dispersas. El siguiente tema m
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Centraliza guía, resultado y estado de carga en un store pequeño. Monta buscador y resumen sobre la misma fuente y verifica que una nueva consulta no conserva el resultado anterior como si fuera vigente.
 
-### Tema 3: Consumo de una API real con manejo de errores
+### Tema 3: Consumo de una API real con manejo de errores · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -433,7 +433,7 @@ Ya puedes integrar red sin estados contradictorios. El siguiente tema ensamblar�
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Implementa el cliente de seguimiento con estados separados para 404, red caída y éxito. Prueba respuestas desordenadas y demuestra que un fallo antiguo no reemplaza la última consulta exitosa.
 
-### Tema 4: Conectando todo — el patrón completo de una SPA
+### Tema 4: Conectando todo — el patrón completo de una SPA · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 

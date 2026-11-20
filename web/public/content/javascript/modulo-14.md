@@ -1,13 +1,397 @@
-# Módulo 14: JavaScript Master: APIs avanzadas del navegador, WASM y cómputo emergente
+# Módulo 14: JavaScript Master: TypeScript, WASM y cómputo emergente
 
-
-**Qué ya no está aquí:** TypeScript avanzado se estudia en el Módulo 11 Tema 5, los Web Workers en el Módulo 10 Tema 3 y los bundlers en el Módulo 7 Temas 2, 3 y 6. Este módulo conserva solo lo que no se enseña antes.
 
 **Preparación del módulo:** cada tema comienza en una carpeta vacía e independiente con Node 24 LTS. Crearás el proyecto, el manifiesto, los puntos de entrada y todos los archivos indicados; las rutas son relativas a esa carpeta. Conserva cada laboratorio para comparar los cambios posteriores sin depender de archivos prefabricados.
 
 ## Aprende construyendo
 
-### Tema 1: Accesibilidad web
+### Tema 1: TypeScript avanzado · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás construir una unión discriminada exhaustiva, derivar tipos con utilidades y mantener un contrato público que falle al añadir estados sin manejar. Endurecerás el ciclo de entrega del proyecto sin `any` ni assertions que oculten deuda.
+
+**Conocimiento previo:** TypeScript strict, generics, narrowing, `never` y pruebas de tipos. Ejecuta `npx tsc --noEmit` limpio antes de modificar el dominio.
+
+#### Paso 2 · Contexto y caso real
+
+El proyecto incorpora cancelación y devolución a estados existentes. Si cada pantalla usa strings y condicionales parciales, una variante nueva puede quedar sin UI. El proyecto usará discriminante, exhaustividad y tipos derivados para que el cambio rompa en todos los lugares pendientes.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** unión discriminada, campo discriminante literal, narrowing, exhaustividad con `never`, utility types (`Pick`, `Record`).
+
+Una unión discriminada usa un campo común (`kind`) con valores literales distintos por variante, permitiendo que TypeScript angoste (narrow) el tipo dentro de cada rama de un `switch` sin ningún cast manual; `never` captura la garantía de "no debería quedar nada sin cubrir" — si el compilador puede probar que una rama recibe un valor imposible, exige tratarlo, y si queda un caso real sin manejar, falla ANTES de ejecutar, no en producción.
+
+**Analogía:** es como un formulario con un menú desplegable fijo de categorías, donde cada categoría habilita campos específicos propios; agregar una categoría nueva sin actualizar el formulario produce un error visible antes de publicarlo, no un campo vacío silencioso descubierto por un usuario real.
+
+**¿Por qué es importante?** Una unión discriminada exhaustiva convierte un estado nuevo del dominio en un error de compilación en cada lugar que todavía no lo maneja, en vez de un bug silencioso que aparece recién cuando ese estado ocurre en producción.
+
+**Casos de uso reales:** agregar un estado nuevo a un flujo de pedidos y que el compilador señale cada pantalla pendiente; derivar un `Record` de iconos que el compilador exige completar; migrar un `enum` plano a una unión discriminada con payload propio por variante.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  A["DeliveryStatus.kind"] --> B{switch}
+  B -->|assigned| C[rama tipada: courierId]
+  B -->|in-transit| D[rama tipada: lat/lng]
+  B -->|delivered| E[rama tipada: receivedBy]
+  B -->|caso nuevo sin rama| F["assertNever: error de compilación"]
+```
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-1
+cd ejemplo-js-modulo-14-tema-1
+npm init -y
+npm install --save-dev typescript tsx
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+```
+
+Crea `src/domain/delivery-status.ts`:
+
+```ts
+// La unión discriminada obliga a tratar cada estado de la entrega.
+export type DeliveryStatus =
+  | { kind: 'assigned'; courierId: string }
+  | { kind: 'in-transit'; latitude: number; longitude: number }
+  | { kind: 'delivered'; receivedBy: string };
+
+export function statusLabel(status: DeliveryStatus): string {
+  switch (status.kind) {
+    case 'assigned': return `Asignada a ${status.courierId}`;
+    case 'in-transit': return `En ruta: ${status.latitude}, ${status.longitude}`;
+    case 'delivered': return `Recibida por ${status.receivedBy}`;
+    default: return assertNever(status); // Falla al compilar si aparece un estado nuevo.
+  }
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Estado no soportado: ${JSON.stringify(value)}`);
+}
+```
+
+Crea `src/demo.ts` para ejecutar las tres ramas:
+
+```ts
+import { statusLabel } from './domain/delivery-status.js';
+
+console.log(statusLabel({ kind: 'assigned', courierId: 'Ana' }));
+console.log(statusLabel({ kind: 'in-transit', latitude: 4.6, longitude: -74.1 }));
+console.log(statusLabel({ kind: 'delivered', receivedBy: 'Luis' }));
+```
+
+Ejecuta:
+
+```bash
+npx tsc --noEmit
+npx tsx src/demo.ts
+```
+
+**Resultado esperado:** la comprobación termina sin errores y la salida contiene `Asignada a Ana`, `En ruta: 4.6, -74.1` y `Recibida por Luis`.
+
+**Fallo deliberado:** añade `{ kind: "cancelled"; reason: string }` sin incorporarlo al `switch`. `assertNever` recibe un valor distinto de `never` y TypeScript señala la rama faltante antes de ejecutar.
+
+#### Paso 5 · Práctica guiada
+
+Deriva `DeliveryKind = DeliveryStatus["kind"]` y un `Record<DeliveryKind, string>` para iconos. **Pista:** al añadir una variante, el `Record` también debe exigir su icono.
+
+#### Paso 6 · Práctica independiente
+
+Modela devolución y reprogramación, crea un tipo `DeliverySummary` con `Pick` y pruebas `@ts-expect-error`. Compara unión exhaustiva con clase jerárquica y registra la decisión.
+
+#### Paso 7 · Cierre
+
+Ya puedes hacer que evolución del dominio revele consumidores incompletos. El siguiente tema llevará cálculo tipado fuera del hilo principal con validación runtime.
+
+**Errores comunes:** usar enum/string sin payload específico; default que oculta variantes; `as never`; tipos condicionales ilegibles; confundir seguridad estática con validación externa.
+
+**Fuentes oficiales:** [TypeScript — Unions](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html) y [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Modela el resultado público como unión discriminada de carga, error y éxito. Comprueba que añadir un estado obliga a actualizar el renderizado, sin usar conversiones que silencien el compilador.
+
+**Límites y decisión de uso:** Los tipos de TypeScript se eliminan al ejecutar y no validan respuestas externas. Combina contratos estáticos con validación en las fronteras; una aserción de tipo no transforma un dato inválido en uno correcto.
+
+### Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 50 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás definir un protocolo de mensajes discriminado, validar entradas dentro del worker, correlacionar respuestas y cancelar solicitudes obsoletas. Calcularás distancia del proyecto sin bloquear UI ni confiar ciegamente en TypeScript.
+
+**Prerrequisitos:** Web Workers, TypeScript, uniones discriminadas y medición de hilo principal. Vite debe ejecutar el ejemplo; el contrato de tipos desaparece cuando un mensaje cruza el límite runtime.
+
+#### Paso 2 · Contexto y caso real
+
+El planificador recibe recalculados sucesivos al mover una parada. El proyecto debe devolver solo el cálculo más reciente, rechazar payloads inválidos y terminar workers al destruir la vista.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** hilo separado, `postMessage`, serialización/clonado estructurado, protocolo de mensajes, validación en la frontera runtime.
+
+Un Worker corre en un hilo completamente separado, comunicándose con el hilo principal únicamente a través de `postMessage`, que serializa (clona) los datos enviados — el tipo que TypeScript declaró para ese mensaje en tiempo de compilación es solo una promesa que nunca se verifica en tiempo de ejecución una vez que el mensaje efectivamente cruza esa frontera entre hilos.
+
+**Analogía:** es como enviar un paquete a través de un servicio de correo que solo transporta el contenido físico, nunca la etiqueta de "contenido garantizado" que el remitente escribió; quien lo recibe debe volver a verificar qué llegó realmente, sin confiar ciegamente en lo que decía esa etiqueta.
+
+**¿Por qué es importante?** El tipo estático de TypeScript no sobrevive la frontera de `postMessage`; validar la forma real del mensaje dentro del worker es la única garantía genuina contra un payload corrupto o inesperado.
+
+**Casos de uso reales:** descartar una respuesta obsoleta de un cálculo recalculado varias veces; rechazar un mensaje con forma inesperada sin que un cast silencioso lo deje pasar; terminar el worker explícitamente al destruir la vista que lo creó.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+  participant UI as Hilo principal
+  participant W as Worker
+  UI->>W: postMessage(payload) — tipo solo en compilación
+  W->>W: valida forma real del payload
+  alt payload inválido
+    W-->>UI: postMessage({kind: "error", ...})
+  else payload válido
+    W-->>UI: postMessage({kind: "success", ...})
+  end
+```
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-2
+cd ejemplo-js-modulo-14-tema-2
+npm create vite@latest . -- --template vanilla-ts
+npm install
+```
+
+Crea `src/workers/route.worker.ts`:
+
+```ts
+// route.worker.ts: el cálculo pesado ocurre fuera del hilo de la interfaz.
+self.onmessage = (event: MessageEvent<unknown>) => {
+  const data = event.data;
+  if (typeof data !== "object" || data === null ||
+      !("segments" in data) || !Array.isArray(data.segments) ||
+      !data.segments.every((value) => typeof value === "number")) {
+    self.postMessage({ kind: "error", message: "Segmentos inválidos" });
+    return;
+  }
+  const total = data.segments.reduce((distance, segment) => distance + segment, 0);
+  self.postMessage({ kind: "success", total });
+};
+```
+
+Crea `src/route-client.ts`:
+
+```ts
+type RouteResponse =
+  | { kind: 'success'; total: number }
+  | { kind: 'error'; message: string };
+
+export function createRouteClient(output: HTMLElement) {
+  const worker = new Worker(new URL('./workers/route.worker.ts', import.meta.url), { type: 'module' });
+  worker.onmessage = (event: MessageEvent<RouteResponse>) => {
+    output.textContent = event.data.kind === 'success'
+      ? `Distancia planificada: ${event.data.total} km`
+      : event.data.message;
+  };
+  return {
+    calculate(segments: number[]) { worker.postMessage({ segments }); },
+    destroy() { worker.terminate(); },
+  };
+}
+```
+
+Sustituye `src/main.ts` por un punto de entrada que también permita comprobar que la UI responde:
+
+```ts
+import { createRouteClient } from './route-client';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Planificador</h1>
+  <button id="calculate">Calcular</button>
+  <button id="pulse">Comprobar UI: 0</button>
+  <p id="result" role="status"></p>
+`;
+const client = createRouteClient(document.querySelector('#result')!);
+document.querySelector('#calculate')!.addEventListener('click', () => client.calculate([2.4, 3.1, 1.5]));
+let clicks = 0;
+document.querySelector('#pulse')!.addEventListener('click', (event) => {
+  (event.currentTarget as HTMLButtonElement).textContent = `Comprobar UI: ${++clicks}`;
+});
+window.addEventListener('pagehide', () => client.destroy(), { once: true });
+```
+
+```bash
+npm run dev
+```
+
+Abre la URL local y pulsa **Calcular**.
+
+**Resultado esperado:** `Distancia planificada: 7 km`; el botón de la UI sigue respondiendo durante un lote grande.
+
+**Fallo deliberado:** envía `{ segments: [2, "3"] }`. Aunque un cast podría silenciar al editor, el worker responde `Segmentos inválidos`. Conserva validación en la frontera.
+
+#### Paso 5 · Práctica guiada
+
+Añade `requestId` a solicitud/respuesta y descarta respuestas antiguas. **Pista:** correlación pertenece al protocolo, no a una variable global invisible.
+
+#### Paso 6 · Práctica independiente
+
+Implementa cancelación, timeout, error del worker y transferencia de ArrayBuffer. Mide coste de clonación y define umbral donde otro hilo aporta valor.
+
+#### Paso 7 · Cierre
+
+Ya puedes operar un protocolo fuera del hilo con límites runtime. El siguiente tema decidirá cómo dividir y entregar ese código.
+
+**Errores comunes:** confiar en MessageEvent tipado; olvidar terminate; perder correlación; enviar DOM/funciones; usar worker para tareas pequeñas sin medir.
+
+**Fuentes oficiales:** [MDN — Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) y [Vite — Web Workers](https://vite.dev/guide/features.html#web-workers).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Traslada el cálculo de estadísticas del historial a un Worker. Mide que la entrada sigue respondiendo y prueba cancelar una consulta para que sus estadísticas no aparezcan bajo otra guía.
+
+### Tema 3: Bundlers y optimización · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás auditar el grafo de producción, crear un chunk bajo demanda y comparar bytes/solicitudes antes y después. Separarás el mapa del proyecto solo si no permanece importado de forma ansiosa.
+
+**Conocimiento previo:** ESM, import dinámico, Vite, Rollup y DevTools Network. Conserva un build base y mide comprimido además de tamaño en disco.
+
+#### Paso 2 · Contexto y caso real
+
+La mayoría de operadores consulta listas; pocos abren el mapa avanzado. En este proyecto el mapa se descargará al entrar a su ruta, con estado de carga/error y presupuesto documentado.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** grafo de dependencias, import estático vs. dinámico, chunk bajo demanda, importación ansiosa (eager), presupuesto de bytes.
+
+Un bundler construye un grafo de dependencias a partir de los imports estáticos del código; un `import()` dinámico marca un punto de división real donde el bundler puede generar un chunk separado, cargado solo cuando ese código efectivamente se ejecuta — pero basta con que CUALQUIER otro archivo importe el mismo módulo de forma estática para que ese chunk quede incluido en el bundle inicial de todas formas, sin ningún error que lo señale.
+
+**Analogía:** es como reservar una sala separada para un evento específico, pero si alguien deja una puerta conectada permanentemente abierta desde el salón principal, la gente entra a esa sala igual, sin esperar a que el evento realmente empiece.
+
+**¿Por qué es importante?** Un import dinámico no garantiza por sí solo que el código quede fuera del bundle inicial; cualquier import estático remanente del mismo módulo en otro archivo anula esa división silenciosamente.
+
+**Casos de uso reales:** cargar un mapa pesado solo cuando el usuario navega a esa pantalla; detectar una importación ansiedad duplicada inspeccionando el reporte visual del bundle; medir bytes comprimidos (no solo el tamaño en disco) antes de decidir si vale la pena dividir.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  M[main.ts] -->|import estático| Maps[maplibre-gl]
+  V[vista-mapa.ts] -->|import dinámico await import| Maps
+  Maps -. "si M también lo importa estático" .-> Bundle["incluido en el bundle inicial igual"]
+```
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-3
+cd ejemplo-js-modulo-14-tema-3
+npm create vite@latest . -- --template vanilla-ts
+npm install
+npm install maplibre-gl
+```
+
+Crea `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    // Crea un artefacto inspeccionable y evita mapas de producción accidentales.
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        // Separa el mapa: solo se descarga cuando la pantalla lo necesita.
+        manualChunks: { maps: ['maplibre-gl'] },
+      },
+    },
+  },
+});
+```
+
+Crea `src/map-view.ts`; el import dinámico se ejecuta únicamente al abrir el mapa:
+
+```ts
+export async function mountMap(container: HTMLElement) {
+  const { Map } = await import('maplibre-gl');
+  return new Map({
+    container,
+    style: 'https://demotiles.maplibre.org/style.json',
+    center: [-74.1, 4.6],
+    zoom: 4,
+  });
+}
+```
+
+Sustituye `src/main.ts`:
+
+```ts
+import 'maplibre-gl/dist/maplibre-gl.css';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Seguimiento</h1>
+  <p>La entrega está en tránsito.</p>
+  <button id="open-map">Abrir mapa</button>
+  <p id="map-status" role="status"></p>
+  <div id="map" style="height: 320px"></div>
+`;
+document.querySelector('#open-map')!.addEventListener('click', async () => {
+  const status = document.querySelector<HTMLElement>('#map-status')!;
+  status.textContent = 'Cargando mapa…';
+  try {
+    const { mountMap } = await import('./map-view');
+    await mountMap(document.querySelector<HTMLElement>('#map')!);
+    status.textContent = 'Mapa listo';
+  } catch {
+    status.textContent = 'No se pudo cargar el mapa; el estado textual sigue disponible.';
+  }
+});
+```
+
+Ejecuta:
+
+```bash
+npm run build
+npm run preview
+```
+
+**Resultado esperado:** `dist/assets` contiene un chunk maps y Network no lo solicita en inicio; aparece al abrir mapa.
+
+**Fallo deliberado:** agrega además `import maplibregl from "maplibre-gl"` en `main.ts`. El chunk puede descargarse inicialmente o duplicar estrategia; inspecciona el grafo y elimina la importación ansiosa.
+
+#### Paso 5 · Práctica guiada
+
+Genera un reporte visual del bundle y establece presupuesto para chunk inicial. **Pista:** registra versión, bytes gzip/brotli y número de solicitudes, no solo nombres minificados.
+
+#### Paso 6 · Práctica independiente
+
+Compara manualChunks con import dinámico, precarga y caché HTTP. Simula red lenta y fallo de chunk; diseña mensaje/reintento y decide si la división mejora LCP/INP.
+
+#### Paso 7 · Cierre
+
+Ya puedes relacionar grafo, entrega y experiencia en vez de “hacer chunks”. El siguiente tema verificará que la interfaz resultante sea operable sin ratón ni visión.
+
+**Errores comunes:** dividir sin medir; importar lazy y eager; publicar source maps; crear chunks diminutos; olvidar estado de error; comparar tamaño sin compresión.
+
+**Fuentes oficiales:** [Vite — Build](https://vite.dev/guide/build.html), [Rollup — Configuration](https://rollupjs.org/configuration-options/) y [web.dev — Code splitting](https://web.dev/articles/reduce-javascript-payloads-with-code-splitting).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Divide la funcionalidad de mapa del seguimiento básico. Inspecciona los recursos descargados antes de abrirlo y confirma que un fallo del chunk del mapa no impide leer el estado textual.
+
+**Límites y decisión de uso:** Reducir bytes no basta si aumentas peticiones, trabajo de parseo o latencia al abrir una función. Mide recorridos reales y compatibilidad antes de dividir módulos o añadir transformaciones que dificulten depuración.
+
+### Tema 4: Accesibilidad web · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -45,8 +429,8 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-1
-cd ejemplo-js-modulo-14-tema-1
+mkdir ejemplo-js-modulo-14-tema-4
+cd ejemplo-js-modulo-14-tema-4
 npm create vite@latest . -- --template vanilla-ts
 npm install
 npm install --save-dev vitest jsdom
@@ -153,148 +537,7 @@ Ya puedes verificar operabilidad y comunicación, no solo atributos. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Completa búsqueda y lectura del historial con teclado y lector de pantalla. Verifica anuncio del resultado y foco tras un error, sin depender únicamente de colores para distinguir estados.
 
-### Tema 2: WebAssembly con Rust o C
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás compilar una función Rust a WebAssembly, cargarla con fallback JavaScript y medir carga/cómputo antes de decidir. Evaluarás un score de ruta del proyecto sin asumir que WASM siempre es más rápido.
-
-**Conocimiento previo:** Rust básico o capacidad de seguir una función pura, npm, Vite y medición. Instala Rust, `wasm-pack` y verifica sus versiones; si no están disponibles, conserva el fallback funcional.
-
-#### Paso 2 · Contexto y caso real
-
-El optimizador ejecuta un cálculo numérico muchas veces. En este proyecto se aislará una función pura, se comparará con JavaScript y el resto de la aplicación seguirá funcionando si descarga o instanciación WASM falla.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** compilado vs. interpretado, costo fijo de carga/instanciación, medición separada de carga y cómputo, fallback funcional.
-
-WebAssembly ejecuta código compilado (no interpretado) a velocidad cercana a nativa dentro del navegador, pero cargar y compilar/instanciar el módulo `.wasm` tiene un costo fijo que una función pequeña puede no justificar frente al mismo cálculo en JavaScript puro; medir por separado "costo de carga" y "costo de cómputo" es indispensable antes de decidir, y un fallback a JavaScript evita que un módulo `.wasm` faltante o corrupto rompa la funcionalidad completa.
-
-**Analogía:** es como traer una máquina industrial especializada para cortar una sola hoja de papel — más rápida una vez instalada, pero el tiempo de instalarla puede superar por mucho el tiempo de usar una tijera común para esa tarea puntual.
-
-**¿Por qué es importante?** WASM no es automáticamente "más rápido"; sin medir por separado carga e instanciación frente al cómputo real, se puede adoptar una herramienta más compleja por una ganancia que nunca se verificó.
-
-**Casos de uso reales:** comparar la mediana de tiempo de un cálculo numérico repetido miles de veces en JS vs. WASM; recuperarse con un fallback JS cuando la descarga del `.wasm` falla; decidir el umbral de iteraciones a partir del cual WASM realmente compensa su costo de carga.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-  L["Carga + instanciación (costo fijo)"] --> C{"¿Suficientes iteraciones para compensar?"}
-  C -->|sí| W[WASM gana]
-  C -->|no| J[JS puro gana]
-  F[".wasm falla o no carga"] --> FB["Fallback JS: funcionalidad no se rompe"]
-```
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-2
-cd ejemplo-js-modulo-14-tema-2
-npm create vite@latest . -- --template vanilla-ts
-npm install
-cargo init --lib wasm
-```
-
-Sustituye `wasm/Cargo.toml`:
-
-```toml
-[package]
-name = "route_score"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-wasm-bindgen = "0.2"
-```
-
-Sustituye `wasm/src/lib.rs`:
-
-```rust
-use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-pub fn route_score(distance_km: f64, late_stops: u32) -> f64 {
-    // Función pura: fácil de comparar contra la implementación JavaScript.
-    distance_km + f64::from(late_stops) * 5.0
-}
-```
-
-Crea `src/wasm/route-score.ts` con carga y fallback en la misma frontera:
-
-```ts
-import init, { route_score } from '../../wasm/pkg/route_score.js';
-
-export async function routeScore(distanceKm: number, lateStops: number) {
-  try {
-    await init(); // Instancia el módulo antes de invocar sus exportaciones.
-    return route_score(distanceKm, lateStops);
-  } catch (error) {
-    console.warn('WASM no disponible; se usa el fallback JavaScript', error);
-    return distanceKm + lateStops * 5;
-  }
-}
-```
-
-Crea `src/wasm-demo.ts`:
-
-```ts
-import { routeScore } from './wasm/route-score';
-
-const output = document.querySelector<HTMLOutputElement>('#score')!;
-output.value = String(await routeScore(12.5, 2));
-```
-
-Crea `wasm.html` en la raíz del proyecto:
-
-```html
-<!doctype html>
-<html lang="es">
-  <head><meta charset="UTF-8"><title>Score de ruta</title></head>
-  <body>
-    <main><h1>Score de ruta</h1><output id="score">Calculando…</output></main>
-    <script type="module" src="/src/wasm-demo.ts"></script>
-  </body>
-</html>
-```
-
-Instala previamente Rust y wasm-pack según https://rustwasm.github.io/wasm-pack/installer/ y ejecuta:
-
-```bash
-wasm-pack build wasm --target web
-npm run dev
-```
-
-Abre `/wasm.html` después del build WASM; este punto de entrada es independiente de `index.html`.
-
-`--target` es la bandera que fija para qué entorno `wasm-pack` empaqueta el módulo (`web`, listo para importar directamente en el navegador).
-
-**Resultado esperado:** imprime `22.5`; Network muestra el módulo `.wasm` y la UI conserva un resultado equivalente al fallback JavaScript.
-
-**Fallo deliberado:** renombra temporalmente el `.wasm` generado. `init()` rechaza; captura el error, registra diagnóstico y usa la implementación JS en vez de dejar la pantalla rota.
-
-#### Paso 5 · Práctica guiada
-
-Ejecuta warm-up y compara mediana de 100, 10 000 y 1 000 000 iteraciones. **Pista:** mide por separado descarga/instanciación y cálculo; una función pequeña puede perder por overhead.
-
-#### Paso 6 · Práctica independiente
-
-Prueba paridad JS/WASM, límites numéricos, módulo corrupto y navegador compatible. Registra tamaño comprimido, complejidad de toolchain y criterio de retirada.
-
-#### Paso 7 · Cierre
-
-Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El siguiente tema aislará decisiones experimentales de ML/Web3 con revisión humana.
-
-**Errores comunes:** usar WASM para DOM; ignorar frontera/memoria; medir solo ejecución caliente; no ofrecer fallback; adoptar toolchain sin beneficio reproducible.
-
-**Fuentes oficiales:** [MDN — WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly), [Rust and WebAssembly](https://rustwasm.github.io/docs/book/) y [wasm-bindgen](https://rustwasm.github.io/wasm-bindgen/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla un cálculo candidato a WebAssembly detrás de una función con alternativa JavaScript. Compara resultados y coste de transferencia con datos iguales antes de justificar su incorporación al widget.
-
-### Tema 3: Web3 y machine learning en navegador
+### Tema 5: Web3 y machine learning en navegador · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -330,8 +573,8 @@ flowchart TD
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-3
-cd ejemplo-js-modulo-14-tema-3
+mkdir ejemplo-js-modulo-14-tema-6
+cd ejemplo-js-modulo-14-tema-6
 npm init -y
 npm install --save-dev tsx typescript
 ```
@@ -380,7 +623,7 @@ Ya puedes aislar cómputo emergente detrás de límites éticos y reversibles. E
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Construye una demostración opcional de clasificación local de incidencias con datos sintéticos. Mide errores y tiempo de carga; no permitas que una predicción cambie por sí sola el estado operativo de una entrega.
 
-### Tema 4: Geolocalización, permisos y precisión GPS
+### Tema 6: Geolocalización, permisos y precisión GPS · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -410,8 +653,8 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-4
-cd ejemplo-js-modulo-14-tema-4
+mkdir ejemplo-js-modulo-14-tema-7
+cd ejemplo-js-modulo-14-tema-7
 npm create vite@latest . -- --template vanilla
 npm install
 ```
@@ -492,7 +735,7 @@ Una coordenada solo es útil junto con precisión, tiempo y consentimiento. El s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Solicita ubicación solo al activar una función que la necesita y ofrece búsqueda manual. Prueba permiso denegado y baja precisión; el widget debe comunicar incertidumbre sin inventar una posición exacta.
 
-### Tema 5: sessionStorage, cookies e IndexedDB
+### Tema 7: sessionStorage, cookies e IndexedDB · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -521,8 +764,8 @@ El proyecto conservará un borrador por pestaña y una cola offline estructurada
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-5
-cd ejemplo-js-modulo-14-tema-5
+mkdir ejemplo-js-modulo-14-tema-8
+cd ejemplo-js-modulo-14-tema-8
 npm create vite@latest . -- --template vanilla
 npm install
 ```
@@ -589,7 +832,7 @@ La persistencia se elige por semántica y amenaza, no por comodidad. El próximo
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Elige almacenamiento para una preferencia de idioma y para un borrador no sensible. Prueba pestaña nueva, recarga y limpieza; no persistas credenciales ni historial privado por comodidad.
 
-### Tema 6: Expresiones regulares avanzadas y Unicode
+### Tema 8: Expresiones regulares avanzadas y Unicode · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -620,8 +863,8 @@ patronSeguro.test('código: CO-2026 (urgente) recibido'); // true, sin que "(" a
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-6
-cd ejemplo-js-modulo-14-tema-6
+mkdir ejemplo-js-modulo-14-tema-9
+cd ejemplo-js-modulo-14-tema-9
 npm init -y
 npm install --save-dev tsx typescript
 ```
@@ -681,7 +924,7 @@ Ya puedes aplicar regex a formatos regulares con pruebas y límites. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Valida el formato público de una guía y normaliza texto de búsqueda según el contrato. Prueba caracteres Unicode y entradas largas, evitando que una expresión regular bloquee la interacción.
 
-### Tema 7: Patrones Factory, Strategy, Observer y Pub/Sub
+### Tema 9: Patrones Factory, Strategy, Observer y Pub/Sub · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -713,8 +956,8 @@ classDiagram
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-7
-cd ejemplo-js-modulo-14-tema-7
+mkdir ejemplo-js-modulo-14-tema-10
+cd ejemplo-js-modulo-14-tema-10
 npm init -y
 npm install --save-dev tsx typescript
 ```
@@ -776,132 +1019,7 @@ Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa la selección del cliente, el formato del estado y la publicación de cambios. Prueba dos instancias del widget y verifica que sus suscriptores se liberan al desmontar.
 
-### Tema 8: Service Workers, PWA y estrategias de caché
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás registrar un Service Worker, precachear la aplicación mínima, diseñar una estrategia offline y actualizarla sin servir archivos incompatibles.
-
-**Conocimiento previo:** build de producción, Promesas, HTTP caching y DevTools Application. Service Worker requiere HTTPS o localhost; desregistra versiones del laboratorio al reiniciar pruebas.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una operación logística puede perder conectividad. Una PWA debe seguir mostrando el último estado seguro y encolar acciones idempotentes, sin fingir que una confirmación offline ya llegó al servidor.
-
-El proyecto permitirá consultar el shell y último seguimiento público, pero una confirmación offline quedará “pendiente de sincronizar” hasta acuse del servidor.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Analogía:** el Service Worker es una bodega intermedia entre la aplicación y la red: puede entregar una copia, pedir una nueva o guardar un envío pendiente, pero necesita reglas de inventario y renovación.
-
-**Conceptos clave:** ciclo `install/activate/fetch`; Cache Storage guarda respuestas; cache-first favorece disponibilidad; network-first favorece frescura; Background Sync es mejora progresiva; manifest no convierte por sí solo un sitio en PWA confiable.
-
-```mermaid
-flowchart LR
-    APP["App web"] --> SW["Service Worker"]
-    SW --> CACHE["Cache Storage"]
-    SW --> NETWORK["API / red"]
-    SW --> QUEUE["cola offline idempotente"]
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir ejemplo-js-modulo-14-tema-8
-cd ejemplo-js-modulo-14-tema-8
-npm create vite@latest . -- --template vanilla-ts
-npm install
-```
-
-Crea `public/sw.js`:
-
-```js
-const CACHE = 'academia-lab-shell-v1';
-self.addEventListener('install', (event) => event.waitUntil((async () => {
-  const cache = await caches.open(CACHE);
-  const response = await fetch('/index.html');
-  const html = await response.text();
-  const assets = [...html.matchAll(/(?:src|href)="([^"#]+)"/g)].map((m) => m[1]).filter((p) => p.startsWith('/assets/'));
-  await cache.addAll(['/', '/index.html', ...assets]);
-})()));
-self.addEventListener('activate', (event) => event.waitUntil(
-  caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith('academia-lab-shell-') && key !== CACHE).map((key) => caches.delete(key))))
-));
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(fetch(event.request).catch(async () =>
-    (await caches.match(event.request)) ?? new Response('Sin conexión; recurso no disponible', { status: 503 })));
-});
-```
-
-Crea `src/pwa/register-service-worker.ts`; el registro se activa solo en producción:
-
-```ts
-export function registerServiceWorker() {
-  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.error('No se pudo registrar el Service Worker', error);
-    });
-  }, { once: true });
-}
-```
-
-Sustituye `src/main.ts`:
-
-```ts
-import { registerServiceWorker } from './pwa/register-service-worker';
-
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <h1>Seguimiento público</h1>
-  <p id="tracking">Último estado disponible: en tránsito.</p>
-  <button id="refresh">Actualizar estado</button>
-`;
-document.querySelector('#refresh')!.addEventListener('click', async () => {
-  const output = document.querySelector<HTMLElement>('#tracking')!;
-  try {
-    const response = await fetch('/api/tracking');
-    if (!response.ok) throw new Error('API no disponible');
-    output.textContent = await response.text();
-  } catch {
-    output.textContent = 'Sin conexión; se conserva el último estado disponible, no una confirmación nueva.';
-  }
-});
-registerServiceWorker();
-```
-
-La instalación precachea HTML y assets del build; las bibliotecas opcionales del mapa no se prometen disponibles offline. Desde la carpeta del proyecto, ejecuta:
-
-```bash
-npm run build
-npm run preview
-```
-
-**Resultado esperado:** en Offline el shell abre; una API no cacheada muestra estado offline explícito y no una confirmación falsa.
-
-**Fallo deliberado:** cambia assets sin aumentar `CACHE` y conserva pestaña controlada. Puede aparecer una mezcla incompatible. Versiona, activa actualización consciente y prueba dos pestañas.
-
-#### Paso 5 · Práctica guiada
-
-Cambia `CACHE` a `v2` y verifica eliminación de `v1`. **Pista:** una actualización queda esperando mientras existan pestañas controladas por la versión anterior.
-
-#### Paso 6 · Práctica independiente
-
-Implementa stale-while-revalidate solo para seguimiento público, prueba expiración, cuota, instalación fallida y cola idempotente. Documenta qué nunca se cachea.
-
-#### Paso 7 · Cierre
-
-Ya puedes separar disponibilidad offline de confirmación remota. El siguiente tema mantendrá tiempo real con reconexión controlada.
-
-**Errores comunes:** cachear todo; datos privados; llamar skipWaiting sin coordinar; no versionar; asumir que manifest garantiza offline; marcar acción pendiente como confirmada.
-
-**Fuentes oficiales:** [MDN — Service Worker API](https://developer.mozilla.org/docs/Web/API/Service_Worker_API) y [web.dev — PWA](https://web.dev/learn/pwa/).
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Cachea recursos estáticos y distingue una respuesta de seguimiento desactualizada. Desconecta la red y comprueba que la interfaz informa la antigüedad del dato en vez de presentar una entrega como confirmada en vivo.
-
-**Límites y decisión de uso:** La caché del Service Worker puede servir datos obsoletos y conservar recursos de una versión anterior. Define actualización y recuperación; no reutilices respuestas privadas entre sesiones ni ocultes la falta de red con un estado presentado como actual.
-
-### Tema 9: WebSocket y comunicación en tiempo real
+### Tema 10: WebSocket y comunicación en tiempo real · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -924,8 +1042,8 @@ El proyecto mantendrá un socket por vista/servicio, validará cada evento y ded
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-9
-cd ejemplo-js-modulo-14-tema-9
+mkdir ejemplo-js-modulo-14-tema-12
+cd ejemplo-js-modulo-14-tema-12
 npm create vite@latest . -- --template vanilla
 npm install
 npm install --save-dev ws
@@ -1023,7 +1141,7 @@ El tiempo real requiere contrato, ciclo de vida y recuperación. El próximo tem
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Recibe eventos públicos con versión o secuencia y recupera el estado al reconectar. Simula duplicados y desorden: el historial visible no debe retroceder ni mostrar dos veces el mismo evento.
 
-### Tema 10: Typed Arrays, ArrayBuffer y DataView
+### Tema 11: Typed Arrays, ArrayBuffer y DataView · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1046,8 +1164,8 @@ El proyecto recibe dos coordenadas escaladas por un millón en ocho bytes big-en
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-10
-cd ejemplo-js-modulo-14-tema-10
+mkdir ejemplo-js-modulo-14-tema-13
+cd ejemplo-js-modulo-14-tema-13
 npm init -y
 npm install --save-dev tsx typescript
 ```
@@ -1113,7 +1231,7 @@ Puedes convertir bytes en datos de dominio con contrato explícito. El siguiente
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Decodifica un mensaje binario de posición con longitud y endianness explícitos. Prueba un buffer truncado y verifica que se rechaza antes de convertir bytes incompletos en coordenadas visibles.
 
-### Tema 11: ECMAScript moderno, Temporal e iterator helpers
+### Tema 12: ECMAScript moderno, Temporal e iterator helpers · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1153,8 +1271,8 @@ flowchart LR
 #### Paso 4 · Demostración guiada desde cero
 
 ```bash
-mkdir ejemplo-js-modulo-14-tema-11
-cd ejemplo-js-modulo-14-tema-11
+mkdir ejemplo-js-modulo-14-tema-14
+cd ejemplo-js-modulo-14-tema-14
 npm init -y
 npm install --save-dev tsx typescript
 ```
@@ -1211,7 +1329,7 @@ Adoptar novedades es una decisión verificable. Con esto el track incorpora las 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla las APIs modernas usadas para tiempo o iteración y comprueba disponibilidad en los navegadores objetivo. Prueba la alternativa configurada sin modificar el orden ni las fechas del historial.
 
-### Tema 12: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
+### Tema 13: Gestión explícita de recursos: using, await using y DisposableStack · Avanzado · 40 min
 
 **Prerrequisito:** temas «try/catch en flujos asíncronos» (módulo 6) y «ECMAScript moderno, Temporal e iterator helpers» de este módulo.
 
@@ -1350,3 +1468,269 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un
 **Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
 
 **Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
+### Tema 14: WebAssembly con Rust o C · Experto · 50 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás compilar una función Rust a WebAssembly, cargarla con fallback JavaScript y medir carga/cómputo antes de decidir. Evaluarás un score de ruta del proyecto sin asumir que WASM siempre es más rápido.
+
+**Conocimiento previo:** Rust básico o capacidad de seguir una función pura, npm, Vite y medición. Instala Rust, `wasm-pack` y verifica sus versiones; si no están disponibles, conserva el fallback funcional.
+
+#### Paso 2 · Contexto y caso real
+
+El optimizador ejecuta un cálculo numérico muchas veces. En este proyecto se aislará una función pura, se comparará con JavaScript y el resto de la aplicación seguirá funcionando si descarga o instanciación WASM falla.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** compilado vs. interpretado, costo fijo de carga/instanciación, medición separada de carga y cómputo, fallback funcional.
+
+WebAssembly ejecuta código compilado (no interpretado) a velocidad cercana a nativa dentro del navegador, pero cargar y compilar/instanciar el módulo `.wasm` tiene un costo fijo que una función pequeña puede no justificar frente al mismo cálculo en JavaScript puro; medir por separado "costo de carga" y "costo de cómputo" es indispensable antes de decidir, y un fallback a JavaScript evita que un módulo `.wasm` faltante o corrupto rompa la funcionalidad completa.
+
+**Analogía:** es como traer una máquina industrial especializada para cortar una sola hoja de papel — más rápida una vez instalada, pero el tiempo de instalarla puede superar por mucho el tiempo de usar una tijera común para esa tarea puntual.
+
+**¿Por qué es importante?** WASM no es automáticamente "más rápido"; sin medir por separado carga e instanciación frente al cómputo real, se puede adoptar una herramienta más compleja por una ganancia que nunca se verificó.
+
+**Casos de uso reales:** comparar la mediana de tiempo de un cálculo numérico repetido miles de veces en JS vs. WASM; recuperarse con un fallback JS cuando la descarga del `.wasm` falla; decidir el umbral de iteraciones a partir del cual WASM realmente compensa su costo de carga.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+  L["Carga + instanciación (costo fijo)"] --> C{"¿Suficientes iteraciones para compensar?"}
+  C -->|sí| W[WASM gana]
+  C -->|no| J[JS puro gana]
+  F[".wasm falla o no carga"] --> FB["Fallback JS: funcionalidad no se rompe"]
+```
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-5
+cd ejemplo-js-modulo-14-tema-5
+npm create vite@latest . -- --template vanilla-ts
+npm install
+cargo init --lib wasm
+```
+
+Sustituye `wasm/Cargo.toml`:
+
+```toml
+[package]
+name = "route_score"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+```
+
+Sustituye `wasm/src/lib.rs`:
+
+```rust
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub fn route_score(distance_km: f64, late_stops: u32) -> f64 {
+    // Función pura: fácil de comparar contra la implementación JavaScript.
+    distance_km + f64::from(late_stops) * 5.0
+}
+```
+
+Crea `src/wasm/route-score.ts` con carga y fallback en la misma frontera:
+
+```ts
+import init, { route_score } from '../../wasm/pkg/route_score.js';
+
+export async function routeScore(distanceKm: number, lateStops: number) {
+  try {
+    await init(); // Instancia el módulo antes de invocar sus exportaciones.
+    return route_score(distanceKm, lateStops);
+  } catch (error) {
+    console.warn('WASM no disponible; se usa el fallback JavaScript', error);
+    return distanceKm + lateStops * 5;
+  }
+}
+```
+
+Crea `src/wasm-demo.ts`:
+
+```ts
+import { routeScore } from './wasm/route-score';
+
+const output = document.querySelector<HTMLOutputElement>('#score')!;
+output.value = String(await routeScore(12.5, 2));
+```
+
+Crea `wasm.html` en la raíz del proyecto:
+
+```html
+<!doctype html>
+<html lang="es">
+  <head><meta charset="UTF-8"><title>Score de ruta</title></head>
+  <body>
+    <main><h1>Score de ruta</h1><output id="score">Calculando…</output></main>
+    <script type="module" src="/src/wasm-demo.ts"></script>
+  </body>
+</html>
+```
+
+Instala previamente Rust y wasm-pack según https://rustwasm.github.io/wasm-pack/installer/ y ejecuta:
+
+```bash
+wasm-pack build wasm --target web
+npm run dev
+```
+
+Abre `/wasm.html` después del build WASM; este punto de entrada es independiente de `index.html`.
+
+`--target` es la bandera que fija para qué entorno `wasm-pack` empaqueta el módulo (`web`, listo para importar directamente en el navegador).
+
+**Resultado esperado:** imprime `22.5`; Network muestra el módulo `.wasm` y la UI conserva un resultado equivalente al fallback JavaScript.
+
+**Fallo deliberado:** renombra temporalmente el `.wasm` generado. `init()` rechaza; captura el error, registra diagnóstico y usa la implementación JS en vez de dejar la pantalla rota.
+
+#### Paso 5 · Práctica guiada
+
+Ejecuta warm-up y compara mediana de 100, 10 000 y 1 000 000 iteraciones. **Pista:** mide por separado descarga/instanciación y cálculo; una función pequeña puede perder por overhead.
+
+#### Paso 6 · Práctica independiente
+
+Prueba paridad JS/WASM, límites numéricos, módulo corrupto y navegador compatible. Registra tamaño comprimido, complejidad de toolchain y criterio de retirada.
+
+#### Paso 7 · Cierre
+
+Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El siguiente tema aislará decisiones experimentales de ML/Web3 con revisión humana.
+
+**Errores comunes:** usar WASM para DOM; ignorar frontera/memoria; medir solo ejecución caliente; no ofrecer fallback; adoptar toolchain sin beneficio reproducible.
+
+**Fuentes oficiales:** [MDN — WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly), [Rust and WebAssembly](https://rustwasm.github.io/docs/book/) y [wasm-bindgen](https://rustwasm.github.io/wasm-bindgen/).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla un cálculo candidato a WebAssembly detrás de una función con alternativa JavaScript. Compara resultados y coste de transferencia con datos iguales antes de justificar su incorporación al widget.
+
+### Tema 15: Service Workers, PWA y estrategias de caché · Experto · 50 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás registrar un Service Worker, precachear la aplicación mínima, diseñar una estrategia offline y actualizarla sin servir archivos incompatibles.
+
+**Conocimiento previo:** build de producción, Promesas, HTTP caching y DevTools Application. Service Worker requiere HTTPS o localhost; desregistra versiones del laboratorio al reiniciar pruebas.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Una operación logística puede perder conectividad. Una PWA debe seguir mostrando el último estado seguro y encolar acciones idempotentes, sin fingir que una confirmación offline ya llegó al servidor.
+
+El proyecto permitirá consultar el shell y último seguimiento público, pero una confirmación offline quedará “pendiente de sincronizar” hasta acuse del servidor.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Analogía:** el Service Worker es una bodega intermedia entre la aplicación y la red: puede entregar una copia, pedir una nueva o guardar un envío pendiente, pero necesita reglas de inventario y renovación.
+
+**Conceptos clave:** ciclo `install/activate/fetch`; Cache Storage guarda respuestas; cache-first favorece disponibilidad; network-first favorece frescura; Background Sync es mejora progresiva; manifest no convierte por sí solo un sitio en PWA confiable.
+
+```mermaid
+flowchart LR
+    APP["App web"] --> SW["Service Worker"]
+    SW --> CACHE["Cache Storage"]
+    SW --> NETWORK["API / red"]
+    SW --> QUEUE["cola offline idempotente"]
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+```bash
+mkdir ejemplo-js-modulo-14-tema-11
+cd ejemplo-js-modulo-14-tema-11
+npm create vite@latest . -- --template vanilla-ts
+npm install
+```
+
+Crea `public/sw.js`:
+
+```js
+const CACHE = 'academia-lab-shell-v1';
+self.addEventListener('install', (event) => event.waitUntil((async () => {
+  const cache = await caches.open(CACHE);
+  const response = await fetch('/index.html');
+  const html = await response.text();
+  const assets = [...html.matchAll(/(?:src|href)="([^"#]+)"/g)].map((m) => m[1]).filter((p) => p.startsWith('/assets/'));
+  await cache.addAll(['/', '/index.html', ...assets]);
+})()));
+self.addEventListener('activate', (event) => event.waitUntil(
+  caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith('academia-lab-shell-') && key !== CACHE).map((key) => caches.delete(key))))
+));
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
+  event.respondWith(fetch(event.request).catch(async () =>
+    (await caches.match(event.request)) ?? new Response('Sin conexión; recurso no disponible', { status: 503 })));
+});
+```
+
+Crea `src/pwa/register-service-worker.ts`; el registro se activa solo en producción:
+
+```ts
+export function registerServiceWorker() {
+  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      console.error('No se pudo registrar el Service Worker', error);
+    });
+  }, { once: true });
+}
+```
+
+Sustituye `src/main.ts`:
+
+```ts
+import { registerServiceWorker } from './pwa/register-service-worker';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <h1>Seguimiento público</h1>
+  <p id="tracking">Último estado disponible: en tránsito.</p>
+  <button id="refresh">Actualizar estado</button>
+`;
+document.querySelector('#refresh')!.addEventListener('click', async () => {
+  const output = document.querySelector<HTMLElement>('#tracking')!;
+  try {
+    const response = await fetch('/api/tracking');
+    if (!response.ok) throw new Error('API no disponible');
+    output.textContent = await response.text();
+  } catch {
+    output.textContent = 'Sin conexión; se conserva el último estado disponible, no una confirmación nueva.';
+  }
+});
+registerServiceWorker();
+```
+
+La instalación precachea HTML y assets del build; las bibliotecas opcionales del mapa no se prometen disponibles offline. Desde la carpeta del proyecto, ejecuta:
+
+```bash
+npm run build
+npm run preview
+```
+
+**Resultado esperado:** en Offline el shell abre; una API no cacheada muestra estado offline explícito y no una confirmación falsa.
+
+**Fallo deliberado:** cambia assets sin aumentar `CACHE` y conserva pestaña controlada. Puede aparecer una mezcla incompatible. Versiona, activa actualización consciente y prueba dos pestañas.
+
+#### Paso 5 · Práctica guiada
+
+Cambia `CACHE` a `v2` y verifica eliminación de `v1`. **Pista:** una actualización queda esperando mientras existan pestañas controladas por la versión anterior.
+
+#### Paso 6 · Práctica independiente
+
+Implementa stale-while-revalidate solo para seguimiento público, prueba expiración, cuota, instalación fallida y cola idempotente. Documenta qué nunca se cachea.
+
+#### Paso 7 · Cierre
+
+Ya puedes separar disponibilidad offline de confirmación remota. El siguiente tema mantendrá tiempo real con reconexión controlada.
+
+**Errores comunes:** cachear todo; datos privados; llamar skipWaiting sin coordinar; no versionar; asumir que manifest garantiza offline; marcar acción pendiente como confirmada.
+
+**Fuentes oficiales:** [MDN — Service Worker API](https://developer.mozilla.org/docs/Web/API/Service_Worker_API) y [web.dev — PWA](https://web.dev/learn/pwa/).
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Cachea recursos estáticos y distingue una respuesta de seguimiento desactualizada. Desconecta la red y comprueba que la interfaz informa la antigüedad del dato en vez de presentar una entrega como confirmada en vivo.
+
+**Límites y decisión de uso:** La caché del Service Worker puede servir datos obsoletos y conservar recursos de una versión anterior. Define actualización y recuperación; no reutilices respuestas privadas entre sesiones ni ocultes la falta de red con un estado presentado como actual.
+

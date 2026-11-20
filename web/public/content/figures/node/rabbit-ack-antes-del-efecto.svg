@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 1263" width="794" height="1263" role="img" aria-label="Captura de terminal: confirmar antes del efecto borra el trabajo sin hacerlo">
+<title>Captura de terminal: confirmar antes del efecto borra el trabajo sin hacerlo</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Comandos capturados en orden: node topologia.mjs ; node producir.mjs ; docker exec liebre rabbitmqctl list_queues name messages | grep -v Listing ; COLA=repartidor node pierde-trabajo.mjs ; docker exec liebre rabbitmqctl list_queues name messages | grep -v Listing ; COLA=repartidor SEGUNDOS=4 node trabajar.mjs. Codigo de salida final: 0.</desc>
+<rect width="794" height="1263" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">confirmar antes del efecto borra el trabajo sin hacerlo</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node topologia.mjs</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">cola repartidor -&gt; [asignada, cancelada] dlq repartidor.muertos</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">cola facturacion -&gt; [entregada] dlq facturacion.muertos</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">exchange rutaflow.entregos (direct) y rutaflow.muertos (direct) declarados</text>
+<text x="18" y="137" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">node producir.mjs</tspan></text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">confirmado exchange=rutaflow.entregos rk=asignada cuerpo={"pedido":"1","conductor":"ana"}</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">confirmado exchange=rutaflow.entregos rk=entregada cuerpo={"pedido":"1","total":4200}</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">confirmado exchange=rutaflow.entregos rk=cancelada cuerpo={"pedido":"2","motivo":"cliente"}</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">publicados=3 mandatory=false</text>
+<text x="18" y="232" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker exec liebre rabbitmqctl list_queues name messages | grep -v Listing</tspan></text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">Timeout: 60.0 seconds ...</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">name    messages</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">repartidor.muertos    0</text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">facturacion    1</text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">repartidor    2</text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">facturacion.muertos    0</text>
+<text x="18" y="365" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">COLA=repartidor node pierde-trabajo.mjs</tspan></text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6">confirmado pedido=1 antes de tocar la base</text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6">/private/tmp/rabbit-lab/node_modules/amqplib/lib/safe_emit.js:8</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">      throw e;</text>
+<text x="18" y="441" style="white-space: pre" fill="#e6e6e6">      ^</text>
+<text x="18" y="460" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="479" style="white-space: pre" fill="#e6e6e6">Error: la aplicacion muere aqui, despues del ack</text>
+<text x="18" y="498" style="white-space: pre" fill="#e6e6e6">    at file:///private/tmp/rabbit-lab/pierde-trabajo.mjs:14:9</text>
+<text x="18" y="517" style="white-space: pre" fill="#e6e6e6">    at Channel.dispatchMessage (/private/tmp/rabbit-lab/node_modules/amqplib/lib/channel.js:481:</text>
+<text x="18" y="536" style="white-space: pre" fill="#e6e6e6">14)</text>
+<text x="18" y="555" style="white-space: pre" fill="#e6e6e6">    at Channel.handleDelivery (/private/tmp/rabbit-lab/node_modules/amqplib/lib/channel.js:489:1</text>
+<text x="18" y="574" style="white-space: pre" fill="#e6e6e6">7)</text>
+<text x="18" y="593" style="white-space: pre" fill="#e6e6e6">    at Channel.emit (node:events:509:28)</text>
+<text x="18" y="612" style="white-space: pre" fill="#e6e6e6">    at safeEmit (/private/tmp/rabbit-lab/node_modules/amqplib/lib/safe_emit.js:3:13)</text>
+<text x="18" y="631" style="white-space: pre" fill="#e6e6e6">    at /private/tmp/rabbit-lab/node_modules/amqplib/lib/channel.js:382:5</text>
+<text x="18" y="650" style="white-space: pre" fill="#e6e6e6">    at Channel.content [as handleMessage] (/private/tmp/rabbit-lab/node_modules/amqplib/lib/chan</text>
+<text x="18" y="669" style="white-space: pre" fill="#e6e6e6">nel.js:433:9)</text>
+<text x="18" y="688" style="white-space: pre" fill="#e6e6e6">    at Channel.acceptMessageFrame (/private/tmp/rabbit-lab/node_modules/amqplib/lib/channel.js:2</text>
+<text x="18" y="707" style="white-space: pre" fill="#e6e6e6">09:33)</text>
+<text x="18" y="726" style="white-space: pre" fill="#e6e6e6">    at Channel.accept (/private/tmp/rabbit-lab/node_modules/amqplib/lib/channel.js:290:21)</text>
+<text x="18" y="745" style="white-space: pre" fill="#e6e6e6">    at Connection.mainAccept [as accept] (/private/tmp/rabbit-lab/node_modules/amqplib/lib/conne</text>
+<text x="18" y="764" style="white-space: pre" fill="#e6e6e6">ction.js:587:24)</text>
+<text x="18" y="783" style="white-space: pre" fill="#e6e6e6">Emitted 'error' event on ChannelModel instance at:</text>
+<text x="18" y="802" style="white-space: pre" fill="#e6e6e6">    at Connection.emit (node:events:509:28)</text>
+<text x="18" y="821" style="white-space: pre" fill="#e6e6e6">    at safeEmit (/private/tmp/rabbit-lab/node_modules/amqplib/lib/safe_emit.js:3:13)</text>
+<text x="18" y="840" style="white-space: pre" fill="#e6e6e6">    at Connection.onSocketError (/private/tmp/rabbit-lab/node_modules/amqplib/lib/connection.js:</text>
+<text x="18" y="859" style="white-space: pre" fill="#e6e6e6">320:7)</text>
+<text x="18" y="878" style="white-space: pre" fill="#e6e6e6">    at Connection.emit (node:events:509:28)</text>
+<text x="18" y="897" style="white-space: pre" fill="#e6e6e6">    at Socket.go (/private/tmp/rabbit-lab/node_modules/amqplib/lib/connection.js:449:14)</text>
+<text x="18" y="916" style="white-space: pre" fill="#e6e6e6">    at Socket.emit (node:events:509:28)</text>
+<text x="18" y="935" style="white-space: pre" fill="#e6e6e6">    at emitReadable_ (node:internal/streams/readable:836:12)</text>
+<text x="18" y="954" style="white-space: pre" fill="#e6e6e6">    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {</text>
+<text x="18" y="973" style="white-space: pre" fill="#e6e6e6">  code: 541</text>
+<text x="18" y="992" style="white-space: pre" fill="#e6e6e6">}</text>
+<text x="18" y="1011" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="1030" style="white-space: pre" fill="#e6e6e6">Node.js v24.18.0</text>
+<text x="18" y="1049" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker exec liebre rabbitmqctl list_queues name messages | grep -v Listing</tspan></text>
+<text x="18" y="1068" style="white-space: pre" fill="#e6e6e6">Timeout: 60.0 seconds ...</text>
+<text x="18" y="1087" style="white-space: pre" fill="#e6e6e6">name    messages</text>
+<text x="18" y="1106" style="white-space: pre" fill="#e6e6e6">repartidor.muertos    0</text>
+<text x="18" y="1125" style="white-space: pre" fill="#e6e6e6">facturacion    1</text>
+<text x="18" y="1144" style="white-space: pre" fill="#e6e6e6">repartidor    1</text>
+<text x="18" y="1163" style="white-space: pre" fill="#e6e6e6">facturacion.muertos    0</text>
+<text x="18" y="1182" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">COLA=repartidor SEGUNDOS=4 node trabajar.mjs</tspan></text>
+<text x="18" y="1201" style="white-space: pre" fill="#e6e6e6">recibido cola=repartidor rk=cancelada redelivered=true cuerpo={"pedido":"2","motivo":"cliente"}</text>
+<text x="18" y="1220" style="white-space: pre" fill="#e6e6e6">procesado cola=repartidor rk=cancelada pedido=2</text>
+<text x="18" y="1239" style="white-space: pre" fill="#e6e6e6">total cola=repartidor rechazos=0</text>
+</g>
+</svg>

@@ -50,7 +50,7 @@ npm ci
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-31`** después de `npm ci` y
 `./pki/generar.sh`. Los archivos `antes.js` son vulnerables **a propósito**: no copies nada de ellos. El
-[README del laboratorio](../../../examples/microservicios/modulo-31/README.md) tiene el mapa de carpetas.
+`examples/microservicios/modulo-31/README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (con `package-lock.json`; `npm audit --omit=dev` respondió `found 0 vulnerabilities` el
 2026-11-20):

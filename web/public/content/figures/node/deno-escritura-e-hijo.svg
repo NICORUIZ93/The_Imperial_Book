@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 446" width="794" height="446" role="img" aria-label="Captura de terminal: escribir un archivo y lanzar un proceso tambien son permisos">
+<title>Captura de terminal: escribir un archivo y lanzar un proceso tambien son permisos</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea 'deno ...' se ejecuto dentro de denoland/deno:2.9.8 con docker run --rm --network ruta -e TOKEN_ENTREGAS -e NO_COLOR=1 -v deno-lab-cache:/deno-dir -v "$PWD":/app -w /app denoland/deno:2.9.8 deno "$@". Comandos en orden: deno run --no-prompt guardar.ts ; deno run --no-prompt --allow-write=./resultado.txt --allow-read=./resultado.txt guardar.ts ; deno run --no-prompt hijo.ts ; deno run --no-prompt --allow-run=echo hijo.ts. Codigo de salida final: 0.</desc>
+<rect width="794" height="446" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">escribir un archivo y lanzar un proceso tambien son permisos</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">deno run --no-prompt guardar.ts</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">error: Uncaught (in promise) NotCapable: Requires write access to "./resultado.txt", run again w</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">ith the --allow-write flag</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">Deno.writeTextFileSync("./resultado.txt", "entrega confirmada\n");</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">     ^</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">    at writeFileSync (ext:deno_fs/30_fs.js:1:10224)</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">    at Object.writeTextFileSync (ext:deno_fs/30_fs.js:1:10961)</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">    at file:///app/guardar.ts:1:6</text>
+<text x="18" y="213" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">deno run --no-prompt --allow-write=./resultado.txt --allow-read=./resultado.txt guardar.ts</tspan></text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">escrito=entrega confirmada</text>
+<text x="18" y="251" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">deno run --no-prompt hijo.ts</tspan></text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">error: Uncaught (in promise) NotCapable: Requires run access to "echo", run again with the --all</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">ow-run flag</text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">const { stdout, code } = await cmd.output();</text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">                                   ^</text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">    at spawnInner (ext:deno_process/40_process.js:1:8464)</text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">    at Command.output (ext:deno_process/40_process.js:1:10417)</text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6">    at file:///app/hijo.ts:2:36</text>
+<text x="18" y="403" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">deno run --no-prompt --allow-run=echo hijo.ts</tspan></text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">salida-hijo=entrega confirmada code=0</text>
+</g>
+</svg>

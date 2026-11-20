@@ -149,3 +149,40 @@ lucide-icon { display:inline-grid; width:17px; height:17px; flex:none; }
   .topic-row { grid-template-columns:22px minmax(0,1fr); gap:7px; }
   .topic-heading h3 { font-size:12.5px; }
 }
+
+// ── CURRICULUM LIBRARY · mismo sistema que catálogo y cursos ─────────────
+.curriculum-topbar { min-height:72px; border-bottom:1px solid $bd; background:$wh; box-shadow:$sh; }
+.brand-mark { width:38px; height:38px; border:0; border-radius:11px; color:#fff; background:$p; }
+.curriculum-topbar nav a { border-radius:8px; padding:0 8px; }
+.curriculum-topbar nav a:hover,.curriculum-topbar nav a[aria-current='page'] { color:$p; text-decoration:none; background:$pl; }
+.curriculum-main { max-width:1180px; padding-top:clamp(38px,6vw,76px); }
+.curriculum-hero,.stack-detail-hero { padding:clamp(28px,5vw,54px); border:1px solid $bd; border-radius:22px; background:$wh; box-shadow:$shm; }
+.curriculum-hero h1,.stack-detail-hero h1 { max-width:18ch; font-size:clamp(40px,5.2vw,64px); }
+.curriculum-hero h1 span { color:$p; }
+.curriculum-intro { font-size:16px; }
+.curriculum-stats { gap:0; padding:18px 0 0; border-top:1px solid $bd; border-bottom:0; }
+.curriculum-stats div { padding:0 18px; }
+.curriculum-stats div:first-child { padding-left:0; }
+.curriculum-stats div + div { border-left:1px solid $bd; }
+.stack-browser,.topic-browser,.implementation-state,.ocr-section { margin-top:54px; }
+.stack-search { padding:0 12px; border:1px solid $bd; border-radius:11px; background:$wh; box-shadow:$sh; }
+.stack-search:focus-within { border-color:$p; box-shadow:$glow; }
+.scope-tabs,.topic-filters { gap:8px; }
+.scope-tabs button,.topic-filters > button { padding:7px 12px; border:1px solid transparent; border-radius:999px; }
+.scope-tabs button.active,.topic-filters > button.active { border-color:color-mix(in srgb,var(--accent) 20%,var(--border)); color:$p; background:$pl; }
+.stack-list,.topic-list { display:grid; gap:10px; border:0; }
+.stack-row,.topic-row { padding:17px; border:1px solid $bd; border-radius:13px; background:$wh; box-shadow:$sh; }
+.stack-row:hover { border-color:$bd2; background:$wh; box-shadow:$shm; }
+.stack-row-index,.topic-number { width:32px; height:32px; display:grid; place-items:center; padding:0; border-radius:8px; background:$bg2; }
+.stack-row-main strong { font-size:14px; }
+.course-source-card { padding:20px; border:1px solid $bd; border-radius:13px; background:$wh; box-shadow:$sh; }
+.module-filter select,.show-more { min-height:42px; border:1px solid $bd; border-radius:9px; background:$wh; }
+.show-more:hover { border-color:$p; color:$p; background:$pl; }
+
+@media(max-width:760px) {
+  .curriculum-main { padding-inline:12px; }
+  .curriculum-hero,.stack-detail-hero { padding:26px 22px; border-radius:18px; }
+  .curriculum-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .curriculum-stats div { padding:10px; }
+  .curriculum-stats div + div { border-left:0; }
+}

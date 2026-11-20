@@ -5,7 +5,7 @@ Una aplicación no está terminada cuando muestra datos. En producción recibe e
 
 ## Aprende construyendo
 
-### Tema 1: Datos no confiables y seguridad en el navegador
+### Tema 1: Datos no confiables y seguridad en el navegador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -124,7 +124,7 @@ Ya puedes conservar datos como datos y aplicar defensa según contexto. El sigui
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Renderiza una observación recibida como dato no confiable utilizando nodos de texto. Inserta etiquetas y atributos de prueba y comprueba que aparecen como texto, sin ejecutar código ni crear elementos.
 
-### Tema 2: Memoria administrada no significa memoria infinita
+### Tema 2: Memoria administrada no significa memoria infinita · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -221,7 +221,7 @@ Ya puedes diferenciar memoria temporal de retención accidental. El siguiente te
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Monta y desmonta el widget repetidamente. Registra listeners, timers y referencias retenidas; al desmontar, las consultas y observaciones deben detenerse y permitir liberar la instancia.
 
-### Tema 3: Errores útiles sin convertir usuarios en sensores involuntarios
+### Tema 3: Errores útiles sin convertir usuarios en sensores involuntarios · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -326,7 +326,7 @@ Ya puedes observar sin registrar indiscriminadamente. El siguiente tema adaptar�
 
 **Límites y decisión de uso:** Un reporte detallado puede exponer datos sensibles o saturar observabilidad con errores repetidos. Define campos permitidos, muestreo y retención; no envíes el cuerpo completo de formularios para obtener más contexto.
 
-### Tema 4: Compatibilidad, idioma y tiempo son requisitos de datos
+### Tema 4: Compatibilidad, idioma y tiempo son requisitos de datos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

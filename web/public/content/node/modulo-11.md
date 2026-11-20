@@ -4,7 +4,7 @@
 
 ### Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min
 
-**Prerrequisito:** Node.js 24 LTS, npm y Docker instalados; conocimientos básicos de terminal y de la diferencia entre `dependencies` y `devDependencies`.
+**Prerrequisito:** Node.js LTS, npm y Docker instalados; conocimientos básicos de terminal y de la diferencia entre `dependencies` y `devDependencies`.
 
 **Al terminar podrás:** construir una imagen de producción que compile TypeScript en una etapa, ejecute solo el artefacto generado en otra, use un usuario no root y reproduzca dependencias mediante un lockfile.
 
@@ -140,13 +140,6 @@ docker image inspect --format '{{.Size}}' api-multistage:1.0
 
 **Práctica independiente:** crea otra etiqueta cuyo contenedor confirme que TypeScript no está instalado en producción. Usa `docker run --rm --entrypoint sh api-multistage:1.1 -c 'test ! -d node_modules/typescript'`; el comando debe terminar con código 0. Documenta qué archivos copiaste de `build`, cuál es el comando de arranque y qué evidencia demuestra que el proceso no usa root.
 
-**Ampliación: señales dentro del contenedor (antes Tema 5 del Módulo 14).** `docker stop` envía `SIGTERM` al proceso principal y, si no ha terminado al cabo del plazo de gracia (10 s por defecto), envía `SIGKILL`. Dos decisiones del Dockerfile deciden si tu código llega a ver esa señal:
-
-1. `CMD ["node", "dist/server.js"]` en forma de array arranca Node directamente. Con `CMD ["npm", "start"]`, npm queda en medio y, según la guía de buenas prácticas de la imagen oficial, se traga `SIGTERM` y `SIGINT`.
-2. La misma guía advierte que Node no está diseñado para correr como PID 1 y que, como PID 1, no responde a `SIGINT` y señales similares si no las maneja. Arranca con `docker run --init …` (un init mínimo como PID 1 que reenvía señales) o registra tú el manejador.
-
-El manejador con plazo máximo es el del Módulo 9 Tema 3 (`process.once("SIGTERM", …)` con `server.close` y deadline); cópialo en `src/server.ts` y mide con `time docker stop api-multistage` cuánto tarda en salir con y sin manejador, con y sin `--init`. Anota los cuatro tiempos y el código de salida (`docker inspect --format '{{.State.ExitCode}}' api-multistage`, sin `--rm`); no supongas el resultado.
-
 **Checklist de salida:**
 
 - [ ] `package-lock.json` existe y ambas etapas copian `package.json` y el lockfile antes de `npm ci`.
@@ -163,7 +156,7 @@ El manejador con plazo máximo es el del Módulo 9 Tema 3 (`process.once("SIGTER
 
 ### Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min
 
-**Prerrequisito:** Node.js 24 LTS, npm y Docker; comprensión básica de HTTP y de códigos de estado.
+**Prerrequisito:** Node.js LTS, npm y Docker; comprensión básica de HTTP y de códigos de estado.
 
 **Al terminar podrás:** ejecutar una misma imagen con configuraciones distintas y demostrar que `/live` permanece disponible mientras `/ready` devuelve 503 cuando la aplicación no está lista.
 
@@ -338,7 +331,7 @@ flowchart TD
 
 ### Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min
 
-**Prerrequisito:** Node.js 24 LTS y npm; nociones de procesos, señales POSIX, HTTP y contenedores. No se necesita un clúster remoto.
+**Prerrequisito:** Node.js LTS y npm; nociones de procesos, señales POSIX, HTTP y contenedores. No se necesita un clúster remoto.
 
 **Al terminar podrás:** comparar un reload supervisado por PM2 con un protocolo de despliegue real, detectar una versión que no está lista y ejecutar un rollback manual documentado.
 
@@ -504,7 +497,7 @@ VERSION=v2 FAIL_READINESS=false npx pm2 reload entregas-local --update-env
 
 ### Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min
 
-**Prerrequisito:** Node.js 24 LTS, Docker y conocimientos básicos de HTTP, puertos y JSON.
+**Prerrequisito:** Node.js LTS, Docker y conocimientos básicos de HTTP, puertos y JSON.
 
 **Al terminar podrás:** enrutar peticiones mediante Nginx hacia dos backends, comprobar el tratamiento controlado de cabeceras y construir una función serverless con validación y límites de uso explícitos.
 
@@ -656,77 +649,6 @@ console.log(await handler({ body: "{" }));
 
 Ejecuta `node function/invoke.mjs`. Debes obtener 400 para el cuerpo sin `name`, 200 para Ada y 400 para JSON inválido. Documenta por separado el contrato, qué observarías para comparar una invocación fría con otras posteriores en un proveedor real y por qué un trabajo de larga duración podría requerir otro modelo. No inventes latencias ni costes.
 
-**Ampliación: la misma lógica en dos proveedores (antes Tema 4 del Módulo 14).** El handler anterior mezcla validación y respuesta HTTP. Cuando el cálculo es de negocio (la tarifa de un envío), sepáralo en una función pura y deja a cada proveedor solo un adaptador delgado. Crea `function/costo.mjs`:
-
-```js
-// Lógica de negocio pura: no conoce eventos, requests ni proveedores.
-export function calcularCosto({ distanciaKm, pesoKg }) {
-  if (!Number.isFinite(distanciaKm) || !Number.isFinite(pesoKg) || distanciaKm < 0 || pesoKg <= 0) {
-    throw new RangeError("distanciaKm y pesoKg deben ser números válidos");
-  }
-  return Math.round(distanciaKm * 1500 + pesoKg * 200);
-}
-```
-
-Crea el adaptador de AWS Lambda `function/aws-costo.mjs`:
-
-```js
-import { calcularCosto } from "./costo.mjs";
-
-// Adaptador AWS Lambda (evento HTTP de API Gateway / Function URL).
-export const handler = async (event) => {
-  try {
-    const costo = calcularCosto(JSON.parse(event.body ?? "{}"));
-    return { statusCode: 200, headers: { "content-type": "application/json" }, body: JSON.stringify({ costo }) };
-  } catch (error) {
-    return { statusCode: 400, headers: { "content-type": "application/json" }, body: JSON.stringify({ error: error.message }) };
-  }
-};
-```
-
-Crea el adaptador de Azure Functions `function/azure-costo.mjs`. No necesitas instalar `@azure/functions` para probarlo: la función recibe un objeto con `json()`, igual que el `Request` estándar:
-
-```js
-import { calcularCosto } from "./costo.mjs";
-
-// Adaptador con la firma del modelo v4 de Azure Functions: (request, context) => HttpResponseInit.
-// En Azure se registra con app.http("costo", { methods: ["POST"], handler: costoHttp }) de @azure/functions.
-export async function costoHttp(request) {
-  try {
-    return { status: 200, jsonBody: { costo: calcularCosto(await request.json()) } };
-  } catch (error) {
-    return { status: 400, jsonBody: { error: error.message } };
-  }
-}
-```
-
-Crea `function/invoke-costo.mjs` y ejecútalo con `node function/invoke-costo.mjs`:
-
-```js
-import { handler } from "./aws-costo.mjs";
-import { costoHttp } from "./azure-costo.mjs";
-
-const pedido = { distanciaKm: 12.5, pesoKg: 3 };
-const aws = await handler({ body: JSON.stringify(pedido) });
-const azure = await costoHttp(new Request("http://local/costo", { method: "POST", body: JSON.stringify(pedido) }));
-
-console.log("AWS  ", aws.statusCode, JSON.parse(aws.body));
-console.log("Azure", azure.status, azure.jsonBody);
-console.log("mismo costo:", JSON.parse(aws.body).costo === azure.jsonBody.costo);
-console.log("AWS inválido", (await handler({ body: JSON.stringify({ distanciaKm: 5 }) })).statusCode);
-```
-
-**Resultado esperado:**
-
-```text
-AWS   200 { costo: 19350 }
-Azure 200 { costo: 19350 }
-mismo costo: true
-AWS inválido 400
-```
-
-**Fallo deliberado:** en `aws-costo.mjs` reemplaza la llamada a `calcularCosto` por la fórmula copiada con un recargo (`distanciaKm * 1600 + pesoKg * 200`). **Resultado:** `AWS 200 { costo: 20600 }` frente a `Azure 200 { costo: 19350 }` y `mismo costo: false`. **Diagnóstico:** la fórmula duplicada en un adaptador divergió; la regla de negocio vive en un solo archivo y los adaptadores solo traducen entrada y salida. Restaura la llamada.
-
 Para cerrar el laboratorio del proxy, detén Nginx con Ctrl+C y limpia los recursos creados:
 
 ```bash
@@ -742,11 +664,10 @@ docker network rm proxy-lab
 - [ ] El identificador enviado directamente por el cliente no atraviesa el proxy como valor confiable.
 - [ ] La función devuelve 200 solo con un `name` válido y 400 para entrada ausente o JSON inválido.
 - [ ] La comparación serverless distingue prueba local, cold start real, costes adicionales y límites de duración.
-- [ ] `calcularCosto` vive en un solo archivo y los adaptadores de AWS y Azure devuelven el mismo costo.
 
 **Errores comunes:** exponer el backend directamente; confiar en headers de clientes no controlados; olvidar timeouts; no definir upstream; usar serverless para procesos largos sin comprobar límites; confundir escala a cero con factura total cero; inventar mediciones de cold start.
 
-**Fuentes oficiales:** [Nginx reverse proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/), [AWS Lambda handler](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html), [Azure Functions — Node.js (modelo v4)](https://learn.microsoft.com/azure/azure-functions/functions-reference-node) y [Docker networking](https://docs.docker.com/engine/network/).
+**Fuentes oficiales:** [Nginx reverse proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/), [AWS Lambda handler](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html) y [Docker networking](https://docs.docker.com/engine/network/).
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** coloca la API detrás de un proxy con límites de cuerpo y tiempos definidos. Normaliza las cabeceras de cliente en ese límite de confianza y evalúa una función únicamente para una operación acotada; conserva contenedores o workers para trabajos cuya duración o estado no encajen con serverless.
 
@@ -754,7 +675,7 @@ docker network rm proxy-lab
 
 **Al terminar podrás:** desde una carpeta vacía, producir y ejecutar una release contenerizada de una API con build multi-stage, configuración externa, liveness, readiness y evidencia de rollback, sin usar archivos de los proyectos anteriores.
 
-**Prerrequisitos:** Node.js 24 LTS, npm y Docker. Registra en tu README los comandos que ejecutaste y su salida: esa es la evidencia del laboratorio.
+**Prerrequisitos:** Node.js LTS, npm y Docker. La ejecución práctica y la revisión pedagógica quedan pendientes hasta realizarlas y registrar sus resultados.
 
 Crea la estructura:
 

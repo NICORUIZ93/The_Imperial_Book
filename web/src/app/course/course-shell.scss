@@ -56,26 +56,71 @@
 .shell.overview-mode .shell-main { width:100%; }
 .overview-only-hidden { display:none !important; }
 
-// Lectura de libro: ni cabecera ni índice lateral; la hoja ocupa la mesa.
-.shell.book-shell .shell-topbar,
-.shell.book-shell .shell-sidebar,
+// Lectura académica: conserva contexto, progreso e índice del curso.
+.shell.book-shell .shell-topbar { display:flex; }
+.shell.book-shell .shell-sidebar { display:block; }
+.shell.book-shell .shell-body { display:flex; }
+.shell.book-shell .shell-main { width:auto; }
 .shell.book-shell .shell-scrim { display:none; }
-.shell.book-shell .shell-body { display:block; }
-.shell.book-shell .shell-main { width:100%; }
+
+// Academic shell · navegación calmada, accesible y reutilizada por todos los tracks.
+.shell-topbar {
+  min-height:68px; padding:0 24px; border-bottom:1px solid color-mix(in srgb,var(--border) 82%,transparent);
+  background:color-mix(in srgb,var(--bg-elevated) 88%,transparent); backdrop-filter:blur(18px) saturate(1.25);
+  box-shadow:0 1px 0 rgba(23,32,51,.03);
+}
+.back-link { min-height:44px; color:$i3; font-size:11px; font-weight:700; letter-spacing:.08em; }
+.shell-track-logo { width:34px; height:34px; padding:6px; border:1px solid $bd; border-radius:10px; background:$wh !important; box-shadow:$sh; }
+.shell-track-logo img { width:21px; height:21px; filter:none; }
+.shell-title strong { color:$ink; font-size:14px; font-weight:750; letter-spacing:-.01em; }
+.shell-progress { height:4px; max-width:240px; margin-top:6px; border-radius:999px; background:$bg2; }
+.shell-progress span { border-radius:inherit; background:$g; }
+.search-trigger { min-height:40px; padding:0 12px; border:1px solid $bd; border-radius:10px; background:$bg2; }
+.search-trigger:hover { border-color:$bd2; background:$wh; box-shadow:$sh; }
+.icon-button { width:40px; height:40px; border-radius:10px; }
+.icon-button:hover { color:$p; background:$pl; }
+.shell-sidebar {
+  top:68px; width:286px; height:calc(100vh - 68px); padding:24px 16px 36px;
+  border-right:1px solid $bd; background:color-mix(in srgb,var(--bg-elevated) 96%,var(--bg));
+}
+.official-source { margin:0 8px 18px; padding:12px; border:1px solid $bd; border-radius:12px; background:$bg2; }
+
+// ── ACADEMY SHELL · sistema compartido ───────────────────────────────────
+.shell-body { width:100%; min-width:0; background:$bg; }
+.shell-main { width:calc(100% - 286px); min-width:0; overflow:clip; }
+.shell-topbar {
+  gap:12px; padding-inline:clamp(14px,2.2vw,28px);
+  border-bottom-color:$bd; box-shadow:0 8px 24px rgba(15,23,42,.04);
+}
+.back-link { padding:0 10px; border-radius:9px; }
+.back-link:hover { color:$p; background:$pl; }
+.shell-title { max-width:340px; }
+.shell-sidebar { scrollbar-width:thin; scrollbar-color:$bd2 transparent; }
+.official-source { color:$i3; line-height:1.55; }
+.official-source a { color:$p; }
+
+@media (max-width:1180px) and (min-width:861px) {
+  .shell-sidebar { width:248px; }
+  .shell-main { width:calc(100% - 248px); }
+  .search-trigger span,.search-trigger kbd { display:none; }
+  .search-trigger { width:40px; justify-content:center; padding:0; }
+}
 
 @media (max-width: 860px) {
   .mobile-only { display:grid; }
   .shell-sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:4px 6px 14px; border-bottom:1px solid $bd; }
-  .shell-sidebar {
+  .shell-sidebar,
+  .shell.book-shell .shell-sidebar {
     position:fixed; top:0; right:22%; bottom:0; left:0; height:auto; z-index:40; transform:translateX(-100%);
     transition:transform .18s ease; box-shadow:$shl; background:$wh;
   }
   .shell-sidebar.open { transform:translateX(0); }
-  .shell-body .shell-scrim { display:block; position:fixed; inset:0; background:rgba(20,19,17,.45); z-index:35; }
-  .shell-scrim.open, .shell-scrim { display:none; }
+  .shell-body .shell-scrim { position:fixed; inset:0; background:rgba(11,17,32,.55); backdrop-filter:blur(3px); z-index:35; }
+  .shell.book-shell .shell-body .shell-scrim { display:block; }
   .search-trigger span { display:none; }
-  .shell-topbar { padding-inline:14px; gap:10px; }
+  .shell-topbar { min-height:64px; padding-inline:12px; gap:8px; }
   .shell-sidebar { width:min(320px,86vw); }
+  .shell-main { width:100%; }
   .shell-track-logo { display:none; }
   .search-trigger { width:34px; justify-content:center; padding:0; border-bottom:0; }
   .search-trigger kbd { display:none; }

@@ -47,7 +47,7 @@ npm ci
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-28`** después de `npm ci`. El
-[README del laboratorio](../../../examples/microservicios/modulo-28/README.md) tiene el mapa de carpetas.
+`examples/microservicios/modulo-28/README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (con `package-lock.json`):
 

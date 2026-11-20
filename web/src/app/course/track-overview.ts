@@ -10,6 +10,7 @@ import { TRACK_GUIDES } from '../track-guides';
 import { projectFor } from '../learning-activities';
 import { ProgressService } from '../progress.service';
 import { TopicIndexService } from '../topic-index.service';
+import { TRACK_PREREQUISITES } from '../learning-paths';
 
 type ModuleStatus = 'next' | 'in-progress' | 'done' | 'available';
 
@@ -38,6 +39,9 @@ export class TrackOverviewComponent {
   readonly track = computed(() => findTrack(this.trackId()));
   readonly guide = computed(() => TRACK_GUIDES[this.trackId()]);
   readonly project = computed(() => projectFor(this.trackId()));
+  readonly prerequisites = computed(() => (TRACK_PREREQUISITES[this.trackId()] ?? [])
+    .map(id => findTrack(id))
+    .filter((track): track is NonNullable<typeof track> => Boolean(track)));
   readonly percent = computed(() => {
     const track = this.track();
     return track ? this.progressService.percentComplete(track.id, track.modules.length) : 0;
@@ -51,7 +55,7 @@ export class TrackOverviewComponent {
     if (!track) return [];
     const order: CourseModule['level'][] = ['Fundamentos', 'Aplicación', 'Integración', 'Experto'];
     return order
-      .map(level => ({ level, modules: track.modules.filter(module => module.level === level) }))
+      .map(level => ({ level, modules: track.modules.filter(module => module.level === level).sort((a, b) => a.id - b.id) }))
       .filter(group => group.modules.length > 0);
   });
 

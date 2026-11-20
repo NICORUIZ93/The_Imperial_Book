@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-El proyecto del Tema 2 es la **base del laboratorio final**: consérvalo, porque el Proyecto 12 lo amplía en lugar de empezar de cero. Los Temas 3 a 6 son laboratorios de mecanismos concretos en su propia carpeta. Escribe manualmente todos los archivos indicados. El módulo solo usa herramientas ya enseñadas en el curso (Express, Prisma 7, `jose`, `bcrypt`, Pino, Supertest, Testcontainers, Docker) o enseñadas aquí mismo antes del laboratorio (Socket.IO en el Tema 5, validación de archivos y notificaciones con un doble en el Tema 6).
+Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados: no copies ejemplos de la academia ni reutilices archivos de otros temas. `npm init -y` genera el `package.json` inicial y cada proyecto instala sus propias dependencias.
 
 Los laboratorios permiten comprobar mecanismos concretos en local. **Una demostración que responde correctamente no es por ello una API productiva.** Esa afirmación exige evidencia adicional de seguridad, capacidad, recuperación, observabilidad y operación, además de revisión humana.
 
@@ -10,7 +10,7 @@ Los laboratorios permiten comprobar mecanismos concretos en local. **Una demostr
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, módulos ES, `async`/`await` y HTTP básico. El proyecto empieza en una carpeta vacía y no depende de ningún otro laboratorio.
+**Prerrequisitos:** Node.js LTS, npm, módulos ES, `async`/`await` y HTTP básico. El proyecto empieza en una carpeta vacía y no depende de ningún otro laboratorio.
 
 **Al terminar podrás:** construir una API pequeña donde HTTP, aplicación e infraestructura se comuniquen mediante contratos, inyectar el repositorio en el caso de uso y probar una regla de negocio sin arrancar el servidor.
 
@@ -257,805 +257,11 @@ En el proyecto integrador independiente del final, crea los puertos `Repositorio
 
 **Fuentes oficiales:** [Node.js — módulos ES](https://nodejs.org/api/esm.html), [Node.js — HTTP](https://nodejs.org/api/http.html) y [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
-### Tema 2: Uniendo cada módulo del track · Avanzado · 180 min
+### Tema 2: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, Express (Módulo 4), Prisma 7 con driver adapter (Módulo 5 Tema 2), PostgreSQL con `pg` (Módulo 5 Tema 1), JWT con `jose` y `bcrypt` (Módulo 6), Supertest y Testcontainers (Módulo 7), Pino (Módulo 9) y Docker (Módulo 11). Debes tener un daemon de Docker disponible para Testcontainers. Este proyecto es la base del laboratorio final del módulo: consérvalo.
-
-**Al terminar podrás:** integrar configuración, Express, una relación real de Prisma, access y refresh tokens, pruebas contra PostgreSQL efímero, logs con correlación y una imagen Docker multi-stage.
-
-**Por qué importa:** comprender middleware, persistencia o autenticación por separado no demuestra que colaboren. Un contrato puede romperse precisamente en la unión: el login puede emitir un token que el middleware rechaza, o una prueba puede pasar con mocks mientras la consulta real es inválida.
-
-La integración conserva las fronteras del tema anterior. Express traduce HTTP; Prisma implementa persistencia; `jose` firma y verifica tokens; Pino registra hechos sin credenciales. La relación `User 1—N Delivery` se comprueba leyendo la entrega con su propietario. El refresh token contiene un `jti` que también existe en la base: una firma válida no basta si el identificador fue revocado o expiró.
-
-Prisma se configura exactamente como en el Módulo 5 Tema 2 (Prisma 7: `prisma.config.ts`, generador `prisma-client` y cliente creado con un *driver adapter*), cambiando SQLite por PostgreSQL con `@prisma/adapter-pg`. Testcontainers levanta PostgreSQL para la prueba y `prisma db push` crea el esquema de ese laboratorio. Esto es apropiado para una prueba de integración, no una estrategia de migración de producción. Supertest usa la aplicación sin depender de un puerto fijo. El Dockerfile empaqueta el resultado, pero construir una imagen tampoco demuestra que el servicio esté listo para tráfico real.
-
-```text
-Supertest → Express + correlación → JWT → Prisma → PostgreSQL efímero
-                              └── Pino: request, resultado y correlationId
-```
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-integracion-track
-cd ejemplo-integracion-track
-npm init -y
-npm pkg set type=module scripts.start="node --import tsx src/server.js" scripts.test="node --import tsx --test --test-concurrency=1" scripts.db:generate="prisma generate"
-npm install express@5 jose pino bcrypt @prisma/client@7 @prisma/adapter-pg@7 dotenv tsx
-npm install --save-dev prisma@7 supertest testcontainers
-mkdir -p prisma src test
-```
-
-Las versiones mayores de Prisma quedan fijadas (`@7`): la etiqueta `latest` de npm puede apuntar a otra mayor con una API distinta. `prisma`, `@prisma/client` y `@prisma/adapter-pg` deben compartir la misma versión; compruébalo con `npm ls prisma @prisma/client @prisma/adapter-pg`. `tsx` es dependencia de ejecución porque el cliente que genera Prisma 7 es TypeScript (Módulo 5 Tema 2); `node --import tsx` lo carga desde los archivos `.js` del proyecto.
-
-Crea `.env` (solo para tu máquina; la prueba define su propia URL):
-
-```text
-DATABASE_URL="postgresql://entregas:entregas@127.0.0.1:5432/entregas"
-```
-
-Crea `.gitignore`:
-
-```text
-.env
-node_modules/
-generated/
-```
-
-Crea `prisma.config.ts`, igual que en el Módulo 5:
-
-```ts
-import "dotenv/config";
-import { defineConfig } from "prisma/config";
-
-export default defineConfig({
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
-  datasource: {
-    url: process.env.DATABASE_URL,
-  },
-});
-```
-
-Crea `prisma/schema.prisma`. Como en Prisma 7, el `datasource` ya no lleva `url` (la aporta `prisma.config.ts`) y el generador escribe el cliente en una carpeta propia:
-
-```prisma
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-}
-
-model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String
-  deliveries    Delivery[]
-  refreshTokens RefreshToken[]
-}
-
-model Delivery {
-  id        String   @id @default(uuid())
-  title     String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-}
-
-model RefreshToken {
-  id        String    @id
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  expiresAt DateTime
-  revokedAt DateTime?
-}
-```
-
-Genera el cliente. En Prisma 7, `db push` y `migrate dev` ya no lo generan solos, así que este paso se repite cada vez que cambies el schema:
-
-```bash
-npx prisma generate
-```
-
-**Resultado esperado:** aparece la carpeta `generated/prisma` con `client.ts`.
-
-Crea `src/db.js`, el único archivo que sabe cómo se construye el cliente:
-
-```js
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client.ts";
-
-// Prisma 7 se conecta mediante un driver adapter; aquí, el driver pg del Módulo 5.
-export function crearPrisma(databaseUrl) {
-  return new PrismaClient({ adapter: new PrismaPg({ connectionString: databaseUrl }) });
-}
-```
-
-Crea `src/config.js`. La configuración rechaza valores ambiguos antes de escuchar:
-
-```js
-export function cargarConfiguracion() {
-  const databaseUrl = process.env.DATABASE_URL ?? "";
-  const jwtSecret = process.env.JWT_SECRET ?? "";
-  const port = Number(process.env.PORT ?? 3000);
-
-  if (!databaseUrl.startsWith("postgresql://")) {
-    throw new Error("DATABASE_URL debe ser una URL PostgreSQL");
-  }
-  if (Buffer.byteLength(jwtSecret) < 32) {
-    throw new Error("JWT_SECRET debe contener al menos 32 bytes");
-  }
-  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
-    throw new Error("PORT debe ser un entero entre 1 y 65535");
-  }
-
-  return Object.freeze({ databaseUrl, jwtSecret, port });
-}
-```
-
-Crea `src/app.js`:
-
-```js
-import { randomUUID } from "node:crypto";
-import express from "express";
-import bcrypt from "bcrypt";
-import { SignJWT, jwtVerify } from "jose";
-
-const issuer = "integracion-track";
-const audience = "entregas-api";
-
-export function crearApp({ prisma, logger, jwtSecret }) {
-  const app = express();
-  const clave = new TextEncoder().encode(jwtSecret);
-  app.disable("x-powered-by");
-  app.use(express.json({ limit: "32kb" }));
-
-  app.use((req, res, next) => {
-    const propuesto = req.get("x-request-id");
-    req.id = propuesto && propuesto.length <= 100 ? propuesto : randomUUID();
-    req.log = logger.child({ correlationId: req.id });
-    res.setHeader("x-request-id", req.id);
-    res.on("finish", () => {
-      req.log.info({ method: req.method, path: req.path, status: res.statusCode }, "request");
-    });
-    next();
-  });
-
-  async function firmarAccess(user) {
-    return new SignJWT({ type: "access" })
-      .setProtectedHeader({ alg: "HS256" })
-      .setSubject(user.id)
-      .setIssuer(issuer)
-      .setAudience(audience)
-      .setIssuedAt()
-      .setExpirationTime("15m")
-      .sign(clave);
-  }
-
-  app.get("/health", async (_req, res, next) => {
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-      res.json({ ok: true });
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.post("/auth/login", async (req, res, next) => {
-    try {
-      const { email, password } = req.body ?? {};
-      const user = await prisma.user.findUnique({ where: { email } });
-      if (!user || !(await bcrypt.compare(password ?? "", user.passwordHash))) {
-        return res.status(401).json({ error: "Credenciales inválidas" });
-      }
-
-      const jti = randomUUID();
-      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      await prisma.refreshToken.create({ data: { id: jti, userId: user.id, expiresAt } });
-
-      const refreshToken = await new SignJWT({ type: "refresh" })
-        .setProtectedHeader({ alg: "HS256" })
-        .setSubject(user.id)
-        .setJti(jti)
-        .setIssuer(issuer)
-        .setAudience(audience)
-        .setIssuedAt()
-        .setExpirationTime("7d")
-        .sign(clave);
-
-      res.json({ accessToken: await firmarAccess(user), refreshToken });
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.post("/auth/refresh", async (req, res, next) => {
-    try {
-      const token = req.body?.refreshToken ?? "";
-      const { payload } = await jwtVerify(token, clave, {
-        issuer,
-        audience,
-        algorithms: ["HS256"],
-      });
-      if (payload.type !== "refresh" || !payload.jti || !payload.sub) {
-        return res.status(401).json({ error: "Refresh token inválido" });
-      }
-
-      const almacenado = await prisma.refreshToken.findUnique({
-        where: { id: payload.jti },
-        include: { user: true },
-      });
-      const vigente = almacenado
-        && almacenado.userId === payload.sub
-        && !almacenado.revokedAt
-        && almacenado.expiresAt > new Date();
-      if (!vigente) return res.status(401).json({ error: "Refresh revocado o expirado" });
-
-      res.json({ accessToken: await firmarAccess(almacenado.user) });
-    } catch {
-      res.status(401).json({ error: "Refresh token inválido" });
-    }
-  });
-
-  async function exigirAccess(req, res, next) {
-    try {
-      const header = req.headers.authorization ?? "";
-      const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-      const { payload } = await jwtVerify(token, clave, {
-        issuer,
-        audience,
-        algorithms: ["HS256"],
-      });
-      if (payload.type !== "access" || !payload.sub) throw new Error("Tipo inválido");
-      req.user = { id: payload.sub };
-      next();
-    } catch {
-      res.status(401).json({ error: "Access token inválido" });
-    }
-  }
-
-  app.post("/deliveries", exigirAccess, async (req, res, next) => {
-    try {
-      const title = typeof req.body?.title === "string" ? req.body.title.trim() : "";
-      if (title.length < 3 || title.length > 120) {
-        return res.status(422).json({ error: "Título inválido" });
-      }
-      const delivery = await prisma.delivery.create({
-        data: { title, userId: req.user.id },
-      });
-      res.status(201).json(delivery);
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.get("/deliveries", exigirAccess, async (req, res, next) => {
-    try {
-      const deliveries = await prisma.delivery.findMany({
-        where: { userId: req.user.id },
-        include: { user: { select: { id: true, email: true } } },
-      });
-      res.json(deliveries);
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.use((error, req, res, _next) => {
-    req.log.error({ error: error.message }, "request fallida");
-    res.status(500).json({ error: "Error interno", correlationId: req.id });
-  });
-
-  return app;
-}
-```
-
-Crea `src/server.js`:
-
-```js
-import pino from "pino";
-import { cargarConfiguracion } from "./config.js";
-import { crearApp } from "./app.js";
-import { crearPrisma } from "./db.js";
-
-const config = cargarConfiguracion();
-const prisma = crearPrisma(config.databaseUrl);
-const logger = pino({ level: process.env.LOG_LEVEL ?? "info" });
-const app = crearApp({ prisma, logger, jwtSecret: config.jwtSecret });
-const server = app.listen(config.port, () => logger.info({ port: config.port }, "API lista"));
-
-async function apagar() {
-  server.close(async () => {
-    await prisma.$disconnect();
-    process.exit(0);
-  });
-}
-process.on("SIGTERM", apagar);
-process.on("SIGINT", apagar);
-```
-
-Crea `test/integracion.test.js`:
-
-```js
-import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { after, before, test } from "node:test";
-import bcrypt from "bcrypt";
-import pino from "pino";
-import supertest from "supertest";
-import { GenericContainer } from "testcontainers";
-import { crearPrisma } from "../src/db.js";
-
-let container;
-let prisma;
-let app;
-let user;
-const jwtSecret = "secreto-local-de-pruebas-con-mas-de-32-bytes";
-
-before(async () => {
-  container = await new GenericContainer("postgres:16-alpine")
-    .withEnvironment({
-      POSTGRES_USER: "test",
-      POSTGRES_PASSWORD: "test",
-      POSTGRES_DB: "entregas",
-    })
-    .withExposedPorts(5432)
-    .start();
-
-  process.env.DATABASE_URL = `postgresql://test:test@${container.getHost()}:${container.getMappedPort(5432)}/entregas`;
-  // Prisma 7 eliminó --skip-generate: db push ya no genera el cliente (lo generaste antes con npx prisma generate).
-  execFileSync("npx", ["prisma", "db", "push"], {
-    env: process.env,
-    stdio: "inherit",
-  });
-
-  prisma = crearPrisma(process.env.DATABASE_URL);
-  const { crearApp } = await import("../src/app.js");
-  app = crearApp({ prisma, logger: pino({ enabled: false }), jwtSecret });
-  user = await prisma.user.create({
-    data: {
-      email: "ana@example.test",
-      passwordHash: await bcrypt.hash("clave-larga-de-prueba", 10),
-    },
-  });
-});
-
-after(async () => {
-  await prisma?.$disconnect();
-  await container?.stop();
-});
-
-test("login, operación protegida, relación y refresh funcionan juntos", async () => {
-  await supertest(app).get("/deliveries").expect(401);
-
-  const login = await supertest(app)
-    .post("/auth/login")
-    .send({ email: "ana@example.test", password: "clave-larga-de-prueba" })
-    .expect(200);
-
-  await supertest(app)
-    .post("/deliveries")
-    .set("Authorization", `Bearer ${login.body.accessToken}`)
-    .send({ title: "Entrega integrada" })
-    .expect(201);
-
-  const lista = await supertest(app)
-    .get("/deliveries")
-    .set("Authorization", `Bearer ${login.body.accessToken}`)
-    .expect(200);
-  assert.equal(lista.body.length, 1);
-  assert.equal(lista.body[0].user.id, user.id);
-  assert.equal(lista.body[0].user.passwordHash, undefined);
-
-  const renovado = await supertest(app)
-    .post("/auth/refresh")
-    .send({ refreshToken: login.body.refreshToken })
-    .expect(200);
-  assert.equal(typeof renovado.body.accessToken, "string");
-});
-```
-
-Crea `Dockerfile`:
-
-```dockerfile
-FROM node:24-bookworm-slim AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY prisma.config.ts ./
-COPY prisma ./prisma
-RUN npx prisma generate
-
-FROM node:24-bookworm-slim AS runtime
-ENV NODE_ENV=production
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY --from=build /app/generated ./generated
-COPY src ./src
-USER node
-EXPOSE 3000
-CMD ["node", "--import", "tsx", "src/server.js"]
-```
-
-Crea `.dockerignore`:
-
-```text
-node_modules
-generated
-npm-debug.log
-test
-.git
-.env
-```
-
-La imagen usa la etiqueta `node:24-bookworm-slim` (Node 24 LTS fijo), no `lts`, que cambia de mayor sin avisar. El cliente se genera dentro de la etapa `build` a partir del schema; la carpeta `generated` local no entra en el contexto.
-
-Ejecuta la prueba de integración y construye la imagen:
-
-```bash
-npm test
-docker build -t entregas-track:local .
-```
-
-**Resultado esperado:** la prueba levanta PostgreSQL, crea el esquema, obtiene `401` sin token, completa login y alta protegida, lee la relación con el usuario sin exponer `passwordHash` y renueva el access token. Docker termina una imagen local multi-stage. Estas señales verifican el laboratorio; no acreditan capacidad ni seguridad de producción.
-
-**Fallo deliberado y corrección:** ejecuta `PORT=abc DATABASE_URL=postgresql://localhost/entregas JWT_SECRET=clave-local-de-laboratorio-con-mas-de-32-bytes npm start`. La configuración debe rechazar el puerto antes de escuchar. Corrige `PORT` con un entero válido. Después cambia en una petición de prueba el access token por el refresh token: debe recibir `401`, porque el middleware exige `type: "access"`; no elimines esa comprobación para hacerlo pasar.
-
-**Práctica guiada:** añade `POST /auth/logout` que reciba el refresh token, verifique su firma y marque `revokedAt` solo si pertenece al `sub` verificado. Repite `/auth/refresh` y comprueba `401`. Añade a la prueba una cabecera `x-request-id` conocida y verifica que vuelve en la respuesta sin registrar tokens.
-
-**Ejercicio independiente:** incorpora rotación de refresh tokens: cada renovación revoca el `jti` anterior y crea uno nuevo en una transacción. Demuestra que reutilizar el token anterior falla. Añade un segundo usuario y prueba que no puede leer las entregas del primero aunque tenga un access token válido.
-
-#### Aplica
-
-En el proyecto integrador independiente del final, conecta registro, login, refresh, operación protegida y consulta de entregas con una relación real. Ejecuta el flujo crítico contra PostgreSQL efímero, exige correlación en cada respuesta y empaqueta exactamente esa versión en Docker. Documenta por separado cualquier control todavía pendiente.
-
-**Checklist de salida.**
-
-- [ ] El proyecto contiene desde cero esquema, aplicación, pruebas y Docker.
-- [ ] La configuración inválida impide arrancar.
-- [ ] La relación uno-a-muchos se verifica con una consulta real.
-- [ ] Access y refresh tienen propósitos distintos y no son intercambiables.
-- [ ] El refresh se contrasta con un registro vigente en la base.
-- [ ] Los logs incluyen correlación y excluyen contraseñas y tokens.
-- [ ] La prueba usa PostgreSQL real y la imagen se construye sin secretos incorporados.
-
-**Si falla:** si aparece `Cannot find module '../generated/prisma/client.ts'`, ejecuta `npx prisma generate`. Si `tsx` informa `Cannot find module './internal/class.js'`, la documentación de Prisma indica añadir `importFileExtension = "ts"` al generador y volver a generar. Si `db push` rechaza la opción `--skip-generate`, copiaste un comando de Prisma 6: Prisma 7 la eliminó; quítala. Si Prisma no encuentra tablas, revisa que `db push` se ejecute con la misma `DATABASE_URL` que usa el test. Si el login funciona y la ruta protegida no, compara issuer, audience, algoritmo y `type` al firmar y verificar. Si Docker no encuentra el cliente generado, comprueba que el esquema y los artefactos de Prisma se copien antes de `CMD`.
-
-**Errores comunes:** mezclar la API de Prisma 6 (`prisma-client-js`, `url` en el schema, `new PrismaClient({ datasources })`) con la de Prisma 7; instalar Prisma sin fijar la mayor; afirmar integración con mocks en todas las capas, compartir una base entre pruebas, aceptar refresh como access, devolver hashes, registrar credenciales, usar `prisma db push` como migración productiva o meter secretos en la imagen.
-
-**Modelo mental:** trata el sistema como un recorrido vertical, no como una colección de carpetas: una petición atraviesa el límite HTTP, una regla de aplicación, persistencia y una respuesta. Cada frontera traduce su contrato; si el fallo aparece solo al unir capas, reduce el recorrido hasta la primera entrada cuya salida ya no cumple ese contrato.
-
-**Cuándo integrar:** construye esta vertical cuando las piezas tienen contratos locales comprobados; conserva pruebas unitarias para reglas y de integración para sus uniones. No reemplaces las pruebas pequeñas con un único test end-to-end: cuando falla un recorrido enorme, cuesta separar configuración, autenticación, consulta y serialización.
-
-**Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma — actualizar a Prisma 7](https://www.prisma.io/docs/orm/more/upgrade-guides/upgrading-versions/upgrading-to-prisma-7), [Prisma — generadores](https://www.prisma.io/docs/orm/prisma-schema/overview/generators), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
-
-### Tema 3: Qué le falta a esta API para producción real · Intermedio · 75 min
-
-#### Aprende
-
-**Prerrequisitos:** Node.js 24 LTS, npm, JSON, HTTP y conceptos de seguridad y operación. Este proyecto evalúa evidencia escrita; no necesita ni reutiliza una API anterior.
-
-**Al terminar podrás:** elaborar una evaluación de preparación que distinga «verificado», «pendiente» y «no aplica», rechace afirmaciones sin evidencia y produzca una lista honesta de trabajo restante.
-
-**Por qué importa:** una demo puede devolver `200` y seguir permitiendo acceso a recursos ajenos, perder datos al reiniciar o no tener forma de recuperarse. Producción no es una etiqueta que se obtiene por completar dependencias: requiere controles observados, responsables y criterios de recuperación.
-
-La revisión cubre al menos cinco dimensiones. **Seguridad:** autenticación, autorización por recurso, límites y gestión de secretos. **Datos:** copias, restauración, retención y migraciones compatibles con versiones anteriores. **Resiliencia:** tiempos de espera, reintentos acotados, idempotencia y degradación. **Observabilidad:** métricas, logs, trazas y alertas accionables. **Operación:** despliegue, rollback, capacidad, runbooks y responsables.
-
-Una evidencia debe permitir comprobar el estado: comando y resultado, enlace a una prueba, fecha de una restauración o medición de carga. «Existe un healthcheck» no prueba que una alerta llegue al equipo. «Hay backup» no prueba que pueda restaurarse. Un control «no aplica» necesita una justificación, no sirve para ocultar un riesgo.
-
-**Analogía:** es la inspección previa de una aeronave. Arrancar el motor equivale a la demo; la inspección exige comprobar frenos, instrumentos, combustible y procedimientos. La analogía no convierte una lista en certificación: cada elemento necesita una prueba real y criterio profesional.
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-readiness-evidencia
-cd ejemplo-readiness-evidencia
-npm init -y
-npm pkg set type=module
-mkdir src
-```
-
-Crea `readiness.json`. El estado inicial es deliberadamente prudente: los controles todavía no ejecutados permanecen pendientes:
-
-```json
-[
-  {
-    "control": "Autorización por entrega",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Backend",
-    "siguienteAccion": "Probar acceso cruzado entre dos repartidores"
-  },
-  {
-    "control": "Límites de cuerpo y frecuencia",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Backend",
-    "siguienteAccion": "Medir rechazo de cargas y ráfagas excesivas"
-  },
-  {
-    "control": "Restauración de base de datos",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Plataforma",
-    "siguienteAccion": "Restaurar una copia en un entorno aislado"
-  },
-  {
-    "control": "Migración reversible y compatible",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Datos",
-    "siguienteAccion": "Ensayar expansión, despliegue y contracción"
-  },
-  {
-    "control": "Secretos y rotación",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Seguridad",
-    "siguienteAccion": "Rotar una credencial sin reconstruir la imagen"
-  },
-  {
-    "control": "Alerta accionable",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Operaciones",
-    "siguienteAccion": "Provocar un fallo y registrar la alerta recibida"
-  },
-  {
-    "control": "Capacidad bajo carga",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Operaciones",
-    "siguienteAccion": "Medir latencia y errores con una carga representativa"
-  },
-  {
-    "control": "Rollback y runbook",
-    "estado": "pendiente",
-    "evidencia": "",
-    "responsable": "Operaciones",
-    "siguienteAccion": "Ensayar reversa y documentar la decisión"
-  }
-]
-```
-
-Crea `src/readiness.js`:
-
-```js
-import { readFile } from "node:fs/promises";
-
-export function evaluarReadiness(controles) {
-  if (!Array.isArray(controles) || controles.length === 0) {
-    throw new Error("La evaluación necesita controles");
-  }
-
-  for (const item of controles) {
-    for (const campo of ["control", "estado", "responsable", "siguienteAccion"]) {
-      if (typeof item[campo] !== "string" || !item[campo].trim()) {
-        throw new Error(`Campo obligatorio ausente: ${campo}`);
-      }
-    }
-    if (!["verificado", "pendiente", "no aplica"].includes(item.estado)) {
-      throw new Error(`Estado inválido en ${item.control}`);
-    }
-    if (item.estado === "verificado" && !item.evidencia?.trim()) {
-      throw new Error(`${item.control}: verificado exige evidencia`);
-    }
-    if (item.estado === "no aplica" && !item.evidencia?.trim()) {
-      throw new Error(`${item.control}: no aplica exige justificación`);
-    }
-  }
-
-  const pendientes = controles.filter((item) => item.estado === "pendiente");
-  return {
-    listoParaProduccion: pendientes.length === 0,
-    verificados: controles.filter((item) => item.estado === "verificado").length,
-    pendientes: pendientes.map((item) => item.control),
-  };
-}
-
-const archivo = new URL("../readiness.json", import.meta.url);
-const controles = JSON.parse(await readFile(archivo, "utf8"));
-console.log(JSON.stringify(evaluarReadiness(controles), null, 2));
-```
-
-Ejecuta:
-
-```bash
-node src/readiness.js
-```
-
-**Resultado esperado:** `listoParaProduccion: false`, cero controles verificados y los ocho pendientes enumerados. El programa no confunde completar el JSON con superar una revisión de producción.
-
-**Fallo deliberado y corrección:** cambia el primer estado a `verificado` sin completar `evidencia`. La ejecución debe fallar con `verificado exige evidencia`. No inventes una prueba para corregirlo: devuelve el estado a `pendiente`. Solo después de ejecutar realmente la prueba de acceso cruzado puedes registrar comando, fecha y resultado como evidencia.
-
-**Práctica guiada:** añade una prueba automatizada en un archivo `test/readiness.test.js` creado manualmente. Debe comprobar tres casos: un control verificado sin evidencia es rechazado, un pendiente impide `listoParaProduccion` y un control no aplicable exige justificación. Configura `npm pkg set scripts.test="node --test"` y ejecuta `npm test`.
-
-**Ejercicio independiente:** redacta `runbook-incidente.md` en la raíz de este proyecto para el escenario «aumento de respuestas 500 después del despliegue». Incluye umbral de detección, consulta de métricas y logs, mitigación, condición de rollback, comunicación, recuperación de datos si aplica y acciones posteriores. Asigna un responsable y una señal objetiva de cierre.
-
-#### Aplica
-
-En el proyecto integrador independiente del final, entrega una matriz de preparación con evidencia ejecutable para autorización, límites, restauración, secretos, alertas, carga y rollback. Todo lo no comprobado debe quedar pendiente; la imagen Docker funcional no se presentará como autorización para publicar.
-
-**Checklist de salida.**
-
-- [ ] Creaste el evaluador y su inventario desde una carpeta vacía.
-- [ ] Cada control tiene responsable y siguiente acción.
-- [ ] Un estado verificado sin evidencia provoca un error.
-- [ ] Un control no aplicable requiere justificación.
-- [ ] Los controles pendientes impiden declarar preparación productiva.
-- [ ] Distingues backups de restauraciones y logs de alertas.
-
-**Si falla:** un JSON con una coma sobrante produce un error de parseo; corrige la sintaxis antes de interpretar estados. Si el resultado declara preparación con pendientes, revisa el cálculo de `pendientes.length`. No reduzcas la lista de controles únicamente para obtener `true`.
-
-**Errores comunes:** usar cobertura como única señal, escribir evidencia no ejecutada, omitir restauración, no asignar responsables, migrar sin compatibilidad hacia atrás, guardar secretos en la imagen o llamar productiva a una demo sin alertas y recuperación.
-
-**Fuentes oficiales:** [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE Workbook](https://sre.google/workbook/) y [The Twelve-Factor App](https://12factor.net/).
-
-### Tema 4: Próximos pasos — microservicios, colas de mensajes y TypeScript · Intermedio · 75 min
-
-#### Aprende
-
-**Prerrequisitos:** Node.js 24 LTS, npm, JSON y arquitectura por capas. El proyecto toma una decisión sobre un caso propio y no reutiliza código de otros temas.
-
-**Al terminar podrás:** justificar si conviene conservar un monolito modular, separar un servicio, introducir una cola o adoptar TypeScript a partir de restricciones y evidencia, incluyendo coste y reversa.
-
-**Por qué importa:** estas tecnologías resuelven problemas distintos y añaden costes distintos. Adoptarlas como una progresión obligatoria puede convertir un sistema operable en una red de despliegues, mensajes duplicados y diagnósticos distribuidos sin resolver una necesidad medida.
-
-Los **microservicios** se justifican cuando existen límites de dominio claros y una necesidad real de despliegue, escalado, aislamiento o propiedad independiente. A cambio introducen red, contratos versionados, observabilidad distribuida y fallos parciales. Un equipo pequeño con un solo flujo de despliegue suele beneficiarse primero de un monolito modular.
-
-Las **colas** desacoplan disponibilidad y ritmo de procesamiento cuando el trabajo puede completarse después. Exigen idempotencia, reintentos con límite, *dead-letter*, control de antigüedad y una política de consistencia eventual. RabbitMQ encaja en colas de tareas y enrutamiento; Kafka se orienta a flujos de eventos retenidos y múltiples consumidores. Ninguno convierte automáticamente un proceso en fiable ni es necesario para toda notificación.
-
-**TypeScript** añade contratos estáticos y refactorización asistida cuando el código, los colaboradores o las integraciones crecen. No valida por sí solo datos en tiempo de ejecución ni mejora una arquitectura confusa. Puede adoptarse por fronteras, con validación de entrada y una configuración estricta gradual; JavaScript con JSDoc y pruebas puede seguir siendo una decisión razonable.
-
-**Analogía:** elegir arquitectura es decidir si un restaurante necesita otra cocina, un servicio de mensajería o un mejor sistema de fichas. Cada opción ayuda con un cuello de botella diferente; comprar los tres sin medir solo aumenta la coordinación.
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-decision-condicionada
-cd ejemplo-decision-condicionada
-npm init -y
-npm pkg set type=module
-mkdir src
-```
-
-Crea `decision.json` para un servicio que debe procesar 20 informes por minuto y cuyo equipo aún no tiene requisito de despliegue independiente:
-
-```json
-{
-  "problema": "Los informes bloquean hasta 2 segundos una petición HTTP",
-  "restricciones": [
-    "Un equipo mantiene todo el sistema",
-    "El usuario puede consultar el informe terminado después",
-    "No hay necesidad medida de escalar el informe por separado"
-  ],
-  "opciones": [
-    {
-      "nombre": "Monolito modular",
-      "condicion": "Mantener si el procesamiento dentro de la petición cumple el objetivo",
-      "beneficio": "Una sola unidad de despliegue y depuración",
-      "costo": "El trabajo comparte recursos con la API",
-      "riesgo": "Acoplamiento si desaparecen los límites internos",
-      "evidencia": "20 informes por minuto y sin despliegue independiente",
-      "reversa": "No requiere migración"
-    },
-    {
-      "nombre": "Cola dentro del mismo sistema desplegable",
-      "condicion": "Considerar porque la respuesta no necesita esperar el informe",
-      "beneficio": "Desacopla la petición del tiempo de procesamiento",
-      "costo": "Requiere consumidor, idempotencia y monitorización de antigüedad",
-      "riesgo": "Duplicados y estados parcialmente completados",
-      "evidencia": "El informe puede consultarse después; falta medir la cola elegida",
-      "reversa": "Conservar temporalmente el procesamiento síncrono detrás de una bandera"
-    },
-    {
-      "nombre": "Microservicio de informes",
-      "condicion": "Considerar solo si aparece propiedad o escalado independiente",
-      "beneficio": "Despliegue y recursos independientes",
-      "costo": "Red, contratos, observabilidad y operación adicionales",
-      "riesgo": "Fallos parciales y datos distribuidos",
-      "evidencia": "No existe todavía una restricción que lo justifique",
-      "reversa": "Mantener el contrato interno para reintegrar el módulo"
-    },
-    {
-      "nombre": "TypeScript en el módulo de informes",
-      "condicion": "Considerar si los errores de contrato aumentan al crecer el módulo",
-      "beneficio": "Contratos estáticos y refactorización asistida",
-      "costo": "Compilación, tipos de dependencias y migración gradual",
-      "riesgo": "Confiar en tipos sin validar entradas externas",
-      "evidencia": "Medir primero defectos de contrato; no se presupone el beneficio",
-      "reversa": "Adopción por archivos sin reescritura completa"
-    }
-  ]
-}
-```
-
-Crea `src/evaluar.js`:
-
-```js
-import { readFile } from "node:fs/promises";
-
-const campos = ["condicion", "beneficio", "costo", "riesgo", "evidencia", "reversa"];
-
-export function evaluarDecision(decision) {
-  if (!decision.problema?.trim() || !Array.isArray(decision.restricciones)) {
-    throw new Error("Define problema y restricciones antes de elegir");
-  }
-  if (!Array.isArray(decision.opciones) || decision.opciones.length < 2) {
-    throw new Error("Compara al menos dos opciones");
-  }
-
-  for (const opcion of decision.opciones) {
-    for (const campo of campos) {
-      if (typeof opcion[campo] !== "string" || !opcion[campo].trim()) {
-        throw new Error(`${opcion.nombre}: falta ${campo}`);
-      }
-    }
-  }
-
-  return {
-    decision: "documentada; todavía requiere validar las condiciones con medidas",
-    opcionesComparadas: decision.opciones.map((opcion) => opcion.nombre),
-    progresionObligatoria: false,
-  };
-}
-
-const archivo = new URL("../decision.json", import.meta.url);
-console.log(evaluarDecision(JSON.parse(await readFile(archivo, "utf8"))));
-```
-
-Ejecuta:
-
-```bash
-node src/evaluar.js
-```
-
-**Resultado esperado:** aparecen las cuatro opciones y `progresionObligatoria: false`. El programa valida que la comparación esté completa; no selecciona automáticamente una tecnología porque la evidencia todavía incluye mediciones pendientes.
-
-**Fallo deliberado y corrección:** elimina `costo` de la opción de microservicio. La ejecución falla con `Microservicio de informes: falta costo`. Restaura el coste completo; quitar también la opción para ocultar el error impediría comparar alternativas.
-
-**Práctica guiada:** añade una medición concreta de latencia y frecuencia a `restricciones`. Escribe qué resultado cambiaría la recomendación de monolito a cola y cuál justificaría separar un servicio. Si ninguna medición lo exige, conserva la opción más simple y registra el siguiente momento de revisión.
-
-**Ejercicio independiente:** añade a este proyecto `experimento.cjs` o `experimento.mjs` que simule un consumidor que recibe dos veces el mismo `jobId`. Debe demostrar idempotencia con un almacén local acotado y rechazar reintentos después de tres intentos. Explica por qué esa simulación no prueba todavía RabbitMQ ni Kafka y escribe el criterio que justificaría probar uno de ellos.
-
-#### Aplica
-
-En el proyecto integrador independiente del final, conserva inicialmente un monolito modular. Añade un registro de decisión para colas, separación de servicios y TypeScript: cada cambio necesita una condición medida, coste operativo, estrategia de reversa y pruebas de fallos. No introduzcas ninguno como requisito para terminar el proyecto.
-
-**Checklist de salida.**
-
-- [ ] Comparaste varias opciones a partir de un problema concreto.
-- [ ] Cada opción declara condición, beneficio, coste, riesgo, evidencia y reversa.
-- [ ] Las colas incluyen idempotencia y reintentos acotados.
-- [ ] Los microservicios exigen una necesidad independiente demostrable.
-- [ ] TypeScript se evalúa sin confundir tipos con validación en tiempo de ejecución.
-- [ ] Mantener el monolito modular aparece como una decisión válida.
-
-**Si falla:** si la recomendación menciona primero un producto y después busca el problema, invierte el análisis. Si una cola parece eliminar todos los fallos, documenta duplicados, orden, veneno de mensajes, *dead-letter* y consistencia eventual antes de elegirla.
-
-**Errores comunes:** microservicios por moda, una base compartida sin propiedad clara, colas sin idempotencia, reintentos infinitos, Kafka para una tarea sin requisito de flujo retenido, TypeScript sin validación externa o métricas inventadas para justificar la decisión.
-
-**Fuentes oficiales:** [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html), [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html), [RabbitMQ — reliability](https://www.rabbitmq.com/docs/reliability) y [Apache Kafka — documentation](https://kafka.apache.org/documentation/).
-
-### Tema 5: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min
-
-#### Aprende
-
-**Prerrequisitos:** Node.js 24 LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
+**Prerrequisitos:** Node.js LTS, npm, HTTP, JSON, eventos asíncronos y coordenadas básicas. El proyecto incluye servidor, cliente y pruebas propios; no necesita una aplicación móvil ni archivos anteriores.
 
 **Al terminar podrás:** validar coordenadas y antigüedad, autenticar un canal, autorizar cada jornada, asignar secuencias en el servidor, publicar después de persistir y recuperar un intervalo acotado con una señal de reinicio cuando el historial ya no baste.
 
@@ -1063,7 +269,7 @@ En el proyecto integrador independiente del final, conserva inicialmente un mono
 
 Latitud pertenece a `[-90, 90]`, longitud a `[-180, 180]` y la precisión no puede ser negativa. `capturedAt` representa cuándo se tomó la muestra; el servidor aplica una política de antigüedad y margen de futuro. La **secuencia** la asigna el servidor por jornada después de aceptar el comando. Una restricción única como `(journey_id, sequence_number)` evita duplicar el efecto al reintentar en una base durable.
 
-**Para leer, no para instalar en este curso:** en PostgreSQL con la extensión PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
+En PostgreSQL con PostGIS, un punto puede almacenarse como `geography(Point, 4326)`. `ST_MakePoint` recibe **longitud antes que latitud**:
 
 ```sql
 ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
@@ -1374,7 +580,7 @@ En PowerShell, asigna `$env:LAB_TOKEN="token-local-de-laboratorio-con-mas-de-32-
 
 #### Aplica
 
-En el proyecto integrador del final (que parte del Tema 2), almacena posiciones con Prisma en columnas de latitud y longitud validadas y con secuencia única por jornada, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
+En el proyecto integrador independiente del final, almacena posiciones en PostGIS con longitud y latitud en el orden correcto, autoriza cada jornada y publica solo después de confirmar persistencia. Añade pruebas de reconexión, duplicado, hueco fuera de retención y acceso cruzado. Si exiges que ninguna publicación se pierda tras una caída entre base y socket, incorpora outbox; no presentes la emisión directa como esa garantía.
 
 **Checklist de salida.**
 
@@ -1394,11 +600,11 @@ En el proyecto integrador del final (que parte del Tema 2), almacena posiciones 
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/), [RFC 7946 — GeoJSON](https://www.rfc-editor.org/rfc/rfc7946), [PostGIS — ST_MakePoint](https://postgis.net/docs/ST_MakePoint.html) y [PostgreSQL — unique constraints](https://www.postgresql.org/docs/current/ddl-constraints.html).
 
-### Tema 6: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min
+### Tema 3: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, buffers, archivos, promesas y autorización por recurso. El proyecto crea su propio servicio, almacenamiento en cuarentena y pruebas; no requiere credenciales de Firebase ni archivos de otros temas.
 
 **Al terminar podrás:** validar una imagen por su contenido, limitar tamaño y dimensiones, guardarla con un nombre generado por el servidor en cuarentena, impedir cargas en entregas ajenas y confirmar una entrega aunque falle la notificación posterior.
 
@@ -1683,30 +889,762 @@ En el proyecto integrador independiente del final, incorpora evidencias PNG con 
 
 **Fuentes oficiales:** [Node.js — fs](https://nodejs.org/api/fs.html), [Node.js — crypto](https://nodejs.org/api/crypto.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), [Firebase Admin — mensajería](https://firebase.google.com/docs/cloud-messaging/send-message) y [pngjs](https://github.com/pngjs/pngjs).
 
+### Tema 4: Uniendo cada módulo del track · Avanzado · 180 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, Express, Prisma, JWT, pruebas HTTP y Docker. Debes tener un daemon de Docker disponible para Testcontainers. El proyecto crea su esquema, sus usuarios de prueba y todos sus archivos desde cero.
+
+**Al terminar podrás:** integrar configuración, Express, una relación real de Prisma, access y refresh tokens, pruebas contra PostgreSQL efímero, logs con correlación y una imagen Docker multi-stage.
+
+**Por qué importa:** comprender middleware, persistencia o autenticación por separado no demuestra que colaboren. Un contrato puede romperse precisamente en la unión: el login puede emitir un token que el middleware rechaza, o una prueba puede pasar con mocks mientras la consulta real es inválida.
+
+La integración conserva las fronteras del tema anterior. Express traduce HTTP; Prisma implementa persistencia; `jose` firma y verifica tokens; Pino registra hechos sin credenciales. La relación `User 1—N Delivery` se comprueba leyendo la entrega con su propietario. El refresh token contiene un `jti` que también existe en la base: una firma válida no basta si el identificador fue revocado o expiró.
+
+Testcontainers levanta PostgreSQL para la prueba y `prisma db push` crea el esquema de ese laboratorio. Esto es apropiado para una prueba de integración, no una estrategia de migración de producción. Supertest usa la aplicación sin depender de un puerto fijo. El Dockerfile empaqueta el resultado, pero construir una imagen tampoco demuestra que el servicio esté listo para tráfico real.
+
+```text
+Supertest → Express + correlación → JWT → Prisma → PostgreSQL efímero
+                              └── Pino: request, resultado y correlationId
+```
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-integracion-track
+cd ejemplo-integracion-track
+npm init -y
+npm pkg set type=module scripts.start="node src/server.js" scripts.test="node --test --test-concurrency=1"
+npm install express jose pino bcrypt @prisma/client
+npm install --save-dev prisma supertest testcontainers
+mkdir -p prisma src test
+```
+
+Crea `prisma/schema.prisma`:
+
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String
+  deliveries    Delivery[]
+  refreshTokens RefreshToken[]
+}
+
+model Delivery {
+  id        String   @id @default(uuid())
+  title     String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String    @id
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  revokedAt DateTime?
+}
+```
+
+Crea `src/config.js`. La configuración rechaza valores ambiguos antes de escuchar:
+
+```js
+export function cargarConfiguracion() {
+  const databaseUrl = process.env.DATABASE_URL ?? "";
+  const jwtSecret = process.env.JWT_SECRET ?? "";
+  const port = Number(process.env.PORT ?? 3000);
+
+  if (!databaseUrl.startsWith("postgresql://")) {
+    throw new Error("DATABASE_URL debe ser una URL PostgreSQL");
+  }
+  if (Buffer.byteLength(jwtSecret) < 32) {
+    throw new Error("JWT_SECRET debe contener al menos 32 bytes");
+  }
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new Error("PORT debe ser un entero entre 1 y 65535");
+  }
+
+  return Object.freeze({ databaseUrl, jwtSecret, port });
+}
+```
+
+Crea `src/app.js`:
+
+```js
+import { randomUUID } from "node:crypto";
+import express from "express";
+import bcrypt from "bcrypt";
+import { SignJWT, jwtVerify } from "jose";
+
+const issuer = "integracion-track";
+const audience = "entregas-api";
+
+export function crearApp({ prisma, logger, jwtSecret }) {
+  const app = express();
+  const clave = new TextEncoder().encode(jwtSecret);
+  app.disable("x-powered-by");
+  app.use(express.json({ limit: "32kb" }));
+
+  app.use((req, res, next) => {
+    const propuesto = req.get("x-request-id");
+    req.id = propuesto && propuesto.length <= 100 ? propuesto : randomUUID();
+    req.log = logger.child({ correlationId: req.id });
+    res.setHeader("x-request-id", req.id);
+    res.on("finish", () => {
+      req.log.info({ method: req.method, path: req.path, status: res.statusCode }, "request");
+    });
+    next();
+  });
+
+  async function firmarAccess(user) {
+    return new SignJWT({ type: "access" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject(user.id)
+      .setIssuer(issuer)
+      .setAudience(audience)
+      .setIssuedAt()
+      .setExpirationTime("15m")
+      .sign(clave);
+  }
+
+  app.get("/health", async (_req, res, next) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      res.json({ ok: true });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/auth/login", async (req, res, next) => {
+    try {
+      const { email, password } = req.body ?? {};
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user || !(await bcrypt.compare(password ?? "", user.passwordHash))) {
+        return res.status(401).json({ error: "Credenciales inválidas" });
+      }
+
+      const jti = randomUUID();
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      await prisma.refreshToken.create({ data: { id: jti, userId: user.id, expiresAt } });
+
+      const refreshToken = await new SignJWT({ type: "refresh" })
+        .setProtectedHeader({ alg: "HS256" })
+        .setSubject(user.id)
+        .setJti(jti)
+        .setIssuer(issuer)
+        .setAudience(audience)
+        .setIssuedAt()
+        .setExpirationTime("7d")
+        .sign(clave);
+
+      res.json({ accessToken: await firmarAccess(user), refreshToken });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/auth/refresh", async (req, res, next) => {
+    try {
+      const token = req.body?.refreshToken ?? "";
+      const { payload } = await jwtVerify(token, clave, {
+        issuer,
+        audience,
+        algorithms: ["HS256"],
+      });
+      if (payload.type !== "refresh" || !payload.jti || !payload.sub) {
+        return res.status(401).json({ error: "Refresh token inválido" });
+      }
+
+      const almacenado = await prisma.refreshToken.findUnique({
+        where: { id: payload.jti },
+        include: { user: true },
+      });
+      const vigente = almacenado
+        && almacenado.userId === payload.sub
+        && !almacenado.revokedAt
+        && almacenado.expiresAt > new Date();
+      if (!vigente) return res.status(401).json({ error: "Refresh revocado o expirado" });
+
+      res.json({ accessToken: await firmarAccess(almacenado.user) });
+    } catch {
+      res.status(401).json({ error: "Refresh token inválido" });
+    }
+  });
+
+  async function exigirAccess(req, res, next) {
+    try {
+      const header = req.headers.authorization ?? "";
+      const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+      const { payload } = await jwtVerify(token, clave, {
+        issuer,
+        audience,
+        algorithms: ["HS256"],
+      });
+      if (payload.type !== "access" || !payload.sub) throw new Error("Tipo inválido");
+      req.user = { id: payload.sub };
+      next();
+    } catch {
+      res.status(401).json({ error: "Access token inválido" });
+    }
+  }
+
+  app.post("/deliveries", exigirAccess, async (req, res, next) => {
+    try {
+      const title = typeof req.body?.title === "string" ? req.body.title.trim() : "";
+      if (title.length < 3 || title.length > 120) {
+        return res.status(422).json({ error: "Título inválido" });
+      }
+      const delivery = await prisma.delivery.create({
+        data: { title, userId: req.user.id },
+      });
+      res.status(201).json(delivery);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/deliveries", exigirAccess, async (req, res, next) => {
+    try {
+      const deliveries = await prisma.delivery.findMany({
+        where: { userId: req.user.id },
+        include: { user: { select: { id: true, email: true } } },
+      });
+      res.json(deliveries);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.use((error, req, res, _next) => {
+    req.log.error({ error: error.message }, "request fallida");
+    res.status(500).json({ error: "Error interno", correlationId: req.id });
+  });
+
+  return app;
+}
+```
+
+Crea `src/server.js`:
+
+```js
+import { PrismaClient } from "@prisma/client";
+import pino from "pino";
+import { cargarConfiguracion } from "./config.js";
+import { crearApp } from "./app.js";
+
+const config = cargarConfiguracion();
+const prisma = new PrismaClient({ datasources: { db: { url: config.databaseUrl } } });
+const logger = pino({ level: process.env.LOG_LEVEL ?? "info" });
+const app = crearApp({ prisma, logger, jwtSecret: config.jwtSecret });
+const server = app.listen(config.port, () => logger.info({ port: config.port }, "API lista"));
+
+async function apagar() {
+  server.close(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+}
+process.on("SIGTERM", apagar);
+process.on("SIGINT", apagar);
+```
+
+Crea `test/integracion.test.js`:
+
+```js
+import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { after, before, test } from "node:test";
+import bcrypt from "bcrypt";
+import pino from "pino";
+import supertest from "supertest";
+import { GenericContainer } from "testcontainers";
+
+let container;
+let prisma;
+let app;
+let user;
+const jwtSecret = "secreto-local-de-pruebas-con-mas-de-32-bytes";
+
+before(async () => {
+  container = await new GenericContainer("postgres:16-alpine")
+    .withEnvironment({
+      POSTGRES_USER: "test",
+      POSTGRES_PASSWORD: "test",
+      POSTGRES_DB: "entregas",
+    })
+    .withExposedPorts(5432)
+    .start();
+
+  process.env.DATABASE_URL = `postgresql://test:test@${container.getHost()}:${container.getMappedPort(5432)}/entregas`;
+  execFileSync("npx", ["prisma", "db", "push", "--skip-generate"], {
+    env: process.env,
+    stdio: "inherit",
+  });
+
+  prisma = new PrismaClient();
+  const { crearApp } = await import("../src/app.js");
+  app = crearApp({ prisma, logger: pino({ enabled: false }), jwtSecret });
+  user = await prisma.user.create({
+    data: {
+      email: "ana@example.test",
+      passwordHash: await bcrypt.hash("clave-larga-de-prueba", 10),
+    },
+  });
+});
+
+after(async () => {
+  await prisma?.$disconnect();
+  await container?.stop();
+});
+
+test("login, operación protegida, relación y refresh funcionan juntos", async () => {
+  await supertest(app).get("/deliveries").expect(401);
+
+  const login = await supertest(app)
+    .post("/auth/login")
+    .send({ email: "ana@example.test", password: "clave-larga-de-prueba" })
+    .expect(200);
+
+  await supertest(app)
+    .post("/deliveries")
+    .set("Authorization", `Bearer ${login.body.accessToken}`)
+    .send({ title: "Entrega integrada" })
+    .expect(201);
+
+  const lista = await supertest(app)
+    .get("/deliveries")
+    .set("Authorization", `Bearer ${login.body.accessToken}`)
+    .expect(200);
+  assert.equal(lista.body.length, 1);
+  assert.equal(lista.body[0].user.id, user.id);
+  assert.equal(lista.body[0].user.passwordHash, undefined);
+
+  const renovado = await supertest(app)
+    .post("/auth/refresh")
+    .send({ refreshToken: login.body.refreshToken })
+    .expect(200);
+  assert.equal(typeof renovado.body.accessToken, "string");
+});
+```
+
+Crea `Dockerfile`:
+
+```dockerfile
+FROM node:lts-bookworm-slim AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY prisma ./prisma
+RUN npx prisma generate
+
+FROM node:lts-bookworm-slim AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY prisma ./prisma
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY src ./src
+USER node
+EXPOSE 3000
+CMD ["node", "src/server.js"]
+```
+
+Crea `.dockerignore`:
+
+```text
+node_modules
+npm-debug.log
+test
+.git
+.env
+```
+
+Ejecuta la prueba de integración y construye la imagen:
+
+```bash
+npm test
+docker build -t entregas-track:local .
+```
+
+**Resultado esperado:** la prueba levanta PostgreSQL, crea el esquema, obtiene `401` sin token, completa login y alta protegida, lee la relación con el usuario sin exponer `passwordHash` y renueva el access token. Docker termina una imagen local multi-stage. Estas señales verifican el laboratorio; no acreditan capacidad ni seguridad de producción.
+
+**Fallo deliberado y corrección:** ejecuta `PORT=abc DATABASE_URL=postgresql://localhost/entregas JWT_SECRET=clave-local-de-laboratorio-con-mas-de-32-bytes npm start`. La configuración debe rechazar el puerto antes de escuchar. Corrige `PORT` con un entero válido. Después cambia en una petición de prueba el access token por el refresh token: debe recibir `401`, porque el middleware exige `type: "access"`; no elimines esa comprobación para hacerlo pasar.
+
+**Práctica guiada:** añade `POST /auth/logout` que reciba el refresh token, verifique su firma y marque `revokedAt` solo si pertenece al `sub` verificado. Repite `/auth/refresh` y comprueba `401`. Añade a la prueba una cabecera `x-request-id` conocida y verifica que vuelve en la respuesta sin registrar tokens.
+
+**Ejercicio independiente:** incorpora rotación de refresh tokens: cada renovación revoca el `jti` anterior y crea uno nuevo en una transacción. Demuestra que reutilizar el token anterior falla. Añade un segundo usuario y prueba que no puede leer las entregas del primero aunque tenga un access token válido.
+
+#### Aplica
+
+En el proyecto integrador independiente del final, conecta registro, login, refresh, operación protegida y consulta de entregas con una relación real. Ejecuta el flujo crítico contra PostgreSQL efímero, exige correlación en cada respuesta y empaqueta exactamente esa versión en Docker. Documenta por separado cualquier control todavía pendiente.
+
+**Checklist de salida.**
+
+- [ ] El proyecto contiene desde cero esquema, aplicación, pruebas y Docker.
+- [ ] La configuración inválida impide arrancar.
+- [ ] La relación uno-a-muchos se verifica con una consulta real.
+- [ ] Access y refresh tienen propósitos distintos y no son intercambiables.
+- [ ] El refresh se contrasta con un registro vigente en la base.
+- [ ] Los logs incluyen correlación y excluyen contraseñas y tokens.
+- [ ] La prueba usa PostgreSQL real y la imagen se construye sin secretos incorporados.
+
+**Si falla:** si Prisma no encuentra tablas, revisa que `db push` se ejecute con la misma `DATABASE_URL` que usa el test. Si el login funciona y la ruta protegida no, compara issuer, audience, algoritmo y `type` al firmar y verificar. Si Docker no encuentra el cliente generado, comprueba que el esquema y los artefactos de Prisma se copien antes de `CMD`.
+
+**Errores comunes:** afirmar integración con mocks en todas las capas, compartir una base entre pruebas, aceptar refresh como access, devolver hashes, registrar credenciales, usar `prisma db push` como migración productiva o meter secretos en la imagen.
+
+**Modelo mental:** trata el sistema como un recorrido vertical, no como una colección de carpetas: una petición atraviesa el límite HTTP, una regla de aplicación, persistencia y una respuesta. Cada frontera traduce su contrato; si el fallo aparece solo al unir capas, reduce el recorrido hasta la primera entrada cuya salida ya no cumple ese contrato.
+
+**Cuándo integrar:** construye esta vertical cuando las piezas tienen contratos locales comprobados; conserva pruebas unitarias para reglas y de integración para sus uniones. No reemplaces las pruebas pequeñas con un único test end-to-end: cuando falla un recorrido enorme, cuesta separar configuración, autenticación, consulta y serialización.
+
+**Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/docs), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
+
+### Tema 5: Qué le falta a esta API para producción real · Avanzado · 75 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, JSON, HTTP y conceptos de seguridad y operación. Este proyecto evalúa evidencia escrita; no necesita ni reutiliza una API anterior.
+
+**Al terminar podrás:** elaborar una evaluación de preparación que distinga «verificado», «pendiente» y «no aplica», rechace afirmaciones sin evidencia y produzca una lista honesta de trabajo restante.
+
+**Por qué importa:** una demo puede devolver `200` y seguir permitiendo acceso a recursos ajenos, perder datos al reiniciar o no tener forma de recuperarse. Producción no es una etiqueta que se obtiene por completar dependencias: requiere controles observados, responsables y criterios de recuperación.
+
+La revisión cubre al menos cinco dimensiones. **Seguridad:** autenticación, autorización por recurso, límites y gestión de secretos. **Datos:** copias, restauración, retención y migraciones compatibles con versiones anteriores. **Resiliencia:** tiempos de espera, reintentos acotados, idempotencia y degradación. **Observabilidad:** métricas, logs, trazas y alertas accionables. **Operación:** despliegue, rollback, capacidad, runbooks y responsables.
+
+Una evidencia debe permitir comprobar el estado: comando y resultado, enlace a una prueba, fecha de una restauración o medición de carga. «Existe un healthcheck» no prueba que una alerta llegue al equipo. «Hay backup» no prueba que pueda restaurarse. Un control «no aplica» necesita una justificación, no sirve para ocultar un riesgo.
+
+**Analogía:** es la inspección previa de una aeronave. Arrancar el motor equivale a la demo; la inspección exige comprobar frenos, instrumentos, combustible y procedimientos. La analogía no convierte una lista en certificación: cada elemento necesita una prueba real y criterio profesional.
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-readiness-evidencia
+cd ejemplo-readiness-evidencia
+npm init -y
+npm pkg set type=module
+mkdir src
+```
+
+Crea `readiness.json`. El estado inicial es deliberadamente prudente: los controles todavía no ejecutados permanecen pendientes:
+
+```json
+[
+  {
+    "control": "Autorización por entrega",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Backend",
+    "siguienteAccion": "Probar acceso cruzado entre dos repartidores"
+  },
+  {
+    "control": "Límites de cuerpo y frecuencia",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Backend",
+    "siguienteAccion": "Medir rechazo de cargas y ráfagas excesivas"
+  },
+  {
+    "control": "Restauración de base de datos",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Plataforma",
+    "siguienteAccion": "Restaurar una copia en un entorno aislado"
+  },
+  {
+    "control": "Migración reversible y compatible",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Datos",
+    "siguienteAccion": "Ensayar expansión, despliegue y contracción"
+  },
+  {
+    "control": "Secretos y rotación",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Seguridad",
+    "siguienteAccion": "Rotar una credencial sin reconstruir la imagen"
+  },
+  {
+    "control": "Alerta accionable",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Operaciones",
+    "siguienteAccion": "Provocar un fallo y registrar la alerta recibida"
+  },
+  {
+    "control": "Capacidad bajo carga",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Operaciones",
+    "siguienteAccion": "Medir latencia y errores con una carga representativa"
+  },
+  {
+    "control": "Rollback y runbook",
+    "estado": "pendiente",
+    "evidencia": "",
+    "responsable": "Operaciones",
+    "siguienteAccion": "Ensayar reversa y documentar la decisión"
+  }
+]
+```
+
+Crea `src/readiness.js`:
+
+```js
+import { readFile } from "node:fs/promises";
+
+export function evaluarReadiness(controles) {
+  if (!Array.isArray(controles) || controles.length === 0) {
+    throw new Error("La evaluación necesita controles");
+  }
+
+  for (const item of controles) {
+    for (const campo of ["control", "estado", "responsable", "siguienteAccion"]) {
+      if (typeof item[campo] !== "string" || !item[campo].trim()) {
+        throw new Error(`Campo obligatorio ausente: ${campo}`);
+      }
+    }
+    if (!["verificado", "pendiente", "no aplica"].includes(item.estado)) {
+      throw new Error(`Estado inválido en ${item.control}`);
+    }
+    if (item.estado === "verificado" && !item.evidencia?.trim()) {
+      throw new Error(`${item.control}: verificado exige evidencia`);
+    }
+    if (item.estado === "no aplica" && !item.evidencia?.trim()) {
+      throw new Error(`${item.control}: no aplica exige justificación`);
+    }
+  }
+
+  const pendientes = controles.filter((item) => item.estado === "pendiente");
+  return {
+    listoParaProduccion: pendientes.length === 0,
+    verificados: controles.filter((item) => item.estado === "verificado").length,
+    pendientes: pendientes.map((item) => item.control),
+  };
+}
+
+const archivo = new URL("../readiness.json", import.meta.url);
+const controles = JSON.parse(await readFile(archivo, "utf8"));
+console.log(JSON.stringify(evaluarReadiness(controles), null, 2));
+```
+
+Ejecuta:
+
+```bash
+node src/readiness.js
+```
+
+**Resultado esperado:** `listoParaProduccion: false`, cero controles verificados y los ocho pendientes enumerados. El programa no confunde completar el JSON con superar una revisión de producción.
+
+**Fallo deliberado y corrección:** cambia el primer estado a `verificado` sin completar `evidencia`. La ejecución debe fallar con `verificado exige evidencia`. No inventes una prueba para corregirlo: devuelve el estado a `pendiente`. Solo después de ejecutar realmente la prueba de acceso cruzado puedes registrar comando, fecha y resultado como evidencia.
+
+**Práctica guiada:** añade una prueba automatizada en un archivo `test/readiness.test.js` creado manualmente. Debe comprobar tres casos: un control verificado sin evidencia es rechazado, un pendiente impide `listoParaProduccion` y un control no aplicable exige justificación. Configura `npm pkg set scripts.test="node --test"` y ejecuta `npm test`.
+
+**Ejercicio independiente:** redacta `runbook-incidente.md` en la raíz de este proyecto para el escenario «aumento de respuestas 500 después del despliegue». Incluye umbral de detección, consulta de métricas y logs, mitigación, condición de rollback, comunicación, recuperación de datos si aplica y acciones posteriores. Asigna un responsable y una señal objetiva de cierre.
+
+#### Aplica
+
+En el proyecto integrador independiente del final, entrega una matriz de preparación con evidencia ejecutable para autorización, límites, restauración, secretos, alertas, carga y rollback. Todo lo no comprobado debe quedar pendiente; la imagen Docker funcional no se presentará como autorización para publicar.
+
+**Checklist de salida.**
+
+- [ ] Creaste el evaluador y su inventario desde una carpeta vacía.
+- [ ] Cada control tiene responsable y siguiente acción.
+- [ ] Un estado verificado sin evidencia provoca un error.
+- [ ] Un control no aplicable requiere justificación.
+- [ ] Los controles pendientes impiden declarar preparación productiva.
+- [ ] Distingues backups de restauraciones y logs de alertas.
+
+**Si falla:** un JSON con una coma sobrante produce un error de parseo; corrige la sintaxis antes de interpretar estados. Si el resultado declara preparación con pendientes, revisa el cálculo de `pendientes.length`. No reduzcas la lista de controles únicamente para obtener `true`.
+
+**Errores comunes:** usar cobertura como única señal, escribir evidencia no ejecutada, omitir restauración, no asignar responsables, migrar sin compatibilidad hacia atrás, guardar secretos en la imagen o llamar productiva a una demo sin alertas y recuperación.
+
+**Fuentes oficiales:** [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE Workbook](https://sre.google/workbook/) y [The Twelve-Factor App](https://12factor.net/).
+
+### Tema 6: Próximos pasos — microservicios, colas de mensajes y TypeScript · Avanzado · 75 min
+
+#### Aprende
+
+**Prerrequisitos:** Node.js LTS, npm, JSON y arquitectura por capas. El proyecto toma una decisión sobre un caso propio y no reutiliza código de otros temas.
+
+**Al terminar podrás:** justificar si conviene conservar un monolito modular, separar un servicio, introducir una cola o adoptar TypeScript a partir de restricciones y evidencia, incluyendo coste y reversa.
+
+**Por qué importa:** estas tecnologías resuelven problemas distintos y añaden costes distintos. Adoptarlas como una progresión obligatoria puede convertir un sistema operable en una red de despliegues, mensajes duplicados y diagnósticos distribuidos sin resolver una necesidad medida.
+
+Los **microservicios** se justifican cuando existen límites de dominio claros y una necesidad real de despliegue, escalado, aislamiento o propiedad independiente. A cambio introducen red, contratos versionados, observabilidad distribuida y fallos parciales. Un equipo pequeño con un solo flujo de despliegue suele beneficiarse primero de un monolito modular.
+
+Las **colas** desacoplan disponibilidad y ritmo de procesamiento cuando el trabajo puede completarse después. Exigen idempotencia, reintentos con límite, *dead-letter*, control de antigüedad y una política de consistencia eventual. RabbitMQ encaja en colas de tareas y enrutamiento; Kafka se orienta a flujos de eventos retenidos y múltiples consumidores. Ninguno convierte automáticamente un proceso en fiable ni es necesario para toda notificación.
+
+**TypeScript** añade contratos estáticos y refactorización asistida cuando el código, los colaboradores o las integraciones crecen. No valida por sí solo datos en tiempo de ejecución ni mejora una arquitectura confusa. Puede adoptarse por fronteras, con validación de entrada y una configuración estricta gradual; JavaScript con JSDoc y pruebas puede seguir siendo una decisión razonable.
+
+**Analogía:** elegir arquitectura es decidir si un restaurante necesita otra cocina, un servicio de mensajería o un mejor sistema de fichas. Cada opción ayuda con un cuello de botella diferente; comprar los tres sin medir solo aumenta la coordinación.
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-decision-condicionada
+cd ejemplo-decision-condicionada
+npm init -y
+npm pkg set type=module
+mkdir src
+```
+
+Crea `decision.json` para un servicio que debe procesar 20 informes por minuto y cuyo equipo aún no tiene requisito de despliegue independiente:
+
+```json
+{
+  "problema": "Los informes bloquean hasta 2 segundos una petición HTTP",
+  "restricciones": [
+    "Un equipo mantiene todo el sistema",
+    "El usuario puede consultar el informe terminado después",
+    "No hay necesidad medida de escalar el informe por separado"
+  ],
+  "opciones": [
+    {
+      "nombre": "Monolito modular",
+      "condicion": "Mantener si el procesamiento dentro de la petición cumple el objetivo",
+      "beneficio": "Una sola unidad de despliegue y depuración",
+      "costo": "El trabajo comparte recursos con la API",
+      "riesgo": "Acoplamiento si desaparecen los límites internos",
+      "evidencia": "20 informes por minuto y sin despliegue independiente",
+      "reversa": "No requiere migración"
+    },
+    {
+      "nombre": "Cola dentro del mismo sistema desplegable",
+      "condicion": "Considerar porque la respuesta no necesita esperar el informe",
+      "beneficio": "Desacopla la petición del tiempo de procesamiento",
+      "costo": "Requiere consumidor, idempotencia y monitorización de antigüedad",
+      "riesgo": "Duplicados y estados parcialmente completados",
+      "evidencia": "El informe puede consultarse después; falta medir la cola elegida",
+      "reversa": "Conservar temporalmente el procesamiento síncrono detrás de una bandera"
+    },
+    {
+      "nombre": "Microservicio de informes",
+      "condicion": "Considerar solo si aparece propiedad o escalado independiente",
+      "beneficio": "Despliegue y recursos independientes",
+      "costo": "Red, contratos, observabilidad y operación adicionales",
+      "riesgo": "Fallos parciales y datos distribuidos",
+      "evidencia": "No existe todavía una restricción que lo justifique",
+      "reversa": "Mantener el contrato interno para reintegrar el módulo"
+    },
+    {
+      "nombre": "TypeScript en el módulo de informes",
+      "condicion": "Considerar si los errores de contrato aumentan al crecer el módulo",
+      "beneficio": "Contratos estáticos y refactorización asistida",
+      "costo": "Compilación, tipos de dependencias y migración gradual",
+      "riesgo": "Confiar en tipos sin validar entradas externas",
+      "evidencia": "Medir primero defectos de contrato; no se presupone el beneficio",
+      "reversa": "Adopción por archivos sin reescritura completa"
+    }
+  ]
+}
+```
+
+Crea `src/evaluar.js`:
+
+```js
+import { readFile } from "node:fs/promises";
+
+const campos = ["condicion", "beneficio", "costo", "riesgo", "evidencia", "reversa"];
+
+export function evaluarDecision(decision) {
+  if (!decision.problema?.trim() || !Array.isArray(decision.restricciones)) {
+    throw new Error("Define problema y restricciones antes de elegir");
+  }
+  if (!Array.isArray(decision.opciones) || decision.opciones.length < 2) {
+    throw new Error("Compara al menos dos opciones");
+  }
+
+  for (const opcion of decision.opciones) {
+    for (const campo of campos) {
+      if (typeof opcion[campo] !== "string" || !opcion[campo].trim()) {
+        throw new Error(`${opcion.nombre}: falta ${campo}`);
+      }
+    }
+  }
+
+  return {
+    decision: "documentada; todavía requiere validar las condiciones con medidas",
+    opcionesComparadas: decision.opciones.map((opcion) => opcion.nombre),
+    progresionObligatoria: false,
+  };
+}
+
+const archivo = new URL("../decision.json", import.meta.url);
+console.log(evaluarDecision(JSON.parse(await readFile(archivo, "utf8"))));
+```
+
+Ejecuta:
+
+```bash
+node src/evaluar.js
+```
+
+**Resultado esperado:** aparecen las cuatro opciones y `progresionObligatoria: false`. El programa valida que la comparación esté completa; no selecciona automáticamente una tecnología porque la evidencia todavía incluye mediciones pendientes.
+
+**Fallo deliberado y corrección:** elimina `costo` de la opción de microservicio. La ejecución falla con `Microservicio de informes: falta costo`. Restaura el coste completo; quitar también la opción para ocultar el error impediría comparar alternativas.
+
+**Práctica guiada:** añade una medición concreta de latencia y frecuencia a `restricciones`. Escribe qué resultado cambiaría la recomendación de monolito a cola y cuál justificaría separar un servicio. Si ninguna medición lo exige, conserva la opción más simple y registra el siguiente momento de revisión.
+
+**Ejercicio independiente:** añade a este proyecto `experimento.cjs` o `experimento.mjs` que simule un consumidor que recibe dos veces el mismo `jobId`. Debe demostrar idempotencia con un almacén local acotado y rechazar reintentos después de tres intentos. Explica por qué esa simulación no prueba todavía RabbitMQ ni Kafka y escribe el criterio que justificaría probar uno de ellos.
+
+#### Aplica
+
+En el proyecto integrador independiente del final, conserva inicialmente un monolito modular. Añade un registro de decisión para colas, separación de servicios y TypeScript: cada cambio necesita una condición medida, coste operativo, estrategia de reversa y pruebas de fallos. No introduzcas ninguno como requisito para terminar el proyecto.
+
+**Checklist de salida.**
+
+- [ ] Comparaste varias opciones a partir de un problema concreto.
+- [ ] Cada opción declara condición, beneficio, coste, riesgo, evidencia y reversa.
+- [ ] Las colas incluyen idempotencia y reintentos acotados.
+- [ ] Los microservicios exigen una necesidad independiente demostrable.
+- [ ] TypeScript se evalúa sin confundir tipos con validación en tiempo de ejecución.
+- [ ] Mantener el monolito modular aparece como una decisión válida.
+
+**Si falla:** si la recomendación menciona primero un producto y después busca el problema, invierte el análisis. Si una cola parece eliminar todos los fallos, documenta duplicados, orden, veneno de mensajes, *dead-letter* y consistencia eventual antes de elegirla.
+
+**Errores comunes:** microservicios por moda, una base compartida sin propiedad clara, colas sin idempotencia, reintentos infinitos, Kafka para una tarea sin requisito de flujo retenido, TypeScript sin validación externa o métricas inventadas para justificar la decisión.
+
+**Fuentes oficiales:** [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html), [Martin Fowler — Microservices](https://martinfowler.com/articles/microservices.html), [RabbitMQ — reliability](https://www.rabbitmq.com/docs/reliability) y [Apache Kafka — documentation](https://kafka.apache.org/documentation/).
+
 ## Laboratorio práctico
 
 ### Proyecto 12: API operativa de entregas
 
 **Objetivo del laboratorio:** construir en una carpeta nueva una API de entregas con arquitectura por capas, autenticación, persistencia, pruebas, observabilidad, posiciones recuperables, evidencias en cuarentena y notificaciones posteriores. El resultado es un prototipo integrable y desplegable en un entorno controlado; solo podrá evaluarse como candidato productivo cuando exista evidencia de los controles operativos pendientes.
 
-**Requisitos previos:** competencias de los Módulos 0–11, los Temas 1, 2, 5 y 6 de este módulo, Node.js 24 LTS, npm y Docker. El punto de partida es el proyecto del Tema 2 (`ejemplo-integracion-track`): ya tiene configuración validada, Express, Prisma 7 con `@prisma/adapter-pg`, login con access y refresh, Pino, una prueba con Testcontainers y el Dockerfile. Crea tus propias pruebas y secretos locales; no copies los de otros laboratorios.
+**Requisitos previos:** competencias de los Módulos 0–11, Node.js LTS, npm y Docker. No uses código, datos ni configuración de los laboratorios anteriores: escribe este proyecto desde cero y crea sus propias pruebas y secretos locales.
 
-Copia el proyecto del Tema 2 a una carpeta nueva para conservar el original y reorganízalo en capas (Tema 1):
+Inicia el proyecto independiente:
 
 ```bash
-cp -R ejemplo-integracion-track api-entregas-integrador
+mkdir api-entregas-integrador
 cd api-entregas-integrador
-rm -rf node_modules generated
-npm ci
-npm ls prisma @prisma/client @prisma/adapter-pg
-npm install socket.io socket.io-client
-npx prisma generate
-mkdir -p src/application src/domain src/http src/infrastructure quarantine
+npm init -y
+npm pkg set type=module scripts.start="node src/server.js" scripts.test="node --test --test-concurrency=1"
+mkdir -p src/application src/domain src/http src/infrastructure prisma test quarantine
 ```
 
-**Resultado esperado:** `npm ls` muestra las tres dependencias de Prisma en la misma versión `7.x`. Si aparece otra mayor, reinstala con `@7` antes de seguir: el resto del laboratorio usa la API de Prisma 7 del Módulo 5 (`prisma.config.ts`, generador `prisma-client`, `new PrismaClient({ adapter })`).
-
-Mueve `src/app.js` a `src/http/app.js` y `src/db.js` a `src/infrastructure/db.js`, y crea como mínimo estos archivos y contenidos:
+Crea manualmente, como mínimo, estos archivos y contenidos dentro del proyecto:
 
 | Archivo | Contenido requerido |
 |---|---|
@@ -1717,12 +1655,11 @@ Mueve `src/app.js` a `src/http/app.js` y `src/db.js` a `src/infrastructure/db.js
 | `src/domain/errores.js` | Errores de validación, autenticación, autorización, conflicto y recurso ausente |
 | `src/http/app.js` | Express, límites de cuerpo, correlación, login, refresh, rutas protegidas y traducción de errores |
 | `src/http/realtime.js` | Origen explícito, autenticación, autorización por jornada, límites, secuencia y reanudación |
-| `src/infrastructure/db.js` | `crearPrisma(databaseUrl)` con `PrismaPg`, como en el Tema 2; ningún otro archivo construye el cliente |
-| `src/infrastructure/prisma-repositorios.js` | Adaptadores transaccionales con `prisma.$transaction`, relación usuario–entregas, posiciones y outbox |
+| `src/infrastructure/prisma-repositorios.js` | Adaptadores transaccionales, relación usuario–entregas, posiciones y outbox |
 | `src/infrastructure/almacen-evidencias.js` | Claves UUID, escritura exclusiva, cuarentena no pública y metadatos mínimos |
-| `src/infrastructure/push.js` | Puerto de notificaciones con el doble explícito del Tema 6, payload mínimo e invalidación de instalaciones; un proveedor real (FCM, APNs) queda fuera del alcance del curso |
+| `src/infrastructure/push.js` | Adaptador Firebase Admin o doble explícito, payload mínimo e invalidación de instalaciones |
 | `src/server.js` | Configuración validada, composición e inyección de adaptadores y apagado ordenado |
-| `prisma.config.ts` y `prisma/schema.prisma` | Los del Tema 2 ampliados con posición (`latitud` y `longitud` `Float`, `@@unique([journeyId, sequenceNumber])`), evidencia y outbox; generador `prisma-client` y `datasource` sin `url` |
+| `prisma/schema.prisma` | Usuario, entrega, refresh, posición con unicidad, evidencia y outbox; PostgreSQL/PostGIS para posiciones |
 | `test/contratos.test.js` | Reglas y puertos con dobles que conservan las mismas formas de entrada y salida |
 | `test/integracion.test.js` | Flujo crítico con Supertest, PostgreSQL efímero y dos usuarios |
 | `test/realtime.test.js` | Duplicados, reconexión, hueco fuera de retención, posición antigua y acceso cruzado |
@@ -1735,14 +1672,14 @@ Mueve `src/app.js` a `src/http/app.js` y `src/db.js` a `src/infrastructure/db.js
 Implementa y verifica estos hitos en orden:
 
 1. **Dominio y contratos.** Una entrega pertenece a un repartidor y solo puede confirmarse con evidencia disponible. Prueba una transición válida, una inválida y acceso cruzado sin levantar HTTP.
-2. **Persistencia real.** Amplía el schema del Tema 2 con posiciones (`@@unique([journeyId, sequenceNumber])` y coordenadas validadas en rango), evidencias y outbox. Después de cada cambio ejecuta `npx prisma generate`; en la prueba, `npx prisma db push` crea el esquema en el PostgreSQL efímero. Si necesitas SQL que Prisma no modela, usa `prisma.$queryRaw` con plantilla (parámetros, no concatenación). PostGIS (Tema 5) queda como lectura: este laboratorio no lo instala.
+2. **Persistencia real.** Crea la relación uno-a-muchos, refresh revocable, posiciones con `(journey_id, sequence_number)` único y punto `geography(Point, 4326)`. Usa longitud antes que latitud y consultas parametrizadas.
 3. **Acceso completo.** Registro con contraseña derivada, login, access de corta duración y refresh con `jti` almacenado. Un refresh no funciona como access y un refresh revocado recibe `401`.
 4. **Operación protegida.** Crear y consultar entregas exige access; dos repartidores con el mismo rol no pueden leer ni modificar recursos ajenos. Los cuerpos tienen límite y las respuestas no exponen hashes ni tokens.
 5. **Observabilidad.** Cada respuesta contiene un identificador de correlación y cada log de petición incluye método, ruta, estado y correlación, sin cuerpos sensibles. `/health` distingue proceso disponible de base inaccesible.
 6. **Posiciones y recuperación.** Persiste antes de emitir. Prueba coordenadas inválidas, muestras antiguas, duplicados, orden lógico y recuperación desde la última secuencia. Un hueco fuera de retención exige instantánea; el canal no es almacenamiento durable.
 7. **Evidencia y push.** Rechaza un archivo que solo declara ser PNG, uno excedido y una entrega ajena. La evidencia queda en cuarentena hasta un análisis autorizado. El fallo push no revierte la confirmación y el outbox permite reintentos acotados.
-8. **Pruebas de integración.** Amplía `test/integracion.test.js` del Tema 2: Testcontainers crea una base limpia para login → refresh → alta protegida → posición → evidencia → confirmación. Los dobles quedan en pruebas unitarias; no sustituyen la verificación del esquema y las transacciones reales.
-9. **Empaquetado y configuración.** Un puerto, URL o secreto inválido impide arrancar. Reutiliza el Dockerfile del Tema 2 (`node:24-bookworm-slim`, `prisma generate` en la etapa de build, `CMD ["node", "--import", "tsx", "src/server.js"]`) con usuario no root y apagado ordenado; la imagen no lleva `.env`. Las migraciones de un entorno compartido se diseñan como expansión y contracción, no como `db push` improvisado.
+8. **Pruebas de integración.** Testcontainers crea una base limpia para login → refresh → alta protegida → posición → evidencia → confirmación. Los dobles quedan en pruebas unitarias; no sustituyen la verificación del esquema y las transacciones reales.
+9. **Empaquetado y configuración.** Un puerto, URL o secreto inválido impide arrancar. Construye la imagen sin `.env`, con usuario no root y apagado ordenado. Las migraciones de un entorno compartido se diseñan como expansión y contracción, no como `db push` improvisado.
 10. **Revisión de preparación.** Registra pendientes de alertas, restauración, carga, secretos, rollback y retención. Conserva el monolito modular salvo evidencia que justifique otra decisión.
 
 Ejecuta las comprobaciones del proyecto:
@@ -1750,7 +1687,7 @@ Ejecuta las comprobaciones del proyecto:
 ```bash
 npm test
 docker build -t api-entregas-integrador:local .
-npm start
+node src/server.js
 ```
 
 Para el último comando, define antes una `DATABASE_URL` de laboratorio, `JWT_SECRET`, el origen del cliente y las credenciales estrictamente necesarias. Detén el proceso con `Ctrl+C` y comprueba el cierre de conexiones.
@@ -1761,7 +1698,7 @@ Para el último comando, define antes una `DATABASE_URL` de laboratorio, `JWT_SE
 
 **Verificación de salida.**
 
-- [ ] El proyecto parte del Tema 2 y conserva Prisma 7 con `@prisma/adapter-pg` en una sola versión mayor fijada.
+- [ ] Todos los archivos del proyecto se escribieron en una carpeta nueva, sin importar laboratorios anteriores.
 - [ ] Las capas se conectan por contratos e inyección y las pruebas de dominio no requieren HTTP ni base.
 - [ ] Registro, login, refresh, revocación y operación protegida funcionan de principio a fin.
 - [ ] Dos usuarios del mismo rol no pueden acceder a recursos ajenos.

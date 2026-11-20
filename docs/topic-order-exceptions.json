@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    "control-1/28",
+    "java/2",
+    "spring-boot/7",
+    "spring-boot/9"
+  ]
+}

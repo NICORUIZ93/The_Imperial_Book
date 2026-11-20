@@ -4,7 +4,7 @@
 
 ### Tema 1: Worker Threads para trabajo CPU-bound · Intermedio · 45 min
 
-**Prerrequisito:** Node.js 24 LTS, módulos ES y manejo básico de la terminal.
+**Prerrequisito:** Node.js LTS, módulos ES y manejo básico de la terminal.
 
 **Al terminar podrás:** ejecutar un cálculo intensivo en un Worker Thread, comprobar que un temporizador del hilo principal sigue respondiendo y limitar la cantidad de cálculos simultáneos.
 
@@ -114,7 +114,7 @@ node src/calcular.js
 
 ### Tema 2: Cluster module y balanceo entre procesos · Intermedio · 45 min
 
-**Prerrequisito:** Node.js 24 LTS, HTTP básico y comprensión de procesos y puertos locales.
+**Prerrequisito:** Node.js LTS, HTTP básico y comprensión de procesos y puertos locales.
 
 **Al terminar podrás:** iniciar dos procesos con `cluster`, identificar qué PID atiende cada respuesta y demostrar que su estado en memoria no se comparte.
 
@@ -229,272 +229,9 @@ Sustituye el texto por ese número, verifica que corresponde a esta práctica y 
 
 **Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
 
-### Tema 3: Colas de trabajo con BullMQ · Intermedio · 50 min
+### Tema 3: Redis para caché, idempotencia y Pub/Sub · Avanzado · 50 min
 
-**Prerrequisito:** Node.js 24 LTS, Docker, Redis básico y funciones asíncronas.
-
-**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
-
-#### Aprende
-
-**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
-
-**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
-
-Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
-
-**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
-
-**Conceptos clave:**
-
-- Productor, cola, consumidor y estado en Redis.
-- `attempts`, backoff, `jobId` y concurrencia acotada.
-- Reintentos ante fallos transitorios e idempotencia del efecto.
-- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
-
-#### Practica
-
-Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
-
-```bash
-mkdir practica-bullmq
-cd practica-bullmq
-mkdir src
-docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
-```
-
-Crea manualmente `package.json`:
-
-```json
-{
-  "name": "practica-bullmq",
-  "private": true,
-  "type": "module",
-  "dependencies": {
-    "bullmq": "^5.0.0"
-  }
-}
-```
-
-Instala la dependencia declarada:
-
-```bash
-npm install
-```
-
-Crea `src/cola.js`:
-
-```js
-import { Queue, Worker } from "bullmq";
-
-const connection = { host: "127.0.0.1", port: 6379 };
-const queue = new Queue("etiquetas", { connection });
-const efectosLocales = new Set();
-
-const worker = new Worker(
-  "etiquetas",
-  async (job) => {
-    console.log(`intento=${job.attemptsMade + 1} guia=${job.data.guia}`);
-    if (job.attemptsMade === 0) throw new Error("fallo transitorio simulado");
-    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
-    efectosLocales.add(job.data.guia);
-    return { guia: job.data.guia };
-  },
-  { connection, concurrency: 2 },
-);
-
-worker.on("failed", (job, error) => {
-  console.log(`falló job=${job?.id}: ${error.message}`);
-});
-worker.on("error", (error) => console.error("worker_error", error.message));
-
-let timeout;
-const completado = new Promise((resolve, reject) => {
-  worker.once("completed", (job) => resolve(job.id));
-  timeout = setTimeout(() => reject(new Error("tiempo de espera agotado")), 10000);
-});
-
-try {
-  const opciones = {
-    jobId: "etiqueta-RF-100",
-    attempts: 3,
-    backoff: { type: "exponential", delay: 100 },
-  };
-  const original = await queue.add("generar", { guia: "RF-100" }, opciones);
-  const idCompletado = await completado;
-  const duplicado = await queue.add("generar", { guia: "RF-100" }, opciones);
-  console.log({ original: original.id, idCompletado, duplicado: duplicado.id });
-} finally {
-  clearTimeout(timeout);
-  await worker.close();
-  await queue.close();
-}
-```
-
-Ejecuta:
-
-```bash
-node src/cola.js
-```
-
-**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
-
-**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
-
-**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
-
-**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
-
-Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
-
-```bash
-docker rm -f redis-practica-bullmq
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
-
-**Checklist de salida:**
-
-- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
-- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
-- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
-- [ ] Un fallo permanente se detiene después del número configurado de intentos.
-- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
-- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
-
-**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
-
-**Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
-
-### Tema 4: PM2, memory leaks y heap snapshots · Intermedio · 50 min
-
-**Prerrequisito:** Node.js 24 LTS, procesos locales y Chrome DevTools para la inspección visual.
-
-**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
-
-#### Aprende
-
-**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
-
-**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
-
-`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
-
-PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
-
-**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
-
-**Conceptos clave:**
-
-- Referencias vivas, garbage collection y comparación de snapshots.
-- RSS, `heapUsed` y `external` como métricas diferentes.
-- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
-- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
-
-#### Practica
-
-Empieza en una carpeta vacía:
-
-```bash
-mkdir practica-memoria
-cd practica-memoria
-mkdir src
-```
-
-Crea `package.json`:
-
-```json
-{
-  "name": "practica-memoria",
-  "private": true,
-  "type": "module",
-  "devDependencies": {
-    "pm2": "^5.4.3"
-  }
-}
-```
-
-Instala la dependencia de desarrollo:
-
-```bash
-npm install
-```
-
-Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
-
-```js
-const retenidos = [];
-let solicitud = 0;
-
-setInterval(() => {
-  for (let i = 0; i < 100; i += 1) {
-    solicitud += 1;
-    retenidos.push({ solicitud, payload: "x".repeat(1024) });
-  }
-  const { rss, heapUsed, external } = process.memoryUsage();
-  const mb = (bytes) => Math.round(bytes / 1024 / 1024);
-  console.log({ objetos: retenidos.length, rssMB: mb(rss), heapUsedMB: mb(heapUsed), externalMB: mb(external) });
-}, 500);
-```
-
-Ejecuta el inspector únicamente en loopback:
-
-```bash
-node --inspect=127.0.0.1:9229 src/leak.js
-```
-
-Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
-
-**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
-
-**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
-
-**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
-
-**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
-
-```js
-module.exports = {
-  apps: [{ name: "memoria-academia", script: "src/cache-limitada.js", instances: 1 }],
-};
-```
-
-Arranca y observa la versión corregida con:
-
-```bash
-npx pm2 start ecosystem.config.cjs
-npx pm2 logs memoria-academia
-```
-
-Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
-
-```bash
-npx pm2 stop memoria-academia
-npx pm2 delete memoria-academia
-```
-
-#### Aplica
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
-
-**Checklist de salida:**
-
-- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
-- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
-- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
-- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
-- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
-- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
-
-**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
-
-**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
-
-### Tema 5: Redis para caché, idempotencia y Pub/Sub · Intermedio · 50 min
-
-**Prerrequisito:** Node.js 24 LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
+**Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
 
 **Al terminar podrás:** implementar una lectura cache-aside con TTL, comprobar una reserva atómica con `SET NX EX` y demostrar que Pub/Sub pierde mensajes cuando no hay suscriptores conectados.
 
@@ -644,253 +381,268 @@ docker rm -f redis-practica-patrones
 
 **Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
 
-### Tema 6: Perfilar CPU con `--cpu-prof` y encontrar lo que bloquea el event loop · Intermedio · 40 min
+### Tema 4: Colas de trabajo con BullMQ · Avanzado · 50 min
 
-**Duración estimada:** 40 min (3 subtemas de 10–15 min).
-**¿Por qué es importante?** En el Tema 1 moviste trabajo a un Worker porque **sabías** que era pesado. En producción lo habitual es lo contrario: la API «a veces va lenta» y nadie sabe qué función es la culpable. Un perfil de CPU muestra en qué funciones se fue el tiempo del hilo principal, para optimizar con datos en vez de intuición.
+**Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
 
-**Prerrequisitos:** Tema 1 de este módulo (Worker Threads), Tema 4 (heap snapshots) y Módulo 3 (servidor con `node:http`). Node 24 LTS y `curl`. Guía oficial de referencia: «Don't Block the Event Loop».
+**Al terminar podrás:** publicar un trabajo con identificador estable, observar un reintento con backoff y cerrar productor y consumidor sin dejar conexiones abiertas.
+
+#### Aprende
+
+**Por qué importa:** generar una etiqueta o enviar una notificación puede ser lento o fallar temporalmente. Encolar separa la respuesta HTTP del procesamiento, limita la concurrencia del consumidor y hace visibles los reintentos. Para una consulta rápida, en cambio, la cola añade latencia e infraestructura sin beneficio.
+
+**Explicación específica:** el productor añade jobs a una cola de BullMQ; Redis conserva su estado y un Worker los procesa. `attempts` acota los intentos y `backoff` separa los reintentos. `jobId` evita insertar dos jobs con el mismo identificador mientras ese job existe y se conserva. La concurrencia del Worker debe ser explícita y ajustada a CPU, memoria y límites del servicio dependiente.
+
+Un reintento puede repetir un efecto que ya ocurrió si la confirmación se perdió. Por eso el consumidor debe ser idempotente. Ni `jobId` ni una marca temporal en Redis vuelven durable por sí solos un correo enviado, un cobro o una escritura externa: la garantía debe apoyarse en una restricción única, un registro transaccional o el mecanismo idempotente del proveedor. Cierra `Worker`, `Queue` y eventos asociados al terminar.
+
+**Analogía:** es una bandeja numerada de trabajos. Si el operador pierde momentáneamente una herramienta, vuelve a intentar la misma orden después de esperar. El número evita dos fichas iguales en la bandeja, pero el almacén de destino todavía necesita impedir que se fabrique dos veces el mismo pedido.
+
+**Conceptos clave:**
+
+- Productor, cola, consumidor y estado en Redis.
+- `attempts`, backoff, `jobId` y concurrencia acotada.
+- Reintentos ante fallos transitorios e idempotencia del efecto.
+- Cierre ordenado y conservación de jobs para poder diagnosticar su estado.
+
+#### Practica
+
+Comienza en una carpeta vacía. Usa un contenedor propio y una versión fijada de Redis:
 
 ```bash
-mkdir -p academia-labs/node/perfil-cpu && cd academia-labs/node/perfil-cpu
-npm init -y
-npm pkg set type=module
+mkdir practica-bullmq
+cd practica-bullmq
+mkdir src
+docker run --name redis-practica-bullmq -p 127.0.0.1:6379:6379 -d redis:7.2.5-alpine
 ```
 
-#### Subtema 6.1: Demuestra que una ruta bloquea a las demás · 10 min
+Crea manualmente `package.json`:
 
-**1. Contexto**
-RutaFlow calcula la ruta más corta entre 11 paradas probando todas las permutaciones. Mientras calcula, ¿puede responder `/salud`?
-
-**2. Hazlo tú**
-Crea `servidor.js`:
-
-```javascript
-import { createServer } from 'node:http';
-
-function distanciaKm(a, b) {
-  const rad = (g) => (g * Math.PI) / 180;
-  const dLat = rad(b.lat - a.lat);
-  const dLon = rad(b.lon - a.lon);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
-  return 2 * 6371 * Math.asin(Math.sqrt(h));
-}
-
-function rutaMasCorta(paradas) {
-  let mejor = Infinity;
-  const permutar = (resto, actual, recorrido) => {
-    if (resto.length === 0) { mejor = Math.min(mejor, recorrido); return; }
-    for (let i = 0; i < resto.length; i++) {
-      const siguiente = resto[i];
-      permutar(resto.toSpliced(i, 1), siguiente, recorrido + distanciaKm(actual, siguiente));
-    }
-  };
-  permutar(paradas.slice(1), paradas[0], 0);
-  return mejor;
-}
-
-const paradas = Array.from({ length: 11 }, (_, i) => ({ lat: 4.6 + i * 0.01, lon: -74.08 + ((i * 7) % 10) * 0.01 }));
-
-createServer((req, res) => {
-  if (req.url === '/ruta') {
-    const km = rutaMasCorta(paradas);
-    res.end(JSON.stringify({ km: Number(km.toFixed(2)) }));
-  } else if (req.url === '/salud') {
-    res.end(JSON.stringify({ ok: true }));
-  } else {
-    res.statusCode = 404;
-    res.end();
+```json
+{
+  "name": "practica-bullmq",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bullmq": "^5.0.0"
   }
-}).listen(4020, () => console.log('escuchando en 4020'));
-
-// Ctrl+C debe terminar con process.exit para que Node escriba el perfil de --cpu-prof.
-process.on('SIGINT', () => process.exit(0));
+}
 ```
+
+Instala la dependencia declarada:
 
 ```bash
-node servidor.js
+npm install
 ```
 
-En otra terminal, lanza `/ruta` y, 0,1 s después, `/salud`:
+Crea `src/cola.js`:
 
-```bash
-curl -s -o /dev/null -w "ruta %{time_total}s\n" localhost:4020/ruta & sleep 0.1; curl -s -w "  salud %{time_total}s\n" localhost:4020/salud; wait
-```
+```js
+import { Queue, Worker } from "bullmq";
 
-**Resultado esperado** (los tiempos dependen de tu equipo):
+const connection = { host: "127.0.0.1", port: 6379 };
+const queue = new Queue("etiquetas", { connection });
+const efectosLocales = new Set();
 
-```text
-{"ok":true}  salud 0.590935s
-ruta 0.689719s
-```
+const worker = new Worker(
+  "etiquetas",
+  async (job) => {
+    console.log(`intento=${job.attemptsMade + 1} guia=${job.data.guia}`);
+    if (job.attemptsMade === 0) throw new Error("fallo transitorio simulado");
+    if (efectosLocales.has(job.data.guia)) return { duplicado: true };
+    efectosLocales.add(job.data.guia);
+    return { guia: job.data.guia };
+  },
+  { connection, concurrency: 2 },
+);
 
-**Fallo deliberado:** sube las paradas de `11` a `12` en `Array.from({ length: 11 }, …)` y repite. **Resultado:** `/salud` tarda ahora varios segundos (12 paradas son 11 veces más permutaciones). **Diagnóstico:** `/salud` no hace nada costoso; espera porque el único hilo de JavaScript está ocupado en `/ruta`. Vuelve a `11`.
+worker.on("failed", (job, error) => {
+  console.log(`falló job=${job?.id}: ${error.message}`);
+});
+worker.on("error", (error) => console.error("worker_error", error.message));
 
-**3. Entiende**
-Node atiende todas las peticiones en un hilo. Una función síncrona larga no «ralentiza su ruta»: **congela todas**. Por eso el síntoma aparece en endpoints inocentes. **Límite:** medir con `curl` dice **que** algo bloquea, no **qué** función; para eso necesitas el perfil.
-
-**4. Cierra**
-Anota el tiempo de `/salud` con 11 paradas. Es la línea base.
-
-#### Subtema 6.2: Graba y lee un perfil con `--cpu-prof` · 15 min
-
-**1. Contexto**
-Necesitas la lista de funciones ordenada por tiempo de CPU propio, sin instalar herramientas.
-
-**2. Hazlo tú**
-Arranca el servidor con el perfilador, llama tres veces a `/ruta` y detén con `Ctrl+C`:
-
-```bash
-node --cpu-prof --cpu-prof-dir=perfiles servidor.js
-# en la otra terminal:
-for i in 1 2 3; do curl -s localhost:4020/ruta; echo; done
-```
-
-Al terminar aparece `perfiles/CPU.<fecha>.<hora>.<pid>.0.001.cpuprofile`. Es JSON: ábrelo en Chrome DevTools (**Performance → Load profile**) para verlo como gráfico de llamas, o resúmelo con este script `analizar-perfil.js`:
-
-```javascript
-import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
-
-const carpeta = process.argv[2] ?? 'perfiles';
-const archivo = readdirSync(carpeta).filter((f) => f.endsWith('.cpuprofile')).sort().at(-1);
-const perfil = JSON.parse(readFileSync(join(carpeta, archivo), 'utf8'));
-
-const nodos = new Map(perfil.nodes.map((n) => [n.id, n]));
-const propioMs = new Map();
-perfil.samples.forEach((id, i) => {
-  const { functionName, url, lineNumber } = nodos.get(id).callFrame;
-  const nombre = `${functionName || '(anónima)'} ${url.split('/').at(-1)}:${lineNumber + 1}`;
-  propioMs.set(nombre, (propioMs.get(nombre) ?? 0) + perfil.timeDeltas[i] / 1000);
+let timeout;
+const completado = new Promise((resolve, reject) => {
+  worker.once("completed", (job) => resolve(job.id));
+  timeout = setTimeout(() => reject(new Error("tiempo de espera agotado")), 10000);
 });
 
-const total = [...propioMs.values()].reduce((a, b) => a + b, 0);
-console.log(`perfil: ${archivo} · ${total.toFixed(0)} ms muestreados`);
-for (const [nombre, ms] of [...propioMs].sort((a, b) => b[1] - a[1]).slice(0, 5)) {
-  console.log(`${(100 * ms / total).toFixed(1).padStart(5)}%  ${ms.toFixed(0).padStart(6)} ms  ${nombre}`);
-}
-```
-
-```bash
-node analizar-perfil.js
-```
-
-**Resultado esperado** (los porcentajes varían, el orden no):
-
-```text
-perfil: CPU.20261118.201319.28874.0.001.cpuprofile · 3266 ms muestreados
- 38.5%    1259 ms  permutar servidor.js:13
- 29.6%     966 ms  (idle) :0
- 26.5%     867 ms  distanciaKm servidor.js:3
-  3.3%     109 ms  (garbage collector) :0
-  0.4%      13 ms  (program) :0
-```
-
-**Fallo deliberado:** borra la última línea de `servidor.js` (`process.on('SIGINT', …)`), repite la grabación y detén con `Ctrl+C`. **Resultado:** la carpeta `perfiles` no se crea. **Diagnóstico:** Node escribe el perfil al **salir** normalmente; si la señal mata el proceso, no hay salida ordenada y el perfil se pierde. Restaura el manejador.
-
-**3. Entiende**
-`--cpu-prof` activa el muestreador de V8: cada pocos microsegundos anota qué función estaba ejecutándose. El **tiempo propio** de una función es el de las muestras en que estaba en la cima de la pila. `(idle)` es el hilo esperando I/O (bueno); `(garbage collector)` es memoria que se libera. Aquí casi todo el trabajo útil está en `permutar` y `distanciaKm`, y `distanciaKm` hace trigonometría que se repite millones de veces con los mismos pares de paradas. **Límite:** el muestreo es estadístico; funciones muy cortas pueden no aparecer, y perfilar añade algo de sobrecarga, así que compara perfiles grabados igual.
-
-**4. Cierra**
-Guarda el resumen. Ya sabes qué función atacar primero.
-
-#### Subtema 6.3: Optimiza lo que el perfil señala y vuelve a medir · 15 min
-
-**1. Contexto**
-El perfil dice que una cuarta parte del tiempo se va en recalcular distancias entre las mismas 11 paradas.
-
-**2. Hazlo tú**
-Reemplaza `rutaMasCorta` en `servidor.js` por esta versión que calcula cada distancia una sola vez:
-
-```javascript
-function rutaMasCorta(paradas) {
-  // Cada distancia se calcula una sola vez: n² llamadas en vez de una por paso de cada permutación.
-  const matriz = paradas.map((a) => paradas.map((b) => distanciaKm(a, b)));
-  let mejor = Infinity;
-  const permutar = (resto, actual, recorrido) => {
-    if (resto.length === 0) { mejor = Math.min(mejor, recorrido); return; }
-    for (let i = 0; i < resto.length; i++) {
-      const siguiente = resto[i];
-      permutar(resto.toSpliced(i, 1), siguiente, recorrido + matriz[actual][siguiente]);
-    }
+try {
+  const opciones = {
+    jobId: "etiqueta-RF-100",
+    attempts: 3,
+    backoff: { type: "exponential", delay: 100 },
   };
-  permutar(paradas.map((_, i) => i).slice(1), 0, 0);
-  return mejor;
+  const original = await queue.add("generar", { guia: "RF-100" }, opciones);
+  const idCompletado = await completado;
+  const duplicado = await queue.add("generar", { guia: "RF-100" }, opciones);
+  console.log({ original: original.id, idCompletado, duplicado: duplicado.id });
+} finally {
+  clearTimeout(timeout);
+  await worker.close();
+  await queue.close();
 }
 ```
 
-Graba otro perfil igual que antes y mide:
+Ejecuta:
 
 ```bash
-node --cpu-prof --cpu-prof-dir=perfiles servidor.js
-# en la otra terminal:
-for i in 1 2 3; do curl -s -o /dev/null -w "%{time_total}\n" localhost:4020/ruta; done
-curl -s localhost:4020/ruta; echo
-# Ctrl+C en la primera terminal y luego:
-node analizar-perfil.js
+node src/cola.js
 ```
 
-**Resultado esperado** (en el equipo de referencia, de unos 0,72 s a unos 0,38 s por cálculo):
+**Resultado esperado:** el primer intento falla, BullMQ espera y reintenta; después aparece un evento de completado. Los tres identificadores impresos son `etiqueta-RF-100`, y el segundo `add` no inicia otro procesamiento.
 
-```text
-0.402091
-0.371007
-0.373698
-{"km":35.1}
-perfil: CPU.20261118.201340.29454.0.001.cpuprofile · 2639 ms muestreados
- 55.3%    1461 ms  permutar servidor.js:15
- 36.5%     962 ms  (idle) :0
-  4.7%     124 ms  (garbage collector) :0
+**Fallo deliberado y corrección:** el primer intento ya es el fallo controlado. Si eliminaras `attempts` o intercalaras un `catch` vacío, el fallo quedaría perdido o sin diagnóstico. Conserva el lanzamiento del error, el límite de tres intentos, el backoff y el evento `failed`; esos elementos corrigen el fallo transitorio sin ocultarlo.
+
+**Práctica guiada:** cambia el procesador para que falle siempre con `Error("proveedor no disponible")`. Ejecuta y registra tres intentos fallidos, no un bucle infinito. Corrige después el procesador para fallar solo cuando `job.attemptsMade === 0`, como en el ejemplo inicial, y verifica nuevamente la finalización. Cierra el script en ambos casos mediante el bloque `finally`.
+
+**Ejercicio independiente:** crea `src/productor.js` y `src/consumidor.js` desde cero. El productor debe aceptar una guía por argumento, publicar con `jobId` derivado de esa guía y cerrar su `Queue`. El consumidor debe usar concurrencia dos, tres intentos con backoff y cierre ante `SIGINT`/`SIGTERM`. Simula un proveedor que registra guías procesadas y demuestra que repetir la publicación no repite el efecto local. Después explica por qué ese `Set` no sobrevive a un reinicio y qué restricción única necesitaría el almacén real.
+
+Al terminar toda la práctica, elimina únicamente el contenedor creado aquí:
+
+```bash
+docker rm -f redis-practica-bullmq
 ```
 
-**Fallo deliberado:** en la nueva versión, cambia `permutar(paradas.map((_, i) => i).slice(1), 0, 0)` por `permutar(paradas.slice(1), paradas[0], 0)`. **Resultado:** `curl` no recibe respuesta y el servidor termina con `TypeError: Cannot read properties of undefined (reading '#<Object>')` en la línea de `matriz[actual][siguiente]`. **Diagnóstico:** la nueva `permutar` trabaja con **índices**; con objetos, `matriz[objeto]` es `undefined`. Restaura la llamada y comprueba siempre que el resultado optimizado es **igual** al original (`35.1`).
+#### Aplica
 
-**3. Entiende**
-`distanciaKm` desapareció del perfil y el tiempo bajó a la mitad: optimizaste lo que los datos señalaban. Pero `permutar` sigue ocupando el hilo cientos de milisegundos, así que `/salud` aún espera. Optimizar reduce el bloqueo; **no** lo elimina. Para trabajo que sigue siendo largo, la salida es el Worker del Tema 1 o un algoritmo distinto. **Límite:** no optimices sin perfil «antes» y «después» grabados de la misma forma; sin ellos no sabes si mejoraste.
+**Transferencia al proyecto integrador «API operativa de entregas»:** el endpoint de etiquetas debe responder con un identificador de trabajo y dejar la generación a un consumidor separado. Limita concurrencia y reintentos, registra el fallo definitivo y protege el efecto con una clave única durable en el sistema que lo ejecuta.
 
-**4. Cierra**
-Guarda los dos resúmenes de perfil y los tiempos. El cálculo de rutas queda medido y documentado.
+**Checklist de salida:**
 
-**Hito del tema:**
+- [ ] Redis usa una versión fijada y la conexión apunta a loopback.
+- [ ] El primer fallo se reintenta y el job termina en un intento posterior.
+- [ ] Publicar dos veces `etiqueta-RF-100` no crea dos procesamientos en la demostración.
+- [ ] Un fallo permanente se detiene después del número configurado de intentos.
+- [ ] `Worker` y `Queue` se cierran incluso cuando hay un error.
+- [ ] Distingues deduplicación del job de idempotencia durable del efecto externo.
 
-- [ ] Demostré con `curl` que `/ruta` retrasa a `/salud`.
-- [ ] Grabé un `.cpuprofile` y lo resumí con `analizar-perfil.js` (o lo abrí en DevTools).
-- [ ] Reproduje la pérdida del perfil sin manejador de `SIGINT` y expliqué la causa.
-- [ ] Comparé perfiles antes y después, con el mismo resultado `35.1`, y expliqué por qué `/salud` todavía espera.
+**Errores comunes:** no cerrar consumidores; concurrencia ilimitada; reintentos infinitos; ocultar errores en un `catch` vacío; confiar solo en Redis para un efecto externo crítico; eliminar jobs completados cuando el `jobId` aún se necesita para deduplicar.
 
-**Ejercicio:** mueve `rutaMasCorta` a un Worker (Tema 1) para que `/salud` responda en milisegundos mientras `/ruta` calcula. Antes de abrir la solución, escribe qué tiempo esperas para `/salud` con la prueba del subtema 6.1 y si `/ruta` será más rápida o no.
+**Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
 
-<details>
-<summary>Solución — ábrela después de intentarlo</summary>
+### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 50 min
 
-Crea `ruta.worker.js` con `distanciaKm` y la versión optimizada de `rutaMasCorta` (cópialas tal cual) y al final:
+**Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
 
-```javascript
-import { parentPort, workerData } from 'node:worker_threads';
+**Al terminar podrás:** reproducir una retención creciente de objetos JavaScript, comparar dos heap snapshots y aplicar una corrección que acote las referencias retenidas.
 
-// ... distanciaKm y rutaMasCorta aquí ...
+#### Aprende
 
-parentPort.postMessage(rutaMasCorta(workerData));
+**Por qué importa:** una API puede degradarse durante horas porque conserva referencias de solicitudes ya terminadas. Reiniciar con PM2 recupera temporalmente el servicio, pero no elimina la causa. Medir y comparar snapshots permite localizar qué objetos permanecen vivos.
+
+**Explicación específica:** el garbage collector libera objetos inalcanzables; una fuga aparece cuando una referencia viva mantiene objetos que ya no se necesitan. `process.memoryUsage()` ofrece señales distintas: RSS es memoria residente del proceso, `heapUsed` es memoria usada en el heap de V8 y `external` representa memoria externa asociada, por ejemplo a ciertos `Buffer`. RSS no equivale a heap, y `heapUsed` puede subir y bajar con el GC.
+
+`Buffer.alloc()` incrementa principalmente memoria externa para buffers grandes; no debe usarse como prueba simple de que `heapUsed` crece. Para estudiar el heap, retén objetos JavaScript. Un heap snapshot captura ese heap en un instante; comparar dos snapshots bajo una carga repetible ayuda a identificar clases y referencias que crecen. `--max-old-space-size` cambia un límite de V8, no corrige una fuga.
+
+PM2 aporta arranque, logs y reinicio en despliegues sin orquestador. Un orquestador de contenedores puede asumir esas funciones. En ambos casos, un reinicio por memoria es una medida operativa, no un diagnóstico ni una reparación.
+
+**Analogía:** PM2 es un supervisor que vuelve a encender una máquina detenida. El snapshot es una fotografía del almacén: comparar dos fotos muestra qué cajas se acumulan. Ampliar el almacén o vaciarlo cada noche no explica por qué siguen llegando cajas que nadie retira.
+
+**Conceptos clave:**
+
+- Referencias vivas, garbage collection y comparación de snapshots.
+- RSS, `heapUsed` y `external` como métricas diferentes.
+- Inspector ligado a `127.0.0.1`, nunca expuesto a toda la red durante la práctica.
+- PM2 como supervisor; `--max-old-space-size` como límite, no como corrección.
+
+#### Practica
+
+Empieza en una carpeta vacía:
+
+```bash
+mkdir practica-memoria
+cd practica-memoria
+mkdir src
 ```
 
-En `servidor.js`, sustituye la rama de `/ruta`:
+Crea `package.json`:
 
-```javascript
-import { Worker } from 'node:worker_threads';
-
-// dentro del manejador:
-if (req.url === '/ruta') {
-  const worker = new Worker(new URL('./ruta.worker.js', import.meta.url), { workerData: paradas });
-  worker.once('message', (km) => res.end(JSON.stringify({ km: Number(km.toFixed(2)) })));
-  worker.once('error', (error) => { res.statusCode = 500; res.end(JSON.stringify({ error: error.message })); });
+```json
+{
+  "name": "practica-memoria",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "pm2": "^5.4.3"
+  }
 }
 ```
 
-Con la prueba del subtema 6.1, `/salud` responde en unos milisegundos y `/ruta` tarda lo mismo o un poco más (arrancar el Worker cuesta). El Worker no acelera el cálculo: libera el hilo principal. En producción usarías un pool de Workers acotado, como en el Tema 1, en lugar de crear uno por petición.
+Instala la dependencia de desarrollo:
 
-</details>
+```bash
+npm install
+```
 
-**Fuentes oficiales:** [Node.js Learn — Profiling Node.js Applications](https://nodejs.org/en/learn/getting-started/profiling), [Node.js — CLI `--cpu-prof`](https://nodejs.org/api/cli.html#--cpu-prof) y [Node.js Learn — Don't Block the Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
+Crea `src/leak.js` con objetos JavaScript, no con buffers como sustituto de una prueba de heap:
+
+```js
+const retenidos = [];
+let solicitud = 0;
+
+setInterval(() => {
+  for (let i = 0; i < 100; i += 1) {
+    solicitud += 1;
+    retenidos.push({ solicitud, payload: "x".repeat(1024) });
+  }
+  const { rss, heapUsed, external } = process.memoryUsage();
+  const mb = (bytes) => Math.round(bytes / 1024 / 1024);
+  console.log({ objetos: retenidos.length, rssMB: mb(rss), heapUsedMB: mb(heapUsed), externalMB: mb(external) });
+}, 500);
+```
+
+Ejecuta el inspector únicamente en loopback:
+
+```bash
+node --inspect=127.0.0.1:9229 src/leak.js
+```
+
+Abre `chrome://inspect`, conecta el objetivo Node local y en **Memory** toma un snapshot A. Espera varios intervalos y toma otro B; compara los objetos retenidos. Detén el proceso con `Ctrl+C` en su terminal cuando termines.
+
+**Resultado esperado:** `objetos` crece sin límite y el segundo snapshot conserva muchas más instancias. `heapUsedMB` puede mostrar dientes de sierra por el GC, así que no exijas crecimiento monótono en cada línea. RSS, heap y external no tienen que coincidir.
+
+**Fallo deliberado y corrección:** la fuga deliberada es el arreglo global que conserva cada solicitud. Crea una copia corregida llamada `src/cache-limitada.js` con el mismo instrumento de métricas, pero después de cada inserción elimina las referencias más antiguas para que `retenidos.length` nunca supere 200. Ejecuta esa versión con inspector loopback y toma dos snapshots bajo el mismo ritmo: la cantidad retenida debe estabilizarse alrededor del límite, aunque las métricas sigan fluctuando.
+
+**Práctica guiada:** en ambos archivos, etiqueta cada objeto con `solicitud` y localiza en DevTools qué arreglo lo retiene. Documenta el número de objetos y la comparación A/B antes y después de limitar la colección. No captures snapshots de un servicio productivo ni abras el inspector en `0.0.0.0`.
+
+**Ejercicio independiente:** crea manualmente `ecosystem.config.cjs`:
+
+```js
+module.exports = {
+  apps: [{ name: "memoria-academia", script: "src/cache-limitada.js", instances: 1 }],
+};
+```
+
+Arranca y observa la versión corregida con:
+
+```bash
+npx pm2 start ecosystem.config.cjs
+npx pm2 logs memoria-academia
+```
+
+Comprueba con otra ejecución local que `node --max-old-space-size=256 src/leak.js` cambia el margen del heap pero no detiene el crecimiento de `objetos`. Finalmente añade a `src/cache-limitada.js` una medición separada con `Buffer.alloc(1024 * 1024)` y explica qué métrica externa cambia, sin presentarla como evidencia de fuga de `heapUsed`. Detén y elimina solo esta aplicación de PM2:
+
+```bash
+npx pm2 stop memoria-academia
+npx pm2 delete memoria-academia
+```
+
+#### Aplica
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** aplica una carga repetible al servicio, captura snapshots antes y después y busca referencias de peticiones terminadas. Corrige la retención y repite exactamente la carga. Usa PM2 o el orquestador para disponibilidad, pero conserva la evidencia de memoria para resolver la causa.
+
+**Checklist de salida:**
+
+- [ ] El ejemplo de fuga retiene objetos JavaScript y muestra crecimiento entre snapshots.
+- [ ] La versión corregida limita las referencias a 200 bajo la misma carga.
+- [ ] Explicas RSS, `heapUsed` y `external` sin tratarlos como equivalentes.
+- [ ] `Buffer.alloc` se analiza como memoria externa, no como prueba simple de heap creciente.
+- [ ] El inspector está limitado a `127.0.0.1` y los procesos de prueba se detienen.
+- [ ] PM2 y `--max-old-space-size` no se presentan como correcciones de la fuga.
+
+**Errores comunes:** medir solo RSS; esperar que `heapUsed` suba en cada lectura; confundir memoria de buffers con heap; tomar snapshots en producción sin plan; exponer el inspector; usar cachés sin límite; reiniciar sin corregir referencias.
+
+**Fuentes oficiales:** [diagnóstico de memoria Node](https://nodejs.org/en/learn/diagnostics/memory/using-heap-snapshot), [inspector](https://nodejs.org/api/inspector.html) y [PM2](https://pm2.keymetrics.io/docs/usage/quick-start/).
 
 ## Laboratorio práctico
 
@@ -898,7 +650,7 @@ Construye una API de asignación y etiquetas desde una carpeta vacía. El labora
 
 **Al terminar podrás:** mientras dos procesos atienden HTTP, una petición de cálculo se ejecuta en un Worker Thread sin impedir `/salud`; otra petición encola una etiqueta cuyo primer intento falla y cuyo segundo se completa.
 
-**Prerrequisitos:** Node.js 24 LTS, Docker y tres terminales.
+**Prerrequisitos:** Node.js LTS, Docker y tres terminales.
 
 ### 1. Crea el proyecto y Redis
 

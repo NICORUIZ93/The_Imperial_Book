@@ -51,7 +51,7 @@ npm ci && npm run build
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-27`** después de `npm ci && npm
-run build`. Lee el [README del laboratorio](../../../examples/microservicios/modulo-27/README.md) para el mapa de
+run build`. Lee el `examples/microservicios/modulo-27/README.md` para el mapa de
 carpetas.
 
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo):

@@ -134,6 +134,22 @@
       "status": "checked-with-limits",
       "checkedAt": "2026-11-13",
       "evidence": "Temurin JDK 27.0.1: clasificación produjo MONOLITO_MODULAR, MONOLITO_DISTRIBUIDO y SERVICIOS_AUTONOMOS; matriz produjo MANTENER_MODULAR y CANDIDATO_A_EXTRAER. Límite: modelo didáctico; la decisión real requiere métricas, ownership y ADR."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-1.md",
+      "topic": "Cohesión, API, dominio, puertos, ciclos y señales de extracción",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-18",
+      "evidence": "Temurin JDK 27.0.1: siete archivos compilaron juntos con --release 27. Salidas: regla-envio=2/regla-factura=1; contrato RegistrarEnvio y env-001; tarifa 2040 y error de invariante; adaptador guardados=1; ciclo=true; eventos=1; MANTENER_MODULAR/REVISAR_EXTRACCION. Límite: ejemplos didácticos en memoria; no prueban persistencia, broker ni operación distribuida."
+    },
+    {
+      "track": "microservices",
+      "lesson": "web/public/content/microservices/modulo-1.md",
+      "topic": "Fitness functions de internals, ciclos y alcance",
+      "status": "checked-with-limits",
+      "checkedAt": "2026-11-18",
+      "evidence": "Gradle Wrapper 9.8.2 y Maven Wrapper 3.9.11, Temurin JDK 27.0.1 y ArchUnit 1.5.1: ./gradlew test completó BUILD SUCCESSFUL y ./mvnw test -q terminó con código 0. El primer intento falló antes de compilar porque el laboratorio exigía JDK 25 ausente; build.gradle, pom.xml y README se alinearon con el JDK 27 del curso y de la máquina. Maven emitió advertencias de acceso nativo/reflexión y ausencia de proveedor SLF4J, sin fallar pruebas. Límite: el verde valida bytecode y reglas presentes; no descubre SQL, reflexión arbitraria ni acoplamiento operacional."
     }
   ],
   "additionalRepair": {

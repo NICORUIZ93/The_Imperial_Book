@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Tipos básicos, interfaces y type aliases
+### Tema 1: Tipos básicos, interfaces y type aliases · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -36,7 +36,7 @@ Definir tipos precisos para las estructuras de datos centrales de una aplicació
 Instala TypeScript e inicializa configuración:
 
 ```bash
-npm install --save-dev typescript@7
+npm install --save-dev typescript
 npx tsc --init
 ```
 
@@ -48,7 +48,7 @@ Desde una carpeta vacía crea `ejemplo-typescript-basico`, instala TypeScript y 
 mkdir ejemplo-typescript-basico
 cd ejemplo-typescript-basico
 npm init -y
-npm install -D typescript@7
+npm install -D typescript
 mkdir src
 ```
 
@@ -105,97 +105,7 @@ Ya puedes hacer que estados imposibles fallen antes de ejecutar. El siguiente te
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Define un tipo de respuesta pública que excluya dirección y teléfono. Una prueba de transformación debe demostrar que el widget solo recibe guía, estado e historial permitido.
 
-### Tema 2: Generics
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás crear una abstracción genérica que preserve la relación entre entidad e identificador, usar inferencia y añadir restricciones solo cuando sean necesarias. Implementarás un repositorio en memoria tipado para guías del proyecto.
-
-**Prerrequisitos:** interfaces, Promesas, `Map` y tipos unión. Si una función siempre trabaja únicamente con `Guia`, mantenla concreta; generic no significa automáticamente mejor diseño.
-
-#### Paso 2 · Contexto y caso real
-
-El proyecto necesita repositorios para guías y rutas con operaciones parecidas, pero no debe permitir guardar un usuario en el almacén de guías. El parámetro `T` expresará qué entidad entra y sale; `Id` conservará el tipo de búsqueda.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** funciones y tipos parametrizados, inferencia automática de tipo genérico.
-
-Los generics permiten escribir funciones, interfaces y clases que funcionan con cualquier tipo, sin sacrificar la seguridad de tipos específica de cada uso concreto: `function primero<T>(lista: T[]): T | undefined { return lista[0]; }` define una función que acepta un array de cualquier tipo `T` (un parámetro de tipo, no un valor), y devuelve un valor de ese mismo tipo `T` (o `undefined` si el array está vacío), preservando la relación de tipo entre la entrada y la salida: invocar `primero([1, 2, 3])` produce un resultado tipado como `number | undefined`, mientras que invocar `primero(["a", "b"])` produce un resultado tipado como `string | undefined`, sin necesidad de escribir una versión separada de la función para cada tipo posible de array.
-
-En la mayoría de los casos, no es necesario especificar explícitamente el tipo genérico al invocar una función genérica (`primero<number>([1,2,3])`); TypeScript infiere automáticamente `T` a partir de los argumentos proporcionados en la llamada, y solo es necesario especificarlo explícitamente en casos donde la inferencia automática sería ambigua o insuficiente para determinar el tipo con precisión (por ejemplo, al invocar una función genérica sin ningún argumento cuyo tipo dependa de `T`, donde no hay ninguna pista disponible en la llamada para inferir el tipo automáticamente).
-
-Sin generics, la alternativa sería usar `any` (renunciando a toda verificación de tipo, perdiendo por completo la seguridad que TypeScript ofrece) o escribir una versión separada y duplicada de la función para cada tipo específico necesario (una violación directa del principio de no repetir código, y una carga de mantenimiento creciente a medida que se necesitan más tipos). Los generics resuelven exactamente esta tensión: preservan la reutilización de código genérico sin sacrificar ninguna precisión de tipo específica para cada uso concreto de esa función genérica.
-
-Los generics se extienden más allá de funciones simples a interfaces y clases completas (`interface Caja<T> { contenido: T; }`), y son la base sobre la que se construyen tipos utilitarios extremadamente comunes en código TypeScript real, como `Array<T>` (la propia notación genérica de array), `Promise<T>` (una promesa que resuelve con un valor de tipo `T` específico), y `Map<K, V>` (con tipos de clave y valor genéricos independientes), todos ejemplos de tipos genéricos ya integrados en el propio lenguaje que se usan constantemente sin necesariamente notar explícitamente que son, en efecto, generics.
-
-**Analogía:** una función genérica es como una plantilla de contrato legal con espacios en blanco marcados consistentemente (`[NOMBRE]`, `[NOMBRE]` de nuevo en otra cláusula), donde rellenar todos los espacios con el mismo valor específico (por ejemplo, "Juan Pérez") en cada uso concreto del contrato mantiene la consistencia interna del documento, sin necesidad de redactar un contrato completamente distinto para cada persona que lo firme.
-
-**¿Por qué es importante?** Los generics permiten escribir código verdaderamente reutilizable sin sacrificar seguridad de tipos, y son omnipresentes en TypeScript real (incluyendo tipos integrados del lenguaje como `Array`, `Promise` y `Map`), haciendo indispensable entenderlos para leer y escribir TypeScript idiomático con fluidez.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea `ejemplo-generics-ts`, instala TypeScript y crea `src` y después `src/repositorio.ts`:
-
-```bash
-mkdir ejemplo-generics-ts
-cd ejemplo-generics-ts
-npm init -y
-npm install -D typescript@7
-mkdir src
-```
-
-```ts
-export interface Repositorio<T, Id> {
-  obtener(id: Id): Promise<T | undefined>;
-  guardar(id: Id, entidad: T): Promise<void>;
-}
-
-export class RepositorioMemoria<T, Id> implements Repositorio<T, Id> {
-  private readonly datos = new Map<Id, T>();
-
-  async obtener(id: Id): Promise<T | undefined> {
-    return this.datos.get(id);
-  }
-
-  async guardar(id: Id, entidad: T): Promise<void> {
-    // El mismo T usado al crear el repositorio controla cada escritura.
-    this.datos.set(id, entidad);
-  }
-}
-```
-
-En `src/main.ts`, instancia `new RepositorioMemoria<Guia, string>()`, guarda una guía y asigna la búsqueda a `Guia | undefined`.
-
-```bash
-npx tsc --noEmit
-```
-
-**Resultado esperado:** cero diagnósticos; TypeScript infiere que buscar por string produce `Promise<Guia | undefined>` y rechaza ids numéricos.
-
-**Fallo deliberado:** intenta `repositorio.guardar("U-1", { nombre: "Ana" })`. El compilador muestra propiedades faltantes de `Guia`; no uses `as Guia` para silenciarlo, corrige el repositorio o la entidad.
-
-#### Paso 5 · Práctica guiada
-
-Crea `Pagina<T>` con `items`, `total` y `siguienteCursor`, y devuelve `Pagina<Guia>`. **Pista:** `T` cambia los elementos, mientras metadatos permanecen iguales.
-
-#### Paso 6 · Práctica independiente
-
-Implementa repositorios de Ruta y Guia, prueba inferencia y agrega `T extends { numero: string }` únicamente a una función que realmente lee `numero`. Explica cada parámetro de tipo con una frase.
-
-#### Paso 7 · Cierre
-
-Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega.
-
-Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada entidad del proyecto integrador (SPA sin framework, Módulo 12): un repositorio de guías y otro de rutas, cada uno tipado con su propia entidad, sin duplicar la lógica de `Map` subyacente.
-
-**Cuándo no usarlo:** si el proyecto solo maneja una única entidad y nunca necesitará una segunda variante del mismo repositorio, un generic agrega una letra de tipo (`T`) e indirección sin beneficio real; escribe la clase concreta (`RepositorioGuias`) hasta que aparezca una segunda entidad que realmente comparta la misma forma.
-
-**Errores comunes:** crear letras genéricas sin relación; usar `any`; imponer constraints innecesarios; especificar tipos que el compilador infiere; confundir tipo genérico con valor disponible en runtime.
-
-**Fuentes oficiales:** [TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html) y [Type Inference](https://www.typescriptlang.org/docs/handbook/type-inference.html).
-
-### Tema 3: Narrowing y union types
+### Tema 2: Narrowing y union types · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -231,7 +141,7 @@ Desde una carpeta vacía crea `ejemplo-unions-ts`, instala TypeScript y crea `sr
 mkdir ejemplo-unions-ts
 cd ejemplo-unions-ts
 npm init -y
-npm install -D typescript@7
+npm install -D typescript
 mkdir src
 ```
 
@@ -287,7 +197,7 @@ Esta unión discriminada (`EventoGuia`) es la forma en la que el proyecto integr
 
 **Fuentes oficiales:** [TypeScript Handbook — Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html) y [Union Exhaustiveness](https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#union-exhaustiveness-checking).
 
-### Tema 4: tsconfig esencial y modo strict
+### Tema 3: tsconfig esencial y modo strict · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -307,8 +217,6 @@ La API puede devolver un número como `7` o eliminar `estado` aunque la interfac
 
 `noImplicitAny`, incluida dentro de `strict`, exige que cada parámetro y variable tenga un tipo explícito o inferible; sin esta opción, TypeScript permitiría silenciosamente que una variable sin anotación de tipo explícita se trate implícitamente como `any` (el tipo que desactiva completamente la verificación de tipos, aceptando cualquier valor y cualquier operación sobre él sin ninguna comprobación), socavando silenciosamente gran parte del valor real que TypeScript ofrece. `strictNullChecks`, otra verificación clave incluida en `strict`, obliga a manejar explícitamente los casos donde un valor podría ser `null` o `undefined`, en vez de asumir implícitamente (y con frecuencia incorrectamente) que un valor siempre está presente, una fuente extremadamente común de errores en tiempo de ejecución en JavaScript puro sin esta protección adicional del compilador.
 
-**Qué cambió en TypeScript 7** (la versión de referencia del curso, `npm install -D typescript@7`): `strict` viene **activado por defecto**, así que un proyecto sin la opción ya rechaza un parámetro sin tipo con `error TS7006: Parameter 'x' implicitly has an 'any' type.`; aun así la escribimos explícita para que se lea en el archivo. Además se **eliminaron** `"target": "es5"`, `"moduleResolution": "node10"` y `baseUrl`: si los copias de un tutorial antiguo, `tsc` se detiene con `error TS5108: Option 'target=ES5' has been removed` o `error TS5102: Option 'baseUrl' has been removed` y sugiere usar `paths`. Solo si una herramienta todavía exige la API anterior, instala en paralelo el paquete de compatibilidad que indique su documentación y anótalo como deuda.
-
 `noUncheckedIndexedAccess`, una opción adicional recomendada más allá del propio `strict`, hace que acceder a un array o a un objeto mediante un índice (`array[i]`) devuelva un tipo que incluye explícitamente `undefined` en su unión, reflejando con precisión la realidad de que ese índice específico podría estar fuera de rango, en vez de asumir optimistamente (y de forma potencialmente incorrecta) que el acceso siempre produce un valor válido del tipo esperado del array.
 
 Es fundamental entender un límite real e importante de TypeScript, incluso en su configuración más estricta posible: todas estas verificaciones ocurren exclusivamente en tiempo de compilación, sobre el código fuente tal como está escrito; TypeScript no tiene ninguna forma de verificar en tiempo de ejecución que datos provenientes de una fuente externa (como la respuesta JSON de una API, vista en el Módulo 6) realmente cumplen la forma declarada por una `interface`. Si una API cambia su formato de respuesta sin que el código TypeScript se actualice para reflejarlo, TypeScript confiará ciegamente en la anotación de tipo declarada (`interface Usuario`), sin verificar en absoluto que los datos reales recibidos en tiempo de ejecución realmente tengan esa forma exacta, un desajuste que solo una biblioteca de validación en tiempo de ejecución (como Zod) puede detectar de forma efectiva, verificando explícitamente la forma real de los datos externos en el momento en que se reciben, más allá de lo que TypeScript puede garantizar únicamente en tiempo de compilación.
@@ -325,7 +233,7 @@ Desde una carpeta vacía crea `ejemplo-strict-ts`, instala TypeScript y crea `sr
 mkdir ejemplo-strict-ts
 cd ejemplo-strict-ts
 npm init -y
-npm install -D typescript@7
+npm install -D typescript
 mkdir src
 ```
 
@@ -422,7 +330,227 @@ Ya puedes separar garantías estáticas de validación externa y mantener strict
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Activa comprobaciones estrictas y corrige un acceso a una entrega potencialmente ausente. El build debe rechazar ese acceso hasta que exista una rama explícita para respuesta vacía.
 
-### Tema 5: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies
+### Tema 4: Generics · Avanzado · 40 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás crear una abstracción genérica que preserve la relación entre entidad e identificador, usar inferencia y añadir restricciones solo cuando sean necesarias. Implementarás un repositorio en memoria tipado para guías del proyecto.
+
+**Prerrequisitos:** interfaces, Promesas, `Map` y tipos unión. Si una función siempre trabaja únicamente con `Guia`, mantenla concreta; generic no significa automáticamente mejor diseño.
+
+#### Paso 2 · Contexto y caso real
+
+El proyecto necesita repositorios para guías y rutas con operaciones parecidas, pero no debe permitir guardar un usuario en el almacén de guías. El parámetro `T` expresará qué entidad entra y sale; `Id` conservará el tipo de búsqueda.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** funciones y tipos parametrizados, inferencia automática de tipo genérico.
+
+Los generics permiten escribir funciones, interfaces y clases que funcionan con cualquier tipo, sin sacrificar la seguridad de tipos específica de cada uso concreto: `function primero<T>(lista: T[]): T | undefined { return lista[0]; }` define una función que acepta un array de cualquier tipo `T` (un parámetro de tipo, no un valor), y devuelve un valor de ese mismo tipo `T` (o `undefined` si el array está vacío), preservando la relación de tipo entre la entrada y la salida: invocar `primero([1, 2, 3])` produce un resultado tipado como `number | undefined`, mientras que invocar `primero(["a", "b"])` produce un resultado tipado como `string | undefined`, sin necesidad de escribir una versión separada de la función para cada tipo posible de array.
+
+En la mayoría de los casos, no es necesario especificar explícitamente el tipo genérico al invocar una función genérica (`primero<number>([1,2,3])`); TypeScript infiere automáticamente `T` a partir de los argumentos proporcionados en la llamada, y solo es necesario especificarlo explícitamente en casos donde la inferencia automática sería ambigua o insuficiente para determinar el tipo con precisión (por ejemplo, al invocar una función genérica sin ningún argumento cuyo tipo dependa de `T`, donde no hay ninguna pista disponible en la llamada para inferir el tipo automáticamente).
+
+Sin generics, la alternativa sería usar `any` (renunciando a toda verificación de tipo, perdiendo por completo la seguridad que TypeScript ofrece) o escribir una versión separada y duplicada de la función para cada tipo específico necesario (una violación directa del principio de no repetir código, y una carga de mantenimiento creciente a medida que se necesitan más tipos). Los generics resuelven exactamente esta tensión: preservan la reutilización de código genérico sin sacrificar ninguna precisión de tipo específica para cada uso concreto de esa función genérica.
+
+Los generics se extienden más allá de funciones simples a interfaces y clases completas (`interface Caja<T> { contenido: T; }`), y son la base sobre la que se construyen tipos utilitarios extremadamente comunes en código TypeScript real, como `Array<T>` (la propia notación genérica de array), `Promise<T>` (una promesa que resuelve con un valor de tipo `T` específico), y `Map<K, V>` (con tipos de clave y valor genéricos independientes), todos ejemplos de tipos genéricos ya integrados en el propio lenguaje que se usan constantemente sin necesariamente notar explícitamente que son, en efecto, generics.
+
+**Analogía:** una función genérica es como una plantilla de contrato legal con espacios en blanco marcados consistentemente (`[NOMBRE]`, `[NOMBRE]` de nuevo en otra cláusula), donde rellenar todos los espacios con el mismo valor específico (por ejemplo, "Juan Pérez") en cada uso concreto del contrato mantiene la consistencia interna del documento, sin necesidad de redactar un contrato completamente distinto para cada persona que lo firme.
+
+**¿Por qué es importante?** Los generics permiten escribir código verdaderamente reutilizable sin sacrificar seguridad de tipos, y son omnipresentes en TypeScript real (incluyendo tipos integrados del lenguaje como `Array`, `Promise` y `Map`), haciendo indispensable entenderlos para leer y escribir TypeScript idiomático con fluidez.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Desde una carpeta vacía crea `ejemplo-generics-ts`, instala TypeScript y crea `src` y después `src/repositorio.ts`:
+
+```bash
+mkdir ejemplo-generics-ts
+cd ejemplo-generics-ts
+npm init -y
+npm install -D typescript
+mkdir src
+```
+
+```ts
+export interface Repositorio<T, Id> {
+  obtener(id: Id): Promise<T | undefined>;
+  guardar(id: Id, entidad: T): Promise<void>;
+}
+
+export class RepositorioMemoria<T, Id> implements Repositorio<T, Id> {
+  private readonly datos = new Map<Id, T>();
+
+  async obtener(id: Id): Promise<T | undefined> {
+    return this.datos.get(id);
+  }
+
+  async guardar(id: Id, entidad: T): Promise<void> {
+    // El mismo T usado al crear el repositorio controla cada escritura.
+    this.datos.set(id, entidad);
+  }
+}
+```
+
+En `src/main.ts`, instancia `new RepositorioMemoria<Guia, string>()`, guarda una guía y asigna la búsqueda a `Guia | undefined`.
+
+```bash
+npx tsc --noEmit
+```
+
+**Resultado esperado:** cero diagnósticos; TypeScript infiere que buscar por string produce `Promise<Guia | undefined>` y rechaza ids numéricos.
+
+**Fallo deliberado:** intenta `repositorio.guardar("U-1", { nombre: "Ana" })`. El compilador muestra propiedades faltantes de `Guia`; no uses `as Guia` para silenciarlo, corrige el repositorio o la entidad.
+
+#### Paso 5 · Práctica guiada
+
+Crea `Pagina<T>` con `items`, `total` y `siguienteCursor`, y devuelve `Pagina<Guia>`. **Pista:** `T` cambia los elementos, mientras metadatos permanecen iguales.
+
+#### Paso 6 · Práctica independiente
+
+Implementa repositorios de Ruta y Guia, prueba inferencia y agrega `T extends { numero: string }` únicamente a una función que realmente lee `numero`. Explica cada parámetro de tipo con una frase.
+
+#### Paso 7 · Cierre
+
+Ya puedes reutilizar estructura sin renunciar a precisión. El siguiente tema reducirá uniones y exigirá manejar cada evento de entrega.
+
+Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada entidad del proyecto integrador (SPA sin framework, Módulo 12): un repositorio de guías y otro de rutas, cada uno tipado con su propia entidad, sin duplicar la lógica de `Map` subyacente.
+
+**Cuándo no usarlo:** si el proyecto solo maneja una única entidad y nunca necesitará una segunda variante del mismo repositorio, un generic agrega una letra de tipo (`T`) e indirección sin beneficio real; escribe la clase concreta (`RepositorioGuias`) hasta que aparezca una segunda entidad que realmente comparta la misma forma.
+
+**Errores comunes:** crear letras genéricas sin relación; usar `any`; imponer constraints innecesarios; especificar tipos que el compilador infiere; confundir tipo genérico con valor disponible en runtime.
+
+**Fuentes oficiales:** [TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html) y [Type Inference](https://www.typescriptlang.org/docs/handbook/type-inference.html).
+
+### Tema 5: Decoradores estándar de TypeScript 5 · Avanzado · 45 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+En RutaFlow se quería registrar cada cotización y validar configuraciones sin repetir código en cada clase. Angular y NestJS usan decoradores todo el tiempo (`@Component`, `@Injectable`), y el capítulo de estructura de proyecto del libro de TypeScript los presenta como herramienta de productividad: un caso real de cualquier framework.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un **decorador** es una función que recibe la clase, el método o el campo que decora y un **objeto de contexto** (`ClassMethodDecoratorContext`, `ClassFieldDecoratorContext`…) con su nombre y tipo. Un decorador de método puede devolver una función que reemplaza al método; uno de campo puede devolver un inicializador que transforma el valor inicial; uno de clase puede registrar o reemplazar la clase. TypeScript 5 implementa la **propuesta estándar de TC39**. Los frameworks que usan `"experimentalDecorators": true` siguen la versión antigua, con otra firma y metadatos de reflexión: no se mezclan.
+
+**Analogía:** un decorador es un sello que se estampa en un documento: el documento es el mismo, pero el sello agrega una regla ("revisado", "registrar en el archivo").
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    S["@servicio"] --> CL[clase Cotizador]
+    P["@positivo"] --> CA[campo precioKilo]
+    R["@registrar"] --> ME[método cotizar]
+    ME --> L[log de cada llamada]
+```
+
+**¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
+**Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
+**Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
+**Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar de TypeScript 5, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir ts-decoradores && cd ts-decoradores
+npm init -y && npm install -D typescript@5
+mkdir src
+```
+
+Crea `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "nodenext",
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  }
+}
+```
+
+Crea `src/decoradores.ts`:
+
+```typescript
+// Decoradores estándar de TypeScript 5 (propuesta TC39), sin experimentalDecorators
+
+// Decorador de método: mide y registra cada llamada
+function registrar<This, Args extends unknown[], R>(
+  metodo: (this: This, ...args: Args) => R,
+  contexto: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => R>,
+) {
+  const nombre = String(contexto.name);
+  return function (this: This, ...args: Args): R {
+    const resultado = metodo.call(this, ...args);
+    console.log(`[log] ${nombre}(${args.join(', ')}) -> ${resultado}`);
+    return resultado;
+  };
+}
+
+// Decorador de campo: valida el valor inicial
+function positivo(_valor: undefined, contexto: ClassFieldDecoratorContext) {
+  return (inicial: number) => {
+    if (inicial <= 0) throw new RangeError(`${String(contexto.name)} debe ser positivo`);
+    return inicial;
+  };
+}
+
+// Decorador de clase: registra la clase en un catálogo de servicios
+const catalogo: string[] = [];
+function servicio(clase: Function, contexto: ClassDecoratorContext) {
+  catalogo.push(String(contexto.name));
+}
+
+@servicio
+class Cotizador {
+  @positivo precioKilo = 1200;
+
+  @registrar
+  cotizar(ciudad: string, kilos: number): number {
+    return (ciudad === 'Bogotá' ? 5000 : 9000) + kilos * this.precioKilo;
+  }
+}
+
+const cotizador = new Cotizador();
+cotizador.cotizar('Bogotá', 2);
+cotizador.cotizar('Cali', 1);
+console.log('Servicios registrados:', catalogo);
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+npx tsc && node dist/decoradores.js
+```
+
+**Resultado esperado:**
+
+```text
+[log] cotizar(Bogotá, 2) -> 7400
+[log] cotizar(Cali, 1) -> 10200
+Servicios registrados: [ 'Cotizador' ]
+```
+
+Los decoradores se ejecutan al definir la clase; por eso `Cotizador` ya está en el catálogo antes de usarlo.
+
+**Fallo deliberado:** Cambia `@positivo precioKilo = 1200;` por `@positivo precioKilo = 0;`. Compila sin errores, pero al ejecutar `new Cotizador()` lanza `RangeError: precioKilo debe ser positivo`. El decorador de campo valida en tiempo de ejecución, al crear cada instancia, no al compilar.
+
+#### Paso 5 · Práctica guiada
+Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un error. **Pista:** un decorador con parámetros es una función que devuelve el decorador: `function reintentar(veces: number) { return function (metodo, contexto) { ... } }`.
+
+#### Paso 6 · Práctica independiente
+Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
+
+#### Paso 7 · Cierre
+
+
+### Tema 6: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás declarar sobrecargas de funciones, derivar tipos con `Omit`, `Pick` y tipos mapeados, filtrar propiedades con tipos condicionales, construir nombres con tipos de plantilla y validar objetos con `satisfies` sin perder sus tipos literales. Prerrequisitos: Temas 1 a 4 de este módulo.
@@ -459,7 +587,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 
 ```bash
 mkdir ts-avanzado && cd ts-avanzado
-npm init -y && npm install -D typescript@7
+npm init -y && npm install -D typescript@5
 mkdir src
 ```
 
@@ -548,141 +676,6 @@ Crea el tipo `Opcionales<T>` que haga opcionales solo las propiedades de tipo `n
 #### Paso 6 · Práctica independiente
 Investiga `infer` y escribe `TipoPromesa<T>` que extraiga el tipo resuelto de una `Promise`. Compáralo con el `Awaited` de la librería estándar.
 
-**Ampliación (fusionada desde el antiguo Tema 1 del Módulo 14):** deriva tipos de la unión discriminada `EventoGuia` del Tema 3. Con `type Tipo = EventoGuia["tipo"]` obtienes la unión de discriminantes, y un `Record<Tipo, string>` de iconos obliga a completar cada variante. Compruébalo con TypeScript 7: si añades una variante `{ tipo: "ENTREGA_CANCELADA"; motivo: string }` a la unión y no al `Record`, `npx tsc` responde `error TS2741: Property 'ENTREGA_CANCELADA' is missing in type ...`. Combínalo con `Pick<Extract<EventoGuia, { tipo: "ENTREGA_CONFIRMADA" }>, "receptor">` para describir el resumen de una sola variante sin copiar campos.
-
-#### Paso 7 · Cierre
-
-Ya derivas tipos en lugar de copiarlos: `Omit`/`Pick`, tipos mapeados, condicionales, de plantilla, `satisfies` y `Record` sobre el discriminante de una unión. Este es el único tema de TypeScript avanzado del curso; el Módulo 14 ya no lo repite. El siguiente tema muestra los decoradores estándar.
-
-
-
-### Tema 6: Decoradores estándar de TC39 en TypeScript
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar (TC39) que TypeScript implementa desde la 5.0 y mantiene en la 7, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-En RutaFlow se quería registrar cada cotización y validar configuraciones sin repetir código en cada clase. Angular y NestJS usan decoradores todo el tiempo (`@Component`, `@Injectable`), y el capítulo de estructura de proyecto del libro de TypeScript los presenta como herramienta de productividad: un caso real de cualquier framework.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un **decorador** es una función que recibe la clase, el método o el campo que decora y un **objeto de contexto** (`ClassMethodDecoratorContext`, `ClassFieldDecoratorContext`…) con su nombre y tipo. Un decorador de método puede devolver una función que reemplaza al método; uno de campo puede devolver un inicializador que transforma el valor inicial; uno de clase puede registrar o reemplazar la clase. TypeScript implementa la **propuesta estándar de TC39** desde la versión 5.0; TypeScript 7, la versión de referencia del curso, la conserva sin cambios. Los frameworks que usan `"experimentalDecorators": true` siguen la versión antigua, con otra firma y metadatos de reflexión: no se mezclan.
-
-**Analogía:** un decorador es un sello que se estampa en un documento: el documento es el mismo, pero el sello agrega una regla ("revisado", "registrar en el archivo").
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    S["@servicio"] --> CL[clase Cotizador]
-    P["@positivo"] --> CA[campo precioKilo]
-    R["@registrar"] --> ME[método cotizar]
-    ME --> L[log de cada llamada]
-```
-
-**¿Por qué es importante?** porque entender los decoradores te permite leer Angular, NestJS o TypeORM sin magia y escribir los tuyos sin depender de la API experimental.
-**Fuente oficial:** [TypeScript 5.0: Decorators](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#decorators), [TC39: Decorators proposal](https://github.com/tc39/proposal-decorators).
-**Conceptos clave:** decorador de clase, método y campo, objeto de contexto, inicializador, propuesta TC39, `experimentalDecorators`.
-**Cuándo no usarlo:** no uses decoradores para lógica de negocio central: esconden comportamiento. Úsalos para preocupaciones transversales como registro, validación o registro de servicios.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** registra con un decorador cada consulta al API de seguimiento y su tiempo de respuesta.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** activar `experimentalDecorators` y mezclar su firma antigua con la sintaxis estándar, produciendo errores de tipos confusos; esperar que un decorador de campo como `@positivo` se valide al compilar, cuando en realidad se ejecuta recién al crear cada instancia.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir ts-decoradores && cd ts-decoradores
-npm init -y && npm install -D typescript@7
-mkdir src
-```
-
-Crea `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "nodenext",
-    "strict": true,
-    "outDir": "dist",
-    "rootDir": "src"
-  }
-}
-```
-
-Crea `src/decoradores.ts`:
-
-```typescript
-// Decoradores estándar (propuesta TC39), sin experimentalDecorators
-
-// Decorador de método: mide y registra cada llamada
-function registrar<This, Args extends unknown[], R>(
-  metodo: (this: This, ...args: Args) => R,
-  contexto: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => R>,
-) {
-  const nombre = String(contexto.name);
-  return function (this: This, ...args: Args): R {
-    const resultado = metodo.call(this, ...args);
-    console.log(`[log] ${nombre}(${args.join(', ')}) -> ${resultado}`);
-    return resultado;
-  };
-}
-
-// Decorador de campo: valida el valor inicial
-function positivo(_valor: undefined, contexto: ClassFieldDecoratorContext) {
-  return (inicial: number) => {
-    if (inicial <= 0) throw new RangeError(`${String(contexto.name)} debe ser positivo`);
-    return inicial;
-  };
-}
-
-// Decorador de clase: registra la clase en un catálogo de servicios
-const catalogo: string[] = [];
-function servicio(clase: Function, contexto: ClassDecoratorContext) {
-  catalogo.push(String(contexto.name));
-}
-
-@servicio
-class Cotizador {
-  @positivo precioKilo = 1200;
-
-  @registrar
-  cotizar(ciudad: string, kilos: number): number {
-    return (ciudad === 'Bogotá' ? 5000 : 9000) + kilos * this.precioKilo;
-  }
-}
-
-const cotizador = new Cotizador();
-cotizador.cotizar('Bogotá', 2);
-cotizador.cotizar('Cali', 1);
-console.log('Servicios registrados:', catalogo);
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-npx tsc && node dist/decoradores.js
-```
-
-**Resultado esperado:**
-
-```text
-[log] cotizar(Bogotá, 2) -> 7400
-[log] cotizar(Cali, 1) -> 10200
-Servicios registrados: [ 'Cotizador' ]
-```
-
-Los decoradores se ejecutan al definir la clase; por eso `Cotizador` ya está en el catálogo antes de usarlo.
-
-**Fallo deliberado:** Cambia `@positivo precioKilo = 1200;` por `@positivo precioKilo = 0;`. Compila sin errores, pero al ejecutar `new Cotizador()` lanza `RangeError: precioKilo debe ser positivo`. El decorador de campo valida en tiempo de ejecución, al crear cada instancia, no al compilar.
-
-#### Paso 5 · Práctica guiada
-Crea el decorador de método `@reintentar(3)` que repita la llamada si lanza un error. **Pista:** un decorador con parámetros es una función que devuelve el decorador: `function reintentar(veces: number) { return function (metodo, contexto) { ... } }`.
-
-#### Paso 6 · Práctica independiente
-Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y explica los errores que aparecen. Luego investiga qué modo usa la versión de Angular del track.
-
 #### Paso 7 · Cierre
 
 
@@ -690,7 +683,7 @@ Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y e
 
 **Objetivo del laboratorio:** migrar un módulo JavaScript existente (la biblioteca de funciones del Módulo 1) a TypeScript estricto, sin usar `any` en ningún punto.
 
-**Requisitos previos:** Módulos 0-10 completados, TypeScript 7 instalado (`npm install -D typescript@7`).
+**Requisitos previos:** Módulos 0-10 completados, TypeScript instalado (`npm install -D typescript`).
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|

@@ -8,7 +8,7 @@ Academia en español de programación, desarrollo de software y DevOps. Es una a
 muestra lecciones escritas en Markdown y guarda el progreso en el navegador.
 
 **Estado (2026-11-18):** el repositorio se acaba de limpiar ([specs/011](specs/011-limpieza-total.md)).
-Hoy hay 16 cursos, 291 módulos y 1432 temas, pendientes de revisión: el siguiente paso es definir qué
+Hoy hay 16 cursos, 289 módulos y 1420 temas, pendientes de revisión: el siguiente paso es definir qué
 cursos se implementan y con qué proceso. Lo retirado está en la rama `archivo-2026-11-18`.
 
 ## Estructura

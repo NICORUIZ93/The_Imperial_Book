@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Debounce y throttle
+### Tema 1: Debounce y throttle · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -111,7 +111,7 @@ Ya puedes limitar frecuencia según intención, no por moda. El siguiente tema e
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aplica debounce a la búsqueda y throttle a una observación de scroll. Usa reloj controlado para contar consultas y actualizaciones; la última búsqueda debe ejecutarse aunque el usuario deje de escribir.
 
-### Tema 2: Memoización
+### Tema 2: Memoización · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -199,7 +199,7 @@ Ya puedes intercambiar cómputo por memoria de forma explícita y limitada. El s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Memoiza únicamente una transformación costosa del historial con entradas inmutables. Cambia un evento y verifica que no reutiliza un resultado obsoleto; registra memoria y tiempo antes de conservar la optimización.
 
-### Tema 3: Web Workers para trabajo pesado
+### Tema 3: Web Workers para trabajo pesado · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -229,35 +229,20 @@ Identificar correctamente qué trabajo es apropiado para mover a un Worker —c�
 
 #### Paso 4 · Demostración guiada desde cero
 
-Desde una carpeta vacía crea `ejemplo-web-worker` con Vite 8 (el servidor de desarrollo del Módulo 7):
+Desde una carpeta vacía crea `ejemplo-web-worker`, ejecuta `npm init -y`, crea `src` y después `src/optimizar.worker.js`:
 
 ```bash
 mkdir ejemplo-web-worker
 cd ejemplo-web-worker
 npm init -y
-npm install -D vite@8
-npm pkg set scripts.dev=vite scripts.build="vite build"
 mkdir src
 ```
 
-Crea `src/optimizar-ruta.worker.js`. Además de ordenar, el worker **valida** lo que recibe: lo que cruza `postMessage` es una copia sin garantías, así que se comprueba igual que un JSON externo:
-
 ```js
-// El worker recibe una copia estructurada, valida su forma y nunca toca el DOM.
-function esSolicitudValida(data) {
-  return typeof data === "object" && data !== null &&
-    Number.isInteger(data.solicitudId) &&
-    Array.isArray(data.distancias) &&
-    data.distancias.every((d) => typeof d === "number" && Number.isFinite(d));
-}
-
 self.onmessage = ({ data }) => {
-  if (!esSolicitudValida(data)) {
-    self.postMessage({ tipo: "error", solicitudId: data?.solicitudId, mensaje: "Solicitud inválida" });
-    return;
-  }
+  // El worker recibe una copia estructurada y nunca toca el DOM.
   const ordenadas = [...data.distancias].sort((a, b) => a - b);
-  self.postMessage({ tipo: "ok", solicitudId: data.solicitudId, ordenadas });
+  self.postMessage({ solicitudId: data.solicitudId, ordenadas });
 };
 ```
 
@@ -280,57 +265,15 @@ export function optimizarRuta(distancias, solicitudId) {
 }
 ```
 
-Crea `src/main.js` con un botón que lanza el cálculo y otro que demuestra que la interfaz sigue respondiendo:
-
-```js
-import { optimizarRuta } from "./cliente-optimizacion.js";
-
-const salida = document.querySelector("#salida");
-const pulso = document.querySelector("#pulso");
-let clics = 0;
-let solicitud = 0;
-
-pulso.addEventListener("click", () => { pulso.textContent = `Comprobar UI: ${++clics}`; });
-
-document.querySelector("#ordenar").addEventListener("click", async () => {
-  const distancias = Array.from({ length: 2_000_000 }, () => Math.random() * 100);
-  salida.textContent = "Ordenando…";
-  const { resultado } = optimizarRuta(distancias, ++solicitud);
-  const respuesta = await resultado;
-  salida.textContent = respuesta.tipo === "ok"
-    ? `Solicitud ${respuesta.solicitudId}: ${respuesta.ordenadas.length} distancias, mínima ${respuesta.ordenadas[0].toFixed(3)}`
-    : respuesta.mensaje;
-});
-```
-
-Crea `index.html`:
-
-```html
-<!doctype html>
-<html lang="es">
-  <head><meta charset="utf-8"><title>Worker de rutas</title></head>
-  <body>
-    <button id="ordenar">Ordenar 2 millones de distancias</button>
-    <button id="pulso">Comprobar UI: 0</button>
-    <p id="salida" role="status"></p>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-```
-
-Ejecuta:
+Invoca la función desde un botón, conserva otro botón que incremente un contador y ejecuta:
 
 ```bash
 npm run dev
 ```
 
-Abre la URL que imprime Vite, pulsa **Ordenar 2 millones de distancias** e inmediatamente pulsa varias veces **Comprobar UI**.
+**Resultado esperado:** el contador sigue respondiendo mientras se ordena un lote grande; al finalizar se recibe el mismo `solicitudId` y distancias ascendentes.
 
-**Resultado esperado:** el contador aumenta mientras se lee `Ordenando…`; al terminar aparece `Solicitud 1: 2000000 distancias, mínima 0.000` (el último número cambia porque los datos son aleatorios). `npm run build` genera un archivo aparte `dist/assets/optimizar-ruta.worker-<hash>.js`: Vite detecta el patrón `new Worker(new URL(...), import.meta.url)`.
-
-**Fallo deliberado 1:** escribe `document.body.textContent = "listo"` dentro de `self.onmessage`. La consola del navegador muestra `ReferenceError: document is not defined` y la respuesta nunca llega; elimina el acceso y actualiza el DOM solo al recibir `message` en el hilo principal.
-
-**Fallo deliberado 2:** en `main.js` envía `optimizarRuta([2, "3"], ++solicitud)`. El worker responde `Solicitud inválida`: aunque un tipo de TypeScript prometiera `number[]`, ese tipo no viaja con el mensaje. Conserva la validación en la frontera.
+**Fallo deliberado:** escribe `document.body.textContent = "listo"` dentro del worker. Aparece `ReferenceError: document is not defined`; elimina el acceso y actualiza DOM solo tras recibir `message` en el hilo principal.
 
 #### Paso 5 · Práctica guiada
 
@@ -338,11 +281,11 @@ Cancela la solicitud anterior al iniciar una nueva y descarta mensajes con id ob
 
 #### Paso 6 · Práctica independiente
 
-Compara duración y responsividad con cálculo principal y worker, incluyendo el coste de copiar datos; luego envía las distancias en un `Float64Array` y transfiere su `buffer` con `worker.postMessage(datos, [datos.buffer])` y mide la diferencia. Ojo: `Array.isArray` da `false` para un `Float64Array`; adapta `esSolicitudValida` antes de medir. Prueba mensaje válido, error, cancelación y payload no clonable; decide el tamaño mínimo que justifica el worker.
+Compara duración y responsividad con cálculo principal y worker, incluyendo coste de copiar datos. Prueba mensaje válido, error, cancelación y payload no clonable; decide el tamaño mínimo que justifica el worker.
 
 #### Paso 7 · Cierre
 
-Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo, validar el protocolo de mensajes y descartar respuestas obsoletas. Este es el tema de Web Workers del curso (el Módulo 14 ya no lo repite; allí solo quedan los Service Workers para modo offline). El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello.
+Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo. El siguiente tema usará Performance para confirmar si este trabajo era realmente el cuello.
 
 **Errores comunes:** acceder al DOM; crear un worker por elemento pequeño; no terminarlo; enviar funciones o nodos no clonables; ignorar respuestas obsoletas y errores.
 
@@ -350,7 +293,7 @@ Ya puedes separar cómputo de UI sin confundir asincronía con paralelismo, vali
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Procesa un historial grande en un Worker sin bloquear el campo de búsqueda. Cambia de guía durante el cálculo y descarta el resultado antiguo mediante un identificador de solicitud.
 
-### Tema 4: Profiling con DevTools
+### Tema 4: Profiling con DevTools · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -453,7 +396,7 @@ Ya puedes tratar rendimiento como experimento reproducible. El siguiente tema co
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Perfila abrir el historial y ordenar eventos con un conjunto reproducible. Guarda la traza antes y después de una mejora y confirma que el resultado y la interacción por teclado permanecen iguales.
 
-### Tema 5: Core Web Vitals
+### Tema 5: Core Web Vitals · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

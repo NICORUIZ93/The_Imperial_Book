@@ -1,10 +1,4 @@
-import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-
-// Total de temas publicado: se deriva del índice real para que agregar temas no rompa la prueba.
-const TOTAL_TEMAS = Object.values(
-  JSON.parse(readFileSync('public/content/topic-index.json', 'utf8')) as Record<string, Record<string, unknown[]>>,
-).reduce((suma, modulos) => suma + Object.values(modulos).reduce((n, temas) => n + temas.length, 0), 0);
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -38,7 +32,9 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   await page.goto('/temario');
 
   await expect(page.getByRole('heading', { name: /Todos los temas, cada uno con su lección/i })).toBeVisible();
-  await expect(page.locator('.curriculum-stats')).toContainText(String(TOTAL_TEMAS));
+  const index = await (await page.request.get('/content/topic-index.json')).json();
+  const total = Object.values(index).flatMap(track => Object.values(track as Record<string, unknown[]>)).reduce((sum, topics) => sum + topics.length, 0);
+  await expect(page.locator('.curriculum-stats')).toContainText(String(total));
   await expect(page.locator('.stack-row')).toHaveCount(16);
   await expect(page.locator('body')).not.toContainText('candidato');
 
@@ -62,7 +58,7 @@ test('Fundamentos módulo 1: muestra los estados inválidos y bytes UTF-8 en la 
   await page.goto('/curso/foundations/1');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(7);
+  await expect(topics).toHaveCount(5);
   await expect(topics.nth(0)).toContainText('Tarea 2: estado no admitido: archivada');
   await expect(topics.nth(4)).toContainText('4 bytes');
 });
@@ -126,7 +122,7 @@ test('Node módulo 0: renderiza configuración explícita y eventos no durables'
   await page.goto('/curso/node/0');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(5);
+  await expect(topics).toHaveCount(4);
   for (const index of [2, 3]) {
     await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
   }
@@ -153,13 +149,13 @@ test('ruta: presenta los niveles como orientación, no como certificación', asy
     'Los niveles describen la progresión prevista; no son una evaluación ni una certificación de dominio.',
   );
   await expect(
-    page.locator('.module-group .group-heading').filter({ hasText: 'Especialización (objetivo)' }),
+    page.locator('.module-group .group-heading').filter({ hasText: '4 · Diagnóstico y decisión profesional' }),
   ).toHaveCount(1);
   await expect(page.locator('.overview-page')).not.toContainText('Experto');
 
   await page.goto('/curso/javascript/14');
   const eyebrow = page.locator('.lesson-eyebrow');
-  await expect(eyebrow).toContainText('Especialización (objetivo)');
+  await expect(eyebrow).toContainText('4 · Diagnóstico y decisión profesional');
   await expect(eyebrow).not.toContainText('Experto');
 });
 
@@ -227,7 +223,7 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
     { track: 'ios', module: 12, diagrams: 4 },
     { track: 'ios', module: 14, diagrams: 10 },
     { track: 'react', module: 6, diagrams: 3 },
-    { track: 'spring-boot', module: 2, diagrams: 6 },
+    { track: 'spring-boot', module: 2, diagrams: 5 },
   ];
 
   for (const { track, module, diagrams } of chapters) {
@@ -517,7 +513,7 @@ test('lector: marca un tema como leído y lo conserva al recargar', async ({ pag
 });
 
 test('lector: el código largo se ajusta dentro del bloque', async ({ page }) => {
-  await page.goto('/curso/spring-boot/4');
+  await page.goto('/curso/spring-boot/16');
   const example = page.locator('.lesson-markdown .code-example').first();
   await example.waitFor();
   const toggle = example.locator('[data-wrap-code]');

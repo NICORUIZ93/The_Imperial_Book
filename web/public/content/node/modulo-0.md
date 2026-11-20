@@ -2,7 +2,7 @@
 
 ## Antes de comenzar:
 
-1. Instala **Node 24 LTS**, la versión de referencia de la academia (`docs/VERSIONES.md`), desde [nodejs.org](https://nodejs.org/). En Windows usa el instalador `.msi`; en macOS o Linux puedes usar el instalador oficial o un administrador de versiones. Cierra y vuelve a abrir la terminal después de instalar.
+1. Instala la versión **LTS vigente** desde [nodejs.org](https://nodejs.org/). En Windows usa el instalador `.msi`; en macOS o Linux puedes usar el instalador oficial o un administrador de versiones. Cierra y vuelve a abrir la terminal después de instalar.
 2. Instala Git desde [git-scm.com](https://git-scm.com/downloads) y un editor, por ejemplo [Visual Studio Code](https://code.visualstudio.com/).
 3. Abre una terminal nueva y verifica cada herramienta:
 
@@ -12,18 +12,18 @@ npm --version
 git --version
 ```
 
-En Windows puedes usar PowerShell; los tres comandos son iguales. Debes ver una versión de Node que empiece por `v24`, una versión de npm y una versión de Git. Si un comando no se reconoce, confirma que el instalador terminó y vuelve a abrir la terminal; no continúes hasta que `node` y `npm` respondan.
+En Windows puedes usar PowerShell; los tres comandos son iguales. Debes ver una versión de Node con prefijo `v`, una versión de npm y una versión de Git. Si un comando no se reconoce, confirma que el instalador terminó y vuelve a abrir la terminal; no continúes hasta que `node` y `npm` respondan.
 
 ## Mapa de la ruta
 
-«Node.js: fundamentos de backend» tiene 16 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+«Node.js: fundamentos de backend» tiene 14 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
 
 ```mermaid
 flowchart LR
     E0["Fundamentos<br/>módulos 0–2"]
     E1["Aplicación<br/>módulos 3–5"]
     E2["Integración<br/>módulos 6–7"]
-    E3["Experto<br/>módulos 8–15"]
+    E3["Experto<br/>módulos 8–13"]
     E0 --> E1
     E1 --> E2
     E2 --> E3
@@ -45,12 +45,10 @@ flowchart LR
 | 11 | Experto | [Despliegue y contenedores](/curso/node/11) |
 | 12 | Experto | [Proyecto integrador: API productiva](/curso/node/12) |
 | 13 | Experto | [TypeScript, contratos e integraciones confiables](/curso/node/13) |
-| 14 | Experto | [Node.js avanzado: GraphQL Federation, sagas y mensajería](/curso/node/14) |
-| 15 | Experto | [Deno y Bun: permisos, compatibilidad y decisión](/curso/node/15) |
 
 ## Aprende construyendo
 
-Instala Node.js 24 LTS, Git y Visual Studio Code. Un administrador de versiones permite cambiar de Node entre proyectos: `nvm-windows` en Windows y `nvm` en macOS/Linux. Comprueba `node --version`, `npm --version` y `git --version` antes de empezar.
+Instala una versión **LTS** de Node.js, Git y Visual Studio Code. Un administrador de versiones permite cambiar de Node entre proyectos: `nvm-windows` en Windows y `nvm` en macOS/Linux. Comprueba `node --version`, `npm --version` y `git --version` antes de empezar.
 
 Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados; no necesitas copiar código del repositorio de la academia ni reutilizar archivos de otro tema. `npm init -y` crea el `package.json` de cada proyecto. Nunca copies `node_modules` ni lo subas a Git: se reconstruye con `npm install`. Si npm muestra `EACCES`, no uses `sudo`; corrige la instalación de Node mediante el administrador de versiones.
 
@@ -58,7 +56,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, terminal, archivos JavaScript básicos, `const`, `import` y promesas elementales.
+**Prerrequisitos:** Node.js LTS, terminal, archivos JavaScript básicos, `const`, `import` y promesas elementales.
 
 **Al terminar podrás:** explicar las responsabilidades de V8 y libuv, demostrar con código que una operación de I/O no bloquea el hilo de JavaScript y distinguir esa concurrencia de un cálculo intensivo de CPU.
 
@@ -149,98 +147,7 @@ En el **[Proyecto integrador: runtime observable de entregas](#proyecto-0-runtim
 
 **Fuentes oficiales:** [Node.js: Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`fs/promises`](https://nodejs.org/api/fs.html#promises-api).
 
-### Tema 2: Fases del Event Loop de Node · Intermedio · 75 min
-
-#### Aprende
-
-**Prerrequisitos:** callbacks, promesas y la distinción entre I/O y CPU del Tema 1. Este proyecto no reutiliza sus archivos.
-
-**Al terminar podrás:** predecir y verificar el orden entre código síncrono, `nextTick`, promesas, timers, I/O y `setImmediate`, separando garantías del runtime de órdenes accidentales.
-
-**Por qué importa:** un servidor combina reintentos, respuestas de base de datos y mensajes de red. Una suposición falsa sobre el orden produce errores intermitentes; una recursión de `nextTick` puede dejar el proceso activo pero incapaz de atender I/O.
-
-El Event Loop repite fases con responsabilidades concretas: **timers** ejecuta callbacks de `setTimeout` y `setInterval` vencidos; **pending callbacks** procesa ciertos callbacks del sistema diferidos; **poll** recupera eventos de I/O y ejecuta sus callbacks; **check** ejecuta `setImmediate`; y **close callbacks** gestiona cierres, como los de sockets.
-
-`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop. En CommonJS, y dentro de cualquier callback (por ejemplo, uno de I/O), la cola de `nextTick` se vacía antes que las microtareas de promesas. En el nivel superior de un módulo ESM ocurre lo contrario: Node ya está vaciando la cola de microtareas al evaluar el módulo, así que las promesas se ejecutan antes que `nextTick` (documentación oficial de `process`, sección «When to use `queueMicrotask()` vs. `process.nextTick()`»). Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
-
-Entre `setTimeout(fn, 0)` y `setImmediate(fn)` programados en el nivel superior no existe un ganador portable: influye la temporización de inicio. Dentro de un callback de I/O en `poll`, `setImmediate` se ejecuta antes del siguiente timer porque `check` sigue inmediatamente a esa fase.
-
-**Analogía:** las fases son estaciones de una ronda de inspección. `nextTick` es un aviso urgente atendido al terminar la tarea actual, antes de avanzar a la siguiente estación. Si los avisos urgentes generan otros avisos sin fin, la ronda nunca continúa.
-
-```mermaid
-flowchart LR
-    TIMER["timers"] --> PENDING["pending callbacks"] --> POLL["poll: I/O"] --> CHECK["check: setImmediate"] --> CLOSE["close callbacks"] --> TIMER
-    TICK["nextTick"] -. "antes de continuar" .-> TIMER
-```
-
-#### Practica
-
-Desde una carpeta vacía:
-
-```bash
-mkdir ejemplo-event-loop
-cd ejemplo-event-loop
-npm init -y
-mkdir -p src/runtime
-```
-
-En PowerShell usa `New-Item -ItemType Directory -Force src/runtime`. Añade `"type": "module"` a `package.json` y crea `src/runtime/fases.js`:
-
-```js
-import { readFile } from "node:fs";
-
-console.log("1. síncrono");
-
-setTimeout(() => console.log("4/5. timer de nivel superior"), 0);
-setImmediate(() => console.log("4/5. immediate de nivel superior"));
-Promise.resolve().then(() => console.log("3. microtarea Promise"));
-process.nextTick(() => console.log("2. cola nextTick"));
-
-readFile(new URL("../../package.json", import.meta.url), () => {
-  console.log("6. callback de I/O (fase poll)");
-  process.nextTick(() => console.log("7. nextTick dentro de I/O"));
-  Promise.resolve().then(() => console.log("8. Promise dentro de I/O"));
-  setImmediate(() => console.log("9. immediate después de I/O"));
-  setTimeout(() => console.log("10. timer después de I/O"), 0);
-});
-```
-
-Ejecuta:
-
-```bash
-node src/runtime/fases.js
-```
-
-**Resultado esperado:** como `package.json` declara `"type": "module"`, el archivo es ESM y las tres primeras líneas salen como `1. síncrono`, `3. microtarea Promise`, `2. cola nextTick`: en el nivel superior de ESM la promesa gana a `nextTick`. Las líneas `4/5` no tienen orden garantizado entre sí ni respecto al bloque de I/O (en algunas ejecuciones el timer de nivel superior sale incluso después de `9`). Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden: dentro de un callback de I/O, `nextTick` sí va antes que la promesa.
-
-Compruébalo con CommonJS: copia el archivo a `src/runtime/fases.cjs`, cambia la primera línea por `const { readFile } = require("node:fs");` y la ruta por `require("node:path").join(__dirname, "../../package.json")`. Al ejecutar `node src/runtime/fases.cjs` las tres primeras líneas salen como `1`, `2`, `3`. El orden de `nextTick` frente a promesas depende del tipo de módulo; no es una regla universal.
-
-**Fallo deliberado y corrección:** añade temporalmente `const saturar = () => process.nextTick(saturar); saturar();`. El proceso no llega al I/O; deténlo con `Ctrl+C`. El diagnóstico es inanición del Event Loop, no lentitud del disco. Elimina esas líneas y verifica otra vez la traza completa.
-
-**Práctica guiada:** crea `src/runtime/tabla.js` con la misma instrumentación y una salida tabulada con columnas `mensaje`, `cola o fase` y `garantizado`. Clasifica `nextTick` y promesas aparte de `timers`, `poll` y `check`; no marques `4/5` como orden garantizado.
-
-**Ejercicio independiente:** crea manualmente `datos/a.txt` y `datos/b.txt`, y un programa `src/runtime/dos-lecturas.js` que lea ambos y registre sus callbacks. Ejecuta cinco veces. Explica qué orden observado puede variar y cuál está garantizado por el contexto.
-
-#### Aplica
-
-En el **[Proyecto integrador: traza de confirmación](#proyecto-0-runtime-observable-de-entregas)**, instrumenta una confirmación sin asumir orden entre timers independientes. Conserva una traza y separa las garantías del flujo de las coincidencias observadas.
-
-**Checklist de salida**
-
-- [ ] El proyecto fue escrito desde cero en una carpeta independiente.
-- [ ] La traza distingue código síncrono, `nextTick`, microtareas y fases.
-- [ ] No presentas como fijo el orden entre timer e immediate de nivel superior.
-- [ ] Dentro de I/O verificaste `nextTick`, promesa, immediate y timer en el orden documentado.
-- [ ] Detuviste y corregiste la recursión que producía inanición.
-- [ ] Tus conclusiones separan observación empírica de contrato del runtime.
-
-**Errores comunes:** asumir que `setTimeout(0)` significa ejecución inmediata, confundir microtareas con fases, bloquear un callback de I/O y enseñar un orden accidental como regla universal.
-
-**Cuándo asumir un orden:** dentro de una fase y en los casos documentados puedes apoyarte en el contrato de Node; el orden entre un timer y `setImmediate` creado desde el nivel superior puede variar. Si la corrección del programa depende de ese orden, coordina con una promesa explícita o una señal de I/O y prueba el contrato que realmente necesitas.
-
-**Fuentes oficiales:** [Event Loop, timers y `nextTick`](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`process.nextTick`](https://nodejs.org/api/process.html#processnexttickcallback-args).
-
-### Tema 3: process, global y módulos core · Básico · 75 min
+### Tema 2: process, global y módulos core · Básico · 75 min
 
 #### Aprende
 
@@ -369,6 +276,97 @@ Lleva esta frontera al **[Proyecto integrador: configuración de la API operativ
 
 **Fuentes oficiales:** [`process`](https://nodejs.org/api/process.html), [`os`](https://nodejs.org/api/os.html) y [`path`](https://nodejs.org/api/path.html).
 
+### Tema 3: Fases del Event Loop de Node · Intermedio · 75 min
+
+#### Aprende
+
+**Prerrequisitos:** callbacks, promesas y la distinción entre I/O y CPU del Tema 1. Este proyecto no reutiliza sus archivos.
+
+**Al terminar podrás:** predecir y verificar el orden entre código síncrono, `nextTick`, promesas, timers, I/O y `setImmediate`, separando garantías del runtime de órdenes accidentales.
+
+**Por qué importa:** un servidor combina reintentos, respuestas de base de datos y mensajes de red. Una suposición falsa sobre el orden produce errores intermitentes; una recursión de `nextTick` puede dejar el proceso activo pero incapaz de atender I/O.
+
+El Event Loop repite fases con responsabilidades concretas: **timers** ejecuta callbacks de `setTimeout` y `setInterval` vencidos; **pending callbacks** procesa ciertos callbacks del sistema diferidos; **poll** recupera eventos de I/O y ejecuta sus callbacks; **check** ejecuta `setImmediate`; y **close callbacks** gestiona cierres, como los de sockets.
+
+`process.nextTick` no es una fase. Su cola se vacía al terminar la operación actual, antes de continuar el Event Loop. En CommonJS, y dentro de cualquier callback (por ejemplo, uno de I/O), la cola de `nextTick` se vacía antes que las microtareas de promesas. En el nivel superior de un módulo ESM ocurre lo contrario: Node ya está vaciando la cola de microtareas al evaluar el módulo, así que las promesas se ejecutan antes que `nextTick` (documentación oficial de `process`, sección «When to use `queueMicrotask()` vs. `process.nextTick()`»). Una cadena recursiva de `nextTick` puede monopolizar el proceso y provocar inanición de I/O.
+
+Entre `setTimeout(fn, 0)` y `setImmediate(fn)` programados en el nivel superior no existe un ganador portable: influye la temporización de inicio. Dentro de un callback de I/O en `poll`, `setImmediate` se ejecuta antes del siguiente timer porque `check` sigue inmediatamente a esa fase.
+
+**Analogía:** las fases son estaciones de una ronda de inspección. `nextTick` es un aviso urgente atendido al terminar la tarea actual, antes de avanzar a la siguiente estación. Si los avisos urgentes generan otros avisos sin fin, la ronda nunca continúa.
+
+```mermaid
+flowchart LR
+    TIMER["timers"] --> PENDING["pending callbacks"] --> POLL["poll: I/O"] --> CHECK["check: setImmediate"] --> CLOSE["close callbacks"] --> TIMER
+    TICK["nextTick"] -. "antes de continuar" .-> TIMER
+```
+
+#### Practica
+
+Desde una carpeta vacía:
+
+```bash
+mkdir ejemplo-event-loop
+cd ejemplo-event-loop
+npm init -y
+mkdir -p src/runtime
+```
+
+En PowerShell usa `New-Item -ItemType Directory -Force src/runtime`. Añade `"type": "module"` a `package.json` y crea `src/runtime/fases.js`:
+
+```js
+import { readFile } from "node:fs";
+
+console.log("1. síncrono");
+
+setTimeout(() => console.log("4/5. timer de nivel superior"), 0);
+setImmediate(() => console.log("4/5. immediate de nivel superior"));
+Promise.resolve().then(() => console.log("3. microtarea Promise"));
+process.nextTick(() => console.log("2. cola nextTick"));
+
+readFile(new URL("../../package.json", import.meta.url), () => {
+  console.log("6. callback de I/O (fase poll)");
+  process.nextTick(() => console.log("7. nextTick dentro de I/O"));
+  Promise.resolve().then(() => console.log("8. Promise dentro de I/O"));
+  setImmediate(() => console.log("9. immediate después de I/O"));
+  setTimeout(() => console.log("10. timer después de I/O"), 0);
+});
+```
+
+Ejecuta:
+
+```bash
+node src/runtime/fases.js
+```
+
+**Resultado esperado:** como `package.json` declara `"type": "module"`, el archivo es ESM y las tres primeras líneas salen como `1. síncrono`, `3. microtarea Promise`, `2. cola nextTick`: en el nivel superior de ESM la promesa gana a `nextTick`. Las líneas `4/5` no tienen orden garantizado entre sí ni respecto al bloque de I/O (en Node 22 el timer de nivel superior a veces sale después de `9`). Después de `6`, aparecen `7`, `8`, `9` y `10` en ese orden: dentro de un callback de I/O, `nextTick` sí va antes que la promesa.
+
+Compruébalo con CommonJS: copia el archivo a `src/runtime/fases.cjs`, cambia la primera línea por `const { readFile } = require("node:fs");` y la ruta por `require("node:path").join(__dirname, "../../package.json")`. Al ejecutar `node src/runtime/fases.cjs` las tres primeras líneas salen como `1`, `2`, `3`. El orden de `nextTick` frente a promesas depende del tipo de módulo; no es una regla universal.
+
+**Fallo deliberado y corrección:** añade temporalmente `const saturar = () => process.nextTick(saturar); saturar();`. El proceso no llega al I/O; deténlo con `Ctrl+C`. El diagnóstico es inanición del Event Loop, no lentitud del disco. Elimina esas líneas y verifica otra vez la traza completa.
+
+**Práctica guiada:** crea `src/runtime/tabla.js` con la misma instrumentación y una salida tabulada con columnas `mensaje`, `cola o fase` y `garantizado`. Clasifica `nextTick` y promesas aparte de `timers`, `poll` y `check`; no marques `4/5` como orden garantizado.
+
+**Ejercicio independiente:** crea manualmente `datos/a.txt` y `datos/b.txt`, y un programa `src/runtime/dos-lecturas.js` que lea ambos y registre sus callbacks. Ejecuta cinco veces. Explica qué orden observado puede variar y cuál está garantizado por el contexto.
+
+#### Aplica
+
+En el **[Proyecto integrador: traza de confirmación](#proyecto-0-runtime-observable-de-entregas)**, instrumenta una confirmación sin asumir orden entre timers independientes. Conserva una traza y separa las garantías del flujo de las coincidencias observadas.
+
+**Checklist de salida**
+
+- [ ] El proyecto fue escrito desde cero en una carpeta independiente.
+- [ ] La traza distingue código síncrono, `nextTick`, microtareas y fases.
+- [ ] No presentas como fijo el orden entre timer e immediate de nivel superior.
+- [ ] Dentro de I/O verificaste `nextTick`, promesa, immediate y timer en el orden documentado.
+- [ ] Detuviste y corregiste la recursión que producía inanición.
+- [ ] Tus conclusiones separan observación empírica de contrato del runtime.
+
+**Errores comunes:** asumir que `setTimeout(0)` significa ejecución inmediata, confundir microtareas con fases, bloquear un callback de I/O y enseñar un orden accidental como regla universal.
+
+**Cuándo asumir un orden:** dentro de una fase y en los casos documentados puedes apoyarte en el contrato de Node; el orden entre un timer y `setImmediate` creado desde el nivel superior puede variar. Si la corrección del programa depende de ese orden, coordina con una promesa explícita o una señal de I/O y prueba el contrato que realmente necesitas.
+
+**Fuentes oficiales:** [Event Loop, timers y `nextTick`](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`process.nextTick`](https://nodejs.org/api/process.html#processnexttickcallback-args).
+
 ### Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min
 
 #### Aprende
@@ -490,215 +488,9 @@ En el **[Proyecto integrador: eventos internos de entrega](#proyecto-0-runtime-o
 
 **Fuentes oficiales:** [`EventEmitter`](https://nodejs.org/api/events.html) y [no bloquear el Event Loop](https://nodejs.org/en/learn/asynchronous-work/dont-block-the-event-loop).
 
-### Tema 5: CLI moderna de Node: `util.parseArgs`, `--env-file`, `node --run` y `--watch` · Básico · 40 min
-
-**Duración estimada:** 40 min (4 subtemas de 10 min).
-**¿Por qué es importante?** Antes de levantar un servidor vas a escribir scripts: cotizar una entrega, migrar datos, cargar un CSV. Node 24 trae de serie lo que antes pedía tres paquetes: leer argumentos (`util.parseArgs`), cargar un `.env` (`--env-file`), ejecutar los scripts de `package.json` sin pasar por npm (`node --run`) y reiniciar al guardar (`--watch`).
-
-**Prerrequisitos:** Tema 3 de este módulo (`process.argv`, `process.env`, `process.exit`). JS Módulo 7 Tema 4 para el campo `scripts` de `package.json`. Node 24 LTS (`node --version` → `v24.x`). Proyecto continuo: el cotizador de entregas de RutaFlow, que en el Módulo 3 se convierte en una ruta HTTP.
-
-```bash
-mkdir -p academia-labs/node/cli-moderna && cd academia-labs/node/cli-moderna
-npm init -y
-npm pkg set type=module
-```
-
-#### Subtema 5.1: Lee opciones con `util.parseArgs` · 10 min
-
-**1. Contexto**
-`process.argv` es un array de strings sin estructura: tú tendrías que distinguir `--kilos 2` de `-k 2`, banderas booleanas y valores por defecto. `parseArgs` lo hace y además rechaza opciones desconocidas.
-
-**2. Hazlo tú**
-Crea `cotizar.js`:
-
-```javascript
-import { parseArgs } from 'node:util';
-
-const { values, positionals } = parseArgs({
-  options: {
-    kilos: { type: 'string', short: 'k' },
-    express: { type: 'boolean', default: false },
-    ciudad: { type: 'string', default: 'Bogotá' },
-  },
-  allowPositionals: true,
-});
-
-const kilos = Number(values.kilos);
-if (!Number.isFinite(kilos) || kilos <= 0) {
-  console.error('Uso: node cotizar.js --kilos <número> [--express] [--ciudad <nombre>] [guía]');
-  process.exit(2);
-}
-
-const tarifaBase = Number(process.env.TARIFA_BASE ?? 5000);
-const total = tarifaBase + kilos * 1200 + (values.express ? 3000 : 0);
-console.log(`${positionals[0] ?? 'sin guía'} → ${values.ciudad}: $${total}`);
-```
-
-```bash
-node cotizar.js --kilos 2 BO-004512
-node cotizar.js -k 2 --express --ciudad Cali
-node cotizar.js; echo "salida: $?"
-```
-
-**Resultado esperado:**
-
-```text
-BO-004512 → Bogotá: $7400
-sin guía → Cali: $10400
-Uso: node cotizar.js --kilos <número> [--express] [--ciudad <nombre>] [guía]
-salida: 2
-```
-
-**Fallo deliberado:** ejecuta `node cotizar.js --kilo 2`. **Error esperado:** `TypeError [ERR_PARSE_ARGS_UNKNOWN_OPTION]: Unknown option '--kilo'.` **Diagnóstico:** `parseArgs` es estricto por defecto y no adivina; corrige el nombre de la opción. Es mejor que un script que ignora la errata y cotiza con valores por defecto.
-
-**3. Entiende**
-`parseArgs` lee `process.argv.slice(2)` y devuelve `values` (opciones con nombre) y `positionals` (lo que no es opción, si `allowPositionals` lo permite). Solo hay dos tipos, `string` y `boolean`: convierte y valida los números tú mismo. Un código de salida distinto de 0 (`2` = uso incorrecto, por convención) permite que otro script o la CI detecten el fallo. **Límite:** no genera ayuda (`--help`) ni subcomandos; para una CLI grande se usa una biblioteca, pero para scripts del proyecto basta.
-
-**4. Cierra**
-Guarda las cuatro salidas. El cotizador ya acepta opciones validadas.
-
-#### Subtema 5.2: Carga configuración con `--env-file` · 10 min
-
-**1. Contexto**
-La tarifa base cambia por ambiente y no debe quedar escrita en el código ni en el historial de comandos.
-
-**2. Hazlo tú**
-
-```bash
-echo "TARIFA_BASE=8000" > .env
-echo ".env" >> .gitignore
-node --env-file=.env cotizar.js --kilos 2
-TARIFA_BASE=9000 node --env-file=.env cotizar.js --kilos 2
-```
-
-**Resultado esperado:**
-
-```text
-sin guía → Bogotá: $10400
-sin guía → Bogotá: $11400
-```
-
-**Fallo deliberado:** renombra `.env` a `.env.local` y repite el primer comando. **Error esperado:** `node: .env: not found` y código de salida 9, sin ejecutar el script. **Diagnóstico:** `--env-file` exige que el archivo exista; si es opcional (por ejemplo en CI, donde las variables vienen del sistema), usa `--env-file-if-exists=.env`, que avisa `.env not found. Continuing without it.` y sigue. Devuelve el nombre a `.env`.
-
-**3. Entiende**
-`--env-file` carga pares `CLAVE=valor` en `process.env` **antes** de ejecutar tu código, sin instalar `dotenv`. La segunda línea demuestra la precedencia: una variable que ya existe en el entorno **gana** al archivo (9000, no 8000). **Límite:** el archivo es texto plano; sirve para desarrollo local, no para guardar secretos de producción (eso se verá en el Módulo 11).
-
-**4. Cierra**
-Confirma que `.env` está en `.gitignore`. La configuración ya vive fuera del código.
-
-#### Subtema 5.3: Ejecuta scripts con `node --run` · 10 min
-
-**1. Contexto**
-Los comandos largos se guardan en `package.json`. `npm run` funciona, pero arranca npm completo antes de tu script; `node --run` los ejecuta directamente.
-
-**2. Hazlo tú**
-
-```bash
-npm pkg set scripts.cotizar="node --env-file=.env cotizar.js"
-node --run cotizar -- --kilos 2 BO-1
-```
-
-**Resultado esperado:**
-
-```text
-BO-1 → Bogotá: $10400
-```
-
-**Fallo deliberado:** ejecuta `node --run cotisar`. **Error esperado:** `Missing script: "cotisar"` seguido de `Available scripts are:` y la lista. **Diagnóstico:** el nombre debe coincidir con una clave de `scripts`; Node te muestra las disponibles.
-
-**3. Entiende**
-`node --run <script>` busca el `package.json` más cercano, agrega `node_modules/.bin` al `PATH` y ejecuta el comando. Todo lo que va después de `--` se pasa al script. **Límite:** a diferencia de `npm run`, **no** ejecuta los scripts `pre<nombre>`/`post<nombre>` ni define las variables `npm_*`, y en Node 24 devuelve código de salida `1` ante cualquier fallo del script (un `process.exit(2)` llega como `1`, mientras `npm run` conserva el `2`). Si tu proyecto depende de esas diferencias, sigue usando `npm run`.
-
-**4. Cierra**
-Guarda la salida. El proyecto ya tiene su comando con nombre.
-
-#### Subtema 5.4: Reinicia al guardar con `--watch` · 10 min
-
-**1. Contexto**
-Mientras ajustas la tarifa por kilo quieres ver el resultado sin volver a escribir el comando.
-
-**2. Hazlo tú**
-
-```bash
-npm pkg set scripts.dev="node --watch --env-file=.env cotizar.js --kilos 3"
-node --run dev
-```
-
-Con el proceso abierto, cambia `kilos * 1200` por `kilos * 1500` en `cotizar.js` y guarda. Detén con `Ctrl+C` y restaura `1200`.
-
-**Resultado esperado:**
-
-```text
-sin guía → Bogotá: $11600
-Completed running 'cotizar.js --kilos 3'. Waiting for file changes before restarting...
-Change detected in '/…/cli-moderna/cotizar.js'
-Restarting 'cotizar.js --kilos 3'
-sin guía → Bogotá: $12500
-Completed running 'cotizar.js --kilos 3'. Waiting for file changes before restarting...
-```
-
-**Fallo deliberado:** guarda `cotizar.js` con un error de sintaxis (borra un `}`). **Resultado:** aparece el `SyntaxError` y luego `Failed running 'cotizar.js --kilos 3'. Waiting for file changes before restarting...`: `--watch` **no** termina, sigue esperando cambios. **Diagnóstico:** corrige y guarda; el proceso se reinicia solo. Es la diferencia con ejecutar `node` a secas.
-
-**3. Entiende**
-`--watch` vigila el archivo de entrada y todo lo que importa; al detectar un cambio, mata el proceso y lo vuelve a lanzar. Sustituye a `nodemon` en la mayoría de proyectos. **Límite:** reinicia el proceso completo (se pierde el estado en memoria) y solo es para desarrollo; en producción nadie debe reiniciar tu servidor por un archivo guardado.
-
-**4. Cierra**
-Guarda la salida del reinicio. Tienes un ciclo de desarrollo completo sin dependencias.
-
-**Hito del tema:**
-
-- [ ] `cotizar.js` acepta `--kilos`, `-k`, `--express` y una guía posicional.
-- [ ] Provoqué `ERR_PARSE_ARGS_UNKNOWN_OPTION` y el código de salida 2.
-- [ ] Demostré que una variable del entorno gana a `.env`.
-- [ ] `node --run dev` se reinició al guardar y expliqué por qué no se usa en producción.
-
-**Ejercicio:** agrega la opción `--formato` con valores `texto` (por defecto) o `json`. Con `json`, imprime una línea JSON con `guia`, `ciudad` y `total`. Un valor distinto debe terminar con código 2 y un mensaje en `stderr`. Escribe primero qué salida esperas para `node --run cotizar -- -k 2 --ciudad Cali --formato json BO-1` (recuerda qué tarifa carga ese script).
-
-<details>
-<summary>Solución — ábrela después de intentarlo</summary>
-
-Agrega la opción y cambia la impresión final de `cotizar.js`:
-
-```javascript
-// en options:
-formato: { type: 'string', default: 'texto' },
-
-// reemplaza el console.log final:
-const guia = positionals[0] ?? 'sin guía';
-if (values.formato === 'json') {
-  console.log(JSON.stringify({ guia, ciudad: values.ciudad, total }));
-} else if (values.formato === 'texto') {
-  console.log(`${guia} → ${values.ciudad}: $${total}`);
-} else {
-  console.error(`Formato no soportado: ${values.formato}. Usa texto o json.`);
-  process.exit(2);
-}
-```
-
-```bash
-node --run cotizar -- -k 2 --ciudad Cali --formato json BO-1
-node cotizar.js -k 2 --ciudad Cali --formato json BO-1
-node cotizar.js -k 2 --formato xml; echo "salida: $?"
-```
-
-Salida (con `TARIFA_BASE=8000` en `.env`):
-
-```text
-{"guia":"BO-1","ciudad":"Cali","total":10400}
-{"guia":"BO-1","ciudad":"Cali","total":7400}
-Formato no soportado: xml. Usa texto o json.
-salida: 2
-```
-
-Si esperabas `7400` en la primera línea, olvidaste que el script `cotizar` carga `.env` con tarifa 8000; la segunda línea, sin `--env-file`, usa la tarifa por defecto de 5000. La comprobación del código de salida se hace con `node` directo porque `node --run` lo convierte en `1`.
-
-</details>
-
-**Fuentes oficiales:** [Node.js — `util.parseArgs`](https://nodejs.org/api/util.html#utilparseargsconfig), [Node.js — CLI: `--env-file`, `--run`, `--watch`](https://nodejs.org/api/cli.html) y [Node.js Learn — Command Line](https://nodejs.org/en/learn/command-line/run-nodejs-scripts-from-the-command-line).
-
 ## Ruta de proyecto progresivo desde carpeta vacía
 
-Después de completar los cinco ejercicios independientes, integra sus mecanismos en un proyecto nuevo. No copies carpetas ni `node_modules` de los laboratorios; vuelve a escribir la implementación mínima a partir de lo que ya comprobaste.
+Después de completar los cuatro ejercicios independientes, integra sus mecanismos en un proyecto nuevo. No copies carpetas ni `node_modules` de los laboratorios; vuelve a escribir la implementación mínima a partir de lo que ya comprobaste.
 
 ```bash
 mkdir runtime-entregas

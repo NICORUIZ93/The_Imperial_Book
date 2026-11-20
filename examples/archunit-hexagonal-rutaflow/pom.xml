@@ -11,7 +11,7 @@
   <groupId>academia.rutaflow</groupId>
   <artifactId>archunit-hexagonal-rutaflow</artifactId>
   <version>0.1.0</version>
-  <properties><java.version>25</java.version><archunit.version>1.5.1</archunit.version></properties>
+  <properties><java.version>27</java.version><archunit.version>1.5.1</archunit.version></properties>
   <dependencies>
     <dependency>
       <groupId>com.tngtech.archunit</groupId>

@@ -8,7 +8,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 #### Aprende
 
-**Prerrequisitos:** Node 24 LTS, npm, JavaScript ESM básico y Docker Desktop o Docker Engine funcionando. Docker se enseña a fondo en el Módulo 11; aquí solo lo usas para levantar PostgreSQL con los comandos exactos del tema (`docker compose up -d`, `ps`, `logs` y `down -v`), sin escribir un Dockerfile. Si nunca lo instalaste, sigue la guía oficial de instalación de Docker y comprueba `docker compose version` antes de seguir. Este proyecto no necesita archivos de otros temas.
+**Prerrequisitos:** Node LTS, npm, JavaScript ESM básico y Docker Desktop o Docker Engine funcionando. Docker se enseña a fondo en el Módulo 11; aquí solo lo usas para levantar PostgreSQL con los comandos exactos del tema (`docker compose up -d`, `ps`, `logs` y `down -v`), sin escribir un Dockerfile. Si nunca lo instalaste, sigue la guía oficial de instalación de Docker y comprueba `docker compose version` antes de seguir. Este proyecto no necesita archivos de otros temas.
 
 **Al terminar podrás:** levantar PostgreSQL localmente, conectarlo con `pg`, ejecutar consultas parametrizadas y diagnosticar separadamente un valor buscado, un dato duplicado y un fallo de conexión.
 
@@ -177,7 +177,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-prácti
 
 #### Aprende
 
-**Prerrequisitos:** Node 24 LTS, npm, ESM y conceptos básicos de tablas, claves y relaciones. Este proyecto usa SQLite y no reutiliza la base, el contenedor ni los archivos del Tema 1.
+**Prerrequisitos:** Node LTS, npm, ESM y conceptos básicos de tablas, claves y relaciones. Este proyecto usa SQLite y no reutiliza la base, el contenedor ni los archivos del Tema 1.
 
 **Al terminar podrás:** declarar un modelo Prisma, crear y revisar una migración versionada, generar el cliente y consultar una base SQLite local mediante ese contrato.
 
@@ -215,12 +215,12 @@ Desde una carpeta vacía crea el proyecto y sus dependencias:
 mkdir ejemplo-prisma-sqlite
 cd ejemplo-prisma-sqlite
 npm init -y
-npm install @prisma/client@7 @prisma/adapter-better-sqlite3@7 dotenv
-npm install --save-dev prisma@7 @types/better-sqlite3 tsx
+npm install @prisma/client @prisma/adapter-better-sqlite3 dotenv
+npm install --save-dev prisma @types/better-sqlite3 tsx
 mkdir src prisma
 ```
 
-La versión mayor de Prisma queda fijada en 7 (la de este tema y del proyecto integrador del Módulo 12): la etiqueta `latest` de npm puede apuntar a otra mayor con otra API. Comprueba con `npm ls prisma @prisma/client` que ambas comparten versión. Añade `"type": "module"` a `package.json`. No ejecutes un generador de proyecto: crea manualmente `.env`, `prisma.config.ts`, `prisma/schema.prisma`, `tsconfig.json` y los archivos de `src` que se indican. Prisma solo generará la migración y el cliente derivados de tu schema.
+Añade `"type": "module"` a `package.json`. No ejecutes un generador de proyecto: crea manualmente `.env`, `prisma.config.ts`, `prisma/schema.prisma`, `tsconfig.json` y los archivos de `src` que se indican. Prisma solo generará la migración y el cliente derivados de tu schema.
 
 Crea `.env`:
 
@@ -359,7 +359,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-prácti
 
 #### Aprende
 
-**Prerrequisitos:** Node 24 LTS, npm, Docker, consultas parametrizadas y SQL básico. El proyecto comienza en una carpeta vacía y no usa la base de los temas anteriores.
+**Prerrequisitos:** Node LTS, npm, Docker, consultas parametrizadas y SQL básico. El proyecto comienza en una carpeta vacía y no usa la base de los temas anteriores.
 
 **Al terminar podrás:** limitar y liberar conexiones de un pool, ejecutar varias escrituras en una transacción y combinar atomicidad con una actualización condicional que proteja el stock.
 
@@ -545,7 +545,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-prácti
 
 #### Aprende
 
-**Prerrequisitos:** Node 24 LTS, npm, Docker Desktop o Docker Engine, objetos JavaScript y promesas. El proyecto comienza en una carpeta vacía y no comparte archivos ni servicios con los otros temas.
+**Prerrequisitos:** Node LTS, npm, Docker Desktop o Docker Engine, objetos JavaScript y promesas. El proyecto comienza en una carpeta vacía y no comparte archivos ni servicios con los otros temas.
 
 **Al terminar podrás:** levantar una base MongoDB local, validar documentos con Mongoose, resolver una referencia con `populate` y justificar cuándo referenciar, anidar o conservar un modelo relacional.
 

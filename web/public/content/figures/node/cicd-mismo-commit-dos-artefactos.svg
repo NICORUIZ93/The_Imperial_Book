@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 465" width="794" height="465" role="img" aria-label="Captura de terminal: el mismo commit, dos imágenes: distintos identificadores">
+<title>Captura de terminal: el mismo commit, dos imágenes: distintos identificadores</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos capturados en orden: npm test | tail -7 ; docker build -q --no-cache -t 127.0.0.1:5060/pedidos:staging . ; docker build -q --no-cache -t 127.0.0.1:5060/pedidos:production . ; docker image inspect --format 'staging    {{.Id}} {{.Created}}' 127.0.0.1:5060/pedidos:staging ; docker image inspect --format 'produccion {{.Id}} {{.Created}}' 127.0.0.1:5060/pedidos:production. Código de salida final: 0.</desc>
+<rect width="794" height="465" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">el mismo commit, dos imágenes: distintos identificadores</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">npm test | tail -7</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">ℹ suites 0</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">ℹ pass 4</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">ℹ fail 0</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">ℹ cancelled 0</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">ℹ skipped 0</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">ℹ todo 0</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">ℹ duration_ms 71.224875</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">npm notice run pedidos@1.0.0 test</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">npm notice run node --test</text>
+<text x="18" y="251" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker build -q --no-cache -t 127.0.0.1:5060/pedidos:staging .</tspan></text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">sha256:0c6544388fbadbd8009b1a7d681aa37d568926d090918c4a9cd44a4b6c899097</text>
+<text x="18" y="289" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker build -q --no-cache -t 127.0.0.1:5060/pedidos:production .</tspan></text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6">sha256:b31e70720710fdf653c8ae83e89808727b290d865ac237c12fe7525c8ecd0c94</text>
+<text x="18" y="327" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker image inspect --format 'staging    {{.Id}} {{.Created}}' 127.0.0.1:5060/pedidos:staging</tspan></text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6">staging    sha256:0c6544388fbadbd8009b1a7d681aa37d568926d090918c4a9cd44a4b6c899097 2026-11-19T04</text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">:51:49.743315631Z</text>
+<text x="18" y="384" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker image inspect --format 'produccion {{.Id}} {{.Created}}' 127.0.0.1:5060/pedidos:product</tspan></text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6">ion</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">produccion sha256:b31e70720710fdf653c8ae83e89808727b290d865ac237c12fe7525c8ecd0c94 2026-11-19T04</text>
+<text x="18" y="441" style="white-space: pre" fill="#e6e6e6">:51:50.950609257Z</text>
+</g>
+</svg>

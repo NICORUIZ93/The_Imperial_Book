@@ -42,13 +42,7 @@ El modificador `.task { }` en una vista SwiftUI lanza una `Task` vinculada autom
 **¿Por qué es importante?** Porque `.task` cancela automáticamente su trabajo cuando la vista desaparece, evitando que una carga asíncrona intente actualizar una vista que ya no existe, algo que un `Task` suelto dentro de `onAppear` no resuelve.
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de otra carpeta vacía y crea en Xcode un proyecto SwiftUI independiente llamado `RutaFlowApp`. Crea `DetalleEnvio.swift` con este contenido y, en el archivo `@main` generado, usa `WindowGroup { DetalleEnvio(guia: "RF-4471") }`:
-
 ```swift
-import SwiftUI
-
-struct Envio { let guia: String }
-
 func obtenerEnvio(guia: String) async throws -> Envio {
     try await Task.sleep(for: .seconds(1)) // simula la consulta real a ShipmentEvents
     return Envio(guia: guia)
@@ -202,18 +196,7 @@ En tu propio proyecto RutaFlow, crea `DetalleEnvioViewModel.swift` con **File �
 ---
 
 #### Paso 4 · Demostración guiada desde cero
-En el proyecto del Tema 1 (que ya declara `Envio` y `obtenerEnvio`), crea `DetalleEnvioViewModel.swift`:
-
 ```swift
-import Observation
-
-struct Conductor { let nombre: String }
-
-func obtenerConductor(guia: String) async throws -> Conductor {
-    try await Task.sleep(for: .seconds(1)) // simula la consulta del conductor asignado
-    return Conductor(nombre: "Ana")
-}
-
 @MainActor @Observable
 class DetalleEnvioViewModel {
     var envio: Envio?
@@ -333,7 +316,150 @@ El siguiente paso es integrar el mecanismo con URLSession y `.task(id:)`. **Erro
 
 **Fuentes oficiales:** [Swift concurrency](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/) y [Task.checkCancellation](https://developer.apple.com/documentation/swift/task/checkcancellation()).
 
-### Tema 5: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min
+### Tema 5: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min
+
+**Prerrequisito:** temas «async/await y Task» y «Cancelación cooperativa» de este módulo.
+
+**Al finalizar podrás:** convertir una fuente de eventos con callbacks en un `AsyncStream`, consumirla con `for await` y detenerla al cancelar la tarea.
+
+**¿Por qué es importante?** Las posiciones GPS, las notificaciones y los mensajes de un socket llegan muchas veces en el tiempo. `AsyncSequence` permite leerlos en un bucle simple, con cancelación y sin anidar callbacks.
+
+#### Paso 1 · Objetivo y preparación
+
+Usa Xcode 26 (Swift 6.2) o posterior. Trabaja en un paquete ejecutable para correrlo en la terminal: `mkdir Posiciones && cd Posiciones && swift package init --type executable`, y borra `Sources/Posiciones/Posiciones.swift` antes de crear `main.swift`.
+
+#### Paso 2 · Contexto y caso real
+
+La app de RutaFlow recibía posiciones con un delegado y las guardaba en una variable global. Al salir de la pantalla nadie detenía el flujo y seguía consumiendo batería. Con `AsyncStream` y la tarea de la vista, el flujo se detiene solo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `AsyncSequence`, `AsyncStream`, continuación, `yield`, `finish`, `onTermination`, `for await`, cancelación.
+
+Una **`AsyncSequence`** es como una secuencia normal, pero cada siguiente elemento se espera con `await`. Se recorre con `for await valor in secuencia`.
+
+**`AsyncStream`** es la forma de crear una a partir de código con callbacks:
+
+- en el cierre de creación recibes una **continuación**;
+- `continuation.yield(valor)` entrega un elemento;
+- `continuation.finish()` termina la secuencia;
+- `continuation.onTermination` corre cuando termina o cuando **se cancela** quien la lee: ahí detienes la fuente.
+
+Si la tarea que hace el `for await` se cancela (por ejemplo, al salir de la vista con `.task`), el bucle termina y se llama `onTermination`.
+
+**Analogía:** un `AsyncStream` es una cinta transportadora: alguien pone cajas (`yield`) y tú las tomas de a una con `for await`. Cuando te vas (cancelas), la cinta se detiene (`onTermination`). La analogía falla en que, si no tomas las cajas, se acumulan: la política de búfer decide cuántas guardar.
+
+**Límite de uso:** por defecto el búfer no tiene límite: si produces más rápido de lo que consumes, crece la memoria. Usa `bufferingPolicy: .bufferingNewest(n)` para datos donde solo importa lo último, como posiciones.
+
+```mermaid
+sequenceDiagram
+    participant F as Fuente (callbacks)
+    participant S as AsyncStream
+    participant C as for await
+    F->>S: yield(posición 1)
+    S-->>C: posición 1
+    F->>S: yield(posición 2)
+    S-->>C: posición 2
+    C->>S: tarea cancelada
+    S->>F: onTermination: detener
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `Posiciones/Sources/Posiciones/main.swift`:
+
+```swift
+import Foundation
+
+// Fuente con callbacks, como un delegado de ubicación.
+final class SimuladorGPS: @unchecked Sendable { // todo ocurre en la cola serial `cola`
+    private let cola = DispatchQueue(label: "gps")
+    private var temporizador: DispatchSourceTimer?
+    private var lat = 4.60
+    var alRecibir: (@Sendable (Double) -> Void)?
+    func iniciar() {
+        let t = DispatchSource.makeTimerSource(queue: cola)
+        t.schedule(deadline: .now() + 0.1, repeating: 0.1)
+        t.setEventHandler { [self] in
+            lat += 0.01
+            alRecibir?(lat)
+        }
+        temporizador = t
+        t.resume()
+    }
+    func detener() { cola.sync { temporizador?.cancel() }; print("GPS detenido") }
+}
+
+func posiciones() -> AsyncStream<Double> {
+    AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuacion in
+        let gps = SimuladorGPS()
+        gps.alRecibir = { continuacion.yield($0) }
+        continuacion.onTermination = { _ in gps.detener() } // al cancelar o terminar
+        gps.iniciar()
+    }
+}
+
+let tarea = Task { @MainActor in
+    for await lat in posiciones() {
+        print(String(format: "posición %.2f", lat))
+    }
+    print("bucle terminado")
+}
+
+try await Task.sleep(for: .milliseconds(350))
+tarea.cancel() // como salir de la pantalla
+try await Task.sleep(for: .milliseconds(100))
+```
+
+Ejecútalo:
+
+```bash
+cd Posiciones
+swift run
+```
+
+**Explicación por bloques:** `SimuladorGPS` imita un delegado: llama un callback cada 100 ms desde su propia cola serial, sin depender del run loop. `posiciones()` lo envuelve en un `AsyncStream` que guarda solo la posición más nueva. Cada callback hace `yield`, y `onTermination` detiene el GPS. La tarea recorre las posiciones con `for await`. A los 350 ms se cancela: el bucle termina, el stream llama `onTermination` y el GPS se detiene. El número exacto de posiciones puede variar en uno según el tiempo.
+
+**Resultado esperado:**
+
+```text
+posición 4.61
+posición 4.62
+posición 4.63
+GPS detenido
+bucle terminado
+```
+
+**Fallo deliberado:** quita `continuacion.onTermination = { _ in gps.detener() }`. **Error esperado:** después de cancelar no aparece «GPS detenido»: la fuente sigue produciendo aunque nadie lee. **Diagnóstico:** cancelar el consumidor no detiene la fuente por sí solo. `onTermination` es el lugar para liberarla.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** ejecuta el programa y cuenta las posiciones recibidas.
+2. **Variación:** cambia la espera antes de cancelar a 1 segundo y vuelve a contar.
+3. **Diagnóstico:** reproduce el fallo deliberado sin `onTermination`.
+4. **Integración:** usa la secuencia en una vista con `.task { for await ... }` y comprueba que se detiene al cerrar la vista.
+5. **Diseño:** reemplaza el simulador por `CLLocationUpdate.liveUpdates()` (iOS 17), que ya es una `AsyncSequence`.
+
+**Pista:** todo `AsyncStream` que envuelve una fuente necesita su `onTermination`.
+
+#### Paso 6 · Práctica independiente
+
+Crea un `AsyncStream<String>` que envuelva `NotificationCenter` para el evento de app en segundo plano y muestra un aviso cada vez que ocurra, deteniendo la observación al cancelar.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas `yield`, `finish` y `onTermination`.
+- [ ] El programa se detiene al cancelar la tarea.
+- [ ] Reprodujiste la fuente que sigue viva sin `onTermination`.
+- [ ] Eliges una política de búfer con criterio.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no detener la fuente al cancelar, usar búfer ilimitado para datos frecuentes y consumir la secuencia fuera de una tarea cancelable. **Siguiente paso:** el módulo 13 usa `CLLocationUpdate.liveUpdates()`, una `AsyncSequence` de ubicaciones reales.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la app del conductor de RutaFlow, expone las posiciones como `AsyncStream` con `bufferingNewest(1)` y consúmelas con `.task` en la pantalla de ruta.
+
+**Fuente oficial:** [Apple — AsyncStream](https://developer.apple.com/documentation/swift/asyncstream) y [Apple — AsyncSequence](https://developer.apple.com/documentation/swift/asyncsequence).
+
+### Tema 6: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min
 
 **Prerrequisito:** temas «Actors para estado mutable seguro» y «TaskGroup y MainActor» de este módulo.
 
@@ -451,13 +577,9 @@ swift test
 
 ```text
 ◇ Test run started.
-↳ Testing Library Version: …
-◇ Test registraMilEntregasSinPerder() started.
-✔ Test registraMilEntregasSinPerder() passed after 0.001 seconds.
-✔ Test run with 1 test in 0 suites passed after 0.001 seconds.
+✔ Test registraMilEntregasSinPerder() passed
+✔ Test run with 1 test passed
 ```
-
-Los tiempos y la versión de la biblioteca cambian en cada máquina.
 
 **Fallo deliberado:** reemplaza el actor por la clase comentada (con `total` y `sumar()`) y llámala dentro de `grupo.addTask`. **Error esperado:** en modo Swift 6, un error en la línea de `grupo.addTask` del tipo `passing closure as a 'sending' parameter risks causing data races between … and concurrent execution of the closure`, con una nota `closure captures 'contador' …`. `addTask` recibe su cierre como parámetro `sending`, así que el compilador comprueba que lo capturado no siga accesible desde la tarea actual; el texto exacto entre «between» y «and» depende de la versión del compilador. **Diagnóstico:** la clase tiene estado mutable y cruzaría a varias tareas. Conviértela en actor; no la marques `@unchecked Sendable` sin un lock.
 
@@ -487,147 +609,4 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** silenciar errores c
 **Transferencia al proyecto integrador «RutaFlow»:** activa el modo Swift 6 en `RutaFlowKit`, convierte el contador de entregas en actor y deja los modelos como structs `Sendable`.
 
 **Fuente oficial:** [Swift.org — Migrating to Swift 6](https://www.swift.org/migration/documentation/migrationguide/) y [Apple — Sendable](https://developer.apple.com/documentation/swift/sendable).
-
-### Tema 6: AsyncSequence y AsyncStream: recibir valores en el tiempo con for await · Avanzado · 40 min
-
-**Prerrequisito:** temas «async/await y Task» y «Cancelación cooperativa» de este módulo.
-
-**Al finalizar podrás:** convertir una fuente de eventos con callbacks en un `AsyncStream`, consumirla con `for await` y detenerla al cancelar la tarea.
-
-**¿Por qué es importante?** Las posiciones GPS, las notificaciones y los mensajes de un socket llegan muchas veces en el tiempo. `AsyncSequence` permite leerlos en un bucle simple, con cancelación y sin anidar callbacks.
-
-#### Paso 1 · Objetivo y preparación
-
-Usa Xcode 26 (Swift 6.2) o posterior. Trabaja en un paquete ejecutable para correrlo en la terminal: `mkdir Posiciones && cd Posiciones && swift package init --type executable`, y borra `Sources/Posiciones/Posiciones.swift` antes de crear `main.swift`.
-
-#### Paso 2 · Contexto y caso real
-
-La app de RutaFlow recibía posiciones con un delegado y las guardaba en una variable global. Al salir de la pantalla nadie detenía el flujo y seguía consumiendo batería. Con `AsyncStream` y la tarea de la vista, el flujo se detiene solo.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `AsyncSequence`, `AsyncStream`, continuación, `yield`, `finish`, `onTermination`, `for await`, cancelación.
-
-Una **`AsyncSequence`** es como una secuencia normal, pero cada siguiente elemento se espera con `await`. Se recorre con `for await valor in secuencia`.
-
-**`AsyncStream`** es la forma de crear una a partir de código con callbacks:
-
-- en el cierre de creación recibes una **continuación**;
-- `continuation.yield(valor)` entrega un elemento;
-- `continuation.finish()` termina la secuencia;
-- `continuation.onTermination` corre cuando termina o cuando **se cancela** quien la lee: ahí detienes la fuente.
-
-Si la tarea que hace el `for await` se cancela (por ejemplo, al salir de la vista con `.task`), el bucle termina y se llama `onTermination`.
-
-**Analogía:** un `AsyncStream` es una cinta transportadora: alguien pone cajas (`yield`) y tú las tomas de a una con `for await`. Cuando te vas (cancelas), la cinta se detiene (`onTermination`). La analogía falla en que, si no tomas las cajas, se acumulan: la política de búfer decide cuántas guardar.
-
-**Límite de uso:** por defecto el búfer no tiene límite: si produces más rápido de lo que consumes, crece la memoria. Usa `bufferingPolicy: .bufferingNewest(n)` para datos donde solo importa lo último, como posiciones.
-
-```mermaid
-sequenceDiagram
-    participant F as Fuente (callbacks)
-    participant S as AsyncStream
-    participant C as for await
-    F->>S: yield(posición 1)
-    S-->>C: posición 1
-    F->>S: yield(posición 2)
-    S-->>C: posición 2
-    C->>S: tarea cancelada
-    S->>F: onTermination: detener
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `Posiciones/Sources/Posiciones/main.swift`:
-
-```swift
-import Foundation
-
-// Fuente con callbacks, como un delegado de ubicación.
-final class SimuladorGPS: @unchecked Sendable { // todo ocurre en la cola serial `cola`
-    private let cola = DispatchQueue(label: "gps")
-    private var temporizador: DispatchSourceTimer?
-    private var lat = 4.60
-    var alRecibir: (@Sendable (Double) -> Void)?
-    func iniciar() {
-        let t = DispatchSource.makeTimerSource(queue: cola)
-        t.schedule(deadline: .now() + 0.1, repeating: 0.1)
-        t.setEventHandler { [self] in
-            lat += 0.01
-            alRecibir?(lat)
-        }
-        temporizador = t
-        t.resume()
-    }
-    func detener() { cola.sync { temporizador?.cancel() }; print("GPS detenido") }
-}
-
-func posiciones() -> AsyncStream<Double> {
-    AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuacion in
-        let gps = SimuladorGPS()
-        gps.alRecibir = { continuacion.yield($0) }
-        continuacion.onTermination = { _ in gps.detener() } // al cancelar o terminar
-        gps.iniciar()
-    }
-}
-
-let tarea = Task { @MainActor in
-    for await lat in posiciones() {
-        print(String(format: "posición %.2f", lat))
-    }
-    print("bucle terminado")
-}
-
-try await Task.sleep(nanoseconds: 350_000_000) // (for:) exigiría macOS 13 en Package.swift
-tarea.cancel() // como salir de la pantalla
-try await Task.sleep(nanoseconds: 100_000_000)
-```
-
-Ejecútalo:
-
-```bash
-cd Posiciones
-swift run
-```
-
-**Explicación por bloques:** `SimuladorGPS` imita un delegado: llama un callback cada 100 ms desde su propia cola serial, sin depender del run loop. `posiciones()` lo envuelve en un `AsyncStream` que guarda solo la posición más nueva. Cada callback hace `yield`, y `onTermination` detiene el GPS. La tarea recorre las posiciones con `for await`. A los 350 ms se cancela: el bucle termina, el stream llama `onTermination` y el GPS se detiene. El número exacto de posiciones puede variar en uno según el tiempo.
-
-**Resultado esperado:**
-
-```text
-posición 4.61
-posición 4.62
-posición 4.63
-GPS detenido
-bucle terminado
-```
-
-**Fallo deliberado:** quita `continuacion.onTermination = { _ in gps.detener() }`. **Error esperado:** después de cancelar no aparece «GPS detenido»: la fuente sigue produciendo aunque nadie lee. **Diagnóstico:** cancelar el consumidor no detiene la fuente por sí solo. `onTermination` es el lugar para liberarla.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta el programa y cuenta las posiciones recibidas.
-2. **Variación:** cambia la espera antes de cancelar a 1 segundo y vuelve a contar.
-3. **Diagnóstico:** reproduce el fallo deliberado sin `onTermination`.
-4. **Integración:** usa la secuencia en una vista con `.task { for await ... }` y comprueba que se detiene al cerrar la vista.
-5. **Diseño:** reemplaza el simulador por `CLLocationUpdate.liveUpdates()` (iOS 17), que ya es una `AsyncSequence`.
-
-**Pista:** todo `AsyncStream` que envuelve una fuente necesita su `onTermination`.
-
-#### Paso 6 · Práctica independiente
-
-Crea un `AsyncStream<String>` que envuelva `NotificationCenter` para el evento de app en segundo plano y muestra un aviso cada vez que ocurra, deteniendo la observación al cancelar.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas `yield`, `finish` y `onTermination`.
-- [ ] El programa se detiene al cancelar la tarea.
-- [ ] Reprodujiste la fuente que sigue viva sin `onTermination`.
-- [ ] Eliges una política de búfer con criterio.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no detener la fuente al cancelar, usar búfer ilimitado para datos frecuentes y consumir la secuencia fuera de una tarea cancelable. **Siguiente paso:** el módulo 13 usa `CLLocationUpdate.liveUpdates()`, una `AsyncSequence` de ubicaciones reales.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la app del conductor de RutaFlow, expone las posiciones como `AsyncStream` con `bufferingNewest(1)` y consúmelas con `.task` en la pantalla de ruta.
-
-**Fuente oficial:** [Apple — AsyncStream](https://developer.apple.com/documentation/swift/asyncstream) y [Apple — AsyncSequence](https://developer.apple.com/documentation/swift/asyncsequence).
 

@@ -10,7 +10,7 @@ Cada tema comienza en una carpeta vacía y constituye un proyecto independiente.
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, JavaScript básico y conocimiento elemental de TypeScript. Comprueba `node --version`; no necesitas una base de datos ni un framework HTTP.
+**Prerrequisitos:** Node.js LTS, npm, JavaScript básico y conocimiento elemental de TypeScript. Comprueba `node --version`; no necesitas una base de datos ni un framework HTTP.
 
 **Al terminar podrás:** validar como `unknown` el body de `POST /envios`, obtener un DTO tipado con zod, demostrar que `strict` y un cast no validan datos de red y traducir mediante una unión discriminada todos los resultados esperados de un caso de uso.
 
@@ -197,11 +197,9 @@ flowchart LR
 
 **Fuentes oficiales:** [zod](https://zod.dev/) y [TypeScript: uso de `unknown` en variables `catch`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables).
 
-### Tema 2: Contratos HTTP: comportamiento verificable y OpenAPI ejecutable · Avanzado · 190 min
+### Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min
 
-#### Primera parte: un contrato HTTP es comportamiento, no solo documentación · 90 min
-
-##### Aprende
+#### Aprende
 
 **Prerrequisitos:** HTTP JSON, módulos ESM, `fetch` y pruebas básicas con Node. Este proyecto no usa el parser ni ningún archivo del ejercicio anterior.
 
@@ -221,7 +219,7 @@ Agregar un campo opcional suele ser compatible, pero no siempre: un parser estri
 
 **Analogía:** el contrato de un enchufe incluye forma y voltaje. El dibujo ayuda, pero solo una prueba con ambos extremos demuestra que funcionan juntos; cambiar el voltaje sin cambiar la forma es especialmente peligroso porque parece compatible.
 
-##### Practica
+#### Practica
 
 Crea un proyecto nuevo, sin abrir proyectos de otros temas:
 
@@ -468,7 +466,7 @@ npm test
 
 **Ejercicio independiente:** crea `contracts/almacen.contract.json` y su prueba. El almacén solo necesita `id` y `guia`, y debe ignorar campos adicionales. Demuestra que eliminar `id` rompe ese contrato, mientras añadir un campo `nota` no lo rompe. Explica por qué este resultado no prueba que todos los demás consumidores toleren `nota`.
 
-##### Aplica
+#### Aplica
 
 Para una operación real de creación de entregas, escribe una matriz con método, request, status, content type, campos imprescindibles, errores y significado. Añade pruebas del proveedor y un archivo de expectativas por consumidor conocido. La evidencia debe incluir una divergencia de status y otra de semántica corregidas; un documento que describe `201` mientras la API devuelve `200` no es un contrato verificado.
 
@@ -499,14 +497,11 @@ flowchart LR
 
 **Fuentes oficiales:** [OpenAPI Specification](https://swagger.io/specification/) y [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).
 
-#### Segunda parte: OpenAPI como contrato ejecutable · 100 min
+### Tema 3: OpenAPI como contrato ejecutable · Avanzado · 100 min
 
-**Antes en el Tema 5 de este módulo.** La primera parte probó el comportamiento; esta lo describe en un documento OpenAPI que se valida contra respuestas reales. Juntas forman un solo tema sobre contratos HTTP.
+#### Aprende
 
-
-##### Aprende
-
-**Prerrequisitos:** YAML, JSON Schema básico, HTTP y pruebas con `fetch`. Usa otra carpeta vacía: la primera parte fijó **qué** promete `POST /envios` con pruebas; esta parte **describe** una consulta en OpenAPI y comprueba que la implementación la cumple.
+**Prerrequisitos:** YAML, JSON Schema básico, HTTP y pruebas con `fetch`. Este proyecto parte de otra carpeta vacía; no reutiliza el servidor ni los contratos de comportamiento anteriores.
 
 **Al terminar podrás:** escribir un documento OpenAPI 3.1 completo para una consulta de entregas, ejecutar lint, validar responses reales contra sus schemas y conservar una comprobación local de compatibilidad para las expectativas declaradas de un consumidor.
 
@@ -526,7 +521,7 @@ El comprobador de compatibilidad de esta práctica es deliberadamente limitado: 
 
 **Analogía:** OpenAPI es el plano firmado de un edificio. Swagger UI es una vista del plano; el lint revisa que el plano esté bien formado, las pruebas inspeccionan la construcción y la comparación de versiones pregunta si una reforma bloquea una puerta que alguien ya usa.
 
-##### Practica
+#### Practica
 
 Crea el proyecto independiente:
 
@@ -788,7 +783,7 @@ npm run check
 
 **Ejercicio independiente:** documenta e implementa `POST /deliveries` en este mismo proyecto, con `201`, `400`, `409`, Problem Details y cabecera `Idempotency-Key`. Añade pruebas reales para cada respuesta. Clasifica por escrito estos cambios: eliminar `trackingCode`, hacer obligatorio un nuevo campo de request, añadir un valor a `status`, añadir una propiedad opcional de respuesta y corregir una descripción. Justifica la dirección del dato y qué consumidor podría romperse en cada caso.
 
-##### Aplica
+#### Aplica
 
 Para una consulta pública de entregas, versiona el archivo OpenAPI junto con la implementación y conserva tres evidencias locales: lint, responses válidas y compatibilidad con una línea base de consumidor. No generes un SDK hasta que esas comprobaciones pasen. Si ya generas schemas desde una única fuente de verdad, evita mantener una segunda descripción manual divergente.
 
@@ -820,7 +815,7 @@ flowchart LR
 
 **Fuentes oficiales:** [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html), [OpenAPI Specification, versión vigente](https://spec.openapis.org/oas/latest.html) y [Redocly CLI](https://redocly.com/docs/cli/).
 
-### Tema 3: Reintentar sin duplicar el efecto · Avanzado · 120 min
+### Tema 4: Reintentar sin duplicar el efecto · Avanzado · 120 min
 
 #### Aprende
 
@@ -1190,7 +1185,7 @@ flowchart TD
 
 **Fuentes oficiales:** [Stripe: idempotent requests](https://docs.stripe.com/idempotency) y [node-postgres: transactions](https://node-postgres.com/features/transactions).
 
-### Tema 4: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min
+### Tema 5: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min
 
 #### Aprende
 
@@ -1414,7 +1409,7 @@ flowchart LR
 
 ### Proyecto: API contractual con efectos recuperables
 
-Construye desde una carpeta vacía `rutaflow-confiable/`, sin copiar archivos de los proyectos anteriores ni de ejemplos de la academia. La vertical será «crear una tarea de entrega y notificarla». Usa Node.js 24 LTS, TypeScript estricto, zod, PostgreSQL local, Redocly y `node:test`; todos los requests, webhooks, consumidores y experimentos concurrentes se ejecutan localmente. No uses credenciales reales ni endpoints de terceros.
+Construye desde una carpeta vacía `rutaflow-confiable/`, sin copiar archivos de los proyectos anteriores ni de ejemplos de la academia. La vertical será «crear una tarea de entrega y notificarla». Usa Node.js LTS, TypeScript estricto, zod, PostgreSQL local, Redocly y `node:test`; todos los requests, webhooks, consumidores y experimentos concurrentes se ejecutan localmente. No uses credenciales reales ni endpoints de terceros.
 
 Crea manualmente esta estructura y completa cada archivo con la responsabilidad indicada:
 

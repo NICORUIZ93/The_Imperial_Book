@@ -37,7 +37,7 @@ export class LessonIndexComponent {
   readonly groups = computed<LevelGroup[]>(() => {
     const modules = this.track()?.modules ?? [];
     return LEVEL_ORDER
-      .map(level => ({ level, modules: modules.filter(m => m.level === level) }))
+      .map(level => ({ level, modules: modules.filter(m => m.level === level).sort((a, b) => a.id - b.id) }))
       .filter(group => group.modules.length > 0);
   });
 

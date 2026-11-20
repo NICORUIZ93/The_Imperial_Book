@@ -124,3 +124,69 @@
   .module-link { grid-column:2; justify-self:start; padding:6px 0 0; }
   .overview-footer { align-items:flex-start; flex-direction:column; }
 }
+
+// ── ROUTE HOME · portada académica compartida ────────────────────────────
+.overview-page { max-width:1180px; padding:clamp(32px,5vw,72px) clamp(20px,5vw,64px) 88px; }
+.overview-hero {
+  position:relative; overflow:hidden; padding:clamp(28px,5vw,58px); border:1px solid $bd; border-radius:24px;
+  background:$wh; box-shadow:$shm;
+}
+.overview-hero::after {
+  content:''; position:absolute; top:0; right:0; width:9px; height:100%; background:var(--track-color,var(--accent)); opacity:.9;
+}
+.overview-kicker { width:max-content; padding:7px 11px; border-radius:999px; color:$p; background:$pl; font-weight:750; letter-spacing:.09em; }
+.overview-hero h1 { max-width:18ch; margin-top:20px; font-size:clamp(38px,5.2vw,66px); }
+.overview-tagline { max-width:58ch; color:$i3; font-size:18px; }
+.primary-action,.secondary-action { min-height:46px; padding:0 18px; border-radius:11px; font-size:13px; text-decoration:none; }
+.primary-action { border-color:$p; background:$p; box-shadow:0 10px 22px color-mix(in srgb,var(--accent) 20%,transparent); }
+.primary-action:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--accent) 84%,#000); }
+.secondary-action { border:1px solid $bd; color:$i3; background:$bg2; }
+.secondary-action:hover { border-color:$p; color:$p; background:$pl; }
+.overview-stats { gap:0; margin-top:32px; padding-top:24px; }
+.overview-stats div { min-width:150px; display:block; padding-right:28px; }
+.overview-stats div + div { padding-left:28px; border-left:1px solid $bd; }
+.overview-stats dt { font-size:28px; }
+.overview-stats dd { margin-top:5px; font-size:11px; }
+.orientation-grid { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:22px 0 56px; padding:0; border:0; }
+.orientation-card {
+  padding:22px; border:1px solid $bd; border-radius:16px; background:$wh; box-shadow:$sh;
+}
+.orientation-card:last-child { padding-right:22px; border-right:1px solid $bd; }
+.card-label { color:$p; font-weight:750; letter-spacing:.08em; }
+.orientation-card strong { margin-top:12px; font-size:16px; }
+.orientation-card p,.orientation-card li { font-size:13px; }
+.prerequisite-card a { color:$p; font-weight:700; text-decoration:none; }
+.prerequisite-card a:hover { text-decoration:underline; text-underline-offset:3px; }
+.section-heading h2 { font-size:clamp(28px,3vw,36px); }
+.module-groups { gap:34px; }
+.group-heading { padding:12px 4px; border-bottom:0; }
+.group-heading > span { color:$p; font-weight:800; }
+.module-list { gap:10px; }
+.module-row {
+  grid-template-columns:54px minmax(0,1fr) auto; align-items:center; padding:18px 20px;
+  border:1px solid $bd; border-radius:14px; background:$wh; box-shadow:$sh;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.module-row:hover { transform:translateY(-1px); border-color:$bd2; box-shadow:$shm; }
+.module-row.is-next { padding-left:20px; border-color:color-mix(in srgb,var(--accent) 30%,var(--border)); box-shadow:inset 4px 0 0 $p,$sh; }
+.module-number { width:42px; height:42px; display:grid; place-items:center; padding:0; border-radius:11px; color:$i3; background:$bg2; font-weight:700; }
+.module-title-line h3 { font-size:17px; }
+.module-status { padding:4px 8px; border-radius:999px; background:$bg2 !important; }
+.module-link { min-height:40px; padding:0 12px; border:1px solid $bd; border-radius:9px; text-decoration:none; }
+.module-link:hover { border-color:$p; background:$pl; }
+.overview-footer { margin-top:56px; padding:28px; border:1px solid $bd; border-radius:18px; background:$wh; box-shadow:$sh; }
+.overview-footer > a { min-height:42px; padding:0 14px; border:1px solid $bd; border-radius:10px; text-decoration:none; }
+
+@media(max-width:640px) {
+  .overview-page { padding:20px 12px 52px; }
+  .overview-hero { padding:26px 22px; border-radius:18px; }
+  .overview-hero h1 { font-size:38px; }
+  .overview-actions { gap:10px; }
+  .primary-action,.secondary-action { width:100%; justify-content:center; }
+  .overview-stats { display:grid; grid-template-columns:repeat(3,1fr); }
+  .overview-stats div { min-width:0; padding:0 10px; }
+  .overview-stats div + div { padding-left:10px; }
+  .overview-stats dt { font-size:23px; }
+  .module-row,.module-row.is-next { grid-template-columns:42px minmax(0,1fr); padding:16px 14px; }
+  .module-link { grid-column:2; }
+}

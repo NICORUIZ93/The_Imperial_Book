@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Unit testing con Vitest
+### Tema 1: Unit testing con Vitest · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -102,7 +102,113 @@ Ya puedes convertir una regla de dominio en feedback rápido y determinista. El 
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Prueba la transformación de respuesta pública con datos vacíos, válidos e inválidos. Las aserciones deben comprobar el contrato visible del widget, no detalles del orden interno de funciones.
 
-### Tema 2: Mocks, spies y fakes
+### Tema 2: ESLint, Prettier y cobertura de código · Intermedio · 35 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás distinguir análisis estático, formato y cobertura, configurar comandos reproducibles y usar un reporte para encontrar una rama sin prueba. Convertirás calidad del proyecto en un contrato ejecutable sin perseguir un porcentaje vacío.
+
+**Prerrequisitos:** npm, Vitest y una suite verde. Conserva `package-lock.json`; las mismas versiones deben ejecutarse localmente y en CI.
+
+#### Paso 2 · Contexto y caso real
+
+El proyecto ya tiene pruebas, pero aún puede contener variables sin usar, formato inconsistente o ramas nunca ejercitadas. El proyecto integrará tres señales distintas y bloqueará errores, manteniendo las decisiones de cobertura enfocadas en el dominio crítico.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** análisis estático de calidad frente a formato visual, cobertura de líneas/ramas, límites de la cobertura como métrica.
+
+ESLint y Prettier resuelven dos problemas complementarios pero distintos, y confundir sus responsabilidades es un error conceptual común. ESLint es un analizador estático que detecta errores de lógica, malas prácticas y patrones potencialmente problemáticos en el código (variables declaradas pero nunca usadas, comparaciones con `==` en vez de `===`, promesas creadas pero nunca manejadas), configurables mediante un conjunto de reglas que el equipo decide adoptar según sus estándares de calidad. Prettier, en cambio, se ocupa exclusivamente del formato visual del código (indentación, longitud de línea, comillas simples frente a dobles), sin ninguna opinión sobre la lógica o corrección del código, aplicando un estilo consistente automáticamente sin necesidad de discusión manual sobre preferencias de formato entre miembros del equipo.
+
+Ejecutar ambas herramientas en conjunto —típicamente ESLint configurado para no incluir reglas de formato (delegando esa responsabilidad completamente a Prettier, evitando conflictos entre ambas herramientas compitiendo por el mismo aspecto del código) y Prettier ejecutándose automáticamente al guardar un archivo o como parte de un hook de pre-commit— es la configuración estándar recomendada en proyectos JavaScript modernos, eliminando tanto errores de lógica detectables estáticamente como discusiones improductivas sobre preferencias personales de estilo visual del código.
+
+La cobertura de código, medida típicamente con `vitest --coverage`, cuantifica qué porcentaje de líneas, ramas condicionales, y funciones del código fuente se ejecutó al menos una vez durante la ejecución completa de la suite de pruebas. Un reporte de cobertura es una herramienta valiosa para identificar código completamente no probado (una función nunca invocada por ninguna prueba, o una rama de un `if` que nunca se ejecuta en ningún escenario probado), señalando dónde podrían existir bugs no descubiertos simplemente porque esa porción de código nunca se ejerció durante ninguna prueba.
+
+Sin embargo, un 100% de cobertura no garantiza en absoluto la ausencia de bugs: cobertura mide únicamente que una línea se ejecutó, no que su resultado fue verificado correctamente con una aserción significativa; es perfectamente posible alcanzar 100% de cobertura con pruebas que ejecutan el código pero nunca afirman nada relevante sobre su comportamiento, o que solo prueban el "camino feliz" sin cubrir casos límite genuinamente importantes que técnicamente pasan por líneas ya cubiertas por otro escenario. Por esta razón, la cobertura debería tratarse como una señal útil de qué áreas carecen de cualquier prueba en absoluto, no como un objetivo numérico a maximizar ciegamente sin considerar la calidad real de las aserciones.
+
+**Analogía:** ESLint es como un corrector de estilo que revisa la lógica y coherencia argumental de un texto; Prettier es como un editor que aplica automáticamente un formato tipográfico consistente (fuente, márgenes, espaciado) sin opinar sobre el contenido; la cobertura de código es como verificar qué porcentaje de las páginas de un libro fueron efectivamente leídas por al menos un revisor, sin garantizar que ese revisor haya entendido o verificado correctamente el contenido de cada página leída.
+
+**¿Por qué es importante?** ESLint y Prettier automatizan dos aspectos distintos y complementarios de calidad de código, eliminando tanto errores de lógica detectables como discusiones de estilo; la cobertura es una señal útil de código no probado, pero nunca una garantía de corrección real del comportamiento verificado.
+
+#### Paso 4 · Demostración guiada desde cero
+
+Instala herramientas en `academia-web`:
+
+```bash
+npm install --save-dev eslint @eslint/js prettier @vitest/coverage-v8
+```
+
+Desde una carpeta vacía crea `ejemplo-calidad-js`, instala ESLint, Prettier y Vitest, y crea `src`:
+
+```bash
+mkdir ejemplo-calidad-js
+cd ejemplo-calidad-js
+npm init -y
+npm install -D eslint prettier vitest
+mkdir src
+```
+
+Crea `eslint.config.js`:
+
+```js
+import js from "@eslint/js";
+
+export default [
+  js.configs.recommended,
+  {
+    files: ["src/**/*.js"],
+    languageOptions: { globals: { document: "readonly", fetch: "readonly" } },
+    rules: { eqeqeq: "error", "no-unused-vars": "error" },
+  },
+];
+```
+
+Crea `.prettierrc.json` con `{ "printWidth": 100, "semi": true }` y agrega scripts:
+
+```json
+{
+  "scripts": {
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "test:coverage": "vitest run --coverage",
+    "verify": "npm run lint && npm run format:check && npm test"
+  }
+}
+```
+
+Ejecuta:
+
+```bash
+npm run lint
+npm run format:check
+npm run test:coverage
+```
+
+**Resultado esperado:** lint y formato terminan sin errores; cobertura genera tabla con líneas, funciones y ramas, además de `coverage/` para inspección detallada.
+
+**Fallo deliberado:** añade `const temporal = 1;` sin usar en `src/main.js`. ESLint muestra regla, archivo y línea. Elimina la variable o úsala con intención; no desactives la regla para ocultar deuda.
+
+#### Paso 5 · Práctica guiada
+
+Abre el reporte HTML, localiza una rama roja de `crearGuia` y escribe un caso significativo. **Pista:** primero describe el comportamiento ausente; el porcentaje debe subir como consecuencia, no como objetivo único.
+
+#### Paso 6 · Práctica independiente
+
+Define un umbral razonado para `src/dominio/**`, crea un archivo deliberadamente ejecutado sin aserciones y explica por qué su cobertura no prueba corrección. Documenta qué comandos ejecutará CI y cuánto tardan.
+
+#### Paso 7 · Cierre
+
+Ya puedes interpretar tres controles complementarios y mantenerlos reproducibles. El próximo módulo medirá rendimiento con la misma disciplina: hipótesis, métrica y comparación.
+
+**Errores comunes:** hacer competir ESLint y Prettier por formato; ejecutar herramientas globales con versiones distintas; perseguir 100% sin aserciones; ignorar ramas; corregir warnings desactivando reglas sin justificar.
+
+**Fuentes oficiales:** [ESLint — Configure](https://eslint.org/docs/latest/use/configure/), [Prettier — Install](https://prettier.io/docs/install) y [Vitest — Coverage](https://vitest.dev/guide/coverage).
+
+---
+
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Ejecuta formato, análisis y pruebas del widget en CI. Introduce una rama de error sin cobertura y añade una prueba que detecte su comportamiento incorrecto, evitando premiar solo el porcentaje.
+
+### Tema 3: Mocks, spies y fakes · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -198,7 +304,7 @@ Ya puedes controlar colaboraciones y tiempo sin convertir el test en teatro de m
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Sustituye el cliente externo por un fake que permita controlar éxito y fallo. Verifica el comportamiento de usuario y usa spies solo donde contar una interacción sea parte del contrato.
 
-### Tema 3: Mockear fetch
+### Tema 4: Mockear fetch · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -304,112 +410,6 @@ Ya puedes simular la frontera HTTP conservando su contrato esencial. El siguient
 **Fuentes oficiales:** [Vitest — Mocking Requests](https://vitest.dev/guide/mocking/requests) y [MDN — Response](https://developer.mozilla.org/en-US/docs/Web/API/Response).
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Controla fetch para devolver dos consultas en orden inverso. La prueba debe demostrar que la respuesta antigua no altera la guía vigente y que un aborto no se presenta como error de usuario.
-
-### Tema 4: ESLint, Prettier y cobertura de código
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás distinguir análisis estático, formato y cobertura, configurar comandos reproducibles y usar un reporte para encontrar una rama sin prueba. Convertirás calidad del proyecto en un contrato ejecutable sin perseguir un porcentaje vacío.
-
-**Prerrequisitos:** npm, Vitest y una suite verde. Conserva `package-lock.json`; las mismas versiones deben ejecutarse localmente y en CI.
-
-#### Paso 2 · Contexto y caso real
-
-El proyecto ya tiene pruebas, pero aún puede contener variables sin usar, formato inconsistente o ramas nunca ejercitadas. El proyecto integrará tres señales distintas y bloqueará errores, manteniendo las decisiones de cobertura enfocadas en el dominio crítico.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** análisis estático de calidad frente a formato visual, cobertura de líneas/ramas, límites de la cobertura como métrica.
-
-ESLint y Prettier resuelven dos problemas complementarios pero distintos, y confundir sus responsabilidades es un error conceptual común. ESLint es un analizador estático que detecta errores de lógica, malas prácticas y patrones potencialmente problemáticos en el código (variables declaradas pero nunca usadas, comparaciones con `==` en vez de `===`, promesas creadas pero nunca manejadas), configurables mediante un conjunto de reglas que el equipo decide adoptar según sus estándares de calidad. Prettier, en cambio, se ocupa exclusivamente del formato visual del código (indentación, longitud de línea, comillas simples frente a dobles), sin ninguna opinión sobre la lógica o corrección del código, aplicando un estilo consistente automáticamente sin necesidad de discusión manual sobre preferencias de formato entre miembros del equipo.
-
-Ejecutar ambas herramientas en conjunto —típicamente ESLint configurado para no incluir reglas de formato (delegando esa responsabilidad completamente a Prettier, evitando conflictos entre ambas herramientas compitiendo por el mismo aspecto del código) y Prettier ejecutándose automáticamente al guardar un archivo o como parte de un hook de pre-commit— es la configuración estándar recomendada en proyectos JavaScript modernos, eliminando tanto errores de lógica detectables estáticamente como discusiones improductivas sobre preferencias personales de estilo visual del código.
-
-La cobertura de código, medida típicamente con `vitest --coverage`, cuantifica qué porcentaje de líneas, ramas condicionales, y funciones del código fuente se ejecutó al menos una vez durante la ejecución completa de la suite de pruebas. Un reporte de cobertura es una herramienta valiosa para identificar código completamente no probado (una función nunca invocada por ninguna prueba, o una rama de un `if` que nunca se ejecuta en ningún escenario probado), señalando dónde podrían existir bugs no descubiertos simplemente porque esa porción de código nunca se ejerció durante ninguna prueba.
-
-Sin embargo, un 100% de cobertura no garantiza en absoluto la ausencia de bugs: cobertura mide únicamente que una línea se ejecutó, no que su resultado fue verificado correctamente con una aserción significativa; es perfectamente posible alcanzar 100% de cobertura con pruebas que ejecutan el código pero nunca afirman nada relevante sobre su comportamiento, o que solo prueban el "camino feliz" sin cubrir casos límite genuinamente importantes que técnicamente pasan por líneas ya cubiertas por otro escenario. Por esta razón, la cobertura debería tratarse como una señal útil de qué áreas carecen de cualquier prueba en absoluto, no como un objetivo numérico a maximizar ciegamente sin considerar la calidad real de las aserciones.
-
-**Analogía:** ESLint es como un corrector de estilo que revisa la lógica y coherencia argumental de un texto; Prettier es como un editor que aplica automáticamente un formato tipográfico consistente (fuente, márgenes, espaciado) sin opinar sobre el contenido; la cobertura de código es como verificar qué porcentaje de las páginas de un libro fueron efectivamente leídas por al menos un revisor, sin garantizar que ese revisor haya entendido o verificado correctamente el contenido de cada página leída.
-
-**¿Por qué es importante?** ESLint y Prettier automatizan dos aspectos distintos y complementarios de calidad de código, eliminando tanto errores de lógica detectables como discusiones de estilo; la cobertura es una señal útil de código no probado, pero nunca una garantía de corrección real del comportamiento verificado.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Instala herramientas en `academia-web`:
-
-```bash
-npm install --save-dev eslint @eslint/js prettier @vitest/coverage-v8
-```
-
-Desde una carpeta vacía crea `ejemplo-calidad-js`, instala ESLint, Prettier y Vitest, y crea `src`:
-
-```bash
-mkdir ejemplo-calidad-js
-cd ejemplo-calidad-js
-npm init -y
-npm install -D eslint prettier vitest
-mkdir src
-```
-
-Crea `eslint.config.js`:
-
-```js
-import js from "@eslint/js";
-
-export default [
-  js.configs.recommended,
-  {
-    files: ["src/**/*.js"],
-    languageOptions: { globals: { document: "readonly", fetch: "readonly" } },
-    rules: { eqeqeq: "error", "no-unused-vars": "error" },
-  },
-];
-```
-
-Crea `.prettierrc.json` con `{ "printWidth": 100, "semi": true }` y agrega scripts:
-
-```json
-{
-  "scripts": {
-    "lint": "eslint .",
-    "format:check": "prettier --check .",
-    "test:coverage": "vitest run --coverage",
-    "verify": "npm run lint && npm run format:check && npm test"
-  }
-}
-```
-
-Ejecuta:
-
-```bash
-npm run lint
-npm run format:check
-npm run test:coverage
-```
-
-**Resultado esperado:** lint y formato terminan sin errores; cobertura genera tabla con líneas, funciones y ramas, además de `coverage/` para inspección detallada.
-
-**Fallo deliberado:** añade `const temporal = 1;` sin usar en `src/main.js`. ESLint muestra regla, archivo y línea. Elimina la variable o úsala con intención; no desactives la regla para ocultar deuda.
-
-#### Paso 5 · Práctica guiada
-
-Abre el reporte HTML, localiza una rama roja de `crearGuia` y escribe un caso significativo. **Pista:** primero describe el comportamiento ausente; el porcentaje debe subir como consecuencia, no como objetivo único.
-
-#### Paso 6 · Práctica independiente
-
-Define un umbral razonado para `src/dominio/**`, crea un archivo deliberadamente ejecutado sin aserciones y explica por qué su cobertura no prueba corrección. Documenta qué comandos ejecutará CI y cuánto tardan.
-
-#### Paso 7 · Cierre
-
-Ya puedes interpretar tres controles complementarios y mantenerlos reproducibles. El próximo módulo medirá rendimiento con la misma disciplina: hipótesis, métrica y comparación.
-
-**Errores comunes:** hacer competir ESLint y Prettier por formato; ejecutar herramientas globales con versiones distintas; perseguir 100% sin aserciones; ignorar ramas; corregir warnings desactivando reglas sin justificar.
-
-**Fuentes oficiales:** [ESLint — Configure](https://eslint.org/docs/latest/use/configure/), [Prettier — Install](https://prettier.io/docs/install) y [Vitest — Coverage](https://vitest.dev/guide/coverage).
-
----
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Ejecuta formato, análisis y pruebas del widget en CI. Introduce una rama de error sin cobertura y añade una prueba que detecte su comportamiento incorrecto, evitando premiar solo el porcentaje.
 
 ## Construcción guiada del capítulo
 

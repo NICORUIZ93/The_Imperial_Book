@@ -1,6 +1,6 @@
 # 018 · Microservicios de Cero a Maestro (Spring Boot y Node.js por separado)
 
-**Estado:** en curso
+**Estado:** hecho
 **Origen:** el 2026-11-19 el dueño entregó el prompt
 [docs/temarios/PROMPT-MICROSERVICIOS-CERO-A-MAESTRO.md](../docs/temarios/PROMPT-MICROSERVICIOS-CERO-A-MAESTRO.md)
 y pidió aplicarlo «tal cual, punto a punto, sin que se escape nada», con las **versiones más recientes**.
@@ -36,7 +36,7 @@ Reemplaza el temario de Microservicios de specs/017 (N4) y la forma de los temas
   10 entregables, el glosario de 120 términos, los 3 ejercicios de «no usar microservicios» y un
   laboratorio por módulo.
   Verificación: `python3 scripts/validate_fichas.py`
-- **M2** `en-curso` — Los laboratorios del curso pasan en el Mac del dueño.
+- **M2** `hecho` — Los laboratorios del curso pasan en el Mac del dueño.
   Verificación: `! grep -h "	FAIL	" verificacion/microservicios/resultados.tsv`
 - **M3** `hecho` — El track generado coincide con los módulos escritos.
   Verificación: `python3 scripts/build_microservices_track.py --check`

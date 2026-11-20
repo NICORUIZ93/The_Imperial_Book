@@ -5,7 +5,7 @@
 
 ### Tema 1: package.json y semver · Básico · 50 min
 
-**Prerrequisito:** Node 24 LTS y npm. Comprueba `node --version` y `npm --version`; no necesitas archivos de otros temas.
+**Prerrequisito:** Node LTS y npm. Comprueba `node --version` y `npm --version`; no necesitas archivos de otros temas.
 
 **Al terminar podrás:** clasificar dependencias, interpretar rangos semver y justificar qué actualizaciones acepta un servicio Node.
 
@@ -37,7 +37,7 @@ cd ejemplo-package-json
 npm init -y
 npm install express
 npm install --save-dev vitest
-npm pkg set type=module engines.node=">=24" scripts.start="node src/main.js" scripts.test="vitest run"
+npm pkg set type=module engines.node=">=20" scripts.start="node src/main.js" scripts.test="vitest run"
 mkdir src
 ```
 
@@ -54,7 +54,7 @@ Revisa `package.json`. Su forma relevante será similar a esta, aunque las versi
 ```json
 {
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": { "node": ">=20" },
   "scripts": {
     "start": "node src/main.js",
     "test": "vitest run"
@@ -107,10 +107,10 @@ npm pkg set scripts.check:runtime="node --version"
 npm run check:runtime
 ```
 
-**Crea** `.nvmrc` con la mayor LTS de referencia del curso, Node 24:
+**Crea** `.nvmrc` con la mayor LTS elegida, una por línea; por ejemplo, si eliges Node 22:
 
 ```text
-24
+22
 ```
 
 Entrega la salida de `npm pkg get scripts engines` y explica en un comentario de tu evidencia por qué `engines` comunica el requisito, pero el gestor puede necesitar configuración adicional para imponerlo. Como reto independiente, cambia una dependencia de un rango caret a tilde, predice el efecto antes de instalar y restaura el rango original después de comparar el manifiesto y el lockfile.
@@ -243,7 +243,274 @@ npm ls vitest --depth=0
 
 ---
 
-### Tema 3: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min
+### Tema 3: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min
+
+**Prerrequisito:** Node 22.12 o superior para el ejemplo de `require()` de ESM y un editor. Comprueba `node --version`; no necesitas archivos de otros temas.
+
+**Al terminar podrás:** decidir si un archivo es ESM o CommonJS, interoperar entre ambos, cargar ESM desde CommonJS y reemplazar `__dirname`.
+
+#### Aprende
+
+Una API puede migrar a ESM y conservar módulos CommonJS antiguos o librerías que solo usan `module.exports`. Mezclar ambos sistemas sin conocer sus reglas produce errores como `require is not defined` o `__dirname is not defined`, capaces de bloquear un despliegue.
+
+**Por qué importa:** muchos proyectos Node reales permanecen en transición entre los dos sistemas. Saber qué sistema corresponde a cada archivo permite migrar de forma gradual sin copiar módulos ni cambiar extensiones al azar.
+
+Node decide por archivo: `.mjs` siempre es ESM; `.cjs`, CommonJS; `.js` depende del campo `"type"` del `package.json` más cercano. ESM usa `import`/`export`, carga asíncrona y no define `require`, `module` ni `__dirname`. Desde ESM, un módulo CommonJS se importa y su `module.exports` llega como `default`. `createRequire(import.meta.url)` crea un `require` cuando hace falta, por ejemplo para cargar JSON. Desde Node 22.12, CommonJS puede hacer `require()` de un módulo ESM síncrono; un ESM con top-level await no cumple ese supuesto.
+
+Para reconstruir `__dirname` en ESM puedes usar `path.dirname(fileURLToPath(import.meta.url))`; desde Node 20.11 también está disponible `import.meta.dirname`. En CommonJS, `__dirname` sigue existiendo con su comportamiento habitual.
+
+**Analogía:** son dos enchufes distintos en la misma casa. `.mjs` y `.cjs` traen la clavija marcada; para `.js`, decide el cuadro eléctrico (`"type"`). Cambiar la etiqueta sin adaptar el cableado provoca el fallo.
+
+```mermaid
+flowchart TD
+    A{extensión} -- .mjs --> E[ESM]
+    A -- .cjs --> C[CommonJS]
+    A -- .js --> T{type en package.json}
+    T -- module --> E
+    T -- commonjs o ausente --> C
+```
+
+**Conceptos clave:** ESM, CommonJS, campo `type`, `.mjs`, `.cjs`, `createRequire`, `import.meta.url`, `require(esm)` y exports condicionales.
+
+**Cuándo no usarlo:** en un proyecto nuevo no mezcles sistemas sin necesidad: usa solo ESM. La interoperabilidad es una herramienta de migración y compatibilidad, no un diseño objetivo.
+
+#### Practica
+
+**Desde cero:** crea una carpeta vacía:
+
+```bash
+mkdir esm-y-cjs
+cd esm-y-cjs
+```
+
+**Crea** `package.json`:
+
+```json
+{ "name": "mezcla-modulos", "version": "1.0.0", "type": "module" }
+```
+
+**Crea** `legado.cjs`:
+
+```javascript
+// Módulo CommonJS antiguo: usa require y module.exports
+const path = require('node:path');
+
+function nombreReporte(fecha) {
+  return path.join(__dirname, `reporte-${fecha}.csv`);
+}
+
+module.exports = { nombreReporte, version: '1.4.0' };
+```
+
+**Crea** `moderno.mjs`:
+
+```javascript
+// Módulo ESM moderno: usa export
+export const zonas = ['Norte', 'Sur', 'Centro'];
+export default function saludo(nombre) {
+  return `Hola ${nombre}, tienes ${zonas.length} zonas`;
+}
+```
+
+**Crea** `config.json`:
+
+```json
+{ "ciudad": "Bogotá" }
+```
+
+**Crea** `desde-cjs.cjs`:
+
+```javascript
+// CommonJS cargando un módulo ESM síncrono en Node 22.12+
+const moderno = require('./moderno.mjs');
+console.log('ESM desde CJS:', moderno.default('Beto'), moderno.zonas.length);
+```
+
+**Crea** `main.js`:
+
+```javascript
+// package.json tiene "type": "module", así que este .js es ESM
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import legado from './legado.cjs';
+import saludo, { zonas } from './moderno.mjs';
+
+const require = createRequire(import.meta.url);
+const config = require('./config.json');
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+console.log('CJS desde ESM:', legado.version, path.basename(legado.nombreReporte('2026-10-28')));
+console.log('ESM:', saludo('Ana'), zonas);
+console.log('JSON con createRequire:', config.ciudad);
+console.log('Carpeta actual:', path.basename(__dirname));
+```
+
+Ejecuta ambos puntos de entrada:
+
+```bash
+node main.js
+node desde-cjs.cjs
+```
+
+**Resultado esperado:**
+
+```text
+CJS desde ESM: 1.4.0 reporte-2026-10-28.csv
+ESM: Hola Ana, tienes 3 zonas [ 'Norte', 'Sur', 'Centro' ]
+JSON con createRequire: Bogotá
+Carpeta actual: esm-y-cjs
+ESM desde CJS: Hola Beto, tienes 3 zonas 3
+```
+
+`legado.cjs` conserva `__dirname`; `main.js` lo reconstruye con `import.meta.url`. El módulo exportado por CommonJS llega como `default` al importarlo desde ESM.
+
+**Fallo deliberado:** borra de `main.js` la línea `const __dirname = path.dirname(fileURLToPath(import.meta.url));` y ejecuta `node main.js`.
+
+**Diagnóstico y corrección:** aparece `ReferenceError: __dirname is not defined in ES module scope`, porque ESM no crea esa variable. Restaura la línea o sustitúyela por `const __dirname = import.meta.dirname;` en una versión compatible de Node y ejecuta de nuevo.
+
+**Práctica guiada.** renombra `legado.cjs` a `legado.js`, actualiza el import de `main.js` a `./legado.js` sin cambiar el código del módulo y ejecuta. Después restaura el nombre `.cjs` y el import. **Pista:** con `"type": "module"`, el archivo renombrado pasa a ser ESM; `require` y `module.exports` dejan de existir. El error confirma que la extensión y `type` cambian la interpretación, no solo el nombre.
+
+**Si falla.** Si `require('./moderno.mjs')` no funciona, comprueba que Node sea 22.12 o superior y que `moderno.mjs` no use top-level await. Si `main.js` no encuentra un archivo, revisa primero que el import coincida con la extensión actual antes de diagnosticar el sistema de módulos.
+
+#### Aplica
+
+Crea dentro de esta misma carpeta un paquete `dual` que exponga una versión ESM y otra CommonJS de una función pura. Debe contener sus propios `package.json`, `index.mjs` e `index.cjs`; añade un consumidor ESM y otro CommonJS que lo importen mediante las condiciones `"import"` y `"require"` de `exports`.
+
+**Pista de configuración:** la entrada `"."` puede apuntar a `"./index.mjs"` bajo `"import"` y a `"./index.cjs"` bajo `"require"`. La implementación de la función y los dos consumidores son el reto independiente. Verifica que ambos producen el mismo resultado y que ningún archivo `.js` depende accidentalmente del `type` equivocado.
+
+**Checklist de salida.**
+
+- [ ] `package.json` declara `"type": "module"` y los archivos `.cjs` conservan CommonJS.
+- [ ] `main.js` importa CommonJS como `default` y carga JSON con `createRequire`.
+- [ ] `desde-cjs.cjs` carga el ESM síncrono en Node 22.12 o superior.
+- [ ] La eliminación de `__dirname` reproduce el `ReferenceError` y la corrección restaura la salida.
+- [ ] El renombrado a `.js` demuestra el efecto de `type` y después se revierte.
+- [ ] El paquete dual resuelve las condiciones `import` y `require` con resultados equivalentes.
+
+**Si falla.** Si al mezclar formatos aparece `module is not defined`, comprueba si ese archivo está siendo tratado como ESM. Si aparece `require is not defined`, decide entre conservar `.cjs`, migrar a `import` o crear deliberadamente un `createRequire`; no declares variables ficticias para ocultar el problema.
+
+**Errores comunes:** usar `__dirname` o `require` directamente dentro de ESM; renombrar `.cjs` a `.js` sin revisar `type`; olvidar actualizar los imports al cambiar extensiones; intentar `require()` de un ESM con top-level await.
+
+**Fuentes oficiales:** [Node.js: Modules: ECMAScript modules](https://nodejs.org/api/esm.html) y [Node.js: Loading ECMAScript modules using require()](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** migra un módulo CommonJS de la API a ESM y deja el anterior funcionando hasta retirarlo; verifica ambos consumidores antes de cambiar la entrada pública.
+
+---
+
+### Tema 4: Scripts de ciclo de vida · Intermedio · 50 min
+
+**Prerrequisito:** Node, npm y conocimiento de scripts, lockfiles y paquetes. La demostración es independiente y parte de una carpeta vacía.
+
+**Al terminar podrás:** ubicar una tarea en el hook correcto y auditar el riesgo de ejecutar scripts propios o transitivos automáticamente.
+
+#### Aprende
+
+Un paquete puede necesitar verificar Node antes de instalar y preparar artefactos reproducibles, pero nunca migrar producción ni descargar ejecutables de forma oculta. npm reconoce nombres de scripts que se ejecutan automáticamente en momentos concretos, sin invocarlos con `npm run`.
+
+**Por qué importa:** los hooks automatizan configuración necesaria y también son un vector de cadena de suministro. Un `postinstall` de una dependencia transitiva puede ejecutarse con los permisos del usuario sin una confirmación específica; instalar un paquete implica revisar qué código automático se autoriza.
+
+`preinstall` se ejecuta antes de instalar dependencias y sirve para precondiciones. `postinstall` ocurre inmediatamente después y puede compilar código nativo o generar un cliente. `prepare` se ejecuta tras `npm install` en desarrollo y antes de empaquetar un paquete para distribución, por lo que puede preparar artefactos que deben existir en ambos flujos. Los nombres especiales no son una ubicación genérica para cualquier tarea.
+
+Algunos equipos deshabilitan scripts en CI o producción con `--ignore-scripts`. Eso reduce ejecución automática, pero también omite tareas legítimas: cualquier generación necesaria debe convertirse en un comando explícito y documentado. Las migraciones destructivas, publicaciones y operaciones sobre infraestructura pertenecen a despliegues deliberados, no a una instalación.
+
+**Analogía:** los hooks son instrucciones de ensamblaje que llegan dentro de un paquete y se ejecutan al recibirlo. Son convenientes cuando el remitente es confiable; antes de autorizarlas hay que revisar qué hacen, igual que no montarías un mecanismo desconocido sin leer sus instrucciones.
+
+**Conceptos clave:** `preinstall`, `postinstall`, `prepare`, `--foreground-scripts`, `--ignore-scripts` y permisos de ejecución.
+
+**Cuándo no usarlo:** evita hooks para descargas no fijadas, migraciones, publicaciones o cambios externos irreversibles. Conserva automatizaciones pequeñas, deterministas y auditables.
+
+#### Practica
+
+**Desde cero:** crea el proyecto independiente:
+
+```bash
+mkdir ejemplo-hooks-npm
+cd ejemplo-hooks-npm
+npm init -y
+mkdir scripts
+```
+
+**Crea** `scripts/verificar-node.js`:
+
+```js
+const major = Number(process.versions.node.split(".")[0]);
+
+if (major < 20) {
+  console.error(`Node ${process.version} no es compatible; usa Node 20 o superior`);
+  process.exitCode = 1;
+} else {
+  console.log(`Node compatible: ${process.version}`);
+}
+```
+
+En el `package.json` raíz añade scripts sin red ni cambios irreversibles:
+
+```json
+{
+  "scripts": {
+    "preinstall": "node scripts/verificar-node.js",
+    "generate": "node -e \"console.log('Artefactos reproducibles generados')\"",
+    "prepare": "npm run generate"
+  }
+}
+```
+
+Ejecuta mostrando la salida de hooks:
+
+```bash
+npm install --foreground-scripts
+```
+
+`--foreground-scripts` imprime en vivo la salida de los scripts de ciclo de vida en lugar de ocultarla por defecto. **Resultado esperado:** aparece primero la verificación compatible y después el mensaje de generación durante `prepare`; no se modifica infraestructura externa.
+
+**Fallo deliberado:** cambia temporalmente `major < 20` por `major < 99` en `scripts/verificar-node.js` y repite `npm install --foreground-scripts`.
+
+**Diagnóstico y corrección:** la instalación termina con código distinto de cero y explica la versión requerida. Es un fallo de precondición intencional, no un problema de npm. Restaura `major < 20` y repite el comando para volver al estado verde.
+
+**Práctica guiada.** en una copia temporal ejecuta la instalación sin hooks y después la generación explícita:
+
+```bash
+mkdir ../ejemplo-hooks-sin-scripts
+cp package.json package-lock.json ../ejemplo-hooks-sin-scripts/
+cp -R scripts ../ejemplo-hooks-sin-scripts/
+cd ../ejemplo-hooks-sin-scripts
+npm ci --ignore-scripts
+npm run generate
+cd ../ejemplo-hooks-npm
+```
+
+**Pista:** durante `npm ci --ignore-scripts` desaparecen la verificación y la generación automática; el último comando demuestra que la tarea legítima todavía puede ejecutarse de forma explícita.
+
+**Si falla.** Si no ves los mensajes, conserva `--foreground-scripts` y ejecuta los comandos por separado para distinguir la salida del hook de la de npm. Si una copia no tiene `package-lock.json`, vuelve al proyecto y genera ese archivo con `npm install` antes de usar `npm ci`.
+
+#### Aplica
+
+Mueve la generación no indispensable fuera de `prepare`: elimina ese hook del `package.json` principal y conserva `generate` como tarea explícita. **Crea** `COMANDOS.md` y documenta cuándo ejecutar `npm run generate`, qué salidas aparecen con y sin `--ignore-scripts`, y por qué una migración destructiva no pertenece a `postinstall`.
+
+Como reto independiente, compara una instalación normal con otra usando `--ignore-scripts` y escribe qué tarea legítima tendrías que reponer manualmente antes de empaquetar.
+
+**Checklist de salida.**
+
+- [ ] `preinstall` ejecuta una verificación local y determinista de Node.
+- [ ] La instalación normal muestra la verificación y la generación en el orden esperado.
+- [ ] El umbral `99` provoca un código de salida distinto de cero y `20` restaura el estado verde.
+- [ ] `--ignore-scripts` suprime los hooks sin impedir `npm run generate` explícito.
+- [ ] La generación no indispensable queda fuera de `prepare` y su ejecución está documentada.
+- [ ] Ningún script publica, migra, descarga ejecutables ni modifica servicios externos.
+
+**Si falla.** Si el proyecto necesita un artefacto y la instalación con hooks deshabilitados lo omite, no vuelvas a ocultar la tarea en otro hook: añade el comando explícito al proceso documentado. Si una dependencia transitiva ejecuta código inesperado, detén la instalación y revisa su procedencia y scripts antes de autorizarla.
+
+**Errores comunes:** ejecutar descargas en `postinstall`; ocultar migraciones; ignorar scripts transitivos; asumir que `--ignore-scripts` no tiene consecuencias; usar hooks distintos entre local y CI sin documentarlo.
+
+**Fuentes oficiales:** [scripts npm](https://docs.npmjs.com/cli/using-npm/scripts), [`ignore-scripts`](https://docs.npmjs.com/cli/using-npm/config#ignore-scripts) y [seguridad de dependencias npm](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities).
+
+**Transferencia al proyecto integrador «API operativa de entregas»:** revisa qué scripts se ejecutan durante instalación y empaquetado. Instala la API en un entorno sin credenciales de despliegue y confirma que preparar dependencias no publica ni modifica servicios externos.
+
+---
+
+### Tema 5: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min
 
 **Prerrequisito:** Node, npm, imports ESM y conocimiento de `package.json` e instalación reproducible. No reutilizarás proyectos de temas anteriores.
 
@@ -386,120 +653,9 @@ Crea `packages/tracking` con su propio manifiesto y una función pura que valide
 
 ---
 
-### Tema 4: Scripts de ciclo de vida · Intermedio · 50 min
+### Tema 6: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min
 
-**Prerrequisito:** Node, npm y conocimiento de scripts, lockfiles y paquetes. La demostración es independiente y parte de una carpeta vacía.
-
-**Al terminar podrás:** ubicar una tarea en el hook correcto y auditar el riesgo de ejecutar scripts propios o transitivos automáticamente.
-
-#### Aprende
-
-Un paquete puede necesitar verificar Node antes de instalar y preparar artefactos reproducibles, pero nunca migrar producción ni descargar ejecutables de forma oculta. npm reconoce nombres de scripts que se ejecutan automáticamente en momentos concretos, sin invocarlos con `npm run`.
-
-**Por qué importa:** los hooks automatizan configuración necesaria y también son un vector de cadena de suministro. Un `postinstall` de una dependencia transitiva puede ejecutarse con los permisos del usuario sin una confirmación específica; instalar un paquete implica revisar qué código automático se autoriza.
-
-`preinstall` se ejecuta antes de instalar dependencias y sirve para precondiciones. `postinstall` ocurre inmediatamente después y puede compilar código nativo o generar un cliente. `prepare` se ejecuta tras `npm install` en desarrollo y antes de empaquetar un paquete para distribución, por lo que puede preparar artefactos que deben existir en ambos flujos. Los nombres especiales no son una ubicación genérica para cualquier tarea.
-
-Algunos equipos deshabilitan scripts en CI o producción con `--ignore-scripts`. Eso reduce ejecución automática, pero también omite tareas legítimas: cualquier generación necesaria debe convertirse en un comando explícito y documentado. Las migraciones destructivas, publicaciones y operaciones sobre infraestructura pertenecen a despliegues deliberados, no a una instalación.
-
-**Analogía:** los hooks son instrucciones de ensamblaje que llegan dentro de un paquete y se ejecutan al recibirlo. Son convenientes cuando el remitente es confiable; antes de autorizarlas hay que revisar qué hacen, igual que no montarías un mecanismo desconocido sin leer sus instrucciones.
-
-**Conceptos clave:** `preinstall`, `postinstall`, `prepare`, `--foreground-scripts`, `--ignore-scripts` y permisos de ejecución.
-
-**Cuándo no usarlo:** evita hooks para descargas no fijadas, migraciones, publicaciones o cambios externos irreversibles. Conserva automatizaciones pequeñas, deterministas y auditables.
-
-#### Practica
-
-**Desde cero:** crea el proyecto independiente:
-
-```bash
-mkdir ejemplo-hooks-npm
-cd ejemplo-hooks-npm
-npm init -y
-mkdir scripts
-```
-
-**Crea** `scripts/verificar-node.js`:
-
-```js
-const major = Number(process.versions.node.split(".")[0]);
-
-if (major < 24) {
-  console.error(`Node ${process.version} no es compatible; usa Node 24 o superior`);
-  process.exitCode = 1;
-} else {
-  console.log(`Node compatible: ${process.version}`);
-}
-```
-
-En el `package.json` raíz añade scripts sin red ni cambios irreversibles:
-
-```json
-{
-  "scripts": {
-    "preinstall": "node scripts/verificar-node.js",
-    "generate": "node -e \"console.log('Artefactos reproducibles generados')\"",
-    "prepare": "npm run generate"
-  }
-}
-```
-
-Ejecuta mostrando la salida de hooks:
-
-```bash
-npm install --foreground-scripts
-```
-
-`--foreground-scripts` imprime en vivo la salida de los scripts de ciclo de vida en lugar de ocultarla por defecto. **Resultado esperado:** aparece primero la verificación compatible y después el mensaje de generación durante `prepare`; no se modifica infraestructura externa.
-
-**Fallo deliberado:** cambia temporalmente `major < 24` por `major < 99` en `scripts/verificar-node.js` y repite `npm install --foreground-scripts`.
-
-**Diagnóstico y corrección:** la instalación termina con código distinto de cero y explica la versión requerida. Es un fallo de precondición intencional, no un problema de npm. Restaura `major < 24` y repite el comando para volver al estado verde.
-
-**Práctica guiada.** en una copia temporal ejecuta la instalación sin hooks y después la generación explícita:
-
-```bash
-mkdir ../ejemplo-hooks-sin-scripts
-cp package.json package-lock.json ../ejemplo-hooks-sin-scripts/
-cp -R scripts ../ejemplo-hooks-sin-scripts/
-cd ../ejemplo-hooks-sin-scripts
-npm ci --ignore-scripts
-npm run generate
-cd ../ejemplo-hooks-npm
-```
-
-**Pista:** durante `npm ci --ignore-scripts` desaparecen la verificación y la generación automática; el último comando demuestra que la tarea legítima todavía puede ejecutarse de forma explícita.
-
-**Si falla.** Si no ves los mensajes, conserva `--foreground-scripts` y ejecuta los comandos por separado para distinguir la salida del hook de la de npm. Si una copia no tiene `package-lock.json`, vuelve al proyecto y genera ese archivo con `npm install` antes de usar `npm ci`.
-
-#### Aplica
-
-Mueve la generación no indispensable fuera de `prepare`: elimina ese hook del `package.json` principal y conserva `generate` como tarea explícita. **Crea** `COMANDOS.md` y documenta cuándo ejecutar `npm run generate`, qué salidas aparecen con y sin `--ignore-scripts`, y por qué una migración destructiva no pertenece a `postinstall`.
-
-Como reto independiente, compara una instalación normal con otra usando `--ignore-scripts` y escribe qué tarea legítima tendrías que reponer manualmente antes de empaquetar.
-
-**Checklist de salida.**
-
-- [ ] `preinstall` ejecuta una verificación local y determinista de Node.
-- [ ] La instalación normal muestra la verificación y la generación en el orden esperado.
-- [ ] El umbral `99` provoca un código de salida distinto de cero y `24` restaura el estado verde.
-- [ ] `--ignore-scripts` suprime los hooks sin impedir `npm run generate` explícito.
-- [ ] La generación no indispensable queda fuera de `prepare` y su ejecución está documentada.
-- [ ] Ningún script publica, migra, descarga ejecutables ni modifica servicios externos.
-
-**Si falla.** Si el proyecto necesita un artefacto y la instalación con hooks deshabilitados lo omite, no vuelvas a ocultar la tarea en otro hook: añade el comando explícito al proceso documentado. Si una dependencia transitiva ejecuta código inesperado, detén la instalación y revisa su procedencia y scripts antes de autorizarla.
-
-**Errores comunes:** ejecutar descargas en `postinstall`; ocultar migraciones; ignorar scripts transitivos; asumir que `--ignore-scripts` no tiene consecuencias; usar hooks distintos entre local y CI sin documentarlo.
-
-**Fuentes oficiales:** [scripts npm](https://docs.npmjs.com/cli/using-npm/scripts), [`ignore-scripts`](https://docs.npmjs.com/cli/using-npm/config#ignore-scripts) y [seguridad de dependencias npm](https://docs.npmjs.com/auditing-package-dependencies-for-security-vulnerabilities).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** revisa qué scripts se ejecutan durante instalación y empaquetado. Instala la API en un entorno sin credenciales de despliegue y confirma que preparar dependencias no publica ni modifica servicios externos.
-
----
-
-### Tema 5: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min
-
-**Prerrequisito:** Node 24 LTS, npm y conocimiento de `package.json`, semver y lockfiles. Este tema no consume archivos creados en otros temas.
+**Prerrequisito:** Node 20 o superior, npm y conocimiento de `package.json`, semver y lockfiles. Este tema no consume archivos creados en otros temas.
 
 **Al terminar podrás:** preparar un paquete con `exports`, `files` y `engines`, revisar su tarball, instalarlo localmente y distinguir la publicación pública de un registro privado.
 
@@ -550,7 +706,7 @@ mkdir -p tarifas/src app
     ".": "./src/index.js"
   },
   "files": ["src"],
-  "engines": { "node": ">=24" },
+  "engines": { "node": ">=20" },
   "license": "MIT"
 }
 ```
@@ -663,167 +819,11 @@ Documenta la ruta que informa `npm config get userconfig` y explica por qué el 
 
 ---
 
-### Tema 6: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min
-
-**Prerrequisito:** Node 24 LTS (el ejemplo de `require()` de ESM existe desde Node 22.12) y un editor. Comprueba `node --version`; no necesitas archivos de otros temas.
-
-**Al terminar podrás:** decidir si un archivo es ESM o CommonJS, interoperar entre ambos, cargar ESM desde CommonJS y reemplazar `__dirname`.
-
-#### Aprende
-
-Una API puede migrar a ESM y conservar módulos CommonJS antiguos o librerías que solo usan `module.exports`. Mezclar ambos sistemas sin conocer sus reglas produce errores como `require is not defined` o `__dirname is not defined`, capaces de bloquear un despliegue.
-
-**Por qué importa:** muchos proyectos Node reales permanecen en transición entre los dos sistemas. Saber qué sistema corresponde a cada archivo permite migrar de forma gradual sin copiar módulos ni cambiar extensiones al azar.
-
-Node decide por archivo: `.mjs` siempre es ESM; `.cjs`, CommonJS; `.js` depende del campo `"type"` del `package.json` más cercano. ESM usa `import`/`export`, carga asíncrona y no define `require`, `module` ni `__dirname`. Desde ESM, un módulo CommonJS se importa y su `module.exports` llega como `default`. `createRequire(import.meta.url)` crea un `require` cuando hace falta, por ejemplo para cargar JSON. Desde Node 22.12, CommonJS puede hacer `require()` de un módulo ESM síncrono; un ESM con top-level await no cumple ese supuesto.
-
-Para reconstruir `__dirname` en ESM puedes usar `path.dirname(fileURLToPath(import.meta.url))`; en Node 24 también está disponible `import.meta.dirname`. En CommonJS, `__dirname` sigue existiendo con su comportamiento habitual.
-
-**Analogía:** son dos enchufes distintos en la misma casa. `.mjs` y `.cjs` traen la clavija marcada; para `.js`, decide el cuadro eléctrico (`"type"`). Cambiar la etiqueta sin adaptar el cableado provoca el fallo.
-
-```mermaid
-flowchart TD
-    A{extensión} -- .mjs --> E[ESM]
-    A -- .cjs --> C[CommonJS]
-    A -- .js --> T{type en package.json}
-    T -- module --> E
-    T -- commonjs o ausente --> C
-```
-
-**Conceptos clave:** ESM, CommonJS, campo `type`, `.mjs`, `.cjs`, `createRequire`, `import.meta.url`, `require(esm)` y exports condicionales.
-
-**Cuándo no usarlo:** en un proyecto nuevo no mezcles sistemas sin necesidad: usa solo ESM. La interoperabilidad es una herramienta de migración y compatibilidad, no un diseño objetivo.
-
-#### Practica
-
-**Desde cero:** crea una carpeta vacía:
-
-```bash
-mkdir esm-y-cjs
-cd esm-y-cjs
-```
-
-**Crea** `package.json`:
-
-```json
-{ "name": "mezcla-modulos", "version": "1.0.0", "type": "module" }
-```
-
-**Crea** `legado.cjs`:
-
-```javascript
-// Módulo CommonJS antiguo: usa require y module.exports
-const path = require('node:path');
-
-function nombreReporte(fecha) {
-  return path.join(__dirname, `reporte-${fecha}.csv`);
-}
-
-module.exports = { nombreReporte, version: '1.4.0' };
-```
-
-**Crea** `moderno.mjs`:
-
-```javascript
-// Módulo ESM moderno: usa export
-export const zonas = ['Norte', 'Sur', 'Centro'];
-export default function saludo(nombre) {
-  return `Hola ${nombre}, tienes ${zonas.length} zonas`;
-}
-```
-
-**Crea** `config.json`:
-
-```json
-{ "ciudad": "Bogotá" }
-```
-
-**Crea** `desde-cjs.cjs`:
-
-```javascript
-// CommonJS cargando un módulo ESM síncrono en Node 22.12+
-const moderno = require('./moderno.mjs');
-console.log('ESM desde CJS:', moderno.default('Beto'), moderno.zonas.length);
-```
-
-**Crea** `main.js`:
-
-```javascript
-// package.json tiene "type": "module", así que este .js es ESM
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import legado from './legado.cjs';
-import saludo, { zonas } from './moderno.mjs';
-
-const require = createRequire(import.meta.url);
-const config = require('./config.json');
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-console.log('CJS desde ESM:', legado.version, path.basename(legado.nombreReporte('2026-10-28')));
-console.log('ESM:', saludo('Ana'), zonas);
-console.log('JSON con createRequire:', config.ciudad);
-console.log('Carpeta actual:', path.basename(__dirname));
-```
-
-Ejecuta ambos puntos de entrada:
-
-```bash
-node main.js
-node desde-cjs.cjs
-```
-
-**Resultado esperado:**
-
-```text
-CJS desde ESM: 1.4.0 reporte-2026-10-28.csv
-ESM: Hola Ana, tienes 3 zonas [ 'Norte', 'Sur', 'Centro' ]
-JSON con createRequire: Bogotá
-Carpeta actual: esm-y-cjs
-ESM desde CJS: Hola Beto, tienes 3 zonas 3
-```
-
-`legado.cjs` conserva `__dirname`; `main.js` lo reconstruye con `import.meta.url`. El módulo exportado por CommonJS llega como `default` al importarlo desde ESM.
-
-**Fallo deliberado:** borra de `main.js` la línea `const __dirname = path.dirname(fileURLToPath(import.meta.url));` y ejecuta `node main.js`.
-
-**Diagnóstico y corrección:** aparece `ReferenceError: __dirname is not defined in ES module scope`, porque ESM no crea esa variable. Restaura la línea o sustitúyela por `const __dirname = import.meta.dirname;` en una versión compatible de Node y ejecuta de nuevo.
-
-**Práctica guiada.** renombra `legado.cjs` a `legado.js`, actualiza el import de `main.js` a `./legado.js` sin cambiar el código del módulo y ejecuta. Después restaura el nombre `.cjs` y el import. **Pista:** con `"type": "module"`, el archivo renombrado pasa a ser ESM; `require` y `module.exports` dejan de existir. El error confirma que la extensión y `type` cambian la interpretación, no solo el nombre.
-
-**Si falla.** Si `require('./moderno.mjs')` no funciona, comprueba que uses Node 24 LTS y que `moderno.mjs` no use top-level await. Si `main.js` no encuentra un archivo, revisa primero que el import coincida con la extensión actual antes de diagnosticar el sistema de módulos.
-
-#### Aplica
-
-Crea dentro de esta misma carpeta un paquete `dual` que exponga una versión ESM y otra CommonJS de una función pura. Debe contener sus propios `package.json`, `index.mjs` e `index.cjs`; añade un consumidor ESM y otro CommonJS que lo importen mediante las condiciones `"import"` y `"require"` de `exports`.
-
-**Pista de configuración:** la entrada `"."` puede apuntar a `"./index.mjs"` bajo `"import"` y a `"./index.cjs"` bajo `"require"`. La implementación de la función y los dos consumidores son el reto independiente. Verifica que ambos producen el mismo resultado y que ningún archivo `.js` depende accidentalmente del `type` equivocado.
-
-**Checklist de salida.**
-
-- [ ] `package.json` declara `"type": "module"` y los archivos `.cjs` conservan CommonJS.
-- [ ] `main.js` importa CommonJS como `default` y carga JSON con `createRequire`.
-- [ ] `desde-cjs.cjs` carga el ESM síncrono en Node 24 LTS.
-- [ ] La eliminación de `__dirname` reproduce el `ReferenceError` y la corrección restaura la salida.
-- [ ] El renombrado a `.js` demuestra el efecto de `type` y después se revierte.
-- [ ] El paquete dual resuelve las condiciones `import` y `require` con resultados equivalentes.
-
-**Si falla.** Si al mezclar formatos aparece `module is not defined`, comprueba si ese archivo está siendo tratado como ESM. Si aparece `require is not defined`, decide entre conservar `.cjs`, migrar a `import` o crear deliberadamente un `createRequire`; no declares variables ficticias para ocultar el problema.
-
-**Errores comunes:** usar `__dirname` o `require` directamente dentro de ESM; renombrar `.cjs` a `.js` sin revisar `type`; olvidar actualizar los imports al cambiar extensiones; intentar `require()` de un ESM con top-level await.
-
-**Fuentes oficiales:** [Node.js: Modules: ECMAScript modules](https://nodejs.org/api/esm.html) y [Node.js: Loading ECMAScript modules using require()](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
-
-**Transferencia al proyecto integrador «API operativa de entregas»:** migra un módulo CommonJS de la API a ESM y deja el anterior funcionando hasta retirarlo; verifica ambos consumidores antes de cambiar la entrada pública.
-
----
-
 ## Proyecto integrador del módulo: monorepo para una API operativa de entregas
 
 **Objetivo del laboratorio:** construir desde cero un monorepo mínimo con dos paquetes propios enlazados mediante workspaces, y comprobar semver, lockfiles y scripts de ciclo de vida en un mismo proyecto verificable.
 
-**Requisitos previos:** Node 24 LTS, npm y un editor. Este cierre es independiente: empieza en una carpeta vacía y no reutilices archivos de los seis temas ni de otros módulos.
+**Requisitos previos:** Node 22.12 o superior, npm y un editor. Este cierre es independiente: empieza en una carpeta vacía y no reutilices archivos de los seis temas ni de otros módulos.
 
 ### 1. Inicializa el workspace y sus hooks
 
@@ -839,8 +839,8 @@ npm init -y
 ```js
 const major = Number(process.versions.node.split(".")[0]);
 
-if (major < 24) {
-  console.error(`Node ${process.version} no es compatible; usa Node 24 o superior`);
+if (major < 22) {
+  console.error(`Node ${process.version} no es compatible; usa Node 22 o superior`);
   process.exitCode = 1;
 } else {
   console.log(`Node compatible: ${process.version}`);
@@ -855,7 +855,7 @@ Edita `package.json` raíz para reunir la configuración esencial:
   "version": "1.0.0",
   "private": true,
   "workspaces": ["packages/*"],
-  "engines": { "node": ">=24" },
+  "engines": { "node": ">=22.12" },
   "scripts": {
     "preinstall": "node scripts/verificar-node.js",
     "postinstall": "node -e \"console.log('Dependencias listas')\"",

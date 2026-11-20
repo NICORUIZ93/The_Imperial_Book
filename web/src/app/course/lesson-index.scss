@@ -45,6 +45,30 @@
 .status-dot.current { background:var(--accent); box-shadow:none; }
 .status-dot.pending { background:transparent; border:1px solid $bd2; }
 
+// Navegación de estudio: bloques escaneables y estados consistentes.
+.topic-search { margin-bottom:14px; padding:0 4px; }
+.topic-search span { margin-bottom:9px; color:$i3; font-weight:700; letter-spacing:.1em; }
+.topic-search input {
+  min-height:42px; padding:0 12px; border:1px solid $bd; border-radius:10px;
+  background:$bg2; font-size:13px; transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.topic-search input:focus { border-color:$p; background:$wh; box-shadow:$glow; }
+.lesson-index-group + .lesson-index-group { margin-top:18px; }
+.lesson-index-level { margin:0 4px 6px; padding:8px 6px; border:0; color:$mu; font-weight:750; }
+.lesson-index-item {
+  min-height:44px; align-items:center; margin:2px 0; padding:8px 9px; border:1px solid transparent;
+  border-radius:10px; font-size:13px; transition:background .18s ease,border-color .18s ease,color .18s ease;
+}
+.lesson-index-item:hover { border-color:$bd; background:$bg2; }
+.lesson-index-item.active { border-color:color-mix(in srgb,var(--accent) 20%,var(--border)); border-left-color:$p; color:$p; background:$pl; }
+.lesson-index-number { min-width:24px; color:$mu; }
+.topic-count { min-width:28px; padding:3px 6px; border-radius:999px; background:$bg2; }
+.lesson-index-item.active .topic-count { color:$p; background:$wh; }
+.status-dot { width:7px; height:7px; border-radius:50%; }
+.status-dot.current { background:$p; box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent); }
+.module-topics a { border-left-color:$bd; border-radius:0 8px 8px 0; }
+.module-topics a:hover { color:$p; background:$pl; }
+
 .sr-only {
   position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
   clip:rect(0,0,0,0); white-space:nowrap; border:0;

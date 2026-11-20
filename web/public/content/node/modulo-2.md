@@ -5,7 +5,7 @@
 
 ### Tema 1: fs/promises frente a callbacks · Intermedio · 45 min
 
-**Prerrequisito:** Node.js 24 LTS, `async`/`await` básico y comprensión de qué representa una ruta. Comprueba la instalación con `node --version` y `npm --version`.
+**Prerrequisito:** Node.js LTS, `async`/`await` básico y comprensión de qué representa una ruta. Comprueba la instalación con `node --version` y `npm --version`.
 
 **Al terminar podrás:** leer y validar JSON con `fs/promises`, diagnosticar por separado un archivo ausente, un JSON inválido y un dato con tipo incorrecto, y reconocer código de callbacks sin mezclar ambos estilos.
 
@@ -155,9 +155,138 @@ Modifica `src/cargar-config.js` para cargarlo junto con `config.json` mediante `
 
 ---
 
-### Tema 2: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min
+### Tema 2: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min
 
-**Prerrequisito:** Node.js 24 LTS y capacidad para reconocer una función callback. Comprueba `node --version`; no necesitas archivos del tema anterior.
+**Prerrequisito:** tema «fs/promises frente a callbacks» de este módulo.
+
+**Al finalizar podrás:** convertir texto en bytes y de vuelta sin dañar caracteres, mover binario dentro de JSON con Base64 y usar `Blob` y `Response`, que funcionan igual en Node y en el navegador.
+
+**¿Por qué es importante?** Archivos, redes y criptografía trabajan con bytes, no con texto. Si confundes caracteres con bytes, cortas una «ñ» por la mitad, calculas mal un tamaño o corrompes una imagen. Las Web APIs de Node permiten escribir ese código una sola vez para servidor y navegador.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa Node.js 22 o superior. Crea la carpeta `academia-labs/node/buffers`. No necesitas instalar paquetes: `Buffer`, `Blob` y `Response` vienen con Node.
+
+**Contexto y caso real.**
+
+La app de RutaFlow sube la firma del cliente como bytes y el servidor la guarda dentro de un JSON. Un desarrollador cortó el texto de la dirección por «longitud» antes de guardarlo y aparecieron símbolos raros en las calles con «Ñ». El problema era que `length` cuenta caracteres y el archivo guarda bytes.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** byte, codificación UTF-8, `Buffer`, `subarray`, Base64, `Blob`, `Response`, Web APIs.
+
+Un **Buffer** es una secuencia de bytes (números de 0 a 255). En UTF-8, las letras básicas ocupan un byte, pero «ñ», «é» o «Ñ» ocupan dos, y un emoji ocupa cuatro. Por eso `texto.length` (caracteres) y `buffer.length` (bytes) pueden ser distintos.
+
+- `Buffer.from(texto, 'utf8')` codifica; `buffer.toString('utf8')` decodifica.
+- `subarray(inicio, fin)` corta **por bytes**: si cortas en medio de un carácter, al decodificar aparece `�`.
+- **Base64** escribe bytes con 64 caracteres seguros para JSON. Ocupa más (alrededor de un tercio más), pero no se rompe.
+
+Node también trae las **Web APIs** del navegador: `Blob` (un bloque de bytes con tipo MIME), `Response`, `fetch`, `TextEncoder` y los streams web. El código que solo usa estas APIs corre igual en los dos lados.
+
+**Analogía:** un Buffer es una fila de casilleros numerados, uno por byte. Una letra con tilde ocupa dos casilleros: si te llevas solo uno, te llevas media letra. La analogía falla en que el casillero no sabe a qué letra pertenece; solo la decodificación lo sabe.
+
+**Límite de uso:** no uses Base64 para archivos grandes que puedes enviar como binario (multipart o un stream): aumenta el tamaño y la memoria. `Buffer` es exclusivo de Node; si el código debe correr en el navegador, usa `Uint8Array`, `TextEncoder` y `Blob`.
+
+```mermaid
+flowchart LR
+    T["Texto<br/>'Calle 26 Ñ'"] -->|"Buffer.from(utf8)"| B["Buffer<br/>11 bytes"]
+    B -->|"toString('base64')"| J["JSON<br/>Q2FsbGUg..."]
+    J -->|"Buffer.from(base64)"| B
+    B --> L["Blob"]
+    L --> R["Response / fetch<br/>igual que en el navegador"]
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/buffers/buffers.mjs`:
+
+```js
+import { Buffer } from 'node:buffer';
+
+// Un Buffer es una vista de bytes. La "Ñ" ocupa 2 bytes en UTF-8.
+const texto = 'Calle 26 Ñ';
+const bytes = Buffer.from(texto, 'utf8');
+console.log(`caracteres: ${texto.length}, bytes: ${bytes.length}`);
+console.log(`hex: ${bytes.subarray(-2).toString('hex')}`);
+
+// Cortar un Buffer por bytes puede partir un carácter.
+console.log(`corte malo: ${bytes.subarray(0, bytes.length - 1).toString('utf8')}`);
+
+// Base64 para mandar binario dentro de JSON.
+const base64 = bytes.toString('base64');
+console.log(`base64: ${base64}`);
+console.log(`ida y vuelta: ${Buffer.from(base64, 'base64').toString('utf8')}`);
+
+// Blob y las Web APIs: el mismo código sirve en el navegador.
+const blob = new Blob([bytes], { type: 'text/plain' });
+console.log(`blob: ${blob.size} bytes, ${blob.type}`);
+console.log(`texto del blob: ${await blob.text()}`);
+const respuesta = new Response(blob);
+console.log(`Response.arrayBuffer: ${(await respuesta.arrayBuffer()).byteLength} bytes`);
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/buffers
+node buffers.mjs
+```
+
+**Explicación por bloques:** El primer bloque muestra la diferencia entre caracteres y bytes: 10 contra 11, porque «Ñ» son los bytes `c3 91`. El segundo corta un byte de más y la decodificación pone `�` donde quedó media letra. El tercero codifica en Base64 y vuelve al texto original sin pérdida. El último crea un `Blob` y lo lee con `blob.text()` y con `new Response(blob)`, las mismas llamadas que harías en el navegador.
+
+![Captura de terminal: node buffers.mjs muestra 10 caracteres y 11 bytes, el corte malo con un símbolo de reemplazo y el Blob de 11 bytes](content/figures/node/buffer-blob-web-apis.svg)
+
+**Resultado esperado:**
+
+```text
+caracteres: 10, bytes: 11
+hex: c391
+corte malo: Calle 26 �
+base64: Q2FsbGUgMjYgw5E=
+ida y vuelta: Calle 26 Ñ
+blob: 11 bytes, text/plain
+texto del blob: Calle 26 Ñ
+Response.arrayBuffer: 11 bytes
+```
+
+**Fallo deliberado:** cambia `Buffer.from(texto, 'utf8')` por `Buffer.from(texto, 'latin1')` y deja `toString('utf8')`. **Error esperado:** «ida y vuelta» ya no muestra «Ñ». **Diagnóstico:** codificaste con una tabla y decodificaste con otra. Usa la misma codificación en los dos lados; en la web, casi siempre UTF-8.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el archivo y explica por qué hay 11 bytes y 10 caracteres.
+2. **Variación:** cambia el texto por «Envío 🚚» y predice caracteres y bytes antes de ejecutar.
+3. **Diagnóstico:** reproduce el fallo deliberado con `latin1` y explica qué bytes se escribieron.
+4. **Integración:** escribe una función `cortarSeguro(texto, maxBytes)` que nunca deje media letra (pista: usa `TextEncoder` y prueba con `TextDecoder` en modo `fatal: true`).
+5. **Diseño:** decide qué formato usarías para enviar una foto de 5 MB desde la app: Base64 en JSON o `multipart/form-data`, y justifica.
+
+**Pista:** si ves `�`, alguien decodificó bytes incompletos o con la codificación equivocada.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Escribe `firma.mjs`, que lea una imagen PNG pequeña con `readFile`, la convierta en Base64, la guarde en `firma.json` y luego reconstruya `firma-copia.png`. Comprueba con `cmp` que los dos archivos son idénticos.
+
+**Checklist de salida.**
+
+- [ ] Explicas la diferencia entre `length` de un texto y de un Buffer.
+- [ ] El script imprime las ocho líneas esperadas.
+- [ ] Reprodujiste el error de codificación y lo corregiste.
+- [ ] Sabes qué APIs funcionan igual en Node y en el navegador.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** cortar texto por bytes sin revisar caracteres, mezclar codificaciones y enviar archivos grandes en Base64. **Siguiente paso:** el tema «Streams básicos» procesa archivos grandes por partes, sin cargarlos enteros en un Buffer.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la API de RutaFlow, valida el tamaño de la firma en bytes (no en caracteres) antes de guardarla y conviértela con Base64 solo para el JSON de respuesta.
+
+**Fuente oficial:** [Node.js — Buffer](https://nodejs.org/api/buffer.html) y [Node.js — Web APIs globales](https://nodejs.org/api/globals.html).
+
+### Tema 3: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min
+
+**Prerrequisito:** Node.js LTS y capacidad para reconocer una función callback. Comprueba `node --version`; no necesitas archivos del tema anterior.
 
 **Al terminar podrás:** conectar `Readable`, `Transform` y `Writable` con `pipeline()`, procesar datos por fragmentos sin cargar el archivo completo y conservar el resto de una línea partida entre chunks.
 
@@ -320,9 +449,131 @@ Repite la prueba con chunks de 8 bytes, incluye una última fila sin salto de l�
 
 ---
 
-### Tema 3: Backpressure: write() y el evento drain · Avanzado · 55 min
+### Tema 4: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min
 
-**Prerrequisito:** Node.js 24 LTS y conocimiento básico de `Writable`. El laboratorio crea su propio destino y no reutiliza streams de otros temas.
+**Prerrequisito:** tema «pipeline() para componer streams de forma segura» de este módulo.
+
+**Al finalizar podrás:** comprimir y descomprimir archivos grandes por streams con `zlib`, comparar gzip y Brotli y comprobar que la copia es idéntica.
+
+**¿Por qué es importante?** Los registros de posiciones y los reportes son texto muy repetitivo. Comprimirlos reduce espacio en disco y tiempo de transferencia. Hacerlo por streams evita cargar el archivo entero en memoria.
+
+#### Aprende
+
+**Objetivo y preparación.**
+
+Usa una versión LTS con soporte de Node.js (22 o 24). Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
+
+**Contexto y caso real.**
+
+RutaFlow guarda cada día un CSV con miles de posiciones de mensajeros. Los archivos ocupaban gigas y el respaldo nocturno no alcanzaba a terminar. Comprimirlos con gzip al cerrar el día redujo el tamaño a una fracción mínima.
+
+**Teoría, modelo mental y analogía.**
+
+**Conceptos clave:** compresión sin pérdida, gzip, Brotli, `zlib`, `pipeline`, stream de transformación.
+
+La compresión **sin pérdida** busca repeticiones y las escribe una sola vez. Cuanto más repetitivo es el texto, más se comprime. Al descomprimir recuperas exactamente los mismos bytes.
+
+El módulo `node:zlib` trae gzip (el más compatible) y Brotli (suele comprimir más, pero tarda más en el nivel máximo). Cada uno tiene dos formas:
+
+- **Por streams** (`createGzip`, `createGunzip`): procesa por partes. Úsala con archivos grandes y con `pipeline`, que cierra todo y propaga errores.
+- **Síncrona** (`gzipSync`, `brotliCompressSync`): cómoda para datos pequeños, pero bloquea el event loop mientras trabaja.
+
+**Analogía:** comprimir es escribir «x5000» en lugar de repetir cinco mil veces la misma línea. La analogía falla en que el algoritmo no ve líneas enteras, sino secuencias de bytes que se repiten a cualquier distancia.
+
+**Límite de uso:** los archivos que ya vienen comprimidos (JPEG, MP4, ZIP) casi no se reducen y solo gastas CPU. No uses las versiones síncronas dentro de un servidor HTTP: bloquean a todos los clientes.
+
+```mermaid
+flowchart LR
+    A["posiciones.csv<br/>134 KB"] --> G["createGzip()"]
+    G --> Z["posiciones.csv.gz"]
+    Z --> U["createGunzip()"]
+    U --> C["copia.csv<br/>idéntica"]
+```
+
+#### Practica
+
+**Demostración guiada desde cero.**
+
+Archivo `academia-labs/node/compresion/comprimir.mjs`:
+
+```js
+import { createReadStream, createWriteStream } from 'node:fs';
+import { stat, writeFile } from 'node:fs/promises';
+import { pipeline } from 'node:stream/promises';
+import { createGzip, createGunzip, brotliCompressSync, gzipSync } from 'node:zlib';
+
+// Un registro repetitivo, como los de posiciones de RutaFlow.
+const lineas = Array.from({ length: 5000 }, (_, i) => `ENV-${i % 50},4.65,-74.05,EN_RUTA`).join('\n');
+await writeFile('posiciones.csv', lineas);
+
+// Comprimir por streams: no carga el archivo entero en memoria.
+await pipeline(createReadStream('posiciones.csv'), createGzip(), createWriteStream('posiciones.csv.gz'));
+
+const original = (await stat('posiciones.csv')).size;
+const gzip = (await stat('posiciones.csv.gz')).size;
+console.log(`original: ${original} bytes`);
+console.log(`gzip: ${gzip} bytes (${Math.round((gzip / original) * 100)} %)`);
+console.log(`brotli: ${brotliCompressSync(lineas).length < gzipSync(lineas).length ? 'más pequeño que gzip' : 'no mejora a gzip'}`);
+
+// Descomprimir y comprobar que no se perdió nada.
+await pipeline(createReadStream('posiciones.csv.gz'), createGunzip(), createWriteStream('copia.csv'));
+console.log(`copia idéntica: ${(await stat('copia.csv')).size === original}`);
+```
+
+Ejecútalo:
+
+```bash
+cd academia-labs/node/compresion
+node comprimir.mjs
+```
+
+**Explicación por bloques:** Primero se genera un CSV de 5 000 líneas muy parecidas. `pipeline` conecta lectura, compresión y escritura, y espera a que todo termine o falle. Después se comparan tamaños: el texto repetitivo baja a cerca del 1 %. La línea de Brotli compara las versiones síncronas, válidas aquí porque el dato es pequeño y es un script, no un servidor. Por último se descomprime y se compara el tamaño de la copia con el original. El número exacto de bytes de gzip puede variar un poco según la versión de Node.
+
+![Captura de terminal: node comprimir.mjs reduce 133999 bytes a 901 bytes con gzip y confirma que la copia es idéntica](content/figures/node/zlib-compresion.svg)
+
+**Resultado esperado:**
+
+```text
+original: 133999 bytes
+gzip: 901 bytes (1 %)
+brotli: más pequeño que gzip
+copia idéntica: true
+```
+
+**Fallo deliberado:** quita `createGzip()` del primer `pipeline`, pero deja el nombre `posiciones.csv.gz`. **Error esperado:** al descomprimir aparece `Error: incorrect header check`. **Diagnóstico:** el archivo no tiene la cabecera gzip; la extensión no comprime nada. Vuelve a poner el stream de compresión.
+
+**Práctica guiada.**
+
+1. **Reproducción:** ejecuta el script y anota el porcentaje de compresión.
+2. **Variación:** cambia `i % 50` por `Math.random()` dentro de cada línea y observa cómo empeora la compresión.
+3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de error completo.
+4. **Integración:** agrega `createBrotliCompress()` por streams y compara su tamaño con gzip.
+5. **Diseño:** decide qué comprimirías en el respaldo de RutaFlow: CSV, fotos JPEG o PDF, y justifica con lo medido.
+
+**Pista:** la compresión depende de las repeticiones: datos aleatorios casi no se reducen.
+
+#### Aplica
+
+**Práctica independiente.**
+
+Escribe `comprimir-carpeta.mjs`, que comprima con gzip cada `.csv` de una carpeta en paralelo (máximo dos a la vez) y al final imprima el total de bytes ahorrados.
+
+**Checklist de salida.**
+
+- [ ] Explicas por qué este CSV se comprime tanto.
+- [ ] El script imprime las cuatro líneas esperadas.
+- [ ] Reprodujiste `incorrect header check` y lo corregiste.
+- [ ] Sabes cuándo no conviene comprimir.
+
+Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** usar `gzipSync` dentro de un servidor, comprimir archivos ya comprimidos y confiar en la extensión del archivo. **Siguiente paso:** el módulo 3 sirve archivos por HTTP; ahí `content-encoding: gzip` aplica la misma idea a las respuestas.
+
+**Transferencia al proyecto integrador «RutaFlow»:** al cerrar el día en RutaFlow, comprime el CSV de posiciones con gzip por streams y guarda en el registro el tamaño original y el comprimido.
+
+**Fuente oficial:** [Node.js — Zlib](https://nodejs.org/api/zlib.html) y [Node.js — stream.pipeline](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options).
+
+### Tema 5: Backpressure: write() y el evento drain · Avanzado · 55 min
+
+**Prerrequisito:** Node.js LTS y conocimiento básico de `Writable`. El laboratorio crea su propio destino y no reutiliza streams de otros temas.
 
 **Al terminar podrás:** detectar backpressure, respetar el valor booleano de `write()`, esperar `drain` y medir pausas, longitud del búfer, duración y memoria antes de cambiar `highWaterMark`.
 
@@ -472,9 +723,9 @@ Ejecuta esta versión con `highWaterMark: 12` y compárala con `highWaterMark: 4
 
 ---
 
-### Tema 4: pipeline() para componer streams de forma segura · Avanzado · 60 min
+### Tema 6: pipeline() para componer streams de forma segura · Avanzado · 60 min
 
-**Prerrequisito:** Node.js 24 LTS y conocimiento básico de `Readable`, `Transform` y `Writable`. Crearás una entrada, una transformación y una salida nuevas en este tema.
+**Prerrequisito:** Node.js LTS y conocimiento básico de `Readable`, `Transform` y `Writable`. Crearás una entrada, una transformación y una salida nuevas en este tema.
 
 **Al terminar podrás:** componer streams con `pipeline()`, propagar un error a mitad de la cadena, limpiar la salida parcial, cancelar con `AbortController` y publicar un archivo solo después del éxito.
 
@@ -570,7 +821,7 @@ import { rm } from "node:fs/promises";
 }
 ```
 
-Repite el fallo con `ERROR` y confirma que desaparece `salida.txt`. Después usa la clase global `AbortController` disponible en Node 24 LTS:
+Repite el fallo con `ERROR` y confirma que desaparece `salida.txt`. Después usa la clase global `AbortController` disponible en Node LTS:
 
 ```js
 const controller = new AbortController();
@@ -629,257 +880,6 @@ flowchart LR
 **Transferencia al proyecto integrador «API operativa de entregas»:** compón lectura, transformación y escritura del export mediante `pipeline`, limpia la salida parcial ante cualquier fallo y agrega cancelación explícita. Interrumpe el destino y verifica que no quede un archivo parcial anunciado como completo ni una lectura activa sin consumidor. El siguiente módulo introduce HTTP, también con ejemplos creados desde cero.
 
 ---
-
-### Tema 5: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min
-
-**Prerrequisito:** tema «fs/promises frente a callbacks» de este módulo.
-
-**Al finalizar podrás:** convertir texto en bytes y de vuelta sin dañar caracteres, mover binario dentro de JSON con Base64 y usar `Blob` y `Response`, que funcionan igual en Node y en el navegador.
-
-**¿Por qué es importante?** Archivos, redes y criptografía trabajan con bytes, no con texto. Si confundes caracteres con bytes, cortas una «ñ» por la mitad, calculas mal un tamaño o corrompes una imagen. Las Web APIs de Node permiten escribir ese código una sola vez para servidor y navegador.
-
-#### Aprende
-
-**Objetivo y preparación.**
-
-Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/buffers`. No necesitas instalar paquetes: `Buffer`, `Blob` y `Response` vienen con Node.
-
-**Contexto y caso real.**
-
-La app de RutaFlow sube la firma del cliente como bytes y el servidor la guarda dentro de un JSON. Un desarrollador cortó el texto de la dirección por «longitud» antes de guardarlo y aparecieron símbolos raros en las calles con «Ñ». El problema era que `length` cuenta caracteres y el archivo guarda bytes.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** byte, codificación UTF-8, `Buffer`, `subarray`, Base64, `Blob`, `Response`, Web APIs.
-
-Un **Buffer** es una secuencia de bytes (números de 0 a 255). En UTF-8, las letras básicas ocupan un byte, pero «ñ», «é» o «Ñ» ocupan dos, y un emoji ocupa cuatro. Por eso `texto.length` (caracteres) y `buffer.length` (bytes) pueden ser distintos.
-
-- `Buffer.from(texto, 'utf8')` codifica; `buffer.toString('utf8')` decodifica.
-- `subarray(inicio, fin)` corta **por bytes**: si cortas en medio de un carácter, al decodificar aparece `�`.
-- **Base64** escribe bytes con 64 caracteres seguros para JSON. Ocupa más (alrededor de un tercio más), pero no se rompe.
-
-Node también trae las **Web APIs** del navegador: `Blob` (un bloque de bytes con tipo MIME), `Response`, `fetch`, `TextEncoder` y los streams web. El código que solo usa estas APIs corre igual en los dos lados.
-
-**Analogía:** un Buffer es una fila de casilleros numerados, uno por byte. Una letra con tilde ocupa dos casilleros: si te llevas solo uno, te llevas media letra. La analogía falla en que el casillero no sabe a qué letra pertenece; solo la decodificación lo sabe.
-
-**Límite de uso:** no uses Base64 para archivos grandes que puedes enviar como binario (multipart o un stream): aumenta el tamaño y la memoria. `Buffer` es exclusivo de Node; si el código debe correr en el navegador, usa `Uint8Array`, `TextEncoder` y `Blob`.
-
-```mermaid
-flowchart LR
-    T["Texto<br/>'Calle 26 Ñ'"] -->|"Buffer.from(utf8)"| B["Buffer<br/>11 bytes"]
-    B -->|"toString('base64')"| J["JSON<br/>Q2FsbGUg..."]
-    J -->|"Buffer.from(base64)"| B
-    B --> L["Blob"]
-    L --> R["Response / fetch<br/>igual que en el navegador"]
-```
-
-#### Practica
-
-**Demostración guiada desde cero.**
-
-Archivo `academia-labs/node/buffers/buffers.mjs`:
-
-```js
-import { Buffer } from 'node:buffer';
-
-// Un Buffer es una vista de bytes. La "Ñ" ocupa 2 bytes en UTF-8.
-const texto = 'Calle 26 Ñ';
-const bytes = Buffer.from(texto, 'utf8');
-console.log(`caracteres: ${texto.length}, bytes: ${bytes.length}`);
-console.log(`hex: ${bytes.subarray(-2).toString('hex')}`);
-
-// Cortar un Buffer por bytes puede partir un carácter.
-console.log(`corte malo: ${bytes.subarray(0, bytes.length - 1).toString('utf8')}`);
-
-// Base64 para mandar binario dentro de JSON.
-const base64 = bytes.toString('base64');
-console.log(`base64: ${base64}`);
-console.log(`ida y vuelta: ${Buffer.from(base64, 'base64').toString('utf8')}`);
-
-// Blob y las Web APIs: el mismo código sirve en el navegador.
-const blob = new Blob([bytes], { type: 'text/plain' });
-console.log(`blob: ${blob.size} bytes, ${blob.type}`);
-console.log(`texto del blob: ${await blob.text()}`);
-const respuesta = new Response(blob);
-console.log(`Response.arrayBuffer: ${(await respuesta.arrayBuffer()).byteLength} bytes`);
-```
-
-Ejecútalo:
-
-```bash
-cd academia-labs/node/buffers
-node buffers.mjs
-```
-
-**Explicación por bloques:** El primer bloque muestra la diferencia entre caracteres y bytes: 10 contra 11, porque «Ñ» son los bytes `c3 91`. El segundo corta un byte de más y la decodificación pone `�` donde quedó media letra. El tercero codifica en Base64 y vuelve al texto original sin pérdida. El último crea un `Blob` y lo lee con `blob.text()` y con `new Response(blob)`, las mismas llamadas que harías en el navegador.
-
-![Captura de terminal: node buffers.mjs muestra 10 caracteres y 11 bytes, el corte malo con un símbolo de reemplazo y el Blob de 11 bytes](content/figures/node/buffer-blob-web-apis.svg)
-
-**Resultado esperado:**
-
-```text
-caracteres: 10, bytes: 11
-hex: c391
-corte malo: Calle 26 �
-base64: Q2FsbGUgMjYgw5E=
-ida y vuelta: Calle 26 Ñ
-blob: 11 bytes, text/plain
-texto del blob: Calle 26 Ñ
-Response.arrayBuffer: 11 bytes
-```
-
-**Fallo deliberado:** cambia `Buffer.from(texto, 'utf8')` por `Buffer.from(texto, 'latin1')` y deja `toString('utf8')`. **Error esperado:** «ida y vuelta» ya no muestra «Ñ». **Diagnóstico:** codificaste con una tabla y decodificaste con otra. Usa la misma codificación en los dos lados; en la web, casi siempre UTF-8.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el archivo y explica por qué hay 11 bytes y 10 caracteres.
-2. **Variación:** cambia el texto por «Envío 🚚» y predice caracteres y bytes antes de ejecutar.
-3. **Diagnóstico:** reproduce el fallo deliberado con `latin1` y explica qué bytes se escribieron.
-4. **Integración:** escribe una función `cortarSeguro(texto, maxBytes)` que nunca deje media letra (pista: usa `TextEncoder` y prueba con `TextDecoder` en modo `fatal: true`).
-5. **Diseño:** decide qué formato usarías para enviar una foto de 5 MB desde la app: Base64 en JSON o `multipart/form-data`, y justifica.
-
-**Pista:** si ves `�`, alguien decodificó bytes incompletos o con la codificación equivocada.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Escribe `firma.mjs`, que lea una imagen PNG pequeña con `readFile`, la convierta en Base64, la guarde en `firma.json` y luego reconstruya `firma-copia.png`. Comprueba con `cmp` que los dos archivos son idénticos.
-
-**Checklist de salida.**
-
-- [ ] Explicas la diferencia entre `length` de un texto y de un Buffer.
-- [ ] El script imprime las ocho líneas esperadas.
-- [ ] Reprodujiste el error de codificación y lo corregiste.
-- [ ] Sabes qué APIs funcionan igual en Node y en el navegador.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** cortar texto por bytes sin revisar caracteres, mezclar codificaciones y enviar archivos grandes en Base64. **Siguiente paso:** el tema «Streams básicos» procesa archivos grandes por partes, sin cargarlos enteros en un Buffer.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la API de RutaFlow, valida el tamaño de la firma en bytes (no en caracteres) antes de guardarla y conviértela con Base64 solo para el JSON de respuesta.
-
-**Fuente oficial:** [Node.js — Buffer](https://nodejs.org/api/buffer.html) y [Node.js — Web APIs globales](https://nodejs.org/api/globals.html).
-
-### Tema 6: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min
-
-**Prerrequisito:** tema «pipeline() para componer streams de forma segura» de este módulo.
-
-**Al finalizar podrás:** comprimir y descomprimir archivos grandes por streams con `zlib`, comparar gzip y Brotli y comprobar que la copia es idéntica.
-
-**¿Por qué es importante?** Los registros de posiciones y los reportes son texto muy repetitivo. Comprimirlos reduce espacio en disco y tiempo de transferencia. Hacerlo por streams evita cargar el archivo entero en memoria.
-
-#### Aprende
-
-**Objetivo y preparación.**
-
-Usa Node.js 24 LTS. Crea la carpeta `academia-labs/node/compresion`. El ejemplo genera su propio archivo de datos.
-
-**Contexto y caso real.**
-
-RutaFlow guarda cada día un CSV con miles de posiciones de mensajeros. Los archivos ocupaban gigas y el respaldo nocturno no alcanzaba a terminar. Comprimirlos con gzip al cerrar el día redujo el tamaño a una fracción mínima.
-
-**Teoría, modelo mental y analogía.**
-
-**Conceptos clave:** compresión sin pérdida, gzip, Brotli, `zlib`, `pipeline`, stream de transformación.
-
-La compresión **sin pérdida** busca repeticiones y las escribe una sola vez. Cuanto más repetitivo es el texto, más se comprime. Al descomprimir recuperas exactamente los mismos bytes.
-
-El módulo `node:zlib` trae gzip (el más compatible) y Brotli (suele comprimir más, pero tarda más en el nivel máximo). Cada uno tiene dos formas:
-
-- **Por streams** (`createGzip`, `createGunzip`): procesa por partes. Úsala con archivos grandes y con `pipeline`, que cierra todo y propaga errores.
-- **Síncrona** (`gzipSync`, `brotliCompressSync`): cómoda para datos pequeños, pero bloquea el event loop mientras trabaja.
-
-**Analogía:** comprimir es escribir «x5000» en lugar de repetir cinco mil veces la misma línea. La analogía falla en que el algoritmo no ve líneas enteras, sino secuencias de bytes que se repiten a cualquier distancia.
-
-**Límite de uso:** los archivos que ya vienen comprimidos (JPEG, MP4, ZIP) casi no se reducen y solo gastas CPU. No uses las versiones síncronas dentro de un servidor HTTP: bloquean a todos los clientes.
-
-```mermaid
-flowchart LR
-    A["posiciones.csv<br/>134 KB"] --> G["createGzip()"]
-    G --> Z["posiciones.csv.gz"]
-    Z --> U["createGunzip()"]
-    U --> C["copia.csv<br/>idéntica"]
-```
-
-#### Practica
-
-**Demostración guiada desde cero.**
-
-Archivo `academia-labs/node/compresion/comprimir.mjs`:
-
-```js
-import { createReadStream, createWriteStream } from 'node:fs';
-import { stat, writeFile } from 'node:fs/promises';
-import { pipeline } from 'node:stream/promises';
-import { createGzip, createGunzip, brotliCompressSync, gzipSync } from 'node:zlib';
-
-// Un registro repetitivo, como los de posiciones de RutaFlow.
-const lineas = Array.from({ length: 5000 }, (_, i) => `ENV-${i % 50},4.65,-74.05,EN_RUTA`).join('\n');
-await writeFile('posiciones.csv', lineas);
-
-// Comprimir por streams: no carga el archivo entero en memoria.
-await pipeline(createReadStream('posiciones.csv'), createGzip(), createWriteStream('posiciones.csv.gz'));
-
-const original = (await stat('posiciones.csv')).size;
-const gzip = (await stat('posiciones.csv.gz')).size;
-console.log(`original: ${original} bytes`);
-console.log(`gzip: ${gzip} bytes (${Math.round((gzip / original) * 100)} %)`);
-console.log(`brotli: ${brotliCompressSync(lineas).length < gzipSync(lineas).length ? 'más pequeño que gzip' : 'no mejora a gzip'}`);
-
-// Descomprimir y comprobar que no se perdió nada.
-await pipeline(createReadStream('posiciones.csv.gz'), createGunzip(), createWriteStream('copia.csv'));
-console.log(`copia idéntica: ${(await stat('copia.csv')).size === original}`);
-```
-
-Ejecútalo:
-
-```bash
-cd academia-labs/node/compresion
-node comprimir.mjs
-```
-
-**Explicación por bloques:** Primero se genera un CSV de 5 000 líneas muy parecidas. `pipeline` conecta lectura, compresión y escritura, y espera a que todo termine o falle. Después se comparan tamaños: el texto repetitivo baja a cerca del 1 %. La línea de Brotli compara las versiones síncronas, válidas aquí porque el dato es pequeño y es un script, no un servidor. Por último se descomprime y se compara el tamaño de la copia con el original. El número exacto de bytes de gzip puede variar un poco según la versión de Node.
-
-![Captura de terminal: node comprimir.mjs reduce 133999 bytes a 901 bytes con gzip y confirma que la copia es idéntica](content/figures/node/zlib-compresion.svg)
-
-**Resultado esperado:**
-
-```text
-original: 133999 bytes
-gzip: 901 bytes (1 %)
-brotli: más pequeño que gzip
-copia idéntica: true
-```
-
-**Fallo deliberado:** quita `createGzip()` del primer `pipeline`, pero deja el nombre `posiciones.csv.gz`. **Error esperado:** al descomprimir aparece `Error: incorrect header check`. **Diagnóstico:** el archivo no tiene la cabecera gzip; la extensión no comprime nada. Vuelve a poner el stream de compresión.
-
-**Práctica guiada.**
-
-1. **Reproducción:** ejecuta el script y anota el porcentaje de compresión.
-2. **Variación:** cambia `i % 50` por `Math.random()` dentro de cada línea y observa cómo empeora la compresión.
-3. **Diagnóstico:** reproduce el fallo deliberado y lee el mensaje de error completo.
-4. **Integración:** agrega `createBrotliCompress()` por streams y compara su tamaño con gzip.
-5. **Diseño:** decide qué comprimirías en el respaldo de RutaFlow: CSV, fotos JPEG o PDF, y justifica con lo medido.
-
-**Pista:** la compresión depende de las repeticiones: datos aleatorios casi no se reducen.
-
-#### Aplica
-
-**Práctica independiente.**
-
-Escribe `comprimir-carpeta.mjs`, que comprima con gzip cada `.csv` de una carpeta en paralelo (máximo dos a la vez) y al final imprima el total de bytes ahorrados.
-
-**Checklist de salida.**
-
-- [ ] Explicas por qué este CSV se comprime tanto.
-- [ ] El script imprime las cuatro líneas esperadas.
-- [ ] Reprodujiste `incorrect header check` y lo corregiste.
-- [ ] Sabes cuándo no conviene comprimir.
-
-Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** usar `gzipSync` dentro de un servidor, comprimir archivos ya comprimidos y confiar en la extensión del archivo. **Siguiente paso:** el módulo 3 sirve archivos por HTTP; ahí `content-encoding: gzip` aplica la misma idea a las respuestas.
-
-**Transferencia al proyecto integrador «RutaFlow»:** al cerrar el día en RutaFlow, comprime el CSV de posiciones con gzip por streams y guarda en el registro el tamaño original y el comprimido.
-
-**Fuente oficial:** [Node.js — Zlib](https://nodejs.org/api/zlib.html) y [Node.js — stream.pipeline](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options).
 
 ## Construcción guiada del capítulo
 

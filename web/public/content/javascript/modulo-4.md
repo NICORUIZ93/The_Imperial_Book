@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: map, filter, reduce, find, some/every
+### Tema 1: map, filter, reduce, find, some/every · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -78,7 +78,7 @@ Ya eliges transformación, selección, acumulación, búsqueda o comprobación s
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Filtra eventos públicos, localiza el más reciente y calcula cantidades por estado sin mutar la respuesta. Prueba historial vacío y duplicado, conservando una salida esperada para cada caso.
 
-### Tema 2: Set y Map frente a Array y Object
+### Tema 2: Set y Map frente a Array y Object · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -102,7 +102,7 @@ La elección entre `Map` y un objeto plano para almacenar pares clave-valor depe
 
 `Set` y `Map` no reemplazan a `Array` y `Object` de forma universal; cada estructura tiene su lugar según la naturaleza del problema: `Array` para colecciones ordenadas donde el índice numérico importa y puede haber duplicados, `Object` para registros con forma fija y conocida, `Set` para colecciones donde la unicidad es la propiedad central, y `Map` para diccionarios verdaderamente dinámicos donde las claves no se conocen de antemano.
 
-Desde ECMAScript 2025 (disponible en Node.js 24 LTS, la versión de referencia del curso), `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
+Desde ECMAScript 2025 (disponible en Node.js 22 o superior), `Set` incorpora métodos de composición que antes requerían convertir a array y recombinar a mano: `union`, `intersection`, `difference`, `symmetricDifference`, `isSubsetOf`, `isSupersetOf` e `isDisjointFrom`. Todos devuelven un nuevo `Set` (o un booleano, en los de comparación) sin mutar los originales, aplicando directamente operaciones de teoría de conjuntos que antes exigían combinar `filter` con `.has()`:
 
 ```javascript
 const enRuta = new Set(['RF-101', 'RF-102', 'RF-103']);
@@ -163,7 +163,7 @@ Ya eliges estructuras por semántica y no por costumbre. El siguiente tema actua
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Deduplica eventos por identificador y mantén su acceso directo en un Map. Inserta dos eventos con igual contenido pero distinto id y verifica que no los elimina por una comparación incorrecta.
 
-### Tema 3: Inmutabilidad y actualización de estructuras anidadas
+### Tema 3: Inmutabilidad y actualización de estructuras anidadas · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -236,80 +236,7 @@ Ya conservas historia y copias únicamente niveles modificados. El siguiente tem
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Actualiza una guía dentro del estado sin modificar el snapshot previo. Una prueba debe comparar ambos historiales y demostrar que los consumidores pueden detectar el cambio de referencia.
 
-### Tema 4: WeakMap y WeakSet
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás asociar metadatos débiles a objetos y explicar por qué no se pueden enumerar ni usar como almacenamiento de negocio.
-
-**Conocimiento previo:** `Map`, `Set`, referencias y noción básica de recolección de basura.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** El proyecto puede asociar diagnósticos temporales a objetos de lectura. Un `Map` los mantendría vivos; `WeakMap` no impide su recolección cuando desaparecen las demás referencias.
-
-#### Paso 3 · Teoría con analogía
-
-**Conceptos clave:** referencias débiles, prevención de fugas de memoria, claves no enumerables.
-
-`WeakMap` y `WeakSet` son variantes de `Map` y `Set` con una diferencia crucial: mantienen referencias "débiles" a sus claves (en el caso de `WeakMap`) o a sus valores (en el caso de `WeakSet`), lo que significa que si no existe ninguna otra referencia activa a un objeto usado como clave, el recolector de basura puede liberar la memoria de ese objeto, y su entrada correspondiente en el `WeakMap`/`WeakSet` desaparece automáticamente, sin necesidad de eliminarla manualmente. Un `Map` normal, en cambio, mantiene una referencia "fuerte" a sus claves, impidiendo que el recolector de basura las libere mientras el `Map` siga existiendo, incluso si ninguna otra parte del programa las necesita ya.
-
-Esta diferencia tiene una aplicación práctica concreta: asociar metadatos adicionales a objetos (por ejemplo, datos de caché o de seguimiento) sin impedir que esos objetos se liberen de memoria cuando ya no se necesiten en ningún otro lugar del programa. Usar un `Map` normal para este propósito crearía una fuga de memoria silenciosa: los objetos nunca se liberarían mientras el `Map` exista, aunque el resto del programa ya no tenga ninguna otra referencia a ellos, porque el propio `Map` los mantendría vivos artificialmente.
-
-Una limitación importante de `WeakMap` y `WeakSet` es que no son iterables y no exponen un método para conocer su tamaño (`size`): precisamente porque sus contenidos pueden desaparecer automáticamente en cualquier momento (cuando el recolector de basura decide liberar una clave sin otras referencias), permitir iterar sobre ellos o consultar su tamaño produciría un comportamiento no determinista e impredecible, así que el lenguaje deliberadamente no expone esas capacidades para estas estructuras.
-
-En la práctica cotidiana, `WeakMap` y `WeakSet` son herramientas de uso relativamente especializado (frameworks y bibliotecas internas los usan con frecuencia para asociar metadatos a objetos DOM sin impedir su recolección cuando se eliminan de la página), pero entender su existencia y su propósito específico —prevenir fugas de memoria en asociaciones de metadatos— es valioso incluso si su uso directo en código de aplicación cotidiano es menos frecuente que `Map` y `Set` normales.
-
-**Analogía:** un `Map` normal es como una lista de invitados a un evento que, una vez escrita, obliga a mantener reservado el lugar de cada invitado indefinidamente aunque cancelen su asistencia; un `WeakMap` es como una lista que automáticamente borra el nombre de un invitado en cuanto esa persona deja de existir en cualquier otro registro del sistema, liberando su lugar sin intervención manual.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    OBJECT["objeto de vida corta"] --> APP["referencia de la aplicación"]
-    OBJECT -. "clave débil" .-> WEAK["WeakMap: metadatos"]
-    APP -->|"se elimina"| GC["elegible para recolección"]
-    WEAK -. "no impide liberar" .-> GC
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Desde una carpeta vacía crea el ejemplo independiente y guarda `src/index.js`:
-
-```bash
-mkdir ejemplo-weak
-cd ejemplo-weak
-npm init -y
-mkdir src
-```
-
-```javascript
-const diagnosticos = new WeakMap();
-const guia = { codigo: 'RF-101' };
-diagnosticos.set(guia, { revisado: true });
-console.log(diagnosticos.get(guia));
-console.log(diagnosticos.has(guia));
-```
-
-Ejecuta `node src/index.js`. Resultado esperado: el objeto `{ revisado: true }` y `true`. **Fallo deliberado:** ejecuta `diagnosticos.set('RF-102', {})`; aparecerá `TypeError` porque las claves deben ser objetos. No intentes verificar la recolección de basura; su momento no es determinista.
-
-#### Paso 5 · Práctica guiada
-
-Usa `WeakSet` para marcar objetos ya validados. **Pista:** solo admite objetos; prueba primero una cadena y diagnostica el `TypeError`.
-
-#### Paso 6 · Práctica independiente
-
-Compara una asociación de diagnósticos con `Map` y `WeakMap`. Documenta cuál permite listar, cuál conoce tamaño y cuál conviene para auditoría persistente. No intentes forzar el recolector.
-
-#### Paso 7 · Cierre
-
-Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
-
-**Errores comunes:** esperar `size`; usar claves primitivas; guardar información que debe listarse; afirmar cuándo ocurrirá la recolección.
-
-**Transferencia al proyecto integrador «Seguimiento público accesible»:** Asocia metadatos internos a elementos del widget sin almacenarlos en una lista global permanente. Desmonta una instancia y revisa que no queda una colección fuerte que retenga todos sus nodos.
-
-### Tema 5: Métodos inmutables modernos
+### Tema 4: Métodos inmutables modernos · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -389,169 +316,78 @@ Completaste colecciones funcionales conservando versiones auditables. El siguien
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Ordena una copia del historial para mostrar lo más reciente primero. Verifica que otra vista conserva el orden original recibido de la API y que la operación no altera su arreglo compartido.
 
-### Tema 6: Expresiones regulares básicas: validar, extraer y reemplazar
+### Tema 5: WeakMap y WeakSet · Avanzado · 35 min
 
-**Duración estimada:** 35 min (3 subtemas de 10–15 min).
-**¿Por qué es importante?** Validar el formato de una guía, sacar los pesos de una nota escrita a mano o enmascarar un número son tareas de texto que con `slice` e `indexOf` se vuelven frágiles. Una expresión regular describe el **patrón** una sola vez. Este tema cubre lo básico; Unicode, `lookbehind` y el riesgo de ReDoS quedan para el Módulo 14.
+#### Paso 1 · Objetivo y preparación
 
-**Prerrequisitos:** Módulo 0 Tema 6 (métodos de string), Tema 1 de este módulo (`map`, `reduce`) y Módulo 1 Tema 7 (ya viste `/^[A-Z]{2}-\d{6}$/` sin explicarla). Node 24 LTS.
+Al finalizar podrás asociar metadatos débiles a objetos y explicar por qué no se pueden enumerar ni usar como almacenamiento de negocio.
+
+**Conocimiento previo:** `Map`, `Set`, referencias y noción básica de recolección de basura.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** El proyecto puede asociar diagnósticos temporales a objetos de lectura. Un `Map` los mantendría vivos; `WeakMap` no impide su recolección cuando desaparecen las demás referencias.
+
+#### Paso 3 · Teoría con analogía
+
+**Conceptos clave:** referencias débiles, prevención de fugas de memoria, claves no enumerables.
+
+`WeakMap` y `WeakSet` son variantes de `Map` y `Set` con una diferencia crucial: mantienen referencias "débiles" a sus claves (en el caso de `WeakMap`) o a sus valores (en el caso de `WeakSet`), lo que significa que si no existe ninguna otra referencia activa a un objeto usado como clave, el recolector de basura puede liberar la memoria de ese objeto, y su entrada correspondiente en el `WeakMap`/`WeakSet` desaparece automáticamente, sin necesidad de eliminarla manualmente. Un `Map` normal, en cambio, mantiene una referencia "fuerte" a sus claves, impidiendo que el recolector de basura las libere mientras el `Map` siga existiendo, incluso si ninguna otra parte del programa las necesita ya.
+
+Esta diferencia tiene una aplicación práctica concreta: asociar metadatos adicionales a objetos (por ejemplo, datos de caché o de seguimiento) sin impedir que esos objetos se liberen de memoria cuando ya no se necesiten en ningún otro lugar del programa. Usar un `Map` normal para este propósito crearía una fuga de memoria silenciosa: los objetos nunca se liberarían mientras el `Map` exista, aunque el resto del programa ya no tenga ninguna otra referencia a ellos, porque el propio `Map` los mantendría vivos artificialmente.
+
+Una limitación importante de `WeakMap` y `WeakSet` es que no son iterables y no exponen un método para conocer su tamaño (`size`): precisamente porque sus contenidos pueden desaparecer automáticamente en cualquier momento (cuando el recolector de basura decide liberar una clave sin otras referencias), permitir iterar sobre ellos o consultar su tamaño produciría un comportamiento no determinista e impredecible, así que el lenguaje deliberadamente no expone esas capacidades para estas estructuras.
+
+En la práctica cotidiana, `WeakMap` y `WeakSet` son herramientas de uso relativamente especializado (frameworks y bibliotecas internas los usan con frecuencia para asociar metadatos a objetos DOM sin impedir su recolección cuando se eliminan de la página), pero entender su existencia y su propósito específico —prevenir fugas de memoria en asociaciones de metadatos— es valioso incluso si su uso directo en código de aplicación cotidiano es menos frecuente que `Map` y `Set` normales.
+
+**Analogía:** un `Map` normal es como una lista de invitados a un evento que, una vez escrita, obliga a mantener reservado el lugar de cada invitado indefinidamente aunque cancelen su asistencia; un `WeakMap` es como una lista que automáticamente borra el nombre de un invitado en cuanto esa persona deja de existir en cualquier otro registro del sistema, liberando su lugar sin intervención manual.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    OBJECT["objeto de vida corta"] --> APP["referencia de la aplicación"]
+    OBJECT -. "clave débil" .-> WEAK["WeakMap: metadatos"]
+    APP -->|"se elimina"| GC["elegible para recolección"]
+    WEAK -. "no impide liberar" .-> GC
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Desde una carpeta vacía crea el ejemplo independiente y guarda `src/index.js`:
 
 ```bash
-mkdir -p academia-labs/javascript/regex-basicas && cd academia-labs/javascript/regex-basicas
+mkdir ejemplo-weak
+cd ejemplo-weak
+npm init -y
+mkdir src
 ```
-
-#### Subtema 6.1: Valida un formato completo con `test`, anclas y cuantificadores · 10 min
-
-**1. Contexto**
-Una guía de RutaFlow son dos letras mayúsculas, un guion y seis dígitos. Todo lo demás debe rechazarse, incluido un espacio al final.
-
-**2. Hazlo tú**
-Crea `validar.js`:
 
 ```javascript
-const guiaValida = /^[A-Z]{2}-\d{6}$/;
-
-const candidatas = ['BO-004512', 'bo-004512', 'BO-4512', 'XBO-004512', 'BO-004512 '];
-for (const guia of candidatas) {
-  console.log(JSON.stringify(guia).padEnd(14), guiaValida.test(guia));
-}
-
-const sinMayusculas = /^[A-Z]{2}-\d{6}$/i;
-console.log('con flag i:', sinMayusculas.test('bo-004512'));
+const diagnosticos = new WeakMap();
+const guia = { codigo: 'RF-101' };
+diagnosticos.set(guia, { revisado: true });
+console.log(diagnosticos.get(guia));
+console.log(diagnosticos.has(guia));
 ```
 
-```bash
-node validar.js
-```
+Ejecuta `node src/index.js`. Resultado esperado: el objeto `{ revisado: true }` y `true`. **Fallo deliberado:** ejecuta `diagnosticos.set('RF-102', {})`; aparecerá `TypeError` porque las claves deben ser objetos. No intentes verificar la recolección de basura; su momento no es determinista.
 
-**Resultado esperado:**
+#### Paso 5 · Práctica guiada
 
-```text
-"BO-004512"    true
-"bo-004512"    false
-"BO-4512"      false
-"XBO-004512"   false
-"BO-004512 "   false
-con flag i: true
-```
+Usa `WeakSet` para marcar objetos ya validados. **Pista:** solo admite objetos; prueba primero una cadena y diagnostica el `TypeError`.
 
-**Fallo deliberado:** quita las anclas: `/[A-Z]{2}-\d{6}/`. **Resultado:** `"XBO-004512"` y `"BO-004512 "` pasan a `true`. **Diagnóstico:** sin `^` y `$`, `test` busca el patrón **en cualquier parte** del texto; para validar un valor completo, ancla el inicio y el final.
+#### Paso 6 · Práctica independiente
 
-**3. Entiende**
-Piezas de la expresión: `[A-Z]` es una **clase** (una letra de la A a la Z), `\d` un dígito, `{2}` y `{6}` **cuantificadores** exactos (`+` = uno o más, `*` = cero o más, `?` = opcional), `-` fuera de una clase es un carácter literal, `^` y `$` son **anclas** de inicio y fin. Las **banderas** van tras la última barra: `i` ignora mayúsculas, `g` busca todas las coincidencias. **Límite:** una regex valida **forma**, no significado: `ZZ-000000` pasa aunque no exista esa ciudad.
+Compara una asociación de diagnósticos con `Map` y `WeakMap`. Documenta cuál permite listar, cuál conoce tamaño y cuál conviene para auditoría persistente. No intentes forzar el recolector.
 
-**4. Cierra**
-Guarda la salida y anota qué candidata rechaza cada parte del patrón.
+#### Paso 7 · Cierre
 
-#### Subtema 6.2: Extrae datos con grupos con nombre y `matchAll` · 15 min
+Ya reservas colecciones débiles para metadatos no enumerables de objetos vivos. El siguiente tema usa operaciones inmutables modernas sobre arrays. Fuente oficial: [MDN — WeakMap](https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/WeakMap).
 
-**1. Contexto**
-Un despachador deja notas como «Entregas BO-004512 (3.5 kg) y ME-000981 (12 kg)». Quieres la lista de guías y la suma de kilos sin recorrer el texto a mano.
+**Errores comunes:** esperar `size`; usar claves primitivas; guardar información que debe listarse; afirmar cuándo ocurrirá la recolección.
 
-**2. Hazlo tú**
-Crea `extraer.js`:
-
-```javascript
-const nota = 'Entregas BO-004512 (3.5 kg) y ME-000981 (12 kg); revisar CA-77.';
-
-const guia = /(?<ciudad>[A-Z]{2})-(?<numero>\d{6})/;
-const primera = nota.match(guia);
-console.log(primera[0], primera.groups.ciudad, primera.groups.numero, primera.index);
-
-const todas = [...nota.matchAll(/(?<ciudad>[A-Z]{2})-(?<numero>\d{6})/g)].map(m => m.groups.ciudad + m.groups.numero);
-console.log(todas);
-
-const pesos = [...nota.matchAll(/(\d+(?:\.\d+)?) kg/g)].map(m => Number(m[1]));
-console.log(pesos, pesos.reduce((t, p) => t + p, 0));
-```
-
-```bash
-node extraer.js
-```
-
-**Resultado esperado:**
-
-```text
-BO-004512 BO 004512 9
-[ 'BO004512', 'ME000981' ]
-[ 3.5, 12 ] 15.5
-```
-
-**Fallo deliberado:** quita la bandera `g` del primer `matchAll`. **Error esperado:** `TypeError: String.prototype.matchAll called with a non-global RegExp argument`. **Diagnóstico:** `matchAll` recorre **todas** las coincidencias y exige `g` para que la intención sea explícita; vuelve a ponerla.
-
-**3. Entiende**
-`match` sin `g` devuelve la **primera** coincidencia: `[0]` es el texto completo, `.index` su posición y `.groups` los **grupos con nombre** `(?<nombre>…)`. `matchAll` con `g` devuelve un iterador de coincidencias; con `[...]` lo conviertes en array y sigues con `map`/`reduce` del Tema 1. `(?:…)` agrupa **sin capturar** (aquí, la parte decimal opcional) y `\.` escapa el punto, que sin barra significa «cualquier carácter». `CA-77` no aparece porque no tiene seis dígitos. **Límite:** si el texto viene de alguien externo y armas la regex con ese texto, debes escapar sus caracteres especiales (Módulo 14 Tema «Expresiones regulares avanzadas»).
-
-**4. Cierra**
-Guarda la salida. El proyecto ya extrae guías y kilos de texto libre.
-
-#### Subtema 6.3: Reemplaza y divide con patrones · 10 min
-
-**1. Contexto**
-En el seguimiento público no se debe mostrar el número completo de la guía, y las ciudades de una ruta llegan separadas a veces por `;` y a veces por `,` con espacios irregulares.
-
-**2. Hazlo tú**
-Agrega al final de `extraer.js`:
-
-```javascript
-console.log(nota.replace(/\d{6}/g, '******'));
-console.log(' Bogotá; Cali ,Medellín ;Pasto '.trim().split(/\s*[;,]\s*/));
-console.log('BO-004512'.replace(/(?<c>[A-Z]{2})-(?<n>\d+)/, '$<n>/$<c>'));
-```
-
-```bash
-node extraer.js
-```
-
-**Resultado esperado** (debajo de las tres líneas anteriores):
-
-```text
-Entregas BO-****** (3.5 kg) y ME-****** (12 kg); revisar CA-77.
-[ 'Bogotá', 'Cali', 'Medellín', 'Pasto' ]
-004512/BO
-```
-
-**Fallo deliberado:** quita la `g` de `/\d{6}/g`. **Resultado:** solo se enmascara `BO-******`; `ME-000981` queda visible. **Diagnóstico:** `replace` con una regex sin `g` cambia solo la primera coincidencia; para todas usa `g` (o `replaceAll`, que exige `g` si recibe regex).
-
-**3. Entiende**
-`replace` acepta una regex y, en el texto de reemplazo, `$<nombre>` inserta un grupo con nombre. `split` con regex parte por cualquier separador que encaje: `\s*` absorbe espacios a ambos lados y `[;,]` acepta los dos separadores. **Límite:** una regex con `g` guarda estado en `lastIndex`; si reutilizas la misma con `test` dos veces seguidas, la segunda puede dar `false`. Para validar, usa regex **sin** `g`.
-
-**4. Cierra**
-Guarda la salida completa de `extraer.js`.
-
-**Hito del tema:**
-
-- [ ] `validar.js` rechaza las cuatro guías mal formadas.
-- [ ] Reproduje el falso positivo al quitar `^` y `$` y lo expliqué.
-- [ ] `extraer.js` suma 15.5 kg a partir del texto libre.
-- [ ] Expliqué la diferencia entre `match` sin `g` y `matchAll` con `g`.
-
-**Ejercicio:** escribe `telefonos.js` que, a partir de `'Llamar a 300 123 4567 o al 3011234567; fijo 601-555-1234'`, devuelva los celulares colombianos (10 dígitos que empiezan por `3`, con o sin espacios entre bloques 3-3-4) normalizados sin espacios. El fijo no debe aparecer. Antes de abrir la solución, escribe tu patrón y qué devolvería para `'3001234567'` pegado a otra cifra (`'93001234567'`).
-
-<details>
-<summary>Solución — ábrela después de intentarlo</summary>
-
-```javascript
-const texto = 'Llamar a 300 123 4567 o al 3011234567; fijo 601-555-1234';
-const celular = /\b(3\d{2}) ?(\d{3}) ?(\d{4})\b/g;
-
-const celulares = [...texto.matchAll(celular)].map(m => m[1] + m[2] + m[3]);
-console.log(celulares);
-console.log([...'93001234567'.matchAll(celular)].length);
-```
-
-Salida:
-
-```text
-[ '3001234567', '3011234567' ]
-0
-```
-
-`\b` (límite de palabra) impide encontrar un celular dentro de una cifra más larga, por eso `'93001234567'` da 0 coincidencias. ` ?` hace opcional cada espacio. Si tu patrón también aceptaba el fijo, revisa que exiges el `3` inicial.
-
-</details>
-
-**Fuentes oficiales:** [MDN: Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), [MDN: Named capturing group](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Named_capturing_group) y [MDN: `String.prototype.matchAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/matchAll).
+**Transferencia al proyecto integrador «Seguimiento público accesible»:** Asocia metadatos internos a elementos del widget sin almacenarlos en una lista global permanente. Desmonta una instancia y revisa que no queda una colección fuerte que retenga todos sus nodos.
 
 ## Construcción guiada del capítulo
 

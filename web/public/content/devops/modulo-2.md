@@ -723,7 +723,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** correr como root «
 
 **Fuente oficial:** [Docker Docs — Rootless mode](https://docs.docker.com/engine/security/rootless/) y [Docker Docs — Docker security](https://docs.docker.com/engine/security/) y [Kubernetes — Configure a Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
 
-### Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Básico · 35 min
+### Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Avanzado · 35 min
 
 **Prerrequisito:** temas «Dockerfile multi-stage» y «Contenedores sin privilegios» de este módulo.
 

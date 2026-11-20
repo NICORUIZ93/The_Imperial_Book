@@ -45,7 +45,7 @@ npm ci                      # no instala nada: el lockfile está vacío a propó
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-35`**. El
-[README del laboratorio](../../../examples/microservicios/modulo-35/README.md) tiene el mapa de carpetas.
+`examples/microservicios/modulo-35/README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio:
 

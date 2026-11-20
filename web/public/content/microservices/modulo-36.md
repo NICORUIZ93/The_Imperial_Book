@@ -56,7 +56,7 @@ npm ci
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-36`**. El
-[README del laboratorio](../../../examples/microservicios/modulo-36/README.md) tiene el enunciado, el diagrama C4 y el
+`examples/microservicios/modulo-36/README.md` tiene el enunciado, el diagrama C4 y el
 mapa de carpetas.
 
 `package.json` (pista Node.js):

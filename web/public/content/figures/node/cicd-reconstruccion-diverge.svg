@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 1681" width="794" height="1681" role="img" aria-label="Captura de terminal: dos builds del mismo commit producen artefactos distintos">
+<title>Captura de terminal: dos builds del mismo commit producen artefactos distintos</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-18. Comandos capturados en orden: npm test ; docker build -q --no-cache -t 127.0.0.1:5060/pedidos:staging . ; docker build -q --no-cache -t 127.0.0.1:5060/pedidos:production .. Código de salida final: 1.</desc>
+<rect width="794" height="1681" rx="8" fill="#1e1f24"/>
+<rect width="794" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="794" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="397.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">dos builds del mismo commit producen artefactos distintos</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">npm test</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">✔ el pipeline se ejecuta en orden: construir, luego staging, luego producción (0.518ms)</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">✖ solo el primer trabajo compila la imagen (0.284959ms)</text>
+<text x="18" y="118" style="white-space: pre" fill="#e6e6e6">✖ la promoción mueve el digest, no una etiqueta mutable (0.20925ms)</text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">✔ el servicio responde ok en / (10.031208ms)</text>
+<text x="18" y="156" style="white-space: pre" fill="#e6e6e6">ℹ tests 4</text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">ℹ suites 0</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">ℹ pass 2</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">ℹ fail 2</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">ℹ cancelled 0</text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">ℹ skipped 0</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">ℹ todo 0</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">ℹ duration_ms 59.77725</text>
+<text x="18" y="308" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">✖ failing tests:</text>
+<text x="18" y="346" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="365" style="white-space: pre" fill="#e6e6e6">test at test/pipeline.test.mjs:16:1</text>
+<text x="18" y="384" style="white-space: pre" fill="#e6e6e6">✖ solo el primer trabajo compila la imagen (0.284959ms)</text>
+<text x="18" y="403" style="white-space: pre" fill="#e6e6e6">  AssertionError [ERR_ASSERTION]: promover-a-produccion reconstruye la imagen</text>
+<text x="18" y="422" style="white-space: pre" fill="#e6e6e6">      at TestContext.&lt;anonymous&gt; (file:///private/tmp/cicd-lab/test/pipeline.test.mjs:20:14)</text>
+<text x="18" y="441" style="white-space: pre" fill="#e6e6e6">      at Test.runInAsyncScope (node:async_hooks:227:14)</text>
+<text x="18" y="460" style="white-space: pre" fill="#e6e6e6">      at Test.run (node:internal/test_runner/test:1325:25)</text>
+<text x="18" y="479" style="white-space: pre" fill="#e6e6e6">      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)</text>
+<text x="18" y="498" style="white-space: pre" fill="#e6e6e6">      at Test.postRun (node:internal/test_runner/test:1465:19)</text>
+<text x="18" y="517" style="white-space: pre" fill="#e6e6e6">      at Test.run (node:internal/test_runner/test:1390:12)</text>
+<text x="18" y="536" style="white-space: pre" fill="#e6e6e6">      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3) {</text>
+<text x="18" y="555" style="white-space: pre" fill="#e6e6e6">    generatedMessage: false,</text>
+<text x="18" y="574" style="white-space: pre" fill="#e6e6e6">    code: 'ERR_ASSERTION',</text>
+<text x="18" y="593" style="white-space: pre" fill="#e6e6e6">    actual: 'docker build --pull -t "$IMAGEN:production" . &amp;&amp; docker push "$IMAGEN:production" '</text>
+<text x="18" y="612" style="white-space: pre" fill="#e6e6e6">,</text>
+<text x="18" y="631" style="white-space: pre" fill="#e6e6e6">    expected: /docker build /,</text>
+<text x="18" y="650" style="white-space: pre" fill="#e6e6e6">    operator: 'doesNotMatch',</text>
+<text x="18" y="669" style="white-space: pre" fill="#e6e6e6">    diff: 'simple'</text>
+<text x="18" y="688" style="white-space: pre" fill="#e6e6e6">  }</text>
+<text x="18" y="707" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="726" style="white-space: pre" fill="#e6e6e6">test at test/pipeline.test.mjs:25:1</text>
+<text x="18" y="745" style="white-space: pre" fill="#e6e6e6">✖ la promoción mueve el digest, no una etiqueta mutable (0.20925ms)</text>
+<text x="18" y="764" style="white-space: pre" fill="#e6e6e6">  AssertionError [ERR_ASSERTION]: debe haber exactamente dos promociones</text>
+<text x="18" y="783" style="white-space: pre" fill="#e6e6e6">  </text>
+<text x="18" y="802" style="white-space: pre" fill="#e6e6e6">  1 !== 2</text>
+<text x="18" y="821" style="white-space: pre" fill="#e6e6e6">  </text>
+<text x="18" y="840" style="white-space: pre" fill="#e6e6e6">      at TestContext.&lt;anonymous&gt; (file:///private/tmp/cicd-lab/test/pipeline.test.mjs:29:10)</text>
+<text x="18" y="859" style="white-space: pre" fill="#e6e6e6">      at Test.runInAsyncScope (node:async_hooks:227:14)</text>
+<text x="18" y="878" style="white-space: pre" fill="#e6e6e6">      at Test.run (node:internal/test_runner/test:1325:25)</text>
+<text x="18" y="897" style="white-space: pre" fill="#e6e6e6">      at Test.processPendingSubtests (node:internal/test_runner/test:911:18)</text>
+<text x="18" y="916" style="white-space: pre" fill="#e6e6e6">      at Test.postRun (node:internal/test_runner/test:1465:19)</text>
+<text x="18" y="935" style="white-space: pre" fill="#e6e6e6">      at Test.run (node:internal/test_runner/test:1390:12)</text>
+<text x="18" y="954" style="white-space: pre" fill="#e6e6e6">      at async Test.processPendingSubtests (node:internal/test_runner/test:911:7) {</text>
+<text x="18" y="973" style="white-space: pre" fill="#e6e6e6">    generatedMessage: false,</text>
+<text x="18" y="992" style="white-space: pre" fill="#e6e6e6">    code: 'ERR_ASSERTION',</text>
+<text x="18" y="1011" style="white-space: pre" fill="#e6e6e6">    actual: 1,</text>
+<text x="18" y="1030" style="white-space: pre" fill="#e6e6e6">    expected: 2,</text>
+<text x="18" y="1049" style="white-space: pre" fill="#e6e6e6">    operator: 'strictEqual',</text>
+<text x="18" y="1068" style="white-space: pre" fill="#e6e6e6">    diff: 'simple'</text>
+<text x="18" y="1087" style="white-space: pre" fill="#e6e6e6">  }</text>
+<text x="18" y="1106" style="white-space: pre" fill="#e6e6e6">npm notice run pedidos@1.0.0 test</text>
+<text x="18" y="1125" style="white-space: pre" fill="#e6e6e6">npm notice run node --test</text>
+<text x="18" y="1144" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker build -q --no-cache -t 127.0.0.1:5060/pedidos:staging .</tspan></text>
+<text x="18" y="1163" style="white-space: pre" fill="#e6e6e6">Dockerfile:8</text>
+<text x="18" y="1182" style="white-space: pre" fill="#e6e6e6">--------------------</text>
+<text x="18" y="1201" style="white-space: pre" fill="#e6e6e6">   6 |     COPY test ./test</text>
+<text x="18" y="1220" style="white-space: pre" fill="#e6e6e6">   7 |     COPY .github .github</text>
+<text x="18" y="1239" style="white-space: pre" fill="#e6e6e6">   8 | &gt;&gt;&gt; RUN npm test</text>
+<text x="18" y="1258" style="white-space: pre" fill="#e6e6e6">   9 |     </text>
+<text x="18" y="1277" style="white-space: pre" fill="#e6e6e6">  10 |     FROM node:24-alpine</text>
+<text x="18" y="1296" style="white-space: pre" fill="#e6e6e6">--------------------</text>
+<text x="18" y="1315" style="white-space: pre" fill="#e6e6e6">ERROR: failed to build: failed to solve: process "/bin/sh -c npm test" did not complete successf</text>
+<text x="18" y="1334" style="white-space: pre" fill="#e6e6e6">ully: exit code: 1</text>
+<text x="18" y="1353" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="1372" style="white-space: pre" fill="#e6e6e6">View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/0uoye66fiux7rgl</text>
+<text x="18" y="1391" style="white-space: pre" fill="#e6e6e6">8gclckwg7e</text>
+<text x="18" y="1410" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">docker build -q --no-cache -t 127.0.0.1:5060/pedidos:production .</tspan></text>
+<text x="18" y="1429" style="white-space: pre" fill="#e6e6e6">Dockerfile:8</text>
+<text x="18" y="1448" style="white-space: pre" fill="#e6e6e6">--------------------</text>
+<text x="18" y="1467" style="white-space: pre" fill="#e6e6e6">   6 |     COPY test ./test</text>
+<text x="18" y="1486" style="white-space: pre" fill="#e6e6e6">   7 |     COPY .github .github</text>
+<text x="18" y="1505" style="white-space: pre" fill="#e6e6e6">   8 | &gt;&gt;&gt; RUN npm test</text>
+<text x="18" y="1524" style="white-space: pre" fill="#e6e6e6">   9 |     </text>
+<text x="18" y="1543" style="white-space: pre" fill="#e6e6e6">  10 |     FROM node:24-alpine</text>
+<text x="18" y="1562" style="white-space: pre" fill="#e6e6e6">--------------------</text>
+<text x="18" y="1581" style="white-space: pre" fill="#e6e6e6">ERROR: failed to build: failed to solve: process "/bin/sh -c npm test" did not complete successf</text>
+<text x="18" y="1600" style="white-space: pre" fill="#e6e6e6">ully: exit code: 1</text>
+<text x="18" y="1619" style="white-space: pre" fill="#e6e6e6"></text>
+<text x="18" y="1638" style="white-space: pre" fill="#e6e6e6">View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/kw0b7mmo9r8sigt</text>
+<text x="18" y="1657" style="white-space: pre" fill="#e6e6e6">hkif5csi8d</text>
+</g>
+</svg>

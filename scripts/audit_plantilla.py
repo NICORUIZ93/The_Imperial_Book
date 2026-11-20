@@ -23,7 +23,7 @@ TOPIC = re.compile(r"^### Tema \d+[:.]", re.M)
 FENCE = re.compile(r"^```([\w+-]*)\s*$", re.M)
 
 CHECKS = {
-    "objetivos": r"al finalizar podr[aá]s|objetivo|qu[eé] podr[aá]s hacer",
+    "objetivos": r"al finalizar podr[aá]s|al terminar podr[aá]s|objetivo|qu[eé] podr[aá]s hacer",
     "motivacion": r"por qu[eé] (es importante|importa)|contexto y caso real|caso real",
     "analogia": r"analog[ií]a",
     "codigo_y_resultado": None,  # se calcula aparte

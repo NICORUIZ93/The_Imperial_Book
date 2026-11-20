@@ -8,7 +8,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, terminal y nociones básicas de HTTP y JavaScript. No necesitas archivos de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, terminal y nociones básicas de HTTP y JavaScript. No necesitas archivos de otros temas.
 
 **Al terminar podrás:** ordenar middleware de Express, usar `next()` para continuar o detener una cadena y diagnosticar una petición que queda sin respuesta.
 
@@ -125,7 +125,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, imports ESM y rutas HTTP básicas. Este proyecto no reutiliza archivos de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, imports ESM y rutas HTTP básicas. Este proyecto no reutiliza archivos de otros temas.
 
 **Al terminar podrás:** separar un grupo de rutas con `express.Router()`, montarlo bajo un prefijo y aplicar middleware únicamente a ese grupo.
 
@@ -257,7 +257,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, Express y JSON básicos. El ejemplo comienza en otra carpeta vacía y no depende de servidores anteriores.
+**Prerrequisitos:** Node.js LTS, npm, Express y JSON básicos. El ejemplo comienza en otra carpeta vacía y no depende de servidores anteriores.
 
 **Al terminar podrás:** validar una entrada con Zod, devolver errores de cliente consistentes y enviar fallos inesperados a un único middleware de Express.
 
@@ -389,7 +389,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, HTTP e imports ESM. Este tema usa dos proyectos nuevos y no necesita archivos de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, HTTP e imports ESM. Este tema usa dos proyectos nuevos y no necesita archivos de otros temas.
 
 **Al terminar podrás:** crear el mismo endpoint con Express y Fastify, localizar dónde valida cada framework y elegir según contrato, validación, ecosistema y operación.
 
@@ -529,7 +529,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, nociones de HTTP, eventos y temporizadores de JavaScript. No necesitas archivos ni servidores de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, nociones de HTTP, eventos y temporizadores de JavaScript. No necesitas archivos ni servidores de otros temas.
 
 **Al terminar podrás:** abrir un canal WebSocket por el que el servidor empuje datos sin una solicitud por mensaje, enviar datos en ambas direcciones y explicar cuándo WebSocket aporta frente a HTTP y polling.
 
@@ -627,7 +627,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 #### Aprende
 
-**Prerrequisitos:** Node.js 24 LTS, npm, HTTP y middleware básico de Express. Este proyecto comienza en una carpeta vacía y no reutiliza archivos de otros temas.
+**Prerrequisitos:** Node.js LTS, npm, HTTP y middleware básico de Express. Este proyecto comienza en una carpeta vacía y no reutiliza archivos de otros temas.
 
 **Al terminar podrás:** recibir una foto de evidencia con `multipart/form-data`, limitar su tamaño, filtrar el MIME declarado, guardarla con un nombre generado por el servidor y explicar qué validaciones todavía hacen falta antes de producción.
 
@@ -758,7 +758,7 @@ Desde una carpeta vacía crea `api-operativa-entregas/` y escribe manualmente to
 
 **Objetivo del laboratorio:** construir una API REST con Express que incluya middleware de logging, validación con Zod y manejo de errores centralizado, y repetir el mismo ejercicio con Fastify para comparar. Integra después los contratos de entrega planteados en el módulo sin mezclar el dominio con el framework.
 
-**Requisitos previos:** Node.js 24 LTS, npm y los fundamentos de Node y HTTP de los Módulos 0–3. No se reutilizan archivos de esos módulos.
+**Requisitos previos:** Node.js LTS, npm y los fundamentos de Node y HTTP de los Módulos 0–3. No se reutilizan archivos de esos módulos.
 
 **Construcción guiada del proyecto:**
 

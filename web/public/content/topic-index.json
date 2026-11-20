@@ -156,16 +156,16 @@
         "fragment": "tema-5-mapas-con-maps-compose-marcadores-camara-y-ruta"
       },
       {
+        "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
+        "fragment": "tema-6-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+      },
+      {
         "title": "Geofencing: avisar al entrar en la zona de una parada",
-        "fragment": "tema-6-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
+        "fragment": "tema-7-geofencing-avisar-al-entrar-en-la-zona-de-una-parada"
       },
       {
         "title": "CameraX y ML Kit: foto de entrega y escaneo de códigos de barras",
-        "fragment": "tema-7-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
-      },
-      {
-        "title": "Sensores con SensorManager: detectar caídas del paquete y orientación",
-        "fragment": "tema-8-sensores-con-sensormanager-detectar-caidas-del-paquete-y-orientacion"
+        "fragment": "tema-8-camerax-y-ml-kit-foto-de-entrega-y-escaneo-de-codigos-de-barras"
       },
       {
         "title": "Bluetooth LE: buscar y leer una báscula del vehículo",
@@ -514,12 +514,12 @@
         "fragment": "tema-4-rendimiento-y-actualizacion-son-contratos-de-experiencia"
       },
       {
-        "title": "CSP con nonce y Trusted Types en Angular",
-        "fragment": "tema-5-csp-con-nonce-y-trusted-types-en-angular"
+        "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
+        "fragment": "tema-5-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
       },
       {
-        "title": "Perfilar con Angular DevTools y el panel Performance de Chrome",
-        "fragment": "tema-6-perfilar-con-angular-devtools-y-el-panel-performance-de-chrome"
+        "title": "CSP con nonce y Trusted Types en Angular",
+        "fragment": "tema-6-csp-con-nonce-y-trusted-types-en-angular"
       }
     ],
     "15": [
@@ -2479,26 +2479,6 @@
       }
     ]
   },
-  "docker": {
-    "0": [
-      {
-        "title": "Un contenedor es un proceso: namespaces PID, NET, MNT y UTS",
-        "fragment": "tema-1-un-contenedor-es-un-proceso-namespaces-pid-net-mnt-y-uts"
-      },
-      {
-        "title": "Límites con cgroups v2: memory.max y cpu.max",
-        "fragment": "tema-2-limites-con-cgroups-v2-memory-max-y-cpu-max"
-      },
-      {
-        "title": "Root dentro y fuera: capacidades y namespace de usuario",
-        "fragment": "tema-3-root-dentro-y-fuera-capacidades-y-namespace-de-usuario"
-      },
-      {
-        "title": "PID 1 y señales: por qué docker stop termina en 137",
-        "fragment": "tema-4-pid-1-y-senales-por-que-docker-stop-termina-en-137"
-      }
-    ]
-  },
   "flutter": {
     "0": [
       {
@@ -2978,12 +2958,12 @@
         "fragment": "tema-4-camara-galeria-y-carga-multipart-de-una-evidencia"
       },
       {
-        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
-        "fragment": "tema-5-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
+        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
+        "fragment": "tema-5-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
       },
       {
-        "title": "Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada",
-        "fragment": "tema-6-trabajo-en-segundo-plano-con-workmanager-sincronizar-aunque-la-app-este-cerrada"
+        "title": "Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente",
+        "fragment": "tema-6-add-to-app-integrar-una-pantalla-flutter-en-una-app-android-o-ios-existente"
       }
     ],
     "8": [
@@ -3598,16 +3578,16 @@
         "fragment": "tema-7-notificaciones-push-con-apns"
       },
       {
+        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
+        "fragment": "tema-8-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+      },
+      {
         "title": "Core Location moderno: CLLocationUpdate, permisos y precisión",
-        "fragment": "tema-8-core-location-moderno-cllocationupdate-permisos-y-precision"
+        "fragment": "tema-9-core-location-moderno-cllocationupdate-permisos-y-precision"
       },
       {
         "title": "BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite",
-        "fragment": "tema-9-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
-      },
-      {
-        "title": "Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles",
-        "fragment": "tema-10-face-id-y-touch-id-con-localauthentication-confirmar-acciones-sensibles"
+        "fragment": "tema-10-backgroundtasks-actualizar-datos-y-sincronizar-cuando-el-sistema-lo-permite"
       }
     ],
     "14": [
@@ -3698,12 +3678,12 @@
         "fragment": "tema-4-cancelacion-cooperativa-distinguir-una-tarea-cancelada-de-un-fallo-de-red"
       },
       {
-        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
-        "fragment": "tema-5-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
+        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
+        "fragment": "tema-5-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
       },
       {
-        "title": "AsyncSequence y AsyncStream: recibir valores en el tiempo con for await",
-        "fragment": "tema-6-asyncsequence-y-asyncstream-recibir-valores-en-el-tiempo-con-for-await"
+        "title": "Swift 6: aislamiento, Sendable y data races detectadas al compilar",
+        "fragment": "tema-6-swift-6-aislamiento-sendable-y-data-races-detectadas-al-compilar"
       }
     ],
     "5": [
@@ -3734,12 +3714,12 @@
         "fragment": "tema-3-migraciones-y-swiftdata-vs-core-data"
       },
       {
-        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
-        "fragment": "tema-4-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
+        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
+        "fragment": "tema-4-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
       },
       {
-        "title": "Archivos en iOS: FileManager, carpetas de la app y fileImporter",
-        "fragment": "tema-5-archivos-en-ios-filemanager-carpetas-de-la-app-y-fileimporter"
+        "title": "CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario",
+        "fragment": "tema-5-cloudkit-con-swiftdata-sincronizar-datos-entre-los-dispositivos-del-usuario"
       }
     ],
     "7": [
@@ -4334,40 +4314,32 @@
       {
         "title": "JavaScript en navegador y Node.js",
         "fragment": "tema-5-javascript-en-navegador-y-node-js"
-      },
-      {
-        "title": "Números, strings y fechas con la biblioteca estándar",
-        "fragment": "tema-6-numeros-strings-y-fechas-con-la-biblioteca-estandar"
       }
     ],
     "1": [
       {
+        "title": "Control de flujo — if, switch y loops",
+        "fragment": "tema-1-control-de-flujo-if-switch-y-loops"
+      },
+      {
         "title": "Tres formas de escribir una función",
-        "fragment": "tema-1-tres-formas-de-escribir-una-funcion"
+        "fragment": "tema-2-tres-formas-de-escribir-una-funcion"
       },
       {
         "title": "Parámetros por defecto y rest/spread",
-        "fragment": "tema-2-parametros-por-defecto-y-rest-spread"
-      },
-      {
-        "title": "Funciones de orden superior",
-        "fragment": "tema-3-funciones-de-orden-superior"
-      },
-      {
-        "title": "Control de flujo — if, switch y loops",
-        "fragment": "tema-4-control-de-flujo-if-switch-y-loops"
-      },
-      {
-        "title": "IIFE y el objeto arguments",
-        "fragment": "tema-5-iife-y-el-objeto-arguments"
+        "fragment": "tema-3-parametros-por-defecto-y-rest-spread"
       },
       {
         "title": "Desestructuración, valores por defecto y rest",
-        "fragment": "tema-6-desestructuracion-valores-por-defecto-y-rest"
+        "fragment": "tema-4-desestructuracion-valores-por-defecto-y-rest"
       },
       {
-        "title": "Errores síncronos: `throw`, `try/catch/finally`, subclases de `Error` y `cause`",
-        "fragment": "tema-7-errores-sincronos-throw-try-catch-finally-subclases-de-error-y-cause"
+        "title": "Funciones de orden superior",
+        "fragment": "tema-5-funciones-de-orden-superior"
+      },
+      {
+        "title": "IIFE y el objeto arguments",
+        "fragment": "tema-6-iife-y-el-objeto-arguments"
       }
     ],
     "10": [
@@ -4398,24 +4370,24 @@
         "fragment": "tema-1-tipos-basicos-interfaces-y-type-aliases"
       },
       {
-        "title": "Generics",
-        "fragment": "tema-2-generics"
-      },
-      {
         "title": "Narrowing y union types",
-        "fragment": "tema-3-narrowing-y-union-types"
+        "fragment": "tema-2-narrowing-y-union-types"
       },
       {
         "title": "tsconfig esencial y modo strict",
-        "fragment": "tema-4-tsconfig-esencial-y-modo-strict"
+        "fragment": "tema-3-tsconfig-esencial-y-modo-strict"
+      },
+      {
+        "title": "Generics",
+        "fragment": "tema-4-generics"
+      },
+      {
+        "title": "Decoradores estándar de TypeScript 5",
+        "fragment": "tema-5-decoradores-estandar-de-typescript-5"
       },
       {
         "title": "TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies",
-        "fragment": "tema-5-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
-      },
-      {
-        "title": "Decoradores estándar de TC39 en TypeScript",
-        "fragment": "tema-6-decoradores-estandar-de-tc39-en-typescript"
+        "fragment": "tema-6-typescript-avanzado-sobrecargas-tipos-mapeados-condicionales-y-satisfies"
       }
     ],
     "12": [
@@ -4456,52 +4428,64 @@
     ],
     "14": [
       {
-        "title": "Accesibilidad web",
-        "fragment": "tema-1-accesibilidad-web"
+        "title": "TypeScript avanzado",
+        "fragment": "tema-1-typescript-avanzado"
       },
       {
-        "title": "WebAssembly con Rust o C",
-        "fragment": "tema-2-webassembly-con-rust-o-c"
+        "title": "Workers y ejecución fuera del hilo principal",
+        "fragment": "tema-2-workers-y-ejecucion-fuera-del-hilo-principal"
+      },
+      {
+        "title": "Bundlers y optimización",
+        "fragment": "tema-3-bundlers-y-optimizacion"
+      },
+      {
+        "title": "Accesibilidad web",
+        "fragment": "tema-4-accesibilidad-web"
       },
       {
         "title": "Web3 y machine learning en navegador",
-        "fragment": "tema-3-web3-y-machine-learning-en-navegador"
+        "fragment": "tema-5-web3-y-machine-learning-en-navegador"
       },
       {
         "title": "Geolocalización, permisos y precisión GPS",
-        "fragment": "tema-4-geolocalizacion-permisos-y-precision-gps"
+        "fragment": "tema-6-geolocalizacion-permisos-y-precision-gps"
       },
       {
         "title": "sessionStorage, cookies e IndexedDB",
-        "fragment": "tema-5-sessionstorage-cookies-e-indexeddb"
+        "fragment": "tema-7-sessionstorage-cookies-e-indexeddb"
       },
       {
         "title": "Expresiones regulares avanzadas y Unicode",
-        "fragment": "tema-6-expresiones-regulares-avanzadas-y-unicode"
+        "fragment": "tema-8-expresiones-regulares-avanzadas-y-unicode"
       },
       {
         "title": "Patrones Factory, Strategy, Observer y Pub/Sub",
-        "fragment": "tema-7-patrones-factory-strategy-observer-y-pub-sub"
-      },
-      {
-        "title": "Service Workers, PWA y estrategias de caché",
-        "fragment": "tema-8-service-workers-pwa-y-estrategias-de-cache"
+        "fragment": "tema-9-patrones-factory-strategy-observer-y-pub-sub"
       },
       {
         "title": "WebSocket y comunicación en tiempo real",
-        "fragment": "tema-9-websocket-y-comunicacion-en-tiempo-real"
+        "fragment": "tema-10-websocket-y-comunicacion-en-tiempo-real"
       },
       {
         "title": "Typed Arrays, ArrayBuffer y DataView",
-        "fragment": "tema-10-typed-arrays-arraybuffer-y-dataview"
+        "fragment": "tema-11-typed-arrays-arraybuffer-y-dataview"
       },
       {
         "title": "ECMAScript moderno, Temporal e iterator helpers",
-        "fragment": "tema-11-ecmascript-moderno-temporal-e-iterator-helpers"
+        "fragment": "tema-12-ecmascript-moderno-temporal-e-iterator-helpers"
       },
       {
         "title": "Gestión explícita de recursos: using, await using y DisposableStack",
-        "fragment": "tema-12-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+        "fragment": "tema-13-gestion-explicita-de-recursos-using-await-using-y-disposablestack"
+      },
+      {
+        "title": "WebAssembly con Rust o C",
+        "fragment": "tema-14-webassembly-con-rust-o-c"
+      },
+      {
+        "title": "Service Workers, PWA y estrategias de caché",
+        "fragment": "tema-15-service-workers-pwa-y-estrategias-de-cache"
       }
     ],
     "2": [
@@ -4566,16 +4550,12 @@
         "fragment": "tema-3-inmutabilidad-y-actualizacion-de-estructuras-anidadas"
       },
       {
-        "title": "WeakMap y WeakSet",
-        "fragment": "tema-4-weakmap-y-weakset"
-      },
-      {
         "title": "Métodos inmutables modernos",
-        "fragment": "tema-5-metodos-inmutables-modernos"
+        "fragment": "tema-4-metodos-inmutables-modernos"
       },
       {
-        "title": "Expresiones regulares básicas: validar, extraer y reemplazar",
-        "fragment": "tema-6-expresiones-regulares-basicas-validar-extraer-y-reemplazar"
+        "title": "WeakMap y WeakSet",
+        "fragment": "tema-5-weakmap-y-weakset"
       }
     ],
     "5": [
@@ -4640,8 +4620,8 @@
         "fragment": "tema-2-tree-shaking-y-code-splitting"
       },
       {
-        "title": "Vite 8: desarrollo con ESM nativo y build con Rolldown",
-        "fragment": "tema-3-vite-8-desarrollo-con-esm-nativo-y-build-con-rolldown"
+        "title": "Vite y esbuild",
+        "fragment": "tema-3-vite-y-esbuild"
       },
       {
         "title": "package.json — exports, type y scripts",
@@ -4678,20 +4658,20 @@
         "fragment": "tema-3-formularios-y-validacion-nativa"
       },
       {
+        "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
+        "fragment": "tema-4-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
+      },
+      {
         "title": "Web APIs — localStorage e IntersectionObserver",
-        "fragment": "tema-4-web-apis-localstorage-e-intersectionobserver"
+        "fragment": "tema-5-web-apis-localstorage-e-intersectionobserver"
       },
       {
         "title": "ResizeObserver y MutationObserver",
-        "fragment": "tema-5-resizeobserver-y-mutationobserver"
+        "fragment": "tema-6-resizeobserver-y-mutationobserver"
       },
       {
         "title": "requestAnimationFrame y requestIdleCallback",
-        "fragment": "tema-6-requestanimationframe-y-requestidlecallback"
-      },
-      {
-        "title": "Formularios accesibles: validar, anunciar y conservar la entrada",
-        "fragment": "tema-7-formularios-accesibles-validar-anunciar-y-conservar-la-entrada"
+        "fragment": "tema-7-requestanimationframe-y-requestidlecallback"
       }
     ],
     "9": [
@@ -4700,16 +4680,16 @@
         "fragment": "tema-1-unit-testing-con-vitest"
       },
       {
+        "title": "ESLint, Prettier y cobertura de código",
+        "fragment": "tema-2-eslint-prettier-y-cobertura-de-codigo"
+      },
+      {
         "title": "Mocks, spies y fakes",
-        "fragment": "tema-2-mocks-spies-y-fakes"
+        "fragment": "tema-3-mocks-spies-y-fakes"
       },
       {
         "title": "Mockear fetch",
-        "fragment": "tema-3-mockear-fetch"
-      },
-      {
-        "title": "ESLint, Prettier y cobertura de código",
-        "fragment": "tema-4-eslint-prettier-y-cobertura-de-codigo"
+        "fragment": "tema-4-mockear-fetch"
       }
     ]
   },
@@ -4958,16 +4938,16 @@
         "fragment": "tema-5-recursos-y-localizacion-en-compose-multiplatform-textos-imagenes-y-plurales-comunes"
       },
       {
-        "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
-        "fragment": "tema-6-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
-      },
-      {
         "title": "Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver",
-        "fragment": "tema-7-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
+        "fragment": "tema-6-accesibilidad-en-compose-multiplatform-semantica-que-funciona-con-talkback-y-voiceover"
       },
       {
         "title": "Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app",
-        "fragment": "tema-8-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+        "fragment": "tema-7-compose-hot-reload-ver-cambios-de-la-interfaz-sin-reiniciar-la-app"
+      },
+      {
+        "title": "Deep links en Compose Multiplatform: abrir una pantalla desde un enlace",
+        "fragment": "tema-8-deep-links-en-compose-multiplatform-abrir-una-pantalla-desde-un-enlace"
       }
     ],
     "8": [
@@ -5053,20 +5033,16 @@
         "fragment": "tema-1-node-no-es-javascript-en-el-servidor-sin-mas"
       },
       {
-        "title": "Fases del Event Loop de Node",
-        "fragment": "tema-2-fases-del-event-loop-de-node"
+        "title": "process, global y módulos core",
+        "fragment": "tema-2-process-global-y-modulos-core"
       },
       {
-        "title": "process, global y módulos core",
-        "fragment": "tema-3-process-global-y-modulos-core"
+        "title": "Fases del Event Loop de Node",
+        "fragment": "tema-3-fases-del-event-loop-de-node"
       },
       {
         "title": "Event-driven architecture y non-blocking I/O",
         "fragment": "tema-4-event-driven-architecture-y-non-blocking-i-o"
-      },
-      {
-        "title": "CLI moderna de Node: `util.parseArgs`, `--env-file`, `node --run` y `--watch`",
-        "fragment": "tema-5-cli-moderna-de-node-util-parseargs-env-file-node-run-y-watch"
       }
     ],
     "1": [
@@ -5079,20 +5055,20 @@
         "fragment": "tema-2-lockfiles-e-instalacion-reproducible"
       },
       {
-        "title": "Workspaces — monorepos con npm/pnpm",
-        "fragment": "tema-3-workspaces-monorepos-con-npm-pnpm"
+        "title": "ESM y CommonJS en el mismo proyecto",
+        "fragment": "tema-3-esm-y-commonjs-en-el-mismo-proyecto"
       },
       {
         "title": "Scripts de ciclo de vida",
         "fragment": "tema-4-scripts-de-ciclo-de-vida"
       },
       {
-        "title": "Publicar y versionar un paquete npm (público o privado)",
-        "fragment": "tema-5-publicar-y-versionar-un-paquete-npm-publico-o-privado"
+        "title": "Workspaces — monorepos con npm/pnpm",
+        "fragment": "tema-5-workspaces-monorepos-con-npm-pnpm"
       },
       {
-        "title": "ESM y CommonJS en el mismo proyecto",
-        "fragment": "tema-6-esm-y-commonjs-en-el-mismo-proyecto"
+        "title": "Publicar y versionar un paquete npm (público o privado)",
+        "fragment": "tema-6-publicar-y-versionar-un-paquete-npm-publico-o-privado"
       }
     ],
     "10": [
@@ -5145,24 +5121,24 @@
         "fragment": "tema-1-arquitectura-por-capas"
       },
       {
-        "title": "Uniendo cada módulo del track",
-        "fragment": "tema-2-uniendo-cada-modulo-del-track"
-      },
-      {
-        "title": "Qué le falta a esta API para producción real",
-        "fragment": "tema-3-que-le-falta-a-esta-api-para-produccion-real"
-      },
-      {
-        "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
-        "fragment": "tema-4-proximos-pasos-microservicios-colas-de-mensajes-y-typescript"
-      },
-      {
         "title": "Posiciones espaciales y Socket.IO con orden recuperable",
-        "fragment": "tema-5-posiciones-espaciales-y-socket-io-con-orden-recuperable"
+        "fragment": "tema-2-posiciones-espaciales-y-socket-io-con-orden-recuperable"
       },
       {
         "title": "Archivos y notificaciones push sin convertirlos en autorización",
-        "fragment": "tema-6-archivos-y-notificaciones-push-sin-convertirlos-en-autorizacion"
+        "fragment": "tema-3-archivos-y-notificaciones-push-sin-convertirlos-en-autorizacion"
+      },
+      {
+        "title": "Uniendo cada módulo del track",
+        "fragment": "tema-4-uniendo-cada-modulo-del-track"
+      },
+      {
+        "title": "Qué le falta a esta API para producción real",
+        "fragment": "tema-5-que-le-falta-a-esta-api-para-produccion-real"
+      },
+      {
+        "title": "Próximos pasos — microservicios, colas de mensajes y TypeScript",
+        "fragment": "tema-6-proximos-pasos-microservicios-colas-de-mensajes-y-typescript"
       }
     ],
     "13": [
@@ -5171,56 +5147,20 @@
         "fragment": "tema-1-tipos-estaticos-dentro-datos-desconocidos-en-la-frontera"
       },
       {
-        "title": "Contratos HTTP: comportamiento verificable y OpenAPI ejecutable",
-        "fragment": "tema-2-contratos-http-comportamiento-verificable-y-openapi-ejecutable"
+        "title": "Un contrato HTTP es comportamiento, no solo documentación",
+        "fragment": "tema-2-un-contrato-http-es-comportamiento-no-solo-documentacion"
+      },
+      {
+        "title": "OpenAPI como contrato ejecutable",
+        "fragment": "tema-3-openapi-como-contrato-ejecutable"
       },
       {
         "title": "Reintentar sin duplicar el efecto",
-        "fragment": "tema-3-reintentar-sin-duplicar-el-efecto"
+        "fragment": "tema-4-reintentar-sin-duplicar-el-efecto"
       },
       {
         "title": "Webhooks verificables y recuperación por reconciliación",
-        "fragment": "tema-4-webhooks-verificables-y-recuperacion-por-reconciliacion"
-      }
-    ],
-    "14": [
-      {
-        "title": "TypeScript en Node.js",
-        "fragment": "tema-1-typescript-en-node-js"
-      },
-      {
-        "title": "GraphQL Federation: componer subgrafos de equipos distintos",
-        "fragment": "tema-2-graphql-federation-componer-subgrafos-de-equipos-distintos"
-      },
-      {
-        "title": "Compensar una entrega cuando falla un paso",
-        "fragment": "tema-3-compensar-una-entrega-cuando-falla-un-paso"
-      },
-      {
-        "title": "Kafka desde Node: clave, grupo consumidor y offset",
-        "fragment": "tema-4-kafka-desde-node-clave-grupo-consumidor-y-offset"
-      },
-      {
-        "title": "RabbitMQ desde Node: exchange, cola y confirmaciones",
-        "fragment": "tema-5-rabbitmq-desde-node-exchange-cola-y-confirmaciones"
-      }
-    ],
-    "15": [
-      {
-        "title": "Deno y permisos explícitos",
-        "fragment": "tema-1-deno-y-permisos-explicitos"
-      },
-      {
-        "title": "Bun reúne runtime, paquetes, pruebas y bundler",
-        "fragment": "tema-2-bun-reune-runtime-paquetes-pruebas-y-bundler"
-      },
-      {
-        "title": "Migrar un proyecto Node a Bun sin perder reproducibilidad",
-        "fragment": "tema-3-migrar-un-proyecto-node-a-bun-sin-perder-reproducibilidad"
-      },
-      {
-        "title": "Elegir entre Node, Deno y Bun",
-        "fragment": "tema-4-elegir-entre-node-deno-y-bun"
+        "fragment": "tema-5-webhooks-verificables-y-recuperacion-por-reconciliacion"
       }
     ],
     "2": [
@@ -5229,24 +5169,24 @@
         "fragment": "tema-1-fs-promises-frente-a-callbacks"
       },
       {
-        "title": "Streams básicos: Readable, Writable y Transform",
-        "fragment": "tema-2-streams-basicos-readable-writable-y-transform"
-      },
-      {
-        "title": "Backpressure: write() y el evento drain",
-        "fragment": "tema-3-backpressure-write-y-el-evento-drain"
-      },
-      {
-        "title": "pipeline() para componer streams de forma segura",
-        "fragment": "tema-4-pipeline-para-componer-streams-de-forma-segura"
-      },
-      {
         "title": "Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador",
-        "fragment": "tema-5-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+        "fragment": "tema-2-buffer-blob-y-las-web-apis-de-node-bytes-codificaciones-y-codigo-compartido-con-el-navegador"
+      },
+      {
+        "title": "Streams básicos: Readable, Writable y Transform",
+        "fragment": "tema-3-streams-basicos-readable-writable-y-transform"
       },
       {
         "title": "Compresión con zlib: gzip y Brotli por streams",
-        "fragment": "tema-6-compresion-con-zlib-gzip-y-brotli-por-streams"
+        "fragment": "tema-4-compresion-con-zlib-gzip-y-brotli-por-streams"
+      },
+      {
+        "title": "Backpressure: write() y el evento drain",
+        "fragment": "tema-5-backpressure-write-y-el-evento-drain"
+      },
+      {
+        "title": "pipeline() para componer streams de forma segura",
+        "fragment": "tema-6-pipeline-para-componer-streams-de-forma-segura"
       }
     ],
     "3": [
@@ -5271,16 +5211,12 @@
         "fragment": "tema-5-paginacion-por-cursor-y-limites-de-entrada-comprobables"
       },
       {
-        "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
-        "fragment": "tema-6-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
-      },
-      {
         "title": "Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS",
-        "fragment": "tema-7-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
+        "fragment": "tema-6-debajo-de-http-tcp-con-net-udp-con-dgram-y-resolucion-dns"
       },
       {
-        "title": "Consumir APIs desde Node con `fetch`: timeouts, errores HTTP y reintentos",
-        "fragment": "tema-8-consumir-apis-desde-node-con-fetch-timeouts-errores-http-y-reintentos"
+        "title": "HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión",
+        "fragment": "tema-7-https-y-http-2-con-tls-certificados-alpn-y-varias-peticiones-por-conexion"
       }
     ],
     "4": [
@@ -5355,32 +5291,32 @@
     ],
     "7": [
       {
-        "title": "Vitest y Supertest — pruebas de integración HTTP reales",
-        "fragment": "tema-1-vitest-y-supertest-pruebas-de-integracion-http-reales"
-      },
-      {
-        "title": "Testcontainers — bases de datos de prueba reales y efímeras",
-        "fragment": "tema-2-testcontainers-bases-de-datos-de-prueba-reales-y-efimeras"
-      },
-      {
-        "title": "Mocks de servicios externos y CI",
-        "fragment": "tema-3-mocks-de-servicios-externos-y-ci"
-      },
-      {
-        "title": "Alternativas de testing y debugging",
-        "fragment": "tema-4-alternativas-de-testing-y-debugging"
-      },
-      {
         "title": "node:test — test runner nativo sin dependencias",
-        "fragment": "tema-5-node-test-test-runner-nativo-sin-dependencias"
+        "fragment": "tema-1-node-test-test-runner-nativo-sin-dependencias"
       },
       {
         "title": "TDD práctico: rojo, verde y refactor con node:test",
-        "fragment": "tema-6-tdd-practico-rojo-verde-y-refactor-con-node-test"
+        "fragment": "tema-2-tdd-practico-rojo-verde-y-refactor-con-node-test"
       },
       {
         "title": "Cobertura de pruebas con node:test: líneas, ramas y umbrales",
-        "fragment": "tema-7-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+        "fragment": "tema-3-cobertura-de-pruebas-con-node-test-lineas-ramas-y-umbrales"
+      },
+      {
+        "title": "Vitest y Supertest — pruebas de integración HTTP reales",
+        "fragment": "tema-4-vitest-y-supertest-pruebas-de-integracion-http-reales"
+      },
+      {
+        "title": "Testcontainers — bases de datos de prueba reales y efímeras",
+        "fragment": "tema-5-testcontainers-bases-de-datos-de-prueba-reales-y-efimeras"
+      },
+      {
+        "title": "Mocks de servicios externos y CI",
+        "fragment": "tema-6-mocks-de-servicios-externos-y-ci"
+      },
+      {
+        "title": "Alternativas de testing y debugging",
+        "fragment": "tema-7-alternativas-de-testing-y-debugging"
       }
     ],
     "8": [
@@ -5393,20 +5329,16 @@
         "fragment": "tema-2-cluster-module-y-balanceo-entre-procesos"
       },
       {
+        "title": "Redis para caché, idempotencia y Pub/Sub",
+        "fragment": "tema-3-redis-para-cache-idempotencia-y-pub-sub"
+      },
+      {
         "title": "Colas de trabajo con BullMQ",
-        "fragment": "tema-3-colas-de-trabajo-con-bullmq"
+        "fragment": "tema-4-colas-de-trabajo-con-bullmq"
       },
       {
         "title": "PM2, memory leaks y heap snapshots",
-        "fragment": "tema-4-pm2-memory-leaks-y-heap-snapshots"
-      },
-      {
-        "title": "Redis para caché, idempotencia y Pub/Sub",
-        "fragment": "tema-5-redis-para-cache-idempotencia-y-pub-sub"
-      },
-      {
-        "title": "Perfilar CPU con `--cpu-prof` y encontrar lo que bloquea el event loop",
-        "fragment": "tema-6-perfilar-cpu-con-cpu-prof-y-encontrar-lo-que-bloquea-el-event-loop"
+        "fragment": "tema-5-pm2-memory-leaks-y-heap-snapshots"
       }
     ],
     "9": [
@@ -5419,20 +5351,20 @@
         "fragment": "tema-2-correlation-id-por-request"
       },
       {
-        "title": "Excepciones no capturadas y graceful shutdown",
-        "fragment": "tema-3-excepciones-no-capturadas-y-graceful-shutdown"
-      },
-      {
         "title": "REST, GraphQL y gRPC",
-        "fragment": "tema-4-rest-graphql-y-grpc"
+        "fragment": "tema-3-rest-graphql-y-grpc"
       },
       {
-        "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
-        "fragment": "tema-5-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
+        "title": "Excepciones no capturadas y graceful shutdown",
+        "fragment": "tema-4-excepciones-no-capturadas-y-graceful-shutdown"
       },
       {
         "title": "Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel",
-        "fragment": "tema-6-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+        "fragment": "tema-5-contexto-por-peticion-con-asynclocalstorage-y-eventos-con-diagnostics-channel"
+      },
+      {
+        "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
+        "fragment": "tema-6-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
       }
     ]
   },
