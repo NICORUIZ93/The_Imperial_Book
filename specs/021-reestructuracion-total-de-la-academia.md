@@ -94,6 +94,23 @@ roadmap.sh y con lo que se exige a un perfil sénior; listar los **temas que fal
 intermedios y avanzados), marcar los temas actuales que se quedan en lo básico y deben profundizarse, fijar el **orden lineal** (prerrequisitos, nivel, minutos) y el número de
 módulos. Sale un `docs/temarios/<curso>.md` por curso con el antes y el después.
 
+**Fuentes obligatorias del temario objetivo (pedido del dueño, 2026-11-20).** Cada curso se contrasta con
+todas estas, y el documento del temario las cita con enlace:
+
+1. Documentación y especificación oficiales completas (p. ej. dev.java y la JLS, docs.gradle.org, la
+   referencia de Spring Framework/Boot/Data/Security).
+2. **Índices de libros de referencia** del tema (al menos tres por curso; p. ej. Core Java I y II, Effective
+   Java, Java Concurrency in Practice; Spring in Action, Pro Spring; Gradle in Action).
+3. **Objetivos de certificaciones** vigentes (p. ej. OCP Java SE 21, Spring Certified Professional, CKA/CKAD,
+   AWS/Azure/GCP).
+4. **Sílabos universitarios y de bootcamps** publicados.
+5. **Cursos largos de YouTube y plataformas** (temarios y marcas de tiempo de cursos «de cero a experto»).
+6. Rutas públicas (roadmap.sh) y preguntas de entrevista de nivel sénior.
+
+De cada fuente se toma la **lista de temas** (hechos), no su texto. El temario objetivo es la unión
+deduplicada, ordenada de básico a experto, con una marca por tema: «ya está», «está pero básico» o «falta»,
+y de qué fuentes sale. El curso no se cierra hasta que no queda ningún «falta» sin decisión.
+
 ### Fase 3 · Plantilla y validador únicos
 Generalizar `scripts/validate_fichas.py` a todos los cursos: secciones obligatorias, diagrama con texto
 alternativo, código con versiones, salida esperada, práctica, nivel y minutos, y título único en toda la
