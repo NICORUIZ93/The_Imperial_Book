@@ -28,7 +28,7 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     for _ in $(seq 1 90); do
       sleep 1
       kill -0 "$pid" 2>/dev/null || { echo "la app terminó sola (ver logs/consul-app.log)"; break; }
-      if curl -fsS 'localhost:8500/v1/health/service/catalogo?passing=true' | grep -q '"Service":"catalogo"'; then
+      if curl -fsS 'localhost:8500/v1/health/service/catalogo?passing=true' | grep -qE '"Service": *"catalogo"'; then
         registrado=si; break
       fi
     done

@@ -41,7 +41,10 @@ public class CatalogoConfigApp {
 
     public static ConfigurableApplicationContext arrancar(String... args) {
         return new SpringApplicationBuilder(CatalogoConfigApp.class)
-            .properties("spring.config.name=catalogo")
+            // spring-cloud-config-server está en este classpath (laboratorio de un solo proyecto) y su
+            // ConfigServerBootstrapApplicationListener pone spring.cloud.config.enabled=false si nadie lo
+            // define antes: el resolver "configserver:" quedaría apagado. Lo activamos de forma explícita.
+            .properties("spring.config.name=catalogo", "spring.cloud.config.enabled=true")
             .run(args);
     }
 

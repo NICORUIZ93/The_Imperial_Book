@@ -18,7 +18,7 @@ medir() {   # imprime "p95_ms errores degradadas"
     ms=$(tail -1 <<<"$salida" | awk '{printf "%d", $2 * 1000}')
     tiempos+=("$ms")
     [ "$codigo" -ge 500 ] || [ "$codigo" = 000 ] && errores=$((errores + 1))
-    grep -q '"degradado":true' <<<"$salida" && degradadas=$((degradadas + 1))
+    grep -qE '"degradado": *true' <<<"$salida" && degradadas=$((degradadas + 1))
   done
   local p95
   p95=$(printf '%s\n' "${tiempos[@]}" | sort -n | awk -v n="$N" '{v[NR]=$1} END {i=int(0.95*n+0.999); print v[i]}')

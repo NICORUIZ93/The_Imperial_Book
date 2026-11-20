@@ -603,10 +603,11 @@ cd f052-consul && ../mvnw -q spring-boot:run \
    En otra terminal:
 
 ```bash
-curl -s 'localhost:8500/v1/health/service/catalogo?passing=true' | grep -o '"Service":"catalogo"'
+curl -s 'localhost:8500/v1/health/service/catalogo?passing=true' | jq -r '.[].Service.Service'
 ```
 
-   **Output esperado:** `"Service":"catalogo"`. **Captura descrita:** en `http://localhost:8500/ui`, el servicio
+   **Output esperado:** `catalogo` (Consul devuelve JSON con un espacio tras los dos puntos: compara con `jq`,
+   no con `grep '"Service":"catalogo"'`). **Captura descrita:** en `http://localhost:8500/ui`, el servicio
    `catalogo` aparece con su chequeo «Service 'catalogo' check» en verde. `host.docker.internal` hace falta porque
    el chequeo lo ejecuta Consul **desde el contenedor** contra tu máquina. Termina con `docker compose down`.
 
@@ -1747,7 +1748,10 @@ public class CatalogoConfigApp {
 
     public static ConfigurableApplicationContext arrancar(String... args) {
         return new SpringApplicationBuilder(CatalogoConfigApp.class)
-            .properties("spring.config.name=catalogo")
+            // spring-cloud-config-server está en este classpath (laboratorio de un solo proyecto) y su
+            // ConfigServerBootstrapApplicationListener pone spring.cloud.config.enabled=false si nadie lo
+            // define antes: el resolver "configserver:" quedaría apagado. Lo activamos de forma explícita.
+            .properties("spring.config.name=catalogo", "spring.cloud.config.enabled=true")
             .run(args);
     }
 
@@ -1920,21 +1924,38 @@ que `application-prod.yml`. Si quieres 1 s en prod para inventario, créalo en `
 
 #### 12. ERROR COMÚN
 
-**Síntoma:** el servicio arranca sin errores pero usa los valores generales (`catalogo.pagina=10`) en vez de los
-suyos.
+**Síntoma:** el cliente no arranca y el error dice que no sabe leer la ubicación `configserver:`, aunque
+`spring-cloud-starter-config` está en el POM.
 
-**Cómo se ve:** `curl -s localhost:8888/catalog/prod | jq '.propertySources[].name'` muestra **solo** las fuentes
-`application`: el servidor no encontró `catalog.yml`. En el log del cliente, la línea de arranque
-`Fetching config from server at : http://localhost:8888` seguida de `Located environment: name=catalog,
-profiles=[prod]` revela el nombre que usó.
+**Cómo se ve** (error real de `ConfigServerTest` en macOS con Spring Cloud Config 5.0.6, antes de la corrección):
 
-**Diagnóstico:** el nombre que envía el cliente es `spring.application.name`; si es `catalog` (o no lo definiste y
-vale `application`), el servidor no busca `catalogo.yml`. El servidor no avisa: para él, «no hay archivos de esa
-aplicación» es normal. El mismo síntoma aparece si el perfil activo no es el que crees (`Located environment:
-... profiles=[default]`).
+```text
+java.lang.IllegalStateException: Unable to load config data from 'configserver:http://localhost:49886'
+Caused by: java.lang.IllegalStateException: Incorrect ConfigDataLocationResolver chosen or file extension is not known
+  to any PropertySourceLoader. ... The location is being resolved using the StandardConfigDataLocationResolver,
+  check the location prefix if a different resolver is expected
+```
 
-**Arreglo:** alinea `spring.application.name` con el nombre del archivo en el repositorio y comprueba siempre con
-`GET /{app}/{perfil}` qué fuentes devuelve el servidor antes de culpar al cliente.
+**Diagnóstico** (leído en las fuentes de Spring Cloud Config 5.0.6): el resolver del cliente,
+`ConfigServerConfigDataLocationResolver`, solo acepta `configserver:` si `spring.cloud.config.enabled` vale `true`
+(por defecto lo es). Pero `f054-config` tiene también `spring-cloud-config-server` en el classpath, y el servidor trae
+`ConfigServerBootstrapApplicationListener`, que añade `spring.cloud.config.enabled=false` a **cualquier** aplicación
+que no lo haya definido como `true` (para que el servidor no se pida configuración a sí mismo). Con el resolver
+apagado, Spring Boot prueba el resolver estándar de archivos, que no entiende el prefijo. **Diagnóstico visual:** la
+palabra clave es `StandardConfigDataLocationResolver`: si aparece con una ubicación `configserver:`, el cliente de
+Config no está activo (falta la dependencia o alguien puso `enabled=false`).
+
+**Arreglo:** en `CatalogoConfigApp.arrancar` se define `spring.cloud.config.enabled=true` antes de arrancar (como
+propiedad por defecto, visible para el listener). En un proyecto real el cliente no lleva el servidor en su classpath
+y no hace falta. Con el resolver activo y el servidor caído, el error correcto es otro:
+`ConfigClientFailFastException: Could not locate PropertySource and the fail fast property is set, failing` (lo
+comprueba `sinConfigServerElClienteNoArranca`).
+
+**Otro síntoma frecuente:** el servicio arranca pero usa los valores generales (`catalogo.pagina=10`).
+`curl -s localhost:8888/catalog/prod | jq '.propertySources[].name'` muestra solo las fuentes `application`: el nombre
+que envía el cliente (`spring.application.name`) no coincide con el del archivo. El log del cliente lo revela en
+`Located environment: name=catalog, profiles=[prod], ...`. Alinea el nombre y comprueba siempre con
+`GET /{app}/{perfil}` qué devuelve el servidor.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
