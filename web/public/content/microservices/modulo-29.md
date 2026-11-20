@@ -392,6 +392,7 @@ export function publicarPendientes(pool, publicar, { lote = 100 } = {}) {
     "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
     "transforms.outbox.table.expand.json.payload": "true",
     "transforms.outbox.table.fields.additional.placement": "type:header:eventType",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": "false"
   }
@@ -601,6 +602,12 @@ MAL  → pedidos en la BD: 1 · eventos publicados: 0 (inventario y pagos nunca 
 inventario): la diferencia crece justo en los minutos en que el broker tuvo problemas. **Arreglo:** escribe el evento en
 la outbox dentro de la misma transacción (`crearPedido()`) y deja la publicación al relay o a Debezium. Si además usas
 Debezium, recuerda `plugin.name=pgoutput`: sin él, el conector falla al arrancar porque busca el plugin `decoderbufs`.
+
+**Error real visto en el Mac (Debezium 3.7 + Kafka 4.4):** la clave llegó como
+`{"schema":{"type":"string","optional":false},"payload":"P-42"}` en vez de `P-42`. El *worker* de Kafka Connect usa
+`JsonConverter` con esquemas para las claves si el conector no dice otra cosa. Solución: `"key.converter":
+"org.apache.kafka.connect.storage.StringConverter"` en la configuración del conector (la clave del EventRouter es el
+`aggregateid`, un texto).
 
 #### 13. PREGUNTA DE ENTREVISTA
 
