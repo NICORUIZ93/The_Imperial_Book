@@ -467,10 +467,10 @@ Paso 1 (salida real con JDK 25.0.5; las dos primeras líneas son de `curl`, las 
 {"sku":"CAFE","disponibles":12}
 404
 Exception in thread "main" java.net.BindException: Address already in use
-	at java.base/sun.ninventario: GET CAFE
+	at java.base/sun.nio.ch.Net.bind0(Native Method)
+	at java.inventario: GET CAFE
 inventario: GET TE
-base/sun.nio.ch.Net.bind(Net.java:522)
-	at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(ServerSocketChannelImpl.java:335)
+at java.base/sun.nio.ch.ServerSocketChannelImpl.netBind(ServerSocketChannelImpl.java:335)
 	at java.base/sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:297)
 	at java.base/sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:80)
 	at jdk.httpserver/sun.net.httpserver.ServerImpl.<init>(ServerImpl.java:147)
@@ -478,7 +478,7 @@ base/sun.nio.ch.Net.bind(Net.java:522)
 	at jdk.httpserver/sun.net.httpserver.DefaultHttpServerProvider.createHttpServer(DefaultHttpServerProvider.java:35)
 	at jdk.httpserver/com.sun.net.httpserver.HttpServer.create(HttpServer.java:152)
 	at InventarioFalso.main(InventarioFalso.java:16)
-bash: line 1: kill: (21984) - No such process
+bash: line 1: kill: (24784) - No such process
 ```
 
 - Paso 2: cuatro líneas iguales, `{"sku":"CAFE","disponibles":12}  <- resttemplate` y así con `webclient`, `feign` y
@@ -2451,9 +2451,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class Notificador {
 
-    final AtomicInteger enviados = new AtomicInteger();
+    // Privado y leído con un método: Spring envuelve este bean en un proxy CGLIB por @Async, y los campos del
+    // proxy no se inicializan (un test que lea notificador.enviados vería null). Los métodos sí se delegan.
+    private final AtomicInteger enviados = new AtomicInteger();
 
     public record PedidoCreado(String id) {
+    }
+
+    public int enviados() {
+        return enviados.get();
     }
 
     /** Llamada directa (síncrona): quien llama espera los 300 ms. */
@@ -2627,12 +2633,12 @@ class SyncAsyncTest {
 
     @Test
     void elAsincronoRespondeAntesYElTrabajoTerminaDespues() throws Exception {
-        int antes = notificador.enviados.get();
+        int antes = notificador.enviados();
         long inicio = System.nanoTime();
         mvc.perform(post("/pedidos/A-1/asincrono")).andExpect(status().isAccepted());
         assertThat((System.nanoTime() - inicio) / 1_000_000).isLessThan(250);
         Thread.sleep(600);   // el hilo de @Async termina su trabajo
-        assertThat(notificador.enviados.get()).isGreaterThan(antes);
+        assertThat(notificador.enviados()).isGreaterThan(antes);
     }
 }
 ```
@@ -2651,6 +2657,17 @@ hilo de la petición (`http-nio-8080-exec-1`) en lugar de un hilo `task-1`. **Di
 del proxy de Spring (no desde la misma clase). Imprime `Thread.currentThread().getName()` en el listener. **Arreglo:**
 `@EnableAsync` en la aplicación y `@Async` en el listener, como en el laboratorio; en un sistema distribuido, publica el
 evento en un broker.
+
+Otro error real (Mac, Spring Boot 4.1.3), de la primera versión de este laboratorio, cuyo test leía un campo del bean:
+
+```text
+java.lang.NullPointerException: Cannot invoke "java.util.concurrent.atomic.AtomicInteger.get()" because "this.notificador.enviados" is null
+```
+
+**Diagnóstico:** como `Notificador` tiene un método `@Async`, Spring no inyecta el objeto original sino un **proxy
+CGLIB** (una subclase generada). Las llamadas a métodos se delegan al objeto real, pero los **campos** del proxy nunca se
+inicializan: leer `notificador.enviados` desde fuera devuelve `null`. **Arreglo:** campos privados y acceso por métodos
+(`notificador.enviados()`), como en el código actual.
 
 #### 13. PREGUNTA DE ENTREVISTA
 

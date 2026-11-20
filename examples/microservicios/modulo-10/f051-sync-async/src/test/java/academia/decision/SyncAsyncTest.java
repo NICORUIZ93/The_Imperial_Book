@@ -29,11 +29,11 @@ class SyncAsyncTest {
 
     @Test
     void elAsincronoRespondeAntesYElTrabajoTerminaDespues() throws Exception {
-        int antes = notificador.enviados.get();
+        int antes = notificador.enviados();
         long inicio = System.nanoTime();
         mvc.perform(post("/pedidos/A-1/asincrono")).andExpect(status().isAccepted());
         assertThat((System.nanoTime() - inicio) / 1_000_000).isLessThan(250);
         Thread.sleep(600);   // el hilo de @Async termina su trabajo
-        assertThat(notificador.enviados.get()).isGreaterThan(antes);
+        assertThat(notificador.enviados()).isGreaterThan(antes);
     }
 }

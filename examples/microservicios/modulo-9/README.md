@@ -26,7 +26,7 @@ cd examples/microservicios/modulo-9
 ```
 
 El script muestra la versión de Java y de Docker Compose, hace `docker compose up -d --wait`, ejecuta
-`./mvnw -q test` en las 6 carpetas, comprueba los tres guiones SQL de F046 (dos deben fallar y uno devolver
+`./mvnw -q -fae test` en las 6 carpetas, comprueba los tres guiones SQL de F046 (dos deben fallar y uno devolver
 2 filas), imprime `RESULTADO: OK · Módulo 5 (Introducción a microservicios y DDD) verificado` y termina con
 `docker compose down`.
 

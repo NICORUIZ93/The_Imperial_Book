@@ -9,9 +9,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class Notificador {
 
-    final AtomicInteger enviados = new AtomicInteger();
+    // Privado y leído con un método: Spring envuelve este bean en un proxy CGLIB por @Async, y los campos del
+    // proxy no se inicializan (un test que lea notificador.enviados vería null). Los métodos sí se delegan.
+    private final AtomicInteger enviados = new AtomicInteger();
 
     public record PedidoCreado(String id) {
+    }
+
+    public int enviados() {
+        return enviados.get();
     }
 
     /** Llamada directa (síncrona): quien llama espera los 300 ms. */

@@ -1216,6 +1216,10 @@ cualquier otra, así que las fronteras se rompen sin que nadie lo note.
   transacción que publicó el evento se confirma**), `@Async` (en otro hilo; por eso la aplicación tiene `@EnableAsync`)
   y `@Transactional(propagation = REQUIRES_NEW)` (el listener tiene su propia transacción). Si la transacción de
   `Pedidos.completar` falla, inventario nunca recibe el evento.
+- **Qué artefactos necesitas:** `spring-modulith-starter-core` trae `ApplicationModules` y la verificación, pero
+  **no** el paquete `org.springframework.modulith.events`; `@ApplicationModuleListener` está en
+  `spring-modulith-events-api`, que se declara aparte (o llega con los *starters* del registro de eventos, como
+  `spring-modulith-starter-jdbc`).
 - **Por qué hay H2 en el `pom.xml`:** un listener transaccional necesita un gestor de transacciones; con
   `spring-boot-starter-jdbc` y H2, Spring Boot crea uno sin configuración.
 - **`@ApplicationModuleTest`** arranca **solo el módulo** del paquete del test (modo `STANDALONE`), y el parámetro
@@ -1274,10 +1278,15 @@ construida sobre Spring Boot 4.1.3), H2 2.4.240 (gestionado por Boot). `f043-mod
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <!-- API de módulos, @ApplicationModuleListener y verificación de estructura -->
+    <!-- API de módulos (ApplicationModules) y verificación de la estructura -->
     <dependency>
       <groupId>org.springframework.modulith</groupId>
       <artifactId>spring-modulith-starter-core</artifactId>
+    </dependency>
+    <!-- @ApplicationModuleListener vive en spring-modulith-events-api: el starter core NO lo incluye -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
     </dependency>
     <!-- @ApplicationModuleListener es un listener transaccional: necesita un gestor de transacciones -->
     <dependency>
@@ -1520,6 +1529,11 @@ publica **no tiene transacción** (le falta `@Transactional`, o lo llamas desde 
 en `publishEvent` y mira si en la pila aparece `TransactionInterceptor`. **Arreglo:** publica desde un método
 `@Transactional` llamado a través del bean (como `Pedidos.completar`), o usa `Scenario.publish(...)`, que ya abre una
 transacción.
+
+Otro error real, al compilar en el Mac con solo `spring-modulith-starter-core`:
+`Inventario.java:[8,43] package org.springframework.modulith.events does not exist` y `[21,6] cannot find symbol:
+class ApplicationModuleListener`. **Diagnóstico:** la anotación vive en otro artefacto. **Arreglo:** agrega
+`spring-modulith-events-api` (versión del BOM de Spring Modulith), como en el `pom.xml` de esta ficha.
 
 #### 13. PREGUNTA DE ENTREVISTA
 

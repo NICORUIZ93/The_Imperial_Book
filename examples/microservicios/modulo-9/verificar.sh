@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Módulo 5 · Introducción a microservicios y DDD (modulo-9)
-# Levanta PostgreSQL 18.7 (F046), ejecuta los tests de las 6 fichas (F041–F046) con el Maven Wrapper,
+# Levanta PostgreSQL 18.7 (F046), ejecuta los tests de las 6 fichas (F041–F046) con el Maven Wrapper
+# (-fae: si un proyecto falla, los demás se siguen probando y el resumen final los lista todos),
 # comprueba los guiones SQL de F046 y apaga el contenedor.
 # Uso: ./verificar.sh     (requiere JDK 25 LTS y Docker con Compose v2)
 set -u
@@ -9,7 +10,7 @@ java -version 2>&1 | head -1
 docker compose version
 docker compose up -d --wait || { echo "RESULTADO: FALLA · PostgreSQL no quedó healthy (docker compose logs postgres)"; exit 1; }
 resultado=0
-if ./mvnw -q test; then
+if ./mvnw -q -fae test; then
   echo "OK · tests de F041–F046 en verde"
 else
   resultado=1

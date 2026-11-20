@@ -29,10 +29,15 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-    <!-- API de módulos, @ApplicationModuleListener y verificación de estructura -->
+    <!-- API de módulos (ApplicationModules) y verificación de la estructura -->
     <dependency>
       <groupId>org.springframework.modulith</groupId>
       <artifactId>spring-modulith-starter-core</artifactId>
+    </dependency>
+    <!-- @ApplicationModuleListener vive en spring-modulith-events-api: el starter core NO lo incluye -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
     </dependency>
     <!-- @ApplicationModuleListener es un listener transaccional: necesita un gestor de transacciones -->
     <dependency>

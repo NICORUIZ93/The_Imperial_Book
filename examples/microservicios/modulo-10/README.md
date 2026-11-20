@@ -27,7 +27,7 @@ cd examples/microservicios/modulo-10
 ```
 
 El script hace `docker compose up -d --wait` (RabbitMQ en :5672 y :15672, Kafka en :9092), ejecuta
-`./mvnw -q test` en las 5 carpetas, comprueba el contrato Protocol Buffers con `demo-binario.sh`, imprime
+`./mvnw -q -fae test` en las 5 carpetas, comprueba el contrato Protocol Buffers con `demo-binario.sh`, imprime
 `RESULTADO: OK · Módulo 6 (Comunicación entre servicios) verificado` y termina con `docker compose down`.
 
 Para trabajar una ficha a mano:
