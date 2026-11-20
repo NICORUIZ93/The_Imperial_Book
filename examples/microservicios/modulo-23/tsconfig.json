@@ -1,0 +1,18 @@
+{
+  // Módulo 19 · TypeScript 6.0.3 solo COMPRUEBA tipos (npm run tipos): Node 26 ejecuta los .ts directamente
+  // quitando las anotaciones (type stripping), así que no hay carpeta dist/.
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,   // solo sintaxis que Node sabe borrar (nada de enum ni namespaces)
+    "verbatimModuleSyntax": true,
+    "allowJs": true,              // el .ts importa módulos .js del laboratorio
+    "checkJs": false,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["f119-circuit-breaker/cockatiel.ts"]
+}

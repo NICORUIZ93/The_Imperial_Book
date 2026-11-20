@@ -1,0 +1,39 @@
+# Módulo 19 (modulo-23) · Resiliencia en Node.js: inventario + Redis, con Toxiproxy delante de los dos.
+#   docker compose up -d --wait
+#   curl localhost:21212/stock/7            -> {"sku":"7","stock":12}   (inventario a través de Toxiproxy)
+#   ./simular-fallo.sh lento 2000           -> 2 s de latencia en el inventario (ver simular-fallo.sh)
+#   ./simular-fallo.sh caido redis          -> Redis «caído» para el rate limiter
+#   docker compose down
+# Tus servicios Node (f119…f123) corren en tu máquina y llaman a 127.0.0.1:21212 (inventario) y 127.0.0.1:26379 (Redis).
+services:
+  inventario:
+    image: node:26-alpine
+    working_dir: /lab
+    command: ["node", "comun/inventario.js", "9000"]
+    volumes: ["./comun:/lab/comun:ro"]
+    ports: ["9000:9000"]          # directo, sin proxy: solo para las rutas de control (/contador, /reiniciar)
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:9000/salud').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  redis:
+    image: redis:8.10.2-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["6379:6379"]          # directo, sin proxy: para redis-cli y los tests
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.13.0
+    # API de control en 8474; los proxies "inventario" (21212) y "redis" (26379) se crean desde toxiproxy.json.
+    command: ["-host=0.0.0.0", "-config=/config/toxiproxy.json"]
+    volumes: ["./toxiproxy.json:/config/toxiproxy.json:ro"]
+    ports: ["8474:8474", "21212:21212", "26379:26379"]
+    depends_on:
+      inventario:
+        condition: service_healthy
+      redis:
+        condition: service_healthy

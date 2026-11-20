@@ -1,0 +1,40 @@
+# Módulo 20 (modulo-24) · Seguridad en Node.js: MongoDB para la inyección NoSQL y tres gestores de secretos locales.
+#   docker compose up -d --wait
+#   node f129-secretos/sembrar.js          -> guarda el secreto tienda/bd en los tres gestores
+#   docker compose down
+# Emuladores (mismas imágenes que el docker-compose.yml de la raíz del repositorio):
+#   aws-local   Floci     -> AWS Secrets Manager en http://localhost:4566   (credenciales test/test, región us-east-1)
+#   azure-local Floci-Az  -> Azure Key Vault en  http://localhost:4577/devstoreaccount1-keyvault
+#   vault       HashiCorp Vault en modo dev (en memoria, sin TLS, token «root»): SOLO para aprender.
+# Si ya tienes arriba el compose de la raíz (usa los mismos puertos 4566 y 4577), levanta solo: mongo vault
+services:
+  mongo:
+    image: mongo:9.0.8
+    ports: ["27017:27017"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  aws-local:
+    image: floci/floci:2.2.0
+    ports: ["${AWS_LOCAL_PORT:-4566}:4566"]
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+  azure-local:
+    image: floci/floci-az:0.14.0
+    ports: ["${AZURE_LOCAL_PORT:-4577}:4577"]
+  vault:
+    image: hashicorp/vault:2.2.0
+    cap_add: ["IPC_LOCK"]
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=root
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    ports: ["8200:8200"]
+    healthcheck:
+      test: ["CMD", "vault", "status", "-address=http://127.0.0.1:8200"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
