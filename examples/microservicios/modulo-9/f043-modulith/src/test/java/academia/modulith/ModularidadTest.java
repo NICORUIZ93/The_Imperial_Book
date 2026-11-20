@@ -10,7 +10,7 @@ class ModularidadTest {
 
     @Test
     void laEstructuraModularEsValida() {
-        modulos.forEach(System.out::println);   // imprime cada módulo, su API y sus dependencias
+        modulos.forEach(m -> System.out.println(m.toString(modulos)));   // cada módulo, sus beans y dependencias
         modulos.verify();
     }
 }

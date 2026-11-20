@@ -82,9 +82,36 @@ Aquí no hay Maven Central ni Docker Hub: nada de Maven se compiló ni ejecutó.
 Los simuladores de Python (`simuladores/*.py`, 9 tests) **se ejecutaron aquí** con Python 3.13.18 contra 4 `redis-server` 7.0.15 locales (sin persistencia, puertos 6379–6382) y sus salidas están pegadas en la lección. Falta todo lo de Maven y los contenedores `redis:8.10.2`/`postgres:18.7`.
 
 - examples/microservicios/modulo-8/verificar.sh:1 — ejecutar completo (compose, 9 tests de Python, tests de Maven de F037–F040).
-- web/public/content/microservices/modulo-8.md:608 — F037: tiempos reales de `curl` y la salida de `--scan`/`TTL`/`GET` (`\xac\xed\x00\x05`) con el Redis del compose.
-- web/public/content/microservices/modulo-8.md:686 — F037: confirmar la cadena de causas al quitar `Serializable` (textos tomados del código de Spring Data Redis y Spring Framework).
-- web/public/content/microservices/modulo-8.md:1377 — F038: pasos 2 y 3 con la app y `docker compose restart redis` (XLEN 0 comprobado aquí con un redis-server sin persistencia).
-- web/public/content/microservices/modulo-8.md:1509 — F038: salida ilustrativa del error común (write-through dentro de `@Transactional`), no ejecutada.
+- web/public/content/microservices/modulo-8.md:621 — F037: tiempos reales de `curl` y la salida de `--scan`/`TTL`/`GET` (`\xac\xed\x00\x05`) con el Redis del compose.
+- web/public/content/microservices/modulo-8.md:699 — F037: confirmar la cadena de causas al quitar `Serializable` (textos tomados del código de Spring Data Redis y Spring Framework).
+- web/public/content/microservices/modulo-8.md:1430 — F038: pasos 2 y 3 con la app y `docker compose restart redis` (XLEN 0 comprobado aquí con un redis-server sin persistencia).
+- web/public/content/microservices/modulo-8.md:1562 — F038: salida ilustrativa del error común (write-through dentro de `@Transactional`), no ejecutada.
 - examples/microservicios/modulo-8/f039-redlock-fencing/src/test/java/academia/redlock/RedlockFencingTest.java:1 — F039: confirmar con Lettuce 7.5.2 que un nodo caído (puerto 6399) falla rápido con los timeouts de 100 ms y que la validez queda entre 800 y 988 ms.
-- web/public/content/microservices/modulo-8.md:2868 — F040: valores impresos por `StampedeTest` y `Tests run: 22`; la afirmación sobre `@Cacheable(sync = true)` y `lockingRedisCacheWriter` se tomó del código de `DefaultRedisCacheWriter` (rama main) y conviene comprobarla en 4.1.3.
+- web/public/content/microservices/modulo-8.md:2921 — F040: valores impresos por `StampedeTest` y `Tests run: 22`; la afirmación sobre `@Cacheable(sync = true)` y `lockingRedisCacheWriter` se tomó del código de `DefaultRedisCacheWriter` (rama main) y conviene comprobarla en 4.1.3.
+
+## Fase 1 · Módulos 5 y 6 (modulo-9 y modulo-10, fichas F041–F051)
+
+Aquí no hay Maven Central (todo `./mvnw` queda pendiente) ni acceso a Docker Hub. Sí se ejecutó con **JDK 25.0.5**:
+todo el Java puro (F041, dominio de F042, revisor de F044, `TablaDeRutas`/`CapaAnticorrupcion` de F045, criterios de
+F051) con sus tests JUnit (JUnit Platform 1.9.1 local: 5 + 6 + 2 + 7 + 4 tests en verde), los servidores falsos de F045
+y F047, los guiones SQL de F046 sobre **PostgreSQL 16.15** local (no 18.7), el driver JDBC 42.7.2 contra ese servidor,
+`demo-binario.sh` de F048 con `protoc` 35.1 de grpcio-tools 1.84.1, y la validación del esquema y las 4 consultas de
+F049 con `graphql` 16 (JavaScript). `docker compose config -q` pasa en ambos módulos. Versiones alineadas con la etiqueta v4.1.3 de spring-boot
+(Spring Framework 7.0.11, Jackson 3.1.8, Spring AMQP/Kafka 4.1.3, kafka-clients 4.2.2, Spring gRPC 1.1.2, grpc-java 1.84.1,
+protobuf-maven-plugin 5.1.12, Spring for GraphQL 2.0.7, graphql-java 25.1, JUnit Jupiter 6.0.3); Spring Modulith **2.1.3**
+(construida sobre Boot 4.1.3, publicada en Maven Central) y Spring Cloud 2025.1.4 (acepta Boot 4.0.x y 4.1.x).
+
+- examples/microservicios/modulo-9/verificar.sh:1 — ejecutar completo: `postgres:18.7` con `initdb/01-bd-por-servicio.sql` (healthcheck con `PGPASSWORD`), `./mvnw -q test` en F041–F046 (5 + 7 + 2 + 5 + 10 + 2 = 31 tests) y los tres guiones SQL.
+- examples/microservicios/modulo-10/verificar.sh:1 — ejecutar completo: `rabbitmq:4.4.1-management` y `apache/kafka:4.4.0` healthy (healthchecks `rabbitmq-diagnostics -q ping` y `kafka-topics.sh --list`), `./mvnw -q test` en F047–F051 (3 + 4 + 4 + 3 + 6 = 20 tests) y `demo-binario.sh` con el `protoc` del Mac.
+- web/public/content/microservices/modulo-9.md:1432 — F043: formato real de `ApplicationModule.toString(modules)` (nombre mostrado tras `# `, viñetas de dependencias y beans) y la línea de descripción que sigue a `Module 'inventario' depends on non-exposed type ...` en el paso 2.
+- web/public/content/microservices/modulo-9.md:1438 — F043: que `InventarioTest` (modo STANDALONE con `Scenario.publish`) recibe el evento con `@ApplicationModuleListener` + `@EnableAsync` y H2 como gestor de transacciones.
+- web/public/content/microservices/modulo-9.md:1895 — F044: orden de los campos del record en el JSON con Jackson 3.1 (`SORT_PROPERTIES_ALPHABETICALLY` está activo por defecto en Jackson 3, pero las propiedades del constructor del record van primero en orden de declaración según `POJOPropertiesCollector`); texto del log de *graceful shutdown* al hacer `kill`.
+- web/public/content/microservices/modulo-9.md:1898 — F044: informe `APPLICATION FAILED TO START` con `TIENDA_MONEDA=pesos` (propiedad, valor, origen y motivo).
+- web/public/content/microservices/modulo-9.md:2476 — F045: respuestas de la fachada (`X-Servido-Por`, cuerpo) con `spring-boot:run` y el cambio por `STRANGLER_RUTAS`.
+- web/public/content/microservices/modulo-9.md:3024 — F046: respuesta JSON de `/facturas/E-1` (orden de campos con Jackson 3) y mensajes de `psql` con PostgreSQL 18.7 dentro del contenedor.
+- web/public/content/microservices/modulo-10.md:473 — F047: los cuatro clientes con `spring-boot:run`; Feign 5.0.4 con Jackson 3 deserializando el record; tipo de excepción de timeout de RestTemplate (el *request factory* que elige Boot con Reactor Netty en el classpath) y de Feign (`RetryableException`).
+- web/public/content/microservices/modulo-10.md:1036 — F048: generación con `protobuf-maven-plugin` 5.1.12 desde el *parent* de Boot 4.1.3, arranque en :9090, salida de `ClienteDeConsola` y de `grpcurl`; mensaje exacto de `UNIMPLEMENTED`/`UNAVAILABLE` en grpc-java 1.84.1.
+- web/public/content/microservices/modulo-10.md:1539 — F049: respuestas de `curl` a `/graphql`, mensaje de validación de graphql-java 25.1 para `costo` e informe de inspección del esquema al arrancar.
+- web/public/content/microservices/modulo-10.md:2073 — F050: estado `healthy`, JSON con `"particion":null` (inclusión de nulos por defecto en Jackson 3), líneas de log, salida de `kafka-console-consumer.sh` con `--timeout-ms` y el reenvío desde la consola web de RabbitMQ.
+- web/public/content/microservices/modulo-10.md:2536 — F051: tiempos de `curl` 201 frente a 202 y que `SyncAsyncTest` (umbral de 250 ms) es estable en el Mac.
+- web/public/content/microservices/modulo-8.md:717 — F037/F038: corregido el fallo del Mac (`cacheEvictBorra…` línea 45) con `immediateWrites()` en `CacheConfig` (Spring Data Redis 4 hace put/evict/clear asíncronos con Lettuce, según `DefaultRedisCacheWriter`); repetir `./verificar.sh` (ahora con `-fae`).

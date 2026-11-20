@@ -1,0 +1,35 @@
+// F048 · Contrato del servicio de inventario. Es la fuente de verdad: cliente y servidor se generan desde aquí.
+syntax = "proto3";
+
+package academia.inventario.v1;
+
+option java_multiple_files = true;
+option java_package = "academia.grpc.proto";
+
+service Inventario {
+  // Unario: una petición, una respuesta.
+  rpc Consultar (ConsultaRequest) returns (Existencia);
+  // Streaming del servidor: una petición, varias respuestas en el tiempo.
+  rpc SeguirExistencias (ConsultaRequest) returns (stream Existencia);
+  // Streaming del cliente: muchas peticiones, una respuesta al final.
+  rpc ReservarLote (stream Reserva) returns (ResumenReservas);
+}
+
+message ConsultaRequest {
+  string sku = 1;
+}
+
+message Existencia {
+  string sku = 1;          // el número (1, 2...) es la identidad del campo en el binario: no lo cambies nunca
+  int32 disponibles = 2;
+}
+
+message Reserva {
+  string sku = 1;
+  int32 cantidad = 2;
+}
+
+message ResumenReservas {
+  int32 reservas = 1;
+  int32 unidades = 2;
+}

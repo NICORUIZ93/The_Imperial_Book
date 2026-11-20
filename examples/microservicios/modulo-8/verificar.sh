@@ -15,7 +15,7 @@ fallos=0
 echo "== Simuladores (Python + Redis real)"
 (cd simuladores && python3 -m unittest -v test_simuladores) || fallos=$((fallos + 1))
 echo "== Proyectos Spring Boot (F037–F040)"
-./mvnw -q test || fallos=$((fallos + 1))
+./mvnw -q -fae test || fallos=$((fallos + 1))   # -fae: sigue con los demás proyectos y los informa todos
 docker compose down
 if [ "$fallos" -eq 0 ]; then
   echo "RESULTADO: OK · Módulo 4 (Caching y rendimiento) verificado"

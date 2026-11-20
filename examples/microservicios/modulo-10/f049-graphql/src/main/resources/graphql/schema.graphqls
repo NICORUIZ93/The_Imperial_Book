@@ -1,0 +1,21 @@
+# F049 · El esquema es el contrato: qué se puede pedir y con qué tipos.
+type Query {
+  producto(sku: ID!): Producto
+  productos: [Producto!]!
+}
+
+type Mutation {
+  calificar(sku: ID!, estrellas: Int!, comentario: String): Resena!
+}
+
+type Producto {
+  sku: ID!
+  nombre: String!
+  precio: Int!
+  resenas: [Resena!]!
+}
+
+type Resena {
+  estrellas: Int!
+  comentario: String
+}

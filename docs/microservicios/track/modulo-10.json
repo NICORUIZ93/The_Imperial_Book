@@ -1,0 +1,39 @@
+{
+  "id": 10,
+  "title": "Módulo 6 · Comunicación entre servicios",
+  "shortTitle": "Comunicación entre servicios",
+  "level": "Integración",
+  "duration": "13 h",
+  "color": "#0f766e",
+  "description": "Comunica servicios Spring Boot de forma síncrona (RestTemplate, WebClient, OpenFeign y RestClient con @HttpExchange, gRPC con Protocol Buffers y streaming, GraphQL con Spring for GraphQL) y asíncrona (RabbitMQ y Kafka), y decide con criterios medibles cuándo usar cada estilo.",
+  "concepts": [
+    "REST síncrono: RestTemplate, WebClient, OpenFeign",
+    "gRPC: Protocol Buffers, servicios, streaming",
+    "GraphQL con Spring for GraphQL",
+    "Mensajería asíncrona: RabbitMQ y Kafka (introducción)",
+    "Sync vs async: criterios de decisión"
+  ],
+  "practice": [
+    "Consulta el mismo inventario con cuatro clientes HTTP y corta una respuesta lenta con timeouts",
+    "Define un contrato .proto con llamadas unarias y de streaming y mira sus 8 bytes en el cable",
+    "Resuelve un esquema GraphQL y elimina el problema N+1 con @BatchMapping",
+    "Publica y consume el mismo evento con RabbitMQ y con Kafka en Docker Compose",
+    "Calcula la disponibilidad de una cadena síncrona y mide 201 frente a 202 Accepted"
+  ],
+  "questions": [
+    "¿Qué cliente HTTP usarías en un microservicio Spring Boot nuevo y por qué?",
+    "¿Cuándo elegirías gRPC en lugar de REST?",
+    "¿Qué es el problema N+1 en GraphQL y cómo lo resuelves?",
+    "¿Cuándo usarías RabbitMQ y cuándo Kafka?",
+    "En un checkout, ¿qué haces síncrono y qué asíncrono?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Spring Boot 4.1.3",
+    "Spring Cloud 2025.1.4",
+    "RabbitMQ 4.4.1",
+    "Apache Kafka 4.4.0",
+    "protoc"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-10 con ./verificar.sh en verde (tests de F047–F051 con los brokers del Docker Compose y el contrato Protocol Buffers)."
+}

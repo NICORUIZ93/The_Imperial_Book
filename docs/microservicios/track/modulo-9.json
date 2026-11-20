@@ -1,0 +1,40 @@
+{
+  "id": 9,
+  "title": "Módulo 5 · Introducción a microservicios y DDD",
+  "shortTitle": "Microservicios y DDD",
+  "level": "Integración",
+  "duration": "13 h",
+  "color": "#0f766e",
+  "description": "Decide con criterios cuándo partir un sistema (monolito modular, microservicios o SOA), encuentra las fronteras con DDD, verifícalas con Spring Modulith, prepara cada servicio con los doce factores, migra poco a poco con Strangler Fig y dale a cada servicio su propia base de datos.",
+  "concepts": [
+    "Monolito vs Microservicios vs SOA",
+    "DDD: Bounded Contexts, Agregados, Eventos de Dominio",
+    "Spring Modulith",
+    "12-Factor App",
+    "Strangler Fig Pattern",
+    "Database-per-service"
+  ],
+  "practice": [
+    "Evalúa tres organizaciones y resuelve el ejercicio cuya respuesta correcta es no usar microservicios",
+    "Modela el agregado Pedido con sus invariantes y traduce PedidoConfirmado al contexto de Envíos",
+    "Verifica la estructura de módulos con Spring Modulith y provoca una violación de tipo interno",
+    "Arranca el mismo JAR con dos configuraciones y detecta secretos escritos en application.properties",
+    "Migra /cotizaciones al servicio nuevo con una fachada y una capa anticorrupción, y revierte cambiando una regla",
+    "Comprueba que Facturación no puede conectarse a la base de Envíos ni hacer JOIN entre bases"
+  ],
+  "questions": [
+    "¿En qué se diferencian SOA y microservicios?",
+    "¿Cómo usarías DDD para decidir las fronteras de tus microservicios?",
+    "¿Cómo migrarías un monolito de 10 años sin detener el negocio?",
+    "Si cada servicio tiene su base de datos, ¿cómo haces un reporte con datos de cinco servicios?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Spring Boot 4.1.3",
+    "Spring Modulith 2.1.3",
+    "PostgreSQL 18.7",
+    "Docker Compose",
+    "Maven Wrapper"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-9 con ./verificar.sh en verde (tests de F041–F046 y los tres guiones SQL de database-per-service)."
+}

@@ -15,7 +15,7 @@ docker compose version
 fallos=0
 
 echo "== 1/3 Tests de las 5 fichas"
-./mvnw -q test || fallos=$((fallos + 1))
+./mvnw -q -fae test || fallos=$((fallos + 1))   # -fae: sigue con los demás proyectos y los informa todos
 
 if [ "${1:-}" != "--rapido" ]; then
   echo "== 2/3 Pact Broker"

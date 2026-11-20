@@ -236,6 +236,12 @@ las siguientes se sirven desde ahí.
 - **TTL.** Global: `spring.cache.redis.time-to-live=60s`. Por caché: un bean `RedisCacheManagerBuilderCustomizer`
   con `withCacheConfiguration("ofertas", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(2)))`.
   Redis guarda la clave con expiración (`PX`) y la borra él solo.
+- **Escrituras inmediatas.** Desde Spring Data Redis 4.0, con Lettuce, el `RedisCacheWriter` por defecto hace
+  `put`, `evict` y `clear` de forma **asíncrona**: el método anotado devuelve el control antes de que Redis haya
+  aplicado el cambio (la interfaz `RedisCacheWriter.evict` lo documenta: «Actual eviction may be performed in an
+  asynchronous or deferred fashion»). Si necesitas leer tu propia escritura justo después (un test, o un
+  `@CacheEvict` seguido de una lectura), crea el writer con `RedisCacheWriter.create(factory, w -> w.immediateWrites())`
+  y pásalo con `builder.cacheWriter(...)` en el `RedisCacheManagerBuilderCustomizer`, como hace `CacheConfig`.
 - **Otras anotaciones.** `@CachePut` ejecuta siempre el método y guarda el resultado (refresca);
   `@CacheEvict(allEntries = true)` vacía la caché; `@Caching` combina varias; `unless = "#result == null"` evita
   guardar ciertos resultados.
@@ -360,6 +366,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * @EnableCaching activa el proxy que intercepta @Cacheable/@CacheEvict.
@@ -369,11 +377,16 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 @EnableCaching
 class CacheConfig {
 
-    /** TTL por caché: "ofertas" cambia a diario en la vida real; aquí 2 s para verlo expirar en el test. */
     @Bean
-    RedisCacheManagerBuilderCustomizer ttlPorCache() {
-        return builder -> builder.withCacheConfiguration("ofertas",
-                RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(2)));
+    RedisCacheManagerBuilderCustomizer configuracionDeCaches(RedisConnectionFactory redis) {
+        return builder -> builder
+                // Spring Data Redis 4 con Lettuce escribe en la caché (put, evict, clear) de forma ASÍNCRONA
+                // por defecto: justo después de @CacheEvict la clave puede seguir ahí. immediateWrites()
+                // hace que cada escritura termine antes de que el método devuelva el control.
+                .cacheWriter(RedisCacheWriter.create(redis, writer -> writer.immediateWrites()))
+                // TTL por caché: "ofertas" cambia a diario en la vida real; aquí 2 s para verlo expirar en el test.
+                .withCacheConfiguration("ofertas",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(2)));
     }
 }
 ```
@@ -701,6 +714,20 @@ DTOs pensados para la caché (no entidades JPA con relaciones perezosas).
 clase (pregunta de la sección 11). Se diagnostica con un contador como `RepositorioLento.consultas()` o con
 `redis-cli MONITOR`: si no aparece ningún `GET productos::…`, el proxy no intervino.
 
+**Tercer caso, propio de Spring Data Redis 4:** sin `immediateWrites()`, un test que comprueba la clave justo
+después de `@CacheEvict` falla de vez en cuando:
+
+```text
+java.lang.AssertionError:
+Expecting value to be false but was true
+```
+
+(salida real de `assertThat(redis.hasKey("productos::1")).isFalse()` en la primera versión de este laboratorio, en
+el Mac del autor). La eviction no se perdió: llegó a Redis milisegundos después, porque el writer por defecto escribe
+de forma asíncrona. Se diagnostica repitiendo la comprobación tras un `Thread.sleep(50)` (pasa) o con
+`redis-cli MONITOR` (el `DEL` aparece después del `EXISTS` del test). Arreglo: `immediateWrites()` en el writer, como
+en `CacheConfig`.
+
 #### 13. PREGUNTA DE ENTREVISTA
 
 «¿Cómo eliges el TTL de una caché y cómo invalidas cuando el dato cambia?»
@@ -807,7 +834,8 @@ Hay dos sitios donde vive el mismo dato: la **base de datos** (lenta, pero segur
   Callable)`. `@Cacheable` es cache-aside escrito por el framework; `@Cacheable(sync = true)` usa precisamente
   `Cache.get(clave, cargador)`.
 - **Write-Through.** La operación termina cuando base **y** caché tienen el valor nuevo (`UPDATE` y luego
-  `cache.put`). Lecturas posteriores son *hits* con el dato correcto. Coste: cada escritura paga la latencia de
+  `cache.put`). Ojo: en Spring Data Redis 4 con Lettuce, `cache.put` es asíncrono por defecto; para cumplir la
+  promesa del patrón, `CacheConfig` configura el writer con `immediateWrites()` (Lección 1, sección 7). Lecturas posteriores son *hits* con el dato correcto. Coste: cada escritura paga la latencia de
   ambas. Si usas transacciones, pon la caché **después del commit**: Spring ofrece `TransactionAwareCacheDecorator`
   (o `transactionAware()` en el `RedisCacheManager`) para retrasar el `put` hasta que la transacción confirma.
 - **Write-Behind (write-back).** La escritura actualiza la caché y deja el cambio en una **cola duradera**; aquí un
@@ -959,6 +987,31 @@ package academia.patrones;
 import java.io.Serializable;
 
 public record Producto(long id, String nombre, int precio) implements Serializable {
+}
+```
+
+`f038-patrones-cache/src/main/java/academia/patrones/CacheConfig.java`:
+
+```java
+package academia.patrones;
+
+import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+
+/**
+ * Write-Through promete que, al volver de cambiarPrecio, la caché YA tiene el valor nuevo.
+ * Con Lettuce, Spring Data Redis 4 hace put/evict/clear asíncronos por defecto; immediateWrites() lo garantiza.
+ */
+@Configuration(proxyBeanMethods = false)
+class CacheConfig {
+
+    @Bean
+    RedisCacheManagerBuilderCustomizer escriturasInmediatas(RedisConnectionFactory redis) {
+        return builder -> builder.cacheWriter(RedisCacheWriter.create(redis, writer -> writer.immediateWrites()));
+    }
 }
 ```
 

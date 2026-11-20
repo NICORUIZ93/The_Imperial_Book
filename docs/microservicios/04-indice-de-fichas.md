@@ -6,7 +6,7 @@
 > edites a mano. El estado lo calcula `scripts/validate_fichas.py`: **completa** (cumple los 14 puntos),
 > **incompleta** (existe, pero le falta algún punto) o **pendiente** (aún no está escrita).
 
-**Resumen:** 187 fichas · 7 completas · 0 incompletas · 180 pendientes.
+**Resumen:** 187 fichas · 51 completas · 0 incompletas · 136 pendientes.
 
 ## Fase 0 · Fundamentos absolutos
 
@@ -19,55 +19,55 @@
 | F005 | Módulo 0.2 | Pensamiento computacional | [modulo-1.md](../../web/public/content/microservices/modulo-1.md) | completa |
 | F006 | Módulo 0.3 | Java y Node.js lado a lado: sintaxis y ejecución | [modulo-2.md](../../web/public/content/microservices/modulo-2.md) | completa |
 | F007 | Módulo 0.3 | Java y Node.js lado a lado: tipos, errores y concurrencia | [modulo-2.md](../../web/public/content/microservices/modulo-2.md) | completa |
-| F008 | Módulo 0.4 | Git | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F009 | Módulo 0.4 | Terminal | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F010 | Módulo 0.4 | HTTP | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F011 | Módulo 0.4 | JSON | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F012 | Módulo 0.4 | YAML | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F013 | Módulo 0.4 | Variables de entorno | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | pendiente |
-| F014 | Módulo 0.5 | Primer «Hola Mundo» en Java | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | pendiente |
-| F015 | Módulo 0.5 | Primer «Hola Mundo» en Node.js | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | pendiente |
-| F016 | Módulo 0.5 | Docker básico | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | pendiente |
+| F008 | Módulo 0.4 | Git | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F009 | Módulo 0.4 | Terminal | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F010 | Módulo 0.4 | HTTP | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F011 | Módulo 0.4 | JSON | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F012 | Módulo 0.4 | YAML | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F013 | Módulo 0.4 | Variables de entorno | [modulo-3.md](../../web/public/content/microservices/modulo-3.md) | completa |
+| F014 | Módulo 0.5 | Primer «Hola Mundo» en Java | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | completa |
+| F015 | Módulo 0.5 | Primer «Hola Mundo» en Node.js | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | completa |
+| F016 | Módulo 0.5 | Docker básico | [modulo-4.md](../../web/public/content/microservices/modulo-4.md) | completa |
 
 ## Fase 1 · Spring Boot de cero a experto
 
 | ID | Módulo | Ficha | Archivo | Estado |
 |---|---|---|---|---|
-| F017 | Módulo 1 | Java 21: Streams, Lambdas, Optional, Records, Pattern Matching | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F018 | Módulo 1 | Virtual Threads (Project Loom) | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F019 | Módulo 1 | Spring IoC, DI, Bean Lifecycle, ApplicationContext | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F020 | Módulo 1 | Auto-configuración condicional, @Conditional, starters | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F021 | Módulo 1 | Multi-module Spring Boot projects | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F022 | Módulo 1 | Perfiles y configuración externalizada | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F023 | Módulo 1 | CRaC (Coordinated Restore at Checkpoint) | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F024 | Módulo 1 | GraalVM Native Image | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | pendiente |
-| F025 | Módulo 2 | Spring MVC: DispatcherServlet, Controllers, Validación | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F026 | Módulo 2 | DTOs, @JsonProperty, Jackson | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F027 | Módulo 2 | Manejo global de excepciones (@ControllerAdvice) | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F028 | Módulo 2 | Spring Data JPA, Hibernate, entidades, relaciones, transacciones | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F029 | Módulo 2 | Criteria API y Specifications | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F030 | Módulo 2 | Flyway/Liquibase | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F031 | Módulo 2 | PostgreSQL y MySQL | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | pendiente |
-| F032 | Módulo 3 | JUnit 5, Mockito, MockMvc | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | pendiente |
-| F033 | Módulo 3 | Testcontainers | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | pendiente |
-| F034 | Módulo 3 | Contract Testing con Pact y Pact Broker | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | pendiente |
-| F035 | Módulo 3 | ArchUnit | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | pendiente |
-| F036 | Módulo 3 | SonarQube | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | pendiente |
-| F037 | Módulo 4 | Caching con Redis: @Cacheable, @CacheEvict, TTL | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | pendiente |
-| F038 | Módulo 4 | Patrones: Read-Through, Write-Behind, Write-Through | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | pendiente |
-| F039 | Módulo 4 | Distributed Locking con Redlock y Fencing Tokens | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | pendiente |
-| F040 | Módulo 4 | Cache stampede y solución con locks | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | pendiente |
-| F041 | Módulo 5 | Monolito vs Microservicios vs SOA | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F042 | Módulo 5 | DDD: Bounded Contexts, Agregados, Eventos de Dominio | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F043 | Módulo 5 | Spring Modulith | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F044 | Módulo 5 | 12-Factor App | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F045 | Módulo 5 | Strangler Fig Pattern | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F046 | Módulo 5 | Database-per-service | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | pendiente |
-| F047 | Módulo 6 | REST síncrono: RestTemplate, WebClient, OpenFeign | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | pendiente |
-| F048 | Módulo 6 | gRPC: Protocol Buffers, servicios, streaming | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | pendiente |
-| F049 | Módulo 6 | GraphQL con Spring for GraphQL | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | pendiente |
-| F050 | Módulo 6 | Mensajería asíncrona: RabbitMQ y Kafka (introducción) | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | pendiente |
-| F051 | Módulo 6 | Sync vs async: criterios de decisión | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | pendiente |
+| F017 | Módulo 1 | Java 21: Streams, Lambdas, Optional, Records, Pattern Matching | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F018 | Módulo 1 | Virtual Threads (Project Loom) | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F019 | Módulo 1 | Spring IoC, DI, Bean Lifecycle, ApplicationContext | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F020 | Módulo 1 | Auto-configuración condicional, @Conditional, starters | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F021 | Módulo 1 | Multi-module Spring Boot projects | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F022 | Módulo 1 | Perfiles y configuración externalizada | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F023 | Módulo 1 | CRaC (Coordinated Restore at Checkpoint) | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F024 | Módulo 1 | GraalVM Native Image | [modulo-5.md](../../web/public/content/microservices/modulo-5.md) | completa |
+| F025 | Módulo 2 | Spring MVC: DispatcherServlet, Controllers, Validación | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F026 | Módulo 2 | DTOs, @JsonProperty, Jackson | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F027 | Módulo 2 | Manejo global de excepciones (@ControllerAdvice) | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F028 | Módulo 2 | Spring Data JPA, Hibernate, entidades, relaciones, transacciones | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F029 | Módulo 2 | Criteria API y Specifications | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F030 | Módulo 2 | Flyway/Liquibase | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F031 | Módulo 2 | PostgreSQL y MySQL | [modulo-6.md](../../web/public/content/microservices/modulo-6.md) | completa |
+| F032 | Módulo 3 | JUnit 5, Mockito, MockMvc | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | completa |
+| F033 | Módulo 3 | Testcontainers | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | completa |
+| F034 | Módulo 3 | Contract Testing con Pact y Pact Broker | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | completa |
+| F035 | Módulo 3 | ArchUnit | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | completa |
+| F036 | Módulo 3 | SonarQube | [modulo-7.md](../../web/public/content/microservices/modulo-7.md) | completa |
+| F037 | Módulo 4 | Caching con Redis: @Cacheable, @CacheEvict, TTL | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | completa |
+| F038 | Módulo 4 | Patrones: Read-Through, Write-Behind, Write-Through | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | completa |
+| F039 | Módulo 4 | Distributed Locking con Redlock y Fencing Tokens | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | completa |
+| F040 | Módulo 4 | Cache stampede y solución con locks | [modulo-8.md](../../web/public/content/microservices/modulo-8.md) | completa |
+| F041 | Módulo 5 | Monolito vs Microservicios vs SOA | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F042 | Módulo 5 | DDD: Bounded Contexts, Agregados, Eventos de Dominio | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F043 | Módulo 5 | Spring Modulith | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F044 | Módulo 5 | 12-Factor App | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F045 | Módulo 5 | Strangler Fig Pattern | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F046 | Módulo 5 | Database-per-service | [modulo-9.md](../../web/public/content/microservices/modulo-9.md) | completa |
+| F047 | Módulo 6 | REST síncrono: RestTemplate, WebClient, OpenFeign | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | completa |
+| F048 | Módulo 6 | gRPC: Protocol Buffers, servicios, streaming | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | completa |
+| F049 | Módulo 6 | GraphQL con Spring for GraphQL | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | completa |
+| F050 | Módulo 6 | Mensajería asíncrona: RabbitMQ y Kafka (introducción) | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | completa |
+| F051 | Módulo 6 | Sync vs async: criterios de decisión | [modulo-10.md](../../web/public/content/microservices/modulo-10.md) | completa |
 | F052 | Módulo 7 | Service Discovery: Eureka, Consul | [modulo-11.md](../../web/public/content/microservices/modulo-11.md) | pendiente |
 | F053 | Módulo 7 | API Gateway: Spring Cloud Gateway | [modulo-11.md](../../web/public/content/microservices/modulo-11.md) | pendiente |
 | F054 | Módulo 7 | Config Server: configuración centralizada | [modulo-11.md](../../web/public/content/microservices/modulo-11.md) | pendiente |

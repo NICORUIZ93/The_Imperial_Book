@@ -62,7 +62,7 @@ ESTADO: completo
 | ☐ | Spring Cloud Config / Consul / OpenFeign / Commons (LoadBalancer) / CircuitBreaker | — | **5.0.6 / 5.0.4 / 5.0.4 / 5.0.4 / 5.0.3** | — | árbol de dependencias | https://docs.spring.io/spring-cloud-release/reference/index.html |
 | ☐ | Spring for GraphQL | — | **2.0.7** (gestionada) | — | árbol de dependencias | https://docs.spring.io/spring-boot/4.1/appendix/dependency-versions/coordinates.html |
 | ☐ | Spring gRPC | — | **1.1.2** (gestionada) · grpc-java **1.84.1** (gestionada; la más nueva es v1.85.1) | — | árbol de dependencias | https://docs.spring.io/spring-boot/4.1/appendix/dependency-versions/coordinates.html · https://github.com/grpc/grpc-java/releases/latest |
-| ☐ | Spring Modulith | — | **2.1.2** | — | árbol de dependencias | https://spring.io/projects/spring-modulith |
+| ☐ | Spring Modulith | — | **2.1.3** (construida sobre Spring Boot 4.1.3) | — | árbol de dependencias | https://spring.io/projects/spring-modulith |
 | ☐ | Spring Security | — | **7.1.3** (gestionada) | — | árbol de dependencias | https://docs.spring.io/spring-boot/4.1/appendix/dependency-versions/coordinates.html |
 | ☐ | Spring Kafka / Spring AMQP | — | **4.1.3 / 4.1.3** (gestionadas) | — | árbol de dependencias | ídem |
 | ☐ | Hibernate ORM | — | **7.4.15.Final** (gestionada) | — | árbol de dependencias | ídem |

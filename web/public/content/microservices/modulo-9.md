@@ -3,7 +3,7 @@
 **Fase 1 · Spring Boot de cero a experto** (semanas 7 y 8 de 12). **Duración:** 13 h (6 temas de 1,5–3 h).
 **Dificultad:** 3 de 5 (4 de 5 en DDD y Strangler Fig). **Dependencias:** Módulos 1 a 4 (Java moderno, Spring IoC,
 perfiles, Spring MVC, JDBC/JPA, PostgreSQL, testing con JUnit y MockMvc). **Herramientas:** **JDK 25 LTS (25.0.5)**,
-**Spring Boot 4.1.2** (Spring Framework 7.0.10, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.2**, PostgreSQL 18.7 en
+**Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.3**, PostgreSQL 18.7 en
 Docker Compose y Maven 3.9.11 mediante el wrapper `./mvnw`. **Laboratorio:** `examples/microservicios/modulo-9/` (una
 carpeta Maven autónoma por tema; `./verificar.sh` ejecuta todos los tests).
 
@@ -175,7 +175,7 @@ unir dos módulos de un monolito es barato.
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25 LTS (25.0.5)**, Spring Boot 4.1.2 como *parent* (solo para heredar versiones de plugins y de JUnit
+Versiones: **JDK 25 LTS (25.0.5)**, Spring Boot 4.1.3 como *parent* (solo para heredar versiones de plugins y de JUnit
 Jupiter 6.0.3). El evaluador es Java puro y corre tal cual con `javac` y `java`. `f041-estilos/pom.xml`:
 
 ```xml
@@ -187,7 +187,7 @@ Jupiter 6.0.3). El evaluador es Java puro y corre tal cual con `javac` y `java`.
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -197,7 +197,7 @@ Jupiter 6.0.3). El evaluador es Java puro y corre tal cual con `javac` y `java`.
     <java.version>25</java.version>
   </properties>
   <dependencies>
-    <!-- Solo JUnit Jupiter 6.0.3 (gestionado por Spring Boot 4.1.2): el evaluador es Java puro. -->
+    <!-- Solo JUnit Jupiter 6.0.3 (gestionado por Spring Boot 4.1.3): el evaluador es Java puro. -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -572,7 +572,7 @@ entender **el negocio** y sus palabras. Tres ideas bastan para empezar:
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.2** (`spring-boot-starter` para el contenedor y los eventos;
+Versiones: **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (`spring-boot-starter` para el contenedor y los eventos;
 JUnit Jupiter 6.0.3 y AssertJ 3.27.7 en los tests). Los paquetes `ventas` y `envios` son Java puro; solo `app` usa
 Spring. `f042-ddd/pom.xml`:
 
@@ -585,7 +585,7 @@ Spring. `f042-ddd/pom.xml`:
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -1239,8 +1239,8 @@ cualquier otra, así que las fronteras se rompen sin que nadie lo note.
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25 LTS**, **Spring Boot 4.1.2**, **Spring Modulith 2.1.2** (su propio BOM; esta versión está
-construida sobre Spring Boot 4.1.2), H2 2.4.240 (gestionado por Boot). `f043-modulith/pom.xml`:
+Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3**, **Spring Modulith 2.1.3** (su propio BOM; esta versión está
+construida sobre Spring Boot 4.1.3), H2 2.4.240 (gestionado por Boot). `f043-modulith/pom.xml`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1251,7 +1251,7 @@ construida sobre Spring Boot 4.1.2), H2 2.4.240 (gestionado por Boot). `f043-mod
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -1259,8 +1259,8 @@ construida sobre Spring Boot 4.1.2), H2 2.4.240 (gestionado por Boot). `f043-mod
   <version>1.0.0</version>
   <properties>
     <java.version>25</java.version>
-    <!-- Spring Modulith 2.1.2 se construye sobre Spring Boot 4.1.2 (no lo gestiona el BOM de Boot) -->
-    <spring-modulith.version>2.1.2</spring-modulith.version>
+    <!-- Spring Modulith 2.1.3 se construye sobre Spring Boot 4.1.3 (no lo gestiona el BOM de Boot) -->
+    <spring-modulith.version>2.1.3</spring-modulith.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -1446,7 +1446,7 @@ Paso 2: el test falla con `org.springframework.modulith.core.Violations` y un me
 seguido de una línea que describe la dependencia encontrada (el campo o el constructor de `Inventario`).
 
 **Captura comentada:** el texto de la violación es la plantilla `Module '%s' depends on non-exposed type %s within
-module '%s'!` de Spring Modulith 2.1.2 (clase `ApplicationModule`): primero el módulo que viola la regla, luego la
+module '%s'!` de Spring Modulith 2.1.3 (clase `ApplicationModule`): primero el módulo que viola la regla, luego la
 clase interna y al final el módulo dueño. En el paso 3 no aparece ningún bean de `pedidos`: el test arrancó solo el
 módulo inventario.
 
@@ -1655,7 +1655,7 @@ puro que lee un `application.properties` y señala secretos y direcciones fijas.
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25 LTS**, **Spring Boot 4.1.2** (Spring MVC, Tomcat 11, Hibernate Validator, Actuator). El revisor es
+Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring MVC, Tomcat 11, Hibernate Validator, Actuator). El revisor es
 Java puro y se ejecuta con `java Archivo.java`. `f044-doce-factores/pom.xml`:
 
 ```xml
@@ -1667,7 +1667,7 @@ Java puro y se ejecuta con `java Archivo.java`. `f044-doce-factores/pom.xml`:
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -2129,8 +2129,8 @@ Si algo sale mal, **revertir es cambiar una línea** de la tabla de rutas.
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25 LTS**, **Spring Boot 4.1.2** (`spring-boot-starter-webmvc` y `spring-boot-starter-restclient`,
-Spring Framework 7.0.10). `TablaDeRutas` y `CapaAnticorrupcion` son Java puro. `f045-strangler-fig/pom.xml`:
+Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (`spring-boot-starter-webmvc` y `spring-boot-starter-restclient`,
+Spring Framework 7.0.11). `TablaDeRutas` y `CapaAnticorrupcion` son Java puro. `f045-strangler-fig/pom.xml`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -2141,7 +2141,7 @@ Spring Framework 7.0.10). `TablaDeRutas` y `CapaAnticorrupcion` son Java puro. `
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -2779,7 +2779,7 @@ reorganizarlo sin preguntar a todos.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **PostgreSQL 18.7** (imagen `postgres:18.7`; los guiones se probaron también en PostgreSQL 16.15),
-**JDK 25 LTS**, **Spring Boot 4.1.2** (`spring-boot-starter-jdbc`, driver PostgreSQL gestionado por Boot). Script de
+**JDK 25 LTS**, **Spring Boot 4.1.3** (`spring-boot-starter-jdbc`, driver PostgreSQL gestionado por Boot). Script de
 inicio `modulo-9/initdb/01-bd-por-servicio.sql`:
 
 ```sql
@@ -2856,7 +2856,7 @@ Servicio de Facturación · `f046-bd-por-servicio/pom.xml`:
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <relativePath/>
   </parent>
   <groupId>academia.microservicios</groupId>
@@ -2875,7 +2875,7 @@ Servicio de Facturación · `f046-bd-por-servicio/pom.xml`:
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x (gestionado por Boot) -->
+    <!-- Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot) -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>

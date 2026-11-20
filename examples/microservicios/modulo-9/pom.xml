@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Módulo 5 (modulo-9) · Agregador: "./mvnw test" ejecuta los tests de todas las fichas.
+     Cada carpeta fNNN-* es un proyecto Maven autónomo; este POM solo los agrupa. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>modulo-9-laboratorios</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>f041-estilos</module>
+    <module>f042-ddd</module>
+    <module>f043-modulith</module>
+    <module>f044-doce-factores</module>
+    <module>f045-strangler-fig</module>
+    <module>f046-bd-por-servicio</module>
+  </modules>
+</project>
