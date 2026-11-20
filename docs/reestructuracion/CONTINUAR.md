@@ -80,9 +80,11 @@ de la migración). El resto de la academia sigue en formato antiguo.
   archivo y línea, está al final de `verificacion/microservicios/pendiente.md`. El wrapper quedó sin
   `distributionSha256Sum` y hay que regenerarlo.
 
-**Datos que el dueño aún no ha confirmado:** si tiene iPhone físico, membresía de pago de Apple y cuenta de
-Google Play. Sin eso, los laboratorios de publicación, push y compras se verifican solo en simulador y la
-lección debe decirlo.
+**Equipo del dueño (confirmado el 2026-11-20):** tiene iPhone físico para pruebas. No tiene membresía de pago
+de desarrollador de Apple ni cuenta de Google Play. Por eso los laboratorios que las exigen (push con APNs,
+TestFlight, publicación en tiendas, compras reales, entrega por CI/CD) se escriben como ensayo documentado y
+la lección debe decir que no se probaron de punta a punta. Lo que solo necesita el iPhone (cámara,
+biometría, rendimiento, VoiceOver) sí se verifica en el dispositivo.
 
 ## 5. Qué hacer a continuación, en orden
 
