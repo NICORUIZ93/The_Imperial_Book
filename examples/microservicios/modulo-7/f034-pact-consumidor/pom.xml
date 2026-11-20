@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- F034 · Contract Testing con Pact (lado CONSUMIDOR "tienda-web"). Pact JVM 4.7.7, Spring Boot 4.1.3, JDK 25.
+     ./mvnw test           -> genera target/pacts/tienda-web-catalogo.json
+     ./mvnw pact:publish   -> lo sube al Pact Broker de docker-compose.yml (http://localhost:9292) -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.3</version>
+    <relativePath/>
+  </parent>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>f034-pact-consumidor</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <java.version>25</java.version>
+    <pact.version>4.7.7</pact.version>
+    <pact.broker.url>http://localhost:9292</pact.broker.url>
+  </properties>
+  <dependencies>
+    <!-- RestClient (spring-web 7) + Jackson 3 para el cliente HTTP -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- Pact para JUnit Jupiter: servidor simulado + escritura del contrato -->
+    <dependency>
+      <groupId>au.com.dius.pact.consumer</groupId>
+      <artifactId>junit5</artifactId>
+      <version>${pact.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <!-- Plugin de Pact: pact:publish y pact:can-i-deploy contra el broker -->
+      <plugin>
+        <groupId>au.com.dius.pact.provider</groupId>
+        <artifactId>maven</artifactId>
+        <version>${pact.version}</version>
+        <configuration>
+          <pactBrokerUrl>${pact.broker.url}</pactBrokerUrl>
+          <projectVersion>${project.version}</projectVersion>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

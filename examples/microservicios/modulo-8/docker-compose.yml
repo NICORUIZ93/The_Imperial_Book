@@ -5,6 +5,8 @@
 services:
   redis:
     image: redis:8.10.2
+    # sin persistencia (ni RDB ni AOF), a propósito: un reinicio borra todo (lo usa el laboratorio de write-behind)
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports: ["6379:6379"]
     healthcheck: &redis-salud
       test: ["CMD", "redis-cli", "ping"]
@@ -13,14 +15,17 @@ services:
       retries: 30
   redis-a:            # tres nodos INDEPENDIENTES (sin réplica entre ellos): lo que pide Redlock
     image: redis:8.10.2
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports: ["6380:6379"]
     healthcheck: *redis-salud
   redis-b:
     image: redis:8.10.2
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports: ["6381:6379"]
     healthcheck: *redis-salud
   redis-c:
     image: redis:8.10.2
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports: ["6382:6379"]
     healthcheck: *redis-salud
   postgres:

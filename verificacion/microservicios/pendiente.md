@@ -58,3 +58,33 @@ Maven Central está bloqueado aquí: ningún proyecto con Spring Boot se pudo co
 - web/public/content/microservices/modulo-6.md:3123 — F030: texto exacto de `FlywayValidateException` en Flyway 12.4.0 (los checksums del ejemplo son ilustrativos y el texto lo avisa).
 - web/public/content/microservices/modulo-6.md:3565 — F031: salida con ambos perfiles (`version()` de las imágenes 18.7 y 9.7.4), consultas a mano con `docker compose exec`, y `PostgresTest` + `MysqlTest` → 6 tests; que `ddl-auto=validate` acepte el esquema de ambos motores. El SQL (migraciones, upserts, collation y errores de sintaxis cruzados) se ejecutó aquí en PostgreSQL 16 y MySQL 8.0.46.
 - examples/microservicios/modulo-6/verificar.sh:1 — `./verificar.sh` completo en el Mac: `docker compose up -d --wait` con `postgres:18.7` y `mysql:9.7.4` (scripts de `initdb/` y healthchecks), 29 tests en las 8 carpetas, `docker compose down`.
+
+## Fase 1 · Módulo 3 · Testing y calidad (modulo-7, fichas F032–F036)
+
+Aquí no hay Maven Central ni Docker Hub: nada de Maven se compiló ni ejecutó. Todos los `pom.xml` usan Spring Boot **4.1.3** (si aún no está en Maven Central, bajar a 4.1.2 como dice 08-herramientas-y-versiones.md). Los POM se validaron como XML y `docker compose config -q` pasó. Los mensajes de error citados se tomaron del código fuente de cada herramienta (Mockito, Spring, Testcontainers, Pact JVM, ArchUnit) en GitHub; el SQL de F033 se ejecutó aquí en PostgreSQL 16.15 (falta 18.7).
+
+- examples/microservicios/modulo-7/verificar.sh:1 — ejecutar completo (sin `--rapido`): tests de las 6 carpetas, Pact Broker (publish, verificación desde broker con publishResults, can-i-deploy) y SonarQube.
+- web/public/content/microservices/modulo-7.md:552 — F032: confirmar `Tests run: 8` + `3` = 11 y el formato del fallo del paso 3 (línea 596).
+- web/public/content/microservices/modulo-7.md:646 — F032: copiar la traza real del `@WebMvcTest` sin `@MockitoBean` (texto armado con los mensajes de Spring; la primera línea puede variar).
+- web/public/content/microservices/modulo-7.md:1070 — F033: salida real de `docker ps` (imagen y etiqueta de Ryuk) y líneas `tc.postgres:18.7` del log.
+- web/public/content/microservices/modulo-7.md:1093 — F033: confirmar el fallo con PostgreSQL 18.7 (mensaje comprobado aquí en 16.15) y el tipo de excepción (`BadSqlGrammarException`).
+- examples/microservicios/modulo-7/f033-testcontainers/src/test/java/academia/contenedores/ContenedoresAppDeDesarrollo.java:1 — comprobar `../mvnw spring-boot:test-run` (puede necesitar `-Dspring-boot.test-run.main-class=academia.contenedores.ContenedoresAppDeDesarrollo`).
+- web/public/content/microservices/modulo-7.md:1776 — F034: contenido real del pact V4 generado y que Pact JVM 4.7.7 (artefactos `junit5`) funciona sobre JUnit Platform 6.0.3 de Boot 4.1.3.
+- web/public/content/microservices/modulo-7.md:1792 — F034: salida real del reportero de consola del proveedor.
+- web/public/content/microservices/modulo-7.md:1812 — F034: salida de `pact:publish`, del proveedor con `@PactBroker` y de `pact:can-i-deploy` (texto del motivo del broker); captura del broker en :9292; imagen `pactfoundation/pact-broker:3.2.0-pactbroker2.124.0` con PostgreSQL 18.7 y su healthcheck con Ruby.
+- web/public/content/microservices/modulo-7.md:1822 — F034: confirmar el mensaje al renombrar `precio` (texto de `Matching.kt`).
+- web/public/content/microservices/modulo-7.md:2244 — F035: confirmar que `archunit-junit6` 1.5.1 descubre las 4 reglas con Surefire y pegar las líneas reales de la violación.
+- web/public/content/microservices/modulo-7.md:2659 — F036: respuesta real de `/api/system/status`, `f036-sonarqube/sonar/analizar.sh` completo (cambio de clave, token, Quality Gate `OK` en el primer análisis, medidas) y el hotspot `java:S2068` del paso 4.
+- examples/microservicios/modulo-7/f036-sonarqube/pom.xml:1 — confirmar JaCoCo 0.8.15 con JDK 25 y que sonar-maven-plugin 5.8.0.7211 descarga el motor de SonarQube 26.11.
+
+## Fase 1 · Módulo 4 · Caching y rendimiento (modulo-8, fichas F037–F040)
+
+Los simuladores de Python (`simuladores/*.py`, 9 tests) **se ejecutaron aquí** con Python 3.13.18 contra 4 `redis-server` 7.0.15 locales (sin persistencia, puertos 6379–6382) y sus salidas están pegadas en la lección. Falta todo lo de Maven y los contenedores `redis:8.10.2`/`postgres:18.7`.
+
+- examples/microservicios/modulo-8/verificar.sh:1 — ejecutar completo (compose, 9 tests de Python, tests de Maven de F037–F040).
+- web/public/content/microservices/modulo-8.md:608 — F037: tiempos reales de `curl` y la salida de `--scan`/`TTL`/`GET` (`\xac\xed\x00\x05`) con el Redis del compose.
+- web/public/content/microservices/modulo-8.md:686 — F037: confirmar la cadena de causas al quitar `Serializable` (textos tomados del código de Spring Data Redis y Spring Framework).
+- web/public/content/microservices/modulo-8.md:1377 — F038: pasos 2 y 3 con la app y `docker compose restart redis` (XLEN 0 comprobado aquí con un redis-server sin persistencia).
+- web/public/content/microservices/modulo-8.md:1509 — F038: salida ilustrativa del error común (write-through dentro de `@Transactional`), no ejecutada.
+- examples/microservicios/modulo-8/f039-redlock-fencing/src/test/java/academia/redlock/RedlockFencingTest.java:1 — F039: confirmar con Lettuce 7.5.2 que un nodo caído (puerto 6399) falla rápido con los timeouts de 100 ms y que la validez queda entre 800 y 988 ms.
+- web/public/content/microservices/modulo-8.md:2868 — F040: valores impresos por `StampedeTest` y `Tests run: 22`; la afirmación sobre `@Cacheable(sync = true)` y `lockingRedisCacheWriter` se tomó del código de `DefaultRedisCacheWriter` (rama main) y conviene comprobarla en 4.1.3.
