@@ -30,11 +30,11 @@ class ActuatorPrometheusTest {
         String scrape = mvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
-        assertThat(scrape).containsPattern("http_server_requests_seconds_count\\{[^}]*uri=\"/pedidos/\\{id\\}\"[^}]*\\} 2(\\.0)?\\n");
+        assertThat(scrape).containsPattern("http_server_requests_seconds_count\\{.*uri=\"/pedidos/\\{id\\}\".*\\} 2(\\.0)?\\n");
         assertThat(scrape).doesNotContain("uri=\"/pedidos/7\"");                    // la plantilla, nunca el id
-        assertThat(scrape).containsPattern("http_server_requests_seconds_bucket\\{[^}]*le=\"0\\.5\"");
-        assertThat(scrape).containsPattern("pedidos_creados_total\\{application=\"f070-pedidos\",canal=\"web\"\\} 1(\\.0)?\\n");
-        assertThat(scrape).containsPattern("pedidos_creados_total\\{[^}]*canal=\"otro\"[^}]*\\} 1(\\.0)?\\n");
+        assertThat(scrape).containsPattern("http_server_requests_seconds_bucket\\{.*uri=\"/pedidos/\\{id\\}\".*le=\"0\\.5\"");
+        assertThat(scrape).containsPattern("pedidos_creados_total\\{application=\"f070-pedidos\",canal=\"web\"\\} 1\\.0\\n");
+        assertThat(scrape).containsPattern("pedidos_creados_total\\{.*canal=\"otro\".*\\} 1\\.0\\n");
         assertThat(scrape).doesNotContain("un-valor-inventado-123");
     }
 }

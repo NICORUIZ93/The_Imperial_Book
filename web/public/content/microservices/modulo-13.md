@@ -135,6 +135,9 @@ eres» (identifícate) y **403 Forbidden** significa «sé quién eres y no pued
   (carga el contexto), `HeaderWriterFilter`, `CsrfFilter`, `LogoutFilter`, los de autenticación (`BasicAuthenticationFilter`,
   `UsernamePasswordAuthenticationFilter`, `BearerTokenAuthenticationFilter`…), `AnonymousAuthenticationFilter` (si nadie
   se identificó pone un usuario anónimo), `ExceptionTranslationFilter` y, al final, `AuthorizationFilter`.
+- **El desafío Basic.** Sin credenciales (o con credenciales malas), Spring Security 7 responde `401` con
+  `WWW-Authenticate: Basic realm="Realm", charset="UTF-8"`: `Realm` es el nombre por defecto (se cambia con
+  `httpBasic(b -> b.realmName("tienda"))`) y `charset` avisa al cliente de que codifique usuario y contraseña en UTF-8.
 - **`ExceptionTranslationFilter`** llama al resto de la cadena dentro de un `try`. Si sale una `AuthenticationException`
   (o el usuario es anónimo y le niegan el acceso) invoca el `AuthenticationEntryPoint` → `401` con `WWW-Authenticate`.
   Si sale una `AccessDeniedException` con un usuario autenticado invoca el `AccessDeniedHandler` → `403`.
@@ -441,7 +444,7 @@ curl -s -w " %header{x-auditado-por}\n" -u root:clave-root localhost:8080/admin/
 
 ```text
 200
-401 Basic realm="Realm"
+401 Basic realm="Realm", charset="UTF-8"
 403
 {"panel":"ventas del día: 42"} root
 ```
@@ -493,7 +496,7 @@ class CadenaDeFiltrosTest {
     void sinCredencialesResponde401ConDesafioBasic() throws Exception {
         mvc.perform(get("/admin/panel"))
             .andExpect(status().isUnauthorized())
-            .andExpect(header().string("WWW-Authenticate", "Basic realm=\"Realm\""));
+            .andExpect(header().string("WWW-Authenticate", "Basic realm=\"Realm\", charset=\"UTF-8\""));
     }
 
     @Test
@@ -538,7 +541,7 @@ código recibes? ¿Y si la contraseña es correcta pero eres `ana`?
 <summary>Respuesta</summary>
 
 Con la contraseña equivocada la corta `BasicAuthenticationFilter`: la autenticación falla y su `AuthenticationEntryPoint`
-responde `401` con `WWW-Authenticate: Basic realm="Realm"`; la petición nunca llega a la autorización. Con `ana` la
+responde `401` con `WWW-Authenticate: Basic realm="Realm", charset="UTF-8"`; la petición nunca llega a la autorización. Con `ana` la
 autenticación funciona, `AuthorizationFilter` niega `hasRole("ADMIN")` lanzando `AccessDeniedException` y
 `ExceptionTranslationFilter` la traduce en `403`.
 </details>

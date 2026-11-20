@@ -11,6 +11,7 @@ set -u -o pipefail
 cd "$(dirname "$0")"
 java -version 2>&1 | grep -v Picked | head -1
 fallos=0
+mkdir -p logs                                   # logs de las apps, para diagnosticar
 falla() { echo "FALLA: $1"; fallos=$((fallos + 1)); }
 espera() { # $1 URL, $2 segundos
   for _ in $(seq 1 "$2"); do curl -fsS -o /dev/null "$1" 2>/dev/null && return 0; sleep 1; done; return 1; }
@@ -44,8 +45,8 @@ if [ "${1:-}" != "--solo-jdk" ]; then
 
     echo "-- F070 raspado por Prometheus"
     ./mvnw -q -f f070-micrometer-prometheus/pom.xml package -DskipTests && {
-      java -jar f070-micrometer-prometheus/target/f070-micrometer-prometheus-1.0.0.jar > target-f070.log 2>&1 & pid=$!
-      espera localhost:8080/actuator/health 60 || falla "f070 no arrancó (target-f070.log)"
+      java -jar f070-micrometer-prometheus/target/f070-micrometer-prometheus-1.0.0.jar > logs/f070.log 2>&1 & pid=$!
+      espera localhost:8080/actuator/health 60 || falla "f070 no arrancó (logs/f070.log)"
       ./carga.sh 20 5
       sleep 10
       up=$(curl -fsS 'localhost:9090/api/v1/query?query=up%7Bjob%3D%22f070-pedidos%22%7D' | grep -o '"value":\[[^]]*\]')
@@ -53,26 +54,34 @@ if [ "${1:-}" != "--solo-jdk" ]; then
       echo "up{job=\"f070-pedidos\"} $up · p99_5m $p99"
       echo "$up" | grep -q '"1"\]' || falla "Prometheus no raspa f070"
       [ -n "$p99" ] || falla "la regla de grabación p99 no tiene datos"
-      kill "$pid"; wait "$pid" 2>/dev/null; rm -f target-f070.log
+      kill "$pid"; wait "$pid" 2>/dev/null; true     # wait devuelve 143 tras el kill: no es un fallo
     } || falla "empaquetar F070"
 
-    echo "-- F071 pedidos -> inventario en Jaeger (OpenTelemetry por OTLP)"
+    echo "-- F071 pedidos -> inventario en Jaeger (OpenTelemetry por OTLP/HTTP, puerto 4318)"
+    espera localhost:16686/ 60 || falla "la UI de Jaeger no responde en :16686 (docker compose logs jaeger)"
     ./mvnw -q -f f071-tracing/pom.xml package -DskipTests && {
       jar=f071-tracing/target/f071-tracing-1.0.0.jar
-      java -jar "$jar" --spring.application.name=inventario --server.port=8082 > target-inv.log 2>&1 & p1=$!
-      java -jar "$jar" > target-ped.log 2>&1 & p2=$!
-      espera localhost:8082/actuator/health 60 && espera localhost:8081/actuator/health 60 || falla "f071 no arrancó"
-      curl -fsS localhost:8081/pedidos/P-7; echo
-      servicios=""
+      java -jar "$jar" --spring.application.name=inventario --server.port=8082 > logs/f071-inventario.log 2>&1 & p1=$!
+      java -jar "$jar" > logs/f071-pedidos.log 2>&1 & p2=$!
+      espera localhost:8082/actuator/health 60 && espera localhost:8081/actuator/health 60 || falla "f071 no arrancó (logs/f071-*.log)"
+      servicios=""; visto=no
+      # El exportador envía los spans por lotes (cada ~5 s): se repite la petición y se consulta hasta 60 s.
+      # API de consulta de Jaeger 2: /api/v3/services (estable); /api/services es la interna de la UI.
       for _ in $(seq 1 30); do
-        servicios=$(curl -fsS localhost:16686/api/services 2>/dev/null)
-        echo "$servicios" | grep -q pedidos && echo "$servicios" | grep -q inventario && break
-        sleep 1
+        curl -fsS -o /dev/null localhost:8081/pedidos/P-7
+        sleep 2
+        servicios="$(curl -sS localhost:16686/api/v3/services 2>&1) $(curl -sS localhost:16686/api/services 2>&1)"
+        if echo "$servicios" | grep -q '"pedidos"' && echo "$servicios" | grep -q '"inventario"'; then visto=si; break; fi
       done
+      curl -fsS localhost:8081/pedidos/P-7; echo
       echo "servicios en Jaeger: $servicios"
-      echo "$servicios" | grep -q inventario || falla "Jaeger no recibió las trazas de f071"
-      grep -m1 "consultando pedido" target-ped.log
-      kill "$p1" "$p2"; wait "$p1" "$p2" 2>/dev/null; rm -f target-inv.log target-ped.log
+      grep -m1 "consultando pedido" logs/f071-pedidos.log
+      if [ "$visto" != si ]; then
+        docker compose ps jaeger > logs/jaeger.log 2>&1; docker compose logs --tail 80 jaeger >> logs/jaeger.log 2>&1
+        grep -iE "export|otlp|4318" logs/f071-pedidos.log | tail -5
+        falla "Jaeger no recibió las trazas de f071 (mira logs/f071-pedidos.log, logs/f071-inventario.log y logs/jaeger.log)"
+      fi
+      kill "$p1" "$p2"; wait "$p1" "$p2" 2>/dev/null; true
     } || falla "empaquetar F071"
 
     echo "== 3. Tests Spring Boot 4.1.3 (F070, F071 otel y zipkin, F072)"

@@ -11,6 +11,7 @@ set -u -o pipefail
 cd "$(dirname "$0")"
 java -version 2>&1 | grep -v Picked | head -1
 fallos=0
+mkdir -p logs                                   # logs de las apps y tokens decodificados, para diagnosticar
 falla() { echo "FALLA: $1"; fallos=$((fallos + 1)); }
 
 echo "== 1. Demostraciones con JDK puro"
@@ -33,27 +34,27 @@ if [ "${1:-}" != "--solo-jdk" ]; then
         -d username="$1" -d password=clave-demo -d scope="$2" | sed -E 's/.*"access_token":"([^"]+)".*/\1/'
     }
     ana=$(token ana "openid pedidos:leer pedidos:crear")
-    java jdk/VerToken.java "$ana" 2>/dev/null | tee target/token-ana.txt
-    grep -q '"cliente"' target/token-ana.txt && grep -q '"pedidos"' target/token-ana.txt \
+    java jdk/VerToken.java "$ana" 2>/dev/null | tee logs/token-ana.txt
+    grep -q '"cliente"' logs/token-ana.txt && grep -q '"pedidos"' logs/token-ana.txt \
       && echo "OK: token de ana con realm_access.roles=[cliente] y aud=pedidos" || falla "claims del token de ana"
     canje=$(curl -fsS -u pedidos:solo-dev-pedidos "$realm/protocol/openid-connect/token" \
       -d grant_type=urn:ietf:params:oauth:grant-type:token-exchange -d subject_token="$ana" \
       -d subject_token_type=urn:ietf:params:oauth:token-type:access_token \
       -d audience=pagos -d scope=pagos:cobrar)
     echo "$canje" | grep -q '"issued_token_type":"urn:ietf:params:oauth:token-type:access_token"' || falla "token exchange: $canje"
-    java jdk/VerToken.java "$(echo "$canje" | sed -E 's/.*"access_token":"([^"]+)".*/\1/')" 2>/dev/null | tee target/token-canjeado.txt
-    grep -q '^aud: *"pagos"' target/token-canjeado.txt && echo "OK: token canjeado con aud=pagos" || falla "aud del token canjeado"
+    java jdk/VerToken.java "$(echo "$canje" | sed -E 's/.*"access_token":"([^"]+)".*/\1/')" 2>/dev/null | tee logs/token-canjeado.txt
+    grep -q '^aud: *"pagos"' logs/token-canjeado.txt && echo "OK: token canjeado con aud=pagos" || falla "aud del token canjeado"
 
     echo "-- F064 contra Keycloak real"
     ./mvnw -q -f f064-keycloak/pom.xml package -DskipTests && {
-      java -jar f064-keycloak/target/f064-keycloak-1.0.0.jar > target/f064.log 2>&1 & pid=$!
+      java -jar f064-keycloak/target/f064-keycloak-1.0.0.jar > logs/f064.log 2>&1 & pid=$!
       for _ in $(seq 1 40); do sleep 1; curl -s -o /dev/null localhost:8081/pedidos && break; done
       c1=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $ana" localhost:8081/pedidos)
       c2=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $ana" localhost:8081/admin/reportes)
       c3=$(curl -s -o /dev/null -w "%{http_code}" localhost:8081/pedidos)
       echo "GET /pedidos con ana -> $c1 · GET /admin/reportes con ana -> $c2 · sin token -> $c3"
       [ "$c1-$c2-$c3" = "200-403-401" ] || falla "F064 contra Keycloak"
-      kill "$pid"; wait "$pid" 2>/dev/null
+      kill "$pid"; wait "$pid" 2>/dev/null; true     # wait devuelve 143 tras el kill: no es un fallo
     } || falla "empaquetar F064"
 
     echo "-- Vault: secreto + política de solo lectura"

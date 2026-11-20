@@ -46,3 +46,5 @@ El script termina con `RESULTADO: OK · Módulo 9 (Seguridad) verificado`.
 | Vault | http://localhost:8200 · token raíz `root-solo-dev` (modo dev); la app usa el token con política de `vault/sembrar.sh` |
 
 Todos los secretos de esta tabla existen solo para el laboratorio local. En producción vienen de Vault (F068).
+
+`verificar.sh` guarda en `logs/` (ignorada por git) la salida de las apps que arranca: `logs/f064.log` y los tokens decodificados.

@@ -357,10 +357,18 @@ sleep 15 && ./carga.sh 30 0
 curl -s localhost:8080/actuator/prometheus | grep -E '^pedidos_creados_total|^http_server_requests_seconds_count\{.*pedidos'
 ```
 
-   **Output esperado:** `carga.sh` imprime `... peticiones en 30 s (0 % lentas)` y el `grep` muestra una línea
-   `pedidos_creados_total{application="f070-pedidos",canal="web"} <n>` y una
-   `http_server_requests_seconds_count{application="f070-pedidos",...,uri="/pedidos/{id}"} <m>` (el orden de las
-   etiquetas puede variar). Ninguna línea contiene un id concreto como `/pedidos/17`.
+   **Output esperado** (verificado en macOS con Spring Boot 4.1.3; `<n>` y `<m>` dependen de la carga):
+
+```text
+pedidos_creados_total{application="f070-pedidos",canal="web"} <n>.0
+http_server_requests_seconds_count{application="f070-pedidos",...,uri="/pedidos/{id}"} <m>
+```
+
+   `carga.sh` imprime antes `... peticiones en 30 s (0 % lentas)`. Fíjate en el formato real del registro Prometheus de
+   Micrometer: los contadores salen como decimales (`2.0`), los buckets y `_count` como enteros, `le` es siempre la
+   última etiqueta (`..._bucket{...,uri="/pedidos/{id}",le="0.1"} 1`) y las líneas `# HELP` terminan con dos espacios.
+   Ninguna línea contiene un id concreto como `/pedidos/17`. Ojo si escribes expresiones regulares sobre esta salida:
+   el valor `uri="/pedidos/{id}"` contiene una llave de cierre, así que `[^}]*` no sirve para «saltar etiquetas».
 
 3. Consulta Prometheus:
 
@@ -415,19 +423,20 @@ class ActuatorPrometheusTest {
         String scrape = mvc.perform(get("/actuator/prometheus")).andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
-        assertThat(scrape).containsPattern("http_server_requests_seconds_count\\{[^}]*uri=\"/pedidos/\\{id\\}\"[^}]*\\} 2(\\.0)?\\n");
+        assertThat(scrape).containsPattern("http_server_requests_seconds_count\\{.*uri=\"/pedidos/\\{id\\}\".*\\} 2(\\.0)?\\n");
         assertThat(scrape).doesNotContain("uri=\"/pedidos/7\"");                    // la plantilla, nunca el id
-        assertThat(scrape).containsPattern("http_server_requests_seconds_bucket\\{[^}]*le=\"0\\.5\"");
-        assertThat(scrape).containsPattern("pedidos_creados_total\\{application=\"f070-pedidos\",canal=\"web\"\\} 1(\\.0)?\\n");
-        assertThat(scrape).containsPattern("pedidos_creados_total\\{[^}]*canal=\"otro\"[^}]*\\} 1(\\.0)?\\n");
+        assertThat(scrape).containsPattern("http_server_requests_seconds_bucket\\{.*uri=\"/pedidos/\\{id\\}\".*le=\"0\\.5\"");
+        assertThat(scrape).containsPattern("pedidos_creados_total\\{application=\"f070-pedidos\",canal=\"web\"\\} 1\\.0\\n");
+        assertThat(scrape).containsPattern("pedidos_creados_total\\{.*canal=\"otro\".*\\} 1\\.0\\n");
         assertThat(scrape).doesNotContain("un-valor-inventado-123");
     }
 }
 ```
 
 `RegistroPrometheusTest` (en la misma carpeta) usa `PrometheusMeterRegistry` sin Spring: registra un contador y un
-`Timer` con SLO de 100 y 500 ms, graba 80 ms y 700 ms y comprueba que los buckets `le="0.1"` y `le="0.5"` valen 1 y
-`_count` vale 2.
+`Timer` con SLO de 100 y 500 ms, graba 80 ms y 700 ms y comprueba las líneas reales:
+`pedidos_creados_total{canal="web"} 2.0`, `http_server_requests_seconds_bucket{uri="/pedidos/{id}",le="0.1"} 1`, lo mismo
+para `le="0.5"` y `_count` en 2.
 
 ```bash
 cd f070-micrometer-prometheus && ../mvnw test
@@ -807,7 +816,8 @@ cd f071-tracing && ../mvnw -q package -DskipTests
 java -jar target/f071-tracing-1.0.0.jar --spring.application.name=inventario --server.port=8082 &
 java -jar target/f071-tracing-1.0.0.jar &
 sleep 15 && curl -s localhost:8081/pedidos/P-7; echo
-curl -s localhost:16686/api/services | jq -c .data
+sleep 10        # el exportador envía los spans por lotes cada pocos segundos
+curl -s localhost:16686/api/v3/services | jq -c .services
 ```
 
    **Output esperado:** `{"pedido":"P-7","estado":"confirmado","stock":{"sku":"CAFE-1","stock":12}}` (las claves pueden
@@ -934,7 +944,9 @@ la ruta `/v1/traces`; el 4317 es gRPC); (2) Jaeger no está levantado o su puert
 (`docker compose ps`); (3) el muestreo por defecto (10 %) hace que con pocas peticiones no veas ninguna.
 
 **Arreglo:** `management.opentelemetry.tracing.export.otlp.endpoint=http://localhost:4318/v1/traces`,
-`management.tracing.sampling.probability=1.0` en desarrollo, y comprueba con `curl -s localhost:16686/api/services`.
+`management.tracing.sampling.probability=1.0` en desarrollo, espera unos segundos (los spans se exportan por lotes) y comprueba con
+`curl -s localhost:16686/api/v3/services` (la API de consulta estable de Jaeger 2; `/api/services` es la interna de la UI).
+`./verificar.sh` guarda los logs de las dos apps y de Jaeger en `logs/` cuando esta comprobación falla.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -1975,11 +1987,12 @@ tests:
       - series: 'http_server_requests_seconds_count{job="f070-pedidos",uri="/pedidos/{id}"}'
         values: '0+100x15'
     promql_expr_test:
-      - expr: job:http_server_requests_seconds:p99_5m
+      # El resultado es 0.9000000000000001 (coma flotante) y promtool compara exacto: se redondea al milisegundo.
+      - expr: round(job:http_server_requests_seconds:p99_5m * 1000)
         eval_time: 10m
         exp_samples:
-          - labels: 'job:http_server_requests_seconds:p99_5m{job="f070-pedidos"}'
-            value: 0.9
+          - labels: '{job="f070-pedidos"}'
+            value: 900
     alert_rule_test:
       - eval_time: 10m
         alertname: PedidosLatenciaP99Alta
@@ -2027,7 +2040,9 @@ tests:
 ```
 
 El 0,9 del primer escenario sale a mano: el rango es 0,99 × 100 = 99; el bucket `le="0.5"` acumula 95 y el `le="1.0"`
-acumula 100, así que `0.5 + (1.0 − 0.5) × (99 − 95) / (100 − 95) = 0.9`.
+acumula 100, así que `0.5 + (1.0 − 0.5) × (99 − 95) / (100 − 95) = 0.9`. Prometheus lo calcula en coma flotante y obtiene
+`0.9000000000000001`; como `promtool` compara el valor exacto (con `value: 0.9` falla con `exp 9E-01, got
+9.000000000000001E-01`, visto en el Mac), el test redondea al milisegundo con `round(... * 1000)` y espera `900`.
 
 ```bash
 docker run --rm -v "$PWD/prometheus":/p -w /p --entrypoint promtool prom/prometheus:v3.15.1 test rules reglas_test.yml

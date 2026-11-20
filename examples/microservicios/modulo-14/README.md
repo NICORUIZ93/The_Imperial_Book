@@ -39,3 +39,5 @@ docker compose up -d --wait
 - Prometheus: http://localhost:9090 → *Alerts* muestra `PedidosLatenciaP99Alta` en *pending* y luego *firing*.
 - Grafana: http://localhost:3000 (`admin` / `admin-solo-dev`) → carpeta *Tienda* → *Pedidos · RED*.
 - Jaeger: http://localhost:16686 · Zipkin: http://localhost:9411.
+
+`verificar.sh` guarda en `logs/` (ignorada por git) la salida de las apps que arranca: `logs/f070.log`, `logs/f071-*.log` y, si Jaeger no muestra las trazas, `logs/jaeger.log`.

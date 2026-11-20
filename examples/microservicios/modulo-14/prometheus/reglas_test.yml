@@ -18,11 +18,12 @@ tests:
       - series: 'http_server_requests_seconds_count{job="f070-pedidos",uri="/pedidos/{id}"}'
         values: '0+100x15'
     promql_expr_test:
-      - expr: job:http_server_requests_seconds:p99_5m
+      # El resultado es 0.9000000000000001 (coma flotante) y promtool compara exacto: se redondea al milisegundo.
+      - expr: round(job:http_server_requests_seconds:p99_5m * 1000)
         eval_time: 10m
         exp_samples:
-          - labels: 'job:http_server_requests_seconds:p99_5m{job="f070-pedidos"}'
-            value: 0.9
+          - labels: '{job="f070-pedidos"}'
+            value: 900
     alert_rule_test:
       - eval_time: 10m
         alertname: PedidosLatenciaP99Alta

@@ -31,7 +31,7 @@ class CadenaDeFiltrosTest {
     void sinCredencialesResponde401ConDesafioBasic() throws Exception {
         mvc.perform(get("/admin/panel"))
             .andExpect(status().isUnauthorized())
-            .andExpect(header().string("WWW-Authenticate", "Basic realm=\"Realm\""));
+            .andExpect(header().string("WWW-Authenticate", "Basic realm=\"Realm\", charset=\"UTF-8\""));
     }
 
     @Test
