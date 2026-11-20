@@ -1,0 +1,18 @@
+# Módulo 7 (modulo-11) · Infraestructura de Spring Cloud.
+# Consul 2.1.0 en modo desarrollo (un solo nodo, todo en memoria): registro de servicios + UI.
+#   docker compose up -d --wait      -> UI en http://localhost:8500
+#   docker compose down
+# Eureka Server y Config Server son aplicaciones Spring Boot del laboratorio: se arrancan con ./mvnw
+# (ver README). El test de f052-consul arranca su propio Consul con Testcontainers.
+services:
+  consul:
+    image: hashicorp/consul:2.1.0
+    command: ["agent", "-dev", "-client=0.0.0.0", "-ui"]
+    ports: ["8500:8500"]
+    # Para que Consul pueda llamar a /actuator/health de las apps que corren en tu máquina (Linux).
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

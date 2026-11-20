@@ -1,0 +1,5 @@
+server:
+  port: 8080
+inventario:
+  url: ${INVENTARIO_URL:http://localhost:21212}
+  timeout: 200ms

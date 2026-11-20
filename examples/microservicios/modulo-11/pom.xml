@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Módulo 7 (modulo-11) · Agregador: "./mvnw test" ejecuta los tests de todas las fichas.
+     Cada carpeta fNNN-* es un proyecto Maven autónomo; este POM solo los agrupa. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>modulo-11-laboratorios</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>f052-eureka</module>
+    <module>f052-consul</module>
+    <module>f053-gateway</module>
+    <module>f054-config</module>
+    <module>f055-loadbalancer</module>
+    <module>f056-bff</module>
+  </modules>
+</project>

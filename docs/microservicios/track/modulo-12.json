@@ -1,0 +1,37 @@
+{
+  "id": 12,
+  "title": "Módulo 8 · Resiliencia",
+  "shortTitle": "Resiliencia",
+  "level": "Integración",
+  "duration": "10 h",
+  "color": "#0f766e",
+  "description": "Protege cada llamada con los cinco patrones de Resilience4j 2.4 (Circuit Breaker, Retry, RateLimiter, Bulkhead y TimeLimiter), reparte el presupuesto de latencia con un deadline propagado, elige el fallback según la criticidad del dato y demuestra todo rompiendo el sistema a propósito con Toxiproxy.",
+  "concepts": [
+    "Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter",
+    "Timeouts en cascada y presupuesto de latencia",
+    "Fallback strategies",
+    "Chaos Engineering con Toxiproxy"
+  ],
+  "practice": [
+    "Recorre CLOSED → OPEN → HALF_OPEN → CLOSED con el inventario caído y verifica Retry, RateLimiter, Bulkhead y TimeLimiter bajo fallos inyectados",
+    "Propaga X-Deadline entre tres saltos y responde degradado dentro de 1000 ms con el inventario 1,5 s lento",
+    "Aplica valor por defecto, último valor bueno, réplica y fallar rápido, y detecta el fallback mentiroso",
+    "Ejecuta un experimento de caos completo con Toxiproxy y conviértelo en un test con Testcontainers"
+  ],
+  "questions": [
+    "¿Dónde pones el fallback si combinas @Retry y @CircuitBreaker?",
+    "¿Cómo eliges el timeout de una llamada entre microservicios?",
+    "¿Qué respondes si no puedes comprobar un permiso?",
+    "¿Por qué un experimento de caos necesita una hipótesis y un control?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Spring Boot 4.1.3",
+    "Resilience4j 2.4.0",
+    "Toxiproxy 2.13.0",
+    "Testcontainers 2.0.5",
+    "Maven Wrapper",
+    "Docker Compose"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-12 con ./verificar.sh en verde: 4 demostraciones JDK con fallos inyectados, Toxiproxy con simular-fallo.sh y 4 proyectos Maven (F057–F060, 13 tests)."
+}

@@ -1,0 +1,4 @@
+servicios:
+  catalogo: ${CATALOGO_URL:http://localhost:8081}
+  inventario: ${INVENTARIO_URL:http://localhost:8082}
+  resenas: ${RESENAS_URL:http://localhost:8083}

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Módulo 7 · Spring Cloud e infraestructura (modulo-11)
+# 1) Ejecuta las 5 demostraciones de jdk/ (solo JDK 25, sin dependencias).
+# 2) Levanta Consul 2.1.0 con Docker Compose, registra el catálogo de f052-consul y lo busca en Consul.
+# 3) Ejecuta los tests Spring Boot 4.1.3 + Spring Cloud 2025.1.4 de F052–F056 con el Maven Wrapper.
+# Uso: ./verificar.sh            (requiere JDK 25, Docker con Compose v5 y curl)
+#      ./verificar.sh --solo-jdk (solo el paso 1: no necesita Docker ni Maven Central)
+set -u -o pipefail
+cd "$(dirname "$0")"
+java -version 2>&1 | grep -v Picked | head -1
+fallos=0
+echo "== 1. Demostraciones con JDK puro"
+for demo in Registro MiniGateway ConfigCentral Balanceador Bff; do
+  echo "-- jdk/$demo.java"
+  java -Dstdout.encoding=UTF-8 "jdk/$demo.java" 2>&1 | grep -v '^Picked up' || fallos=$((fallos + 1))
+done
+if [ "${1:-}" != "--solo-jdk" ]; then
+  echo "== 2. Consul con Docker Compose"
+  docker compose version
+  if docker compose up -d --wait; then
+    ./mvnw -q -f f052-consul/pom.xml package -DskipTests
+    # Consul corre en un contenedor: para llegar a /actuator/health de tu máquina usa host.docker.internal.
+    java -jar f052-consul/target/f052-consul-1.0.0.jar --spring.cloud.consul.discovery.prefer-ip-address=false \
+      --spring.cloud.consul.discovery.hostname=host.docker.internal > target-consul.log 2>&1 &
+    pid=$!
+    registrado=no
+    for _ in $(seq 1 40); do
+      sleep 1
+      if curl -fsS localhost:8500/v1/health/service/catalogo?passing=true | grep -q '"Service":"catalogo"'; then
+        registrado=si; break
+      fi
+    done
+    kill "$pid"; wait "$pid" 2>/dev/null
+    if [ "$registrado" = si ]; then echo "OK: catalogo registrado y sano en Consul"; else
+      echo "FALLA: catalogo no apareció sano en Consul (mira target-consul.log)"; fallos=$((fallos + 1)); fi
+    rm -f target-consul.log
+    docker compose down
+  else
+    echo "FALLA: Consul no quedó healthy (docker compose logs)"; fallos=$((fallos + 1))
+  fi
+  echo "== 3. Tests Spring Boot + Spring Cloud (F052–F056)"
+  ./mvnw -q test || fallos=$((fallos + 1))
+fi
+if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
+  echo "RESULTADO: OK · Módulo 7 (Spring Cloud e infraestructura) · parte JDK verificada (falta ./verificar.sh completo)"
+elif [ "$fallos" -eq 0 ]; then
+  echo "RESULTADO: OK · Módulo 7 (Spring Cloud e infraestructura) verificado"
+else
+  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o el primer [ERROR] de Maven"
+  exit 1
+fi

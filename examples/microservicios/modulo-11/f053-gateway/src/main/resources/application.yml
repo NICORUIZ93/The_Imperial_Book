@@ -1,0 +1,26 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: catalogo
+              uri: ${CATALOGO_URL:http://localhost:8081}   # con discovery: lb://catalogo
+              predicates:
+                - Path=/api/catalogo/**
+              filters:
+                - StripPrefix=2                  # /api/catalogo/productos/7 -> /productos/7
+                - AddResponseHeader=X-Gateway, academia
+            - id: inventario
+              uri: ${INVENTARIO_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/inventario/**
+              filters:
+                - StripPrefix=2
+          httpclient:
+            connect-timeout: 1000               # ms para abrir la conexión con el servicio
+            response-timeout: 2s                # tiempo máximo esperando la respuesta

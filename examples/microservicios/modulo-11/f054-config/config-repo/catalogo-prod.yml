@@ -1,0 +1,4 @@
+# Solo para catalogo con el perfil prod. Es la fuente de mayor prioridad.
+catalogo:
+  pagina: 50
+  banner: Black Friday

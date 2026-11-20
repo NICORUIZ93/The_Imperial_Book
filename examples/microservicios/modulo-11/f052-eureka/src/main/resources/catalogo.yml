@@ -1,0 +1,19 @@
+server:
+  port: ${PUERTO:8081}
+spring:
+  application:
+    name: catalogo            # este es el nombre con el que otros lo buscarán
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    registry-fetch-interval-seconds: 5      # por defecto 30
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 5    # latido; por defecto 30
+    lease-expiration-duration-in-seconds: 15 # sin latido durante 15 s => expulsado; por defecto 90
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

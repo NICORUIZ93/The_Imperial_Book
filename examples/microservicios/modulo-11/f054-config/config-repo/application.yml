@@ -1,0 +1,5 @@
+# Lo comparten TODAS las aplicaciones que pidan configuración a este servidor.
+tienda:
+  moneda: COP
+catalogo:
+  pagina: 10

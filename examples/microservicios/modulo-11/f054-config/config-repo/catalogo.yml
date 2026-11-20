@@ -1,0 +1,3 @@
+# Solo para spring.application.name=catalogo (cualquier perfil).
+catalogo:
+  pagina: 20

@@ -1,0 +1,57 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: pedidos
+inventario:
+  url: ${INVENTARIO_URL:http://localhost:21212}   # Toxiproxy, delante del inventario (docker compose)
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventario:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 4                    # mira las 4 últimas llamadas (por defecto 100)
+        minimum-number-of-calls: 4                # no decide con menos de 4 (por defecto 100)
+        failure-rate-threshold: 50                # >= 50 % fallidas => OPEN
+        slow-call-duration-threshold: 1s          # una llamada de más de 1 s cuenta como lenta...
+        slow-call-rate-threshold: 100             # ...y si TODAS son lentas, también abre
+        wait-duration-in-open-state: 2s           # tras 2 s abierto deja pasar llamadas de prueba
+        permitted-number-of-calls-in-half-open-state: 2
+        register-health-indicator: true
+  retry:
+    instances:
+      inventario:
+        max-attempts: 3                           # 1 intento + 2 reintentos
+        wait-duration: 100ms
+        enable-exponential-backoff: true          # 100 ms, 200 ms
+        exponential-backoff-multiplier: 2
+        ignore-exceptions:
+          - io.github.resilience4j.circuitbreaker.CallNotPermittedException   # circuito abierto: no insistas
+          - org.springframework.web.client.HttpClientErrorException           # 4xx: reintentar no lo arregla
+  ratelimiter:
+    instances:
+      inventario:
+        limit-for-period: 3
+        limit-refresh-period: 1s
+        timeout-duration: 0                       # sin cola: si no hay permiso, rechaza ya
+  bulkhead:
+    instances:
+      inventario:
+        max-concurrent-calls: 2
+        max-wait-duration: 0
+  timelimiter:
+    instances:
+      inventario:
+        timeout-duration: 500ms
+        cancel-running-future: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,circuitbreakers,circuitbreakerevents,retries,ratelimiters,bulkheads,timelimiters
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true

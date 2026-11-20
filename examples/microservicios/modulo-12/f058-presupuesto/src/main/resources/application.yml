@@ -1,0 +1,6 @@
+server:
+  port: 8090
+pedidos:
+  url: ${PEDIDOS_URL:http://localhost:8080}
+bff:
+  presupuesto: 800ms      # si el cliente no manda X-Deadline, este es su plazo

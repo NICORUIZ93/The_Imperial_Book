@@ -1,0 +1,15 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: catalogo                 # con este nombre pide catalogo.yml y catalogo-{perfil}.yml
+  config:
+    import: configserver:${CONFIG_URL:http://localhost:8888}
+  cloud:
+    config:
+      fail-fast: true              # sin Config Server, no arranca (en vez de arrancar con valores vacíos)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,refresh

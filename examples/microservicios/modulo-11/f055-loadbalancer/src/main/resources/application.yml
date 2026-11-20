@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: pedidos
+  cloud:
+    discovery:
+      client:
+        simple:
+          # Lista fija de instancias (SimpleDiscoveryClient). Con Eureka o Consul en el classpath,
+          # la lista llega del registro y este bloque sobra.
+          instances:
+            catalogo:
+              - uri: http://localhost:8081
+              - uri: http://localhost:8082
+              - uri: http://localhost:8083

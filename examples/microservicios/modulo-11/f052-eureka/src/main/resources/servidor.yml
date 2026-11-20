@@ -1,0 +1,17 @@
+server:
+  port: 8761
+spring:
+  application:
+    name: eureka-servidor
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # El servidor no se registra a sí mismo ni descarga el registro (modo standalone).
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    # Solo para el laboratorio: expulsar rápido y responder sin la caché de 30 s.
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 2000
+    use-read-only-response-cache: false
