@@ -1,0 +1,31 @@
+// Módulo 15 · F102 · Esquema de Prisma 7.10.1: describe las MISMAS tablas que crea sql/001-esquema.sql.
+// Genera el cliente con:  npm run generate   (escribe TypeScript en f102-prisma-sequelize/generated/)
+generator client {
+  provider = "prisma-client" // generador de Prisma 7: cliente en TypeScript, sin motor de consultas en Rust
+  output   = "../generated"  // obligatorio en Prisma 7: el cliente ya no se escribe dentro de node_modules
+}
+
+datasource db {
+  provider = "postgresql" // la URL ya no va aquí: se la das al adaptador (PrismaPg) al crear el cliente
+}
+
+model Cliente {
+  id      Int      @id @default(autoincrement())
+  nombre  String
+  email   String   @unique
+  pedidos Pedido[]
+
+  @@map("clientes")
+}
+
+model Pedido {
+  id        Int      @id @default(autoincrement())
+  total     Int
+  estado    String   @default("CREADO")
+  creadoEn  DateTime @default(now()) @map("creado_en") @db.Timestamptz(6)
+  clienteId Int      @map("cliente_id")
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+
+  @@index([clienteId], map: "pedidos_cliente_idx")
+  @@map("pedidos")
+}

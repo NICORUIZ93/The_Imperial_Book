@@ -1,0 +1,28 @@
+# Módulo 15 (modulo-19) · Persistencia en Node.js
+# Arranca:   docker compose up -d --wait     (espera a que los dos healthchecks estén "healthy")
+# Detén:     docker compose down              (los datos se pierden: no hay volúmenes, el laboratorio es repetible)
+# Puertos del anfitrión poco comunes (27019 y 5519) para no chocar con un MongoDB o PostgreSQL que ya tengas.
+services:
+  mongo:
+    image: mongo:9.0.8
+    ports: ["27019:27017"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+  postgres:
+    image: postgres:18.7
+    environment:
+      POSTGRES_USER: tienda
+      POSTGRES_PASSWORD: tienda
+      POSTGRES_DB: tienda
+    ports: ["5519:5432"]
+    volumes:
+      - ./initdb/01-bases.sql:/docker-entrypoint-initdb.d/01-bases.sql:ro
+    healthcheck:
+      # inventario_db es la ÚLTIMA base que crea initdb: si responde por TCP, la inicialización terminó.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U tienda -d inventario_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

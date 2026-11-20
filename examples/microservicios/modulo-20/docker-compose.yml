@@ -1,0 +1,32 @@
+# Módulo 16 (modulo-20) · Testing en Node.js
+# Pact Broker:  docker compose up -d --wait     → http://localhost:9220  (sin usuario ni clave: solo para laboratorio)
+# Detén todo:   docker compose down             (sin volúmenes: los contratos publicados se pierden, a propósito)
+# Testcontainers (F108) NO usa este archivo: el propio test arranca y destruye su PostgreSQL.
+services:
+  pact-db:
+    image: postgres:18.7
+    environment:
+      POSTGRES_USER: pact
+      POSTGRES_PASSWORD: pact
+      POSTGRES_DB: pact
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U pact -d pact"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  pact-broker:
+    image: pactfoundation/pact-broker:3.2.0-pactbroker2.124.0   # Pact Broker 2.124.0
+    depends_on:
+      pact-db:
+        condition: service_healthy
+    environment:
+      PACT_BROKER_DATABASE_URL: postgres://pact:pact@pact-db/pact
+      PACT_BROKER_PORT: "9292"
+      PACT_BROKER_LOG_LEVEL: INFO
+    ports: ["9220:9292"]   # 9220 en tu máquina para no chocar con el broker del Módulo 3 (9292)
+    healthcheck:
+      # la imagen trae Ruby: se usa para no depender de curl dentro del contenedor
+      test: ["CMD", "ruby", "-rnet/http", "-e", "exit(Net::HTTP.get_response(URI('http://localhost:9292/diagnostic/status/heartbeat')).code == '200' ? 0 : 1)"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
