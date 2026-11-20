@@ -1,8 +1,8 @@
-# Formato educativo único (propuesta para aprobación · specs/021, Fase 1)
+# Formato educativo único (specs/021)
 
-**Estado:** pendiente de aprobación del dueño. Cuando se apruebe reemplaza la estructura de tema de
-`docs/METODOLOGIA-DE-APRENDIZAJE.md` y se convierte en la regla del validador. Lección de ejemplo
-completa: [leccion-modelo/LECCION.md](leccion-modelo/LECCION.md).
+**Estado:** aprobado por el dueño el 2026-11-20. Es la regla de toda la academia; lo mide
+`python3 scripts/validate_formato.py` y el avance está en [AVANCE-FORMATO.md](AVANCE-FORMATO.md). Lección de
+ejemplo completa: [leccion-modelo/LECCION.md](leccion-modelo/LECCION.md).
 
 ## Curso
 
@@ -60,7 +60,6 @@ error común), diagrama ampliable, índice del tema, progreso y navegación ante
 
 ## Microservicios
 
-Su ficha de 14 puntos (pedida por el dueño en su prompt) equivale a este formato: sus puntos 6, 7 y 8
-(explicación nivel 0, intermedia y maestra) son la sección 6, y su punto 14 (anti-patrón) va dentro de la
-sección 12. Opción a decidir: **(a)** dejar Microservicios con sus 14 puntos y validar la equivalencia, o
-**(b)** pasar toda la academia a 14 puntos.
+Conserva su ficha de 14 puntos (pedida por el dueño en su prompt), que equivale a este formato: sus puntos
+6, 7 y 8 (explicación nivel 0, intermedia y maestra) son la sección 6, y su punto 14 (anti-patrón) va
+dentro de la sección 12. El validador acepta las dos formas.

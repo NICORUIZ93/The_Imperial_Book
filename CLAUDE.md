@@ -15,8 +15,9 @@ de `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se defin
 
 - **Specs primero (SDD).** Antes de cambiar algo, lee `specs/README.md`. Si el trabajo es nuevo, crea
   `specs/NNN-*.md` con criterios numerados y su `Verificación:`, y después implementa.
-- **Metodología.** Todo tema sigue `docs/METODOLOGIA-DE-APRENDIZAJE.md` (temas de 20–45 min, 3–6
-  subtemas con Contexto → Hazlo tú → Entiende → Cierra) y su código sigue `docs/ESTANDAR-DE-CODIGO.md`.
+- **Formato único.** Todo tema nuevo o reescrito sigue `docs/reestructuracion/FORMATO-UNICO.md` (12 secciones
+  fijas, nivel y minutos; lo mide `scripts/validate_formato.py`) y `docs/METODOLOGIA-DE-APRENDIZAJE.md`; su
+  código sigue `docs/ESTANDAR-DE-CODIGO.md`. El plan vigente es `specs/021`.
 - **Exactitud.** Ningún dato técnico se escribe sin ejecutarlo o verificarlo en una fuente primaria.
 - **El dueño aprueba** los temarios antes de escribir temas.
 - Lo retirado del repo está en las ramas `archivo` y `archivo-2026-11-18`; no se vuelve a traer sin spec.

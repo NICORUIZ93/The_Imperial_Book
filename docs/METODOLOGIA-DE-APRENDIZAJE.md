@@ -1,5 +1,11 @@
 # Metodología Aprende construyendo
 
+> **Formato único (aprobado el 2026-11-20, specs/021).** La estructura de curso, módulo, tema, laboratorio y
+> página es la de [docs/reestructuracion/FORMATO-UNICO.md](reestructuracion/FORMATO-UNICO.md): cada tema
+> tiene las mismas 12 secciones. Donde este documento diga otra estructura de tema, manda el formato único;
+> los cursos se migran uno a uno y el avance está en
+> [docs/reestructuracion/AVANCE-FORMATO.md](reestructuracion/AVANCE-FORMATO.md).
+
 The Imperial Book utiliza una metodología propia de enseñanza práctica. Toma como referencia patrones públicos presentes en cursos técnicos claros y orientados a proyectos: anunciar los temas, explicar en partes pequeñas, demostrar, dejar una tarea antes de enseñar la solución, conservar el código alcanzado y cerrar con repaso.
 
 No reproduce clases, guiones, ejercicios ni materiales de terceros, y no implica afiliación con ningún instructor o plataforma.

@@ -2,7 +2,7 @@
 
 Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 
-- [ ] Z0 · main unificado y README con Floci
+- [x] Z0 · main unificado y README con Floci
 - [ ] Z1 · mapa de conceptos aprobado por el dueño
 - [ ] Z2 · temarios objetivo aprobados
 - [ ] Z3 · validador único de plantilla y títulos
@@ -14,4 +14,6 @@ Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 - [ ] Z9 · profundidad: mitad de temas en Integración/Experto, ejemplo realista, error real y criterio
 - [ ] Z10 · formato educativo único en cursos, módulos, temas, laboratorios y página
 
-Pendiente de Z0: comprobar los comandos de Floci del README en el Mac (`probar-floci.command`).
+Pendiente menor de Z0: comprobar los comandos de Floci del README en el Mac (`probar-floci.command`).
+
+Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicios conserva su ficha de 14 puntos).

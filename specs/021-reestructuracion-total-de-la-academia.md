@@ -133,7 +133,7 @@ El avance por curso queda en `docs/reestructuracion/ESTADO.md`.
 Cada fase deja en `docs/reestructuracion/` el informe que prueba su criterio (con el comando del validador
 que se cree en la Fase 3); la verificación de abajo comprueba que ese informe existe.
 
-- **Z0** `pendiente` — `main` contiene Microservicios completo y el trabajo local del dueño, sin temas
+- **Z0** `hecho` — `main` contiene Microservicios completo y el trabajo local del dueño, sin temas
   perdidos, y el README explica cómo arrancar la app y Floci.
   Verificación: `grep -q "^- \[x\] Z0 " docs/reestructuracion/ESTADO.md`
 - **Z1** `pendiente` — Existe el mapa de conceptos con la acción de cada tema y el dueño lo aprobó.

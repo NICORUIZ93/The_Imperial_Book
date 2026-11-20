@@ -49,6 +49,10 @@ python3 scripts/build_zero_to_master_report.py --check
 python3 scripts/audit_track_master_prompt.py --check
 
 echo "== Specs"
+echo "== Formato único (specs/021)"
+python3 scripts/validate_formato.py --check > /tmp/validate_formato.out || { tail -1 /tmp/validate_formato.out; exit 1; }
+tail -1 /tmp/validate_formato.out
+
 # Guarda contra recursión: hay criterios cuya verificación es este mismo script.
 if [ -n "${VALIDATE_SH_EN_CURSO:-}" ]; then
   python3 scripts/validate_specs.py
