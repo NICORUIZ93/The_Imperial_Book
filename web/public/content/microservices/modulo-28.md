@@ -1723,7 +1723,9 @@ export function consultas(job) {
   const j = `job="${job}"`;
   return {
     FF1: `histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{${j},ruta="/pedidos"}[5m])))`,
-    FF2: `sum(rate(http_requests_total{${j},ruta="/pedidos",codigo=~"5.."}[5m])) / sum(rate(http_requests_total{${j},ruta="/pedidos"}[5m]))`,
+    // «or vector(0)»: si una versión nunca respondió 5xx, esa serie no existe, la división da un vector vacío y la
+    // función saldría NaN (falla aunque el servicio esté sano). Visto en el Mac con Prometheus v3.15.1.
+    FF2: `(sum(rate(http_requests_total{${j},ruta="/pedidos",codigo=~"5.."}[5m])) or vector(0)) / sum(rate(http_requests_total{${j},ruta="/pedidos"}[5m]))`,
     FF3: `count(sum by (destino) (rate(dependencias_llamadas_total{${j}}[5m])) > 0)`,
   };
 }
@@ -1944,7 +1946,7 @@ test('medirEnPrometheus lee la respuesta de /api/v1/query (doble local de la API
   const respuestas = { histogram_quantile: '0.367', sum: '0.013', count: '2' };
   const doble = createServer((req, res) => {
     const q = new URL(req.url, 'http://x').searchParams.get('query');
-    const valor = respuestas[Object.keys(respuestas).find((k) => q.startsWith(k))];
+    const valor = respuestas[Object.keys(respuestas).find((k) => q.replace(/^\(/, '').startsWith(k))];
     res.end(JSON.stringify({ status: 'success', data: { resultType: 'vector', result: [{ metric: {}, value: [1795148263.5, valor] }] } }));
   }).listen(0);
   await once(doble, 'listening');

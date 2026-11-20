@@ -60,7 +60,7 @@ test('medirEnPrometheus lee la respuesta de /api/v1/query (doble local de la API
   const respuestas = { histogram_quantile: '0.367', sum: '0.013', count: '2' };
   const doble = createServer((req, res) => {
     const q = new URL(req.url, 'http://x').searchParams.get('query');
-    const valor = respuestas[Object.keys(respuestas).find((k) => q.startsWith(k))];
+    const valor = respuestas[Object.keys(respuestas).find((k) => q.replace(/^\(/, '').startsWith(k))];
     res.end(JSON.stringify({ status: 'success', data: { resultType: 'vector', result: [{ metric: {}, value: [1795148263.5, valor] }] } }));
   }).listen(0);
   await once(doble, 'listening');

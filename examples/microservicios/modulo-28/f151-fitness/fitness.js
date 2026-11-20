@@ -73,7 +73,9 @@ export function consultas(job) {
   const j = `job="${job}"`;
   return {
     FF1: `histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{${j},ruta="/pedidos"}[5m])))`,
-    FF2: `sum(rate(http_requests_total{${j},ruta="/pedidos",codigo=~"5.."}[5m])) / sum(rate(http_requests_total{${j},ruta="/pedidos"}[5m]))`,
+    // «or vector(0)»: si una versión nunca respondió 5xx, esa serie no existe, la división da un vector vacío y la
+    // función saldría NaN (falla aunque el servicio esté sano). Visto en el Mac con Prometheus v3.15.1.
+    FF2: `(sum(rate(http_requests_total{${j},ruta="/pedidos",codigo=~"5.."}[5m])) or vector(0)) / sum(rate(http_requests_total{${j},ruta="/pedidos"}[5m]))`,
     FF3: `count(sum by (destino) (rate(dependencias_llamadas_total{${j}}[5m])) > 0)`,
   };
 }

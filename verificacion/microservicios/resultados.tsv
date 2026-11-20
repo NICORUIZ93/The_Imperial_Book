@@ -25,3 +25,4 @@ microservices	modulo-23	PASS	Mac del dueño 2026-11-20 (Node 26.13.1, Redis 8.10
 microservices	modulo-24	PASS	Mac del dueño 2026-11-20 (Node 26.13.1, Docker)
 microservices	modulo-26	PASS	Mac del dueño 2026-11-20 (Node 26.13.1, Docker)
 microservices	modulo-27	PASS	Mac del dueño 2026-11-20 (Node 26.13.1, Docker)
+microservices	modulo-25	PASS	Mac del dueño 2026-11-20 (Node 26.13.1, Jaeger 2.22.0, RabbitMQ 4.4.1, Kafka 4.4.0, Loki 3.7.9, Docker)
