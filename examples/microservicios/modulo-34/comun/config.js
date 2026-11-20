@@ -1,0 +1,3 @@
+// Módulo 30 · Dirección de PostgreSQL del laboratorio (la de docker-compose.yml). Solo la usa F175.
+// Cambia el destino sin tocar código:  PG_URL=postgres://... node ...
+export const PG_URL = process.env.PG_URL ?? 'postgres://academia:academia@localhost:5432/academia';
