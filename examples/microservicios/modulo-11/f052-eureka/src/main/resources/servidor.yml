@@ -7,6 +7,11 @@ eureka:
   instance:
     hostname: localhost
   client:
+    # El starter del SERVIDOR trae Jersey 3 al classpath (org.glassfish.jersey.client.JerseyClient). Con
+    # jersey.enabled=true (valor por defecto) el cliente Eureka elige Jersey, pero nadie crea su
+    # TransportClientFactories y el EurekaClient no se puede construir. Forzamos RestClient.
+    jersey:
+      enabled: false
     # El servidor no se registra a sí mismo ni descarga el registro (modo standalone).
     register-with-eureka: false
     fetch-registry: false

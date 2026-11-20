@@ -52,6 +52,11 @@ latencia opcional: lo usan los mini-laboratorios para tener «servicios» detrá
 UI en http://localhost:8500. Eureka Server y Config Server son aplicaciones Spring Boot de este laboratorio
 (`f052-eureka`, `f054-config`): se arrancan con `../mvnw spring-boot:run` (ver cada ficha).
 
+## Logs
+
+`verificar.sh` guarda en `logs/` (ignorada por Git) la salida de cada demostración, de Docker Compose, de Maven y
+los informes de surefire; en el Módulo 7 también los chequeos de Consul (`consul-chequeos.json`) y el log de la app.
+
 ## Estado de verificación
 
 Las demostraciones de `jdk/` se ejecutaron con JDK 25.0.5 y su salida está pegada en la lección. Los proyectos

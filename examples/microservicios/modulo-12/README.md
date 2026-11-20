@@ -48,6 +48,11 @@ docker compose down
 Con Toxiproxy encendido, arranca cualquier proyecto Spring (`cd f057-resilience4j && ../mvnw spring-boot:run`):
 todos llaman al inventario en `http://localhost:21212`.
 
+## Logs
+
+`verificar.sh` guarda en `logs/` (ignorada por Git) la salida de cada demostración, de Docker Compose, de Maven y
+los informes de surefire; en el Módulo 7 también los chequeos de Consul (`consul-chequeos.json`) y el log de la app.
+
 ## Estado de verificación
 
 Las demostraciones de `jdk/` se ejecutaron con JDK 25.0.5 y su salida está pegada en la lección. Toxiproxy y los

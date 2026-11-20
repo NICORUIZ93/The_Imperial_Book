@@ -9,10 +9,11 @@ set -u -o pipefail
 cd "$(dirname "$0")"
 java -version 2>&1 | grep -v Picked | head -1
 fallos=0
+rm -rf logs; mkdir -p logs          # todo lo que haga falta para diagnosticar queda en modulo-12/logs/
 echo "== 1. Demostraciones con JDK puro (fallos inyectados con jdk/ProxyDeFallos.java)"
 for demo in Patrones Presupuesto Fallbacks Caos; do
   echo "-- jdk/$demo.java"
-  java -Dstdout.encoding=UTF-8 "jdk/$demo.java" 2>&1 | grep -v '^Picked up' || fallos=$((fallos + 1))
+  java -Dstdout.encoding=UTF-8 "jdk/$demo.java" 2>&1 | grep -v '^Picked up' | tee "logs/jdk-$demo.log" || fallos=$((fallos + 1))
 done
 if [ "${1:-}" != "--solo-jdk" ]; then
   echo "== 2. Toxiproxy con Docker Compose"
@@ -28,12 +29,16 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     awk -v t="${lento#* }" 'BEGIN { exit !(t >= 1.5) }' || { echo "FALLA: la latencia no se aplicó"; fallos=$((fallos + 1)); }
     case "$caido" in 000*) ;; *) echo "FALLA: con el proxy apagado la conexión no se rechazó"; fallos=$((fallos + 1));; esac
     case "$despues" in 200*) ;; *) echo "FALLA: tras /reset el inventario no volvió"; fallos=$((fallos + 1));; esac
+    curl -sS localhost:8474/proxies > logs/toxiproxy-proxies.json 2>&1
+    docker compose logs > logs/compose.log 2>&1
     docker compose down
   else
+    docker compose logs > logs/compose.log 2>&1
     echo "FALLA: inventario o Toxiproxy no quedaron healthy (docker compose logs)"; fallos=$((fallos + 1))
   fi
   echo "== 3. Tests Spring Boot + Resilience4j (F057–F060)"
-  ./mvnw -q test || fallos=$((fallos + 1))
+  ./mvnw -q test > logs/maven-test.log 2>&1 || { fallos=$((fallos + 1)); grep -E "ERROR|FAIL|Tests run:.*Fail" logs/maven-test.log | head -40; }
+  for d in f0*/target/surefire-reports; do [ -d "$d" ] && cp -r "$d" "logs/${d%%/*}-surefire"; done
 fi
 if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
   echo "RESULTADO: OK · Módulo 8 (Resiliencia) · parte JDK verificada (falta ./verificar.sh completo)"

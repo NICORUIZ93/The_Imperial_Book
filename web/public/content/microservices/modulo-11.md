@@ -139,7 +139,9 @@ latido es más viejo que el TTL. Todo registro real añade a eso replicación, e
   registro** cada `eureka.client.registry-fetch-interval-seconds` (**30 s por defecto**) y consulta esa copia local:
   si el servidor de Eureka se cae, los clientes siguen funcionando con lo último que descargaron.
 - En Spring Cloud 2025.1 el cliente Eureka habla HTTP con `RestClient`, así que necesitas
-  `spring-boot-starter-restclient` en el classpath (o `WebClient` / Jersey).
+  `spring-boot-starter-restclient` en el classpath (o `WebClient` / Jersey). Si Jersey está en el classpath (lo trae
+  el starter del servidor), el cliente lo prefiere: desactívalo con `eureka.client.jersey.enabled: false` (error
+  común de este tema).
 
 **Consul con Spring Cloud Consul 5.0.4:** `spring-cloud-starter-consul-discovery` registra la instancia en el agente
 de Consul (`spring.cloud.consul.host` y `port`, 8500 por defecto) y le pide a Consul que **la chequee él mismo**:
@@ -390,6 +392,11 @@ eureka:
   instance:
     hostname: localhost
   client:
+    # El starter del SERVIDOR trae Jersey 3 al classpath (org.glassfish.jersey.client.JerseyClient). Con
+    # jersey.enabled=true (valor por defecto) el cliente Eureka elige Jersey, pero nadie crea su
+    # TransportClientFactories y el EurekaClient no se puede construir. Forzamos RestClient.
+    jersey:
+      enabled: false
     # El servidor no se registra a sí mismo ni descarga el registro (modo standalone).
     register-with-eureka: false
     fetch-registry: false
@@ -466,6 +473,11 @@ spring:
     name: catalogo            # este es el nombre con el que otros lo buscarán
 eureka:
   client:
+    # El starter del SERVIDOR trae Jersey 3 al classpath (org.glassfish.jersey.client.JerseyClient). Con
+    # jersey.enabled=true (valor por defecto) el cliente Eureka elige Jersey, pero nadie crea su
+    # TransportClientFactories y el EurekaClient no se puede construir. Forzamos RestClient.
+    jersey:
+      enabled: false
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
     registry-fetch-interval-seconds: 5      # por defecto 30
@@ -721,24 +733,43 @@ nunca sustituye a la resiliencia.
 
 #### 12. ERROR COMÚN
 
-**Síntoma:** el servicio arranca, pero nunca aparece en el panel de Eureka, y el log se llena cada 30 s de trazas.
+**Síntoma:** el servicio con el cliente Eureka no arranca y el error no menciona Eureka Server ni la red.
 
-**Cómo se ve** (cliente Eureka con una `defaultZone` equivocada, por ejemplo puerto 8762 o sin el sufijo `/eureka/`):
+**Cómo se ve** (error real al ejecutar `EurekaRegistroTest` en macOS con Spring Cloud 2025.1.4, antes de la
+corrección):
 
 ```text
-WARN ... c.n.d.s.t.d.RetryableEurekaHttpClient : Request execution failed with message: I/O error on POST request for "http://localhost:8762/eureka/apps/CATALOGO": Connection refused
-WARN ... com.netflix.discovery.DiscoveryClient : DiscoveryClient_CATALOGO/catalogo:8081 - registration failed Cannot execute request on any known server
+EurekaRegistroTest.dosInstanciasDeCatalogoSeRegistranYSeDescubren:21 » ApplicationContext Failed to start bean 'eurekaAutoServiceRegistration'
+Caused by: java.lang.NullPointerException: Cannot invoke "org.springframework.cloud.netflix.eureka.CloudEurekaClient.getApplications()"
+  because the return value of "org.springframework.cloud.netflix.eureka.serviceregistry.EurekaRegistration.getEurekaClient()" is null
 ```
 
-**Diagnóstico:** el cliente no consigue hablar con el servidor. Comprueba en este orden: (1) que el servidor está
-arriba (`curl -s localhost:8761/eureka/apps` debe responder XML); (2) que la URL termina en `/eureka/`; (3) que la
-clave se llama exactamente `defaultZone` (es la clave de un mapa: `defaultzone` en minúsculas no funciona); (4) que
-el cliente tiene un cliente HTTP en el classpath (`spring-boot-starter-restclient`). **Diagnóstico visual:** el panel
-de Eureka con la tabla vacía («No instances available») mientras el servicio responde en su puerto.
+**Diagnóstico** (leído en las fuentes de Spring Cloud Netflix 5.0.3):
 
-**Arreglo:** corrige `eureka.client.service-url.defaultZone` (o la variable `EUREKA_URL`) y reinicia. Con Consul el
-síntoma equivalente es la instancia en rojo en la UI: Consul no alcanza `/actuator/health` (falta Actuator o la
-dirección registrada no es accesible desde el contenedor).
+1. `spring-cloud-starter-netflix-eureka-server` trae Jersey 3 al classpath (`org.glassfish.jersey.core:jersey-client`
+   y `eureka-client-jersey3`). En `f052-eureka` el servidor y `catalogo` comparten classpath, así que `catalogo`
+   también lo tiene.
+2. `DiscoveryClientOptionalArgsConfiguration` elige el transporte: si existe la clase
+   `org.glassfish.jersey.client.JerseyClient` y `eureka.client.jersey.enabled` no es `false` (por defecto es
+   `true`), la rama Jersey gana y la de `RestClient` se desactiva. Pero la rama Jersey **no crea** ningún bean
+   `TransportClientFactories`.
+3. El bean `eurekaClient` (`@RefreshScope` + `@Lazy`) exige un `TransportClientFactories`. Al ser perezoso, el contexto
+   arranca y el fallo aparece después: `EurekaRegistration.getEurekaClient()` intenta resolver el proxy, captura la
+   excepción, la deja en el log como `error getting CloudEurekaClient` y devuelve `null`; el registro automático
+   choca con ese `null`.
+
+**Diagnóstico visual:** busca hacia arriba en el log la línea `error getting CloudEurekaClient`: la causa real está
+en su traza, no en el `NullPointerException`. Y comprueba qué transporte se eligió: con `RestClient` el log dice
+`Eureka HTTP Client uses RestClient`; si no aparece esa línea, el cliente no tiene transporte.
+
+**Arreglo:** `eureka.client.jersey.enabled: false` en `catalogo.yml` y `servidor.yml` (la documentación lo indica
+para cuando Jersey está en el classpath y no lo quieres en el cliente) con `spring-boot-starter-restclient` en el POM.
+En un proyecto real el servidor y los clientes van en artefactos separados y el cliente nunca ve Jersey.
+
+**Otro síntoma frecuente:** el servicio arranca pero nunca aparece en el panel y cada 30 s el log repite
+`Cannot execute request on any known server`. Es una `defaultZone` mal escrita (otro puerto, sin `/eureka/`, o la
+clave en minúsculas: es la clave de un mapa y debe ser `defaultZone`). Compruébalo con `curl -s
+localhost:8761/eureka/apps`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
