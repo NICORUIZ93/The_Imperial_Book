@@ -1,0 +1,52 @@
+# Módulo 21 (modulo-25) · Observabilidad en Node.js
+# Arranca:  docker compose up -d --wait   (espera a los healthchecks de RabbitMQ, Kafka y Prometheus)
+#   Jaeger UI :16686 + OTLP/HTTP :4318 (F130) · RabbitMQ :5672 (consola :15672, academia/academia) y Kafka :9092 (F131)
+#   Loki :3100 (F133) · Prometheus :9090, raspa f134 en host.docker.internal:9464 (F134) · Grafana :3000 (admin / admin-solo-dev)
+# Detén:    docker compose down -v        (sin volúmenes persistentes: trazas, logs y métricas se borran)
+name: modulo-25
+services:
+  jaeger:
+    image: jaegertracing/jaeger:2.22.0
+    ports: ["16686:16686", "4318:4318"]
+  rabbitmq:
+    image: rabbitmq:4.4.1-management
+    environment:
+      RABBITMQ_DEFAULT_USER: academia
+      RABBITMQ_DEFAULT_PASS: academia
+    ports: ["5672:5672", "15672:15672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+  kafka:
+    image: apache/kafka:4.4.0      # sin variables: un nodo KRaft anunciado en localhost:9092
+    ports: ["9092:9092"]
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null"]
+      interval: 5s
+      timeout: 15s
+      retries: 30
+  loki:
+    image: grafana/loki:3.7.9      # configuración por defecto de la imagen: un solo proceso, almacenamiento en disco local
+    ports: ["3100:3100"]
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports: ["9090:9090"]
+    volumes: ["./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    extra_hosts: ["host.docker.internal:host-gateway"]   # en Linux; Docker Desktop (Mac) ya lo resuelve
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  grafana:
+    image: grafana/grafana:13.2.4
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin-solo-dev
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    ports: ["3000:3000"]
+    volumes: ["./grafana/provisioning:/etc/grafana/provisioning:ro"]
+    depends_on: [loki, prometheus, jaeger]

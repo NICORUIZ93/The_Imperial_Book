@@ -1,0 +1,48 @@
+{
+  "id": 25,
+  "title": "Módulo 21 · Observabilidad",
+  "shortTitle": "Observabilidad en Node.js",
+  "level": "Integración",
+  "duration": "10 h",
+  "color": "#0f766e",
+  "description": "Haz visible lo que pasa dentro de un sistema Node.js: trazas con el SDK de OpenTelemetry que cruzan servicios HTTP, propagación de traceparent a través de RabbitMQ y Kafka, logs JSON con Pino y Winston que llevan el trace_id y ocultan datos sensibles, envío a Grafana Loki con etiquetas de baja cardinalidad (y cuándo elegir ELK) y métricas RED expuestas para Prometheus con su cliente oficial. Todo termina en Grafana, con Jaeger para las trazas.",
+  "concepts": [
+    "OpenTelemetry para Node",
+    "Propagación de traceparent en AMQP/Kafka",
+    "Pino/Winston",
+    "ELK o Grafana Loki",
+    "Prometheus client"
+  ],
+  "practice": [
+    "Instrumenta pedidos e inventario con --import y comprueba que el span SERVER de inventario cuelga del CLIENT de pedidos",
+    "Lleva traceparent en las cabeceras de RabbitMQ y Kafka y repara la traza que kafkajs corta al entregar Buffers",
+    "Escribe el mismo log con Pino y con Winston, con trace_id, nivel en texto y la tarjeta oculta por redact",
+    "Envía logs a Loki por la API de push y mide cómo un id como etiqueta convierte 1 stream en 1000",
+    "Expón un contador, un histograma y un gauge en /metrics y consulta la suma y el p95 con PromQL"
+  ],
+  "questions": [
+    "¿Cómo sabe el servicio B que una petición pertenece a la traza que empezó en A?",
+    "Tus trazas se cortan en cada cola: ¿cómo lo arreglas y cómo modelas un consumidor por lotes?",
+    "¿Qué es un log estructurado y cómo lo relacionas con las trazas?",
+    "¿ELK o Loki para 40 microservicios? ¿Qué etiquetas pondrías?",
+    "¿Qué métricas expones en un servicio HTTP y cómo calculas su p95?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS",
+    "@opentelemetry/sdk-node 0.301.2",
+    "@opentelemetry/sdk-trace 3.1.1",
+    "@opentelemetry/auto-instrumentations-node 0.83.1",
+    "amqplib 2.4.0",
+    "kafkajs 2.2.4",
+    "pino 10.4.0",
+    "winston 3.19.0",
+    "@prometheus-io/client 0.16.1",
+    "Jaeger 2.22.0",
+    "RabbitMQ 4.4.1",
+    "Kafka 4.4.0",
+    "Grafana Loki 3.7.9",
+    "Prometheus 3.15.1",
+    "Grafana 13.2.4"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-25 con ./verificar.sh --compose en verde (npm ci, 19 tests de node --test, demos y errores comunes de cada ficha, trazas en Jaeger, traceparent por RabbitMQ y Kafka, logs en Loki y PromQL contra Prometheus; fichas F130–F134)."
+}

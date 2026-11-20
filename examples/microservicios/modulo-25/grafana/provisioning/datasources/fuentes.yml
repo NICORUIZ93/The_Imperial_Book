@@ -1,0 +1,25 @@
+# Módulo 21 · Grafana 13.2.4: las tres fuentes del módulo, ya configuradas al arrancar (Explore → elige la fuente).
+apiVersion: 1
+datasources:
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      derivedFields:                       # en cada línea con trace_id, un enlace que abre la traza en Jaeger
+        - name: trace_id
+          matcherRegex: '"trace_id":"(\w+)"'
+          datasourceUid: jaeger
+          url: '$${__value.raw}'
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+  - name: Jaeger
+    type: jaeger
+    uid: jaeger
+    access: proxy
+    url: http://jaeger:16686

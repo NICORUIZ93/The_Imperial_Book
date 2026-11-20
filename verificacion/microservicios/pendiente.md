@@ -276,3 +276,31 @@ Ejecutado aquí con **Node.js 26.13.1** (paquete npm `node@26.13.1`, Linux x64, 
 - web/public/content/microservices/modulo-24.md:1781 — F127 paso 2: salida de `ataque.js` contra MongoDB 9.0.8 (escrita a partir del código y de los filtros que registran los tests, no ejecutada): sobre todo las respuestas a `$regex` (401/200/200) y el orden de `["Teclado","Mouse","Prototipo secreto"]`.
 - web/public/content/microservices/modulo-24.md:2936 — F129 pasos 2–4: `sembrar.js` contra Floci (CreateSecret/PutSecretValue), Vault dev (KV v2 en `secret/`) y Floci-Az (`setSecret` con la política `forzarHttp` que documenta su suite `sdk-test-node`); los tres adaptadores solo se probaron aquí contra dobles HTTP locales del protocolo.
 - web/public/content/microservices/modulo-24.md:3084 — F129: `secretos.integracion.js`, en especial que la `version` cambia tras la rotación en los tres gestores (en Floci-Az, ids de versión de 32 caracteres hex).
+
+## Fase 2 · Módulos 21 y 22 (modulo-25 y modulo-26, fichas F130–F141)
+
+Ejecutado aquí con **Node.js 26.13.1** (`/opt/n26bin`, npm 10.9.9). **Módulo 21:** `./verificar.sh --externo` en verde
+(19 tests, demos y errores comunes, más `broker.infra.js` con **RabbitMQ 3.12.1** local en lugar de `rabbitmq:4.4.1`;
+Kafka omitido). **Módulo 22:** `./verificar.sh` en verde con **RabbitMQ 3.12.1** y **Redis 7.0.15** locales (35 tests,
+demos y errores comunes); MongoDB omitido (no hay binario ni imagen en este entorno). Docker Hub está bloqueado: no se
+levantó ningún `docker-compose.yml` (solo `docker compose config -q`). En el Mac:
+
+```bash
+cd examples/microservicios/modulo-25 && ./verificar.sh --compose
+cd examples/microservicios/modulo-26 && ./verificar.sh --compose
+```
+
+- examples/microservicios/modulo-25/verificar.sh:1 — `./verificar.sh --compose` (jaegertracing/jaeger:2.22.0, rabbitmq:4.4.1-management, apache/kafka:4.4.0, grafana/loki:3.7.9, prom/prometheus:v3.15.1, grafana/grafana:13.2.4): que `up --wait` acaba sano (Jaeger, Loki y Grafana no tienen healthcheck) y que pasan Jaeger, `broker.infra.js` con los dos brokers, Loki y PromQL.
+- web/public/content/microservices/modulo-25.md:436 — F130 paso 4: Jaeger UI (desplegable *Service* con `pedidos` e `inventario`, traza de 4 spans y 2 servicios, atributos de `validar-pedido`): descrito, no visto.
+- web/public/content/microservices/modulo-25.md:900 — F131 paso 4: **kafkajs 2.2.4 contra Kafka 4.4.0** (mismo riesgo que F116 en modulo-22: KIP-896); `productor-kafka.js`/`consumidor-kafka.js` y `BROKER=kafka node --test f131-traceparent/broker.infra.js` nunca ejecutados.
+- web/public/content/microservices/modulo-25.md:1599 — F133 pasos 1–5 con Loki 3.7.9: `ready`, `enviadas a Loki: 7 · perdidas: 0`, respuesta de `query_range` con la línea de P-3, vista *Explore* y el mensaje al parar Loki (`[envio-loki] 7 líneas perdidas: fetch failed`). Confirmar también el código de éxito del push (la API documenta el JSON y la marca en ns como string; el test usa 204).
+- web/public/content/microservices/modulo-25.md:1974 — F134 pasos 2–3: Prometheus raspa `host.docker.internal:9464` en Docker Desktop, la consulta devuelve `"5"` y el target aparece UP; el p95 en Grafana.
+- web/public/content/microservices/modulo-25.md:1 — Grafana 13.2.4: que el aprovisionamiento de `fuentes.yml` crea las tres fuentes y que el campo derivado `trace_id` abre la traza en Jaeger.
+- examples/microservicios/modulo-26/verificar.sh:1 — `./verificar.sh --compose` (rabbitmq:4.4.1-management, redis:8.10.2-alpine, mongo:9.0.8): F135 (5 tests), F136 (5), F139 con MongoDB (9) y F140 con MongoDB; healthcheck de mongo con `mongosh`.
+- web/public/content/microservices/modulo-26.md:424 — F135 pasos 1–2 con RabbitMQ 4.4.1 y `docker compose exec rabbitmq rabbitmqctl` (aquí, 3.12.1 local con `rabbitmqctl` del sistema); confirmar que 4.4.1 devuelve el return `312 NO_ROUTE` antes del ack y la cabecera `x-death` con `reason: rejected`.
+- web/public/content/microservices/modulo-26.md:434 — F135 paso 3: consola de RabbitMQ (pestaña *Queues and Streams*, *Get messages*, cabecera `x-death`): descrita, no vista.
+- web/public/content/microservices/modulo-26.md:790 — F136 paso 2: `redis-cli --scan` y `TTL` dentro de `redis:8.10.2-alpine` (aquí, Redis 7.0.15 local).
+- web/public/content/microservices/modulo-26.md:2262 — F139 paso 2: **`almacen-mongo.js` nunca se ejecutó contra MongoDB** (driver mongodb 7.9.1 instalado y tipos revisados: `findOneAndUpdate` devuelve el documento). Confirmar demo con `AlmacenEventosMongo`, la salida de `mongosh`, que el error E11000 se traduce a `ConflictoDeConcurrencia` y los 4 tests de la suite `almacén mongo`.
+- web/public/content/microservices/modulo-26.md:2270 — F139 paso 3: texto exacto del error `E11000 duplicate key error collection: modulo26.f139_commits index: _id_ dup key: …` en MongoDB 9.0.8 (escrito de memoria del formato habitual).
+- web/public/content/microservices/modulo-26.md:2668 — F140 paso 2: `node f140-proyecciones/demo.js` contra MongoDB (misma salida que en memoria).
+- examples/microservicios/modulo-25/verificar.sh:1 y examples/microservicios/modulo-26/verificar.sh:1 — en el Mac `npm ci` lo hará npm 11 (el de Node 26); los lockfiles v3 se generaron con npm 10.9.9.

@@ -127,7 +127,7 @@ ESTADO: completo
 | ☐ | `@aws-sdk/client-secrets-manager` / `@azure/keyvault-secrets` / `node-vault` | — | **3.1173.0 / 4.12.0 / 0.13.0** | 2026-11-19 / 2026-10-27 / 2026-10-11 | |
 | ☐ | `@opentelemetry/api` / `@opentelemetry/sdk-node` / `@opentelemetry/auto-instrumentations-node` | — | **1.10.0 / 0.301.2 / 0.83.1** | 2026-10-20 / 2026-11-12 / 2026-11-12 | |
 | ☐ | `pino` / `winston` | — | **10.4.0 / 3.19.0** | 2026-10-02 / 2025-12-07 | |
-| ☐ | `prom-client` | — | **15.1.3** | 2024-06-27 | |
+| ☐ | `@prometheus-io/client` (antes `prom-client`) | — | **0.16.1** | 2026-08-27 | npm marca `prom-client` 15.1.3 (2024-06-27) como deprecado: «prom-client has been replaced by @prometheus-io/client»; misma API (Módulo 21) |
 | ☐ | `clinic` (clinic.js) | — | **13.0.0** | 2023-06-28 | sin publicaciones desde 2023: `doctor`, `flame` y `bubbleprof` funcionan con Node 26.13.1 en Linux (comprobado el 2026-11-19) si se exporta `NO_INSIGHT=1` (sin TTY, la pregunta de telemetría hace que salga sin hacer nada); `perf_hooks` y `node --cpu-prof` son la alternativa integrada (Módulo 13) |
 | ☐ | `@temporalio/client` / `@temporalio/worker` | — | **1.26.0** | 2026-11-17 | |
 | ☐ | `@kurrent/kurrentdb-client` (antes `@eventstore/db-client`, que no publica desde 2024-05-10) | — | **1.3.3** | 2026-11-19 | Módulo 22 |
