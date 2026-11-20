@@ -13,9 +13,9 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [012](012-limpieza-a-fondo.md) | Limpieza a fondo (segunda pasada) | hecho |
 | [013](013-programa-de-cursos-y-correcciones.md) | Programa de cursos y correcciones | en curso |
 | [014](014-correccion-de-bloqueantes.md) | Corrección de bloqueantes y errores técnicos verificados | hecho |
-| [015](015-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
-| [016](016-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |
-| [017](017-cursos-nuevos.md) | Cursos nuevos: Docker, Kubernetes, Diseño de sistemas y Microservicios completo | en curso |
-| [018](018-microservicios-de-cero-a-maestro.md) | Microservicios de Cero a Maestro (prompt del dueño) | hecho |
 | [015](015-redisenio-experiencia-academica.md) | Rediseño de la experiencia académica | hecho |
 | [016](016-arquitectura-curricular-y-redisenio-total.md) | Arquitectura curricular y rediseño total | hecho |
+| [017](017-cursos-nuevos.md) | Cursos nuevos: Docker, Kubernetes, Diseño de sistemas y Microservicios completo | en curso |
+| [018](018-microservicios-de-cero-a-maestro.md) | Microservicios de Cero a Maestro (prompt del dueño) | hecho |
+| [019](019-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
+| [020](020-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |

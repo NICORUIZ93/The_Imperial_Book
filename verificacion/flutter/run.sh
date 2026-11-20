@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verificación Flutter/Dart en macOS (specs/015).
+# Verificación Flutter/Dart en macOS (specs/019).
 #
 # Uso (desde cualquier carpeta):
 #   bash verificacion/flutter/run.sh            # todas las unidades

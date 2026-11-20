@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extrae el código Swift de web/public/content/ios/*.md a unidades verificables (specs/015).
+"""Extrae el código Swift de web/public/content/ios/*.md a unidades verificables (specs/019).
 
 Uso:  python3 verificacion/ios/extraer.py
 Genera verificacion/ios/build/<unidad>/ con:

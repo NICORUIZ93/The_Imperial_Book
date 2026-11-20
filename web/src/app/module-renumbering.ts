@@ -1,7 +1,7 @@
 import type { TrackProgress } from './progress.service';
 
 /**
- * Renumeraciones de módulos (specs/016). Cuando un curso fusiona o mueve módulos, se agrega aquí un paso
+ * Renumeraciones de módulos (specs/020). Cuando un curso fusiona o mueve módulos, se agrega aquí un paso
  * con la traducción `id antiguo → id nuevo` de cada curso afectado. El progreso guardado del estudiante se
  * traduce una sola vez por paso, en orden, para que no pierda lo que ya completó.
  */
@@ -19,7 +19,7 @@ export interface RenumberingStep {
 
 export const RENUMBERING_STEPS: RenumberingStep[] = [
   {
-    // specs/016: temas nuevos, fusiones y renumeración interna de React y Angular (sin renumerar módulos).
+    // specs/020: temas nuevos, fusiones y renumeración interna de React y Angular (sin renumerar módulos).
     // Spring Boot: 27 → 21 módulos (fusión de duplicados y orden por dependencias). Java: records e igualdad
     // antes de usarse (M7 T1 → M1 T5, M22 T1–T2 → M2 T2–T3) y colas en M2 T6.
     version: 1,

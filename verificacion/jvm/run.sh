@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Kit JVM (specs/015): ejecuta en macOS las unidades que genera extraer.py y los laboratorios
+# Kit JVM (specs/019): ejecuta en macOS las unidades que genera extraer.py y los laboratorios
 # Maven/Gradle de examples/. Compatible con el bash 3.2 de macOS. No se detiene ante un fallo.
 #
 # Uso (desde cualquier carpeta):

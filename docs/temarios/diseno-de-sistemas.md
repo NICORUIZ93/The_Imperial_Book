@@ -34,7 +34,7 @@ Es un curso de conceptos con laboratorios. Los laboratorios usan las versiones d
 JDK 25, Spring Boot 4.1.x y Docker Engine 29. Los motores (PostgreSQL, caché y broker) se fijan por versión al
 escribir cada tema.
 
-## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/016)
+## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/020)
 
 | Origen | Contenido | Destino | Tratamiento |
 |---|---|---|---|

@@ -52,7 +52,7 @@ Sobre el RutaFlow modular de M1:
 | Docker Engine / Kubernetes | 29 / 1.37 | `docs/VERSIONES.md` |
 | Broker y PostgreSQL | Se fijan al escribir M4. El patrón se enseña primero con PostgreSQL | — |
 
-## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/016)
+## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/020)
 
 | Origen | Contenido | Destino | Tratamiento |
 |---|---|---|---|
@@ -79,7 +79,7 @@ Temas de Spring Boot que implementan los patrones y remiten aquí:
 - M11: desde M9.
 - M18: desde M10.
 
-Los números de módulo de Spring Boot cambiarán con la fusión a 21 módulos (specs/016 R3); los enlaces se
+Los números de módulo de Spring Boot cambiarán con la fusión a 21 módulos (specs/020 R3); los enlaces se
 actualizan entonces.
 
 ## 5. Módulos
@@ -249,7 +249,7 @@ Trabajo autónomo del proyecto: 10 h.
 
 Sistema: el RutaFlow modular de M1 en Java. Al final tiene el monolito reducido y los servicios Cotización y
 Tracking (lectura CQRS), dos BFF y PostgreSQL por servicio, levantados con Compose. Como el backend de
-referencia es Spring Boot (specs/016 R5), cada hito trae una variante de implementación en Spring que enlaza al
+referencia es Spring Boot (specs/020 R5), cada hito trae una variante de implementación en Spring que enlaza al
 tema de Spring Boot correspondiente. La rúbrica son las siete evidencias del apartado 2.
 
 ## 7. Horas estimadas

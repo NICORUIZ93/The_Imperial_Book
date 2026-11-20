@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extrae los temas ejecutables de Cloud y DevOps a scripts de pasos (specs/015).
+"""Extrae los temas ejecutables de Cloud y DevOps a scripts de pasos (specs/019).
 
 Uso: python3 extraer.py            (desde cualquier carpeta; rutas relativas al kit)
 

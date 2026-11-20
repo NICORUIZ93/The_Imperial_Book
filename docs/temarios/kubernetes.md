@@ -47,7 +47,7 @@ no tiene nuevas versiones ni parches de seguridad
 ya lo lista como retirado. La API Ingress se enseña como heredada, porque el CKA y el CKAD todavía la piden,
 con un controlador mantenido.
 
-## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/016)
+## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/020)
 
 | Origen | Contenido | Destino | Tratamiento |
 |---|---|---|---|
@@ -322,7 +322,7 @@ se menciona en M8 T1 como alternativa.
 - El controlador de Gateway API del laboratorio: se elige al escribir M5, entre las implementaciones conformes
   con v1.6, y se ejecuta en kind en el Mac del dueño.
 - El entorno de M11 (kubeadm necesita máquinas virtuales, no kind): la herramienta de VM en el Mac del dueño se
-  prueba en specs/015 antes de escribir.
+  prueba en specs/019 antes de escribir.
 - El operador de PostgreSQL de M10 T2: se elige uno mantenido y compatible con 1.37 al escribir.
 
 ## Fuentes consultadas (2026-11-18)

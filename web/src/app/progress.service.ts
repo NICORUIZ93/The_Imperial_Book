@@ -37,7 +37,7 @@ export class ProgressService {
     return this.migrateLegacyCloudProgress();
   }
 
-  /** Traduce el progreso si algún curso renumeró módulos desde la última visita (specs/016). */
+  /** Traduce el progreso si algún curso renumeró módulos desde la última visita (specs/020). */
   private applyPendingRenumberings(state: ProgressState): ProgressState {
     const latest = latestRenumberingVersion();
     const applied = Number(localStorage.getItem(RENUMBERING_VERSION_KEY) ?? '0') || 0;

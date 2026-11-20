@@ -24,7 +24,7 @@ Reemplaza el temario de Microservicios de specs/017 (N4) y la forma de los temas
   Los mínimos del prompt (Java 21, Spring Boot 3.3+, Node 20 LTS…) quedan como suelo, no como objetivo.
   Esta línea es propia del curso; los demás cursos siguen `docs/VERSIONES.md`.
 - Los laboratorios viven en `examples/microservicios/<modulo>/` y los que usan infraestructura arrancan con
-  Docker Compose. Se verifican en el Mac del dueño (specs/015).
+  Docker Compose. Se verifican en el Mac del dueño (specs/019).
 - El contenido anterior del curso (M0–M1 publicados y el borrador de M2–M4) se guarda en
   `docs/microservicios/material-previo/` como fuente para las fichas.
 - La metadata de cada módulo se escribe en `docs/microservicios/track/modulo-N.json` y

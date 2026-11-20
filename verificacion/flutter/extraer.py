@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extrae el código Dart/Flutter de las lecciones a proyectos verificables (specs/015).
+"""Extrae el código Dart/Flutter de las lecciones a proyectos verificables (specs/019).
 
 Fuentes:
   - web/public/content/flutter/modulo-*.md   (todo bloque ```dart)

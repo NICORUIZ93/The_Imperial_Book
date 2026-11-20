@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Kit de verificación JVM (specs/015).
+"""Kit de verificación JVM (specs/019).
 
 Convierte el código Java/Maven/Gradle de las lecciones en unidades ejecutables y
 registra los laboratorios Maven/Gradle de examples/. Sin dependencias externas.

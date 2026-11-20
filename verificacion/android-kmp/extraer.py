@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extractor del kit android-kmp (specs/015).
+"""Extractor del kit android-kmp (specs/019).
 
 Convierte el código Kotlin/Gradle de las lecciones
   web/public/content/android/modulo-N.md
@@ -1748,7 +1748,7 @@ include(":app")
     presentes = {"app"} | set(modulos_extra)
     u.tareas = [t for t in dict.fromkeys(tareas) if not t.startswith(":") or t.split(":")[1] in presentes]
     u.gradle = os.environ.get("GRADLE_ANDROID", "kmp")
-    u.jdk = "kmp"   # JDK 25 + Gradle 9.7 para todo (sonda de specs/015, docs/VERSIONES.md)
+    u.jdk = "kmp"   # JDK 25 + Gradle 9.7 para todo (sonda de specs/019, docs/VERSIONES.md)
     u.sintetizado = sintet + ([f"dependencias inferidas de los imports: {', '.join(sorted(set(inferidas)))}"] if inferidas else [])
 
 

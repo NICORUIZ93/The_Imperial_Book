@@ -4,7 +4,7 @@ import { CourseModule, createModule } from '../course-module.model';
 // web/public/content/control-1/modulo-N.md. Las fórmulas se escriben en TeX
 // (\(...\) y \[...\]) y el visor las renderiza con KaTeX.
 //
-// El orden del arreglo es el orden de estudio (specs/016 R7): Bode (20) va antes de Nyquist (23) y de
+// El orden del arreglo es el orden de estudio (specs/020 R7): Bode (20) va antes de Nyquist (23) y de
 // los compensadores (19 y 24), y los módulos 23–28 se agregaron al final de la numeración para no
 // renumerar los existentes.
 //

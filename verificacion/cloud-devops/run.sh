@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Kit de verificación Cloud/DevOps (specs/015) — se ejecuta en el Mac del dueño (macOS, Docker Desktop).
+# Kit de verificación Cloud/DevOps (specs/019) — se ejecuta en el Mac del dueño (macOS, Docker Desktop).
 #
 #   cd ~/Downloads/imperial-verificacion/repo/verificacion/cloud-devops && ./run.sh
 #   ./run.sh cloud/modulo-3          # solo las unidades cuyo origen contiene ese texto (expresión de grep -E)

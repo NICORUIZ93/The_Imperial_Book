@@ -1,7 +1,7 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
-// specs/016: 21 módulos tras fusionar duplicados. `concepts` son los temas reales de cada lección y `duration`
-// suma los minutos de sus subtemas más un 25 % de práctica (scripts de specs/016).
+// specs/020: 21 módulos tras fusionar duplicados. `concepts` son los temas reales de cada lección y `duration`
+// suma los minutos de sus subtemas más un 25 % de práctica (scripts de specs/020).
 export const SPRING_BOOT_MODULES: CourseModule[] = [
   m(0, 'Fundamentos de Spring: IoC, DI y AOP', 'IoC, DI y AOP', 'Fundamentos', '4 h 30 min', '#6db33f',
     'El contenedor de Spring crea, conecta y envuelve tus objetos. Entiende inyección, ciclo de vida, proxies y SpEL antes de usar anotaciones a ciegas.',

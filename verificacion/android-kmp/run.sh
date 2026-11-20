@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Kit android-kmp (specs/015): compila y prueba en macOS el código Kotlin/Gradle de
+# Kit android-kmp (specs/019): compila y prueba en macOS el código Kotlin/Gradle de
 #   web/public/content/android/*.md, web/public/content/kotlin-multiplatform/*.md
 # y de los laboratorios de examples/ que citan esos cursos.
 #
 # Uso:  bash run.sh                 # todo
 #       SOLO='kmp-m0[0-2]' bash run.sh   # solo las unidades cuyo id cumple la regex
 #       SONDA=1 bash run.sh         # repite la sonda JDK 27 + Gradle 9.8 frente a JDK 25 + Gradle 9.7
-# Decisión vigente (sonda de specs/015, 2026-11-18): KMP, Android y Kotlin/JVM con JDK 25 + Gradle 9.7.
+# Decisión vigente (sonda de specs/019, 2026-11-18): KMP, Android y Kotlin/JVM con JDK 25 + Gradle 9.7.
 # Ningún paso lee de la terminal (stdin es /dev/null) y todo comando externo lleva timeout.
 # Variables opcionales: JDK21/JDK25/JDK26/JDK27 (rutas JAVA_HOME si no se detectan solas), TIMEOUT (s por unidad, 1500), GRADLE_USER_HOME (caché compartida,
 #   ~/.gradle por defecto), ANDROID_HOME, CONSERVAR=1 (no borra build/trabajo de las unidades PASS),
@@ -209,7 +209,7 @@ ejecutar_gradle() {
 }
 
 # ---------------------------------------------------------------- sonda KMP (duda abierta del curso)
-KMP_JDK="$JDK25"; KMP_GRADLE="${GRADLE_LECCION:-9.7.0}"; KMP_NOTA="JDK 25 + Gradle $KMP_GRADLE (decisión de la sonda de specs/015)"
+KMP_JDK="$JDK25"; KMP_GRADLE="${GRADLE_LECCION:-9.7.0}"; KMP_NOTA="JDK 25 + Gradle $KMP_GRADLE (decisión de la sonda de specs/019)"
 SONDA_U="$KIT/build/unidades/kmp-m00-academia"
 if [[ "$SONDA" == "1" && -d "$SONDA_U" ]]; then
   # shellcheck disable=SC1091
@@ -243,7 +243,7 @@ if [[ "$SONDA" == "1" && -d "$SONDA_U" ]]; then
   printf '%s\n' "$SONDA_TXT" > "$KIT/sonda-kmp.txt"
   log "sonda: $SONDA_TXT"
   rm -rf "$TRABAJO"/sonda-*
-  KMP_JDK="$JDK25"; KMP_GRADLE="${GRADLE_LECCION:-9.7.0}"; KMP_NOTA="JDK 25 + Gradle $KMP_GRADLE (decisión de la sonda de specs/015)"
+  KMP_JDK="$JDK25"; KMP_GRADLE="${GRADLE_LECCION:-9.7.0}"; KMP_NOTA="JDK 25 + Gradle $KMP_GRADLE (decisión de la sonda de specs/019)"
 fi
 log "KMP y Kotlin/JVM se verifican con $KMP_NOTA"
 

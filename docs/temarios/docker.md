@@ -53,7 +53,7 @@ Datos de Engine 29 que el curso usa, todos con cita de las notas de versión:
 - «Deprecate cgroup v1».
 - «daemon: raise minimum API version to v1.44».
 
-## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/016)
+## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/020)
 
 | Origen | Contenido | Destino en este curso | Tratamiento |
 |---|---|---|---|
@@ -252,7 +252,7 @@ Trabajo autónomo del proyecto: 8 h.
 
 ## 6. Proyecto integrador sobre RutaFlow
 
-El backend de referencia es la API Spring Boot de RutaFlow (`specs/016`, R5), con PostgreSQL y un worker
+El backend de referencia es la API Spring Boot de RutaFlow (`specs/020`, R5), con PostgreSQL y un worker
 de asignación. El curso no escribe lógica de negocio nueva: parte de un JAR de RutaFlow y lo hace avanzar
 módulo a módulo, con un hito por módulo. Rúbrica: las siete evidencias del apartado 2. Cada una se demuestra con
 un comando y su salida, y la solución de referencia va plegada.
@@ -309,7 +309,7 @@ advierte en M0.
 
 ## 11. Pendientes de verificar antes de escribir
 
-- La versión de Compose en la fuente oficial y en el Mac del dueño (specs/015).
+- La versión de Compose en la fuente oficial y en el Mac del dueño (specs/019).
 - En qué ediciones está disponible `docker debug`. La referencia oficial no lo dice; M10 T3 trae la alternativa
   con un contenedor auxiliar.
 - Los perfiles por defecto de AppArmor en Docker Desktop para Mac (M9 T2), que se ejecutarán en Linux.

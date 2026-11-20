@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Kit de verificación iOS (specs/015). Se ejecuta en macOS con Xcode; no necesita simulador.
+# Kit de verificación iOS (specs/019). Se ejecuta en macOS con Xcode; no necesita simulador.
 #
 #   bash verificacion/ios/run.sh            # extrae y verifica todas las unidades
 #   bash verificacion/ios/run.sh m05        # solo las unidades cuyo nombre contiene «m05»

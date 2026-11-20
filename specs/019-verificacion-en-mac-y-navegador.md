@@ -1,4 +1,4 @@
-# 015 · Verificación real en el Mac del dueño y en navegador
+# 019 · Verificación real en el Mac del dueño y en navegador
 
 **Estado:** en curso
 **Origen:** el dueño pidió el 2026-11-18 resolver lo que specs/014 no pudo comprobar («soluciona todo, te

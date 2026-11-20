@@ -64,7 +64,7 @@ el curso no envejece cada vez que un proveedor publica modelos nuevos.
 
 ## 4. Qué se incorpora desde otros cursos
 
-El reparto aprobado (specs/016) no mueve módulos a este curso. Estos temas existentes se enlazan, y su destino se
+El reparto aprobado (specs/020) no mueve módulos a este curso. Estos temas existentes se enlazan, y su destino se
 decide aquí, para aprobación:
 
 | Origen | Contenido | Propuesta |

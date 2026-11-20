@@ -56,7 +56,7 @@ Actualizaciones de red que el curso cita, según el [roadmap de ethereum.org](ht
 Si Glamsterdam se activa antes de escribir M1, se añade una práctica de compatibilidad (metodología,
 «Mantenimiento tecnológico»).
 
-## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/016)
+## 4. Qué se incorpora desde otros cursos (reparto aprobado en specs/020)
 
 | Origen | Contenido | Destino | Tratamiento |
 |---|---|---|---|

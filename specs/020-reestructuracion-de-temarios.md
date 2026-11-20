@@ -1,4 +1,4 @@
-# 016 · Reestructuración de temarios aprobada por el dueño
+# 020 · Reestructuración de temarios aprobada por el dueño
 
 **Estado:** en curso
 **Origen:** el 2026-11-18 el dueño aprobó las cuatro propuestas de
@@ -9,7 +9,7 @@ como backend de referencia de RutaFlow.
 ## Reglas
 
 - La línea de versiones vive en `docs/VERSIONES.md` y las lecciones la siguen; cada versión se comprueba en
-  la fuente oficial o ejecutándola en el Mac del dueño (specs/015).
+  la fuente oficial o ejecutándola en el Mac del dueño (specs/019).
 - Al fusionar o mover módulos, el progreso guardado del estudiante no se pierde: la app traduce los
   identificadores antiguos (`web/src/app/module-renumbering.ts`).
 - Los temas nuevos y reescritos siguen la plantilla de la metodología y traen ejercicios con solución

@@ -8,10 +8,10 @@ dueño»). IA aplicada y Blockchain no están aprobados y no se escriben.
 
 - Cada curso sigue su temario de `docs/temarios/` y la metodología: temas de 20–45 min, 3–6 subtemas,
   ejercicios con solución plegada, código ejecutado y versiones de `docs/VERSIONES.md`.
-- El contenido que llega de otros cursos (reparto de specs/016) se reescribe en el curso nuevo; en el curso de
+- El contenido que llega de otros cursos (reparto de specs/020) se reescribe en el curso nuevo; en el curso de
   origen se deja un enlace al tema nuevo y se retira el duplicado solo cuando el tema nuevo existe.
 - Lo que requiere Docker con registros, kind o Kubernetes se verifica en el Mac del dueño con
-  `verificacion/cloud-devops/` (specs/015).
+  `verificacion/cloud-devops/` (specs/019).
 
 ## Criterios
 

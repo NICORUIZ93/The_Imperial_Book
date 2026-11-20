@@ -39,7 +39,7 @@ describe('module-renumbering', () => {
     expect(out['react'].completedExercises).toEqual(['2:e']);
   });
 
-  it('specs/016: conserva el progreso de Spring Boot (27 → 21 módulos) y de los temas movidos de Java', () => {
+  it('specs/020: conserva el progreso de Spring Boot (27 → 21 módulos) y de los temas movidos de Java', () => {
     const inicial = {
       'spring-boot': {
         completedModules: [17, 21, 26],

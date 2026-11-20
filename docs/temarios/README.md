@@ -1,8 +1,8 @@
 # Temarios de los cursos nuevos y de Microservicios completo
 
-**Estado:** propuestas para aprobación del dueño (specs/013 P7 y specs/016). No hay lecciones escritas, y nada
+**Estado:** propuestas para aprobación del dueño (specs/013 P7 y specs/020). No hay lecciones escritas, y nada
 de este directorio cambia el contenido actual de DevOps, Cloud, Fundamentos ni JavaScript. Ese contenido se
-mueve solo después de aprobar cada temario (specs/016, «Reglas»).
+mueve solo después de aprobar cada temario (specs/020, «Reglas»).
 **Fecha de revisión de fuentes:** 2026-11-18.
 
 ## Resumen
@@ -30,7 +30,7 @@ Fundamentos ─▶ Java ─▶ Spring Boot ─▶ Docker ─▶ Kubernetes
                                    └─▶ Blockchain
 ```
 
-Todos los integradores trabajan sobre el backend Spring Boot de RutaFlow (specs/016 R5).
+Todos los integradores trabajan sobre el backend Spring Boot de RutaFlow (specs/020 R5).
 
 ## Reparto aprobado y dónde queda cada pieza
 
@@ -84,5 +84,5 @@ fuente primaria. Esos datos quedan como decisión pendiente y no se presentan co
 
 1. Registrar en `specs/013` la línea «Temarios aprobados por el dueño» (criterio P7) con los cambios que pida.
 2. Crear una spec por curso con sus criterios y su `Verificación:`.
-3. Ejecutar el reparto (specs/016) cuando el módulo destino tenga lecciones que superen la puerta editorial:
+3. Ejecutar el reparto (specs/020) cuando el módulo destino tenga lecciones que superen la puerta editorial:
    el contenido de origen no se borra antes, y el progreso se conserva con `web/src/app/module-renumbering.ts`.
