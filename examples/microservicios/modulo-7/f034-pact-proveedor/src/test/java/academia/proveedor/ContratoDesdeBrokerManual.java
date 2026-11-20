@@ -16,8 +16,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
  * Igual que ContratoDesdeCarpetaTest, pero el contrato viene del Pact Broker.
- * El nombre no termina en "Test" a propósito: Surefire solo lo ejecuta si lo pides con -Dtest=ContratoDesdeBrokerManual
- * (así "./mvnw test" no necesita el broker encendido).
+ * El nombre termina en "Manual" a propósito: build.gradle.kts excluye las clases *Manual salvo que añadas -Pbroker
+ * (así "./gradlew test" no necesita el broker encendido). Se pide con --tests ContratoDesdeBrokerManual -Pbroker.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Provider("catalogo")

@@ -2,7 +2,7 @@
 # Módulo 7 · Spring Cloud e infraestructura (modulo-11)
 # 1) Ejecuta las 5 demostraciones de jdk/ (solo JDK 25, sin dependencias).
 # 2) Levanta Consul 2.1.0 con Docker Compose, registra el catálogo de f052-consul y lo busca en Consul.
-# 3) Ejecuta los tests Spring Boot 4.1.3 + Spring Cloud 2025.1.4 de F052–F056 con el Maven Wrapper.
+# 3) Ejecuta los tests Spring Boot 4.1.3 + Spring Cloud 2025.1.4 de F052–F056 con el Gradle Wrapper.
 # Uso: ./verificar.sh            (requiere JDK 25, Docker con Compose v5 y curl)
 #      ./verificar.sh --solo-jdk (solo el paso 1: no necesita Docker ni Maven Central)
 set -u -o pipefail
@@ -19,9 +19,9 @@ if [ "${1:-}" != "--solo-jdk" ]; then
   echo "== 2. Consul con Docker Compose (logs en logs/)"
   docker compose version
   if docker compose up -d --wait; then
-    ./mvnw -q -f f052-consul/pom.xml package -DskipTests
+    ./gradlew -q :f052-consul:bootJar
     # Consul corre en un contenedor: para llegar a /actuator/health de tu máquina usa host.docker.internal.
-    java -jar f052-consul/target/f052-consul-1.0.0.jar --spring.cloud.consul.discovery.prefer-ip-address=false \
+    java -jar f052-consul/build/libs/f052-consul-1.0.0.jar --spring.cloud.consul.discovery.prefer-ip-address=false \
       --spring.cloud.consul.discovery.hostname=host.docker.internal > logs/consul-app.log 2>&1 &
     pid=$!
     registrado=no
@@ -49,15 +49,15 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     echo "FALLA: Consul no quedó healthy (logs/compose.log)"; fallos=$((fallos + 1))
   fi
   echo "== 3. Tests Spring Boot + Spring Cloud (F052–F056)"
-  ./mvnw -q test > logs/maven-test.log 2>&1 || { fallos=$((fallos + 1)); grep -E "ERROR|FAIL|Tests run:.*Fail" logs/maven-test.log | head -40; }
-  # Informes de surefire (con la traza completa de cada test) copiados a logs/
-  for d in f05*/target/surefire-reports; do [ -d "$d" ] && cp -r "$d" "logs/${d%%/*}-surefire"; done
+  ./gradlew -q test > logs/gradle-test.log 2>&1 || { fallos=$((fallos + 1)); grep -E "FAILED|FAILURE|What went wrong" logs/gradle-test.log | head -40; }
+  # Informes XML de los tests (con la traza completa de cada test) copiados a logs/
+  for d in f05*/build/test-results/test; do [ -d "$d" ] && cp -r "$d" "logs/${d%%/*}-test-results"; done
 fi
 if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
   echo "RESULTADO: OK · Módulo 7 (Spring Cloud e infraestructura) · parte JDK verificada (falta ./verificar.sh completo)"
 elif [ "$fallos" -eq 0 ]; then
   echo "RESULTADO: OK · Módulo 7 (Spring Cloud e infraestructura) verificado"
 else
-  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o el primer [ERROR] de Maven"
+  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o «What went wrong» de Gradle"
   exit 1
 fi

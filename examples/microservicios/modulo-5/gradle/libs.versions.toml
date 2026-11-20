@@ -1,0 +1,24 @@
+# Módulo 1 (modulo-5) · Java moderno y Spring Boot esencial
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# Native Build Tools que admite Spring Boot 4.1.3 (docs.spring.io/spring-boot/4.1/system-requirements.html)
+graalvm-native = "1.1.18"
+spring-boot = "4.1.3"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+crac = { module = "org.crac:crac" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+graalvm-buildtools = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-native" }

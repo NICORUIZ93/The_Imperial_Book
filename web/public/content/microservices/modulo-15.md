@@ -6,7 +6,7 @@ partición, clave y consumer group), Módulo 8 (reintentos y fallbacks) y, de la
 Compose. **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3** (que gestiona Spring for Apache Kafka 4.1.3,
 `kafka-clients` 4.2.2 y Spring AMQP 4.1.3), Apache Kafka 4.4.0 en modo KRaft, Confluent Schema Registry 8.4.1, Avro
 1.12.2, RabbitMQ 4.4.1, NATS 2.15.3 con JetStream y el cliente jnats 2.26.4. **Laboratorio:**
-`examples/microservicios/modulo-15/` (una carpeta Maven por tema; `docker-compose.yml` levanta los cuatro brokers y
+`examples/microservicios/modulo-15/` (un subproyecto Gradle por tema; `docker-compose.yml` levanta los cuatro brokers y
 `./verificar.sh` ejecuta todo).
 
 En el Módulo 6 enviaste tu primer evento por RabbitMQ y por Kafka. Funcionaba en la demo. En producción aparecen las
@@ -33,8 +33,8 @@ JetStream).
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-15`, comprueba `java -version` (debe decir
 `25`) y `docker compose version`, y arranca los brokers con `docker compose up -d --wait` (la primera vez descarga
 unos 2 GB de imágenes). Cada tema tiene su carpeta (`f075-…` a `f080-…`); desde la carpeta del módulo ejecuta
-`./mvnw -pl <carpeta> test`. Los tests se conectan a los brokers del `docker-compose.yml` (no a Testcontainers),
-igual que harías con tu entorno local de desarrollo. Las salidas de Maven y de los contenedores de este módulo están
+`./gradlew :<carpeta>:test`. Los tests se conectan a los brokers del `docker-compose.yml` (no a Testcontainers),
+igual que harías con tu entorno local de desarrollo. Las salidas de Gradle y de los contenedores de este módulo están
 pendientes de confirmar en el Mac del dueño (`verificacion/microservicios/pendiente.md`): donde se escribió no hay
 Maven Central ni Docker Hub. Sí se ejecutaron aquí, y su salida está pegada tal cual, el simulador de particiones con
 JDK 25.0.5, la comprobación de murmur2 con la librería `kafka-python`, la codificación Avro con `fastavro`, la
@@ -46,9 +46,9 @@ topología de RabbitMQ en un RabbitMQ 3.12.1 local y los patrones de NATS en un 
 | Spring AMQP / cliente Java de RabbitMQ | 4.1.3 / 5.37.1 | BOM de Spring Boot 4.1.3 |
 | Apache Kafka (broker, KRaft) | 4.4.0 (imagen `apache/kafka:4.4.0`) | `docker-compose.yml` |
 | Confluent Schema Registry | 8.4.1 (imagen `confluentinc/cp-schema-registry:8.4.1`) | `docker-compose.yml` |
-| Avro / `kafka-avro-serializer` | 1.12.2 / 8.4.1 | `pom.xml` de F077 |
+| Avro / `kafka-avro-serializer` | 1.12.2 / 8.4.1 | catálogo `gradle/libs.versions.toml` |
 | RabbitMQ | 4.4.1 (imagen `rabbitmq:4.4.1-management`) | `docker-compose.yml` |
-| NATS Server / jnats | 2.15.3 (imagen `nats:2.15.3-alpine`) / 2.26.4 | `docker-compose.yml` / `pom.xml` de F080 |
+| NATS Server / jnats | 2.15.3 (imagen `nats:2.15.3-alpine`) / 2.26.4 | `docker-compose.yml` / catálogo `gradle/libs.versions.toml` |
 
 El `docker-compose.yml` del módulo, que usan todos los temas:
 
@@ -286,48 +286,119 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3** con **Spring for Apache Kafka 4.1.3
 (gestionados por el BOM), broker **Kafka 4.4.0**. Proyecto completo en
 `examples/microservicios/modulo-15/f075-kafka-particiones/`.
 
-`f075-kafka-particiones/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F075 · Kafka profundo: particionamiento y consumer groups (Spring Boot 4.1.3, JDK 25, Kafka 4.4.0) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f075-kafka-particiones</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring for Apache Kafka 4.1.3 + kafka-clients 4.2.2 (versiones del BOM de Boot 4.1.3) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-kafka</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3 + AssertJ 3.27.7 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-15/settings.gradle.kts`:
+
+```kotlin
+// Módulo 11 (modulo-15) · Build multi-proyecto: "./gradlew test" ejecuta los tests de las 6 fichas (F075–F080).
+// Los tests usan los brokers de docker-compose.yml: arráncalos antes con "docker compose up -d --wait".
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        // F077: el serializador de Confluent no está en Maven Central, vive en el repositorio de Confluent
+        maven {
+            name = "confluent"
+            url = uri("https://packages.confluent.io/maven/")
+        }
+    }
+}
+
+rootProject.name = "modulo-15-laboratorios"
+
+include(
+    "f075-kafka-particiones",
+    "f076-exactly-once",
+    "f077-schema-registry-avro",
+    "f078-dead-letter-topics",
+    "f079-rabbitmq-confirms-dlq",
+    "f080-nats",
+)
+```
+
+`modulo-15/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 11 (modulo-15)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# No los gestiona el BOM de Spring Boot: se fijan aquí
+avro = "1.12.2"
+confluent = "8.4.1"
+# Spring Boot no tiene starter ni gestiona la versión de NATS: se fija aquí
+jnats = "2.26.4"
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-kafka = { module = "org.springframework.boot:spring-boot-starter-kafka" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+avro = { module = "org.apache.avro:avro", version.ref = "avro" }
+avro-tools = { module = "org.apache.avro:avro-tools", version.ref = "avro" }
+kafka-avro-serializer = { module = "io.confluent:kafka-avro-serializer", version.ref = "confluent" }
+spring-boot-starter-amqp = { module = "org.springframework.boot:spring-boot-starter-amqp" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+jnats = { module = "io.nats:jnats", version.ref = "jnats" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+```
+
+`f075-kafka-particiones/build.gradle.kts`:
+
+```kotlin
+// F075 · Kafka profundo: particionamiento y consumer groups (Spring Boot 4.1.3, JDK 25, Kafka 4.4.0)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring for Apache Kafka 4.1.3 + kafka-clients 4.2.2 (versiones del BOM de Boot 4.1.3)
+    implementation(libs.spring.boot.starter.kafka)
+    // JUnit Jupiter 6.0.3 + AssertJ 3.27.7
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f075-kafka-particiones/src/main/resources/application.properties`:
@@ -785,7 +856,7 @@ SIMULADOR OK
 
 ```bash
 docker compose up -d --wait kafka
-./mvnw -pl f075-kafka-particiones test
+./gradlew :f075-kafka-particiones:test
 ```
 
    **Output esperado** (extracto; los nombres de los hilos y el orden de las líneas pueden variar):
@@ -796,8 +867,8 @@ Hilos de «inventario» por partición: {0=[inventario-0-C-1], 1=[inventario-1-C
 consumer-inventario-1 -> [pedidos-particionados-0]
 consumer-inventario-2 -> [pedidos-particionados-1]
 consumer-inventario-3 -> [pedidos-particionados-2]
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 3 líneas `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** la primera línea debe ser **idéntica** a la predicción del paso 1: el broker usa el mismo
@@ -827,7 +898,7 @@ inventario  pedidos-particionados  2          10              10              0 
    está al día». Si ejecutas los tests otra vez, los números crecen; la proporción 1 : 4 : 1 no cambia.
 
 4. **Rómpelo a propósito: un consumidor de más.** Cambia `concurrency = "3"` por `"4"` en `Consumidores.java`,
-   arranca la app (`./mvnw -pl f075-kafka-particiones spring-boot:run`) y en otra terminal:
+   arranca la app (`./gradlew :f075-kafka-particiones:bootRun`) y en otra terminal:
 
 ```bash
 docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
@@ -842,10 +913,10 @@ docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f075-kafka-particiones test
+./gradlew :f075-kafka-particiones:test
 ```
 
-Resultado esperado: `Tests run: 3, Failures: 0, Errors: 0`.
+Resultado esperado: 3 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: sin ejecutar nada, usa el simulador para responder: si el topic tuviera **2** particiones, ¿en qué partición
 quedaría `cliente-6`? Luego añade a `ParticionesTest` este test, que usa el mismo cálculo que el broker, y ejecútalo:
@@ -1047,47 +1118,41 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring for Apache Kafka 4.1.3**,
 **Kafka 4.4.0** con el log de transacciones a 1 réplica (variables `KAFKA_TRANSACTION_STATE_LOG_*` del
 `docker-compose.yml`). Proyecto completo en `examples/microservicios/modulo-15/f076-exactly-once/`.
 
-`f076-exactly-once/pom.xml`:
+`f076-exactly-once/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F076 · Exactly-Once Semantics: consume, procesa y produce en UNA transacción de Kafka (Spring Boot 4.1.3, JDK 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f076-exactly-once</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring for Apache Kafka 4.1.3 (KafkaTransactionManager) + kafka-clients 4.2.2 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-kafka</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F076 · Exactly-Once Semantics: consume, procesa y produce en UNA transacción de Kafka (Spring Boot 4.1.3, JDK 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring for Apache Kafka 4.1.3 (KafkaTransactionManager) + kafka-clients 4.2.2
+    implementation(libs.spring.boot.starter.kafka)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f076-exactly-once/src/main/resources/application.properties`:
@@ -1295,7 +1360,7 @@ class ExactlyOnceTest {
 
 ```bash
 docker compose up -d --wait kafka
-./mvnw -pl f076-exactly-once test
+./gradlew :f076-exactly-once:test
 ```
 
    **Output esperado** (extracto; la clave cambia en cada ejecución):
@@ -1305,8 +1370,8 @@ docker compose up -d --wait kafka
 ... enviado VALIDADO:pago-3f9c1a2b-caida (transacción abierta)
 read_committed   -> [VALIDADO:pago-3f9c1a2b-caida]
 read_uncommitted -> [VALIDADO:pago-3f9c1a2b-caida, VALIDADO:pago-3f9c1a2b-caida]
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 2 líneas `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** el listener se ejecutó **dos veces** (dos líneas «enviado»): la primera transacción se
@@ -1341,10 +1406,10 @@ docker compose exec kafka /opt/kafka/bin/kafka-dump-log.sh --print-data-log \
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f076-exactly-once test
+./gradlew :f076-exactly-once:test
 ```
 
-Resultado esperado: `Tests run: 2, Failures: 0, Errors: 0`.
+Resultado esperado: 2 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade a `ValidadorDePagos` un contador de llamadas al método y un test que compruebe que, para un pago con
 «caida», el método se ejecutó **2** veces aunque la salida confirmada sea 1. Así demuestras con un test la frase «la
@@ -1485,8 +1550,9 @@ qué tipo. Ese acuerdo se llama **esquema**.
 - **Codificación binaria.** `int` y `long` se escriben en *zigzag* + *varint* (los números pequeños ocupan 1 byte); un
   `string` es su longitud (también zigzag) seguida de los bytes UTF-8. El pedido `{"id":"P-1","cliente":"ana",
   "totalCentavos":125000}` ocupa **11 bytes** en Avro (`06 50 2d 31 06 61 6e 61 90 a1 0f`) y 51 en JSON.
-- **Clases generadas.** `avro-maven-plugin` lee `src/main/avro/*.avsc` en la fase `generate-sources` y genera
-  `academia.avro.Pedido` con *builder* (`Pedido.newBuilder()...build()`) y getters. Con `stringType=String`, los
+- **Clases generadas.** La tarea `generarAvro` del `build.gradle.kts` ejecuta `avro-tools compile -string schema` sobre
+  `src/main/avro/*.avsc` antes de compilar (en Maven, `avro-maven-plugin` en la fase `generate-sources`) y genera
+  `academia.avro.Pedido` con *builder* (`Pedido.newBuilder()...build()`) y getters. Con `-string` (`stringType=String`), los
   campos texto son `java.lang.String` (si no, `CharSequence`/`Utf8`).
 - **Formato en el cable (Confluent).** `KafkaAvroSerializer` antepone 5 bytes: un **byte mágico 0** y el **id del
   esquema** en 4 bytes *big-endian*. El deserializador lee el id, pide el esquema (y lo cachea) y decodifica.
@@ -1499,7 +1565,7 @@ qué tipo. Ese acuerdo se llama **esquema**.
 - **Paquetes de confianza de Avro.** Avro 1.12.2 valida cada clase que carga por nombre
   (`ClassSecurityValidator`) y solo confía en un puñado de tipos de `java.lang` y `java.math`. Para tus clases
   generadas debes declarar el paquete en la propiedad de sistema `org.apache.avro.SERIALIZABLE_PACKAGES`
-  (aquí `academia.avro`): el `pom.xml` la pasa a los tests con Surefire y `RegistroApp.main` la fija antes de arrancar.
+  (aquí `academia.avro`): el `build.gradle.kts` la pasa a los tests con `systemProperty(...)` y `RegistroApp.main` la fija antes de arrancar.
 - **Spring Boot.** Se configuran los (de)serializadores por propiedades y `schema.registry.url` en
   `spring.kafka.producer.properties.*` y `spring.kafka.consumer.properties.*`. `specific.avro.reader=true` hace que el
   consumidor devuelva la clase generada en lugar de `GenericRecord`.
@@ -1531,99 +1597,79 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3** (Spring for Apache Kafka 4.1.3), **
 (Confluent Platform 8.4, basada en Kafka 4.4). Proyecto completo en
 `examples/microservicios/modulo-15/f077-schema-registry-avro/`.
 
-`f077-schema-registry-avro/pom.xml`:
+`f077-schema-registry-avro/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F077 · Schema Registry y Avro (Spring Boot 4.1.3, JDK 25, Confluent Platform 8.4.1, Avro 1.12.2) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f077-schema-registry-avro</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- No los gestiona el BOM de Spring Boot: se fijan aquí -->
-    <avro.version>1.12.2</avro.version>
-    <confluent.version>8.4.1</confluent.version>
-  </properties>
-  <!-- El serializador de Confluent no está en Maven Central: vive en el repositorio de Confluent -->
-  <repositories>
-    <repository>
-      <id>confluent</id>
-      <url>https://packages.confluent.io/maven/</url>
-    </repository>
-  </repositories>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-kafka</artifactId>
-    </dependency>
-    <!-- Avro: el formato binario y las clases generadas -->
-    <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro</artifactId>
-      <version>${avro.version}</version>
-    </dependency>
-    <!-- KafkaAvroSerializer / KafkaAvroDeserializer: hablan con Schema Registry -->
-    <dependency>
-      <groupId>io.confluent</groupId>
-      <artifactId>kafka-avro-serializer</artifactId>
-      <version>${confluent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <!-- Genera academia.avro.Pedido desde src/main/avro/pedido.avsc en la fase generate-sources -->
-      <plugin>
-        <groupId>org.apache.avro</groupId>
-        <artifactId>avro-maven-plugin</artifactId>
-        <version>${avro.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>schema</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
-              <outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
-              <stringType>String</stringType>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Avro 1.12.2 solo carga por nombre las clases de paquetes de confianza (ClassSecurityValidator):
-           sin esta propiedad de sistema falla con SecurityException «Forbidden academia.avro.Pedido!».
-           Aquí para los tests; RegistroApp la fija en main() para la aplicación. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <org.apache.avro.SERIALIZABLE_PACKAGES>academia.avro</org.apache.avro.SERIALIZABLE_PACKAGES>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F077 · Schema Registry y Avro (Spring Boot 4.1.3, JDK 25, Confluent Platform 8.4.1, Avro 1.12.2)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+// Configuración aparte para la herramienta que genera código: no entra en el classpath de la aplicación.
+// avro-tools es un jar autónomo (se ejecuta con java -jar), por eso no hacen falta sus dependencias transitivas.
+val avroTools by configurations.creating {
+    isTransitive = false
+}
+
+dependencies {
+    avroTools(libs.avro.tools)
+    implementation(libs.spring.boot.starter.kafka)
+    // Avro: el formato binario y las clases generadas
+    // Avro: el formato binario y las clases generadas
+    implementation(libs.avro)
+    // KafkaAvroSerializer / KafkaAvroDeserializer: hablan con Schema Registry
+    // KafkaAvroSerializer / KafkaAvroDeserializer: hablan con Schema Registry
+    implementation(libs.kafka.avro.serializer)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+// Genera academia.avro.Pedido desde src/main/avro/pedido.avsc antes de compilar
+// (en Maven: avro-maven-plugin, goal schema, fase generate-sources, stringType String).
+val generarAvro by tasks.registering(JavaExec::class) {
+    group = "build"
+    description = "Genera las clases Java de los esquemas Avro de src/main/avro"
+    classpath = avroTools
+    mainClass = "org.apache.avro.tool.Main"
+    val salida = layout.buildDirectory.dir("generated-sources/avro")
+    inputs.dir("src/main/avro")
+    outputs.dir(salida)
+    // -string: los campos string se generan como java.lang.String (no CharSequence/Utf8)
+    args("compile", "-string", "schema", "src/main/avro", salida.get().asFile.path)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(generarAvro)   // el código generado se compila con el resto y compileJava depende de generarAvro
+        }
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    // Avro 1.12.2 solo carga por nombre las clases de paquetes de confianza (ClassSecurityValidator):
+    // sin esta propiedad de sistema falla con SecurityException «Forbidden academia.avro.Pedido!».
+    // Aquí para los tests; RegistroApp la fija en main() para la aplicación.
+    systemProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "academia.avro")
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 El contrato:
@@ -1941,7 +1987,7 @@ class SchemaRegistryTest {
 
 ```bash
 docker compose up -d --wait kafka schema-registry
-./mvnw -pl f077-schema-registry-avro test
+./gradlew :f077-schema-registry-avro:test
 ```
 
    **Output esperado** (extracto):
@@ -1950,8 +1996,8 @@ docker compose up -d --wait kafka schema-registry
 Avro (11 bytes): 06 50 2d 31 06 61 6e 61 90 a1 0f
 Leído con v2: {"id": "P-2", "cliente": "beto", "totalCentavos": 990, "canal": "web"}
 Esquema 1 · 23 bytes en el topic (5 de cabecera)
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 5 líneas `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** los 11 bytes y la lectura con v2 se comprobaron al escribir la ficha con `fastavro` 1.13.1
@@ -1989,7 +2035,7 @@ curl -s -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
    campo `canal` no tiene valor por defecto. Repite con `pedido-v2-compatible.avsc`: `{"is_compatible":true}`.
 
 4. **Rómpelo a propósito.** En `AvroSinInfraestructuraTest`, cambia el recurso del lector por
-   `/pedido-v2-incompatible.avsc` y ejecuta `./mvnw -pl f077-schema-registry-avro test -Dtest=AvroSinInfraestructuraTest`.
+   `/pedido-v2-incompatible.avsc` y ejecuta `./gradlew :f077-schema-registry-avro:test --tests AvroSinInfraestructuraTest`.
 
    **Output esperado:** falla con `org.apache.avro.AvroTypeException: Found academia.avro.Pedido, expecting
    academia.avro.Pedido, missing required field canal` (texto de `Resolver`/`ResolvingGrammarGenerator` de Avro
@@ -2000,10 +2046,10 @@ curl -s -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f077-schema-registry-avro test
+./gradlew :f077-schema-registry-avro:test
 ```
 
-Resultado esperado: `Tests run: 5, Failures: 0, Errors: 0`.
+Resultado esperado: 5 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: crea `pedido-v2-sin-cliente.avsc` que **elimina** el campo `cliente` y añade a `SchemaRegistryTest` un test que
 pida la compatibilidad. Antes de ejecutarlo, escribe tu predicción con `BACKWARD` (pista: ¿puede un lector nuevo, sin
@@ -2044,7 +2090,7 @@ of loader 'app')
 nadie le dice «conviértela en el formulario impreso de la clase `Pedido`», entrega una tarjeta genérica.
 
 **Arreglo:** `spring.kafka.consumer.properties.specific.avro.reader=true`. Comprueba también que la clase generada
-existe en el classpath (`target/generated-sources/avro`) y que el `namespace` + `name` del esquema coinciden con el
+existe en el classpath (`build/generated-sources/avro`) y que el `namespace` + `name` del esquema coinciden con el
 paquete y la clase.
 
 **Segundo error frecuente:** al publicar, `SerializationException: Error serializing Avro message` con esta causa
@@ -2057,7 +2103,7 @@ org.apache.avro.SERIALIZABLE_PACKAGES to set the comma separated list of the cla
 can set them via the API (see org.apache.avro.util.ClassSecurityValidator).
 ```
 
-Arreglo: `-Dorg.apache.avro.SERIALIZABLE_PACKAGES=academia.avro` en la JVM (en el laboratorio, Surefire y
+Arreglo: `-Dorg.apache.avro.SERIALIZABLE_PACKAGES=academia.avro` en la JVM (en el laboratorio, la tarea `test` de Gradle y
 `RegistroApp.main`). No uses el comodín `*` fuera de un entorno controlado: desactiva la protección.
 
 **Tercer error frecuente:** con `auto.register.schemas=true`, un productor publica un esquema incompatible y falla al
@@ -2202,46 +2248,40 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring for Apache Kafka 4.1.3** 
 `DeadLetterPublishingRecoverer`), **kafka-clients 4.2.2**, broker **Kafka 4.4.0**. Proyecto completo en
 `examples/microservicios/modulo-15/f078-dead-letter-topics/`.
 
-`f078-dead-letter-topics/pom.xml`:
+`f078-dead-letter-topics/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F078 · Dead Letter Topics con DefaultErrorHandler + DeadLetterPublishingRecoverer (Spring Boot 4.1.3, JDK 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f078-dead-letter-topics</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-kafka</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F078 · Dead Letter Topics con DefaultErrorHandler + DeadLetterPublishingRecoverer (Spring Boot 4.1.3, JDK 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.kafka)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f078-dead-letter-topics/src/main/resources/application.properties`:
@@ -2479,7 +2519,7 @@ class DeadLetterTest {
 
 ```bash
 docker compose up -d --wait kafka
-./mvnw -pl f078-dead-letter-topics test
+./gradlew :f078-dead-letter-topics:test
 ```
 
    **Output esperado** (extracto; los sufijos y la partición cambian en cada ejecución):
@@ -2491,8 +2531,8 @@ docker compose up -d --wait kafka
 ... cobro C3-5b2e9d10 intento 2 valor=monto=70;pasarela-lenta
 ... cobro C3-5b2e9d10 intento 3 valor=monto=70;pasarela-lenta
 DLT -> C2-5b2e9d10 particion=1 origen=cobros causa=academia.dlt.DatosInvalidos
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 1 línea `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** `C2` se intentó **una** vez (no reintentable) y fue al DLT. `C3` falló dos veces y se cobró
@@ -2532,10 +2572,10 @@ Processed a total of 1 messages
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f078-dead-letter-topics test
+./gradlew :f078-dead-letter-topics:test
 ```
 
-Resultado esperado: `Tests run: 1, Failures: 0, Errors: 0`.
+Resultado esperado: 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade un cuarto cobro `"monto=10;pasarela-caida"` que **siempre** lance `IllegalStateException` y un test que
 compruebe que acaba en `cobros-dlt` tras **3** intentos (1 + 2 reintentos) y con la cabecera
@@ -2725,47 +2765,41 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3** con **Spring AMQP 4.1.3** y el clie
 (gestionados por el BOM), broker **RabbitMQ 4.4.1**. Proyecto completo en
 `examples/microservicios/modulo-15/f079-rabbitmq-confirms-dlq/`.
 
-`f079-rabbitmq-confirms-dlq/pom.xml`:
+`f079-rabbitmq-confirms-dlq/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F079 · RabbitMQ: publisher confirms, returns y DLQ con quorum queues (Spring Boot 4.1.3, JDK 25, RabbitMQ 4.4.1) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f079-rabbitmq-confirms-dlq</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring AMQP 4.1.3 + cliente Java de RabbitMQ 5.37.1 (gestionados por Boot) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-amqp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F079 · RabbitMQ: publisher confirms, returns y DLQ con quorum queues (Spring Boot 4.1.3, JDK 25, RabbitMQ 4.4.1)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring AMQP 4.1.3 + cliente Java de RabbitMQ 5.37.1 (gestionados por Boot)
+    implementation(libs.spring.boot.starter.amqp)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f079-rabbitmq-confirms-dlq/src/main/resources/application.properties`:
@@ -3045,7 +3079,7 @@ class RabbitTest {
 
 ```bash
 docker compose up -d --wait rabbitmq
-./mvnw -pl f079-rabbitmq-confirms-dlq test
+./gradlew :f079-rabbitmq-confirms-dlq:test
 ```
 
    **Output esperado** (extracto; el sufijo cambia en cada ejecución):
@@ -3057,8 +3091,8 @@ Devuelto: 312 NO_ROUTE
 ... pedido siempre-falla-6c1d2e3f intento 3
 ... pedido siempre-falla-6c1d2e3f intento 4
 siempre-falla-6c1d2e3f -> DLQ tras 4 intentos
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 4 líneas `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** con `delivery-limit` 3, el mensaje se entrega 4 veces (1 + 3 reentregas fallidas) y a la
@@ -3088,7 +3122,7 @@ pedidos.dlq	quorum	0
 ```
 
 4. **Rómpelo a propósito: sin `mandatory`.** Borra `spring.rabbitmq.template.mandatory=true` y ejecuta
-   `./mvnw -pl f079-rabbitmq-confirms-dlq test -Dtest=RabbitTest#unMensajeSinRutaSeDevuelveConNoRoute`.
+   `./gradlew :f079-rabbitmq-confirms-dlq:test --tests RabbitTest.unMensajeSinRutaSeDevuelveConNoRoute`.
 
    **Output esperado:** el test falla en `assertThat(r.devuelto()).isNotNull()`: el ack llegó (`r.ack()` es `true`)
    pero el mensaje **desapareció** sin devolución. Esa es la trampa: un ack no significa «está en una cola».
@@ -3099,10 +3133,10 @@ pedidos.dlq	quorum	0
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f079-rabbitmq-confirms-dlq test
+./gradlew :f079-rabbitmq-confirms-dlq:test
 ```
 
-Resultado esperado: `Tests run: 4, Failures: 0, Errors: 0`.
+Resultado esperado: 4 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade a la topología una cola `pedidos.espera` con `x-message-ttl` de 2000 ms y `x-dead-letter-exchange`
 apuntando al exchange `pedidos` con la ruta `pedido.creado`. Escribe un test que publique directamente en
@@ -3281,55 +3315,43 @@ envían a un **subject**, un nombre con puntos como `pedidos.creado`.
 Versiones: **JDK 25**, **Spring Boot 4.1.3** (solo el núcleo, sin web), cliente **jnats 2.26.4** (`io.nats:jnats`),
 servidor **NATS 2.15.3** con JetStream (`-js`). Proyecto completo en `examples/microservicios/modulo-15/f080-nats/`.
 
-`f080-nats/pom.xml`:
+`f080-nats/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F080 · NATS: pub/sub, queue groups, request-reply y JetStream con jnats 2.26.4 (Spring Boot 4.1.3, JDK 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f080-nats</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Spring Boot no tiene starter ni gestiona la versión de NATS: se fija aquí -->
-    <jnats.version>2.26.4</jnats.version>
-  </properties>
-  <dependencies>
-    <!-- Solo el contenedor de Spring (sin web): la app vive mientras la conexión NATS está abierta -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <!-- Cliente oficial de NATS para Java -->
-    <dependency>
-      <groupId>io.nats</groupId>
-      <artifactId>jnats</artifactId>
-      <version>${jnats.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F080 · NATS: pub/sub, queue groups, request-reply y JetStream con jnats 2.26.4 (Spring Boot 4.1.3, JDK 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Solo el contenedor de Spring (sin web): la app vive mientras la conexión NATS está abierta
+    implementation(libs.spring.boot.starter)
+    // Cliente oficial de NATS para Java
+    implementation(libs.jnats)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f080-nats/src/main/resources/application.properties`:
@@ -3579,7 +3601,7 @@ class NatsTest {
 
 ```bash
 docker compose up -d --wait nats
-./mvnw -pl f080-nats test
+./gradlew :f080-nats:test
 ```
 
    **Output esperado** (extracto; el reparto y los tiempos varían):
@@ -3588,8 +3610,8 @@ docker compose up -d --wait nats
 Reparto del queue group: instancia-A=11 instancia-B=9
 Sin respondedores: respuesta=null en 2 ms
 JetStream secuencias=[1, 2, 3] leídos=[pago-0, pago-1, pago-2]
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+…                      <- 4 líneas `PASSED` de Gradle (pendiente de verificación en el Mac)
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** las 20 peticiones se reparten entre las dos instancias (cada una atendida por **una**). La
@@ -3630,10 +3652,10 @@ curl -s "http://localhost:8222/jsz?streams=true" | grep -E '"name"|"messages"|"c
 Test que debe pasar:
 
 ```bash
-./mvnw -pl f080-nats test
+./gradlew :f080-nats:test
 ```
 
-Resultado esperado: `Tests run: 4, Failures: 0, Errors: 0`.
+Resultado esperado: 4 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: en `coreNoGuardaNadaPeroJetStreamSi`, quita el `m.ack()`, cambia el consumidor a `.ackWait(Duration.ofSeconds(2))`
 en el `ConsumerConfiguration` y comprueba con un test que, tras 3 s, `consumidor.next(...)` vuelve a entregar
@@ -3657,7 +3679,7 @@ despliegue (cuando puede no haber ninguna instancia escuchando): usar JetStream 
 aún no arrancó.
 
 **Cómo se ve** (mensaje de la JVM; reproducido con JDK 25.0.5 y una clase compilada con información de depuración,
-como hace Maven por defecto):
+como hacen Maven y Gradle por defecto):
 
 ```text
 java.lang.NullPointerException: Cannot invoke "io.nats.client.Message.getData()" because "respuesta" is null

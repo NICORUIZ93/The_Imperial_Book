@@ -17,18 +17,18 @@ Lección: [`web/public/content/microservices/modulo-12.md`](../../../web/public/
 
 JDK 25 LTS · Spring Boot 4.1.3 · Resilience4j 2.4.0 (`resilience4j-spring-boot4`) · Spring Cloud 2025.1.4 (BOM) ·
 Testcontainers 2.0.5 · toxiproxy-java 2.1.11 · imágenes `ghcr.io/shopify/toxiproxy:2.13.0` y
-`eclipse-temurin:25-jdk` · Maven 3.10.1 por el wrapper · Docker Compose v5.
+`eclipse-temurin:25-jdk` · Gradle 9.9.2 por el wrapper (`./gradlew`) · Docker Compose v5.
 
 ## Ejecutar
 
 ```bash
 cd examples/microservicios/modulo-12
 ./verificar.sh --solo-jdk   # las 4 demostraciones con fallos inyectados; no necesita Docker ni Maven Central
-./verificar.sh              # además: Toxiproxy real (lento, caído, reset) y los tests de las 4 carpetas Maven
+./verificar.sh              # además: Toxiproxy real (lento, caído, reset) y los tests de las 4 carpetas con Gradle
 ```
 
 **Salida esperada de `./verificar.sh`:** cada demostración termina en `OK: ...`; el bloque de Toxiproxy imprime
-`sano: 200 0.0…`, `lento: 200 1.5…`, `caido: 000 …` y `sano: 200 0.0…`; Maven sin `[ERROR]`; y la última línea
+`sano: 200 0.0…`, `lento: 200 1.5…`, `caido: 000 …` y `sano: 200 0.0…`; Gradle sin `FAILED`; y la última línea
 `RESULTADO: OK · Módulo 8 (Resiliencia) verificado`.
 
 ## Simular fallos con Toxiproxy
@@ -45,15 +45,22 @@ curl localhost:21212/stock/7              # a través de Toxiproxy
 docker compose down
 ```
 
-Con Toxiproxy encendido, arranca cualquier proyecto Spring (`cd f057-resilience4j && ../mvnw spring-boot:run`):
+Con Toxiproxy encendido, arranca cualquier proyecto Spring (`cd f057-resilience4j && ../gradlew bootRun`):
 todos llaman al inventario en `http://localhost:21212`.
 
 ## Logs
 
-`verificar.sh` guarda en `logs/` (ignorada por Git) la salida de cada demostración, de Docker Compose, de Maven y
-los informes de surefire; en el Módulo 7 también los chequeos de Consul (`consul-chequeos.json`) y el log de la app.
+`verificar.sh` guarda en `logs/` (ignorada por Git) la salida de cada demostración, de Docker Compose, de Gradle y
+los informes XML de los tests (`build/test-results`); en el Módulo 7 también los chequeos de Consul (`consul-chequeos.json`) y el log de la app.
 
 ## Estado de verificación
 
 Las demostraciones de `jdk/` se ejecutaron con JDK 25.0.5 y su salida está pegada en la lección. Toxiproxy y los
-proyectos Maven quedan en [`verificacion/microservicios/pendiente.md`](../../../verificacion/microservicios/pendiente.md).
+proyectos de Gradle quedan en [`verificacion/microservicios/pendiente.md`](../../../verificacion/microservicios/pendiente.md).
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper `./gradlew`; las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

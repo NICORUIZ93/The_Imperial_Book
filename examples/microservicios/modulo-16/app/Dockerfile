@@ -4,17 +4,21 @@
 #   docker build -t academia/catalogo:1.0.0 app
 #   docker build -t academia/catalogo:1.1.0 --build-arg VERSION=1.1.0 app
 
-# ---------- Etapa 1: compilar (JDK completo + Maven; NO llega a la imagen final) ----------
-FROM maven:3.10.0-eclipse-temurin-25 AS compilacion
+# ---------- Etapa 1: compilar (JDK completo + Gradle por el wrapper; NO llega a la imagen final) ----------
+FROM eclipse-temurin:25-jdk AS compilacion
 WORKDIR /fuente
-# 1) Solo el pom.xml: esta capa (las dependencias) se reutiliza mientras el pom no cambie.
-COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
+# 1) Solo el wrapper y los archivos de build: estas capas (Gradle y las dependencias) se reutilizan
+#    mientras no cambien. --no-daemon: el contenedor de compilación se desecha, no hace falta el daemon.
+COPY gradlew ./
+COPY gradle ./gradle
+RUN ./gradlew --no-daemon --version
+COPY settings.gradle.kts build.gradle.kts ./
+RUN ./gradlew --no-daemon -q descargarDependencias
 # 2) El código cambia a menudo: va DESPUÉS, para no invalidar la capa de dependencias.
 COPY src ./src
-RUN mvn -B -q package -DskipTests
+RUN ./gradlew --no-daemon -q bootJar
 # 3) Extrae el jar en capas: dependencias, loader, snapshots y aplicación (de menos a más cambiante).
-RUN java -Djarmode=tools -jar target/catalogo.jar extract --layers --destination extraido
+RUN java -Djarmode=tools -jar build/libs/catalogo.jar extract --layers --destination extraido
 
 # ---------- Etapa 2: ejecutar (solo la JRE 25; sin shell, sin apt, usuario no root 65532) ----------
 FROM gcr.io/distroless/java25-debian13:nonroot

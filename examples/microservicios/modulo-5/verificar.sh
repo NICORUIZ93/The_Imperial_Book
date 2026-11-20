@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 # Módulo 1 · Java moderno y Spring Boot esencial (modulo-5)
-# Ejecuta los tests de las 8 fichas con el Maven Wrapper.
+# Ejecuta los tests de las 8 fichas con el Gradle Wrapper.
 # Uso: ./verificar.sh            -> tests en la JVM (JDK 25 LTS)
 #      ./verificar.sh --docker   -> además CRaC (checkpoint/restore) y binario nativo en Docker
 set -u
 cd "$(dirname "$0")"
 java -version 2>&1 | head -1
-if ./mvnw -q test; then
+if ./gradlew -q test; then
   echo "OK · tests de F017–F024 en verde"
 else
-  echo "RESULTADO: FALLA · busca arriba el primer [ERROR] y el test marcado con FAILURE"
+  echo "RESULTADO: FALLA · busca arriba «What went wrong» y abre el informe de tests que indica"
   exit 1
 fi
 if [ "${1:-}" = "--docker" ]; then
   set -e
-  ./mvnw -q -f f023-crac/pom.xml package -DskipTests
-  rm -rf f023-crac/target/crac
+  ./gradlew -q :f023-crac:bootJar
+  rm -rf f023-crac/build/crac
   docker compose --profile crac build crac-checkpoint
   docker compose --profile crac run --rm crac-checkpoint || true   # termina al crear el checkpoint
-  test -n "$(ls -A f023-crac/target/crac)" || { echo "RESULTADO: FALLA · no se creó el checkpoint"; exit 1; }
+  test -n "$(ls -A f023-crac/build/crac)" || { echo "RESULTADO: FALLA · no se creó el checkpoint"; exit 1; }
   docker compose --profile crac up -d crac-restore
   sleep 3
   curl -fsS localhost:8080/hola; echo

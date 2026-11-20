@@ -3,7 +3,7 @@
 #   curl localhost:21212/stock/7         -> {"sku":"7","stock":12}   (a través de Toxiproxy)
 #   ./simular-fallo.sh lento 2000        -> inyecta 2 s de latencia (ver simular-fallo.sh)
 #   docker compose down
-# Los servicios Spring Boot (f057…f060) corren en tu máquina con ./mvnw y llaman a localhost:21212.
+# Los servicios Spring Boot (f057…f060) corren en tu máquina con ./gradlew y llaman a localhost:21212.
 services:
   inventario:
     image: eclipse-temurin:25-jdk

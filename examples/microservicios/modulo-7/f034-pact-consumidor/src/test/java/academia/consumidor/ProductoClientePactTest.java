@@ -19,7 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * Test del CONSUMIDOR: Pact levanta un servidor HTTP simulado que responde según las interacciones
- * declaradas; si el cliente las usa bien, Pact escribe el contrato en target/pacts/tienda-web-catalogo.json.
+ * declaradas; si el cliente las usa bien, Pact escribe el contrato en build/pacts/tienda-web-catalogo.json.
  */
 @ExtendWith(PactConsumerTestExt.class)
 @PactTestFor(providerName = "catalogo", pactVersion = PactSpecVersion.V4)

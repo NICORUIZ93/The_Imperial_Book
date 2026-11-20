@@ -3,7 +3,7 @@
 # 1) Demostraciones con JDK puro (jdk/): filtros, JWT, OAuth2+PKCE, RBAC, token exchange, mTLS, escáner.
 # 2) Keycloak 26.8.2 y Vault 2.2.0 con Docker Compose: tokens reales, token exchange (RFC 8693),
 #    F064 contra Keycloak, Vault sembrado con política de solo lectura y Trivy 0.76.1 sobre F069.
-# 3) Tests Spring Boot 4.1.3 de F061–F066 y F068 con el Maven Wrapper.
+# 3) Tests Spring Boot 4.1.3 de F061–F066 y F068 con el Gradle Wrapper.
 # Uso: ./verificar.sh              (JDK 25, Docker con Compose v5, curl, openssl)
 #      ./verificar.sh --solo-jdk   (solo el paso 1: sin Docker ni Maven Central)
 #      ./verificar.sh --mtls       (además, F067 con kind + Istio: ver mtls-kind/README.md)
@@ -46,8 +46,8 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     grep -q '^aud: *"pagos"' logs/token-canjeado.txt && echo "OK: token canjeado con aud=pagos" || falla "aud del token canjeado"
 
     echo "-- F064 contra Keycloak real"
-    ./mvnw -q -f f064-keycloak/pom.xml package -DskipTests && {
-      java -jar f064-keycloak/target/f064-keycloak-1.0.0.jar > logs/f064.log 2>&1 & pid=$!
+    ./gradlew -q :f064-keycloak:bootJar && {
+      java -jar f064-keycloak/build/libs/f064-keycloak-1.0.0.jar > logs/f064.log 2>&1 & pid=$!
       for _ in $(seq 1 40); do sleep 1; curl -s -o /dev/null localhost:8081/pedidos && break; done
       c1=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $ana" localhost:8081/pedidos)
       c2=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $ana" localhost:8081/admin/reportes)
@@ -61,9 +61,10 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     VAULT_TOKEN=$(./vault/sembrar.sh) && export VAULT_TOKEN || falla "vault/sembrar.sh"
 
     echo "-- Trivy 0.76.1 sobre F069 (antes: exit 1 · después: exit 0)"
-    # Trivy resuelve los POM padre; con el ~/.m2 del equipo montado no depende de Maven Central
-    # (que responde 429 y bloquea la IP 30 min si se le pide demasiado).
-    ./mvnw -q -f f069-escaneo/despues/pom.xml dependency:resolve >/dev/null 2>&1 || true
+    # F069 sigue siendo Maven a propósito: los pom.xml son lo que Trivy escanea. Trivy resuelve los POM padre; con el
+    # ~/.m2 del equipo montado no depende de Maven Central (que responde 429 y bloquea la IP 30 min si se le pide
+    # demasiado). Si tienes mvn instalado, precarga el ~/.m2; si no, Trivy descarga lo que necesite.
+    if command -v mvn > /dev/null 2>&1; then mvn -q -f f069-escaneo/despues/pom.xml dependency:resolve >/dev/null 2>&1 || true; fi
     mkdir -p "$HOME/.m2/repository"
     trivy() { docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$HOME/.m2":/root/.m2:ro \
       -v "$PWD/f069-escaneo":/src:ro aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --quiet "/src/$1"; }
@@ -76,7 +77,7 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     trivyc despues || falla "Trivy config encontró HIGH/CRITICAL en despues/Dockerfile"
 
     echo "== 3. Tests Spring Boot 4.1.3 (F061–F066, F068)"
-    ./mvnw -q test || falla "tests Maven"
+    ./gradlew -q test || falla "tests con Gradle"
     docker compose down
   else
     falla "Keycloak o Vault no quedaron healthy (docker compose logs)"
@@ -92,6 +93,6 @@ if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
 elif [ "$fallos" -eq 0 ]; then
   echo "RESULTADO: OK · Módulo 9 (Seguridad) verificado"
 else
-  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o el primer [ERROR] de Maven"
+  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o «What went wrong» de Gradle"
   exit 1
 fi

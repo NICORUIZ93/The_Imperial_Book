@@ -37,14 +37,14 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     echo "FALLA: inventario o Toxiproxy no quedaron healthy (docker compose logs)"; fallos=$((fallos + 1))
   fi
   echo "== 3. Tests Spring Boot + Resilience4j (F057–F060)"
-  ./mvnw -q test > logs/maven-test.log 2>&1 || { fallos=$((fallos + 1)); grep -E "ERROR|FAIL|Tests run:.*Fail" logs/maven-test.log | head -40; }
-  for d in f0*/target/surefire-reports; do [ -d "$d" ] && cp -r "$d" "logs/${d%%/*}-surefire"; done
+  ./gradlew -q test > logs/gradle-test.log 2>&1 || { fallos=$((fallos + 1)); grep -E "FAILED|FAILURE|What went wrong" logs/gradle-test.log | head -40; }
+  for d in f0*/build/test-results/test; do [ -d "$d" ] && cp -r "$d" "logs/${d%%/*}-test-results"; done
 fi
 if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
   echo "RESULTADO: OK · Módulo 8 (Resiliencia) · parte JDK verificada (falta ./verificar.sh completo)"
 elif [ "$fallos" -eq 0 ]; then
   echo "RESULTADO: OK · Módulo 8 (Resiliencia) verificado"
 else
-  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o el primer [ERROR] de Maven"
+  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o «What went wrong» de Gradle"
   exit 1
 fi

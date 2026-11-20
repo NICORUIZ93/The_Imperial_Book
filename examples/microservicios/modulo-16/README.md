@@ -15,11 +15,12 @@ prueba en `pruebas/fNNN-*.sh`.
 | F087 Blue-Green y Canary | `k8s/despliegues/` | `pruebas/f087-despliegues.sh` |
 | F088 GitOps con Argo CD | `argocd/` (Argo CD v3.5.6) | `pruebas/f088-argocd.sh` |
 
-Tests de la aplicación sin Docker ni clúster: `./mvnw test` (5 tests en `CatalogoTest`).
+Tests de la aplicación sin Docker ni clúster: `(cd app && ./gradlew test)` (5 tests en `CatalogoTest`; el build de Gradle vive en `app/`, que es el
+contexto de `docker build`).
 
 ## Versiones
 
-JDK 25 LTS · Spring Boot 4.1.3 · `maven:3.10.0-eclipse-temurin-25` (compilación) ·
+JDK 25 LTS · Spring Boot 4.1.3 · `eclipse-temurin:25-jdk` con el wrapper de Gradle 9.9.2 (compilación) ·
 `gcr.io/distroless/java25-debian13:nonroot` (ejecución) · `nginx:1.30.6-alpine` · kind v0.33.0 con
 `kindest/node:v1.37.0@sha256:a1ed56cf…` · kubectl 1.37 · metrics-server v0.9.0 · Helm 4.3.1 · Argo CD v3.5.6 ·
 `busybox:1.37.0`.
@@ -46,4 +47,11 @@ Borrar el clúster a mano: `kind delete cluster --name academia-m12`.
 
 Ver [`verificacion/microservicios/pendiente.md`](../../../verificacion/microservicios/pendiente.md). Aquí se
 validaron los manifiestos de `k8s/` contra Kubernetes 1.37 (`kubernetes-validate --strict`), `docker compose config`,
-los guiones con `shellcheck` y `SondaSalud` con JDK 25.0.5; faltan Maven, Docker Hub, kind, Helm y Argo CD.
+los guiones con `shellcheck` y `SondaSalud` con JDK 25.0.5; faltan Maven Central, Docker Hub, kind, Helm y Argo CD.
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper (`app/gradlew`); las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

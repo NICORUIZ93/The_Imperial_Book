@@ -15,7 +15,7 @@ Lección: [`web/public/content/microservices/modulo-14.md`](../../../web/public/
 
 JDK 25 LTS (25.0.5) · Spring Boot 4.1.3 (Micrometer 1.17.3, Micrometer Tracing 1.7.3, OpenTelemetry 1.62.0, Zipkin
 Reporter 3.5.3) · Prometheus v3.15.1 (`prom/prometheus:v3.15.1`) · Grafana 13.2.4 (`grafana/grafana:13.2.4`) · Jaeger
-2.22.0 (`jaegertracing/jaeger:2.22.0`) · Zipkin 3.6.1 (`openzipkin/zipkin:3.6.1`) · Python 3 · Maven 3.10.1 por el
+2.22.0 (`jaegertracing/jaeger:2.22.0`) · Zipkin 3.6.1 (`openzipkin/zipkin:3.6.1`) · Python 3 · Gradle 9.9.2 por el
 wrapper.
 
 ## Ejecutar
@@ -23,7 +23,7 @@ wrapper.
 ```bash
 cd examples/microservicios/modulo-14
 ./verificar.sh --solo-jdk     # JDK 25 y Python: 4 demostraciones + validador del dashboard
-./verificar.sh                # + promtool, Grafana, Zipkin, Prometheus raspando f070, Jaeger con f071 y tests Maven
+./verificar.sh                # + promtool, Grafana, Zipkin, Prometheus raspando f070, Jaeger con f071 y tests con Gradle
 ```
 
 El script termina con `RESULTADO: OK · Módulo 10 (Observabilidad) verificado`.
@@ -32,7 +32,7 @@ El script termina con `RESULTADO: OK · Módulo 10 (Observabilidad) verificado`.
 
 ```bash
 docker compose up -d --wait
-(cd f070-micrometer-prometheus && ../mvnw -q spring-boot:run) &    # :8080
+(cd f070-micrometer-prometheus && ../gradlew -q bootRun) &    # :8080
 ./carga.sh 300 5                                                   # 5 min con 5 % de peticiones lentas
 ```
 
@@ -41,3 +41,10 @@ docker compose up -d --wait
 - Jaeger: http://localhost:16686 · Zipkin: http://localhost:9411.
 
 `verificar.sh` guarda en `logs/` (ignorada por git) la salida de las apps que arranca: `logs/f070.log`, `logs/f071-*.log` y, si Jaeger no muestra las trazas, `logs/jaeger.log`.
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper `./gradlew`; las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

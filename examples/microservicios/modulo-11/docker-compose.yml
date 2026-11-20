@@ -2,7 +2,7 @@
 # Consul 2.1.0 en modo desarrollo (un solo nodo, todo en memoria): registro de servicios + UI.
 #   docker compose up -d --wait      -> UI en http://localhost:8500
 #   docker compose down
-# Eureka Server y Config Server son aplicaciones Spring Boot del laboratorio: se arrancan con ./mvnw
+# Eureka Server y Config Server son aplicaciones Spring Boot del laboratorio: se arrancan con ./gradlew
 # (ver README). El test de f052-consul arranca su propio Consul con Testcontainers.
 services:
   consul:

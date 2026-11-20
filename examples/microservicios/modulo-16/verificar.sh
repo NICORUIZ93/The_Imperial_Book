@@ -61,7 +61,7 @@ paso "kind v0.33" version_de "v0.33" kind version
 paso "kubectl 1.37" version_de "v1.37" kubectl version --client
 paso "Helm 4" version_de "v4." helm version --short
 
-paso "Tests de la app catalogo (configuración y probes)" ./mvnw -q test
+paso "Tests de la app catalogo (configuración y probes)" app/gradlew -q -p app test
 
 paso "F081 · docker build academia/catalogo:1.0.0 (multi-stage + distroless)" \
   docker build --provenance=false -t academia/catalogo:1.0.0 app

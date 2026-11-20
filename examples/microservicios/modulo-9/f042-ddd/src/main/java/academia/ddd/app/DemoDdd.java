@@ -6,7 +6,7 @@ import academia.ddd.ventas.Pedido;
 import academia.ddd.ventas.PedidoConfirmado;
 import academia.ddd.ventas.ReglaDeNegocioViolada;
 
-/** Recorrido sin Spring: el dominio funciona solo. Ejecuta: java -cp target/classes academia.ddd.app.DemoDdd */
+/** Recorrido sin Spring: el dominio funciona solo. Ejecuta: java -cp build/classes/java/main academia.ddd.app.DemoDdd */
 public final class DemoDdd {
 
     public static void main(String[] args) {

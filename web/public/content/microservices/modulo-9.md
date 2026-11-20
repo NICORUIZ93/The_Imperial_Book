@@ -4,8 +4,8 @@
 **Dificultad:** 3 de 5 (4 de 5 en DDD y Strangler Fig). **Dependencias:** Módulos 1 a 4 (Java moderno, Spring IoC,
 perfiles, Spring MVC, JDBC/JPA, PostgreSQL, testing con JUnit y MockMvc). **Herramientas:** **JDK 25 LTS (25.0.5)**,
 **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.3**, PostgreSQL 18.7 en
-Docker Compose y Maven 3.9.11 mediante el wrapper `./mvnw`. **Laboratorio:** `examples/microservicios/modulo-9/` (una
-carpeta Maven autónoma por tema; `./verificar.sh` ejecuta todos los tests).
+Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`. **Laboratorio:** `examples/microservicios/modulo-9/` (un
+subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los tests).
 
 Hasta aquí construiste **una** aplicación Spring Boot. Este módulo responde la pregunta que viene después: ¿cuándo
 conviene partirla en varios servicios, por dónde se corta y cómo se migra sin apagar el negocio? Vas a aprender a
@@ -39,8 +39,8 @@ Fig), que lleva al tema 6 (Database-per-service).
 
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-9` y ejecuta `./verificar.sh`: arranca
 PostgreSQL con Docker Compose, corre los tests de las seis carpetas y apaga el contenedor. Para un solo tema:
-`cd f042-ddd && ../mvnw test`. Las fichas F041 y F042 (y la parte de Java puro de F044 y F045) corren también solo con
-el JDK, sin Maven: el comando exacto está en cada ficha.
+`cd f042-ddd && ../gradlew test`. Las fichas F041 y F042 (y la parte de Java puro de F044 y F045) corren también solo con
+el JDK, sin Gradle: el comando exacto está en cada ficha.
 
 ---
 
@@ -54,7 +54,7 @@ Módulo 5, Lección 1 de 6 · Fase 1 · `web/public/content/microservices/modulo
 #### 2. PRERREQUISITOS
 
 - Haber construido una API con Spring MVC y una base de datos (Módulo 2).
-- Saber ejecutar tests con `./mvnw test` y leer un `assertEquals` (Módulo 3).
+- Saber ejecutar tests con `./gradlew test` y leer un `assertEquals` (Módulo 3).
 - Tener el JDK 25: `java -version` debe responder `openjdk version "25...`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
@@ -176,35 +176,119 @@ unir dos módulos de un monolito es barato.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS (25.0.5)**, Spring Boot 4.1.3 como *parent* (solo para heredar versiones de plugins y de JUnit
-Jupiter 6.0.3). El evaluador es Java puro y corre tal cual con `javac` y `java`. `f041-estilos/pom.xml`:
+Jupiter 6.0.3). El evaluador es Java puro y corre tal cual con `javac` y `java`. `f041-estilos/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F041 · Monolito vs Microservicios vs SOA -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f041-estilos</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Solo JUnit Jupiter 6.0.3 (gestionado por Spring Boot 4.1.3): el evaluador es Java puro. -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F041 · Monolito vs Microservicios vs SOA
+plugins {
+    java
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    testImplementation(platform(libs.spring.boot.dependencies))
+    // Solo JUnit Jupiter 6.0.3 (gestionado por Spring Boot 4.1.3): el evaluador es Java puro.
+    testImplementation(libs.junit.jupiter)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-9/settings.gradle.kts`:
+
+```kotlin
+// Módulo 5 (modulo-9) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todos los subproyectos.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-9-laboratorios"
+
+include(
+    "f041-estilos",
+    "f042-ddd",
+    "f043-modulith",
+    "f044-doce-factores",
+    "f045-strangler-fig",
+    "f046-bd-por-servicio",
+)
+```
+
+`modulo-9/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 5 (modulo-9)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+# Spring Modulith 2.1.3 se construye sobre Spring Boot 4.1.3 (no lo gestiona el BOM de Boot)
+spring-modulith = "2.1.3"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-modulith-starter-core = { module = "org.springframework.modulith:spring-modulith-starter-core" }
+spring-modulith-events-api = { module = "org.springframework.modulith:spring-modulith-events-api" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+h2 = { module = "com.h2database:h2" }
+spring-modulith-starter-test = { module = "org.springframework.modulith:spring-modulith-starter-test" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+postgresql = { module = "org.postgresql:postgresql" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 ```
 
 `src/main/java/academia/estilos/Contexto.java`, `Estilo.java` y `Recomendacion.java`:
@@ -367,7 +451,7 @@ billetera muestra una sola línea: `· no hay plataforma operativa (CI/CD, conte
 
 ```bash
 cd examples/microservicios/modulo-9/f041-estilos
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/estilos/EvaluadorDeArquitecturaTest.java`:
@@ -426,7 +510,7 @@ class EvaluadorDeArquitecturaTest {
 }
 ```
 
-**Output esperado:** `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** una empresa de 120 desarrolladores en 12 equipos no tiene CI/CD ni monitoreo. ¿Qué recomienda el
 evaluador y por qué? *(Monolito modular: sin plataforma operativa, cada servicio nuevo multiplica los incidentes; lo
 primero es construir la plataforma.)*
@@ -574,40 +658,42 @@ entender **el negocio** y sus palabras. Tres ideas bastan para empezar:
 
 Versiones: **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (`spring-boot-starter` para el contenedor y los eventos;
 JUnit Jupiter 6.0.3 y AssertJ 3.27.7 en los tests). Los paquetes `ventas` y `envios` son Java puro; solo `app` usa
-Spring. `f042-ddd/pom.xml`:
+Spring. `f042-ddd/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F042 · DDD: Bounded Contexts, Agregados, Eventos de Dominio -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f042-ddd</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Contenedor de Spring y ApplicationEventPublisher. El dominio (ventas, envios) NO depende de Spring. -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3, AssertJ 3.27.7 y Spring Test -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F042 · DDD: Bounded Contexts, Agregados, Eventos de Dominio
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Contenedor de Spring y ApplicationEventPublisher. El dominio (ventas, envios) NO depende de Spring.
+    implementation(libs.spring.boot.starter)
+    // JUnit Jupiter 6.0.3, AssertJ 3.27.7 y Spring Test
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 Contexto Ventas · `src/main/java/academia/ddd/ventas/Dinero.java`, `LineaDePedido.java`, `PedidoConfirmado.java`,
@@ -813,7 +899,7 @@ import academia.ddd.ventas.Pedido;
 import academia.ddd.ventas.PedidoConfirmado;
 import academia.ddd.ventas.ReglaDeNegocioViolada;
 
-/** Recorrido sin Spring: el dominio funciona solo. Ejecuta: java -cp target/classes academia.ddd.app.DemoDdd */
+/** Recorrido sin Spring: el dominio funciona solo. Ejecuta: java -cp build/classes/java/main academia.ddd.app.DemoDdd */
 public final class DemoDdd {
 
     public static void main(String[] args) {
@@ -944,9 +1030,9 @@ class OyenteDeEnvios {
    java -cp /tmp/f042 academia.ddd.app.DemoDdd
    ```
 2. **Rómpelo a propósito:** en `Pedido.lineas()` cambia `return List.copyOf(lineas);` por `return lineas;` y ejecuta
-   los tests (`../mvnw test -Dtest=PedidoTest`). El test `lasLineasNoSePuedenModificarDesdeFuera` falla: cualquiera
+   los tests (`../gradlew test --tests PedidoTest`). El test `lasLineasNoSePuedenModificarDesdeFuera` falla: cualquiera
    podría agregar 100 unidades gratis saltándose la regla de las 20 unidades. Deshaz el cambio.
-3. Ejecuta el flujo con Spring: `../mvnw test -Dtest=FlujoEntreContextosTest`.
+3. Ejecuta el flujo con Spring: `../gradlew test --tests FlujoEntreContextosTest`.
 
 **Output esperado** (paso 1, salida real con JDK 25.0.5):
 
@@ -965,7 +1051,7 @@ bultos. La última muestra la invariante en acción: un pedido confirmado ya no 
 
 ```bash
 cd examples/microservicios/modulo-9/f042-ddd
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/ddd/ventas/PedidoTest.java`:
@@ -1081,7 +1167,7 @@ class FlujoEntreContextosTest {
 }
 ```
 
-**Output esperado:** `Tests run: 7, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (5 de `PedidoTest`, 1 de
+**Output esperado:** 7 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (5 de `PedidoTest`, 1 de
 `PlanificadorDeEnviosTest` y 1 de `FlujoEntreContextosTest`). **Pregunta de comprobación:** ¿por qué `Envio` no tiene
 un campo de tipo `Pedido`? *(Porque pertenece a otro contexto: depende solo del evento publicado; si tuviera `Pedido`,
 cualquier cambio interno de Ventas rompería Envíos.)*
@@ -1220,7 +1306,7 @@ cualquier otra, así que las fronteras se rompen sin que nadie lo note.
   **no** el paquete `org.springframework.modulith.events`; `@ApplicationModuleListener` está en
   `spring-modulith-events-api`, que se declara aparte (o llega con los *starters* del registro de eventos, como
   `spring-modulith-starter-jdbc`).
-- **Por qué hay H2 en el `pom.xml`:** un listener transaccional necesita un gestor de transacciones; con
+- **Por qué hay H2 en `build.gradle.kts`:** un listener transaccional necesita un gestor de transacciones; con
   `spring-boot-starter-jdbc` y H2, Spring Boot crea uno sin configuración.
 - **`@ApplicationModuleTest`** arranca **solo el módulo** del paquete del test (modo `STANDALONE`), y el parámetro
   `Scenario` permite publicar un evento y esperar a que cambie un estado (`andWaitForStateChange`).
@@ -1233,7 +1319,7 @@ cualquier otra, así que las fronteras se rompen sin que nadie lo note.
 - **Registro de publicaciones de eventos.** Con `spring-modulith-starter-jdbc` (o `-jpa`, `-mongodb`), cada evento se
   guarda en una tabla en la misma transacción y se marca como completado cuando el listener termina; si la aplicación
   se cae, los eventos pendientes se pueden reenviar. Es una forma de *outbox* dentro del monolito (Módulo 25).
-- **Alternativas para hacer cumplir fronteras:** (1) **módulos Maven separados** (Módulo 1, multi-módulo): el
+- **Alternativas para hacer cumplir fronteras:** (1) **subproyectos de Gradle separados** (Módulo 1, multi-módulo): el
   compilador impide las dependencias, pero cambiar una frontera exige mover código entre artefactos; (2) **JPMS**
   (`module-info.java`): fuerte, pero incómodo con la reflexión de Spring; (3) **ArchUnit a mano** (Módulo 3): flexible,
   pero escribes y mantienes las reglas tú; Spring Modulith te las da hechas para la convención de paquetes.
@@ -1244,68 +1330,53 @@ cualquier otra, así que las fronteras se rompen sin que nadie lo note.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3**, **Spring Modulith 2.1.3** (su propio BOM; esta versión está
-construida sobre Spring Boot 4.1.3), H2 2.4.240 (gestionado por Boot). `f043-modulith/pom.xml`:
+construida sobre Spring Boot 4.1.3), H2 2.4.240 (gestionado por Boot). `f043-modulith/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F043 · Spring Modulith -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f043-modulith</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Spring Modulith 2.1.3 se construye sobre Spring Boot 4.1.3 (no lo gestiona el BOM de Boot) -->
-    <spring-modulith.version>2.1.3</spring-modulith.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.modulith</groupId>
-        <artifactId>spring-modulith-bom</artifactId>
-        <version>${spring-modulith.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API de módulos (ApplicationModules) y verificación de la estructura -->
-    <dependency>
-      <groupId>org.springframework.modulith</groupId>
-      <artifactId>spring-modulith-starter-core</artifactId>
-    </dependency>
-    <!-- @ApplicationModuleListener vive en spring-modulith-events-api: el starter core NO lo incluye -->
-    <dependency>
-      <groupId>org.springframework.modulith</groupId>
-      <artifactId>spring-modulith-events-api</artifactId>
-    </dependency>
-    <!-- @ApplicationModuleListener es un listener transaccional: necesita un gestor de transacciones -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- @ApplicationModuleTest, Scenario y spring-boot-starter-test -->
-    <dependency>
-      <groupId>org.springframework.modulith</groupId>
-      <artifactId>spring-modulith-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F043 · Spring Modulith
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.modulith:spring-modulith-bom:${libs.versions.spring.modulith.get()}")
+    }
+}
+
+dependencies {
+    // API de módulos (ApplicationModules) y verificación de la estructura
+    implementation(libs.spring.modulith.starter.core)
+    // @ApplicationModuleListener vive en spring-modulith-events-api: el starter core NO lo incluye
+    implementation(libs.spring.modulith.events.api)
+    // @ApplicationModuleListener es un listener transaccional: necesita un gestor de transacciones
+    implementation(libs.spring.boot.starter.jdbc)
+    runtimeOnly(libs.h2)
+    // @ApplicationModuleTest, Scenario y spring-boot-starter-test
+    testImplementation(libs.spring.modulith.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/java/academia/modulith/ModulithApp.java`:
@@ -1428,14 +1499,14 @@ public class Inventario {
 1. Ejecuta la verificación de la estructura e inspecciona lo que Spring Modulith detectó:
    ```bash
    cd examples/microservicios/modulo-9/f043-modulith
-   ../mvnw test -Dtest=ModularidadTest
+   ../gradlew test --tests ModularidadTest
    ```
 2. **Rómpelo a propósito:** en `Inventario.java` agrega el import
    `import academia.modulith.pedidos.interno.CalculadoraDeDescuentos;`, un campo
    `private final CalculadoraDeDescuentos descuentos;` y un constructor que lo reciba. Vuelve a ejecutar el paso 1.
 3. Deshaz el cambio y ejecuta el test del módulo inventario aislado:
    ```bash
-   ../mvnw test -Dtest=InventarioTest
+   ../gradlew test --tests InventarioTest
    ```
 
 **Output esperado:**
@@ -1443,8 +1514,8 @@ public class Inventario {
 - Paso 1: dos bloques que empiezan por `# ` con el nombre del módulo, cada uno con `> Logical name: pedidos` (o
   `inventario`), `> Base package: academia.modulith.pedidos` (o `...inventario`), `> Excluded packages: none`,
   `> Direct module dependencies:` (inventario muestra a pedidos; pedidos, `none`) y `> Spring beans:` con sus beans.
-  Termina con `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
-- Paso 3: en el log, `Reservadas 3 unidades de CAFE-500G para P-1`, y `Tests run: 1, Failures: 0`.
+  Termina con 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+- Paso 3: en el log, `Reservadas 3 unidades de CAFE-500G para P-1`, y 1 línea `PASSED`.
 
 Paso 2: el test falla con `org.springframework.modulith.core.Violations` y un mensaje que empieza por
 
@@ -1463,7 +1534,7 @@ módulo inventario.
 
 ```bash
 cd examples/microservicios/modulo-9/f043-modulith
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/modulith/ModularidadTest.java` y
@@ -1515,7 +1586,7 @@ class InventarioTest {
 }
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** si `Pedidos.completar` lanza una excepción después de `publishEvent`, ¿inventario reserva stock? *(No:
 `@ApplicationModuleListener` es transaccional y solo recibe el evento si la transacción se confirma.)*
 
@@ -1533,7 +1604,7 @@ transacción.
 Otro error real, al compilar en el Mac con solo `spring-modulith-starter-core`:
 `Inventario.java:[8,43] package org.springframework.modulith.events does not exist` y `[21,6] cannot find symbol:
 class ApplicationModuleListener`. **Diagnóstico:** la anotación vive en otro artefacto. **Arreglo:** agrega
-`spring-modulith-events-api` (versión del BOM de Spring Modulith), como en el `pom.xml` de esta ficha.
+`spring-modulith-events-api` (versión del BOM de Spring Modulith), como en el `build.gradle.kts` de esta ficha.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -1598,7 +1669,7 @@ iguales uno al lado del otro (escalar horizontalmente).
 
 ```mermaid
 flowchart LR
-    COD["Código<br/>(1 repo, factor I)"] --> BUILD["build: ./mvnw package<br/>JAR inmutable (V)"]
+    COD["Código<br/>(1 repo, factor I)"] --> BUILD["build: ./gradlew build<br/>JAR inmutable (V)"]
     BUILD --> REL1["release DEV =<br/>JAR + variables DEV"]
     BUILD --> REL2["release PROD =<br/>JAR + variables PROD (III)"]
     REL2 --> RUN1["proceso 1<br/>PORT=8080 (VII)"]
@@ -1635,10 +1706,10 @@ cambiar su código**. Las más importantes para empezar:
 | # | Factor | Cómo se ve en Spring Boot 4 |
 |---|---|---|
 | I | Un código base, muchos despliegues | un repositorio por servicio (o carpeta en un monorepo), el mismo commit en dev y prod |
-| II | Dependencias declaradas | `pom.xml` + `./mvnw` (Maven Wrapper): nada instalado «a mano» en el servidor |
+| II | Dependencias declaradas | `build.gradle.kts` + catálogo de versiones + `./gradlew` (Gradle Wrapper): nada instalado «a mano» en el servidor |
 | III | Configuración en el entorno | `TIENDA_MONEDA` → `tienda.moneda` (enlace relajado); `@ConfigurationProperties` + `@Validated` |
 | IV | Servicios de respaldo como recursos | `spring.datasource.url=${BD_URL}`: cambiar de base es cambiar una variable |
-| V | Build, release, run separados | `./mvnw package` produce un JAR; el release es JAR + configuración; nunca se edita en producción |
+| V | Build, release, run separados | `./gradlew build` produce un JAR; el release es JAR + configuración; nunca se edita en producción |
 | VI | Procesos sin estado | sin sesión HTTP en memoria; el estado va a la base de datos o a Redis (Módulo 4) |
 | VII | Asignación de puertos | Tomcat embebido; `server.port=${PORT:8080}` |
 | VIII | Concurrencia | más réplicas del mismo proceso (Kubernetes, Módulo 12), no hilos gigantes |
@@ -1670,57 +1741,45 @@ puro que lee un `application.properties` y señala secretos y direcciones fijas.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring MVC, Tomcat 11, Hibernate Validator, Actuator). El revisor es
-Java puro y se ejecuta con `java Archivo.java`. `f044-doce-factores/pom.xml`:
+Java puro y se ejecuta con `java Archivo.java`. `f044-doce-factores/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F044 · 12-Factor App -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f044-doce-factores</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Factor VII (port binding): Tomcat 11 embebido dentro del JAR -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Factor III: la configuración se valida al arrancar -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <!-- Factor IX: /actuator/health para que el orquestador sepa si el proceso está listo -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F044 · 12-Factor App
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Factor VII (port binding): Tomcat 11 embebido dentro del JAR
+    implementation(libs.spring.boot.starter.webmvc)
+    // Factor III: la configuración se valida al arrancar
+    implementation(libs.spring.boot.starter.validation)
+    // Factor IX: /actuator/health para que el orquestador sepa si el proceso está listo
+    implementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -1801,7 +1860,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
-/** Factor V (build, release, run): ./mvnw package construye UN jar; el mismo jar corre en todos los entornos. */
+/** Factor V (build, release, run): ./gradlew bootJar construye UN jar; el mismo jar corre en todos los entornos. */
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class DoceFactoresApp {
@@ -1886,12 +1945,12 @@ tienda.moneda=COP
    ```
 2. Arranca el mismo JAR con dos configuraciones distintas (factores III, V y VII):
    ```bash
-   ../mvnw -q package -DskipTests
-   PORT=8081 TIENDA_MONEDA=USD TIENDA_DESCUENTO_MAXIMO=25 java -jar target/f044-doce-factores-1.0.0.jar &
+   ../gradlew -q bootJar
+   PORT=8081 TIENDA_MONEDA=USD TIENDA_DESCUENTO_MAXIMO=25 java -jar build/libs/f044-doce-factores-1.0.0.jar &
    sleep 5 && curl -s localhost:8081/config; echo
    kill %1
    ```
-3. **Rómpelo a propósito:** `TIENDA_MONEDA=pesos java -jar target/f044-doce-factores-1.0.0.jar`.
+3. **Rómpelo a propósito:** `TIENDA_MONEDA=pesos java -jar build/libs/f044-doce-factores-1.0.0.jar`.
 
 **Output esperado:**
 
@@ -1921,7 +1980,7 @@ variables de entorno.
 
 ```bash
 cd examples/microservicios/modulo-9/f044-doce-factores
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/factores/DoceFactoresTest.java` y `RevisorDeConfiguracionTest.java`:
@@ -2004,7 +2063,7 @@ class RevisorDeConfiguracionTest {
 }
 ```
 
-**Output esperado:** `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** ¿qué factor violas si guardas el carrito de compras en un `HashMap` del controlador y tienes dos
 réplicas? *(El VI: cada réplica tiene un carrito distinto y un reinicio lo borra; el estado debe ir a un servicio de
 respaldo como Redis o la base de datos.)*
@@ -2161,52 +2220,43 @@ Si algo sale mal, **revertir es cambiar una línea** de la tabla de rutas.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (`spring-boot-starter-webmvc` y `spring-boot-starter-restclient`,
-Spring Framework 7.0.11). `TablaDeRutas` y `CapaAnticorrupcion` son Java puro. `f045-strangler-fig/pom.xml`:
+Spring Framework 7.0.11). `TablaDeRutas` y `CapaAnticorrupcion` son Java puro. `f045-strangler-fig/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F045 · Strangler Fig Pattern: fachada que enruta entre el monolito y el servicio nuevo -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f045-strangler-fig</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- La fachada recibe HTTP (Spring MVC) ... -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- ... y reenvía con RestClient (Spring Framework 7) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F045 · Strangler Fig Pattern: fachada que enruta entre el monolito y el servicio nuevo
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // La fachada recibe HTTP (Spring MVC) ...
+    implementation(libs.spring.boot.starter.webmvc)
+    // ... y reenvía con RestClient (Spring Framework 7)
+    implementation(libs.spring.boot.starter.restclient)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -2475,7 +2525,7 @@ public class ServidorFalso {
    ```bash
    java servidores-falsos/ServidorFalso.java monolito 8081      # terminal 1
    java servidores-falsos/ServidorFalso.java nuevo 8082         # terminal 2
-   ../mvnw -q spring-boot:run                                   # terminal 3 (fachada en :8080)
+   ../gradlew -q bootRun                                   # terminal 3 (fachada en :8080)
    ```
 3. En una cuarta terminal, pide tres rutas a la fachada:
    ```bash
@@ -2485,7 +2535,7 @@ public class ServidorFalso {
    ```
 4. **Migra `/clientes`:** detén la fachada (`Ctrl+C`) y arráncala con la regla nueva, sin tocar código:
    ```bash
-   STRANGLER_RUTAS="/cotizaciones->nuevo,/clientes->nuevo" ../mvnw -q spring-boot:run
+   STRANGLER_RUTAS="/cotizaciones->nuevo,/clientes->nuevo" ../gradlew -q bootRun
    ```
    Repite `curl -s localhost:8080/clientes/1`. Para **revertir**, vuelve a arrancar sin la variable.
 
@@ -2517,7 +2567,7 @@ de barato.
 
 ```bash
 cd examples/microservicios/modulo-9/f045-strangler-fig
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/strangler/TablaDeRutasTest.java`:
@@ -2677,7 +2727,7 @@ class FachadaStranglerTest {
 }
 ```
 
-**Output esperado:** `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (5 + 2 + 3). **Pregunta de
+**Output esperado:** 10 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (5 + 2 + 3). **Pregunta de
 comprobación:** ¿qué regla agregas para que `/cotizaciones/masivas` siga en el monolito mientras el resto de
 `/cotizaciones` va al servicio nuevo, y por qué funciona? *(`/cotizaciones/masivas->monolito`: gana el prefijo más
 largo.)*
@@ -2876,57 +2926,44 @@ services:
       retries: 30
 ```
 
-Servicio de Facturación · `f046-bd-por-servicio/pom.xml`:
+Servicio de Facturación · `f046-bd-por-servicio/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F046 · Database-per-service: el servicio de Facturación solo ve SU base de datos -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f046-bd-por-servicio</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- JdbcTemplate + HikariCP -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot) -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F046 · Database-per-service: el servicio de Facturación solo ve SU base de datos
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    // JdbcTemplate + HikariCP
+    implementation(libs.spring.boot.starter.jdbc)
+    // Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot)
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -3034,7 +3071,7 @@ ORDER BY c.envio_id;
    docker compose exec -T postgres psql "postgresql://svc_facturacion:facturacion@127.0.0.1:5432/facturacion_db" -f - < f046-bd-por-servicio/sql/03-join-entre-bases.sql
    docker compose exec -T postgres psql "postgresql://svc_facturacion:facturacion@127.0.0.1:5432/facturacion_db" -f - < f046-bd-por-servicio/sql/04-consulta-con-copia-local.sql
    ```
-3. Arranca el servicio y pide una factura: `cd f046-bd-por-servicio && ../mvnw -q spring-boot:run`, y en otra terminal
+3. Arranca el servicio y pide una factura: `cd f046-bd-por-servicio && ../gradlew -q bootRun`, y en otra terminal
    `curl -s localhost:8086/facturas/E-1; echo`. Al terminar, `docker compose down`.
 
 **Output esperado** (paso 2; salida real de `psql` con PostgreSQL 16.15, mismos mensajes en 18.7):
@@ -3063,7 +3100,7 @@ sale solo de tablas que Facturación posee.
 ```bash
 cd examples/microservicios/modulo-9
 docker compose up -d --wait
-cd f046-bd-por-servicio && ../mvnw test
+cd f046-bd-por-servicio && ../gradlew test
 ```
 
 `src/test/java/academia/facturacion/BdPorServicioTest.java`:
@@ -3110,7 +3147,7 @@ class BdPorServicioTest {
 }
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. El mensaje que comprueba el
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El mensaje que comprueba el
 segundo test es el del driver JDBC (salida real con el driver 42.7.2 sobre PostgreSQL 16.15):
 `FATAL: permission denied for database "envios_db"` seguido de `Detail: User does not have CONNECT privilege.` (código
 SQLState `42501`). `./verificar.sh` además ejecuta los tres guiones y exige que los dos primeros fallen y el tercero

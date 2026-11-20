@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cliente gRPC mínimo (sin Spring) contra el servidor en localhost:9090.
- * Ejecuta: ./mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.grpc.ClienteDeConsola
+ * Ejecuta: ../gradlew -q bootRun -Pprincipal=academia.grpc.ClienteDeConsola
  */
 public final class ClienteDeConsola {
 

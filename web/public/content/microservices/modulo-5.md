@@ -3,9 +3,9 @@
 **Fase 1 · Spring Boot de cero a experto** (semanas 1 y 2 de 12). **Duración:** 16 h (8 temas de 1,5–2,5 h).
 **Dificultad:** 2 de 5 en los temas 1–6 y 4 de 5 en CRaC y GraalVM. **Dependencias:** Fase 0 completa (Módulos
 0.1–0.5: terminal, Git, HTTP, JSON, YAML, variables de entorno, primer «Hola Mundo» en Java y Docker básico).
-**Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6), Maven
-3.10.1 mediante el wrapper `./mvnw` y Docker con Compose v5 para CRaC y Native Image. **Laboratorio:**
-`examples/microservicios/modulo-5/` (una carpeta Maven autónoma por tema; `./verificar.sh` ejecuta todos los
+**Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6), Gradle
+9.9.2 (Kotlin DSL) mediante el wrapper `./gradlew` y Docker con Compose v5 para CRaC y Native Image. **Laboratorio:**
+`examples/microservicios/modulo-5/` (un subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los
 tests).
 
 Antes de construir microservicios necesitas dominar las dos herramientas con las que se escriben en esta fase: el
@@ -39,7 +39,7 @@ bloque «Arranque rápido»: tema 7 (CRaC) y tema 8 (GraalVM Native Image).
 
 **Cómo usar el laboratorio.** Clona el repositorio, entra en `examples/microservicios/modulo-5` y ejecuta
 `java -version` (debe decir `25`). Cada tema tiene su carpeta (`f017-java-moderno`, `f018-virtual-threads`…); dentro
-de ella usa `../mvnw` (el wrapper del módulo descarga Maven 3.10.1 la primera vez). La primera compilación de Spring
+de ella usa `../gradlew` (el wrapper del módulo descarga Gradle 9.9.2 la primera vez). La primera compilación de Spring
 descarga dependencias de Maven Central y tarda unos minutos; las siguientes, segundos.
 
 ---
@@ -156,42 +156,124 @@ campos mutables. No devuelvas `Optional<List<T>>`: una lista vacía ya expresa �
 
 #### 9. CÓDIGO EJECUTABLE
 
-**Versiones:** JDK 25 LTS (25.0.5) · Spring Boot 4.1.3 como *parent* solo para heredar versiones de plugins ·
-JUnit Jupiter 6.0.3 (gestionado por Boot). El código no depende de Spring y corre tal cual con
+**Versiones:** JDK 25 LTS (25.0.5) · Gradle 9.9.2 · el BOM de Spring Boot 4.1.3 como plataforma, solo para fijar la
+versión de JUnit Jupiter 6.0.3. El código no depende de Spring y corre tal cual con
 `java src/main/java/academia/java/JavaModerno.java` (lanzador de un solo archivo, desde Java 11).
 
-`modulo-5/f017-java-moderno/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+> `f021-multimodulo` es un build completo que este incluye con `includeBuild` (lo verás en la lección 5).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F017 · Java moderno: Streams, Lambdas, Optional, Records, Pattern Matching.
-     Usa el parent de Spring Boot solo para heredar versiones probadas de plugins y de JUnit;
-     el código no depende de Spring. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f017-java-moderno</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <!-- El parent traduce java.version a maven.compiler.release -->
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <!-- JUnit Jupiter 6.0.3, versión gestionada por Spring Boot 4.1.3 -->
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+`modulo-5/settings.gradle.kts`:
+
+```kotlin
+// Módulo 1 (modulo-5) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todas las fichas.
+// Cada carpeta fNNN-* es un subproyecto con su propio build.gradle.kts; las versiones viven en
+// gradle/libs.versions.toml (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-5-laboratorios"
+
+include(
+    "f017-java-moderno",
+    "f018-virtual-threads",
+    "f019-ioc-di",
+    "f020-autoconfiguracion",
+    "f022-perfiles",
+    "f023-crac",
+    "f024-graalvm-native",
+)
+
+// F021 enseña el multi-proyecto: es un build completo (con su settings.gradle.kts) que se incluye
+// como build compuesto. Se puede abrir y construir solo: cd f021-multimodulo && ../gradlew build
+includeBuild("f021-multimodulo")
+```
+
+`modulo-5/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 1 (modulo-5) · Java moderno y Spring Boot esencial
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# Native Build Tools que admite Spring Boot 4.1.3 (docs.spring.io/spring-boot/4.1/system-requirements.html)
+graalvm-native = "1.1.18"
+spring-boot = "4.1.3"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+crac = { module = "org.crac:crac" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+graalvm-buildtools = { id = "org.graalvm.buildtools.native", version.ref = "graalvm-native" }
+```
+
+`modulo-5/f017-java-moderno/build.gradle.kts`:
+
+```kotlin
+// F017 · Java moderno: Streams, Lambdas, Optional, Records, Pattern Matching.
+// No aplica el plugin de Spring Boot: solo importa su BOM como plataforma para usar la versión
+// probada de JUnit; el código no depende de Spring.
+plugins {
+    java
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    testImplementation(platform(libs.spring.boot.dependencies))
+    testImplementation(libs.junit.jupiter)   // JUnit Jupiter 6.0.3, versión gestionada por Spring Boot 4.1.3
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f017-java-moderno/src/main/java/academia/java/JavaModerno.java`:
@@ -315,7 +397,7 @@ cd examples/microservicios/modulo-5/f017-java-moderno
 java -version
 ```
 
-2. Ejecuta el archivo directamente con el lanzador de código fuente (no hace falta Maven):
+2. Ejecuta el archivo directamente con el lanzador de código fuente (no hace falta Gradle):
 
 ```bash
 java src/main/java/academia/java/JavaModerno.java
@@ -413,10 +495,10 @@ class JavaModernoTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿por qué `skusCaros` no modifica la lista `lineas` aunque la ordene?
 
@@ -574,41 +656,48 @@ son baratos para crear y desechar; un pool reintroduce el límite que querías q
 
 #### 9. CÓDIGO EJECUTABLE
 
-**Versiones:** JDK 25 LTS (25.0.5) · sin dependencias en ejecución · JUnit Jupiter 6.0.3 para el test (gestionado
-por Spring Boot 4.1.3 como *parent*). Corre tal cual con `java src/main/java/academia/hilos/HilosVirtuales.java`.
+**Versiones:** JDK 25 LTS (25.0.5) · sin dependencias en ejecución · JUnit Jupiter 6.0.3 para el test (versión fijada
+por el BOM de Spring Boot 4.1.3). Corre tal cual con `java src/main/java/academia/hilos/HilosVirtuales.java`.
 
-`modulo-5/f018-virtual-threads/pom.xml`:
+`modulo-5/f018-virtual-threads/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F018 · Virtual Threads (Project Loom).
-     Usa el parent de Spring Boot solo para heredar versiones probadas de plugins y de JUnit;
-     el código no depende de Spring. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f018-virtual-threads</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <!-- El parent traduce java.version a maven.compiler.release -->
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <!-- JUnit Jupiter 6.0.3, versión gestionada por Spring Boot 4.1.3 -->
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F018 · Virtual Threads (Project Loom).
+// No aplica el plugin de Spring Boot: solo importa su BOM como plataforma para usar la versión
+// probada de JUnit; el código no depende de Spring.
+plugins {
+    java
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    testImplementation(platform(libs.spring.boot.dependencies))
+    testImplementation(libs.junit.jupiter)   // JUnit Jupiter 6.0.3, versión gestionada por Spring Boot 4.1.3
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f018-virtual-threads/src/main/java/academia/hilos/HilosVirtuales.java`:
@@ -766,10 +855,10 @@ class HilosVirtualesTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si tu servicio usa hilos virtuales y su pool de conexiones a PostgreSQL tiene 10
 conexiones, ¿cuántas consultas simultáneas llegan como máximo a la base de datos?
@@ -840,7 +929,7 @@ Módulo 1, Lección 3 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservic
 
 - Lección 1: interfaces, records y lambdas.
 - Módulo 0.3: clases, constructores y `new`.
-- Módulo 0.5: crear y ejecutar un proyecto Maven (`./mvnw package`, `java -jar`).
+- Módulo 0.5: ejecutar Java desde la terminal (`java -jar`). Lección 1 de este módulo: el wrapper (`./gradlew build`).
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -932,47 +1021,41 @@ estáticas sin dependencias. Un `@Component` para cada clase no es diseño: es a
 `spring-boot-starter-test` (JUnit Jupiter 6, AssertJ). `application.properties` apaga el banner y deja el log en
 `warn` para que solo veas tus líneas.
 
-`modulo-5/f019-ioc-di/pom.xml`:
+`modulo-5/f019-ioc-di/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F019 · Spring IoC, DI, Bean Lifecycle, ApplicationContext -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f019-ioc-di</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Núcleo de Spring Boot: contenedor IoC, logging y configuración. Sin servidor web. -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F019 · Spring IoC, DI, Bean Lifecycle, ApplicationContext
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Núcleo de Spring Boot: contenedor IoC, logging y configuración. Sin servidor web.
+    implementation(libs.spring.boot.starter)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f019-ioc-di/src/main/resources/application.properties`:
@@ -1152,8 +1235,8 @@ public class IocApp {
 
 ```bash
 cd examples/microservicios/modulo-5/f019-ioc-di
-../mvnw -q package -DskipTests
-java -jar target/f019-ioc-di-1.0.0.jar
+../gradlew -q bootJar
+java -jar build/libs/f019-ioc-di-1.0.0.jar
 ```
 
    **Output esperado:**
@@ -1235,10 +1318,10 @@ class CicloDeVidaTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si quitas `@Component` de `NotificadorCorreo`, ¿qué fase deja de ocurrir primero y por
 qué?
@@ -1414,47 +1497,41 @@ acoplamiento (Módulo 5).
 (`spring-boot-starter-test`). Estructura: el paquete `academia.saludo.autoconfigure` hace de «librería + starter» y
 `academia.app` es la aplicación que lo consume.
 
-`modulo-5/f020-autoconfiguracion/pom.xml`:
+`modulo-5/f020-autoconfiguracion/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F020 · Auto-configuración condicional, @Conditional, starters -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f020-autoconfiguracion</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Núcleo de Spring Boot: contenedor IoC, logging y configuración. Sin servidor web. -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F020 · Auto-configuración condicional, @Conditional, starters
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Núcleo de Spring Boot: contenedor IoC, logging y configuración. Sin servidor web.
+    implementation(libs.spring.boot.starter)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f020-autoconfiguracion/src/main/java/academia/saludo/autoconfigure/Saludador.java`:
@@ -1598,8 +1675,8 @@ public class SaludoApp {
 
 ```bash
 cd examples/microservicios/modulo-5/f020-autoconfiguracion
-../mvnw -q package -DskipTests
-java -jar target/f020-autoconfiguracion-1.0.0.jar
+../gradlew -q bootJar
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar
 ```
 
    **Output esperado:**
@@ -1612,7 +1689,7 @@ Hola, Ana!
 2. Cambia la configuración desde la línea de comandos, sin recompilar:
 
 ```bash
-java -jar target/f020-autoconfiguracion-1.0.0.jar --saludo.prefijo=Buenas --saludo.formal=true
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.prefijo=Buenas --saludo.formal=true
 ```
 
    **Output esperado:**
@@ -1625,7 +1702,7 @@ Buenas, Ana!
 3. Mira el informe de condiciones y busca tu clase:
 
 ```bash
-java -jar target/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.root=info | grep -A3 "SaludoAutoConfiguration"
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.root=info | grep -A3 "SaludoAutoConfiguration"
 ```
 
    **Output esperado (fragmento):** en *Positive matches* aparece `SaludoAutoConfiguration matched:` con una línea
@@ -1639,7 +1716,7 @@ java -jar target/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.root=i
 4. **Fallo deliberado:** apaga la auto-configuración:
 
 ```bash
-java -jar target/f020-autoconfiguracion-1.0.0.jar --saludo.habilitado=false
+java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --saludo.habilitado=false
 ```
 
    **Output esperado:** termina con
@@ -1725,10 +1802,10 @@ class SaludoAutoConfigurationTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si borras el archivo `AutoConfiguration.imports`, ¿qué tests fallan y cuáles siguen
 pasando?
@@ -1757,7 +1834,7 @@ está escrita al lado.
 **Arreglo:** crea exactamente
 `src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` con el nombre
 completo de la clase y compruébalo dentro del jar con
-`jar tf target/f020-autoconfiguracion-1.0.0.jar | grep imports`.
+`jar tf build/libs/f020-autoconfiguracion-1.0.0.jar | grep imports`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -1796,21 +1873,21 @@ Módulo 1, Lección 5 de 8 · Fase 1 · 1,5 h · Laboratorio `examples/microserv
 #### 2. PRERREQUISITOS
 
 - Lecciones 3 y 4: beans, `@Bean` y cómo Boot arma la aplicación.
-- Módulo 0.5: `pom.xml`, coordenadas `groupId:artifactId:version` y `./mvnw package`.
+- Lección 1: `build.gradle.kts`, catálogo de versiones, coordenadas `groupId:artifactId:version` y `./gradlew build`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
-**Organizar** un proyecto Maven en un POM padre y dos módulos (`tienda-dominio` sin Spring y `tienda-api` con
-Spring Boot), **construir** solo la parte que necesitas con `-pl ... -am` y **diagnosticar** una dependencia cíclica
-entre módulos a partir del mensaje real de Maven.
+**Organizar** un build de Gradle en un proyecto raíz y dos subproyectos, que aquí llamamos módulos (`tienda-dominio`
+sin Spring y `tienda-api` con Spring Boot), **construir** solo la parte que necesitas con `:tienda-api:test` o
+`buildDependents` y **diagnosticar** una dependencia cíclica entre módulos a partir del mensaje real de Gradle.
 
 #### 4. ANALOGÍA VISUAL
 
-Un **edificio de apartamentos con una sola escritura**. El POM padre es el **reglamento de copropiedad**: fija las
-reglas comunes (versión de Java, versiones de librerías) para todos. Cada módulo es un **apartamento** con su puerta:
+Un **edificio de apartamentos con una sola escritura**. El proyecto raíz (`settings.gradle.kts` y el catálogo de versiones) es el **reglamento de copropiedad**: dice qué
+apartamentos existen y fija las reglas comunes (versiones de librerías y plugins) para todos. Cada módulo es un **apartamento** con su puerta:
 `tienda-dominio` es el apartamento del primer piso, donde vive el «cerebro» del negocio, sin cables de Spring;
 `tienda-api` está encima y tiene la **escalera que baja** al primer piso (su dependencia). La escalera solo baja: si
-alguien construye otra que suba desde el primer piso al segundo, se forma un **círculo** y el inspector (Maven) no
+alguien construye otra que suba desde el primer piso al segundo, se forma un **círculo** y el inspector (Gradle) no
 aprueba la obra. En el dibujo, una flecha gruesa baja de `tienda-api` a `tienda-dominio` y una flecha tachada en rojo
 intenta subir.
 
@@ -1818,15 +1895,15 @@ intenta subir.
 
 ```mermaid
 flowchart TB
-    P["f021-multimodulo (packaging pom)<br/>parent: spring-boot-starter-parent 4.1.3<br/>dependencyManagement: tienda-dominio"]
-    P -->|"#lt;modules#gt;"| D["tienda-dominio (jar)<br/>PoliticaDescuento · Java puro · JUnit"]
-    P -->|"#lt;modules#gt;"| A["tienda-api (jar ejecutable)<br/>Spring MVC · spring-boot-maven-plugin"]
+    P["f021-multimodulo (proyecto raíz, sin jar)<br/>settings.gradle.kts: include de los dos módulos<br/>catálogo libs: Spring Boot 4.1.3"]
+    P -->|"include"| D["tienda-dominio (jar)<br/>PoliticaDescuento · Java puro · JUnit"]
+    P -->|"include"| A["tienda-api (jar ejecutable)<br/>Spring MVC · plugin org.springframework.boot"]
     A -->|"depende de"| D
     D -. "✘ prohibido: ciclo" .-> A
 ```
 
-**Texto alternativo:** arriba, el POM padre f021-multimodulo, de tipo pom, que hereda de spring-boot-starter-parent
-4.1.3 y declara la versión de tienda-dominio. Del padre salen dos flechas «modules» hacia tienda-dominio (jar con la
+**Texto alternativo:** arriba, el proyecto raíz f021-multimodulo, que no produce jar: su settings.gradle.kts incluye
+los dos módulos y el catálogo libs fija Spring Boot 4.1.3. De la raíz salen dos flechas «include» hacia tienda-dominio (jar con la
 clase PoliticaDescuento, Java puro con JUnit) y tienda-api (jar ejecutable con Spring MVC y el plugin de Spring Boot).
 Una flecha sólida va de tienda-api a tienda-dominio con la etiqueta «depende de»; una flecha punteada de vuelta, de
 tienda-dominio a tienda-api, está marcada como prohibida porque formaría un ciclo.
@@ -1835,29 +1912,33 @@ tienda-dominio a tienda-api, está marcada como prohibida porque formaría un ci
 
 Al principio todo cabe en un proyecto. Cuando crece, conviene **separarlo en piezas** que se compilan juntas pero
 tienen límites claros: una pieza con las reglas del negocio (cuánto descuento aplica) y otra con la parte web (recibir
-peticiones HTTP). Maven llama a cada pieza **módulo**, y a la carpeta que los agrupa, **proyecto multi-módulo**. Con
-un solo comando (`./mvnw test`) se compila todo en el orden correcto.
+peticiones HTTP). Gradle llama a cada pieza **subproyecto** (en Maven, **módulo**; aquí usamos las dos palabras), y al conjunto,
+**build multi-proyecto** (multi-módulo). Con
+un solo comando (`./gradlew test`) se compila todo en el orden correcto.
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-- **POM padre** con `<packaging>pom</packaging>`: no produce jar. Cumple dos papeles que a veces se separan:
-  **agregador** (`<modules>`: qué se construye junto) y **padre** (`<parent>` en los hijos: qué heredan). Aquí
-  hereda de `spring-boot-starter-parent`, así todos los módulos comparten versiones de Spring, JUnit y plugins.
-- **`dependencyManagement`** fija la versión de `tienda-dominio` una sola vez; `tienda-api` la declara sin `<version>`.
-- **Reactor:** Maven ordena los módulos por sus dependencias, no por el orden en `<modules>`: verás `tienda-dominio`
-  antes que `tienda-api` aunque los listes al revés.
-- **Construcción parcial:** `-pl tienda-api` (*projects list*) elige un módulo y `-am` (*also make*) añade los que
-  necesita. `-amd` (*also make dependents*) hace lo contrario: «cambié el dominio, construye todo lo que depende de él».
-- **Solo el ejecutable lleva `spring-boot-maven-plugin`.** Ese plugin «re-empaqueta» el jar con las clases en
-  `BOOT-INF/classes`; si lo pones en el dominio, los otros módulos ya no encuentran sus clases cuando lo usan desde
-  el repositorio local.
+- **Proyecto raíz:** no produce jar. Reparte en dos archivos los dos papeles que en Maven cumple el POM padre:
+  `settings.gradle.kts` es el **agregador** (`include(...)`: qué se construye junto; en Maven, `<modules>`) y el
+  `build.gradle.kts` de la raíz declara lo **común** (plugins con `apply false`, `group` y `version` en `subprojects`;
+  en Maven, lo que los hijos heredan con `<parent>`). Las versiones de Spring, JUnit y plugins salen del catálogo `libs`.
+- **Dependencia entre proyectos:** `implementation(project(":tienda-dominio"))` no lleva versión: siempre es el código
+  que tienes delante (en Maven, la versión del módulo hermano se fijaba en `dependencyManagement`).
+- **Grafo de tareas:** Gradle ordena el trabajo por las dependencias, no por el orden del `include`: verás
+  `:tienda-dominio:jar` antes que `:tienda-api:compileJava` aunque los listes al revés (en Maven, el *reactor*).
+- **Construcción parcial:** `:tienda-api:test` ejecuta esa tarea y **solo lo que necesita** (compila y empaqueta el
+  dominio, pero no corre sus tests; en Maven, `-pl tienda-api -am`). `:tienda-dominio:buildDependents` hace lo
+  contrario: «cambié el dominio, construye y prueba todo lo que depende de él» (en Maven, `-amd`).
+- **Solo el ejecutable aplica el plugin `org.springframework.boot`.** Su tarea `bootJar` empaqueta las clases en
+  `BOOT-INF/classes`; el dominio es una librería y produce un jar normal con la tarea `jar`. Si publicas una librería
+  como jar ejecutable, quien la consume no encuentra sus clases.
 
 #### 8. EXPLICACIÓN MAESTRA
 
 | Estructura | Cuándo | Precio |
 |---|---|---|
 | Un módulo | Servicios pequeños, un equipo | Los límites internos solo existen por convención de paquetes. |
-| Multi-módulo Maven (este tema) | Separar dominio de infraestructura (arquitectura hexagonal), compartir un módulo de contratos | Más POMs que mantener; tentación de crear un módulo `common` que todos usan. |
+| Multi-proyecto de Gradle (este tema; en Maven, multi-módulo) | Separar dominio de infraestructura (arquitectura hexagonal), compartir un módulo de contratos | Más archivos de build que mantener; tentación de crear un módulo `common` que todos usan. |
 | Spring Modulith (Módulo 5) | Un monolito modular con límites verificados por tests | Los límites son lógicos (paquetes), no de compilación. |
 | Repositorios separados | Servicios con ciclos de despliegue independientes | Versionado y publicación de artefactos; cambios coordinados lentos. |
 
@@ -1871,68 +1952,89 @@ distribuido (Módulo 30).
 
 #### 9. CÓDIGO EJECUTABLE
 
-**Versiones:** JDK 25 LTS · Maven 3.10.1 (wrapper) · Spring Boot 4.1.3 · JUnit Jupiter 6.0.3 · el dominio no usa Spring.
+**Versiones:** JDK 25 LTS · Gradle 9.9.2 (wrapper) · Spring Boot 4.1.3 · JUnit Jupiter 6.0.3 · el dominio no usa Spring.
 
-`modulo-5/f021-multimodulo/pom.xml`:
+`modulo-5/f021-multimodulo/settings.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F021 · Multi-module Spring Boot projects: POM padre (agregador + versiones comunes). -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f021-multimodulo</artifactId>
-  <version>1.0.0</version>
-  <packaging>pom</packaging>          <!-- el padre no produce un jar: solo agrupa -->
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <modules>                           <!-- orden indiferente: Maven calcula el grafo (reactor) -->
-    <module>tienda-dominio</module>
-    <module>tienda-api</module>
-  </modules>
-  <dependencyManagement>
-    <dependencies>
-      <!-- Versión del módulo hermano declarada una sola vez -->
-      <dependency>
-        <groupId>academia.microservicios</groupId>
-        <artifactId>tienda-dominio</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-</project>
+```kotlin
+// F021 · Multi-module Spring Boot projects: settings.gradle.kts declara QUÉ proyectos forman el build.
+// Es el equivalente del POM padre con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+    versionCatalogs {
+        // Reutiliza el catálogo del laboratorio (modulo-5/gradle/libs.versions.toml): versiones en un solo sitio
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = "f021-multimodulo"
+
+// Orden indiferente: Gradle calcula el grafo de tareas a partir de las dependencias entre proyectos
+include("tienda-dominio", "tienda-api")
 ```
 
-`modulo-5/f021-multimodulo/tienda-dominio/pom.xml`:
+`modulo-5/f021-multimodulo/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Módulo de dominio: Java puro, sin Spring. Es una librería (jar normal). -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>academia.microservicios</groupId>
-    <artifactId>f021-multimodulo</artifactId>
-    <version>1.0.0</version>
-  </parent>
-  <artifactId>tienda-dominio</artifactId>
-  <dependencies>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F021 · Proyecto raíz del multi-proyecto: no produce ningún jar, solo agrupa.
+// Declara los plugins una vez; cada subproyecto aplica los que necesita.
+plugins {
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
+}
+
+// Lo común a todos los subproyectos se declara una sola vez (como <groupId> y <version> del POM padre)
+subprojects {
+    group = "academia.microservicios"
+    version = "1.0.0"
+}
+```
+
+`modulo-5/f021-multimodulo/tienda-dominio/build.gradle.kts`:
+
+```kotlin
+// Módulo de dominio: Java puro, sin Spring. Es una librería (jar normal).
+plugins {
+    java
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    testImplementation(platform(libs.spring.boot.dependencies))
+    testImplementation(libs.junit.jupiter)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f021-multimodulo/tienda-dominio/src/main/java/academia/tienda/dominio/PoliticaDescuento.java`:
@@ -1961,45 +2063,39 @@ public final class PoliticaDescuento {
 }
 ```
 
-`modulo-5/f021-multimodulo/tienda-api/pom.xml`:
+`modulo-5/f021-multimodulo/tienda-api/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Módulo ejecutable: la app Spring Boot. Depende del dominio, nunca al revés. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>academia.microservicios</groupId>
-    <artifactId>f021-multimodulo</artifactId>
-    <version>1.0.0</version>
-  </parent>
-  <artifactId>tienda-api</artifactId>
-  <dependencies>
-    <dependency>
-      <groupId>academia.microservicios</groupId>
-      <artifactId>tienda-dominio</artifactId>   <!-- versión heredada de dependencyManagement -->
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <!-- SOLO el módulo ejecutable lleva el plugin que crea el jar ejecutable -->
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// Módulo ejecutable: la app Spring Boot. Depende del dominio, nunca al revés.
+plugins {
+    java
+    // SOLO el proyecto ejecutable aplica el plugin que crea el jar ejecutable (bootJar)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(project(":tienda-dominio"))   // dependencia entre proyectos: sin versión, siempre el código actual
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f021-multimodulo/tienda-api/src/main/java/academia/tienda/api/TiendaApiApp.java`:
@@ -2054,32 +2150,43 @@ class DescuentoController {
 
 #### 10. MINI-LABORATORIO
 
-1. Construye todo y observa el orden del reactor:
+1. Construye todo y observa el orden de las tareas:
 
 ```bash
 cd examples/microservicios/modulo-5/f021-multimodulo
-../mvnw package
+../gradlew build --console=plain
 ```
 
-   **Output esperado (final):**
+   **Output esperado (fragmento):**
 
 ```text
-[INFO] Reactor Summary for f021-multimodulo 1.0.0:
-[INFO]
-[INFO] f021-multimodulo ................................... SUCCESS [  0.002 s]
-[INFO] tienda-dominio ..................................... SUCCESS [  1.2 s]
-[INFO] tienda-api ......................................... SUCCESS [  3.4 s]
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
+> Task :tienda-dominio:compileJava
+> Task :tienda-dominio:classes
+> Task :tienda-dominio:jar
+> Task :tienda-api:compileJava
+...
+> Task :tienda-api:bootJar
+...
+> Task :tienda-dominio:test
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [1] 50000, 0 PASSED
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [2] 100000, 5000 PASSED
+
+PoliticaDescuentoTest > aplicaElTramoCorrecto(String, String) > [3] 250000, 25000 PASSED
+...
+BUILD SUCCESSFUL in 12s
 ```
 
-   Los segundos varían. **Captura comentada:** el padre (tipo `pom`) va primero, luego el dominio y al final la API,
-   porque la API depende del dominio.
+   Los segundos varían. **Captura comentada:** `:tienda-dominio:jar` aparece antes que `:tienda-api:compileJava`,
+   porque la API depende del dominio; la raíz no ejecuta ninguna tarea propia. Las líneas del dominio se copiaron de
+   una ejecución real con Gradle 8.14.3 y JUnit 5.10; las de `tienda-api` y el total con Gradle 9.9.2 están
+   pendientes de verificación en el Mac.
 
 2. Arranca la API y consúltala (en otra terminal):
 
 ```bash
-java -jar tienda-api/target/tienda-api-1.0.0.jar
+java -jar tienda-api/build/libs/tienda-api-1.0.0.jar
 curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
 ```
 
@@ -2088,17 +2195,20 @@ curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
 3. Construye solo la API y lo que necesita:
 
 ```bash
-../mvnw -q -pl tienda-api -am test
+../gradlew -q :tienda-api:test
 ```
 
-   Termina sin errores y ejecuta 4 tests (3 del dominio y 1 de la API).
+   Termina sin errores y ejecuta el test de la API. Antes compila y empaqueta el dominio (lo necesita en el
+   classpath), pero **no** ejecuta sus 3 tests: Gradle solo corre lo que la tarea pedida necesita. Para ejecutar los 4
+   usa `../gradlew test`.
 
-4. Compara los dos jars: `ls -l tienda-dominio/target/*.jar tienda-api/target/*.jar`. El de la API pesa megas (lleva
-   Spring y Tomcat dentro); el del dominio, kilobytes.
+4. Compara los dos jars: `ls -l tienda-dominio/build/libs/*.jar tienda-api/build/libs/*.jar`. El de la API pesa megas (lleva
+   Spring y Tomcat dentro); el del dominio, kilobytes. Junto al de la API verás `tienda-api-1.0.0-plain.jar`: el jar
+   normal, sin dependencias, que Gradle conserva con el clasificador `plain`.
 
-5. **Fallo deliberado:** en `tienda-dominio/pom.xml`, dentro de `<dependencies>`, añade una dependencia a
-   `tienda-api` (groupId `academia.microservicios`, versión `1.0.0`) y ejecuta `../mvnw validate`. Lee el error (paso
-   12) y elimina la dependencia.
+5. **Fallo deliberado:** en `tienda-dominio/build.gradle.kts`, dentro de `dependencies { }`, añade
+   `implementation(project(":tienda-api"))` y ejecuta `../gradlew build`. Lee el error (paso 12) y elimina la
+   dependencia.
 
 #### 11. VERIFICACIÓN
 
@@ -2155,11 +2265,11 @@ class DescuentoControllerTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` en `tienda-dominio`, `Tests run: 1, Failures: 0,
-Errors: 0, Skipped: 0` en `tienda-api` y `BUILD SUCCESS` en el resumen del reactor.
+**Output esperado:** 3 líneas `PASSED` (una por test) en `tienda-dominio`, 1 línea `PASSED` en `tienda-api` y
+`BUILD SUCCESSFUL` al final *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿qué comando usarías para recompilar y probar todo lo que se ve afectado por un cambio en
 `PoliticaDescuento`?
@@ -2167,34 +2277,52 @@ Errors: 0, Skipped: 0` en `tienda-api` y `BUILD SUCCESS` en el resumen del react
 <details>
 <summary>Respuesta</summary>
 
-`../mvnw -pl tienda-dominio -amd test`: construye el dominio y todos los módulos que dependen de él (aquí, la API).
+`../gradlew :tienda-dominio:buildDependents`: construye y prueba el dominio y todos los módulos que dependen de él (aquí, la
+API). En Maven era `-pl tienda-dominio -amd test`.
 </details>
 
 #### 12. ERROR COMÚN
 
 **Síntoma:** alguien necesita «solo un detalle» de la API dentro del dominio, agrega la dependencia y nada compila.
 
-**Cómo se ve** (salida real de Maven 3.9.11; el texto es el mismo en la 3.10):
+**Cómo se ve** (salida real de Gradle 8.14.3 con los dos módulos reducidos a Java puro; con Gradle 9.9.2 y el plugin
+de Spring Boot, pendiente de verificación en el Mac):
 
 ```text
-[ERROR] The projects in the reactor contain a cyclic reference: Edge between 'Vertex{label='academia.microservicios:tienda-api:1.0.0'}' and 'Vertex{label='academia.microservicios:tienda-dominio:1.0.0'}' introduces to cycle in the graph academia.microservicios:tienda-dominio:1.0.0 --> academia.microservicios:tienda-api:1.0.0 --> academia.microservicios:tienda-dominio:1.0.0 -> [Help 1]
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Circular dependency between the following tasks:
+:tienda-api:classes
+\--- :tienda-api:compileJava
+     \--- :tienda-dominio:jar
+          +--- :tienda-dominio:classes
+          |    \--- :tienda-dominio:compileJava
+          |         \--- :tienda-api:jar
+          |              +--- :tienda-api:classes (*)
+          |              \--- :tienda-api:compileJava (*)
+          \--- :tienda-dominio:compileJava (*)
+
+(*) - details omitted (listed previously)
 ```
 
-**Diagnóstico:** el final del mensaje dibuja el ciclo: dominio → api → dominio. Maven no puede decidir qué construir
-primero.
+**Diagnóstico:** el árbol dibuja el ciclo: para compilar la API hace falta el jar del dominio, y para compilar el
+dominio hace falta el jar de la API. Gradle no puede decidir qué tarea ejecutar primero. (Maven lo dice con
+«The projects in the reactor contain a cyclic reference».)
 
 **Arreglo:** el dominio no conoce la API. Si el dominio necesita algo de fuera, define una **interfaz** en el dominio
 (un «puerto») y que la API la implemente; la flecha de dependencia sigue bajando.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
-«En un proyecto multi-módulo, ¿dónde pones el `spring-boot-maven-plugin` y por qué?»
+«En un proyecto multi-módulo, ¿dónde aplicas el plugin de Spring Boot y por qué?»
 
-**Respuesta modelo:** solo en el módulo que produce la aplicación ejecutable. El goal `repackage` reemplaza el jar
-normal por un *fat jar* con las clases en `BOOT-INF/classes` y las dependencias en `BOOT-INF/lib`. Si un módulo de
-librería se re-empaqueta, otros módulos que lo consumen desde el repositorio no encuentran sus clases y fallan con
-«package ... does not exist». Las versiones de plugins y dependencias se centralizan en el padre
-(`pluginManagement`/`dependencyManagement`), pero la **ejecución** del plugin se declara solo donde corresponde.
+**Respuesta modelo:** solo en el módulo que produce la aplicación ejecutable. La tarea `bootJar` (en Maven, el goal
+`repackage` de `spring-boot-maven-plugin`) crea un *fat jar* con las clases en `BOOT-INF/classes` y las dependencias en
+`BOOT-INF/lib`. Si un módulo de librería se publica así, quien lo consume desde un repositorio no encuentra sus
+clases y falla con «package ... does not exist». Las versiones de plugins y dependencias se centralizan (en Gradle, el
+catálogo de versiones y `apply false` en la raíz; en Maven, `pluginManagement`/`dependencyManagement` del padre), pero
+el plugin se **aplica** solo donde corresponde.
 
 #### 14. ANTI-PATRÓN RELACIONADO
 
@@ -2303,51 +2431,42 @@ va en la base de datos o en un *feature flag*.
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter` + `spring-boot-starter-validation`
 (Hibernate Validator 9.1).
 
-`modulo-5/f022-perfiles/pom.xml`:
+`modulo-5/f022-perfiles/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F022 · Perfiles y configuración externalizada -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f022-perfiles</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Núcleo de Spring Boot + Bean Validation para validar la configuración al arrancar -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F022 · Perfiles y configuración externalizada
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Núcleo de Spring Boot + Bean Validation para validar la configuración al arrancar
+    implementation(libs.spring.boot.starter)
+    implementation(libs.spring.boot.starter.validation)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f022-perfiles/src/main/resources/application.yml`:
@@ -2433,8 +2552,8 @@ public class PerfilesApp {
 
 ```bash
 cd examples/microservicios/modulo-5/f022-perfiles
-../mvnw -q package -DskipTests
-java -jar target/f022-perfiles-1.0.0.jar
+../gradlew -q bootJar
+java -jar build/libs/f022-perfiles-1.0.0.jar
 ```
 
    **Output esperado:**
@@ -2446,7 +2565,7 @@ Perfiles=[] · moneda=COP · descuento-maximo=10 · bd-url=jdbc:postgresql://loc
 2. Producción con el secreto en una variable de entorno:
 
 ```bash
-TIENDA_BD_URL=jdbc:postgresql://bd-prod:5432/tienda java -jar target/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
+TIENDA_BD_URL=jdbc:postgresql://bd-prod:5432/tienda java -jar build/libs/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
 ```
 
    **Output esperado:**
@@ -2458,8 +2577,8 @@ Perfiles=[prod] · moneda=COP · descuento-maximo=5 · bd-url=jdbc:postgresql://
 3. Precedencia: la variable de entorno gana al archivo y el argumento gana a la variable:
 
 ```bash
-TIENDA_DESCUENTOMAXIMO=7 java -jar target/f022-perfiles-1.0.0.jar
-TIENDA_DESCUENTOMAXIMO=7 java -jar target/f022-perfiles-1.0.0.jar --tienda.descuento-maximo=3
+TIENDA_DESCUENTOMAXIMO=7 java -jar build/libs/f022-perfiles-1.0.0.jar
+TIENDA_DESCUENTOMAXIMO=7 java -jar build/libs/f022-perfiles-1.0.0.jar --tienda.descuento-maximo=3
 ```
 
    **Output esperado:** la primera línea termina en `descuento-maximo=7 · bd-url=...tienda_dev` y la segunda en
@@ -2468,7 +2587,7 @@ TIENDA_DESCUENTOMAXIMO=7 java -jar target/f022-perfiles-1.0.0.jar --tienda.descu
 4. **Fallo deliberado:** arranca `prod` **sin** la variable:
 
 ```bash
-java -jar target/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
+java -jar build/libs/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
 ```
 
    **Output esperado:** `APPLICATION FAILED TO START` con «Binding to target academia.perfiles.TiendaProperties
@@ -2537,10 +2656,10 @@ class PerfilesTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (si tienes `TIENDA_BD_URL`
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (si tienes `TIENDA_BD_URL`
 exportada en la terminal verás `Skipped: 1`: ejecuta `unset TIENDA_BD_URL`).
 
 **Pregunta de comprobación:** en Kubernetes defines `TIENDA_DESCUENTOMAXIMO=8` en el `Deployment` y el contenedor
@@ -2651,7 +2770,7 @@ sequenceDiagram
     participant D as docker compose
     participant J1 as JVM con CRaC (checkpoint)
     participant S as Spring
-    participant V as volumen ./target/crac
+    participant V as volumen ./build/crac
     participant J2 as JVM con CRaC (restore)
     D->>J1: java -Dspring.context.checkpoint=onRefresh -XX:CRaCCheckpointTo=/crac -jar app.jar
     J1->>S: crea el contexto y los beans
@@ -2720,52 +2839,43 @@ macOS/Windows sin contenedores; o si tu organización no puede proteger los arch
 **Versiones:** JDK 25 (Azul Zulu 25 con CRaC, imagen `azul/zulu-openjdk:25-jdk-crac`) · Spring Boot 4.1.3 ·
 `org.crac:crac` 1.5.0 (gestionado por Boot) · Docker Compose v5.
 
-`modulo-5/f023-crac/pom.xml`:
+`modulo-5/f023-crac/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F023 · CRaC (Coordinated Restore at Checkpoint) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f023-crac</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <!-- 25: la imagen azul/zulu-openjdk:25-jdk-crac trae un JDK 25 con CRaC -->
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- API org.crac 1.5.0 (gestionada por Boot). En un JDK sin CRaC no hace nada. -->
-    <dependency>
-      <groupId>org.crac</groupId>
-      <artifactId>crac</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F023 · CRaC (Coordinated Restore at Checkpoint)
+// 25: la imagen azul/zulu-openjdk:25-jdk-crac trae un JDK 25 con CRaC
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    // API org.crac 1.5.0 (gestionada por Boot). En un JDK sin CRaC no hace nada.
+    implementation(libs.crac)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f023-crac/src/main/java/academia/crac/CracApp.java`:
@@ -2855,7 +2965,7 @@ class HolaController {
 # JDK 25 de Azul con CRaC (solo Linux; en macOS se usa a través de Docker)
 FROM azul/zulu-openjdk:25-jdk-crac
 WORKDIR /app
-COPY target/f023-crac-1.0.0.jar /app/app.jar
+COPY build/libs/f023-crac-1.0.0.jar /app/app.jar
 EXPOSE 8080
 ```
 
@@ -2869,13 +2979,13 @@ services:
     image: academia/f023-crac:1.0.0
     command: ["java", "-Dspring.context.checkpoint=onRefresh", "-XX:CRaCCheckpointTo=/crac", "-jar", "/app/app.jar"]
     cap_add: ["CHECKPOINT_RESTORE", "SYS_PTRACE"]
-    volumes: ["./f023-crac/target/crac:/crac"]
+    volumes: ["./f023-crac/build/crac:/crac"]
   crac-restore:
     profiles: ["crac"]
     image: academia/f023-crac:1.0.0
     command: ["java", "-XX:CRaCRestoreFrom=/crac"]
     cap_add: ["CHECKPOINT_RESTORE", "SYS_PTRACE"]
-    volumes: ["./f023-crac/target/crac:/crac"]
+    volumes: ["./f023-crac/build/crac:/crac"]
     ports: ["8080:8080"]
 ```
 
@@ -2885,8 +2995,8 @@ services:
 
 ```bash
 cd examples/microservicios/modulo-5
-./mvnw -q -f f023-crac/pom.xml package -DskipTests
-java -jar f023-crac/target/f023-crac-1.0.0.jar
+./gradlew -q :f023-crac:bootJar
+java -jar f023-crac/build/libs/f023-crac-1.0.0.jar
 ```
 
    **Output esperado:** una línea `Conexión abierta (apertura #1)` y otra
@@ -2897,11 +3007,11 @@ java -jar f023-crac/target/f023-crac-1.0.0.jar
 ```bash
 docker compose --profile crac build crac-checkpoint
 docker compose --profile crac run --rm crac-checkpoint
-ls f023-crac/target/crac | head
+ls f023-crac/build/crac | head
 ```
 
    **Output esperado:** el contenedor arranca Spring, **no** imprime `Conexión abierta` (el checkpoint ocurre antes de
-   arrancar los `Lifecycle`) y termina; `ls` muestra archivos de imagen de CRIU (`*.img`) en `f023-crac/target/crac`.
+   arrancar los `Lifecycle`) y termina; `ls` muestra archivos de imagen de CRIU (`*.img`) en `f023-crac/build/crac`.
 
 3. Restaura y consulta:
 
@@ -2918,7 +3028,7 @@ docker compose --profile crac down
    ser una diferencia de uno o dos órdenes de magnitud.
 
 4. **Fallo deliberado:** fuera de Docker, en tu JDK normal, ejecuta
-   `java -XX:CRaCCheckpointTo=/tmp/cr -jar f023-crac/target/f023-crac-1.0.0.jar` y lee el error (paso 12).
+   `java -XX:CRaCCheckpointTo=/tmp/cr -jar f023-crac/build/libs/f023-crac-1.0.0.jar` y lee el error (paso 12).
 
 #### 11. VERIFICACIÓN
 
@@ -2962,10 +3072,10 @@ class CicloCheckpointTest {
 ```
 
 ```bash
-cd f023-crac && ../mvnw test
+cd f023-crac && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. Verificación completa en
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Verificación completa en
 Docker: `./verificar.sh --docker` desde `modulo-5` debe terminar con `RESULTADO: OK`.
 
 **Pregunta de comprobación:** ¿por qué en el modo automático (`onRefresh`) la respuesta dice `"aperturas": 1` y no 2?
@@ -2997,7 +3107,7 @@ de Docker, si ves errores de CRIU con «Operation not permitted», faltan las ca
 
 **Arreglo:** usa el servicio `crac-checkpoint` del `docker-compose.yml` (imagen con CRaC y capacidades declaradas). En tu
 JDK local, para comprobar al menos que el arranque llega a la fase correcta, usa
-`java -Dspring.context.exit=onRefresh -jar f023-crac/target/f023-crac-1.0.0.jar`.
+`java -Dspring.context.exit=onRefresh -jar f023-crac/build/libs/f023-crac-1.0.0.jar`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -3018,7 +3128,7 @@ la flexibilidad de la JVM; Native Image para funciones serverless o CLIs con mem
 ```dockerfile
 FROM azul/zulu-openjdk:25-jdk-crac
 ENV SPRING_DATASOURCE_PASSWORD=Sup3rS3creta!      # el valor queda en la memoria volcada
-COPY target/crac /crac                            # la imagen del registro contiene el checkpoint
+COPY build/crac /crac                             # la imagen del registro contiene el checkpoint
 CMD ["java", "-XX:CRaCRestoreFrom=/crac"]
 ```
 
@@ -3088,15 +3198,17 @@ antemano** todo lo que tu programa va a usar.
 - **Mundo cerrado:** `native-image` parte del `main` y sigue todas las llamadas posibles; lo que no alcanza, no lo
   incluye. La reflexión, los recursos del classpath, los *proxies* dinámicos y la serialización deben declararse en
   metadata (`META-INF/native-image/.../reachability-metadata.json`).
-- **Spring AOT:** con `-Pnative`, el plugin de Spring Boot ejecuta `process-aot`: arranca el contexto **en tiempo de
+- **Spring AOT:** con el plugin `org.graalvm.buildtools.native` aplicado, el plugin de Spring Boot ejecuta la tarea
+  `processAot` (en Maven, el goal `process-aot` del perfil `native`): arranca el contexto **en tiempo de
   compilación**, evalúa las condiciones, genera código Java que crea los beans sin reflexión y escribe la metadata de
   todo lo que Spring sabe que necesita. Por eso un `@ConditionalOnProperty` queda **fijo** al compilar.
 - **Tus pistas:** `RuntimeHintsRegistrar` + `@ImportRuntimeHints` para lo que Spring no puede deducir (aquí, una clase
   cuyo nombre llega en `impuestos.calculadora`). Otras anotaciones: `@RegisterReflectionForBinding` para DTOs que
   serializas a mano.
-- **Herramientas:** el perfil `native` del `spring-boot-starter-parent` configura `native-maven-plugin` (Native Build
-  Tools). `./mvnw -Pnative native:compile` necesita GraalVM 25 con `native-image` y un compilador de C; en Docker usas
-  `ghcr.io/graalvm/native-image-community:25`. Alternativa sin GraalVM local: `./mvnw -Pnative spring-boot:build-image`
+- **Herramientas:** el plugin `org.graalvm.buildtools.native` (Native Build Tools) añade la tarea `nativeCompile`; el
+  binario queda en `build/native/nativeCompile/`. En Maven es el perfil `native` del `spring-boot-starter-parent`
+  (`./mvnw -Pnative native:compile`). `./gradlew nativeCompile` necesita GraalVM 25 con `native-image` y un compilador de C; en Docker usas
+  `ghcr.io/graalvm/native-image-community:25`. Alternativa sin GraalVM local: `./gradlew bootBuildImage`
   (buildpacks de Paketo).
 - **Probar AOT en la JVM:** `java -Dspring.aot.enabled=true -jar ...` usa el código generado sin compilar a nativo:
   detecta temprano problemas de condiciones fijas.
@@ -3121,54 +3233,45 @@ corre en macOS ni en Linux x86_64.
 #### 9. CÓDIGO EJECUTABLE
 
 **Versiones:** JDK 25 · GraalVM Community 25 (imagen `ghcr.io/graalvm/native-image-community:25`) · Spring Boot 4.1.3
-(soporta GraalVM 25 y Native Build Tools gestionadas por el *parent*) · Docker Compose v5.
+(soporta GraalVM 25; Native Build Tools 1.1.18 fijadas en el catálogo de versiones) · Docker Compose v5.
 
-`modulo-5/f024-graalvm-native/pom.xml`:
+`modulo-5/f024-graalvm-native/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F024 · GraalVM Native Image -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f024-graalvm-native</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <!-- 25: Spring Boot 4.1.3 soporta GraalVM Community 25 para Native Image -->
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <!-- Native Build Tools: el perfil "native" del parent lo activa con -Pnative -->
-      <plugin>
-        <groupId>org.graalvm.buildtools</groupId>
-        <artifactId>native-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F024 · GraalVM Native Image
+// 25: Spring Boot 4.1.3 soporta GraalVM Community 25 para Native Image
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    // Native Build Tools: al aplicarlo, el plugin de Boot activa el procesado AOT y añade nativeCompile
+    alias(libs.plugins.graalvm.buildtools)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-5/f024-graalvm-native/src/main/resources/application.properties`:
@@ -3276,8 +3379,8 @@ public class NativoApp {
 
 ```bash
 cd examples/microservicios/modulo-5
-./mvnw -q -f f024-graalvm-native/pom.xml package -DskipTests
-java -jar f024-graalvm-native/target/f024-graalvm-native-1.0.0.jar
+./gradlew -q :f024-graalvm-native:bootJar
+java -jar f024-graalvm-native/build/libs/f024-graalvm-native-1.0.0.jar
 ```
 
    **Output esperado:** `Started NativoApp in X seconds`. En otra terminal,
@@ -3288,10 +3391,10 @@ java -jar f024-graalvm-native/target/f024-graalvm-native-1.0.0.jar
 
 ```bash
 docker compose --profile native run --rm native-build
-file f024-graalvm-native/target/f024-graalvm-native
+file f024-graalvm-native/build/native/nativeCompile/f024-graalvm-native
 ```
 
-   **Output esperado:** el build termina con `BUILD SUCCESS` tras las etapas numeradas de GraalVM (`[1/8] Initializing`
+   **Output esperado:** el build termina con `BUILD SUCCESSFUL` (pendiente de verificación en el Mac) tras las etapas numeradas de GraalVM (`[1/8] Initializing`
    … `[8/8] Creating image`) y `file` describe un ejecutable ELF de Linux (ARM64 en Mac con Apple Silicon).
 
 3. Ejecuta el binario y compara:
@@ -3357,10 +3460,10 @@ class NativoTest {
 ```
 
 ```bash
-cd f024-graalvm-native && ../mvnw test
+cd f024-graalvm-native && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. Verificación completa con el
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Verificación completa con el
 binario: `./verificar.sh --docker` desde `modulo-5`.
 
 **Pregunta de comprobación:** ¿por qué el primer test pasa aunque borres `ImpuestosHints`, y qué test añadiste para que

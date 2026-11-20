@@ -6,7 +6,7 @@ REST, JDBC y PostgreSQL) y Módulo 3 (tests con JUnit y `@SpringBootTest`). **He
 **Spring Boot 4.1.3** (Spring Data Redis 4.1.3 con el cliente Lettuce 7.5.2), **Redis 8.10.2** y **PostgreSQL 18.7**
 en Docker Compose, y **Python 3.10+** (solo la biblioteca estándar) para los simuladores. **Laboratorio:**
 `examples/microservicios/modulo-8/` (`./verificar.sh` levanta los contenedores, ejecuta los simuladores y los tests
-de Maven y los apaga).
+de Gradle y los apaga).
 
 Un microservicio rápido no es el que tiene el código más ingenioso, sino el que **no repite trabajo caro**. La caché
 guarda resultados para no volver a calcularlos o pedirlos, pero trae tres preguntas difíciles: ¿cuándo deja de
@@ -27,11 +27,11 @@ tema 2 (patrones Read-Through, Write-Through y Write-Behind) y al tema 4 (cache 
 
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-8`, levanta la infraestructura con
 `docker compose up -d --wait` (un Redis principal en 6379, tres Redis independientes en 6380–6382 para Redlock y
-PostgreSQL en 5432) y trabaja cada tema en su carpeta con `../mvnw test`. La carpeta `simuladores/` contiene
+PostgreSQL en 5432) y trabaja cada tema en su carpeta con `../gradlew test`. La carpeta `simuladores/` contiene
 programas en Python que hablan con **los mismos Redis** usando un cliente mínimo de menos de 60 líneas (`resp.py`), para que
 veas cada comando (`SET NX PX`, `EVAL`, `INCR`, `XADD`…) sin capas intermedias. Las salidas de los simuladores de
 esta lección son **reales** (se ejecutaron con Python 3.13.18 contra Redis 7.0.15, que tiene los mismos comandos que
-8.10.2); las salidas de Maven quedan pendientes de confirmar en el Mac del dueño
+8.10.2); las salidas de Gradle quedan pendientes de confirmar en el Mac del dueño
 (`verificacion/microservicios/pendiente.md`), porque en el entorno donde se escribió no hay acceso a Maven Central.
 
 `docker-compose.yml` del módulo:
@@ -271,58 +271,109 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Let
 BOM), **Redis 8.10.2** (`docker-compose.yml` del módulo). Proyecto completo en
 `examples/microservicios/modulo-8/f037-cache-redis/`.
 
-`f037-cache-redis/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F037 · Caching con Redis: @Cacheable, @CacheEvict, TTL (Spring Boot 4.1.3, JDK 25, Redis 8.10.2) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f037-cache-redis</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- API REST (Spring MVC 7, Tomcat 11) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Abstracción de caché de Spring (@Cacheable, @CacheEvict...) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-cache</artifactId>
-    </dependency>
-    <!-- Spring Data Redis 4.1.3 + Lettuce 7.5.2: con esto Boot crea un RedisCacheManager -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-8/settings.gradle.kts`:
+
+```kotlin
+// Módulo 4 (modulo-8) · Build multi-proyecto: "./gradlew test" ejecuta los tests de las 4 fichas (F037–F040).
+// Todas necesitan "docker compose up -d --wait" antes (Redis 8.10.2 x4 y PostgreSQL 18.7).
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-8-laboratorios"
+
+include(
+    "f037-cache-redis",
+    "f038-patrones-cache",
+    "f039-redlock-fencing",
+    "f040-cache-stampede",
+)
+```
+
+`modulo-8/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 4 (modulo-8)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-cache = { module = "org.springframework.boot:spring-boot-starter-cache" }
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+postgresql = { module = "org.postgresql:postgresql" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+```
+
+`f037-cache-redis/build.gradle.kts`:
+
+```kotlin
+// F037 · Caching con Redis: @Cacheable, @CacheEvict, TTL (Spring Boot 4.1.3, JDK 25, Redis 8.10.2)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // API REST (Spring MVC 7, Tomcat 11)
+    implementation(libs.spring.boot.starter.webmvc)
+    // Abstracción de caché de Spring (@Cacheable, @CacheEvict...)
+    implementation(libs.spring.boot.starter.cache)
+    // Spring Data Redis 4.1.3 + Lettuce 7.5.2: con esto Boot crea un RedisCacheManager
+    implementation(libs.spring.boot.starter.data.redis)
+    // JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f037-cache-redis/src/main/resources/application.properties`:
@@ -345,7 +396,7 @@ package academia.cache;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** F037 · Catálogo con caché en Redis. Arranca con: ../mvnw spring-boot:run (con Redis en localhost:6379). */
+/** F037 · Catálogo con caché en Redis. Arranca con: ../gradlew bootRun (con Redis en localhost:6379). */
 @SpringBootApplication
 public class CacheApp {
     public static void main(String[] args) {
@@ -608,7 +659,7 @@ class CacheRedisTest {
 ```bash
 cd examples/microservicios/modulo-8
 docker compose up -d --wait redis
-cd f037-cache-redis && ../mvnw spring-boot:run
+cd f037-cache-redis && ../gradlew bootRun
 ```
 
 2. En otra terminal, mide la primera y la segunda lectura:
@@ -671,10 +722,10 @@ Test que debe pasar (con `docker compose up -d --wait redis`):
 
 ```bash
 cd examples/microservicios/modulo-8/f037-cache-redis
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. El test del TTL tarda
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El test del TTL tarda
 unos 2,5 s a propósito.
 
 **Pregunta de comprobación:** añades en `ProductoServicio` un método `buscarDos(long a, long b)` que hace
@@ -873,64 +924,48 @@ Hay dos sitios donde vive el mismo dato: la **base de datos** (lenta, pero segur
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **driver PostgreSQL 42.7.14**, imágenes
 **`redis:8.10.2`** y **`postgres:18.7`**. Proyecto en `examples/microservicios/modulo-8/f038-patrones-cache/`.
 
-`f038-patrones-cache/pom.xml`:
+`f038-patrones-cache/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F038 · Patrones: Read-Through, Write-Behind, Write-Through (Spring Boot 4.1.3, JDK 25, Redis 8.10.2) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f038-patrones-cache</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- JdbcClient + HikariCP para hablar con PostgreSQL -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot) -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Abstracción de caché de Spring (@Cacheable, @CacheEvict...) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-cache</artifactId>
-    </dependency>
-    <!-- Spring Data Redis 4.1.3 + Lettuce 7.5.2: con esto Boot crea un RedisCacheManager -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F038 · Patrones: Read-Through, Write-Behind, Write-Through (Spring Boot 4.1.3, JDK 25, Redis 8.10.2)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // JdbcClient + HikariCP para hablar con PostgreSQL
+    implementation(libs.spring.boot.starter.jdbc)
+    // Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot)
+    runtimeOnly(libs.postgresql)
+    // Abstracción de caché de Spring (@Cacheable, @CacheEvict...)
+    implementation(libs.spring.boot.starter.cache)
+    // Spring Data Redis 4.1.3 + Lettuce 7.5.2: con esto Boot crea un RedisCacheManager
+    implementation(libs.spring.boot.starter.data.redis)
+    // JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f038-patrones-cache/src/main/resources/application.properties`:
@@ -1427,7 +1462,7 @@ WRITE-BEHIND   101 escrituras de la aplicación tardaron 10 ms (sin esperar a la
 
 ```bash
 cd ../f038-patrones-cache
-../mvnw spring-boot:run -Dspring-boot.run.arguments=--write-behind.intervalo-ms=60000
+../gradlew bootRun --args=--write-behind.intervalo-ms=60000
 ```
 
    y en otra, escribe directamente en el stream y míralo:
@@ -1460,10 +1495,10 @@ Tests que deben pasar (con `docker compose up -d --wait`):
 ```bash
 cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.PatronesTest)
-(cd f038-patrones-cache && ../mvnw test)
+(cd f038-patrones-cache && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real, ejecutado aquí) y `Tests run: 3, Failures: 0, Errors: 0` en Maven.
+**Output esperado:** `Ran 3 tests … OK` (real, ejecutado aquí) y 3 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
 
 `simuladores/test_simuladores.py`:
 
@@ -1727,48 +1762,42 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Let
 **`redis:8.10.2`** (4 instancias). Sin librerías de candados: el algoritmo se ve entero. Proyecto en
 `examples/microservicios/modulo-8/f039-redlock-fencing/`.
 
-`f039-redlock-fencing/pom.xml`:
+`f039-redlock-fencing/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F039 · Distributed Locking con Redlock y Fencing Tokens (Spring Boot 4.1.3, JDK 25, Redis 8.10.2) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f039-redlock-fencing</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring Data Redis 4.1.3 + Lettuce 7.5.2 (sin librerías de candados: el algoritmo se ve entero) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F039 · Distributed Locking con Redlock y Fencing Tokens (Spring Boot 4.1.3, JDK 25, Redis 8.10.2)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring Data Redis 4.1.3 + Lettuce 7.5.2 (sin librerías de candados: el algoritmo se ve entero)
+    implementation(libs.spring.boot.starter.data.redis)
+    // JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f039-redlock-fencing/src/main/resources/application.properties`:
@@ -2305,10 +2334,10 @@ Tests que deben pasar (con los 4 Redis levantados):
 ```bash
 cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.RedlockTest)
-(cd f039-redlock-fencing && ../mvnw test)
+(cd f039-redlock-fencing && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real) y `Tests run: 4, Failures: 0, Errors: 0` en Maven.
+**Output esperado:** `Ran 3 tests … OK` (real) y 4 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si el almacén comprobara `token >= último` en vez de `token > último`, ¿qué fallaría?
 
@@ -2485,48 +2514,42 @@ el resultado. Para que solo una vaya se usa un **candado** en Redis, como el de 
 Versiones: **JDK 25** (hilos virtuales en el test), **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**,
 **Lettuce 7.5.2**, imagen **`redis:8.10.2`**. Proyecto en `examples/microservicios/modulo-8/f040-cache-stampede/`.
 
-`f040-cache-stampede/pom.xml`:
+`f040-cache-stampede/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F040 · Cache stampede y solución con locks (Spring Boot 4.1.3, JDK 25, Redis 8.10.2) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f040-cache-stampede</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring Data Redis 4.1.3 + Lettuce 7.5.2 (sin librerías de candados: el algoritmo se ve entero) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F040 · Cache stampede y solución con locks (Spring Boot 4.1.3, JDK 25, Redis 8.10.2)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring Data Redis 4.1.3 + Lettuce 7.5.2 (sin librerías de candados: el algoritmo se ve entero)
+    implementation(libs.spring.boot.starter.data.redis)
+    // JUnit Jupiter 6.0.3, AssertJ 3.27.7, Mockito 5.23.0
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f040-cache-stampede/src/main/resources/application.properties`:
@@ -2915,12 +2938,12 @@ Ganador muere   -> 49 respuestas, 1 hilo muerto, 2 consultas a la base (el canda
 2. Ejecuta los tests de Spring y observa los contadores impresos:
 
 ```bash
-cd ../f040-cache-stampede && ../mvnw test
+cd ../f040-cache-stampede && ../gradlew test
 ```
 
    **Output esperado:** en la salida de los tests, `SIN protección: 50 consultas a la base` (puede salir algo menos
    en una máquina muy cargada; el test exige más de 25) y `CON candado: 1 consulta a la base`, y al final
-   `Tests run: 22, Failures: 0, Errors: 0, Skipped: 0` (2 tests más 20 repeticiones del test de jitter).
+   22 líneas `PASSED` (una por test) (2 tests más 20 repeticiones del test de jitter).
 
 3. **Mira la estampida en Redis.** En otra terminal, antes del paso 2:
 
@@ -2938,10 +2961,10 @@ Tests que deben pasar (con `docker compose up -d --wait redis`):
 ```bash
 cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.StampedeTest)
-(cd f040-cache-stampede && ../mvnw test)
+(cd f040-cache-stampede && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real) y `Tests run: 22, Failures: 0, Errors: 0` en Maven.
+**Output esperado:** `Ran 3 tests … OK` (real) y 22 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** en `CargadorConCandado`, ¿qué pasaría si quitaras la segunda llamada a
 `redis.opsForValue().get(clave)` (la doble comprobación) dentro del bloque del ganador?

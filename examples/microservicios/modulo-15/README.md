@@ -1,7 +1,7 @@
 # Laboratorio · Módulo 11 · Mensajería avanzada
 
 Lección: [`web/public/content/microservices/modulo-15.md`](../../../web/public/content/microservices/modulo-15.md)
-(Fase 1, specs/018). Cada carpeta `fNNN-*` es un proyecto Maven autónomo con el código y los tests de una ficha.
+(Fase 1, specs/018). Cada carpeta `fNNN-*` es un subproyecto Gradle (Kotlin DSL) con el código y los tests de una ficha.
 
 | Carpeta | Ficha | Necesita |
 |---|---|---|
@@ -18,7 +18,7 @@ Lección: [`web/public/content/microservices/modulo-15.md`](../../../web/public/
 JDK 25 LTS · Spring Boot 4.1.3 (Spring for Apache Kafka 4.1.3, kafka-clients 4.2.2, Spring AMQP 4.1.3, JUnit
 Jupiter 6.0.3; todo gestionado por el BOM) · Avro 1.12.2 · `kafka-avro-serializer` 8.4.1 (repositorio de Confluent)
 · jnats 2.26.4 · imágenes `apache/kafka:4.4.0`, `confluentinc/cp-schema-registry:8.4.1`, `rabbitmq:4.4.1-management`
-y `nats:2.15.3-alpine` · Maven por el wrapper (`.mvn/wrapper/maven-wrapper.properties`).
+y `nats:2.15.3-alpine` · Gradle 9.9.2 por el wrapper (`gradle/wrapper/gradle-wrapper.properties`).
 
 ## Ejecutar
 
@@ -36,12 +36,12 @@ A mano, ficha por ficha:
 ```bash
 java jdk/Particionador.java                              # F075 sin Kafka
 docker compose up -d --wait                              # los 4 brokers
-./mvnw -pl f075-kafka-particiones test                   # F075
-./mvnw -pl f076-exactly-once test                        # F076
-./mvnw -pl f077-schema-registry-avro test                # F077
-./mvnw -pl f078-dead-letter-topics test                  # F078
-./mvnw -pl f079-rabbitmq-confirms-dlq test               # F079 · consola: http://localhost:15672 (academia/academia)
-./mvnw -pl f080-nats test                                # F080 · monitoreo: http://localhost:8222/jsz?streams=true
+./gradlew :f075-kafka-particiones:test                   # F075
+./gradlew :f076-exactly-once:test                        # F076
+./gradlew :f077-schema-registry-avro:test                # F077
+./gradlew :f078-dead-letter-topics:test                  # F078
+./gradlew :f079-rabbitmq-confirms-dlq:test               # F079 · consola: http://localhost:15672 (academia/academia)
+./gradlew :f080-nats:test                                # F080 · monitoreo: http://localhost:8222/jsz?streams=true
 docker compose down
 ```
 
@@ -53,3 +53,10 @@ Ver [`verificacion/microservicios/pendiente.md`](../../../verificacion/microserv
 donde se escribió no hay Maven Central ni Docker Hub. Sí se ejecutaron el simulador (JDK 25.0.5), la comprobación de
 murmur2 contra `kafka-python`, la codificación Avro con `fastavro`, la topología de F079 en RabbitMQ 3.12.1 y la de
 F080 en nats-server 2.10.7.
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper `./gradlew`; las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

@@ -5,8 +5,8 @@
 dominio, database-per-service), Spring MVC y testing (Módulos 2 y 3), Docker Compose (Módulo 0.5). **Herramientas:**
 **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (RestClient/RestTemplate, WebClient, gRPC nativo con Spring gRPC 1.1.2 y
 grpc-java 1.84.1, Spring for GraphQL 2.0, Spring AMQP 4.1.3, Spring for Apache Kafka 4.1.3), **Spring Cloud 2025.1.4**
-(OpenFeign), **RabbitMQ 4.4.1** y **Apache Kafka 4.4.0** en Docker Compose, y Maven 3.9.11 mediante `./mvnw`.
-**Laboratorio:** `examples/microservicios/modulo-10/` (una carpeta Maven autónoma por tema; `./verificar.sh` levanta los
+(OpenFeign), **RabbitMQ 4.4.1** y **Apache Kafka 4.4.0** en Docker Compose, y Gradle 9.9.2 mediante `./gradlew`.
+**Laboratorio:** `examples/microservicios/modulo-10/` (un subproyecto Gradle por tema; `./verificar.sh` levanta los
 brokers y ejecuta todos los tests).
 
 Cuando un sistema se parte en servicios, las llamadas a métodos se vuelven **mensajes por la red**. Este módulo te da
@@ -33,7 +33,7 @@ RestTemplate, WebClient y OpenFeign), el tema 2 (gRPC) y el tema 3 (GraphQL). El
 contiene el tema 4 (RabbitMQ y Kafka). Los temas 3 y 4 llevan al tema 5, sync vs async: criterios de decisión.
 
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-10` y ejecuta `./verificar.sh`. Para un solo
-tema: `cd f048-grpc && ../mvnw test`. Solo el tema 4 necesita Docker (`docker compose up -d --wait` en la carpeta del
+tema: `cd f048-grpc && ../gradlew test`. Solo el tema 4 necesita Docker (`docker compose up -d --wait` en la carpeta del
 módulo).
 
 ---
@@ -149,75 +149,128 @@ objeto Java, aquí el record `Existencia`.
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3.1.8, Reactor Netty), **Spring Cloud
 2025.1.4** (Spring Cloud OpenFeign 5.0.4; Spring Cloud Commons 5.0.4 declara compatibles Spring Boot 4.0.x y 4.1.x).
-`f047-rest-sincrono/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F047 · REST síncrono: RestTemplate, WebClient, OpenFeign (y RestClient + @HttpExchange) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f047-rest-sincrono</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Spring Cloud 2025.1.4: su verificador de compatibilidad acepta Spring Boot 4.0.x y 4.1.x (trae OpenFeign 5.0.4) -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Servidor MVC (el servicio de pedidos expone su propia API) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestTemplateBuilder, RestClient.Builder y clientes @HttpExchange -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- WebClient.Builder (Reactor Netty) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webclient</artifactId>
-    </dependency>
-    <!-- OpenFeign declarativo -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-10/settings.gradle.kts`:
+
+```kotlin
+// Módulo 6 (modulo-10) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todos los subproyectos.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-10-laboratorios"
+
+include(
+    "f047-rest-sincrono",
+    "f048-grpc",
+    "f049-graphql",
+    "f050-mensajeria",
+    "f051-sync-async",
+)
+```
+
+`modulo-10/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 6 (modulo-10)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# Plugin de Protobuf que usa la documentación de Spring Boot 4.1 (reference/io/grpc.html)
+protobuf-plugin = "0.9.6"
+spring-boot = "4.1.3"
+# Spring Cloud 2025.1.4: su verificador de compatibilidad acepta Spring Boot 4.0.x y 4.1.x (trae OpenFeign 5.0.4)
+spring-cloud = "2025.1.4"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-boot-starter-webclient = { module = "org.springframework.boot:spring-boot-starter-webclient" }
+spring-cloud-starter-openfeign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-grpc-server = { module = "org.springframework.boot:spring-boot-starter-grpc-server" }
+spring-boot-starter-grpc-client = { module = "org.springframework.boot:spring-boot-starter-grpc-client" }
+spring-boot-starter-grpc-client-test = { module = "org.springframework.boot:spring-boot-starter-grpc-client-test" }
+spring-boot-starter-graphql = { module = "org.springframework.boot:spring-boot-starter-graphql" }
+spring-boot-starter-graphql-test = { module = "org.springframework.boot:spring-boot-starter-graphql-test" }
+spring-boot-starter-amqp = { module = "org.springframework.boot:spring-boot-starter-amqp" }
+spring-boot-starter-kafka = { module = "org.springframework.boot:spring-boot-starter-kafka" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
+```
+
+`f047-rest-sincrono/build.gradle.kts`:
+
+```kotlin
+// F047 · REST síncrono: RestTemplate, WebClient, OpenFeign (y RestClient + @HttpExchange)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Servidor MVC (el servicio de pedidos expone su propia API)
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestTemplateBuilder, RestClient.Builder y clientes @HttpExchange
+    implementation(libs.spring.boot.starter.restclient)
+    // WebClient.Builder (Reactor Netty)
+    implementation(libs.spring.boot.starter.webclient)
+    // OpenFeign declarativo
+    implementation(libs.spring.cloud.starter.openfeign)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -450,7 +503,7 @@ public class InventarioFalso {
    ```
 2. Arranca el servicio de pedidos en otra terminal y pide lo mismo con los cuatro clientes:
    ```bash
-   ../mvnw -q spring-boot:run
+   ../gradlew -q bootRun
    for c in resttemplate webclient feign httpexchange; do
      curl -s "localhost:8080/pedidos/disponibilidad/CAFE?cliente=$c"; echo "  <- $c"
    done
@@ -495,7 +548,7 @@ quedaría ocupando un hilo de pedidos durante los 2 s (o para siempre, si invent
 
 ```bash
 cd examples/microservicios/modulo-10/f047-rest-sincrono
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/rest/ClientesRestTest.java`:
@@ -593,7 +646,7 @@ class ClientesRestTest {
 }
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** ¿por qué el test de timeout de WebClient usa `hasRootCauseInstanceOf(TimeoutException.class)` y no
 `isInstanceOf`? *(Porque `block()` envuelve la excepción comprobada `TimeoutException` del `Mono` en una excepción no
 comprobada; la causa original queda dentro.)*
@@ -707,9 +760,10 @@ una o en ambas direcciones.
 - **El binario:** `Existencia{sku:"CAFE", disponibles:12}` ocupa **8 bytes** (`0a 04 43 41 46 45 10 0c`): `0a` = campo 1
   de tipo texto, `04` = longitud, `43 41 46 45` = «CAFE», `10` = campo 2 entero, `0c` = 12. El mismo dato en JSON ocupa
   31 bytes.
-- **Generación en Maven:** el `protobuf-maven-plugin` (io.github.ascopes 5.1.12) lee `src/main/proto`. El *parent* de
-  Spring Boot 4.1 ya configura `protoc` y el plugin `protoc-gen-grpc-java` con las versiones del BOM, así que en el
-  `pom.xml` solo se activa. Genera `InventarioGrpc` (stubs y `InventarioImplBase`) y las clases de mensajes en
+- **Generación en Gradle:** el plugin `com.google.protobuf` (0.9.6) lee `src/main/proto`. El plugin de Spring Boot 4.1
+  reacciona a él y configura `protoc` y `protoc-gen-grpc-java` con las versiones del BOM, así que en el
+  `build.gradle.kts` solo se activa (`protobuf { plugins { create("grpc") } }`). En Maven lo hace el
+  `protobuf-maven-plugin` de io.github.ascopes, configurado por el *parent* de Boot. Genera `InventarioGrpc` (stubs y `InventarioImplBase`) y las clases de mensajes en
   `academia.grpc.proto`.
 - **Servidor:** `spring-boot-starter-grpc-server` arranca un servidor Netty en `spring.grpc.server.port` y registra todo
   bean `BindableService` (tu clase que extiende `InventarioImplBase`). También activa el servicio de **reflexión** (para
@@ -742,59 +796,59 @@ una o en ambas direcciones.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (soporte gRPC nativo desde 4.1: Spring gRPC 1.1.2, grpc-java 1.84.1,
-Protobuf Java 4.36.2 y protobuf-maven-plugin 5.1.12, todos gestionados por el BOM). `f048-grpc/pom.xml`:
+Protobuf Java 4.36.2, gestionados por el BOM; plugin de Gradle `com.google.protobuf` 0.9.6). `f048-grpc/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F048 · gRPC: Protocol Buffers, servicios, streaming (soporte gRPC nativo de Spring Boot 4.1) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f048-grpc</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Servidor gRPC (Netty, grpc-java 1.84.1, Spring gRPC 1.1.2, reflexión y health) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-grpc-server</artifactId>
-    </dependency>
-    <!-- Cliente gRPC (GrpcChannelFactory) para la consola y los tests -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-grpc-client</artifactId>
-    </dependency>
-    <!-- @AutoConfigureTestGrpcTransport: servidor y canal en proceso para los tests -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-grpc-client-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <!-- Genera las clases Java desde src/main/proto. El parent de Boot ya fija protoc (protobuf-java 4.36.2)
-           y el plugin protoc-gen-grpc-java (grpc-java 1.84.1): aquí solo se activa. -->
-      <plugin>
-        <groupId>io.github.ascopes</groupId>
-        <artifactId>protobuf-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F048 · gRPC: Protocol Buffers, servicios, streaming (soporte gRPC nativo de Spring Boot 4.1)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    // Genera las clases Java desde src/main/proto. El plugin de Boot reacciona a este plugin y fija protoc
+    // (protobuf-java 4.36.2) y protoc-gen-grpc-java (grpc-java 1.84.1): aquí solo se activa.
+    alias(libs.plugins.protobuf)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Servidor gRPC (Netty, grpc-java 1.84.1, Spring gRPC 1.1.2, reflexión y health)
+    implementation(libs.spring.boot.starter.grpc.server)
+    // Cliente gRPC (GrpcChannelFactory) para la consola y los tests
+    implementation(libs.spring.boot.starter.grpc.client)
+    // @AutoConfigureTestGrpcTransport: servidor y canal en proceso para los tests
+    testImplementation(libs.spring.boot.starter.grpc.client.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+protobuf {
+    plugins {
+        create("grpc")   // activa el generador de stubs gRPC; artefacto y versión los pone el plugin de Boot
+    }
+}
+
+// ../gradlew -q bootRun -Pprincipal=academia.grpc.ClienteDeConsola arranca otra clase con main
+// (en Maven: -Dspring-boot.run.main-class=...). Sin la propiedad, Boot busca la clase @SpringBootApplication.
+springBoot {
+    providers.gradleProperty("principal").orNull?.let { mainClass = it }
+}
 ```
 
 Contrato · `src/main/proto/inventario.proto`:
@@ -947,7 +1001,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Cliente gRPC mínimo (sin Spring) contra el servidor en localhost:9090.
- * Ejecuta: ./mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.grpc.ClienteDeConsola
+ * Ejecuta: ./gradlew -q bootRun -Pprincipal=academia.grpc.ClienteDeConsola
  */
 public final class ClienteDeConsola {
 
@@ -973,7 +1027,7 @@ public final class ClienteDeConsola {
 ```
 
 Demostración del binario · `protobuf/demo-binario.sh` (no necesita paquetes globales de Python: usa `protoc` del PATH,
-el que descargó `../mvnw compile` en `~/.m2` o un entorno virtual propio en `protobuf/.venv`) y el contrato «roto»
+el que descargó `../gradlew compileJava` en `~/.gradle` o un entorno virtual propio en `protobuf/.venv`) y el contrato «roto»
 `protobuf/inventario-v2-roto.proto`:
 
 ```bash
@@ -981,26 +1035,30 @@ el que descargó `../mvnw compile` en `~/.m2` o un entorno virtual propio en `pr
 # F048 · Cómo se ve un mensaje Protocol Buffers en el cable, y qué pasa si cambias los números de campo.
 # Busca protoc en este orden, sin depender de paquetes globales de Python:
 #   1. `protoc` en el PATH (por ejemplo, `brew install protobuf`).
-#   2. El protoc que descargó el build Maven de f048-grpc (protobuf-maven-plugin) en ~/.m2.
+#   2. El protoc que descargó el build de Gradle de f048-grpc (plugin com.google.protobuf) en ~/.gradle.
 #   3. Un entorno virtual propio en protobuf/.venv con grpcio-tools 1.84.1 (tiene ruedas para Python 3.10 a 3.15).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 
-buscar_protoc_de_maven() {
+buscar_protoc_de_gradle() {
   local so arq
   case "$(uname -s)" in Darwin) so=osx ;; Linux) so=linux ;; *) return 1 ;; esac
   case "$(uname -m)" in arm64|aarch64) arq=aarch_64 ;; x86_64|amd64) arq=x86_64 ;; *) return 1 ;; esac
   # protobuf-java 4.36.2 (BOM de Spring Boot 4.1.3) -> com.google.protobuf:protoc:4.36.2:exe:<so>-<arq>
-  local exe="${HOME}/.m2/repository/com/google/protobuf/protoc/4.36.2/protoc-4.36.2-${so}-${arq}.exe"
-  [ -f "$exe" ] || return 1
-  cp "$exe" "$TMP/protoc" && chmod +x "$TMP/protoc"   # en ~/.m2 se guarda sin permiso de ejecución
+  # La caché de Gradle guarda cada archivo en una carpeta con su hash: se busca por nombre
+  local cache="${GRADLE_USER_HOME:-${HOME}/.gradle}/caches/modules-2/files-2.1/com.google.protobuf/protoc/4.36.2"
+  [ -d "$cache" ] || return 1
+  local exe
+  exe=$(find "$cache" -name "protoc-4.36.2-${so}-${arq}.exe" | head -1)
+  [ -n "$exe" ] || return 1
+  cp "$exe" "$TMP/protoc" && chmod +x "$TMP/protoc"   # se copia para darle permiso de ejecución sin tocar la caché
   echo "$TMP/protoc"
 }
 
 if command -v protoc >/dev/null; then
   PROTOC=(protoc)
-elif P=$(buscar_protoc_de_maven); then
+elif P=$(buscar_protoc_de_gradle); then
   PROTOC=("$P")
 else
   VENV=protobuf/.venv
@@ -1048,12 +1106,12 @@ message Existencia {
    ```
 2. Genera el código y arranca el servidor gRPC:
    ```bash
-   ../mvnw -q compile        # genera target/generated-sources/protobuf
-   ../mvnw -q spring-boot:run
+   ../gradlew -q compileJava        # genera build/generated/sources/proto
+   ../gradlew -q bootRun
    ```
 3. En otra terminal, ejecuta el cliente de consola:
    ```bash
-   ../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.grpc.ClienteDeConsola
+   ../gradlew -q bootRun -Pprincipal=academia.grpc.ClienteDeConsola
    ```
 4. (Opcional, con `grpcurl` instalado) explora el servidor por reflexión:
    `grpcurl -plaintext localhost:9090 list` y
@@ -1062,7 +1120,7 @@ message Existencia {
 **Output esperado:**
 
 Paso 1 (salida real, con el entorno virtual que crea el script la primera vez; tu primera línea muestra la versión del
-`protoc` que encontró: el de Homebrew, el que descargó Maven o el de grpcio-tools 1.84.1, `libprotoc 35.1`):
+`protoc` que encontró: el de Homebrew, el que descargó Gradle o el de grpcio-tools 1.84.1, `libprotoc 35.1`):
 
 ```text
 == Creando protobuf/.venv con grpcio-tools 1.84.1 (solo la primera vez)
@@ -1100,7 +1158,7 @@ disponibles: 12
 
 ```bash
 cd examples/microservicios/modulo-10/f048-grpc
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/grpc/InventarioGrpcTest.java`:
@@ -1182,7 +1240,7 @@ class InventarioGrpcTest {
 }
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** necesitas agregar el campo `bodega` a `Existencia`. ¿Qué número le das y por qué? *(Uno nuevo, el 3:
 los clientes viejos ignoran el campo desconocido y los nuevos reciben `""` de los servidores viejos; reutilizar 1 o 2
 rompería a todos.)*
@@ -1323,53 +1381,44 @@ petición.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring for GraphQL 2.0.7 y graphql-java 25.1, gestionados).
-`f049-graphql/pom.xml`:
+`f049-graphql/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F049 · GraphQL con Spring for GraphQL 2.0 (graphql-java 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f049-graphql</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring for GraphQL 2.0.7 + graphql-java 25.1 (gestionados por Boot 4.1.3) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-graphql</artifactId>
-    </dependency>
-    <!-- Transporte HTTP: POST /graphql y GraphiQL en /graphiql -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- @GraphQlTest y GraphQlTester -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-graphql-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F049 · GraphQL con Spring for GraphQL 2.0 (graphql-java 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring for GraphQL 2.0.7 + graphql-java 25.1 (gestionados por Boot 4.1.3)
+    implementation(libs.spring.boot.starter.graphql)
+    // Transporte HTTP: POST /graphql y GraphiQL en /graphiql
+    implementation(libs.spring.boot.starter.webmvc)
+    // @GraphQlTest y GraphQlTester
+    testImplementation(libs.spring.boot.starter.graphql.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 Esquema · `src/main/resources/graphql/schema.graphqls`:
@@ -1568,7 +1617,7 @@ public class GraphQlApp {
 1. Arranca el servicio:
    ```bash
    cd examples/microservicios/modulo-10/f049-graphql
-   ../mvnw -q spring-boot:run
+   ../gradlew -q bootRun
    ```
 2. En otra terminal, envía tres documentos con `curl`:
    ```bash
@@ -1602,7 +1651,7 @@ indefinido (menciona `costo` y el tipo `Producto`) y cuya extensión `classifica
 
 ```bash
 cd examples/microservicios/modulo-10/f049-graphql
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/graphql/CatalogoGraphQlTest.java`:
@@ -1669,7 +1718,7 @@ class CatalogoGraphQlTest {
 }
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** si quitas `@BatchMapping` y resuelves `resenas` con un `@SchemaMapping` que consulta producto por
 producto, ¿qué test falla y con qué número? *(El de una sola llamada: el contador sube 3, uno por producto.)*
 
@@ -1856,57 +1905,45 @@ services:
       retries: 30
 ```
 
-`f050-mensajeria/pom.xml`:
+`f050-mensajeria/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F050 · Mensajería asíncrona: RabbitMQ y Kafka (introducción) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f050-mensajeria</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring AMQP 4.1.x + cliente RabbitMQ 5.x -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-amqp</artifactId>
-    </dependency>
-    <!-- Spring for Apache Kafka 4.1.x + kafka-clients 4.2.2 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-kafka</artifactId>
-    </dependency>
-    <!-- POST /pedidos para publicar a mano en el laboratorio -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F050 · Mensajería asíncrona: RabbitMQ y Kafka (introducción)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring AMQP 4.1.x + cliente RabbitMQ 5.x
+    implementation(libs.spring.boot.starter.amqp)
+    // Spring for Apache Kafka 4.1.x + kafka-clients 4.2.2
+    implementation(libs.spring.boot.starter.kafka)
+    // POST /pedidos para publicar a mano en el laboratorio
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -2100,7 +2137,7 @@ public class MensajeriaApp {
    ```
 2. Arranca el servicio y publica un pedido por cada canal:
    ```bash
-   cd f050-mensajeria && ../mvnw -q spring-boot:run          # terminal 1
+   cd f050-mensajeria && ../gradlew -q bootRun          # terminal 1
    curl -s -X POST "localhost:8080/pedidos/P-1?canal=rabbit"; echo
    curl -s -X POST "localhost:8080/pedidos/P-2?canal=kafka"; echo
    ```
@@ -2140,7 +2177,7 @@ borra.
 ```bash
 cd examples/microservicios/modulo-10
 docker compose up -d --wait
-cd f050-mensajeria && ../mvnw test
+cd f050-mensajeria && ../gradlew test
 ```
 
 `src/test/java/academia/mensajeria/MensajeriaTest.java`:
@@ -2191,7 +2228,7 @@ class MensajeriaTest {
 }
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** agregas un servicio de Puntos que también debe enterarse de cada pedido. ¿Qué creas en RabbitMQ y qué
 en Kafka? *(En RabbitMQ, una cola `puntos.pedidos` con su binding al mismo exchange; en Kafka, nada en el broker: el
 servicio usa un `group-id` nuevo, `puntos`, y lee el mismo topic.)*
@@ -2329,38 +2366,40 @@ ese evento viajaría por RabbitMQ o Kafka (tema 4).
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25 LTS**, **Spring Boot 4.1.3** (Spring MVC; JUnit Jupiter 6.0.3). `Necesidad` y
-`CriteriosDeComunicacion` son Java puro. `f051-sync-async/pom.xml`:
+`CriteriosDeComunicacion` son Java puro. `f051-sync-async/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F051 · Sync vs async: criterios de decisión -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f051-sync-async</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
+```kotlin
+// F051 · Sync vs async: criterios de decisión
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/java/academia/decision/Necesidad.java` y `CriteriosDeComunicacion.java`:
@@ -2565,7 +2604,7 @@ class PedidosController {
    ```
 2. Arranca el servicio y mide los dos estilos:
    ```bash
-   ../mvnw -q spring-boot:run          # terminal 1
+   ../gradlew -q bootRun          # terminal 1
    curl -s -o /dev/null -w "síncrono:  %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-1/sincrono
    curl -s -o /dev/null -w "asíncrono: %{http_code} en %{time_total}s\n" -X POST localhost:8080/pedidos/P-2/asincrono
    ```
@@ -2596,7 +2635,7 @@ paso 2 la diferencia de tiempo es el trabajo que el estilo asíncrono saca del c
 
 ```bash
 cd examples/microservicios/modulo-10/f051-sync-async
-../mvnw test
+../gradlew test
 ```
 
 `src/test/java/academia/decision/CriteriosDeComunicacionTest.java` y `SyncAsyncTest.java`:
@@ -2678,7 +2717,7 @@ class SyncAsyncTest {
 }
 ```
 
-**Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. **Pregunta de
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
 comprobación:** un flujo de checkout llama en cadena a 3 servicios con 99,9 % cada uno. ¿Cuál es la disponibilidad de
 la cadena y qué cambiarías? *(0,999³ ≈ 99,70 %; sacaría del camino síncrono todo lo que no necesita respuesta, como
 notificaciones y puntos, publicándolo como eventos.)*

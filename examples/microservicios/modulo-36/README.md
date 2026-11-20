@@ -7,7 +7,7 @@ separado**, como pide el prompt:
 - **Pista Node.js (Fase 2)**, en la raíz: Express 5.3.0, Temporal TypeScript SDK 1.26.0, ioredis 6.0.0 y Gatling JS
   3.16.101, sobre **Node.js 26.13.1 LTS**. Se ejecuta entera con `./verificar.sh`.
 - **Pista Spring Boot (Fase 1)**, en [`spring/`](spring/): Spring Boot 4.1.3, Spring Cloud Gateway 5.0.4 (tren
-  2025.1.4) con `RedisRateLimiter`, Temporal Java SDK 1.41.1 y Gatling 3.16.1 con `gatling-maven-plugin` 4.21.12, sobre
+  2025.1.4) con `RedisRateLimiter`, Temporal Java SDK 1.41.1 y Gatling 3.16.1 con el plugin `io.gatling.gradle` 3.16.0, sobre
   **JDK 25**. Mismo contrato HTTP, misma saga, mismo límite.
 
 ## El enunciado
@@ -73,13 +73,13 @@ node f182-saga-temporal/iniciar.js                             # terminal 4
 
 ```bash
 cd examples/microservicios/modulo-36/spring
-./mvnw test                                                    # ReservaWorkflowTest con Temporal en memoria
+./gradlew test                                                    # ReservaWorkflowTest con Temporal en memoria
 docker compose -f ../docker-compose.yml up -d --wait           # Redis para el gateway
 temporal server start-dev &                                    # Temporal
-./mvnw -f pagos-externo/pom.xml spring-boot:run &              # :8090 (LIMITE_RPS=20 para la restricción)
-COBROS_POR_SEGUNDO=18 ./mvnw -f reservas/pom.xml spring-boot:run &   # :8081
-./mvnw -f gateway/pom.xml spring-boot:run &                    # :8080
-./mvnw -f carga/pom.xml gatling:test                           # Gatling Java contra :8080
+./gradlew :pagos-externo:bootRun &              # :8090 (LIMITE_RPS=20 para la restricción)
+COBROS_POR_SEGUNDO=18 ./gradlew :reservas:bootRun &   # :8081
+./gradlew :gateway:bootRun &                    # :8080
+./gradlew :carga:gatlingRun                           # Gatling Java contra :8080
 java spring/jdk/SagaReserva.java; java spring/jdk/CuboDeFichas.java   # mecánica en JDK puro
 ```
 
@@ -87,7 +87,7 @@ java spring/jdk/SagaReserva.java; java spring/jdk/CuboDeFichas.java   # mecánic
 
 ```bash
 ./verificar.sh              # pista Node + Redis local si hay redis-server + Gatling si hay Java + jdk/
-./verificar.sh --compose    # además: Redis con Docker Compose y los tests Maven de spring/
+./verificar.sh --compose    # además: Redis con Docker Compose y los tests con Gradle de spring/
 ```
 
 Toda la salida queda en `logs/verificar.log`. Si algo falla o falta una herramienta (Java, Redis, Temporal, Docker),
@@ -99,3 +99,10 @@ La rúbrica completa está en [`docs/microservicios/07-plantillas.md`](../../../
 (sección 7.2) y, ejecutable, en `f187-defensa-arb/rubrica.json` + `puntuar.js`. Aprueba quien obtiene **≥ 2.8 de
 media ponderada y ningún criterio en 1**. Antes de pedir fecha: `node f187-defensa-arb/entregables.js` debe decir
 `listo para la defensa`.
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper (`spring/gradlew`); las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

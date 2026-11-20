@@ -43,7 +43,8 @@ Duración, dificultad, dependencias y fase (párrafo corto), y el mapa visual de
 - **5. Diagrama técnico:** bloque ```mermaid + una línea «**Texto alternativo:** …».
 - **6–8:** nivel 0 para quien nunca programó; intermedio con la mecánica; maestro con trade-offs, al menos 2
   alternativas y cuándo NO usarlo. Nunca remitas a la documentación como única explicación.
-- **9. Código ejecutable:** completo y autónomo (imports, `pom.xml` o `package.json` mínimos, configuración),
+- **9. Código ejecutable:** completo y autónomo (imports, `build.gradle.kts` —Gradle con Kotlin DSL, wrapper y catálogo de versiones; Maven solo como nota de
+  equivalencia— o `package.json` mínimos, configuración),
   comentado, con las versiones exactas. Debe correr tal cual; pega la salida real.
 - **10. Mini-laboratorio:** pasos numerados con comandos exactos, «**Output esperado:**» con el texto real y la
   captura descrita. Si usa Kafka, Redis, PostgreSQL u otra infraestructura, arranca con Docker Compose del

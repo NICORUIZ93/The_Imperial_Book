@@ -91,12 +91,12 @@ registro() {
 }
 paso "Schema Registry responde (hasta 240 s)" registro
 
-paso "F075 · Kafka: particionamiento y consumer groups" ./mvnw -q -pl f075-kafka-particiones test
-paso "F076 · Exactly-Once Semantics" ./mvnw -q -pl f076-exactly-once test
-paso "F077 · Schema Registry y Avro" ./mvnw -q -pl f077-schema-registry-avro test
-paso "F078 · Dead Letter Topics" ./mvnw -q -pl f078-dead-letter-topics test
-paso "F079 · RabbitMQ: publisher confirms y DLQ" ./mvnw -q -pl f079-rabbitmq-confirms-dlq test
-paso "F080 · NATS" ./mvnw -q -pl f080-nats test
+paso "F075 · Kafka: particionamiento y consumer groups" ./gradlew -q :f075-kafka-particiones:test
+paso "F076 · Exactly-Once Semantics" ./gradlew -q :f076-exactly-once:test
+paso "F077 · Schema Registry y Avro" ./gradlew -q :f077-schema-registry-avro:test
+paso "F078 · Dead Letter Topics" ./gradlew -q :f078-dead-letter-topics:test
+paso "F079 · RabbitMQ: publisher confirms y DLQ" ./gradlew -q :f079-rabbitmq-confirms-dlq:test
+paso "F080 · NATS" ./gradlew -q :f080-nats:test
 
 grupo_inventario() {   # cada partición del topic aparece en una fila con su offset y su LAG
   salida=$(docker compose exec -T kafka /opt/kafka/bin/kafka-consumer-groups.sh \

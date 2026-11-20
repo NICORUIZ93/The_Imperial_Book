@@ -20,7 +20,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Provider("catalogo")
-@PactFolder("../f034-pact-consumidor/target/pacts")
+@PactFolder("../f034-pact-consumidor/build/pacts")
 class ContratoDesdeCarpetaTest {
 
     @LocalServerPort int puerto;

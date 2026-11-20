@@ -4,8 +4,8 @@
 de 2–3 h). **Dificultad:** 4 de 5. **Dependencias:** Módulo 6 (llamadas entre servicios) y Módulo 7 (descubrimiento,
 gateway, balanceo y BFF). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3**, **Resilience4j 2.4.0**
 (`resilience4j-spring-boot4`), Spring Cloud 2025.1.4 (BOM), **Toxiproxy 2.13.0** con Docker Compose, Testcontainers
-2.0.5 (módulo Toxiproxy) y toxiproxy-java 2.1.11, Maven 3.10.1 por el wrapper y `curl`. **Laboratorio:**
-`examples/microservicios/modulo-12/` (una demostración con JDK puro por tema en `jdk/`, una carpeta Maven por tema,
+2.0.5 (módulo Toxiproxy) y toxiproxy-java 2.1.11, Gradle 9.9.2 por el wrapper y `curl`. **Laboratorio:**
+`examples/microservicios/modulo-12/` (una demostración con JDK puro por tema en `jdk/`, un subproyecto Gradle por tema,
 `docker-compose.yml` con el inventario y Toxiproxy, y `simular-fallo.sh`).
 
 En un sistema distribuido **algo siempre está fallando**: una red que pierde paquetes, un servicio en plena
@@ -603,82 +603,123 @@ public class Patrones {
 }
 ```
 
-**Resilience4j en Spring Boot.** `f057-resilience4j/pom.xml`:
+**Resilience4j en Spring Boot.** `f057-resilience4j/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F057 · Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead y TimeLimiter en el servicio "pedidos" -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f057-resilience4j</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-    <resilience4j.version>2.4.0</resilience4j.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API HTTP de pedidos -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient para llamar al inventario -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- /actuator/circuitbreakers, /actuator/health con el estado del circuito -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <!-- Las anotaciones de Resilience4j son aspectos: necesitan AspectJ (en Boot 4 sustituye a spring-boot-starter-aop) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-aspectj</artifactId>
-    </dependency>
-    <!-- Resilience4j 2.4.0: anotaciones @CircuitBreaker, @Retry, @RateLimiter, @Bulkhead, @TimeLimiter (soporte de Spring Boot 4) -->
-    <dependency>
-      <groupId>io.github.resilience4j</groupId>
-      <artifactId>resilience4j-spring-boot4</artifactId>
-      <version>${resilience4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F057 · Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead y TimeLimiter en el servicio "pedidos"
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // API HTTP de pedidos
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient para llamar al inventario
+    implementation(libs.spring.boot.starter.restclient)
+    // /actuator/circuitbreakers, /actuator/health con el estado del circuito
+    implementation(libs.spring.boot.starter.actuator)
+    // Las anotaciones de Resilience4j son aspectos: necesitan AspectJ (en Boot 4 sustituye a spring-boot-starter-aop)
+    implementation(libs.spring.boot.starter.aspectj)
+    // Resilience4j 2.4.0: anotaciones @CircuitBreaker, @Retry, @RateLimiter, @Bulkhead, @TimeLimiter (soporte de Spring Boot 4)
+    implementation(libs.resilience4j.spring.boot4)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-12/settings.gradle.kts`:
+
+```kotlin
+// Módulo 8 (modulo-12) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todos los subproyectos.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-12-laboratorios"
+
+include(
+    "f057-resilience4j",
+    "f058-presupuesto",
+    "f059-fallbacks",
+    "f060-caos",
+)
+```
+
+`modulo-12/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 8 (modulo-12)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+resilience4j = "2.4.0"
+spring-boot = "4.1.3"
+# Tren de Spring Cloud compatible con Spring Boot 4.1.x
+spring-cloud = "2025.1.4"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-aspectj = { module = "org.springframework.boot:spring-boot-starter-aspectj" }
+resilience4j-spring-boot4 = { module = "io.github.resilience4j:resilience4j-spring-boot4", version.ref = "resilience4j" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-toxiproxy = { module = "org.testcontainers:testcontainers-toxiproxy" }
+toxiproxy-java = { module = "eu.rekawek.toxiproxy:toxiproxy-java", version = "2.1.11" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 ```
 
 `f057-resilience4j/src/main/resources/application.yml`:
@@ -957,7 +998,7 @@ Toxiproxy.
 
 ```bash
 docker compose up -d --wait
-cd f057-resilience4j && ../mvnw -q spring-boot:run &
+cd f057-resilience4j && ../gradlew -q bootRun &
 cd ..
 curl -s localhost:8080/pedidos/stock/7; echo
 ```
@@ -1117,10 +1158,10 @@ class PatronesTest {
 ```
 
 ```bash
-cd f057-resilience4j && ../mvnw test
+cd f057-resilience4j && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** con `sliding-window-size: 4`, `minimum-number-of-calls: 4`, `failure-rate-threshold: 50`
 y `max-attempts: 3`, el inventario falla siempre. ¿Cuántas peticiones HTTP llegan al inventario en las dos primeras
@@ -1475,65 +1516,49 @@ public class Presupuesto {
 }
 ```
 
-**El BFF con presupuesto en Spring Boot.** `f058-presupuesto/pom.xml`:
+**El BFF con presupuesto en Spring Boot.** `f058-presupuesto/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F058 · Timeouts en cascada y presupuesto de latencia (deadline propagado en X-Deadline) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f058-presupuesto</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API HTTP del BFF -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient con timeout calculado en cada llamada -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F058 · Timeouts en cascada y presupuesto de latencia (deadline propagado en X-Deadline)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // API HTTP del BFF
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient con timeout calculado en cada llamada
+    implementation(libs.spring.boot.starter.restclient)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f058-presupuesto/src/main/java/academia/presupuesto/Deadline.java`:
@@ -1693,7 +1718,7 @@ el fallo inyectado el BFF ni siquiera llega a recibir respuesta):
 
 ```bash
 docker compose up -d --wait
-cd f058-presupuesto && PEDIDOS_URL=http://localhost:21212 ../mvnw -q spring-boot:run &
+cd f058-presupuesto && PEDIDOS_URL=http://localhost:21212 ../gradlew -q bootRun &
 cd ..
 ./simular-fallo.sh lento 1500
 curl -s -w ' %{time_total}s\n' localhost:8090/bff/pedidos/1
@@ -1811,10 +1836,10 @@ class PresupuestoTest {
 ```
 
 ```bash
-cd f058-presupuesto && ../mvnw test
+cd f058-presupuesto && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** el gateway tiene `response-timeout: 2s`, el BFF llama a pedidos con 3 intentos de
 800 ms y pedidos llama al inventario con timeout de 1 s. ¿Qué está mal y cómo lo corriges con un presupuesto de 1,5 s?
@@ -2106,77 +2131,53 @@ public class Fallbacks {
 }
 ```
 
-**Fallbacks por tipo de error en Spring Boot.** `f059-fallbacks/pom.xml`:
+**Fallbacks por tipo de error en Spring Boot.** `f059-fallbacks/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F059 · Fallback strategies con Resilience4j: por tipo de error, caché del último valor bueno y fallar rápido -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f059-fallbacks</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-    <resilience4j.version>2.4.0</resilience4j.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API HTTP -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient para el inventario -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- Las anotaciones de Resilience4j son aspectos: necesitan AspectJ (en Boot 4 sustituye a spring-boot-starter-aop) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-aspectj</artifactId>
-    </dependency>
-    <!-- Resilience4j 2.4.0: anotaciones @CircuitBreaker, @Retry, @RateLimiter, @Bulkhead, @TimeLimiter (soporte de Spring Boot 4) -->
-    <dependency>
-      <groupId>io.github.resilience4j</groupId>
-      <artifactId>resilience4j-spring-boot4</artifactId>
-      <version>${resilience4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F059 · Fallback strategies con Resilience4j: por tipo de error, caché del último valor bueno y fallar rápido
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // API HTTP
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient para el inventario
+    implementation(libs.spring.boot.starter.restclient)
+    // Las anotaciones de Resilience4j son aspectos: necesitan AspectJ (en Boot 4 sustituye a spring-boot-starter-aop)
+    implementation(libs.spring.boot.starter.aspectj)
+    // Resilience4j 2.4.0: anotaciones @CircuitBreaker, @Retry, @RateLimiter, @Bulkhead, @TimeLimiter (soporte de Spring Boot 4)
+    implementation(libs.resilience4j.spring.boot4)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f059-fallbacks/src/main/java/academia/fallbacks/InventarioServicio.java`:
@@ -2370,7 +2371,7 @@ OK: cada fallback dice de dónde sale el dato; lo crítico falla rápido
 
 ```bash
 docker compose up -d --wait
-cd f059-fallbacks && ../mvnw -q spring-boot:run &
+cd f059-fallbacks && ../gradlew -q bootRun &
 cd ..
 curl -s localhost:8080/productos/7/stock; echo
 ```
@@ -2474,10 +2475,10 @@ class FallbacksTest {
 ```
 
 ```bash
-cd f059-fallbacks && ../mvnw test
+cd f059-fallbacks && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** el servicio de permisos no responde y tu endpoint `GET /facturas/{id}` debe comprobar si
 el usuario puede verla. Tienes en caché que hace 2 horas sí podía. ¿Qué respondes?
@@ -2664,7 +2665,7 @@ en un sistema que ya está en incidente.
 #   curl localhost:21212/stock/7         -> {"sku":"7","stock":12}   (a través de Toxiproxy)
 #   ./simular-fallo.sh lento 2000        -> inyecta 2 s de latencia (ver simular-fallo.sh)
 #   docker compose down
-# Los servicios Spring Boot (f057…f060) corren en tu máquina con ./mvnw y llaman a localhost:21212.
+# Los servicios Spring Boot (f057…f060) corren en tu máquina con ./gradlew y llaman a localhost:21212.
 services:
   inventario:
     image: eclipse-temurin:25-jdk
@@ -2751,7 +2752,7 @@ echo
 ```bash
 #!/usr/bin/env bash
 # F060 · Experimento de caos con Toxiproxy contra el BFF de producto (f060-caos) en localhost:8080.
-# Antes: docker compose up -d --wait   y   (cd f060-caos && ../mvnw spring-boot:run)
+# Antes: docker compose up -d --wait   y   (cd f060-caos && ../gradlew bootRun)
 # Hipótesis: con +600 ms de latencia en el inventario, el p95 de /productos/7 sigue < 300 ms y no hay 5xx.
 # Uso: caos/experimento.sh [latencia_ms] [p95_maximo_ms]
 set -euo pipefail
@@ -2913,83 +2914,54 @@ public class Caos {
 }
 ```
 
-**El BFF bajo prueba en Spring Boot (la versión v2)** — `f060-caos/pom.xml`, `ProductoApp.java` y `application.yml`:
+**El BFF bajo prueba en Spring Boot (la versión v2)** — `f060-caos/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F060 · Chaos Engineering con Toxiproxy: el experimento como test (Testcontainers + Toxiproxy 2.13.0) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f060-caos</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API HTTP del BFF de producto -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient con timeout de 200 ms -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- Testcontainers 2.0.5 (gestionado por Boot) -->
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-toxiproxy</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- Cliente Java de la API de Toxiproxy (no lo gestiona Boot) -->
-    <dependency>
-      <groupId>eu.rekawek.toxiproxy</groupId>
-      <artifactId>toxiproxy-java</artifactId>
-      <version>2.1.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F060 · Chaos Engineering con Toxiproxy: el experimento como test (Testcontainers + Toxiproxy 2.13.0)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // API HTTP del BFF de producto
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient con timeout de 200 ms
+    implementation(libs.spring.boot.starter.restclient)
+    // Testcontainers 2.0.5 (gestionado por Boot)
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.toxiproxy)
+    // Cliente Java de la API de Toxiproxy (no lo gestiona Boot)
+    testImplementation(libs.toxiproxy.java)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 ```java
@@ -3113,14 +3085,14 @@ t                                      # 200 0.00Xs
 4. El experimento contra el BFF de Spring (v2):
 
 ```bash
-cd f060-caos && ../mvnw -q spring-boot:run &
+cd f060-caos && ../gradlew -q bootRun &
 cd ..
 caos/experimento.sh 600 300
 ```
 
    **Output esperado:** las seis líneas del experimento terminando en `6. hipótesis CONFIRMADA`, con `degradadas=20/20`
    en el paso 4 y `p95` alrededor de 200–250 ms. Ahora rompe la protección: detén el BFF (`kill %1`), arráncalo
-   con `(cd f060-caos && ../mvnw -q spring-boot:run -Dspring-boot.run.arguments=--inventario.timeout=5s &)` y repite: el paso 4 da un p95 de unos 600 ms y `6. hipótesis REFUTADA` (código de salida
+   con `(cd f060-caos && ../gradlew -q bootRun --args=--inventario.timeout=5s &)` y repite: el paso 4 da un p95 de unos 600 ms y `6. hipótesis REFUTADA` (código de salida
    1). Termina con `kill %1` y `docker compose down`.
 
 #### 11. VERIFICACIÓN
@@ -3226,10 +3198,10 @@ class ExperimentoCaosTest {
 ```
 
 ```bash
-cd f060-caos && ../mvnw test         # Docker encendido
+cd f060-caos && ../gradlew test         # Docker encendido
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. Si alguien quita el timeout
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Si alguien quita el timeout
 de `ProductoApp`, este test falla con `hipótesis: p95 < 300 ms` en el mensaje: la resiliencia queda protegida en cada
 build.
 

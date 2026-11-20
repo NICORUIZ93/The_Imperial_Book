@@ -4,12 +4,12 @@
 **Dificultad:** 4 de 5. **Dependencias:** Módulo 0.5 (Docker básico: imagen, contenedor, `docker run`), Módulo 1
 (perfiles y configuración externalizada), Módulo 7 del curso (Spring Cloud: por qué un servicio necesita un nombre
 estable) y Módulo 10 (Actuator y health). **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3**, Docker Engine 29 con
-Compose v5, imágenes `maven:3.10.0-eclipse-temurin-25` y `gcr.io/distroless/java25-debian13:nonroot`, **kind v0.33.0**
+Compose v5, imágenes `eclipse-temurin:25-jdk` y `gcr.io/distroless/java25-debian13:nonroot`, **kind v0.33.0**
 con **Kubernetes 1.37.0**, kubectl 1.37, metrics-server v0.9.0, **Helm 4.3.1** y **Argo CD v3.5.6**.
 **Laboratorio:** `examples/microservicios/modulo-16/` (una sola aplicación, `app/`, que recorre las 8 fichas;
 `./verificar.sh` lo ejecuta todo y cada ficha tiene su prueba en `pruebas/fNNN-*.sh`).
 
-Hasta ahora tus servicios corrían con `./mvnw spring-boot:run`. Producción es otra cosa: el código se empaqueta en una
+Hasta ahora tus servicios corrían con `./gradlew bootRun`. Producción es otra cosa: el código se empaqueta en una
 **imagen** inmutable, varias imágenes se levantan juntas con **Compose** en tu máquina, y en el clúster
 **Kubernetes** mantiene vivas las réplicas, les da un nombre estable, les inyecta configuración y secretos, sabe si
 están sanas, las multiplica con la carga, y las actualiza sin cortar el servicio. **Helm** empaqueta todo eso y
@@ -45,8 +45,8 @@ con JDK 25.0.5; lo demás está en `verificacion/microservicios/pendiente.md`.
 
 | Herramienta | Versión | Dónde se fija |
 |---|---|---|
-| Spring Boot (Actuator, probes) | 4.1.3 | `app/pom.xml` |
-| Imagen de compilación | `maven:3.10.0-eclipse-temurin-25` | `app/Dockerfile` |
+| Spring Boot (Actuator, probes) | 4.1.3 | `app/gradle/libs.versions.toml` |
+| Imagen de compilación | `eclipse-temurin:25-jdk` + Gradle 9.9.2 por el wrapper | `app/Dockerfile` |
 | Imagen de ejecución | `gcr.io/distroless/java25-debian13:nonroot` (Temurin 25 sobre Debian 13) | `app/Dockerfile` |
 | Docker Compose | v5 (especificación Compose) · `nginx:1.30.6-alpine` | `docker-compose.yml` |
 | kind / nodo | v0.33.0 / `kindest/node:v1.37.0@sha256:a1ed56cf…` | `kind/cluster.yaml` |
@@ -59,59 +59,115 @@ color y pod responden, y si la clave del API está configurada, sin mostrarla), 
 HPA), los endpoints de Actuator `/actuator/health/liveness` y `/actuator/health/readiness`, y tres endpoints
 **solo de laboratorio** para cambiar a mano el estado de las probes.
 
-`app/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+> Aquí el build es de **un solo proyecto** y vive entero en `app/` (wrapper incluido), porque `app/` es el contexto de
+> `docker build`: los comandos de Gradle se ejecutan desde `app/`.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Módulo 12 · Servicio «catalogo» que se empaqueta, se orquesta y se despliega (Spring Boot 4.1.3, JDK 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>catalogo</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC 7 + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- /actuator/health/liveness y /actuator/health/readiness para las probes de Kubernetes -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <!-- target/catalogo.jar: el Dockerfile lo busca con este nombre -->
-    <finalName>catalogo</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-16/app/settings.gradle.kts`:
+
+```kotlin
+// Módulo 12 (modulo-16) · Build de un solo proyecto: el servicio «catalogo», la misma imagen que usan las 8 fichas
+// (Dockerfile, Compose, Kubernetes, probes, HPA, Helm, Blue-Green/Canary y Argo CD).
+// El build completo (wrapper incluido) vive en app/ porque app/ es el contexto de "docker build".
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "catalogo"
+```
+
+`modulo-16/app/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 12 (modulo-16) · Servicio «catalogo»
+# Catálogo de versiones: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies).
+
+[versions]
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+```
+
+`app/build.gradle.kts`:
+
+```kotlin
+// Módulo 12 · Servicio «catalogo» que se empaqueta, se orquesta y se despliega (Spring Boot 4.1.3, JDK 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC 7 + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // /actuator/health/liveness y /actuator/health/readiness para las probes de Kubernetes
+    implementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+// build/libs/catalogo.jar: el Dockerfile lo busca con este nombre (en Maven, <finalName>catalogo</finalName>)
+tasks.bootJar {
+    archiveFileName = "catalogo.jar"
+}
+
+// Descarga las dependencias sin compilar: en el Dockerfile, la capa que las contiene se reutiliza mientras
+// no cambien los archivos de build (en Maven, dependency:go-offline).
+tasks.register("descargarDependencias") {
+    group = "build setup"
+    description = "Resuelve y descarga las dependencias de compilación y de ejecución"
+    val rutas = configurations.compileClasspath.get() + configurations.runtimeClasspath.get()
+    doLast {
+        println("Dependencias descargadas: ${rutas.files.size}")
+    }
+}
 ```
 
 `app/src/main/resources/application.properties`:
@@ -342,7 +398,7 @@ public final class SondaSalud {
 }
 ```
 
-Sus tests (sin Docker ni clúster: `./mvnw test` desde `modulo-16`):
+Sus tests (sin Docker ni clúster: `(cd app && ./gradlew test)` desde `modulo-16`):
 
 `app/src/test/java/academia/catalogo/CatalogoTest.java`:
 
@@ -510,7 +566,7 @@ Módulo 12, Lección 1 de 8 · Fase 1 · 3 h · Laboratorio `examples/microservi
 #### 2. PRERREQUISITOS
 
 - Módulo 0.5: `docker build`, `docker run`, imagen frente a contenedor, capas y caché.
-- Módulo 1: cómo Spring Boot empaqueta un jar ejecutable con `spring-boot-maven-plugin`.
+- Módulo 1: cómo Spring Boot empaqueta un jar ejecutable con la tarea `bootJar` del plugin de Spring Boot.
 - Saber qué es un usuario `root` y por qué no conviene ejecutar servicios como root.
 
 #### 3. OBJETIVO DE APRENDIZAJE
@@ -524,7 +580,7 @@ SIGTERM.
 #### 4. ANALOGÍA VISUAL
 
 Dibuja una **panadería con dos salas**. En la primera, el **obrador**: harina por todas partes, batidoras, hornos,
-recetas, aprendices (el JDK, Maven, el código fuente, la caché de dependencias). En la segunda, la **vitrina de la
+recetas, aprendices (el JDK, Gradle, el código fuente, la caché de dependencias). En la segunda, la **vitrina de la
 tienda**: solo el pan terminado sobre una bandeja limpia. Entre las dos salas hay una **ventanilla** por la que pasa
 **solo el pan** (`COPY --from=compilacion`). El cliente nunca ve el obrador, y un ladrón que entre a la tienda no
 encuentra cuchillos ni batidoras (sin shell, sin gestor de paquetes). El pan llega en **cajas apiladas**: abajo la
@@ -535,9 +591,9 @@ rehaces toda la pila.
 
 ```mermaid
 flowchart TB
-    subgraph E1["Etapa «compilacion» · maven:3.10.0-eclipse-temurin-25"]
-      A1["COPY pom.xml"] --> A2["mvn dependency:go-offline<br/>(capa en caché)"]
-      A2 --> A3["COPY src"] --> A4["mvn package -> target/catalogo.jar"]
+    subgraph E1["Etapa «compilacion» · eclipse-temurin:25-jdk"]
+      A1["COPY gradlew, gradle/ y los .kts"] --> A2["gradlew descargarDependencias<br/>(capa en caché)"]
+      A2 --> A3["COPY src"] --> A4["gradlew bootJar -> build/libs/catalogo.jar"]
       A4 --> A5["java -Djarmode=tools extract --layers"]
     end
     subgraph E2["Imagen final · distroless/java25-debian13:nonroot"]
@@ -547,8 +603,8 @@ flowchart TB
     A5 -->|"COPY --from=compilacion (solo el resultado)"| B1
 ```
 
-**Texto alternativo:** dos recuadros. Arriba, la etapa de compilación sobre la imagen de Maven con JDK 25: copia el
-pom, descarga dependencias (una capa que queda en caché), copia el código, empaqueta el jar y lo extrae en capas.
+**Texto alternativo:** dos recuadros. Arriba, la etapa de compilación sobre la imagen de Temurin con JDK 25: copia el
+wrapper y los archivos de build de Gradle, descarga dependencias (una capa que queda en caché), copia el código, empaqueta el jar y lo extrae en capas.
 Abajo, la imagen final distroless: cuatro capas apiladas (dependencias, loader de Spring Boot, dependencias snapshot y
 aplicación con catalogo.jar) y la configuración de usuario 65532 y ENTRYPOINT java -jar. Una flecha indica que de la
 etapa de compilación solo se copia el resultado.
@@ -557,7 +613,7 @@ etapa de compilación solo se copia el resultado.
 
 Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa y todo lo que necesita para correr.
 
-- Para **compilar** un programa Java necesitas muchas herramientas (el JDK completo, Maven, el código fuente). Para
+- Para **compilar** un programa Java necesitas muchas herramientas (el JDK completo, Gradle, el código fuente). Para
   **ejecutarlo** solo necesitas el programa compilado y Java.
 - Un Dockerfile **multi-stage** tiene varias etapas: una compila, otra ejecuta. La imagen final solo contiene la
   última etapa, así que es **más pequeña** y tiene **menos cosas que un atacante pueda usar**.
@@ -569,8 +625,10 @@ Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa
 - **Etapas.** `FROM ... AS compilacion` nombra una etapa; `COPY --from=compilacion` copia archivos de ella. Solo la
   última `FROM` define la imagen que se publica.
 - **Caché de capas.** Cada instrucción crea una capa; Docker reutiliza las capas mientras sus entradas no cambien.
-  Copiar primero `pom.xml` y descargar dependencias, y **después** `src`, hace que un cambio de código no vuelva a
-  descargar internet. (`dependency:go-offline` no resuelve el 100 % de los plugins; aun así ahorra la mayoría.)
+  Copiar primero el wrapper y los archivos de build (`settings.gradle.kts`, `build.gradle.kts`, `gradle/`) y descargar
+  dependencias, y **después** `src`, hace que un cambio de código no vuelva a descargar internet. La tarea
+  `descargarDependencias` del laboratorio resuelve los classpath de compilación y ejecución (en Maven,
+  `dependency:go-offline`); lo que falte se descarga en el paso `bootJar`.
 - **Capas de Spring Boot.** `java -Djarmode=tools -jar app.jar extract --layers --destination extraido` (Spring Boot
   3.3+) separa el jar en `dependencies/`, `spring-boot-loader/`, `snapshot-dependencies/` y `application/`. Cada
   `COPY` es una capa: al cambiar tu código solo cambia la última, de pocos KB, y los registros solo suben y bajan esa.
@@ -596,21 +654,21 @@ Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa
   (2) Alpine (musl): pequeña, pero musl cambia detalles de DNS y rendimiento con algunas librerías nativas.
   (3) Distroless (este tema): mínima con glibc. (4) Imagen nativa con GraalVM (Módulo 1): arranque en milisegundos y
   poca memoria, a cambio de builds largos y configuración de reflexión. (5) **Buildpacks**
-  (`./mvnw spring-boot:build-image`): sin Dockerfile, con capas y JRE elegidos por Paketo; menos control.
+  (`./gradlew bootBuildImage`): sin Dockerfile, con capas y JRE elegidos por Paketo; menos control.
 - **Arranque más rápido en Java 25.** Spring Boot documenta una variante con **AOT cache** de Java 25: un `RUN java
   -XX:AOTCacheOutput=app.aot -Dspring.context.exit=onRefresh -jar application.jar` de entrenamiento y
   `-XX:AOTCache=app.aot` al arrancar. En distroless no hay shell, así que ese `RUN` debe ir en forma exec y la caché
   debe generarse con la **misma** JVM que la ejecuta.
 - **Reproducibilidad.** Fija la etiqueta exacta y, en producción, el **digest** (`@sha256:...`) de cada `FROM`; el
-  `.dockerignore` evita copiar `target/` o secretos al contexto de construcción.
-- **Cuándo NO usar multi-stage con compilación dentro.** Si tu CI ya compila y prueba el jar (con caché de Maven
+  `.dockerignore` evita copiar `build/`, `.gradle/` o secretos al contexto de construcción.
+- **Cuándo NO usar multi-stage con compilación dentro.** Si tu CI ya compila y prueba el jar (con caché de Gradle
   propia), compilar otra vez dentro de Docker duplica trabajo: copia el jar ya construido a una imagen de una etapa
   que solo extrae capas (como el ejemplo de la documentación de Spring Boot).
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versiones: **JDK 25**, **Spring Boot 4.1.3**, base de compilación `maven:3.10.0-eclipse-temurin-25` (Maven 3.10.0 con
-Temurin 25), base de ejecución `gcr.io/distroless/java25-debian13:nonroot`, Docker Engine 29 con BuildKit.
+Versiones: **JDK 25**, **Spring Boot 4.1.3**, base de compilación `eclipse-temurin:25-jdk` (Gradle 9.9.2 lo
+descarga el wrapper), base de ejecución `gcr.io/distroless/java25-debian13:nonroot`, Docker Engine 29 con BuildKit.
 
 `app/Dockerfile`:
 
@@ -621,17 +679,21 @@ Temurin 25), base de ejecución `gcr.io/distroless/java25-debian13:nonroot`, Doc
 #   docker build -t academia/catalogo:1.0.0 app
 #   docker build -t academia/catalogo:1.1.0 --build-arg VERSION=1.1.0 app
 
-# ---------- Etapa 1: compilar (JDK completo + Maven; NO llega a la imagen final) ----------
-FROM maven:3.10.0-eclipse-temurin-25 AS compilacion
+# ---------- Etapa 1: compilar (JDK completo + Gradle por el wrapper; NO llega a la imagen final) ----------
+FROM eclipse-temurin:25-jdk AS compilacion
 WORKDIR /fuente
-# 1) Solo el pom.xml: esta capa (las dependencias) se reutiliza mientras el pom no cambie.
-COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
+# 1) Solo el wrapper y los archivos de build: estas capas (Gradle y las dependencias) se reutilizan
+#    mientras no cambien. --no-daemon: el contenedor de compilación se desecha, no hace falta el daemon.
+COPY gradlew ./
+COPY gradle ./gradle
+RUN ./gradlew --no-daemon --version
+COPY settings.gradle.kts build.gradle.kts ./
+RUN ./gradlew --no-daemon -q descargarDependencias
 # 2) El código cambia a menudo: va DESPUÉS, para no invalidar la capa de dependencias.
 COPY src ./src
-RUN mvn -B -q package -DskipTests
+RUN ./gradlew --no-daemon -q bootJar
 # 3) Extrae el jar en capas: dependencias, loader, snapshots y aplicación (de menos a más cambiante).
-RUN java -Djarmode=tools -jar target/catalogo.jar extract --layers --destination extraido
+RUN java -Djarmode=tools -jar build/libs/catalogo.jar extract --layers --destination extraido
 
 # ---------- Etapa 2: ejecutar (solo la JRE 25; sin shell, sin apt, usuario no root 65532) ----------
 FROM gcr.io/distroless/java25-debian13:nonroot
@@ -654,7 +716,8 @@ ENTRYPOINT ["java", "-jar", "catalogo.jar"]
 
 ```text
 # El contexto de construcción es app/: no envíes al daemon lo que no hace falta (ni secretos).
-target/
+build/
+.gradle/
 *.iml
 .idea/
 .env
@@ -665,15 +728,15 @@ La versión ingenua, solo para comparar:
 `app/Dockerfile.ingenuo`:
 
 ```dockerfile
-# F081 · ANTI-PATRÓN (solo para comparar tamaños y tiempos): una sola etapa con JDK + Maven + código fuente.
+# F081 · ANTI-PATRÓN (solo para comparar tamaños y tiempos): una sola etapa con JDK + Gradle + código fuente.
 #   docker build -f app/Dockerfile.ingenuo -t academia/catalogo:ingenuo app
-FROM maven:3.10.0-eclipse-temurin-25
+FROM eclipse-temurin:25-jdk
 WORKDIR /fuente
 # Copia TODO de una vez: cualquier cambio en el código invalida la caché y vuelve a descargar las dependencias.
 COPY . .
-RUN mvn -B -q package -DskipTests
-# Corre como root, con shell, Maven, el JDK completo y el código fuente dentro de la imagen.
-CMD java -jar target/catalogo.jar
+RUN ./gradlew --no-daemon -q bootJar
+# Corre como root, con shell, Gradle, el JDK completo y el código fuente dentro de la imagen.
+CMD java -jar build/libs/catalogo.jar
 ```
 
 La prueba de la ficha:
@@ -738,16 +801,17 @@ docker build --provenance=false -f app/Dockerfile.ingenuo -t academia/catalogo:i
 docker image ls academia/catalogo
 ```
 
-   **Output esperado:** dos filas, `1.0.0` e `ingenuo`. La `ingenuo` incluye el JDK completo, Maven, el repositorio
-   local de dependencias (`/root/.m2`) y el código fuente, así que es **mucho** más grande que la distroless; anota
+   **Output esperado:** dos filas, `1.0.0` e `ingenuo`. La `ingenuo` incluye el JDK completo, Gradle, la caché
+   de dependencias (`/root/.gradle`) y el código fuente, así que es **mucho** más grande que la distroless; anota
    tus dos tamaños (pendiente de medir en el Mac del dueño). `--provenance=false` evita que BuildKit añada un
    manifiesto de atestación, que en Docker Desktop con el almacén de imágenes de containerd puede impedir después
    `kind load docker-image`.
 
 2. Cambia una línea de `CatalogoController.java` (por ejemplo, el nombre de un producto) y reconstruye la `1.0.0`.
 
-   **Output esperado:** BuildKit marca `CACHED` en `COPY pom.xml` y en `RUN mvn -B -q dependency:go-offline`; solo se
-   repiten `COPY src`, `mvn package`, la extracción y la última capa `application/`. Reconstruye la `ingenuo` con el
+   **Output esperado:** BuildKit marca `CACHED` en los `COPY` del wrapper y de los archivos de build y en
+   `RUN ./gradlew --no-daemon -q descargarDependencias` (pendiente de verificación en el Mac); solo se
+   repiten `COPY src`, `gradlew bootJar`, la extracción y la última capa `application/`. Reconstruye la `ingenuo` con el
    mismo cambio: descarga otra vez todas las dependencias, porque `COPY . .` invalidó la caché.
 
 3. Pásale la prueba:
@@ -808,13 +872,13 @@ void elDockerfileCumpleLasReglasDeLaCasa() throws Exception {
 }
 ```
 
-**Pregunta de comprobación:** ¿por qué `COPY pom.xml .` va antes que `COPY src ./src`?
+**Pregunta de comprobación:** ¿por qué `COPY settings.gradle.kts build.gradle.kts ./` va antes que `COPY src ./src`?
 
 <details>
 <summary>Respuesta</summary>
 
-Porque Docker reutiliza una capa mientras no cambien sus entradas ni las de las capas anteriores. El `pom.xml` cambia
-poco; el código, mucho. Si las dependencias se descargan en una capa que solo depende del `pom.xml`, un cambio de
+Porque Docker reutiliza una capa mientras no cambien sus entradas ni las de las capas anteriores. Los archivos de build cambian
+poco; el código, mucho. Si las dependencias se descargan en una capa que solo depende de esos archivos, un cambio de
 código reutiliza esa capa y la construcción tarda segundos en lugar de minutos.
 </details>
 
@@ -845,7 +909,7 @@ multiplataforma con `docker buildx build --platform linux/amd64,linux/arm64`.
 
 «¿Cómo construirías la imagen Docker de un microservicio Spring Boot para producción y por qué?»
 
-**Respuesta modelo:** Dockerfile multi-stage: una etapa con JDK y Maven que descarga dependencias en una capa propia
+**Respuesta modelo:** Dockerfile multi-stage: una etapa con JDK y Gradle (por el wrapper) que descarga dependencias en una capa propia
 (antes de copiar el código, para aprovechar la caché) y empaqueta; luego extraigo el jar con `-Djarmode=tools extract
 --layers` para que las dependencias y mi código vayan en capas separadas. La imagen final parte de una base mínima
 (distroless de Java 25, usuario no root 65532), copia solo las capas extraídas y arranca con `ENTRYPOINT` en forma
@@ -855,8 +919,8 @@ mantenimiento, o una imagen nativa con GraalVM si el arranque y la memoria son c
 
 #### 14. ANTI-PATRÓN RELACIONADO
 
-**La imagen «todo en uno».** Se ve como `app/Dockerfile.ingenuo`: una sola etapa con el JDK, Maven, el código
-fuente, la caché de Maven y `CMD` en forma shell, corriendo como root. Es lenta de construir (cualquier cambio vuelve
+**La imagen «todo en uno».** Se ve como `app/Dockerfile.ingenuo`: una sola etapa con el JDK, Gradle, el código
+fuente, la caché de Gradle y `CMD` en forma shell, corriendo como root. Es lenta de construir (cualquier cambio vuelve
 a descargar dependencias), pesada de distribuir, llena de CVE ajenos a tu código, con el código fuente dentro y sin
 apagado ordenado. Evítala: multi-stage, base mínima, usuario no root y forma exec.
 
@@ -1848,11 +1912,11 @@ $K -n catalogo rollout status deployment/catalogo --timeout=120s
 1. Ejecuta primero los tests sin clúster (comprueban los códigos 200/503 de las probes):
 
 ```bash
-./mvnw -q test
+(cd app && ./gradlew -q test)
 ```
 
-   **Output esperado:** termina sin errores (`CatalogoTest`: 5 tests). Con `./mvnw test` (sin `-q`) verás
-   `Tests run: 5, Failures: 0, Errors: 0`.
+   **Output esperado:** termina sin errores (`CatalogoTest`: 5 tests). Con `./gradlew test` (sin `-q`) verás
+   5 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 2. Con el despliegue del tema anterior en marcha, mira el arranque de un pod nuevo:
 
@@ -1910,7 +1974,7 @@ Test que debe pasar:
 ./pruebas/f084-probes.sh
 ```
 
-Resultado esperado: termina con código 0 (y `CatalogoTest` dentro de `./mvnw test`).
+Resultado esperado: termina con código 0 (y `CatalogoTest` dentro de `(cd app && ./gradlew test)`).
 
 Reto: cambia `CATALOGO_ARRANQUE_LENTO_SEGUNDOS` a `"90"` en el Deployment, aplica y observa: ¿se reinicia el pod?
 Antes de probarlo, calcula con los valores de las probes qué pasará. Después, sube el `failureThreshold` de la

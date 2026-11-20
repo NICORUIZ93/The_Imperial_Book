@@ -44,8 +44,8 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     ZIPKIN_URL=http://localhost:9411 java jdk/TrazasW3C.java 2>&1 | grep -E "POST|OK|FALLA" || falla "spans a Zipkin"
 
     echo "-- F070 raspado por Prometheus"
-    ./mvnw -q -f f070-micrometer-prometheus/pom.xml package -DskipTests && {
-      java -jar f070-micrometer-prometheus/target/f070-micrometer-prometheus-1.0.0.jar > logs/f070.log 2>&1 & pid=$!
+    ./gradlew -q :f070-micrometer-prometheus:bootJar && {
+      java -jar f070-micrometer-prometheus/build/libs/f070-micrometer-prometheus-1.0.0.jar > logs/f070.log 2>&1 & pid=$!
       espera localhost:8080/actuator/health 60 || falla "f070 no arrancó (logs/f070.log)"
       ./carga.sh 20 5
       sleep 10
@@ -59,8 +59,8 @@ if [ "${1:-}" != "--solo-jdk" ]; then
 
     echo "-- F071 pedidos -> inventario en Jaeger (OpenTelemetry por OTLP/HTTP, puerto 4318)"
     espera localhost:16686/ 60 || falla "la UI de Jaeger no responde en :16686 (docker compose logs jaeger)"
-    ./mvnw -q -f f071-tracing/pom.xml package -DskipTests && {
-      jar=f071-tracing/target/f071-tracing-1.0.0.jar
+    ./gradlew -q :f071-tracing:bootJar && {
+      jar=f071-tracing/build/libs/f071-tracing-1.0.0.jar
       java -jar "$jar" --spring.application.name=inventario --server.port=8082 > logs/f071-inventario.log 2>&1 & p1=$!
       java -jar "$jar" > logs/f071-pedidos.log 2>&1 & p2=$!
       espera localhost:8082/actuator/health 60 && espera localhost:8081/actuator/health 60 || falla "f071 no arrancó (logs/f071-*.log)"
@@ -85,8 +85,8 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     } || falla "empaquetar F071"
 
     echo "== 3. Tests Spring Boot 4.1.3 (F070, F071 otel y zipkin, F072)"
-    ./mvnw -q test || falla "tests Maven"
-    ./mvnw -q -f f071-tracing/pom.xml -Pzipkin test || falla "tests F071 con Brave/Zipkin"
+    ./gradlew -q test || falla "tests con Gradle"
+    ./gradlew -q -Ptrazas=zipkin :f071-tracing:test || falla "tests F071 con Brave/Zipkin"
     docker compose down
   else
     falla "la infraestructura no quedó lista (docker compose logs)"
@@ -98,6 +98,6 @@ if [ "$fallos" -eq 0 ] && [ "${1:-}" = "--solo-jdk" ]; then
 elif [ "$fallos" -eq 0 ]; then
   echo "RESULTADO: OK · Módulo 10 (Observabilidad) verificado"
 else
-  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o el primer [ERROR] de Maven"
+  echo "RESULTADO: FALLA · $fallos bloque(s) fallaron: busca arriba FALLA o «What went wrong» de Gradle"
   exit 1
 fi

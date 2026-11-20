@@ -386,3 +386,55 @@ Docker Hub, temporal.download ni Maven Central (salvo `maven-metadata.xml` leíd
 - web/public/content/microservices/modulo-36.md:2155 — F184 pista Spring: `./mvnw -f spring/carga/pom.xml gatling:test` con Gatling 3.16.1 y gatling-maven-plugin 4.21.12 (versiones leídas de `maven-metadata.xml`; la página de docs.gatling.io usa `MANUALLY_REPLACE_WITH_LATEST_VERSION`). Confirmar el DSL Java (`listFeeder(...).circular()`, `percentile(99).lt(300)`) y que `-Dtasa=…` llega a la simulación (con el plugin puede hacer falta `-Dgatling.jvmArgs` o `<jvmArgs>`).
 - web/public/content/microservices/modulo-36.md:1782 — F183 paso 1 con `docker compose up -d --wait` y `REDIS_URL=redis://localhost:6379` (aquí se usó `redis-server --port 16379` de Redis 7.0.15; el script Lua usa `TIME` dentro de `EVAL`, permitido desde Redis 5 con replicación de efectos).
 - web/public/content/microservices/modulo-35.md:1311 — F180: las referencias a Adam Tornhill (*Your Code as a Crime Scene*, hotspots e indentación como medida de complejidad) y al cuadrante de deuda técnica de Martin Fowler (deliberada/inadvertida, prudente/imprudente) se escribieron sin abrir la fuente aquí; confirmar títulos y términos. La página de Fowler sobre Strangler Fig (https://martinfowler.com/bliki/StranglerFigApplication.html) no se pudo abrir desde aquí.
+
+## Migración de Maven a Gradle (2026-11-20) · modulo-5 … modulo-16 y modulo-36/spring
+
+Decisión del dueño (specs/021 §5): la pista Spring de Microservicios se construye con Gradle (Kotlin DSL, wrapper y
+catálogo `gradle/libs.versions.toml`). Se quitaron `pom.xml`, `mvnw`, `mvnw.cmd` y `.mvn/` de esos laboratorios (salvo
+`modulo-13/f069-escaneo/*/pom.xml`, que son el material que escanean Trivy, Snyk y `MiniEscaner`).
+
+**Ejecutado aquí de verdad:** con Gradle 8.14.3 local (sin red, corriendo en JDK 21 con toolchain JDK 25.0.x) y JUnit
+5.10.1 de `/usr/share/maven-repo`, sobre una copia reducida de modulo-5: `test` de `f017-java-moderno` (6 PASSED),
+`f018-virtual-threads` (4 PASSED) y `f021-multimodulo:tienda-dominio` (3 PASSED) a través del build compuesto, `build`
+de F021 con `tienda-api` reducido a Java puro, el error real de dependencia circular y el formato de un test fallido.
+También `bash -n` de todos los `verificar.sh`, `./verificar.sh --solo-jdk` de modulo-11, 12 y 13 (RESULTADO: OK con JDK
+25), `docker compose config -q` de modulo-5 y la sintaxis de los 13 catálogos TOML (y que cada `libs.…` usado existe).
+
+**No ejecutado (el proxy responde 403 a services.gradle.org, plugins.gradle.org y Maven Central; no se rodeó):** ningún
+build con Gradle 9.9.2, ni con los plugins de Spring Boot, dependency-management, GraalVM, Protobuf, Pact, SonarQube o
+Gatling. Las salidas de Gradle de las lecciones están marcadas «pendiente de verificación en el Mac».
+
+- examples/microservicios/modulo-5/gradle/wrapper/gradle-wrapper.properties:3 — wrapper escrito a mano (los 13 son iguales): `distributionUrl` de Gradle **9.9.2** (versión vigente según https://services.gradle.org/versions/current, leída el 2026-11-20; Spring Boot 4.1.3 admite «Gradle 8.x (8.14 or later) and 9.x», docs.spring.io/spring-boot/4.1/system-requirements.html). **Sin `distributionSha256Sum`**: https://gradle.org/release-checksums/ solo llegaba a 9.9.1 y el `.sha256` de services.gradle.org no se pudo leer. `gradle-wrapper.jar`, `gradlew` y `gradlew.bat` son los de Gradle 9.8.2 ya versionados en el repo (sha256 del jar `3b8a2577…68e98`, igual al oficial de 9.8.2). En el Mac, en cada laboratorio: `./gradlew wrapper --gradle-version 9.9.2 --gradle-distribution-sha256-sum <sha256 oficial>` y `./gradlew --version`.
+- examples/microservicios/modulo-5/f024-graalvm-native/build.gradle.kts:8 — plugin `org.graalvm.buildtools.native` 1.1.18 (versión que indica la página de requisitos de Boot 4.1.3; no se pudo abrir plugins.gradle.org para confirmar que existe con ese número). `docker compose --profile native run --rm native-build` ejecuta `../gradlew --no-daemon nativeCompile` dentro de `ghcr.io/graalvm/native-image-community:25`: comprobar que el wrapper corre ahí y que el binario queda en `build/native/nativeCompile/f024-graalvm-native`.
+- examples/microservicios/modulo-5/settings.gradle.kts:31 — `includeBuild("f021-multimodulo")` + tarea `test` de la raíz que depende de los tests del build incluido; `f021-multimodulo/settings.gradle.kts` toma el catálogo con `from(files("../gradle/libs.versions.toml"))`. Probado con Gradle 8.14.3; confirmar con 9.9.2 y con el plugin de Boot (que aparezca `tienda-api-1.0.0-plain.jar`).
+- examples/microservicios/modulo-7/f034-pact-consumidor/build.gradle.kts:1 — plugin `au.com.dius.pact` 4.7.7: bloque `pact { broker { pactBrokerUrl } publish { pactDirectory } }` en Kotlin DSL, tareas `pactPublish` y `canIDeploy -Ppacticipant=… -PpacticipantVersion=…` (la guía de Pact solo trae ejemplos en Groovy), `systemProperty("pact.rootDir", …)` para que el contrato salga en `build/pacts`, y compatibilidad del plugin con Gradle 9.
+- examples/microservicios/modulo-7/f034-pact-proveedor/build.gradle.kts:1 — `exclude("**/*Manual.class")` salvo `-Pbroker`, `dependsOn(":f034-pact-consumidor:test")` y las propiedades `-Ppactbroker.host/-Ppactbroker.port/-Ppact.verifier.publishResults`.
+- examples/microservicios/modulo-7/f036-sonarqube/build.gradle.kts:1 — plugin `org.sonarqube` 7.5.0.8588 + `jacoco` (toolVersion 0.8.15): `../gradlew check sonar -Dsonar.token=…` desde `sonar/analizar.sh`, ruta `build/reports/jacoco/test/jacocoTestReport.xml` y `sonar.qualitygate.wait`.
+- examples/microservicios/modulo-10/f048-grpc/build.gradle.kts:1 — plugin `com.google.protobuf` 0.9.6 con `protobuf { plugins { create("grpc") } }` (la documentación de Boot lo muestra en Groovy: `grpc {}`); carpeta real del código generado (la lección dice `build/generated/sources/proto`) y `demo-binario.sh`, que ahora busca `protoc` en `~/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protoc/4.36.2`.
+- examples/microservicios/modulo-11/f052-eureka/build.gradle.kts:1 — proyectos con dos clases `@SpringBootApplication` (también `f054-config` y `f056-bff`, y el cliente de consola de `modulo-10/f048-grpc`): `springBoot { mainClass }` desde `-Pprincipal=paquete.Clase`. Comprobar que `bootRun -Pprincipal=…` arranca la clase pedida y qué hace `bootJar`/`test` sin la propiedad (con Maven no se empaquetaban).
+- examples/microservicios/modulo-14/f071-tracing/build.gradle.kts:20 — los perfiles Maven `otel`/`zipkin` son ahora `-Ptrazas=otel` (por defecto) y `-Ptrazas=zipkin`.
+- examples/microservicios/modulo-15/f077-schema-registry-avro/build.gradle.kts:1 — sin plugin de Avro: tarea `generarAvro` (`JavaExec` de `org.apache.avro:avro-tools:1.12.2`, `compile -string schema src/main/avro build/generated-sources/avro`) enlazada con `sourceSets.main.java.srcDir(generarAvro)`; propiedad `org.apache.avro.SERIALIZABLE_PACKAGES` en la tarea `test`; repositorio de Confluent en `settings.gradle.kts`. Confirmar que `avro-tools` se resuelve sin transitivas y que la clase generada es igual a la de `avro-maven-plugin`.
+- examples/microservicios/modulo-16/app/Dockerfile:8 — la etapa de compilación pasa de `maven:3.10.0-eclipse-temurin-25` a `eclipse-temurin:25-jdk` con el wrapper (`descargarDependencias` y `bootJar`, jar `build/libs/catalogo.jar`); el build de Gradle vive en `app/` y `verificar.sh` lo llama con `app/gradlew -q -p app test`. Medir de nuevo tamaños y capas `CACHED` (F081).
+- examples/microservicios/modulo-36/spring/carga/build.gradle.kts:1 — plugin `io.gatling.gradle` 3.16.0 con `gatlingVersion` 3.16.1; la simulación se movió a `src/gatling/java`. Confirmar la sintaxis Kotlin del bloque `gatling { }`, que el plugin admite Gradle 9 (su documentación dice «tested against Gradle versions ranging from 7.1 to 8.6») y cómo llegan `-Dtasa`/`-Dsegundos` a la simulación.
+- web/public/content/microservices/modulo-13.md:3795 — nota de F069: que Trivy escanea proyectos Gradle por `gradle.lockfile` y Snyk ejecutando Gradle está escrito sin probar.
+- examples/microservicios/modulo-13/verificar.sh:64 — el paso previo a Trivy ya no usa `./mvnw` (solo `mvn` si está instalado); comprobar que Trivy resuelve `f069-escaneo` igual.
+
+### Re-verificar con Gradle
+
+`bash verificacion/microservicios/run.sh "modulo-N"` (o `./verificar.sh --compose` donde aplique) y revisar las salidas
+de Gradle citadas en cada lección:
+
+- modulo-5 (incluye `./verificar.sh --docker`: CRaC con `build/crac` y binario nativo)
+- modulo-6
+- modulo-7
+- modulo-8
+- modulo-9
+- modulo-10
+- modulo-11
+- modulo-12
+- modulo-13
+- modulo-14 (también `-Ptrazas=zipkin`)
+- modulo-15
+- modulo-16
+- modulo-36 (`./verificar.sh --compose`: `(cd spring && ./gradlew -q test)` y `./gradlew :carga:gatlingRun`)
+

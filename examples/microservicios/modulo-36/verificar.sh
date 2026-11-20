@@ -3,7 +3,7 @@
 # 1) Pista Node.js: npm ci, tests de node --test --test-force-exit (Gatling incluido si hay Java) y los scripts de las siete fichas.
 # 2) Redis real para el limitador (REDIS_URL, o Docker Compose con --compose, o un redis-server local en :16379).
 # 3) Gatling a 60 reservas/s: sin límite del proveedor (SLO en verde) y con la restricción sobrevenida (20/s).
-# 4) Temporal real (si hay TEMPORAL_ADDRESS o el CLI `temporal`) y pista Spring Boot (jdk/ siempre; Maven con --compose).
+# 4) Temporal real (si hay TEMPORAL_ADDRESS o el CLI `temporal`) y pista Spring Boot (jdk/ siempre; Gradle con --compose).
 # Si algo falla o falta una herramienta, lo dice y sigue. Uso: ./verificar.sh [--compose]. bash 3.2 de macOS sirve.
 set -u
 cd "$(dirname "$0")" || exit 1
@@ -98,9 +98,9 @@ if [ "${hay_java}" = si ]; then
   guion "Spring jdk/SagaReserva" "java -Dstdout.encoding=UTF-8 spring/jdk/SagaReserva.java" 'R-3 CANCELADA (el organizador canceló el evento) compensadas=[reembolsar, liberarPlaza]'
   guion "Spring jdk/CuboDeFichas" "java -Dstdout.encoding=UTF-8 spring/jdk/CuboDeFichas.java" 'ráfaga en t=0 s: 10 de 11 aceptadas'
   if [ "${1:-}" = "--compose" ]; then
-    (cd spring && ./mvnw -q test) > logs/maven-test.log 2>&1 || { falla "Maven: tests de spring/ (mira logs/maven-test.log)"; grep -E "ERROR|FAIL" logs/maven-test.log | head -20; }
+    (cd spring && ./gradlew -q test) > logs/gradle-test.log 2>&1 || { falla "Gradle: tests de spring/ (mira logs/gradle-test.log)"; grep -E "FAILED|FAILURE|What went wrong" logs/gradle-test.log | head -20; }
   else
-    omite "tests Maven de spring/ (necesitan Maven Central: ./verificar.sh --compose)"
+    omite "tests con Gradle de spring/ (necesitan Maven Central: ./verificar.sh --compose)"
   fi
 fi
 if [ "${1:-}" = "--compose" ] && command -v docker > /dev/null 2>&1; then docker compose down -v > /dev/null 2>&1; fi

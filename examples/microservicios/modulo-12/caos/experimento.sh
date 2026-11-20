@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # F060 · Experimento de caos con Toxiproxy contra el BFF de producto (f060-caos) en localhost:8080.
-# Antes: docker compose up -d --wait   y   (cd f060-caos && ../mvnw spring-boot:run)
+# Antes: docker compose up -d --wait   y   (cd f060-caos && ../gradlew bootRun)
 # Hipótesis: con +600 ms de latencia en el inventario, el p95 de /productos/7 sigue < 300 ms y no hay 5xx.
 # Uso: caos/experimento.sh [latencia_ms] [p95_maximo_ms]
 set -euo pipefail

@@ -1,7 +1,7 @@
 # Laboratorio · Módulo 4 · Caching y rendimiento
 
 Lección: [`web/public/content/microservices/modulo-8.md`](../../../web/public/content/microservices/modulo-8.md)
-(Fase 1, specs/018). Cada carpeta `fNNN-*` es un proyecto Maven autónomo; `simuladores/` reproduce el mismo
+(Fase 1, specs/018). Cada carpeta `fNNN-*` es un subproyecto Gradle (Kotlin DSL); `simuladores/` reproduce el mismo
 razonamiento en Python (solo biblioteca estándar) contra los mismos Redis, para ver los comandos uno a uno.
 
 | Carpeta | Ficha | Infraestructura |
@@ -15,7 +15,7 @@ razonamiento en Python (solo biblioteca estándar) contra los mismos Redis, para
 
 JDK 25 LTS · Spring Boot 4.1.3 (Spring Data Redis 4.1.3, Lettuce 7.5.2, driver PostgreSQL 42.7.14, JUnit Jupiter
 6.0.3) · imágenes `redis:8.10.2` y `postgres:18.7` · Python 3.10+ para los simuladores (probados con 3.13.18 contra
-Redis 7.0.15) · Maven por el wrapper.
+Redis 7.0.15) · Gradle 9.9.2 por el wrapper (`./gradlew`).
 
 ## Ejecutar
 
@@ -24,7 +24,7 @@ cd examples/microservicios/modulo-8
 ./verificar.sh
 ```
 
-Levanta los 5 contenedores, ejecuta los 9 tests de Python y los tests de Maven, apaga todo y termina con
+Levanta los 5 contenedores, ejecuta los 9 tests de Python y los tests de Gradle, apaga todo y termina con
 `RESULTADO: OK · Módulo 4 (Caching y rendimiento) verificado`.
 
 A mano:
@@ -32,7 +32,14 @@ A mano:
 ```bash
 docker compose up -d --wait
 cd simuladores && python3 patrones.py && python3 redlock_fencing.py && python3 stampede.py && cd ..
-cd f037-cache-redis && ../mvnw test
+cd f037-cache-redis && ../gradlew test
 docker compose exec redis redis-cli --scan --pattern 'productos::*'
 docker compose down
 ```
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper `./gradlew`; las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.

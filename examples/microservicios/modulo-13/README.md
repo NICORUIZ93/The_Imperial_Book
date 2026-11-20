@@ -20,14 +20,14 @@ Lección: [`web/public/content/microservices/modulo-13.md`](../../../web/public/
 JDK 25 LTS (25.0.5) · Spring Boot 4.1.3 (Spring Security 7.1.3, Spring Framework 7.0.11) · Spring Cloud 2025.1.4
 (Spring Cloud Vault) · Keycloak 26.8.2 (`quay.io/keycloak/keycloak:26.8.2`) · HashiCorp Vault 2.2.0
 (`hashicorp/vault:2.2.0`) · Trivy 0.76.1 (`aquasec/trivy:0.76.1`) · Snyk CLI 1.1309.0 · Istio 1.32 · kind ·
-Maven 3.10.1 por el wrapper · OpenSSL 3.
+Gradle 9.9.2 por el wrapper (`./gradlew`) · OpenSSL 3.
 
 ## Ejecutar
 
 ```bash
 cd examples/microservicios/modulo-13
 ./verificar.sh --solo-jdk     # solo JDK 25 y openssl: las 7 demostraciones de jdk/
-./verificar.sh                # + Keycloak, Vault, Trivy y los tests Maven
+./verificar.sh                # + Keycloak, Vault, Trivy y los tests con Gradle
 ./verificar.sh --mtls         # + F067 con kind e Istio (tarda ~5 min la primera vez)
 ```
 
@@ -48,3 +48,14 @@ El script termina con `RESULTADO: OK · Módulo 9 (Seguridad) verificado`.
 Todos los secretos de esta tabla existen solo para el laboratorio local. En producción vienen de Vault (F068).
 
 `verificar.sh` guarda en `logs/` (ignorada por git) la salida de las apps que arranca: `logs/f064.log` y los tokens decodificados.
+
+## Build: Gradle (equivalencia con Maven)
+
+Este laboratorio se construye con Gradle 9.9.2 (Kotlin DSL) por el wrapper `./gradlew`; las versiones están en el
+catálogo `gradle/libs.versions.toml`. Hasta el 2026-11-20 usaba Maven: `./mvnw test` → `./gradlew test` ·
+`./mvnw -pl <carpeta> test` → `./gradlew :<carpeta>:test` · `./mvnw package -DskipTests` → `./gradlew bootJar` ·
+`./mvnw spring-boot:run` → `./gradlew bootRun` · `target/` → `build/` · `pom.xml` → `build.gradle.kts`.
+
+`f069-escaneo/antes` y `f069-escaneo/despues` **siguen siendo proyectos Maven** a propósito: no se compilan, son el
+material que leen `trivy fs`, `snyk test` y `jdk/MiniEscaner.java` (que busca las dependencias en un `pom.xml`). Por
+eso no están en `settings.gradle.kts`.

@@ -6,10 +6,10 @@ todo el curso; en especial Módulos 6/18 (comunicación), 7/17 (gateway), 8/19 (
 con Temporal e idempotencia), 28 (costo) y 31 (migración). **Herramientas:** pista Node.js con **Node.js 26.13.1
 LTS**, Express **5.3.0**, Temporal TypeScript SDK **1.26.0**, ioredis **6.0.0** y Gatling JS **3.16.101**; pista
 Spring Boot con **JDK 25**, Spring Boot **4.1.3**, Spring Cloud Gateway **5.0.4** (tren 2025.1.4), Temporal Java SDK
-**1.41.1** y Gatling **3.16.1** con `gatling-maven-plugin` **4.21.12**; infraestructura: Redis **8.10.2** (Docker
+**1.41.1** y Gatling **3.16.1** con el plugin `io.gatling.gradle` **3.16.0**; la pista Spring se construye con **Gradle 9.9.2**; infraestructura: Redis **8.10.2** (Docker
 Compose) y Temporal Server **1.32.1** (`temporal server start-dev`). **Laboratorio:** `examples/microservicios/modulo-36/`
 (`./verificar.sh` ejecuta 26 tests, los scripts de las siete fichas, Redis real, Gatling a 60 reservas/s y las demos
-JDK de la pista Spring; `--compose` añade Redis con Docker y los tests Maven).
+JDK de la pista Spring; `--compose` añade Redis con Docker y los tests de `spring/` con Gradle).
 
 Este es el examen final del curso, y no es un examen de memoria: es **un sistema que funciona, que se rompe a
 propósito y que defiendes ante un comité**. Construyes un **sistema de reservas con pago externo** con una **saga
@@ -42,7 +42,7 @@ termina en la defensa ante el Comité de Arquitectura (tema 7).
 tests, las demos, Gatling JS 3.16.101 (motor 3.16.1, con el JDK 21 de este entorno) a 60 reservas/s durante 25 s, y
 el limitador contra un **Redis 7.0.15 local** (no 8.10.2). También las demos `spring/jdk/*.java` con Java 21. **No** se
 pudo ejecutar aquí: el servidor de Temporal (la descarga de `temporal.download` está bloqueada; el workflow sí se
-comprobó con el empaquetador de Temporal, `bundleWorkflowCode`), los tests Maven de la pista Spring (Maven Central
+comprobó con el empaquetador de Temporal, `bundleWorkflowCode`), los tests de la pista Spring con Gradle (Maven Central
 bloqueado) ni Docker. Esos bloques están completos y anotados en `verificacion/microservicios/pendiente.md`, y el texto
 lo indica en cada ficha.
 
@@ -52,7 +52,7 @@ lo indica en cada ficha.
 cd examples/microservicios/modulo-36
 npm ci
 ./verificar.sh              # pista Node + Redis local (si hay) + Gatling (si hay Java) + jdk/ → «RESULTADO: OK»
-./verificar.sh --compose    # además Redis con Docker Compose y ./mvnw test de spring/
+./verificar.sh --compose    # además Redis con Docker Compose y (cd spring && ./gradlew test)
 ```
 
 Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-36`**. El
@@ -590,8 +590,13 @@ curl -s localhost:8081/reservas/R-x1
 ```
 
    **Output esperado:** `HTTP/1.1 202 Accepted` y, en la consulta, un JSON con `"estado":"CONFIRMADA"`. Para la pista
-   Spring, `./mvnw -f spring/pagos-externo/pom.xml spring-boot:run` y `./mvnw -f spring/reservas/pom.xml
-   spring-boot:run` (necesita Temporal: F182) en los mismos puertos.
+   Spring, desde `spring/`, `./gradlew :pagos-externo:bootRun` y `./gradlew :reservas:bootRun`
+   (necesita Temporal: F182) en los mismos puertos.
+
+   > **Build con Gradle (equivalencia Maven).** La pista Spring (`spring/`) se construye con Gradle 9.9.2, Kotlin DSL y
+   > catálogo de versiones, por el wrapper `spring/gradlew`: `./mvnw test` → `./gradlew test` ·
+   > `./mvnw -f reservas/pom.xml spring-boot:run` → `./gradlew :reservas:bootRun` · `./mvnw -f carga/pom.xml gatling:test`
+   > → `./gradlew :carga:gatlingRun` · `target/` → `build/`. El `settings.gradle.kts` y el catálogo están en F184.
 
 #### 11. VERIFICACIÓN
 
@@ -1188,7 +1193,7 @@ node f182-saga-temporal/iniciar.js                          # 4: tres reservas
    (Ctrl+C) con el proveedor parado, lanza `iniciar.js`, arranca el proveedor y luego el worker: la saga continúa donde
    estaba.
 
-3. Pista Spring (Mac): `cd spring && ./mvnw -f reservas/pom.xml test` ejecuta `ReservaWorkflowTest` con el servidor
+3. Pista Spring (Mac): `cd spring && ./gradlew :reservas:test` ejecuta `ReservaWorkflowTest` con el servidor
    de Temporal **en memoria** de `temporal-testing` (sin Docker ni CLI).
 
 #### 11. VERIFICACIÓN
@@ -1344,7 +1349,7 @@ test('Temporal: falla confirmar -> reembolsar y liberar', { timeout: 90_000 }, a
 ```
 
 Pista Spring (`spring/reservas/src/test/java/academia/reservas/ReservaWorkflowTest.java`, pendiente en el Mac; espera
-`Tests run: 3, Failures: 0`):
+3 líneas `PASSED` y `BUILD SUCCESSFUL`):
 
 ```java
 package academia.reservas;
@@ -1742,7 +1747,7 @@ public class GatewayApp {
 }
 ```
 
-La mecánica del cubo en JDK puro (`spring/jdk/CuboDeFichas.java`), ejecutable sin Maven:
+La mecánica del cubo en JDK puro (`spring/jdk/CuboDeFichas.java`), ejecutable sin Gradle:
 
 ```java
 // Módulo 32 · F183 · Cubo de fichas (token bucket) en Java puro (JDK 25), con reloj simulado: la misma cuenta que hace
@@ -2060,7 +2065,7 @@ pone en rojo.
   Si fallan, Gatling termina con código 2, y CI lo trata como un test roto.
 - **Parámetros:** `getParameter('tasa', '60')` permite `npx gatling run … tasa=60 segundos=20` sin tocar el código.
 - **Gatling JS:** el paquete `@gatling.io/cli` empaqueta la simulación con esbuild y la ejecuta en la JVM; la primera
-  vez descarga su bundle a `~/.gatling`. La pista Spring usa el DSL de Java con `gatling-maven-plugin`.
+  vez descarga su bundle a `~/.gatling`. La pista Spring usa el DSL de Java con el plugin de Gradle `io.gatling.gradle` (simulaciones en `src/gatling/java`).
 
 #### 8. EXPLICACIÓN MAESTRA
 
@@ -2085,8 +2090,8 @@ pone en rojo.
 
 Versiones: **Gatling JS 3.16.101** (`@gatling.io/cli`, `@gatling.io/core`, `@gatling.io/http`, npm 2026-11-17; motor
 Gatling 3.16.1) con **Java 17 o superior** (aquí se ejecutó con OpenJDK 21.0.13; el curso fija JDK 25). Pista Spring:
-**Gatling 3.16.1** (`io.gatling.highcharts:gatling-charts-highcharts`) y **gatling-maven-plugin 4.21.12** (Maven
-Central, consultado el 2026-11-20).
+**Gatling 3.16.1** (`io.gatling.highcharts:gatling-charts-highcharts`) y el plugin **`io.gatling.gradle` 3.16.0** (Maven
+Central y plugins.gradle.org, consultados el 2026-11-20).
 
 `f184-carga-gatling/src/reservas.gatling.js`:
 
@@ -2155,43 +2160,109 @@ process.on('SIGINT', resumen);
 process.on('SIGTERM', resumen);
 ```
 
-**Pista Spring Boot** (pendiente en el Mac): `spring/carga/pom.xml`:
+**Pista Spring Boot** (pendiente en el Mac): `spring/carga/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Test de carga del proyecto con Gatling 3.16.1 (Java DSL) y gatling-maven-plugin 4.21.12 (versiones de Maven Central
-     consultadas el 2026-11-20). Ejecuta con el sistema en marcha: ./mvnw -f carga/pom.xml gatling:test -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>carga</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <maven.compiler.release>25</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>io.gatling.highcharts</groupId>
-      <artifactId>gatling-charts-highcharts</artifactId>
-      <version>3.16.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.gatling</groupId>
-        <artifactId>gatling-maven-plugin</artifactId>
-        <version>4.21.12</version>
-        <configuration>
-          <simulationClass>academia.carga.ReservasSimulation</simulationClass>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// Test de carga del proyecto con Gatling 3.16.1 (Java DSL) y el plugin de Gatling para Gradle 3.16.0
+// (plugins.gradle.org/plugin/io.gatling.gradle, consultado el 2026-11-20).
+// Ejecuta con el sistema en marcha: ./gradlew :carga:gatlingRun
+// El plugin busca las simulaciones en src/gatling/java (en Maven estaban en src/test/java).
+plugins {
+    java
+    alias(libs.plugins.gatling)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+gatling {
+    // El plugin trae Gatling 3.16.0 por defecto; se fija la misma 3.16.1 que usaba el build de Maven
+    gatlingVersion = libs.versions.gatling.get()
+    // Simulación que ejecuta gatlingRun (en Maven, <simulationClass>)
+    simulation = "academia.carga.ReservasSimulation"
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-36/spring/settings.gradle.kts`:
+
+```kotlin
+// Módulo 32 (modulo-36) · Proyecto final, versión Spring Boot (Fase 1). Build multi-proyecto: "./gradlew test"
+// ejecuta los tests. La simulación de Gatling (carga/) no tiene tests: se lanza aparte con
+// "./gradlew :carga:gatlingRun" porque necesita el sistema en marcha.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-36-proyecto-final"
+
+include(
+    "pagos-externo",
+    "reservas",
+    "gateway",
+    "carga",
+)
+```
+
+`modulo-36/spring/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 32 (modulo-36)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# Gatling 3.16.1 (Maven Central, consultado el 2026-11-20) y su plugin de Gradle 3.16.0 (plugins.gradle.org)
+gatling = "3.16.1"
+plugin-gatling = "3.16.0"
+spring-boot = "4.1.3"
+spring-cloud = "2025.1.4"
+# Última versión en Maven Central (maven-metadata.xml consultado el 2026-11-20: 1.41.1 del 2026-11-16)
+temporal = "1.41.1"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+temporal-sdk = { module = "io.temporal:temporal-sdk", version.ref = "temporal" }
+temporal-testing = { module = "io.temporal:temporal-testing", version.ref = "temporal" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-cloud-starter-gateway-server-webflux = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux" }
+spring-boot-starter-data-redis-reactive = { module = "org.springframework.boot:spring-boot-starter-data-redis-reactive" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+gatling = { id = "io.gatling.gradle", version.ref = "plugin-gatling" }
 ```
 
 `spring/carga/src/test/java/academia/carga/ReservasSimulation.java`:
@@ -2289,7 +2360,7 @@ resumen: 1352 reservas · 1352 CONFIRMADA · 0 CANCELADA · 0 PENDIENTE · 429 d
    7 ms: el SLO de la API se cumple con mucho margen y Gatling sale con código 0. El informe HTML queda en
    `logs/gatling/<simulación>/index.html` (gráfico de respuestas por segundo y de percentiles en el tiempo).
 
-2. Pista Spring (Mac), con el gateway de Spring en :8080: `cd spring && ./mvnw -f carga/pom.xml gatling:test`. Espera
+2. Pista Spring (Mac), con el gateway de Spring en :8080: `cd spring && ./gradlew :carga:gatlingRun`. Espera
    el mismo bloque «Global Information» y las dos líneas `Global: … : true`.
 
 #### 11. VERIFICACIÓN
@@ -3249,7 +3320,7 @@ export function revisar(raiz) {
     ['Medición antes/después de la restricción', hay('f185-restriccion-sobrevenida/antes.js') && hay('f185-restriccion-sobrevenida/despues.js')],
     ['2 ADR o más, con fitness function ejecutable', hay('f186-adr/adr') && readdirSync(join(raiz, 'f186-adr/adr')).length >= 2 && hay('f186-adr/fitness.test.js')],
     ['Estimación de costo con precios reales', /USD/.test(leer('COSTO.md'))],
-    ['Versión Spring Boot (Fase 1) del sistema', hay('spring/pom.xml')],
+    ['Versión Spring Boot (Fase 1) del sistema', hay('spring/settings.gradle.kts')],
   ];
 }
 

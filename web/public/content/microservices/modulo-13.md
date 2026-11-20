@@ -193,59 +193,120 @@ SecurityFilterChain cadenaVulnerable(HttpSecurity http) throws Exception {
 }
 ```
 
-**Después (seguro)** — `modulo-13/f061-filter-chain/pom.xml`:
+**Después (seguro)** — `modulo-13/f061-filter-chain/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F061 · Spring Security: filter chain -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f061-filter-chain</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Spring Security 7.1 (FilterChainProxy, SecurityFilterChain) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit Jupiter 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- httpBasic(), jwt(), oidcLogin() para MockMvc -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F061 · Spring Security: filter chain
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Spring Security 7.1 (FilterChainProxy, SecurityFilterChain)
+    implementation(libs.spring.boot.starter.security)
+    // MockMvc, JUnit Jupiter 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // httpBasic(), jwt(), oidcLogin() para MockMvc
+    testImplementation(libs.spring.boot.starter.security.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-13/settings.gradle.kts`:
+
+```kotlin
+// Módulo 9 (modulo-13) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todas las fichas con Spring.
+// F068 necesita Vault encendido y VAULT_TOKEN (lo prepara verificar.sh). F067 (mTLS) no tiene build, y F069 conserva
+// sus pom.xml porque son el material que leen Trivy, Snyk y MiniEscaner: ver README.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-13-laboratorios"
+
+include(
+    "f061-filter-chain",
+    "f062-jwt",
+    "f063-oauth2-oidc",
+    "f064-keycloak",
+    "f065-rbac-scopes",
+    "f066-token-exchange",
+    "f068-vault",
+)
+```
+
+`modulo-13/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 9 (modulo-13)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+# Tren de Spring Cloud compatible con Spring Boot 4.1.x
+spring-cloud = "2025.1.4"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-security-test = { module = "org.springframework.boot:spring-boot-starter-security-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-security-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server" }
+spring-boot-starter-security-oauth2-resource-server-test = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test" }
+spring-boot-starter-security-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-client" }
+spring-boot-starter-security-oauth2-client-test = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-client-test" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-cloud-starter-vault-config = { module = "org.springframework.cloud:spring-cloud-starter-vault-config" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 ```
 
 `src/main/java/academia/seguridad/cadena/SeguridadConfig.java`:
@@ -423,7 +484,7 @@ OK: la cadena responde 401 sin identidad y 403 sin el rol
 
 ```bash
 cd ../f061-filter-chain
-../mvnw -q spring-boot:run
+../gradlew -q bootRun
 ```
 
    **Output esperado:** una línea `DEBUG ... o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [...]`
@@ -455,7 +516,7 @@ curl -s -w " %header{x-auditado-por}\n" -u root:clave-root localhost:8080/admin/
    cadena.
 
 4. **Fallo deliberado:** detén la app y arráncala con el perfil vulnerable:
-   `../mvnw -q spring-boot:run -Dspring-boot.run.profiles=antes`. Repite el segundo `curl`: ahora responde `200` sin
+   `../gradlew -q bootRun --args='--spring.profiles.active=antes'`. Repite el segundo `curl`: ahora responde `200` sin
    credenciales. Vuelve a arrancar sin perfil.
 
 #### 11. VERIFICACIÓN
@@ -529,10 +590,10 @@ class CadenaDeFiltrosTest {
 `/admin/panel`: documenta el «antes» para que nadie lo reintroduzca sin darse cuenta.
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si pides `/admin/panel` con la contraseña equivocada, ¿qué filtro corta la petición y qué
 código recibes? ¿Y si la contraseña es correcta pero eres `ana`?
@@ -751,34 +812,24 @@ static String verificadorSeguro(String jwt, PublicKey publica, String iss, Strin
 }
 ```
 
-En Spring (`f062-jwt`), el mismo «después» con las piezas de producción. `pom.xml` (dependencias; el resto es igual al
-de F061):
+En Spring (`f062-jwt`), el mismo «después» con las piezas de producción. `f062-jwt/build.gradle.kts` (dependencias; el resto es igual
+al de F061):
 
-```xml
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-webmvc</artifactId>
-</dependency>
-<!-- Resource server: valida JWT con Nimbus -->
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-webmvc-test</artifactId>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-security-test</artifactId>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-security-oauth2-resource-server-test</artifactId>
-  <scope>test</scope>
-</dependency>
+```kotlin
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Resource server: valida JWT con Nimbus
+    implementation(libs.spring.boot.starter.security.oauth2.resource.server)
+    // MockMvc, JUnit Jupiter 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // httpBasic(), jwt(), oidcLogin() para MockMvc
+    testImplementation(libs.spring.boot.starter.security.test)
+    // Pruebas del resource server
+    testImplementation(libs.spring.boot.starter.security.oauth2.resource.server.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
 ```
 
 `src/main/java/academia/seguridad/jwt/JwtConfig.java`:
@@ -1032,10 +1083,10 @@ class Rs256Test {
 (`alg` = `HS256`) y que uno firmado con otro secreto recibe `401`.
 
 ```bash
-cd ../f062-jwt && ../mvnw test
+cd ../f062-jwt && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 8, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 8 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** el equipo de pagos pide «el secreto del JWT» para validar los tokens de usuarios. Si los
 tokens son HS256, ¿qué riesgo nuevo aparece? ¿Y si fueran RS256?
@@ -1256,7 +1307,7 @@ if (!nonce.equals(campo(c, "nonce"))) return "nonce inválido";
 if (Long.parseLong(campo(c, "exp")) < Instant.now().getEpochSecond()) return "expirado";
 ```
 
-En Spring (`f063-oauth2-oidc`), el cliente de producción. Dependencias del `pom.xml`: `spring-boot-starter-webmvc`,
+En Spring (`f063-oauth2-oidc`), el cliente de producción. Dependencias del `build.gradle.kts`: `spring-boot-starter-webmvc`,
 `spring-boot-starter-security-oauth2-client` y, para tests, `spring-boot-starter-webmvc-test`,
 `spring-boot-starter-security-test` y `spring-boot-starter-security-oauth2-client-test` (padre
 `spring-boot-starter-parent` 4.1.3, `java.version` 25).
@@ -1398,7 +1449,7 @@ curl -s localhost:8180/realms/tienda/.well-known/openid-configuration \
 
 ```bash
 cd f063-oauth2-oidc
-../mvnw -q spring-boot:run -Dspring-boot.run.profiles=keycloak
+../gradlew -q bootRun --args='--spring.profiles.active=keycloak'
 ```
 
    Abre `http://localhost:8080/yo` en el navegador, entra con `ana` / `clave-demo`.
@@ -1477,10 +1528,10 @@ class OidcLoginTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿qué token envía la app `tienda-web` a la API de pedidos y cuál usa para saber que quien
 inició sesión es ana? ¿Por qué no al revés?
@@ -1845,7 +1896,7 @@ exp:                2026-...Z (vence en 299 s)
 3. Llama al resource server con el token real:
 
 ```bash
-cd f064-keycloak && ../mvnw -q spring-boot:run &
+cd f064-keycloak && ../gradlew -q bootRun &
 sleep 15
 curl -s -H "Authorization: Bearer $TOKEN" localhost:8081/pedidos; echo
 curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $TOKEN" localhost:8081/admin/reportes
@@ -1942,10 +1993,10 @@ class ResourceServerKeycloakTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. El paso 3 del laboratorio
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El paso 3 del laboratorio
 es la verificación de extremo a extremo contra el Keycloak real; `./verificar.sh` la repite y exige `200-403-401`.
 
 **Pregunta de comprobación:** quitas el client scope `roles` de los *default client scopes* de `tienda-cli`. ¿Qué cambia
@@ -2284,7 +2335,7 @@ OK: 20 decisiones coinciden con la tabla esperada
 ```
 
 2. Repite la matriz con tokens reales de Keycloak (`docker compose up -d --wait keycloak` y la app con
-   `cd ../f065-rbac-scopes && ../mvnw -q spring-boot:run`):
+   `cd ../f065-rbac-scopes && ../gradlew -q bootRun`):
 
 ```bash
 tok() { curl -s localhost:8180/realms/tienda/protocol/openid-connect/token -d grant_type=password \
@@ -2311,7 +2362,7 @@ SOFIA   POST /pedidos -> 403 · DELETE /pedidos/7 -> 403
    "$SOFIA"`), porque `tienda-cli` puede pedirlo; el rol `soporte` no lo concede y por eso el `DELETE` es 403.
 
 3. **Fallo deliberado:** en `Permisos.puede` cambia `return porRol && porScope;` por `return porRol || porScope;`.
-   Ejecuta `../mvnw test`: falla la fila `DELETE, /pedidos/7, sofia, 403` (ahora da 204). Restaura el `&&`.
+   Ejecuta `../gradlew test`: falla la fila `DELETE, /pedidos/7, sofia, 403` (ahora da 204). Restaura el `&&`.
 
 #### 11. VERIFICACIÓN
 
@@ -2366,10 +2417,10 @@ class MatrizDeAutorizacionTest {
 ```
 
 ```bash
-cd ../f065-rbac-scopes && ../mvnw test
+cd ../f065-rbac-scopes && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 12, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 12 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** un cliente de terceros pide a ana el scope `pedidos:borrar`. Ana acepta. ¿Puede borrar?
 
@@ -2767,10 +2818,10 @@ void siElStsRechazaRespondes502SinLlamarAPagos() throws Exception {
 el laboratorio.)
 
 ```bash
-cd f066-token-exchange && ../mvnw test
+cd f066-token-exchange && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** el STS no responde. ¿Debe `pedidos` llamar a pagos con el token original para no fallar?
 
@@ -3316,66 +3367,50 @@ tienda.pagos.api-key=clave-de-pagos-en-texto-plano
 
 Aunque luego lo borres, sigue en el historial: `git log -p -S "clave-de-pagos" -- '*.properties'` lo encuentra.
 
-**Después (seguro)** — `f068-vault/pom.xml` (con el BOM de Spring Cloud):
+**Después (seguro)** — `f068-vault/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F068 · HashiCorp Vault: secretos con Spring Cloud Vault -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f068-vault</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Spring Cloud Vault 5.0 (spring.config.import=vault://) -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-vault-config</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6, AssertJ, Mockito -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F068 · HashiCorp Vault: secretos con Spring Cloud Vault
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Spring Cloud Vault 5.0 (spring.config.import=vault://)
+    implementation(libs.spring.cloud.starter.vault.config)
+    // JUnit Jupiter 6, AssertJ, Mockito
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/resources/application.properties`:
@@ -3518,14 +3553,14 @@ VAULT_ADDR=http://127.0.0.1:8200 java jdk/VaultKv.java secret otra-app
 4. Arranca la app y pide la huella:
 
 ```bash
-cd f068-vault && ../mvnw -q spring-boot:run &
+cd f068-vault && ../gradlew -q bootRun &
 sleep 15 && curl -s localhost:8085/config/pagos; echo
 ```
 
    **Output esperado:** `{"origen":"vault","huella":"sha256:4cf1a3d364d5"}` (las claves del JSON pueden salir en otro
    orden). La huella es la de `clave-de-pagos-desde-vault`, calculada aquí con
    `printf 'clave-de-pagos-desde-vault' | sha256sum | cut -c1-12`. Con el perfil `antes`
-   (`-Dspring-boot.run.profiles=antes`) responde `{"origen":"archivo de propiedades","huella":"sha256:f061fd53677a"}`.
+   (`--args='--spring.profiles.active=antes'`) responde `{"origen":"archivo de propiedades","huella":"sha256:f061fd53677a"}`.
 
 5. **Fallo deliberado:** detén la app, `unset VAULT_TOKEN` y vuelve a arrancarla: el arranque falla porque no se puede
    resolver `${VAULT_TOKEN}`. Exporta un token inventado (`export VAULT_TOKEN=hvs.falso`): ahora falla al leer Vault con un
@@ -3579,10 +3614,10 @@ class SecretoDesdeVaultTest {
 ```bash
 cd examples/microservicios/modulo-13
 export VAULT_TOKEN=$(./vault/sembrar.sh)
-cd f068-vault && ../mvnw test
+cd f068-vault && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿por qué la política dice `secret/data/f068-pagos` y no `secret/f068-pagos`, y qué pasa si
 el token de la app intenta escribir?
@@ -3653,7 +3688,8 @@ Módulo 9, Lección 9 de 9 · Fase 1 · 1,5 h · Laboratorio `examples/microserv
 
 #### 2. PRERREQUISITOS
 
-- Módulo 1: dependencias Maven y `pom.xml`.
+- Módulo 1: dependencias declaradas en el archivo de build. Aquí leerás un `pom.xml` de Maven: cada dependencia es un
+  `<dependency>` con `groupId`, `artifactId` y `version`.
 - Módulo 0.5: `Dockerfile` y `docker run`.
 - Idea de versión semántica (`2.14.1` < `2.15.0`).
 
@@ -3749,6 +3785,13 @@ en tu contexto (documentadas); romperlo siempre por LOW/MEDIUM entrena al equipo
 `MiniEscaner.java` · avisos consultados en GitHub Advisory Database: GHSA-jfh8-c2jp-5v3q (CVE-2021-44228, CRITICAL 10.0,
 corregido en 2.15.0 para la rama 2.13+) y GHSA-mjmj-j48q-9wg2 (CVE-2022-1471, HIGH 8.3, afecta a snakeyaml ≤ 1.33,
 corregido en 2.0).
+
+> **Por qué aquí sigue habiendo `pom.xml`.** El resto del curso se construye con Gradle, pero `f069-escaneo/antes` y
+> `f069-escaneo/despues` no se compilan: son el material que leen `trivy fs`, `snyk test` y `jdk/MiniEscaner.java`, y
+> un `pom.xml` declara las versiones en un formato que los tres entienden sin ejecutar nada. Para escanear un
+> proyecto Gradle, Trivy necesita el archivo de bloqueo `gradle.lockfile` (lo genera el *dependency locking* de
+> Gradle) y Snyk ejecuta Gradle para resolver el árbol *(detalle de Trivy y Snyk con Gradle pendiente de verificación
+> en el Mac)*.
 
 **Antes (vulnerable)** — `f069-escaneo/antes/pom.xml`:
 
@@ -3961,7 +4004,8 @@ viene y cómo la corriges en un proyecto Spring Boot?
 
 Es una dependencia **transitiva** (la trae otro starter o librería). Trivy y Snyk muestran la ruta. En Spring Boot lo
 correcto es subir la versión de Spring Boot (su BOM gestiona la de Jackson) o, si hay urgencia, fijarla con la propiedad
-del BOM (`<jackson-bom.version>`) o en `<dependencyManagement>`, y retirar el ajuste cuando Boot la incluya.
+del BOM (en Gradle, `extra["jackson-bom.version"] = "…"` con el plugin `io.spring.dependency-management`; en Maven,
+`<jackson-bom.version>` o `<dependencyManagement>`), y retirar el ajuste cuando Boot la incluya.
 </details>
 
 #### 12. ERROR COMÚN

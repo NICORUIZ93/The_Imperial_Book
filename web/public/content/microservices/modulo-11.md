@@ -4,9 +4,9 @@
 de 2–2,5 h). **Dificultad:** 3 de 5. **Dependencias:** Módulo 6 (comunicación entre servicios con `RestClient`), y
 del Módulo 1 los perfiles y la configuración externalizada. **Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot
 4.1.3**, **Spring Cloud 2025.1.4 «Oakwood»** (Gateway 5.0.4, Netflix Eureka 5.0.3, Consul 5.0.4, Config 5.0.6,
-Commons/LoadBalancer 5.0.4), **Consul 2.1.0** con Docker Compose, Testcontainers 2.0.5, Maven 3.10.1 por el wrapper
+Commons/LoadBalancer 5.0.4), **Consul 2.1.0** con Docker Compose, Testcontainers 2.0.5, Gradle 9.9.2 por el wrapper
 y `curl`. **Laboratorio:** `examples/microservicios/modulo-11/` (una demostración con JDK puro por tema en `jdk/` y
-una carpeta Maven por tema; `./verificar.sh` lo ejecuta todo).
+un subproyecto Gradle por tema; `./verificar.sh` lo ejecuta todo).
 
 En el Módulo 6 tus servicios se llamaban con URLs fijas (`http://localhost:8082`). En producción eso no aguanta: las
 instancias nacen y mueren, cambian de IP, hay varias copias de cada servicio y cada entorno tiene su configuración.
@@ -45,7 +45,7 @@ consultan; y un «Config Server» (tema 3) entrega la configuración a cada serv
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-11` y ejecuta `java -version` (debe decir
 `25`). Cada tema empieza con una demostración en `jdk/` que solo necesita el JDK (`java jdk/Registro.java`): ves el
 mecanismo por dentro, sin magia. Después pasas al proyecto Spring Cloud de su carpeta (`f052-eureka`,
-`f053-gateway`…), donde usas `../mvnw`. La primera compilación descarga Maven y las dependencias; tarda unos minutos.
+`f053-gateway`…), donde usas `../gradlew`. La primera compilación descarga Gradle y las dependencias; tarda unos minutos.
 
 ---
 ### Service Discovery: Eureka, Consul
@@ -282,75 +282,131 @@ public class Registro {
 ```
 
 **Eureka con Spring Cloud.** Un solo proyecto con dos aplicaciones: el servidor (lee `servidor.yml`) y el servicio
-`catalogo` (lee `catalogo.yml`). `f052-eureka/pom.xml`:
+`catalogo` (lee `catalogo.yml`). `f052-eureka/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F052 · Service Discovery con Eureka: servidor + cliente "catalogo" en un mismo proyecto -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f052-eureka</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Servidor Eureka 5.0.3 (trae también el cliente Eureka) -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-    </dependency>
-    <!-- API HTTP del catálogo (Tomcat 11) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- El cliente Eureka usa RestClient para hablar con el servidor -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- /actuator/health: lo que Eureka publica como estado de la instancia -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F052 · Service Discovery con Eureka: servidor + cliente "catalogo" en un mismo proyecto
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Servidor Eureka 5.0.3 (trae también el cliente Eureka)
+    implementation(libs.spring.cloud.starter.netflix.eureka.server)
+    // API HTTP del catálogo (Tomcat 11)
+    implementation(libs.spring.boot.starter.webmvc)
+    // El cliente Eureka usa RestClient para hablar con el servidor
+    implementation(libs.spring.boot.starter.restclient)
+    // /actuator/health: lo que Eureka publica como estado de la instancia
+    implementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+// Este proyecto tiene varias clases con main. Elige cuál arranca (bootRun) o se empaqueta (bootJar) con
+// -Pprincipal=paquete.Clase (en Maven: -Dspring-boot.run.main-class=...). Los tests no lo necesitan.
+springBoot {
+    providers.gradleProperty("principal").orNull?.let { mainClass = it }
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-11/settings.gradle.kts`:
+
+```kotlin
+// Módulo 7 (modulo-11) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todos los subproyectos.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-11-laboratorios"
+
+include(
+    "f052-eureka",
+    "f052-consul",
+    "f053-gateway",
+    "f054-config",
+    "f055-loadbalancer",
+    "f056-bff",
+)
+```
+
+`modulo-11/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 7 (modulo-11)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+# Tren de Spring Cloud compatible con Spring Boot 4.1.x
+spring-cloud = "2025.1.4"
+
+[libraries]
+spring-cloud-starter-netflix-eureka-server = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server" }
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-cloud-starter-consul-discovery = { module = "org.springframework.cloud:spring-cloud-starter-consul-discovery" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-consul = { module = "org.testcontainers:testcontainers-consul" }
+spring-cloud-starter-gateway-server-webflux = { module = "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux" }
+spring-cloud-config-server = { module = "org.springframework.cloud:spring-cloud-config-server" }
+spring-cloud-starter-config = { module = "org.springframework.cloud:spring-cloud-starter-config" }
+spring-cloud-starter-loadbalancer = { module = "org.springframework.cloud:spring-cloud-starter-loadbalancer" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 ```
 
 `f052-eureka/src/main/java/academia/discovery/servidor/EurekaServidorApp.java`:
@@ -492,21 +548,58 @@ management:
         include: health,info
 ```
 
-**Consul.** El mismo servicio, otra dependencia. `f052-consul/pom.xml` (dependencias):
+**Consul.** El mismo servicio, otra dependencia. `f052-consul/build.gradle.kts`:
 
-```xml
-<dependency>
-  <groupId>org.springframework.cloud</groupId>
-  <artifactId>spring-cloud-starter-consul-discovery</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-actuator</artifactId>   <!-- Consul llama a /actuator/health -->
-</dependency>
+```kotlin
+// F052 · Service Discovery con Consul: el mismo catálogo registrado en Consul 2.1
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Cliente de Consul 5.0.4: registro + chequeo de salud + DiscoveryClient
+    implementation(libs.spring.cloud.starter.consul.discovery)
+    // API HTTP del catálogo
+    implementation(libs.spring.boot.starter.webmvc)
+    // Consul llama a /actuator/health cada 10 s para saber si la instancia está sana
+    implementation(libs.spring.boot.starter.actuator)
+    // Testcontainers 2.0.5 (gestionado por Boot): Consul real en el test
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.consul)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
-(El POM completo, con el BOM de Spring Cloud 2025.1.4, está en la carpeta; es igual al de Eureka cambiando estas
-dependencias.) `f052-consul/src/main/resources/application.yml`:
+(Es igual al de Eureka cambiando las dependencias; el BOM de Spring Cloud 2025.1.4 se importa en el bloque
+`dependencyManagement`.) `f052-consul/src/main/resources/application.yml`:
 
 ```yaml
 server:
@@ -532,7 +625,7 @@ spring:
 # Consul 2.1.0 en modo desarrollo (un solo nodo, todo en memoria): registro de servicios + UI.
 #   docker compose up -d --wait      -> UI en http://localhost:8500
 #   docker compose down
-# Eureka Server y Config Server son aplicaciones Spring Boot del laboratorio: se arrancan con ./mvnw
+# Eureka Server y Config Server son aplicaciones Spring Boot del laboratorio: se arrancan con ./gradlew
 # (ver README). El test de f052-consul arranca su propio Consul con Testcontainers.
 services:
   consul:
@@ -572,9 +665,9 @@ OK: el cliente solo ve instancias que laten
 2. **Eureka.** Abre tres terminales en `f052-eureka`:
 
 ```bash
-../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.discovery.servidor.EurekaServidorApp
-PUERTO=8081 ../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.discovery.catalogo.CatalogoApp
-PUERTO=8082 ../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.discovery.catalogo.CatalogoApp
+../gradlew -q bootRun -Pprincipal=academia.discovery.servidor.EurekaServidorApp
+PUERTO=8081 ../gradlew -q bootRun -Pprincipal=academia.discovery.catalogo.CatalogoApp
+PUERTO=8082 ../gradlew -q bootRun -Pprincipal=academia.discovery.catalogo.CatalogoApp
 ```
 
    Espera unos 10 s y pregunta a una instancia qué ve en el registro:
@@ -596,8 +689,8 @@ curl -s localhost:8081/instancias/catalogo
 
 ```bash
 docker compose up -d --wait
-cd f052-consul && ../mvnw -q spring-boot:run \
-  -Dspring-boot.run.arguments="--spring.cloud.consul.discovery.prefer-ip-address=false --spring.cloud.consul.discovery.hostname=host.docker.internal"
+cd f052-consul && ../gradlew -q bootRun \
+  --args="--spring.cloud.consul.discovery.prefer-ip-address=false --spring.cloud.consul.discovery.hostname=host.docker.internal"
 ```
 
    En otra terminal:
@@ -713,11 +806,11 @@ class ConsulRegistroTest {
 ```
 
 ```bash
-cd f052-eureka && ../mvnw test
-cd ../f052-consul && ../mvnw test        # Docker encendido
+cd f052-eureka && ../gradlew test
+cd ../f052-consul && ../gradlew test        # Docker encendido
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` en cada carpeta.
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* en cada carpeta.
 
 **Pregunta de comprobación:** con los valores por defecto de Eureka (latido 30 s, expulsión 90 s, refresco del
 cliente 30 s), una instancia muere por un corte de luz. ¿Cuánto tiempo, como máximo aproximado, pueden seguir
@@ -764,7 +857,7 @@ en su traza, no en el `NullPointerException`. Y comprueba qué transporte se eli
 `Eureka HTTP Client uses RestClient`; si no aparece esa línea, el cliente no tiene transporte.
 
 **Arreglo:** `eureka.client.jersey.enabled: false` en `catalogo.yml` y `servidor.yml` (la documentación lo indica
-para cuando Jersey está en el classpath y no lo quieres en el cliente) con `spring-boot-starter-restclient` en el POM.
+para cuando Jersey está en el classpath y no lo quieres en el cliente) con `spring-boot-starter-restclient` en `build.gradle.kts`.
 En un proyecto real el servidor y los clientes van en artefactos separados y el cliente nunca ve Jersey.
 
 **Otro síntoma frecuente:** el servicio arranca pero nunca aparece en el panel y cada 30 s el log repite
@@ -1013,60 +1106,47 @@ public class MiniGateway {
 }
 ```
 
-**Spring Cloud Gateway.** `f053-gateway/pom.xml`:
+**Spring Cloud Gateway.** `f053-gateway/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F053 · API Gateway con Spring Cloud Gateway (servidor WebFlux) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f053-gateway</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Spring Cloud Gateway 5.0.4 sobre WebFlux/Netty (nombre del starter desde Spring Cloud 2025.0) -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F053 · API Gateway con Spring Cloud Gateway (servidor WebFlux)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Spring Cloud Gateway 5.0.4 sobre WebFlux/Netty (nombre del starter desde Spring Cloud 2025.0)
+    implementation(libs.spring.cloud.starter.gateway.server.webflux)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f053-gateway/src/main/resources/application.yml` (toda la lógica de enrutamiento):
@@ -1185,7 +1265,7 @@ OK: el gateway enruta, quita el prefijo y propaga X-Request-Id
 ```bash
 mkdir -p /tmp/cat/productos && echo '{"id":7,"nombre":"Audífonos BT"}' > /tmp/cat/productos/7
 python3 -m http.server 8081 --directory /tmp/cat &
-cd f053-gateway && ../mvnw -q spring-boot:run
+cd f053-gateway && ../gradlew -q bootRun
 ```
 
    En otra terminal:
@@ -1277,10 +1357,10 @@ class GatewayTest {
 ```
 
 ```bash
-cd f053-gateway && ../mvnw test
+cd f053-gateway && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** tienes dos rutas: `Path=/api/**` → `legado` y, debajo, `Path=/api/catalogo/**` →
 `catalogo`. ¿A dónde va `GET /api/catalogo/productos/7` y cómo lo arreglas?
@@ -1564,75 +1644,59 @@ public class ConfigCentral {
 }
 ```
 
-**Spring Cloud Config.** `f054-config/pom.xml`:
+**Spring Cloud Config.** `f054-config/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F054 · Config Server: servidor de configuración + cliente "catalogo" con refresco -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f054-config</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Spring Cloud Config Server 5.0.6 (backend "native": carpeta config-repo/) -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-config-server</artifactId>
-    </dependency>
-    <!-- Cliente: spring.config.import=configserver:... -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-config</artifactId>
-    </dependency>
-    <!-- API HTTP (servidor y cliente) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- POST /actuator/refresh en el cliente -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F054 · Config Server: servidor de configuración + cliente "catalogo" con refresco
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Spring Cloud Config Server 5.0.6 (backend "native": carpeta config-repo/)
+    implementation(libs.spring.cloud.config.server)
+    // Cliente: spring.config.import=configserver:...
+    implementation(libs.spring.cloud.starter.config)
+    // API HTTP (servidor y cliente)
+    implementation(libs.spring.boot.starter.webmvc)
+    // POST /actuator/refresh en el cliente
+    implementation(libs.spring.boot.starter.actuator)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+// Este proyecto tiene varias clases con main. Elige cuál arranca (bootRun) o se empaqueta (bootJar) con
+// -Pprincipal=paquete.Clase (en Maven: -Dspring-boot.run.main-class=...). Los tests no lo necesitan.
+springBoot {
+    providers.gradleProperty("principal").orNull?.let { mainClass = it }
+}
 ```
 
 El «repositorio»: `f054-config/config-repo/application.yml`, `catalogo.yml` y `catalogo-prod.yml`:
@@ -1805,7 +1869,7 @@ OK: precedencia, refresco y fail-fast comprobados
 2. **El servidor.** Desde `f054-config` (el servidor busca `./config-repo/` relativo a la carpeta actual):
 
 ```bash
-../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.config.servidor.ConfigServidorApp
+../gradlew -q bootRun -Pprincipal=academia.config.servidor.ConfigServidorApp
 ```
 
    En otra terminal:
@@ -1821,7 +1885,7 @@ curl -s localhost:8888/catalogo/prod | jq '.propertySources[] | {name, source}'
 3. **El cliente con perfil prod:**
 
 ```bash
-SPRING_PROFILES_ACTIVE=prod ../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.config.catalogo.CatalogoConfigApp
+SPRING_PROFILES_ACTIVE=prod ../gradlew -q bootRun -Pprincipal=academia.config.catalogo.CatalogoConfigApp
 curl -s localhost:8081/ajustes
 ```
 
@@ -1906,10 +1970,10 @@ class ConfigServerTest {
 ```
 
 ```bash
-cd f054-config && ../mvnw test
+cd f054-config && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** el servicio `inventario` arranca con perfil `prod` y en el repositorio existen
 `application.yml` (`timeout: 2s`), `application-prod.yml` (`timeout: 1s`) e `inventario.yml` (`timeout: 3s`). ¿Qué
@@ -1925,7 +1989,7 @@ que `application-prod.yml`. Si quieres 1 s en prod para inventario, créalo en `
 #### 12. ERROR COMÚN
 
 **Síntoma:** el cliente no arranca y el error dice que no sabe leer la ubicación `configserver:`, aunque
-`spring-cloud-starter-config` está en el POM.
+`spring-cloud-starter-config` está en `build.gradle.kts`.
 
 **Cómo se ve** (error real de `ConfigServerTest` en macOS con Spring Cloud Config 5.0.6, antes de la corrección):
 
@@ -2192,65 +2256,49 @@ public class Balanceador {
 }
 ```
 
-**Spring Cloud LoadBalancer.** `f055-loadbalancer/pom.xml`:
+**Spring Cloud LoadBalancer.** `f055-loadbalancer/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F055 · Spring Cloud LoadBalancer: balanceo en el cliente con RestClient -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f055-loadbalancer</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- Spring Cloud LoadBalancer (Commons 5.0.4): round-robin por defecto -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-    </dependency>
-    <!-- RestClient.Builder de Spring Boot 4 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F055 · Spring Cloud LoadBalancer: balanceo en el cliente con RestClient
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // Spring Cloud LoadBalancer (Commons 5.0.4): round-robin por defecto
+    implementation(libs.spring.cloud.starter.loadbalancer)
+    // RestClient.Builder de Spring Boot 4
+    implementation(libs.spring.boot.starter.restclient)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f055-loadbalancer/src/main/java/academia/balanceo/BalanceoApp.java`:
@@ -2385,7 +2433,7 @@ for i in 1 2 3; do mkdir -p /tmp/c$i && echo -n catalogo-$i > /tmp/c$i/quien; \
    tiene servidor web: termina al acabar):
 
 ```bash
-../mvnw -q spring-boot:run -Dspring-boot.run.arguments=--demo.llamadas=6
+../gradlew -q bootRun --args=--demo.llamadas=6
 ```
 
    **Output esperado:** seis líneas `llamada N -> catalogo-X` con `catalogo-1`, `catalogo-2` y `catalogo-3` dos veces
@@ -2463,10 +2511,10 @@ class BalanceoTest {
 ```
 
 ```bash
-cd f055-loadbalancer && ../mvnw test
+cd f055-loadbalancer && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`. Verás un `WARN` de
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Verás un `WARN` de
 LoadBalancer recomendando Caffeine para la caché: en producción añade `com.github.ben-manes.caffeine:caffeine`.
 
 **Pregunta de comprobación:** tienes 2 instancias de `catalogo` en la zona A y 1 en la zona B; tu servicio corre en
@@ -2740,65 +2788,55 @@ public class Bff {
 }
 ```
 
-**Dos BFF con Spring Boot.** `f056-bff/pom.xml`:
+**Dos BFF con Spring Boot.** `f056-bff/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F056 · BFF pattern: un backend para la app móvil y otro para la web -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f056-bff</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <!-- Tren de Spring Cloud compatible con Spring Boot 4.1.x -->
-    <spring-cloud.version>2025.1.4</spring-cloud.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <!-- API HTTP de cada BFF -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient para llamar a catálogo, inventario y reseñas -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F056 · BFF pattern: un backend para la app móvil y otro para la web
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${libs.versions.spring.cloud.get()}")
+    }
+}
+
+dependencies {
+    // API HTTP de cada BFF
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient para llamar a catálogo, inventario y reseñas
+    implementation(libs.spring.boot.starter.restclient)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+// Este proyecto tiene varias clases con main. Elige cuál arranca (bootRun) o se empaqueta (bootJar) con
+// -Pprincipal=paquete.Clase (en Maven: -Dspring-boot.run.main-class=...). Los tests no lo necesitan.
+springBoot {
+    providers.gradleProperty("principal").orNull?.let { mainClass = it }
+}
 ```
 
 Las llamadas a los servicios, compartidas — `f056-bff/src/main/java/academia/bff/Servicios.java`:
@@ -2998,8 +3036,8 @@ echo '{"sku":7,"stock":12,"bodega":"BOG-1"}' > /tmp/s/stock/7
 echo '{"promedio":4.6,"total":318}' > /tmp/s/resenas/7
 python3 ../servicios-falsos.py 8081 /tmp/s 150 > /dev/null 2>&1 &
 export CATALOGO_URL=http://localhost:8081 INVENTARIO_URL=http://localhost:8081 RESENAS_URL=http://localhost:8081
-../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.bff.movil.BffMovilApp &
-../mvnw -q spring-boot:run -Dspring-boot.run.main-class=academia.bff.web.BffWebApp &
+../gradlew -q bootRun -Pprincipal=academia.bff.movil.BffMovilApp &
+../gradlew -q bootRun -Pprincipal=academia.bff.web.BffWebApp &
 ```
 
    Cuando ambos digan `Started`, compara:
@@ -3089,10 +3127,10 @@ class BffTest {
 ```
 
 ```bash
-cd f056-bff && ../mvnw test
+cd f056-bff && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** tu empresa tiene app iOS, app Android y web; iOS y Android muestran exactamente las
 mismas pantallas. ¿Cuántos BFF creas?

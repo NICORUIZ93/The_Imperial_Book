@@ -153,64 +153,114 @@ y en Spring el equivalente es construir un `Timer` a mano con el valor libre com
 Timer.builder("pedidos.latencia").tag("pedido", String.valueOf(id)).register(registro)   // una serie por pedido
 ```
 
-**Después** — `f070-micrometer-prometheus/pom.xml`:
+**Después** — `f070-micrometer-prometheus/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F070 · Micrometer + Prometheus: métricas RED y de negocio en /actuator/prometheus -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f070-micrometer-prometheus</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Actuator: /actuator/health, /actuator/prometheus -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <!-- Registro Prometheus de Micrometer (versión del BOM de Boot) -->
-    <dependency>
-      <groupId>io.micrometer</groupId>
-      <artifactId>micrometer-registry-prometheus</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit Jupiter 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- @AutoConfigureMetrics: registro Prometheus también en los tests -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-micrometer-metrics-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F070 · Micrometer + Prometheus: métricas RED y de negocio en /actuator/prometheus
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Actuator: /actuator/health, /actuator/prometheus
+    implementation(libs.spring.boot.starter.actuator)
+    // Registro Prometheus de Micrometer (versión del BOM de Boot)
+    implementation(libs.micrometer.registry.prometheus)
+    // MockMvc, JUnit Jupiter 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // @AutoConfigureMetrics: registro Prometheus también en los tests
+    testImplementation(libs.spring.boot.starter.micrometer.metrics.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+```
+
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
+
+`modulo-14/settings.gradle.kts`:
+
+```kotlin
+// Módulo 10 (modulo-14) · Build multi-proyecto: "./gradlew test" ejecuta los tests de F070, F071 (con OpenTelemetry) y F072.
+// F073 (Grafana) y F074 (reglas de Prometheus) no tienen build de Gradle: ver README y verificar.sh.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-14-laboratorios"
+
+include(
+    "f070-micrometer-prometheus",
+    "f071-tracing",
+    "f072-logging-estructurado",
+)
+```
+
+`modulo-14/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 10 (modulo-14)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+spring-boot-starter-micrometer-metrics-test = { module = "org.springframework.boot:spring-boot-starter-micrometer-metrics-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-restclient = { module = "org.springframework.boot:spring-boot-starter-restclient" }
+spring-boot-starter-opentelemetry = { module = "org.springframework.boot:spring-boot-starter-opentelemetry" }
+spring-boot-starter-opentelemetry-test = { module = "org.springframework.boot:spring-boot-starter-opentelemetry-test" }
+spring-boot-starter-zipkin = { module = "org.springframework.boot:spring-boot-starter-zipkin" }
+spring-boot-starter-zipkin-test = { module = "org.springframework.boot:spring-boot-starter-zipkin-test" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
 ```
 
 `src/main/java/academia/observabilidad/metricas/PedidosController.java` (la clase `MetricasApp` es la habitual con
@@ -352,7 +402,7 @@ pedidos_creados counter 2 muestras
 ```bash
 cd ..
 docker compose up -d --wait prometheus
-(cd f070-micrometer-prometheus && ../mvnw -q spring-boot:run) &
+(cd f070-micrometer-prometheus && ../gradlew -q bootRun) &
 sleep 15 && ./carga.sh 30 0
 curl -s localhost:8080/actuator/prometheus | grep -E '^pedidos_creados_total|^http_server_requests_seconds_count\{.*pedidos'
 ```
@@ -383,7 +433,7 @@ curl -s 'localhost:9090/api/v1/query' --data-urlencode \
    objetivo `f070-pedidos` aparece `UP` con su última duración de raspado.
 
 4. **Fallo deliberado:** en `PedidosController.crear` cambia `.tag("canal", etiqueta)` por `.tag("canal", canal)` y
-   ejecuta `../mvnw test`: falla la aserción `doesNotContain("un-valor-inventado-123")`, porque un valor libre llegó a
+   ejecuta `../gradlew test`: falla la aserción `doesNotContain("un-valor-inventado-123")`, porque un valor libre llegó a
    ser etiqueta. Restaura la línea.
 
 #### 11. VERIFICACIÓN
@@ -439,10 +489,10 @@ class ActuatorPrometheusTest {
 para `le="0.5"` y `_count` en 2.
 
 ```bash
-cd f070-micrometer-prometheus && ../mvnw test
+cd f070-micrometer-prometheus && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** en el paso 1, ¿por qué el bucket `le="0.25"` vale lo mismo que `le="0.1"` (980) y qué te
 dice eso de la latencia?
@@ -466,7 +516,7 @@ dial tcp ...: connect: connection refused` o `server returned HTTP status 404 No
 **Diagnóstico:** con *connection refused*, Prometheus (dentro de Docker) no llega a tu máquina: en Linux falta
 `extra_hosts: host.docker.internal:host-gateway` (en el `docker-compose.yml` del laboratorio ya está) o la app escucha en
 otro puerto. Con 404, el endpoint no está expuesto (`management.endpoints.web.exposure.include` sin `prometheus`) o falta
-`micrometer-registry-prometheus` en el `pom.xml`.
+`micrometer-registry-prometheus` en `build.gradle.kts`.
 
 **Arreglo:** comprueba primero desde el contenedor: `docker compose exec prometheus wget -qO- host.docker.internal:8080/actuator/prometheus | head -3`.
 Si eso funciona, el problema está en `prometheus.yml` (`metrics_path`, puerto).
@@ -600,7 +650,7 @@ cuando una petición cruza procesos. Tampoco son el lugar para auditar (se muest
 #### 9. CÓDIGO EJECUTABLE
 
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-opentelemetry` (Micrometer Tracing 1.7.3 +
-OpenTelemetry 1.62.0, exportación OTLP/HTTP) o, con `-Pzipkin`, `spring-boot-starter-zipkin` (Brave + Zipkin Reporter
+OpenTelemetry 1.62.0, exportación OTLP/HTTP) o, con `-Ptrazas=zipkin`, `spring-boot-starter-zipkin` (Brave + Zipkin Reporter
 3.5.3) · `spring-boot-starter-restclient` · Jaeger 2.22.0 · Zipkin 3.6.1.
 
 **Antes** — sin propagación: el cliente HTTP se crea a mano (en `jdk/TrazasW3C.java`, con `propagar = false`
@@ -614,97 +664,61 @@ if (propagar) req.header("traceparent", "00-" + ctx[0] + "-" + cliente + "-01");
 
 En Spring, el mismo error es `RestClient.create(url)` en lugar de `RestClient.Builder` inyectado.
 
-**Después** — `f071-tracing/pom.xml` con dos perfiles de Maven (uno u otro, nunca ambos):
+**Después** — `f071-tracing/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F071 · OpenTelemetry + Zipkin/Jaeger: trazas distribuidas entre pedidos e inventario.
-     Por defecto (perfil Maven "otel"): Micrometer Tracing + OpenTelemetry, exporta por OTLP a Jaeger.
-     Con "-Pzipkin": Micrometer Tracing + Brave, exporta a Zipkin. Nunca los dos a la vez. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f071-tracing</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- RestClient.Builder autoconfigurado: propaga traceparent solo -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-restclient</artifactId>
-    </dependency>
-    <!-- Actuator: /actuator/health -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit Jupiter 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <profiles>
-    <profile>
-      <id>otel</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <dependencies>
-        <!-- Micrometer Tracing + puente OpenTelemetry + exportador OTLP -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-opentelemetry</artifactId>
-        </dependency>
-        <!-- @AutoConfigureTracing -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-opentelemetry-test</artifactId>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>zipkin</id>
-      <dependencies>
-        <!-- Micrometer Tracing + Brave + reporter Zipkin -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-zipkin</artifactId>
-        </dependency>
-        <!-- @AutoConfigureTracing -->
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-zipkin-test</artifactId>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F071 · OpenTelemetry + Zipkin/Jaeger: trazas distribuidas entre pedidos e inventario.
+// Por defecto (-Ptrazas=otel): Micrometer Tracing + OpenTelemetry, exporta por OTLP a Jaeger.
+// Con "-Ptrazas=zipkin": Micrometer Tracing + Brave, exporta a Zipkin. Nunca los dos a la vez.
+// (En Maven eran los perfiles "otel", activo por defecto, y "zipkin" con -Pzipkin.)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+// Propiedad de proyecto que elige el puente de trazas: es el equivalente de un perfil de Maven
+val trazas = providers.gradleProperty("trazas").getOrElse("otel")
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // RestClient.Builder autoconfigurado: propaga traceparent solo
+    implementation(libs.spring.boot.starter.restclient)
+    // Actuator: /actuator/health
+    implementation(libs.spring.boot.starter.actuator)
+    if (trazas == "zipkin") {
+        // Micrometer Tracing + Brave + exportador a Zipkin
+        implementation(libs.spring.boot.starter.zipkin)
+        testImplementation(libs.spring.boot.starter.zipkin.test)
+    } else {
+        // Micrometer Tracing + OpenTelemetry + exportador OTLP
+        implementation(libs.spring.boot.starter.opentelemetry)
+        testImplementation(libs.spring.boot.starter.opentelemetry.test)
+    }
+    // MockMvc, JUnit Jupiter 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `src/main/java/academia/observabilidad/trazas/PedidosController.java`:
@@ -760,9 +774,9 @@ server.port=8081
 tienda.inventario.url=${INVENTARIO_URL:http://localhost:8082}
 # 100 % de las trazas en el laboratorio (por defecto Spring Boot muestrea el 10 %).
 management.tracing.sampling.probability=1.0
-# Perfil Maven "otel": spans por OTLP/HTTP a Jaeger.
+# Con -Ptrazas=otel (por defecto): spans por OTLP/HTTP a Jaeger.
 management.opentelemetry.tracing.export.otlp.endpoint=${OTLP_URL:http://localhost:4318/v1/traces}
-# Perfil Maven "zipkin": spans a Zipkin.
+# Con -Ptrazas=zipkin: spans a Zipkin.
 management.tracing.export.zipkin.endpoint=${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
 ```
 
@@ -812,9 +826,9 @@ ZIPKIN_URL=http://localhost:9411 java jdk/TrazasW3C.java | grep POST
 3. Ahora con Spring y OpenTelemetry hacia Jaeger: arranca inventario y pedidos y haz una petición:
 
 ```bash
-cd f071-tracing && ../mvnw -q package -DskipTests
-java -jar target/f071-tracing-1.0.0.jar --spring.application.name=inventario --server.port=8082 &
-java -jar target/f071-tracing-1.0.0.jar &
+cd f071-tracing && ../gradlew -q bootJar
+java -jar build/libs/f071-tracing-1.0.0.jar --spring.application.name=inventario --server.port=8082 &
+java -jar build/libs/f071-tracing-1.0.0.jar &
 sleep 15 && curl -s localhost:8081/pedidos/P-7; echo
 sleep 10        # el exportador envía los spans por lotes cada pocos segundos
 curl -s localhost:16686/api/v3/services | jq -c .services
@@ -827,7 +841,7 @@ curl -s localhost:16686/api/v3/services | jq -c .services
    servicio `pedidos`: la traza tiene los spans `http get /pedidos/{id}`, `pedidos.reservar-stock`, `http get` (cliente) e
    `inventario`/`http get /stock/{sku}`, y la pestaña del span propio muestra `pedido.id=P-7`.
 
-4. Repite con Brave hacia Zipkin: `../mvnw -q -Pzipkin package -DskipTests`, arranca de nuevo los dos procesos y busca la
+4. Repite con Brave hacia Zipkin: `../gradlew -q -Ptrazas=zipkin bootJar`, arranca de nuevo los dos procesos y busca la
    traza en `http://localhost:9411`.
 
 5. **Fallo deliberado:** en `PedidosController` sustituye `builder.baseUrl(urlInventario).build()` por
@@ -916,10 +930,10 @@ class PropagacionTest {
 ```
 
 ```bash
-cd f071-tracing && ../mvnw test && ../mvnw -Pzipkin test
+cd f071-tracing && ../gradlew test && ../gradlew -Ptrazas=zipkin test
 ```
 
-**Output esperado:** dos veces `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (OpenTelemetry y
+**Output esperado:** dos veces 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (OpenTelemetry y
 Brave producen el mismo `traceparent` W3C).
 
 **Pregunta de comprobación:** pedidos recibe una petición **sin** `traceparent`. ¿Qué `trace-id` lleva la llamada a
@@ -1117,8 +1131,8 @@ class PagosController {
 }
 ```
 
-`src/main/resources/application.properties` (el `pom.xml` solo necesita `spring-boot-starter-webmvc` y, para tests,
-`spring-boot-starter-webmvc-test`; padre `spring-boot-starter-parent` 4.1.3, `java.version` 25):
+`src/main/resources/application.properties` (el `build.gradle.kts` solo necesita `spring-boot-starter-webmvc` y, para tests,
+`spring-boot-starter-webmvc-test`; plugin de Spring Boot 4.1.3 y toolchain de Java 25):
 
 ```properties
 spring.application.name=f072-pagos
@@ -1175,7 +1189,7 @@ jq -c 'select(."log.level"=="ERROR") | {pedido: ."pedido.id", traza: ."trace.id"
 
 ```bash
 cd ../f072-logging-estructurado
-../mvnw -q spring-boot:run > f072.log &
+../gradlew -q bootRun > f072.log &
 sleep 15
 curl -s -X POST "localhost:8080/pedidos/P-7/pagar?canal=web&importe=32000&email=ana@correo.com"; echo
 curl -s -X POST "localhost:8080/pedidos/P-9/pagar?canal=app&importe=9000000&email=luis@correo.com"; echo
@@ -1188,7 +1202,7 @@ grep '"message":"p' f072.log | jq -c '{nivel: .log.level, mensaje: .message, ped
    **Captura comentada:** `grep -c correo.com f072.log` da `0`: el correo llegó a la API pero no al log.
 
 4. **Fallo deliberado:** cambia la línea de `log.atInfo()...` por
-   `log.info("Pedido " + id + " de " + email + " confirmado");` y ejecuta `../mvnw test`: el primer test falla porque ya
+   `log.info("Pedido " + id + " de " + email + " confirmado");` y ejecuta `../gradlew test`: el primer test falla porque ya
    no hay ninguna línea con `"message":"pedido confirmado"` (el mensaje cambia con cada pedido) y, si ajustas la búsqueda,
    fallan `"canal":"web"` y `doesNotContain("ana@correo.com")`. Restaura la línea.
 
@@ -1255,10 +1269,10 @@ class LogsJsonTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (la salida de Maven muestra
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (la salida de Gradle muestra
 también las líneas JSON de arranque de Spring).
 
 **Pregunta de comprobación:** ¿por qué `pedidoId` va al MDC y `canal` con `addKeyValue`?
@@ -1633,7 +1647,7 @@ código de salida: 0
 
 ```bash
 docker compose up -d --wait
-(cd f070-micrometer-prometheus && ../mvnw -q spring-boot:run) &
+(cd f070-micrometer-prometheus && ../gradlew -q bootRun) &
 sleep 15 && ./carga.sh 120 5
 ```
 
@@ -1947,7 +1961,7 @@ docker run --rm -v "$PWD/prometheus":/p -w /p --entrypoint promtool prom/prometh
 
 ```bash
 docker compose up -d --wait prometheus
-(cd f070-micrometer-prometheus && ../mvnw -q spring-boot:run) &
+(cd f070-micrometer-prometheus && ../gradlew -q bootRun) &
 sleep 15 && ./carga.sh 240 5 &
 watch -n 10 "curl -s localhost:9090/api/v1/alerts | jq -c '.data.alerts[] | {alerta: .labels.alertname, estado: .state}'"
 ```

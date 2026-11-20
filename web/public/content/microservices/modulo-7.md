@@ -5,7 +5,7 @@
 PostgreSQL) y, de la Fase 0, Docker básico (Módulo 0.5). **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3**
 (que gestiona JUnit Jupiter 6.0.3, Mockito 5.23.0, AssertJ 3.27.7 y Testcontainers 2.0.5), Pact JVM 4.7.7,
 Pact Broker 2.124.0, ArchUnit 1.5.1, JaCoCo 0.8.15, SonarQube Community Build 26.11 y Docker con Compose v2.
-**Laboratorio:** `examples/microservicios/modulo-7/` (una carpeta Maven autónoma por tema; `./verificar.sh`
+**Laboratorio:** `examples/microservicios/modulo-7/` (un subproyecto Gradle por tema; `./verificar.sh`
 ejecuta los tests, el ciclo completo del Pact Broker y el análisis de SonarQube).
 
 Un microservicio que no tiene tests no se puede cambiar sin miedo, y un sistema de microservicios cambia todos los
@@ -39,9 +39,9 @@ obsoleto. Todo lo que aprendas aquí con «Jupiter» vale para proyectos con JUn
 https://docs.junit.org/6.0.0/release-notes/
 
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-7` y comprueba `java -version` (debe decir
-`25`) y `docker version`. Cada tema tiene su carpeta (`f032-…` a `f036-…`); dentro usa `../mvnw` (el wrapper del
-módulo descarga Maven la primera vez). La primera compilación descarga dependencias de Maven Central y tarda unos
-minutos. Las salidas de Maven y de los contenedores de este módulo están pendientes de confirmar en el Mac del
+`25`) y `docker version`. Cada tema tiene su carpeta (`f032-…` a `f036-…`); dentro usa `../gradlew` (el wrapper del
+módulo descarga Gradle 9.9.2 la primera vez). La primera compilación descarga dependencias de Maven Central y tarda unos
+minutos. Las salidas de Gradle y de los contenedores de este módulo están pendientes de confirmar en el Mac del
 dueño (`verificacion/microservicios/pendiente.md`): en el entorno donde se escribió no hay acceso a Maven Central ni
 a Docker Hub, así que los mensajes de error que ves se tomaron del código fuente de cada herramienta (con su URL).
 
@@ -51,11 +51,11 @@ a Docker Hub, así que los mensajes de error que ves se tomaron del código fuen
 | Mockito | 5.23.0 | BOM de Spring Boot 4.1.3 |
 | AssertJ | 3.27.7 | BOM de Spring Boot 4.1.3 |
 | Testcontainers | 2.0.5 | BOM de Spring Boot 4.1.3 |
-| Pact JVM | 4.7.7 | tu `pom.xml` |
+| Pact JVM | 4.7.7 | tu catálogo `gradle/libs.versions.toml` |
 | Pact Broker | 2.124.0 (imagen `pactfoundation/pact-broker:3.2.0-pactbroker2.124.0`) | `docker-compose.yml` |
-| ArchUnit | 1.5.1 (`archunit-junit6`) | tu `pom.xml` |
-| JaCoCo | 0.8.15 | tu `pom.xml` |
-| SonarScanner for Maven | 5.8.0.7211 | tu `pom.xml` |
+| ArchUnit | 1.5.1 (`archunit-junit6`) | tu catálogo `gradle/libs.versions.toml` |
+| JaCoCo | 0.8.15 | tu catálogo `gradle/libs.versions.toml` |
+| SonarScanner for Gradle (plugin `org.sonarqube`) | 7.5.0.8588 | tu catálogo `gradle/libs.versions.toml` |
 | SonarQube | Community Build 26.11.0.134175 | `docker-compose.yml` |
 
 ---
@@ -69,7 +69,7 @@ Módulo 3, Lección 1 de 5 · Fase 1 · 3,5 h · Laboratorio `examples/microserv
 
 - Módulo 1: clases, records, inyección por constructor y `@Service`.
 - Módulo 2: un `@RestController` con `@GetMapping`, `@PathVariable` y `@RequestParam`, y los códigos 200, 400 y 404.
-- Saber ejecutar `../mvnw test` y leer la línea `Tests run: …` (Módulo 0.5).
+- Saber ejecutar `../gradlew test` y leer las líneas `PASSED`/`FAILED` y el `BUILD SUCCESSFUL` final (Módulo 1).
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -166,7 +166,7 @@ Las tres cosas juntas responden a una pregunta: «¿mi regla de negocio y mi API
 - **Mockito y JDK 21+.** Mockito 5 usa el *inline mock maker*, que se instala como agente Java. Si no lo configuras
   como `-javaagent`, en JDK 21+ verás el aviso «Mockito is currently self-attaching to enable the inline-mock-maker.
   This will no longer work in future releases of the JDK…» (texto de `PremainAttachAccess` en el código de Mockito).
-  Hoy es solo un aviso; la guía de Mockito explica cómo añadirlo como agente en Surefire.
+  Hoy es solo un aviso; la guía de Mockito explica cómo añadirlo como agente (en Gradle, con `jvmArgs` de la tarea `test`; en Maven, en Surefire).
 - **Cuándo NO** escribir tests de unidad con mocks: código que solo traduce y delega (un controller sin lógica, un
   mapeo trivial); ahí un test de capa web o de integración da más confianza por el mismo esfuerzo. Y nunca persigas
   el 100 % de cobertura: persigue que cada regla de negocio tenga un test que falle si la rompes.
@@ -178,54 +178,123 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **JUnit Jupiter 6.0.3**, **Mockito
 `examples/microservicios/modulo-7/f032-junit-mockito-mockmvc/`.
 
 
-`f032-junit-mockito-mockmvc/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F032 · JUnit 5 (hoy JUnit Jupiter 6.0.3), Mockito 5.23.0, MockMvc (Spring Boot 4.1.3, JDK 25) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f032-junit-mockito-mockmvc</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC 7 + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- JUnit Jupiter 6.0.3 + Mockito 5.23.0 + AssertJ 3.27.7 (versiones del BOM de Boot 4.1.3) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- @WebMvcTest y MockMvc -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-7/settings.gradle.kts`:
+
+```kotlin
+// Módulo 3 (modulo-7) · Build multi-proyecto: "./gradlew test" ejecuta los tests de las 5 fichas (F032–F036).
+// El orden importa y está declarado: el test del proveedor de Pact depende del test del consumidor (que genera el
+// contrato). F033 (Testcontainers) necesita Docker en marcha; Pact Broker y SonarQube se levantan con docker-compose.yml.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-7-laboratorios"
+
+include(
+    "f032-junit-mockito-mockmvc",
+    "f033-testcontainers",
+    "f034-pact-consumidor",
+    "f034-pact-proveedor",
+    "f035-archunit",
+    "f036-sonarqube",
+)
+```
+
+`modulo-7/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 3 (modulo-7)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+# plugins.gradle.org/plugin/org.sonarqube (consultado el 2026-11-20)
+sonarqube = "7.5.0.8588"
+jacoco = "0.8.15"
+pact = "4.7.7"
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+postgresql = { module = "org.postgresql:postgresql" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
+pact-consumer-junit5 = { module = "au.com.dius.pact.consumer:junit5", version.ref = "pact" }
+spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+pact-provider-junit5 = { module = "au.com.dius.pact.provider:junit5", version.ref = "pact" }
+archunit-junit6 = { module = "com.tngtech.archunit:archunit-junit6", version = "1.5.1" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+pact = { id = "au.com.dius.pact", version.ref = "pact" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+```
+
+`f032-junit-mockito-mockmvc/build.gradle.kts`:
+
+```kotlin
+// F032 · JUnit 5 (hoy JUnit Jupiter 6.0.3), Mockito 5.23.0, MockMvc (Spring Boot 4.1.3, JDK 25)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC 7 + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // JUnit Jupiter 6.0.3 + Mockito 5.23.0 + AssertJ 3.27.7 (versiones del BOM de Boot 4.1.3)
+    testImplementation(libs.spring.boot.starter.test)
+    // @WebMvcTest y MockMvc
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 Código de producción (`src/main/java/academia/pruebas/`):
@@ -546,21 +615,20 @@ class ProductoControllerTest {
 
 ```bash
 cd examples/microservicios/modulo-7/f032-junit-mockito-mockmvc
-../mvnw test
+../gradlew test
 ```
 
-   **Output esperado** (final del informe de Surefire):
+   **Output esperado** (esquema de la salida de Gradle; el texto exacto de cada línea está pendiente de verificación
+   en el Mac):
 
 ```text
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: … s -- in academia.pruebas.CatalogoServicioTest
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: … s -- in academia.pruebas.ProductoControllerTest
-[INFO]
-[INFO] Results:
-[INFO]
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
-[INFO]
-[INFO] BUILD SUCCESS
+CatalogoServicioTest > … PASSED        <- 8 líneas, una por test (el parametrizado cuenta 4)
+ProductoControllerTest > … PASSED      <- 3 líneas
+
+BUILD SUCCESSFUL in …s
 ```
+
+   El informe completo, con tiempos por clase, queda en `build/reports/tests/test/index.html`.
 
    **Captura comentada:** `CatalogoServicioTest` cuenta 8 porque el test parametrizado se ejecuta 4 veces (una por
    fila de `@CsvSource`) más los 4 tests normales. `CatalogoServicioTest` tarda milisegundos (no hay Spring);
@@ -569,7 +637,7 @@ cd examples/microservicios/modulo-7/f032-junit-mockito-mockmvc
 2. Arranca la API y pruébala de verdad:
 
 ```bash
-../mvnw spring-boot:run
+../gradlew bootRun
 # en otra terminal:
 curl -s "localhost:8080/productos/1/cotizacion?cantidad=10"; echo
 curl -s -o /dev/null -w "%{http_code}\n" "localhost:8080/productos/99/cotizacion?cantidad=1"
@@ -585,18 +653,27 @@ curl -s -o /dev/null -w "%{http_code}\n" "localhost:8080/productos/1/cotizacion"
 ```
 
 3. **Rompe la regla a propósito.** En `CatalogoServicio` cambia `cantidad >= 10` por `cantidad > 10` y vuelve a
-   ejecutar `../mvnw test`.
+   ejecutar `../gradlew test`.
 
    **Output esperado:** falla **1** test, el caso `10 unidades a 100 -> total 900` del parametrizado. El de MockMvc
-   **no** falla, porque ahí el servicio es un mock y la regla no se ejecuta. Surefire muestra (el número de línea
-   depende de tu archivo):
+   **no** falla, porque ahí el servicio es un mock y la regla no se ejecuta. Gradle muestra (esquema: el formato es el
+   real de Gradle con `exceptionFormat = FULL`, comprobado aquí con otro test; el texto de este caso está pendiente
+   de verificación en el Mac):
 
 ```text
-[ERROR] Failures:
-[ERROR]   CatalogoServicioTest.aplicaElDescuentoDesdeDiezUnidades:<línea>
-expected: 900
- but was: 1000
-[ERROR] Tests run: 11, Failures: 1, Errors: 0, Skipped: 0
+CatalogoServicioTest > aplicaElDescuentoDesdeDiezUnidades(…) > … FAILED
+    org.opentest4j.AssertionFailedError: …
+    expected: 900
+     but was: 1000
+        at … CatalogoServicioTest.aplicaElDescuentoDesdeDiezUnidades(CatalogoServicioTest.java:<línea>)
+
+11 tests completed, 1 failed
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':f032-junit-mockito-mockmvc:test'.
+> There were failing tests. See the report at: file:///…/build/reports/tests/test/index.html
 ```
 
    **Captura comentada:** un solo caso rojo (10 unidades) te dice exactamente qué frontera se rompió; los casos 1, 9
@@ -605,7 +682,8 @@ expected: 900
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar: `../mvnw test` en `f032-junit-mockito-mockmvc` con `Tests run: 11, Failures: 0, Errors: 0`.
+Test que debe pasar: `../gradlew test` en `f032-junit-mockito-mockmvc` con 11 líneas `PASSED`, ninguna `FAILED`, y
+`BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade a `CatalogoServicioTest` un test `reservarTodoElStockDejaCero` que reserve 5 de 5 y compruebe con
 `ArgumentCaptor` que se guarda `stock() == 0`. Debe pasar sin tocar el código de producción:
@@ -803,70 +881,48 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Testcontainers 2.0.5** (gestiona
 `examples/microservicios/modulo-7/f033-testcontainers/`.
 
 
-`f033-testcontainers/pom.xml`:
+`f033-testcontainers/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F033 · Testcontainers 2.0.5 + PostgreSQL 18.7 (Spring Boot 4.1.3, JDK 25). Necesita Docker en marcha. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f033-testcontainers</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- JdbcClient + HikariCP -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot) -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- @ServiceConnection: Boot lee host, puerto, usuario y clave del contenedor -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-testcontainers</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- Testcontainers 2.0.5 (gestionado por Boot): @Testcontainers/@Container y el módulo de PostgreSQL -->
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F033 · Testcontainers 2.0.5 + PostgreSQL 18.7 (Spring Boot 4.1.3, JDK 25). Necesita Docker en marcha.
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // JdbcClient + HikariCP
+    implementation(libs.spring.boot.starter.jdbc)
+    // Driver JDBC de PostgreSQL 42.7.14 (gestionado por Boot)
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.test)
+    // @ServiceConnection: Boot lee host, puerto, usuario y clave del contenedor
+    testImplementation(libs.spring.boot.testcontainers)
+    // Testcontainers 2.0.5 (gestionado por Boot): @Testcontainers/@Container y el módulo de PostgreSQL
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 Configuración y esquema:
@@ -898,7 +954,7 @@ package academia.contenedores;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/** F033 · Repositorio con SQL propio de PostgreSQL. Para ejecutarlo en desarrollo: ../mvnw spring-boot:test-run */
+/** F033 · Repositorio con SQL propio de PostgreSQL. Para ejecutarlo en desarrollo: ../gradlew bootTestRun */
 @SpringBootApplication
 public class ContenedoresApp {
     public static void main(String[] args) {
@@ -1041,7 +1097,7 @@ package academia.contenedores;
 
 import org.springframework.boot.SpringApplication;
 
-/** ../mvnw spring-boot:test-run arranca ESTA clase: la app real + un PostgreSQL en Docker. */
+/** ../gradlew bootTestRun arranca ESTA clase: la app real + un PostgreSQL en Docker. */
 public class ContenedoresAppDeDesarrollo {
     public static void main(String[] args) {
         SpringApplication.from(ContenedoresApp::main).with(ContenedoresDeDesarrollo.class).run(args);
@@ -1065,7 +1121,7 @@ docker pull postgres:18.7
 
 ```bash
 cd examples/microservicios/modulo-7/f033-testcontainers
-../mvnw test
+../gradlew test
 # en otra terminal, durante la ejecución:
 docker ps --format '{{.Image}}  {{.Ports}}'
 ```
@@ -1077,11 +1133,10 @@ postgres:18.7  0.0.0.0:55012->5432/tcp
 testcontainers/ryuk:…  0.0.0.0:55011->8080/tcp
 ```
 
-   y al final de Maven:
+   y al final de Gradle, tras 3 líneas `PASSED` (pendiente de verificación en el Mac):
 
 ```text
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+BUILD SUCCESSFUL in …s
 ```
 
    **Captura comentada:** en el log del test verás líneas de `tc.postgres:18.7` con `Creating container for image:
@@ -1090,14 +1145,14 @@ testcontainers/ryuk:…  0.0.0.0:55011->8080/tcp
    la URL no se escribe en ningún archivo.
 
 3. **Fallo deliberado:** cambia en `schema.sql` `email TEXT PRIMARY KEY` por `email TEXT` (sin clave) y repite.
-   **Output esperado:** fallan los dos tests que llaman a `registrarVisita` (`Failures`/`Errors: 2`) con un
+   **Output esperado:** fallan los dos tests que llaman a `registrarVisita` (2 líneas `FAILED` y `3 tests completed, 2 failed`) con un
    `BadSqlGrammarException` cuyo mensaje de PostgreSQL es `ERROR: there is no unique or exclusion constraint matching the ON CONFLICT specification`. Esa
    regla solo la aplica PostgreSQL real: es justo lo que Testcontainers detecta y una base de juguete podría no
    detectar. Restaura la clave.
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar: `../mvnw test` en `f033-testcontainers` → `Tests run: 3, Failures: 0, Errors: 0`.
+Test que debe pasar: `../gradlew test` en `f033-testcontainers` → 3 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade a `ClienteRepositorioTest` un test que registre `"Carla"` y compruebe que `buscarPorNombre("arl")`
 devuelve un solo cliente con `visitas() == 1`:
@@ -1210,7 +1265,7 @@ tomacorriente a la misma mesa.
 flowchart LR
     subgraph CONS["tienda-web (consumidor)"]
       CT["ProductoClientePactTest"] --> MS["Servidor simulado de Pact"]
-      CT --> PF["target/pacts/<br/>tienda-web-catalogo.json"]
+      CT --> PF["build/pacts/<br/>tienda-web-catalogo.json"]
     end
     subgraph BRK["Pact Broker :9292"]
       P["contrato tienda-web 1.0.0"]
@@ -1219,18 +1274,18 @@ flowchart LR
     subgraph PROV["catalogo (proveedor)"]
       PT["ContratoDesdeBrokerManual<br/>@State + HttpTestTarget"] --> APP["catalogo real<br/>(puerto aleatorio)"]
     end
-    PF -- "pact:publish" --> P
+    PF -- "pactPublish" --> P
     P -- "descarga" --> PT
     PT -- "publishResults=true" --> V
-    V -- "pact:can-i-deploy" --> D{"¿desplegar<br/>tienda-web 1.0.0?"}
+    V -- "canIDeploy" --> D{"¿desplegar<br/>tienda-web 1.0.0?"}
 ```
 
 **Texto alternativo:** tres recuadros de izquierda a derecha. En el consumidor tienda-web, el test
 ProductoClientePactTest habla con el servidor simulado de Pact y produce el archivo
-target/pacts/tienda-web-catalogo.json. Una flecha «pact:publish» lleva ese archivo al Pact Broker, que guarda el
+build/pacts/tienda-web-catalogo.json. Una flecha «pactPublish» lleva ese archivo al Pact Broker, que guarda el
 contrato de tienda-web 1.0.0. El broker entrega el contrato al test del proveedor catalogo, que prepara estados con
 @State y reproduce cada petición contra el catálogo real; el resultado se publica de vuelta en el broker. Desde el
-resultado sale la pregunta «pact:can-i-deploy: ¿desplegar tienda-web 1.0.0?».
+resultado sale la pregunta «canIDeploy: ¿desplegar tienda-web 1.0.0?».
 
 #### 6. EXPLICACIÓN NIVEL 0
 
@@ -1249,7 +1304,7 @@ Broker** es el lugar donde se guardan y donde se pregunta «¿puedo desplegar es
   método `@Pact(consumer = "tienda-web")` describe una **interacción**: estado previo (`given`), petición
   (`uponReceiving`, `path`, `method`) y respuesta (`willRespondWith`, `status`, `headers`, `body`). Pact levanta un
   **servidor HTTP simulado** que responde así; tu cliente real (`ProductoCliente` con `RestClient`) le pega. Si el
-  test pasa y todas las peticiones esperadas llegaron, Pact escribe `target/pacts/tienda-web-catalogo.json`
+  test pasa y todas las peticiones esperadas llegaron, Pact escribe `build/pacts/tienda-web-catalogo.json`
   (especificación V4 porque pediste `PactSpecVersion.V4`).
 - **Matchers.** `integerType("precio", 100)` significa «cualquier entero; 100 es el ejemplo». Así el contrato exige
   **forma**, no valores exactos, y el proveedor puede devolver 120. El proveedor puede añadir campos (`stock`) sin
@@ -1260,10 +1315,11 @@ Broker** es el lugar donde se guardan y donde se pregunta «¿puedo desplegar es
   Los métodos `@State("existe el producto 1")` preparan los datos: el nombre debe coincidir **letra por letra** con
   el `given(...)` del consumidor.
 - **Pact Broker.** Guarda contratos por versión del consumidor y resultados de verificación por versión del
-  proveedor. `./mvnw pact:publish` (plugin `au.com.dius.pact.provider:maven`) sube los archivos de `target/pacts`;
+  proveedor. `./gradlew pactPublish` (plugin `au.com.dius.pact`; en Maven, `pact:publish`) sube los archivos de `build/pacts`;
   el proveedor los descarga con `@PactBroker(host, port)` y, con `pact.verifier.publishResults=true` y
   `pact.provider.version`, publica su resultado. Esas propiedades se leen en la **JVM de los tests**: por eso el
-  `pom.xml` del proveedor las pasa con `systemPropertyVariables` de Surefire.
+  `build.gradle.kts` del proveedor las pasa con `systemProperty(...)` en la tarea `test` (en Maven,
+  `systemPropertyVariables` de Surefire) y en la línea de comandos se escriben con `-P`, no con `-D`.
 - **can-i-deploy.** Consulta la matriz del broker: ¿la versión X del consumidor tiene una verificación exitosa con
   la versión del proveedor que hay (o habrá) en el entorno? Responde «Computer says yes \o/» o «Computer says no».
 
@@ -1292,70 +1348,71 @@ Broker** es el lugar donde se guardan y donde se pregunta «¿puedo desplegar es
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Pact JVM 4.7.7** (`au.com.dius.pact.consumer:junit5`,
-`au.com.dius.pact.provider:junit5` y el plugin `au.com.dius.pact.provider:maven`), **Pact Broker 2.124.0** en
+`au.com.dius.pact.provider:junit5` y el plugin de Gradle `au.com.dius.pact`), **Pact Broker 2.124.0** en
 Docker. El artefacto de Pact se llama `junit5` pero corre sobre la plataforma JUnit 6 de Boot 4.1 (misma API
 Jupiter de extensiones). Código completo en `examples/microservicios/modulo-7/f034-pact-*`.
 
 **Consumidor:**
 
-`f034-pact-consumidor/pom.xml`:
+`f034-pact-consumidor/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F034 · Contract Testing con Pact (lado CONSUMIDOR "tienda-web"). Pact JVM 4.7.7, Spring Boot 4.1.3, JDK 25.
-     ./mvnw test           -> genera target/pacts/tienda-web-catalogo.json
-     ./mvnw pact:publish   -> lo sube al Pact Broker de docker-compose.yml (http://localhost:9292) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f034-pact-consumidor</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <pact.version>4.7.7</pact.version>
-    <pact.broker.url>http://localhost:9292</pact.broker.url>
-  </properties>
-  <dependencies>
-    <!-- RestClient (spring-web 7) + Jackson 3 para el cliente HTTP -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- Pact para JUnit Jupiter: servidor simulado + escritura del contrato -->
-    <dependency>
-      <groupId>au.com.dius.pact.consumer</groupId>
-      <artifactId>junit5</artifactId>
-      <version>${pact.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <!-- Plugin de Pact: pact:publish y pact:can-i-deploy contra el broker -->
-      <plugin>
-        <groupId>au.com.dius.pact.provider</groupId>
-        <artifactId>maven</artifactId>
-        <version>${pact.version}</version>
-        <configuration>
-          <pactBrokerUrl>${pact.broker.url}</pactBrokerUrl>
-          <projectVersion>${project.version}</projectVersion>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F034 · Contract Testing con Pact (lado CONSUMIDOR "tienda-web"). Pact JVM 4.7.7, Spring Boot 4.1.3, JDK 25.
+// ../gradlew test          -> genera build/pacts/tienda-web-catalogo.json
+// ../gradlew pactPublish   -> lo sube al Pact Broker de docker-compose.yml (http://localhost:9292)
+plugins {
+    java
+    // Plugin de Pact: tareas pactPublish y canIDeploy contra el broker
+    alias(libs.plugins.pact)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    implementation(platform(libs.spring.boot.dependencies))
+    // RestClient (spring-web 7) + Jackson 3 para el cliente HTTP
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.test)
+    // Pact para JUnit Jupiter: servidor simulado + escritura del contrato
+    testImplementation(libs.pact.consumer.junit5)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")   // el plugin de Boot lo añade solo; aquí no está aplicado
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    // Carpeta donde Pact escribe el contrato (el proveedor lo lee de aquí con @PactFolder)
+    systemProperty("pact.rootDir", layout.buildDirectory.dir("pacts").get().asFile.path)
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+pact {
+    broker {
+        // se puede cambiar desde la línea de comandos con -PpactBrokerUrl=...
+        pactBrokerUrl = providers.gradleProperty("pactBrokerUrl").getOrElse("http://localhost:9292")
+    }
+    publish {
+        // build/pacts es también el valor por defecto del plugin; la versión publicada es la del proyecto (1.0.0)
+        pactDirectory = layout.buildDirectory.dir("pacts").get().asFile.path
+    }
+}
 ```
 
 `f034-pact-consumidor/src/main/java/academia/consumidor/Producto.java`:
@@ -1415,7 +1472,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * Test del CONSUMIDOR: Pact levanta un servidor HTTP simulado que responde según las interacciones
- * declaradas; si el cliente las usa bien, Pact escribe el contrato en target/pacts/tienda-web-catalogo.json.
+ * declaradas; si el cliente las usa bien, Pact escribe el contrato en build/pacts/tienda-web-catalogo.json.
  */
 @ExtendWith(PactConsumerTestExt.class)
 @PactTestFor(providerName = "catalogo", pactVersion = PactSpecVersion.V4)
@@ -1470,74 +1527,58 @@ public class ProductoClientePactTest {
 
 **Proveedor:**
 
-`f034-pact-proveedor/pom.xml`:
+`f034-pact-proveedor/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F034 · Contract Testing con Pact (lado PROVEEDOR "catalogo"). Pact JVM 4.7.7, Spring Boot 4.1.3, JDK 25.
-     ./mvnw test   -> verifica el contrato que dejó ../f034-pact-consumidor/target/pacts (sin broker)
-     ./mvnw test -Dtest=ContratoDesdeBrokerManual -Dpact.verifier.publishResults=true
-                   -> lo descarga del Pact Broker (localhost:9292) y publica el resultado -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f034-pact-proveedor</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <pact.version>4.7.7</pact.version>
-    <!-- se pueden cambiar desde la línea de comandos con -D... -->
-    <pactbroker.host>localhost</pactbroker.host>
-    <pactbroker.port>9292</pactbroker.port>
-    <pact.verifier.publishResults>false</pact.verifier.publishResults>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- Verificador de Pact para JUnit Jupiter (@Provider, @State, @PactFolder, @PactBroker) -->
-    <dependency>
-      <groupId>au.com.dius.pact.provider</groupId>
-      <artifactId>junit5</artifactId>
-      <version>${pact.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <!-- Pact lee estas propiedades del JVM de los TESTS: Maven no las pasa solas desde la línea de comandos -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <pactbroker.host>${pactbroker.host}</pactbroker.host>
-            <pactbroker.port>${pactbroker.port}</pactbroker.port>
-            <pact.verifier.publishResults>${pact.verifier.publishResults}</pact.verifier.publishResults>
-            <pact.provider.version>${project.version}</pact.provider.version>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F034 · Contract Testing con Pact (lado PROVEEDOR "catalogo"). Pact JVM 4.7.7, Spring Boot 4.1.3, JDK 25.
+// ../gradlew test   -> verifica el contrato que dejó ../f034-pact-consumidor/build/pacts (sin broker)
+// ../gradlew test --tests ContratoDesdeBrokerManual -Pbroker -Ppact.verifier.publishResults=true
+//                   -> lo descarga del Pact Broker (localhost:9292) y publica el resultado
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.test)
+    // Verificador de Pact para JUnit Jupiter (@Provider, @State, @PactFolder, @PactBroker)
+    testImplementation(libs.pact.provider.junit5)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    // El contrato lo genera el test del consumidor: tiene que ejecutarse antes
+    dependsOn(":f034-pact-consumidor:test")
+    // Pact lee estas propiedades de la JVM de los TESTS: Gradle no les pasa solo lo que escribes en la línea de
+    // comandos. Se pueden cambiar con -Ppactbroker.host=..., -Ppactbroker.port=... y -Ppact.verifier.publishResults=true
+    systemProperty("pactbroker.host", providers.gradleProperty("pactbroker.host").getOrElse("localhost"))
+    systemProperty("pactbroker.port", providers.gradleProperty("pactbroker.port").getOrElse("9292"))
+    systemProperty("pact.verifier.publishResults", providers.gradleProperty("pact.verifier.publishResults").getOrElse("false"))
+    systemProperty("pact.provider.version", version.toString())
+    // Gradle ejecuta todas las clases con tests (Surefire, en Maven, solo las *Test). ContratoDesdeBrokerManual
+    // necesita el broker encendido: queda fuera salvo que la pidas con -Pbroker
+    if (!providers.gradleProperty("broker").isPresent) {
+        exclude("**/*Manual.class")
+    }
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `f034-pact-proveedor/src/main/java/academia/proveedor/CatalogoApp.java`:
@@ -1648,7 +1689,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Provider("catalogo")
-@PactFolder("../f034-pact-consumidor/target/pacts")
+@PactFolder("../f034-pact-consumidor/build/pacts")
 class ContratoDesdeCarpetaTest {
 
     @LocalServerPort int puerto;
@@ -1699,8 +1740,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 /**
  * Igual que ContratoDesdeCarpetaTest, pero el contrato viene del Pact Broker.
- * El nombre no termina en "Test" a propósito: Surefire solo lo ejecuta si lo pides con -Dtest=ContratoDesdeBrokerManual
- * (así "./mvnw test" no necesita el broker encendido).
+ * El nombre termina en "Manual" a propósito: build.gradle.kts excluye las clases *Manual salvo que añadas -Pbroker
+ * (así "./gradlew test" no necesita el broker encendido). Se pide con --tests ContratoDesdeBrokerManual -Pbroker.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Provider("catalogo")
@@ -1772,21 +1813,22 @@ services:
 
 ```bash
 cd examples/microservicios/modulo-7
-./mvnw -pl f034-pact-consumidor test
-python3 -m json.tool f034-pact-consumidor/target/pacts/tienda-web-catalogo.json | head -20
+./gradlew :f034-pact-consumidor:test
+python3 -m json.tool f034-pact-consumidor/build/pacts/tienda-web-catalogo.json | head -20
 ```
 
-   **Output esperado:** `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0` y un JSON que empieza con
+   **Output esperado:** 2 líneas `PASSED` (una por test) y un JSON que empieza con
    `"consumer": {"name": "tienda-web"}`, contiene `"interactions"` con las descripciones `obtener el producto 1` y
    `obtener un producto inexistente`, sus `providerStates` y, en `metadata`, `"pactSpecification": {"version": "4.0"}`.
 
-2. Verifica el contrato en el proveedor sin broker (lee la carpeta del consumidor):
+2. Verifica el contrato en el proveedor sin broker (lee la carpeta del consumidor; Gradle ejecuta antes el test del
+   consumidor porque el `build.gradle.kts` del proveedor lo declara con `dependsOn`):
 
 ```bash
-./mvnw -pl f034-pact-proveedor test
+./gradlew :f034-pact-proveedor:test
 ```
 
-   **Output esperado** (reportero de consola de Pact y resumen de Surefire):
+   **Output esperado** (reportero de consola de Pact y final de Gradle; pendiente de verificación en el Mac):
 
 ```text
 Verifying a pact between tienda-web and catalogo
@@ -1797,20 +1839,20 @@ Verifying a pact between tienda-web and catalogo
       has status code 200 (OK)
       has a matching body (OK)
 …
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESSFUL in …s
 ```
 
 3. Levanta el broker, publica, verifica desde el broker y pregunta si puedes desplegar:
 
 ```bash
 docker compose up -d --wait pact-broker
-./mvnw -pl f034-pact-consumidor pact:publish
-./mvnw -pl f034-pact-proveedor test -Dtest=ContratoDesdeBrokerManual -Dpact.verifier.publishResults=true
-./mvnw -pl f034-pact-consumidor pact:can-i-deploy -Dpacticipant=tienda-web -DpacticipantVersion=1.0.0
+./gradlew :f034-pact-consumidor:pactPublish
+./gradlew :f034-pact-proveedor:test --tests ContratoDesdeBrokerManual -Pbroker -Ppact.verifier.publishResults=true
+./gradlew :f034-pact-consumidor:canIDeploy -Ppacticipant=tienda-web -PpacticipantVersion=1.0.0
 ```
 
-   **Output esperado:** `pact:publish` informa la publicación de `tienda-web-catalogo.json` en
-   `http://localhost:9292`; la verificación vuelve a dar `Tests run: 2, Failures: 0`; y `can-i-deploy` imprime una
+   **Output esperado:** `pactPublish` informa la publicación de `tienda-web-catalogo.json` en
+   `http://localhost:9292`; la verificación vuelve a pasar (2 líneas `PASSED`); y `canIDeploy` imprime una
    línea que empieza por `Computer says yes \o/` seguida del motivo que devuelve el broker.
 
    **Captura comentada:** abre `http://localhost:9292`. La tabla muestra una fila *tienda-web → catalogo* con la
@@ -1825,12 +1867,12 @@ docker compose up -d --wait pact-broker
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar (desde `examples/microservicios/modulo-7`): `Tests run: 2` en cada módulo y `BUILD SUCCESS`;
-con el broker encendido, `can-i-deploy` también debe terminar en `BUILD SUCCESS`.
+Test que debe pasar (desde `examples/microservicios/modulo-7`): 2 líneas `PASSED` en cada módulo y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*;
+con el broker encendido, `canIDeploy` también debe terminar en `BUILD SUCCESSFUL`.
 
 ```bash
-./mvnw -pl f034-pact-consumidor,f034-pact-proveedor test
-./mvnw -pl f034-pact-consumidor pact:can-i-deploy -Dpacticipant=tienda-web -DpacticipantVersion=1.0.0
+./gradlew :f034-pact-consumidor:test :f034-pact-proveedor:test
+./gradlew :f034-pact-consumidor:canIDeploy -Ppacticipant=tienda-web -PpacticipantVersion=1.0.0
 ```
 
 Reto: añade al consumidor una tercera interacción «obtener el producto 2» con estado «existe el producto 2» y el
@@ -1851,7 +1893,7 @@ extra en los objetos de respuesta. Quitar `nombre` sí: la verificación falla c
 
 #### 12. ERROR COMÚN
 
-**Síntoma:** ejecutas el proveedor solo (`./mvnw -pl f034-pact-proveedor test`) en un clon recién descargado y falla
+**Síntoma:** ejecutas el proveedor solo (`./gradlew :f034-pact-proveedor:test`) en un clon recién descargado y falla
 sin probar nada.
 
 **Cómo se ve:**
@@ -1862,12 +1904,12 @@ au.com.dius.pact.provider.junitsupport.loader.NoPactsFoundException: No Pact fil
 
 (texto de `PactJUnit5VerificationProvider` en el código de Pact JVM).
 
-**Diagnóstico visual:** dibuja el recorrido del archivo: consumidor → `target/pacts` → proveedor. Si la carpeta
-`f034-pact-consumidor/target/pacts` no existe (`ls f034-pact-consumidor/target/pacts`), el consumidor no se ha
-ejecutado; `./mvnw clean` también la borra. Con el broker, el mismo error significa que no hay contratos publicados
+**Diagnóstico visual:** dibuja el recorrido del archivo: consumidor → `build/pacts` → proveedor. Si la carpeta
+`f034-pact-consumidor/build/pacts` no existe (`ls f034-pact-consumidor/build/pacts`), el consumidor no se ha
+ejecutado; `./gradlew clean` también la borra. Con el broker, el mismo error significa que no hay contratos publicados
 para `catalogo` (mira `http://localhost:9292`).
 
-**Arreglo:** ejecuta antes el consumidor (`./mvnw -pl f034-pact-consumidor,f034-pact-proveedor test`, en ese orden)
+**Arreglo:** ejecuta antes el consumidor (`./gradlew :f034-pact-consumidor:test :f034-pact-proveedor:test`, en ese orden)
 o publica en el broker. Si un proveedor nuevo aún no tiene consumidores, añade `@IgnoreNoPactsToVerify` para que no
 falle.
 
@@ -1987,7 +2029,7 @@ que nadie lee y pasan a ser algo que el build comprueba siempre.
   guarda las violaciones actuales en un archivo y solo falla con las **nuevas**; también existe
   `archunit_ignore_patterns.txt`. Así la deuda no crece mientras la pagas.
 - **Alternativas.** (1) ArchUnit: reglas en Java, dentro de la suite, ricas y con mensajes precisos. (2) Módulos de
-  Java (JPMS, `module-info.java`) o módulos Maven separados: el **compilador** impide la dependencia, más fuerte
+  Java (JPMS, `module-info.java`) o subproyectos de Gradle separados: el **compilador** impide la dependencia, más fuerte
   pero más rígido y costoso de reorganizar. (3) Spring Modulith (Módulo 5): verifica módulos de aplicación de Spring
   y, por debajo, usa ArchUnit. (4) jQAssistant o reglas de SonarQube: análisis externo, menos cerca del desarrollador.
 - **Cuándo NO:** prototipos de días, o reglas tan finas que congelan el diseño («ninguna clase puede tener más de
@@ -1999,53 +2041,42 @@ Versiones: **JDK 25**, **Spring Boot 4.1.3**, **ArchUnit 1.5.1** (`com.tngtech.a
 gestiona Boot), **JUnit Platform 6.0.3**. Proyecto completo en `examples/microservicios/modulo-7/f035-archunit/`.
 
 
-`f035-archunit/pom.xml`:
+`f035-archunit/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F035 · ArchUnit 1.5.1 (motor para JUnit 6: archunit-junit6), Spring Boot 4.1.3, JDK 25 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f035-archunit</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- ArchUnit no lo gestiona Boot: versión fija. archunit-junit6 existe desde ArchUnit 1.5.0 -->
-    <dependency>
-      <groupId>com.tngtech.archunit</groupId>
-      <artifactId>archunit-junit6</artifactId>
-      <version>1.5.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F035 · ArchUnit 1.5.1 (motor para JUnit 6: archunit-junit6), Spring Boot 4.1.3, JDK 25
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation(libs.spring.boot.starter.webmvc)
+    testImplementation(libs.spring.boot.starter.test)
+    // ArchUnit no lo gestiona Boot: versión fija. archunit-junit6 existe desde ArchUnit 1.5.0
+    testImplementation(libs.archunit.junit6)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 Código de producción (`src/main/java/academia/capas/`):
@@ -2219,10 +2250,10 @@ class ArquitecturaTest {
 
 ```bash
 cd examples/microservicios/modulo-7/f035-archunit
-../mvnw test
+../gradlew test
 ```
 
-   **Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (una ejecución por
+   **Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (una ejecución por
    cada campo `@ArchTest`).
 
 2. **Sáltate una capa.** En `PedidoController` cambia el constructor para que reciba también el repositorio:
@@ -2239,9 +2270,9 @@ import academia.capas.repositorio.PedidoRepositorio;
     }
 ```
 
-   y ejecuta `../mvnw test`.
+   y ejecuta `../gradlew test`.
 
-   **Output esperado:** `Tests run: 4, Failures: 2`. Fallan `capas` y `controllersSinRepositorios`. El mensaje de la
+   **Output esperado:** 2 líneas `FAILED` y `4 tests completed, 2 failed`. Fallan `capas` y `controllersSinRepositorios`. El mensaje de la
    segunda empieza así (formato de `FailureDisplayFormatFactory` en ArchUnit):
 
 ```text
@@ -2264,7 +2295,7 @@ java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'no c
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar: `../mvnw test` en `f035-archunit` → `Tests run: 4, Failures: 0`.
+Test que debe pasar: `../gradlew test` en `f035-archunit` → 4 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 Reto: añade una quinta regla que prohíba que el paquete `modelo` dependa de Spring, ejecútala (debe pasar) y luego
 anota `Pedido` con `@org.springframework.stereotype.Component` para verla fallar:
@@ -2311,7 +2342,7 @@ prueba de «romper a propósito» al escribir una regla nueva.
 *fitness functions* automáticas que corren en cada build: con ArchUnit fijo capas o la arquitectura hexagonal
 (el dominio no depende de infraestructura), prohíbo ciclos entre paquetes, inyección por campo y dependencias
 peligrosas. En código heredado congelo las violaciones existentes con `FreezingArchRule` para que no aparezcan
-nuevas. Si la frontera es crítica, la refuerzo con módulos Maven o JPMS, que la hace cumplir el compilador. Y lo
+nuevas. Si la frontera es crítica, la refuerzo con módulos del build (subproyectos de Gradle) o JPMS, que la hace cumplir el compilador. Y lo
 complemento con revisión de código y métricas de SonarQube; ArchUnit cubre lo estructural, no la calidad del
 algoritmo.
 
@@ -2346,7 +2377,7 @@ servicio `sonarqube` de `examples/microservicios/modulo-7/docker-compose.yml`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
-**Configurar** el análisis de un proyecto Maven en SonarQube con cobertura de JaCoCo y un Quality Gate que bloquee
+**Configurar** el análisis de un proyecto Gradle en SonarQube con cobertura de JaCoCo y un Quality Gate que bloquee
 el build, e **interpretar** sus métricas (cobertura, bugs, vulnerabilidades, code smells, hotspots); lo compruebas
 cuando `sonar/analizar.sh` imprime `Quality Gate: OK`, una cobertura mayor que 0 y `RESULTADO SONAR: OK`.
 
@@ -2364,26 +2395,26 @@ un dibujo del auto. El cartel lo decide el taller para todos, no cada conductor.
 ```mermaid
 sequenceDiagram
     participant Dev as Tú / CI
-    participant MVN as Maven (./mvnw verify sonar)
+    participant MVN as Gradle (./gradlew check sonar)
     participant JC as JaCoCo
     participant SQ as SonarQube :9000
-    Dev->>MVN: verify + sonar:sonar con -Dsonar.token
-    MVN->>JC: prepare-agent: instrumenta los tests
-    JC-->>MVN: target/site/jacoco/jacoco.xml
+    Dev->>MVN: check + sonar con -Dsonar.token
+    MVN->>JC: plugin jacoco: instrumenta los tests
+    JC-->>MVN: build/reports/jacoco/test/jacocoTestReport.xml
     MVN->>SQ: descarga el motor y las reglas del servidor
     MVN->>MVN: analiza el código fuente y el bytecode
     MVN->>SQ: sube el informe (fuentes, problemas, cobertura)
     SQ->>SQ: Compute Engine procesa y evalúa el Quality Gate
     MVN->>SQ: sonar.qualitygate.wait=true: ¿estado?
     SQ-->>MVN: OK o ERROR
-    MVN-->>Dev: BUILD SUCCESS o BUILD FAILURE
+    MVN-->>Dev: BUILD SUCCESSFUL o BUILD FAILED
 ```
 
-**Texto alternativo:** diagrama de secuencia. Tú o el CI lanzan Maven con verify y la meta sonar y un token. Maven
-activa el agente de JaCoCo durante los tests, que deja target/site/jacoco/jacoco.xml. Maven descarga del servidor
+**Texto alternativo:** diagrama de secuencia. Tú o el CI lanzan Gradle con las tareas check y sonar y un token. Gradle
+activa el agente de JaCoCo durante los tests, que deja build/reports/jacoco/test/jacocoTestReport.xml. Gradle descarga del servidor
 SonarQube el motor de análisis y las reglas, analiza el código y sube el informe. El Compute Engine de SonarQube lo
-procesa y evalúa el Quality Gate. Como sonar.qualitygate.wait está activado, Maven pregunta por el estado y termina
-en BUILD SUCCESS si es OK o en BUILD FAILURE si es ERROR.
+procesa y evalúa el Quality Gate. Como sonar.qualitygate.wait está activado, Gradle pregunta por el estado y termina
+en BUILD SUCCESSFUL si es OK o en BUILD FAILED si es ERROR.
 
 #### 6. EXPLICACIÓN NIVEL 0
 
@@ -2398,13 +2429,14 @@ mínimos que, si no se cumplen, hace fallar el build. Así la calidad no depende
 #### 7. EXPLICACIÓN INTERMEDIA
 
 - **Piezas.** El **servidor** SonarQube (web, Compute Engine, Elasticsearch y una base de datos; en la imagen
-  Community Build, una H2 embebida solo apta para pruebas) y el **escáner** (aquí, SonarScanner for Maven:
-  `org.sonarsource.scanner.maven:sonar-maven-plugin`, fijado a 5.8.0.7211 en `pluginManagement`).
+  Community Build, una H2 embebida solo apta para pruebas) y el **escáner** (aquí, SonarScanner for Gradle:
+  el plugin `org.sonarqube`, fijado a 7.5.0.8588 en el catálogo de versiones; en Maven, `sonar-maven-plugin`).
 - **Autenticación.** El escáner usa un **token** en `sonar.token` (o la variable `SONAR_TOKEN`); `sonar.login` es la
   forma antigua. El token se genera en *My Account → Security* o con la API `POST /api/user_tokens/generate`. En el
   primer inicio el usuario es `admin`/`admin` y SonarQube exige cambiar la contraseña.
-- **Cobertura.** SonarQube no ejecuta tests: **importa** el informe XML de JaCoCo. El plugin `jacoco-maven-plugin`
-  con `prepare-agent` (instrumenta los tests) y `report` (genera `target/site/jacoco/jacoco.xml`) en `verify`;
+- **Cobertura.** SonarQube no ejecuta tests: **importa** el informe XML de JaCoCo. El plugin `jacoco` de Gradle
+  instrumenta la tarea `test` y `jacocoTestReport` genera `build/reports/jacoco/test/jacocoTestReport.xml` (en Maven,
+  `jacoco-maven-plugin` con `prepare-agent` y `report`);
   `sonar.coverage.jacoco.xmlReportPaths` dice dónde está. Por eso el comando es `verify` + `sonar`, en ese orden.
 - **Métricas.** *Bugs* (fiabilidad), *Vulnerabilities* (seguridad), *Security Hotspots* (código sensible que una
   persona debe revisar, como credenciales en el código: regla `java:S2068`), *Code Smells* (mantenibilidad),
@@ -2412,7 +2444,7 @@ mínimos que, si no se cumplen, hace fallar el build. Así la calidad no depende
 - **Quality Gate y «código nuevo».** El gate por defecto, *Sonar way*, pone condiciones sobre el **código nuevo**
   (cobertura del código nuevo, duplicación, ratings de fiabilidad/seguridad/mantenibilidad y hotspots revisados).
   El principio es *Clean as You Code*: no exigir arreglar todo el pasado, sí que lo que cambias hoy esté limpio.
-  `sonar.qualitygate.wait=true` hace que Maven espere el veredicto y falle si es `ERROR`.
+  `sonar.qualitygate.wait=true` hace que Gradle espere el veredicto y falle si es `ERROR`.
 
 #### 8. EXPLICACIÓN MAESTRA
 
@@ -2435,83 +2467,84 @@ mínimos que, si no se cumplen, hace fallar el build. Así la calidad no depende
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **JaCoCo 0.8.15** (soporta oficialmente Java 26 y, de forma
-experimental, clases de Java 27), **SonarScanner for Maven 5.8.0.7211**, **SonarQube Community Build
+experimental, clases de Java 27), **SonarScanner for Gradle 7.5.0.8588**, **SonarQube Community Build
 26.11.0.134175** (imagen `sonarqube:26.11.0.134175-community`). Proyecto en
 `examples/microservicios/modulo-7/f036-sonarqube/`.
 
 
-`f036-sonarqube/pom.xml`:
+`f036-sonarqube/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F036 · SonarQube Community Build 26.11 + JaCoCo 0.8.15 + SonarScanner for Maven 5.8.0.7211 (Spring Boot 4.1.3, JDK 25)
-     ./mvnw verify                      -> tests + informe de cobertura target/site/jacoco/jacoco.xml
-     ./sonar/analizar.sh                -> crea un token en el SonarQube de docker-compose.yml, analiza y comprueba el Quality Gate -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f036-sonarqube</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-    <jacoco.version>0.8.15</jacoco.version>
-    <!-- Lo que lee el escáner (se puede sobrescribir con -D) -->
-    <sonar.host.url>http://localhost:9000</sonar.host.url>
-    <sonar.projectKey>f036-sonarqube</sonar.projectKey>
-    <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-    <!-- El build espera la decisión del Quality Gate y FALLA si no pasa -->
-    <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <!-- Versión fija del escáner, como pide la guía de SonarScanner for Maven -->
-        <plugin>
-          <groupId>org.sonarsource.scanner.maven</groupId>
-          <artifactId>sonar-maven-plugin</artifactId>
-          <version>5.8.0.7211</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-    <plugins>
-      <!-- JaCoCo: agente durante los tests + informe XML que SonarQube importa -->
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco.version}</version>
-        <executions>
-          <execution>
-            <id>agente</id>
-            <goals><goal>prepare-agent</goal></goals>
-          </execution>
-          <execution>
-            <id>informe</id>
-            <phase>verify</phase>
-            <goals><goal>report</goal></goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F036 · SonarQube Community Build 26.11 + JaCoCo 0.8.15 + SonarScanner for Gradle 7.5.0.8588 (Spring Boot 4.1.3, JDK 25)
+// ../gradlew check                   -> tests + informe de cobertura build/reports/jacoco/test/jacocoTestReport.xml
+// ./sonar/analizar.sh                -> crea un token en el SonarQube de docker-compose.yml, analiza y comprueba el Quality Gate
+plugins {
+    java
+    // JaCoCo viene con Gradle: agente durante los tests + informe XML que SonarQube importa
+    jacoco
+    // Versión fija del escáner (SonarScanner for Gradle): añade la tarea sonar
+    alias(libs.plugins.sonarqube)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // BOM de Spring Boot como plataforma de Gradle: fija las versiones sin aplicar el plugin de Boot
+    implementation(platform(libs.spring.boot.dependencies))
+    implementation(libs.spring.boot.starter)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.compilerArgs.add("-parameters")   // el plugin de Boot lo añade solo; aquí no está aplicado
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+    finalizedBy(tasks.jacocoTestReport)   // cada ejecución de los tests deja el informe de cobertura
+}
+
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true   // build/reports/jacoco/test/jacocoTestReport.xml: el que lee SonarQube
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestReport)   // "check" = tests + informe (en Maven, "verify")
+}
+
+// Lo que lee el escáner (se puede sobrescribir con -Dsonar.xxx=... en la línea de comandos)
+sonar {
+    properties {
+        property("sonar.host.url", "http://localhost:9000")
+        property("sonar.projectKey", "f036-sonarqube")
+        property("sonar.coverage.jacoco.xmlReportPaths",
+            layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.path)
+        // El build espera la decisión del Quality Gate y FALLA si no pasa
+        property("sonar.qualitygate.wait", "true")
+    }
+}
 ```
 
 Código y test:
@@ -2613,7 +2646,7 @@ TOKEN=$(curl -s -u "admin:$CLAVE_NUEVA" -X POST "$URL/api/user_tokens/generate" 
   --data-urlencode "name=laboratorio-$(date +%s)" | python3 -c 'import sys,json; print(json.load(sys.stdin)["token"])')
 
 echo "4/5 Tests + cobertura + análisis (el build espera al Quality Gate)..."
-../mvnw -q verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.token="$TOKEN" -Dsonar.host.url="$URL"
+../gradlew -q check sonar -Dsonar.token="$TOKEN" -Dsonar.host.url="$URL"
 
 echo "5/5 Comprobando por API..."
 curl -s -u "$TOKEN:" "$URL/api/qualitygates/project_status?projectKey=f036-sonarqube" | python3 -c '
@@ -2635,12 +2668,13 @@ echo "RESULTADO SONAR: OK"
 
 ```bash
 cd examples/microservicios/modulo-7/f036-sonarqube
-../mvnw verify
-ls target/site/jacoco/
+../gradlew check
+ls build/reports/jacoco/test/ build/reports/jacoco/test/html/
 ```
 
-   **Output esperado:** `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`, `BUILD SUCCESS` y, en la carpeta,
-   `index.html`, `jacoco.csv`, `jacoco.xml` y una carpeta por paquete. Abre `target/site/jacoco/index.html`: la
+   **Output esperado** (pendiente de verificación en el Mac): 6 líneas `PASSED` (una por test), `BUILD SUCCESSFUL` y, en
+   las carpetas, `jacocoTestReport.xml` y, dentro de `html/`, `index.html` y una carpeta por paquete. Abre
+   `build/reports/jacoco/test/html/index.html`: la
    clase `CalculadoraEnvio` aparece con sus líneas en verde (ejecutadas) y, si existiera alguna rama sin probar, en
    amarillo.
 
@@ -2692,11 +2726,11 @@ RESULTADO SONAR: OK
 
 Test que debe pasar: el script termina con `RESULTADO SONAR: OK` (el propio script es el test: sale con código
 distinto de 0 si el Quality Gate no es `OK` o si la cobertura no se importó), y los tests unitarios dan
-`Tests run: 6, Failures: 0`.
+6 líneas `PASSED`.
 
 ```bash
 cd examples/microservicios/modulo-7
-(cd f036-sonarqube && ../mvnw test)
+(cd f036-sonarqube && ../gradlew test)
 docker compose up -d sonarqube && f036-sonarqube/sonar/analizar.sh; echo "código de salida: $?"
 ```
 
@@ -2704,14 +2738,14 @@ Reto: borra la fila `"20, false, 0"` del `@CsvSource`, vuelve a analizar y mira 
 `return 0;` aparece sin cubrir y la condición `!express && pesoKg >= 20` queda con una rama sin probar (nunca fue
 verdadera). Explica por qué la cobertura bajó aunque todos los tests sigan en verde, y restaura la fila.
 
-**Pregunta de comprobación:** si borras la configuración de JaCoCo del `pom.xml` y analizas, ¿qué cobertura
+**Pregunta de comprobación:** si borras la configuración de JaCoCo del `build.gradle.kts` y analizas, ¿qué cobertura
 muestra SonarQube y por qué?
 
 <details>
 <summary>Respuesta</summary>
 
 0 % (o ninguna medida de cobertura), aunque los tests pasen: SonarQube no ejecuta tests ni mide cobertura, solo
-importa el informe XML que genera JaCoCo. Sin `prepare-agent` y `report` no hay `jacoco.xml` que importar (y el
+importa el informe XML que genera JaCoCo. Sin el plugin `jacoco` y su tarea `jacocoTestReport` no hay informe XML que importar (y el
 script `analizar.sh` falla en su última aserción).
 </details>
 

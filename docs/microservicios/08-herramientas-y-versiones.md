@@ -48,7 +48,7 @@ ESTADO: completo
 | ☐ | Docker Engine | — | **29.10.0** | 2026-11-16 | `docker version` | https://docs.docker.com/engine/release-notes/ |
 | ☐ | Docker Compose | — | **v5.6.1** | 21 oct (año no visible) | `docker compose version` | https://github.com/docker/compose/releases/latest |
 | ☐ | Maven | — | **3.10.1** (Maven 4 sigue en `4.0.0-rc-7`, no apto para producción) | — | `mvn -v` | https://maven.apache.org/download.cgi |
-| ☐ | Gradle (alternativa) | — | **9.9.1** (corre en JVM 17–27) | — | `gradle -v` | https://docs.gradle.org/current/userguide/compatibility.html |
+| ☐ | Gradle (build de la pista Spring desde el 2026-11-20; Maven queda como equivalencia) | — | **9.9.2** por el wrapper (corre en JVM 17–27) | 2026-11-19 | `./gradlew -v` | https://docs.gradle.org/current/userguide/compatibility.html |
 
 ## Fase 1 · Spring Boot
 

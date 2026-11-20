@@ -15,7 +15,7 @@ export function revisar(raiz) {
     ['Medición antes/después de la restricción', hay('f185-restriccion-sobrevenida/antes.js') && hay('f185-restriccion-sobrevenida/despues.js')],
     ['2 ADR o más, con fitness function ejecutable', hay('f186-adr/adr') && readdirSync(join(raiz, 'f186-adr/adr')).length >= 2 && hay('f186-adr/fitness.test.js')],
     ['Estimación de costo con precios reales', /USD/.test(leer('COSTO.md'))],
-    ['Versión Spring Boot (Fase 1) del sistema', hay('spring/pom.xml')],
+    ['Versión Spring Boot (Fase 1) del sistema', hay('spring/settings.gradle.kts')],
   ];
 }
 

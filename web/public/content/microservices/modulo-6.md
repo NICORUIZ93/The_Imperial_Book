@@ -5,7 +5,7 @@
 Módulo 1 completo (records, DI, perfiles) y Módulo 0.4 (HTTP, JSON, `curl`). **Herramientas:** **JDK 25 LTS
 (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3, Hibernate ORM 7.4, Spring Data JPA 4.1), Flyway 12.4,
 Liquibase 5.0, **PostgreSQL 18.7** y **MySQL 9.7.4 LTS** con Docker Compose, `curl` y `jq` (incluido en macOS 15 o
-superior; en Linux, `sudo apt install jq`). **Laboratorio:** `examples/microservicios/modulo-6/` (una carpeta Maven
+superior; en Linux, `sudo apt install jq`). **Laboratorio:** `examples/microservicios/modulo-6/` (un subproyecto Gradle
 por tema; `./verificar.sh` levanta las bases, ejecuta todos los tests y las apaga).
 
 Aquí tu servicio aprende a hablar HTTP y a recordar: recibe peticiones, valida, responde con contratos estables,
@@ -150,53 +150,117 @@ convenir más que JSON sobre HTTP.
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-webmvc` (Spring MVC 7, Tomcat 11.0.27, Jackson 3)
 · `spring-boot-starter-validation` (Hibernate Validator 9.1.6) · `spring-boot-starter-webmvc-test`.
 
-`modulo-6/f025-spring-mvc/pom.xml`:
+> **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
+> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
+> `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
+> las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
+> `./mvnw package -DskipTests` → `./gradlew bootJar` · `./mvnw spring-boot:run` → `./gradlew bootRun` ·
+> `-Dtest=Clase` → `--tests Clase` · `target/` → `build/` (el jar queda en `build/libs/`). Gradle escribe una línea
+> `PASSED` por test y termina con `BUILD SUCCESSFUL` (Maven: `Tests run: N` y `BUILD SUCCESS`).
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F025 · Spring MVC: DispatcherServlet, Controllers, Validación -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f025-spring-mvc</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Bean Validation (Hibernate Validator 9) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+`modulo-6/settings.gradle.kts`:
+
+```kotlin
+// Módulo 2 (modulo-6) · Build multi-proyecto: "./gradlew test" ejecuta los tests de todas las fichas.
+// Las fichas F028–F031 necesitan "docker compose up -d --wait" antes de los tests.
+// Cada carpeta tiene su propio build.gradle.kts; las versiones viven en gradle/libs.versions.toml
+// (catálogo "libs"). Equivale al POM agregador con <modules> de Maven.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = "modulo-6-laboratorios"
+
+include(
+    "f025-spring-mvc",
+    "f026-dtos-jackson",
+    "f027-controller-advice",
+    "f028-jpa",
+    "f029-criteria-specifications",
+    "f030-flyway",
+    "f030-liquibase",
+    "f031-postgresql-mysql",
+)
+```
+
+`modulo-6/gradle/libs.versions.toml`:
+
+```toml
+# Módulo 2 (modulo-6)
+# Catálogo de versiones del laboratorio: una sola fuente para plugins y librerías.
+# Las librerías SIN versión las fija el BOM de Spring Boot (spring-boot-dependencies) o el BOM que importe el proyecto.
+
+[versions]
+spring-boot = "4.1.3"
+
+[libraries]
+spring-boot-starter-webmvc = { module = "org.springframework.boot:spring-boot-starter-webmvc" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+postgresql = { module = "org.postgresql:postgresql" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
+spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
+spring-boot-starter-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase" }
+flyway-mysql = { module = "org.flywaydb:flyway-mysql" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+```
+
+`modulo-6/f025-spring-mvc/build.gradle.kts`:
+
+```kotlin
+// F025 · Spring MVC: DispatcherServlet, Controllers, Validación
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Bean Validation (Hibernate Validator 9)
+    implementation(libs.spring.boot.starter.validation)
+    // MockMvc, JUnit 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f025-spring-mvc/src/main/java/academia/mvc/MvcApp.java`:
@@ -325,7 +389,7 @@ class ProductoController {
 
 ```bash
 cd examples/microservicios/modulo-6/f025-spring-mvc
-../mvnw -q spring-boot:run
+../gradlew -q bootRun
 ```
 
    Espera la línea `Tomcat started on port 8080 (http)` y abre otra terminal.
@@ -427,10 +491,10 @@ class ProductoControllerTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿qué componente decide que `GET /productos/999` lo atiende `buscar` y qué componente
 convierte la `ResponseStatusException` en un `404`?
@@ -582,53 +646,44 @@ sirve de entrada y salida puede bastar; nunca expongas entidades JPA ni siquiera
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · Jackson 3.1 (`tools.jackson.core:jackson-databind` 3.1.8, anotaciones
 `com.fasterxml.jackson.annotation` 2.21) · Hibernate Validator 9.1.6.
 
-`modulo-6/f026-dtos-jackson/pom.xml`:
+`modulo-6/f026-dtos-jackson/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F026 · DTOs, @JsonProperty, Jackson -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f026-dtos-jackson</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Bean Validation (Hibernate Validator 9) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F026 · DTOs, @JsonProperty, Jackson
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Bean Validation (Hibernate Validator 9)
+    implementation(libs.spring.boot.starter.validation)
+    // MockMvc, JUnit 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f026-dtos-jackson/src/main/java/academia/dto/Cliente.java`:
@@ -783,7 +838,7 @@ public class DtoApp {
 
 ```bash
 cd examples/microservicios/modulo-6/f026-dtos-jackson
-../mvnw -q spring-boot:run
+../gradlew -q bootRun
 ```
 
 2. En otra terminal, crea un cliente con JSON en *snake_case*:
@@ -886,10 +941,10 @@ class ClienteJsonTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si mañana el equipo añade `saldo` al modelo `Cliente`, ¿aparece en la respuesta de
 `POST /clientes`? ¿Por qué?
@@ -905,7 +960,7 @@ el DTO y el mapper. Esa es la protección que da separar modelo y contrato.
 
 **Síntoma:** copias un ejemplo de internet con `ObjectMapper` en un proyecto Spring Boot 4 y no compila.
 
-**Cómo se ve** (salida real de `javac` 25 cuando Jackson 2 no está en el classpath, como ocurre en un proyecto Boot 4; Maven la muestra con el prefijo `[ERROR]`):
+**Cómo se ve** (salida real de `javac` 25 cuando Jackson 2 no está en el classpath, como ocurre en un proyecto Boot 4; Gradle la muestra tal cual, bajo `> Task :compileJava FAILED`):
 
 ```text
 academia/dto/Viejo.java:3: error: package com.fasterxml.jackson.databind does not exist
@@ -1038,53 +1093,44 @@ devuelve un resultado. Y no atrapes `Exception` en cada servicio para «loguear 
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 (Spring Framework 7: `ProblemDetail`, RFC 9457) ·
 `spring-boot-starter-webmvc` + `spring-boot-starter-validation`.
 
-`modulo-6/f027-controller-advice/pom.xml`:
+`modulo-6/f027-controller-advice/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F027 · Manejo global de excepciones (@ControllerAdvice) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f027-controller-advice</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring MVC + Tomcat 11 + Jackson 3 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc</artifactId>
-    </dependency>
-    <!-- Bean Validation (Hibernate Validator 9) -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <!-- MockMvc, JUnit 6, AssertJ -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webmvc-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F027 · Manejo global de excepciones (@ControllerAdvice)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring MVC + Tomcat 11 + Jackson 3
+    implementation(libs.spring.boot.starter.webmvc)
+    // Bean Validation (Hibernate Validator 9)
+    implementation(libs.spring.boot.starter.validation)
+    // MockMvc, JUnit 6, AssertJ
+    testImplementation(libs.spring.boot.starter.webmvc.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f027-controller-advice/src/main/java/academia/errores/ProductoNoEncontradoException.java`:
@@ -1229,7 +1275,7 @@ public class ErroresApp {
 
 ```bash
 cd examples/microservicios/modulo-6/f027-controller-advice
-../mvnw -q spring-boot:run
+../gradlew -q bootRun
 ```
 
 2. Pide un producto que no existe y mira cabeceras y cuerpo:
@@ -1344,10 +1390,10 @@ class ManejadorGlobalTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** si `ProductoNoEncontradoException` heredara de `IllegalStateException`, ¿qué handler la
 atendería y por qué?
@@ -1534,53 +1580,43 @@ simples). En microservicios, cada servicio tiene su base (Módulo 5): JPA no deb
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · `spring-boot-starter-data-jpa` (Hibernate ORM 7.4.15, Spring Data JPA
 4.1.3, HikariCP 7.0.2) · driver `org.postgresql:postgresql` 42.7.14 · PostgreSQL 18.7 en Docker.
 
-`modulo-6/f028-jpa/pom.xml`:
+`modulo-6/f028-jpa/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F028 · Spring Data JPA, Hibernate, entidades, relaciones, transacciones -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f028-jpa</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring Data JPA + Hibernate 7 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F028 · Spring Data JPA, Hibernate, entidades, relaciones, transacciones
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring Data JPA + Hibernate 7
+    implementation(libs.spring.boot.starter.data.jpa)
+    // Driver JDBC de PostgreSQL 42.7.x
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f028-jpa/src/main/resources/application.properties`:
@@ -1897,7 +1933,7 @@ docker compose ps --format "{{.Service}} {{.Status}}"
 
 ```bash
 cd f028-jpa
-../mvnw -q spring-boot:run | grep -E "insert|update|select|Pedido 1"
+../gradlew -q bootRun | grep -E "insert|update|select|Pedido 1"
 ```
 
    **Output esperado:** primero las sentencias `create table` (por `ddl-auto=create-drop`), luego un `insert into
@@ -1988,10 +2024,10 @@ class PedidoJpaTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS` (con PostgreSQL arriba; sin
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (con PostgreSQL arriba; sin
 él, los tests fallan con `Connection to localhost:5432 refused`).
 
 **Pregunta de comprobación:** en `unaLineaInvalidaDeshaceTodaLaTransaccion`, el `INSERT` del pedido ya se había
@@ -2149,53 +2185,43 @@ son más legibles. Para reportes pesados, SQL nativo o una vista materializada.
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 · Spring Data JPA 4.1.3 · Hibernate ORM 7.4.15 · Jakarta Persistence
 3.2 · PostgreSQL 18.7 (Docker Compose del módulo).
 
-`modulo-6/f029-criteria-specifications/pom.xml`:
+`modulo-6/f029-criteria-specifications/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F029 · Criteria API y Specifications -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f029-criteria-specifications</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring Data JPA + Hibernate 7 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F029 · Criteria API y Specifications
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring Data JPA + Hibernate 7
+    implementation(libs.spring.boot.starter.data.jpa)
+    // Driver JDBC de PostgreSQL 42.7.x
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f029-criteria-specifications/src/main/resources/application.properties`:
@@ -2421,7 +2447,7 @@ public class ConsultasApp {
 
 ```bash
 cd examples/microservicios/modulo-6/f029-criteria-specifications
-../mvnw -q spring-boot:run | grep -E "^Encontrado|^Reporte|where"
+../gradlew -q bootRun | grep -E "^Encontrado|^Reporte|where"
 ```
 
    **Output esperado:** la consulta generada contiene `where lower(p1_0.nombre) like ? ... and p1_0.precio>=? and
@@ -2447,7 +2473,7 @@ docker compose -f ../docker-compose.yml exec postgres psql -U tienda -d f029 -c 
    Si la app ya terminó (`create-drop` borró la tabla), ejecuta antes los tests en otra terminal o arranca la app sin
    `| grep` y consulta mientras corre.
 
-3. **Fallo deliberado:** en `precioDesde` cambia `"precio"` por `"preco"` y ejecuta `../mvnw test`. Compila sin
+3. **Fallo deliberado:** en `precioDesde` cambia `"precio"` por `"preco"` y ejecuta `../gradlew test`. Compila sin
    problemas pero los tests que usan ese filtro fallan al construir la consulta (paso 12). Restaura `"precio"`.
 
 #### 11. VERIFICACIÓN
@@ -2511,10 +2537,10 @@ class ConsultasTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** ¿cuántas consultas SQL genera `repo.findAll(spec, PageRequest.of(0, 10))` y por qué?
 
@@ -2537,7 +2563,8 @@ envuelta por Spring en una `InvalidDataAccessApiUsageException`.
 compilador no puede comprobar cadenas. El mensaje dice el atributo que no existe y la entidad.
 
 **Arreglo:** corrige el nombre y evita la clase de error generando el metamodelo: añade
-`org.hibernate.orm:hibernate-processor` como `annotationProcessorPaths` del `maven-compiler-plugin` y usa
+`annotationProcessor("org.hibernate.orm:hibernate-processor")` a las dependencias de `build.gradle.kts` (en Maven,
+`annotationProcessorPaths` del `maven-compiler-plugin`) y usa
 `root.get(Producto_.precio)`. Cubre cada `Specification` con al menos un test que la ejecute.
 
 #### 13. PREGUNTA DE ENTREVISTA
@@ -2686,63 +2713,47 @@ PostgreSQL 18.7. Las dos sentencias SQL de Flyway se ejecutaron tal cual en Post
 
 **Flyway:**
 
-`modulo-6/f030-flyway/pom.xml`:
+`modulo-6/f030-flyway/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F030 · Flyway (migraciones versionadas en SQL) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f030-flyway</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- DataSource (HikariCP) + JdbcClient -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <!-- Flyway 12 gestionado por Boot -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-flyway</artifactId>
-    </dependency>
-    <!-- Soporte de Flyway para PostgreSQL -->
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F030 · Flyway (migraciones versionadas en SQL)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // DataSource (HikariCP) + JdbcClient
+    implementation(libs.spring.boot.starter.jdbc)
+    // Flyway 12 gestionado por Boot
+    implementation(libs.spring.boot.starter.flyway)
+    // Soporte de Flyway para PostgreSQL
+    implementation(libs.flyway.database.postgresql)
+    // Driver JDBC de PostgreSQL 42.7.x
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f030-flyway/src/main/resources/application.properties`:
@@ -2815,58 +2826,45 @@ public class FlywayApp {
 
 **Liquibase:**
 
-`modulo-6/f030-liquibase/pom.xml`:
+`modulo-6/f030-liquibase/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F030 · Liquibase (changelog con rollback) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f030-liquibase</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- DataSource (HikariCP) + JdbcClient -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
-    </dependency>
-    <!-- Liquibase 5 gestionado por Boot -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-liquibase</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F030 · Liquibase (changelog con rollback)
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // DataSource (HikariCP) + JdbcClient
+    implementation(libs.spring.boot.starter.jdbc)
+    // Liquibase 5 gestionado por Boot
+    implementation(libs.spring.boot.starter.liquibase)
+    // Driver JDBC de PostgreSQL 42.7.x
+    runtimeOnly(libs.postgresql)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f030-liquibase/src/main/resources/application.properties`:
@@ -2973,7 +2971,7 @@ public class LiquibaseApp {
 
 ```bash
 cd examples/microservicios/modulo-6/f030-flyway
-../mvnw -q spring-boot:run | grep -E "^Migración|^Producto|Successfully applied|Schema"
+../gradlew -q bootRun | grep -E "^Migración|^Producto|Successfully applied|Schema"
 ```
 
    **Output esperado:** el log de Flyway informa que migró el esquema `"public"` a la versión `2` (dos migraciones
@@ -3002,7 +3000,7 @@ docker compose -f ../docker-compose.yml exec postgres psql -U tienda -d f030_fly
 
 ```bash
 cd ../f030-liquibase
-../mvnw -q spring-boot:run | grep "^ChangeSet"
+../gradlew -q bootRun | grep "^ChangeSet"
 ```
 
    **Output esperado:**
@@ -3013,7 +3011,7 @@ ChangeSet 2-agregar-stock · EXECUTED
 ```
 
 5. **Fallo deliberado:** vuelve a `f030-flyway`, edita `V1__crear_productos.sql` cambiando `'Taza de cerámica'` por
-   `'Taza grande'` y ejecuta `../mvnw -q spring-boot:run`. La app no arranca (paso 12). Deshaz el cambio con
+   `'Taza grande'` y ejecuta `../gradlew -q bootRun`. La app no arranca (paso 12). Deshaz el cambio con
    `git checkout -- src/main/resources/db/migration/V1__crear_productos.sql` y comprueba que vuelve a arrancar.
 
 #### 11. VERIFICACIÓN
@@ -3096,12 +3094,12 @@ class ChangelogTest {
 ```
 
 ```bash
-cd examples/microservicios/modulo-6/f030-flyway && ../mvnw test
-cd ../f030-liquibase && ../mvnw test
+cd examples/microservicios/modulo-6/f030-flyway && ../gradlew test
+cd ../f030-liquibase && ../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` en Flyway, `Tests run: 2, Failures: 0, Errors:
-0, Skipped: 0` en Liquibase, y `BUILD SUCCESS` en ambos.
+**Output esperado:** 3 líneas `PASSED` (una por test) en Flyway, 2 líneas `PASSED` en Liquibase, y
+`BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* en ambos.
 
 **Pregunta de comprobación:** en producción descubres que `V2` puso `stock = 10` al producto equivocado. ¿Editas `V2`?
 
@@ -3265,74 +3263,51 @@ las diferencias, no como recomendación.
 de ambas migraciones y de ambos *upserts* se ejecutó tal cual en PostgreSQL 16 y MySQL 8.0.46 de este entorno con el
 mismo resultado (stock 15, y la comparación de texto 0 en PostgreSQL y 1 en MySQL).
 
-`modulo-6/f031-postgresql-mysql/pom.xml`:
+`modulo-6/f031-postgresql-mysql/build.gradle.kts`:
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- F031 · PostgreSQL y MySQL: la misma app en los dos motores -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.1.3</version>
-    <relativePath/>
-  </parent>
-  <groupId>academia.microservicios</groupId>
-  <artifactId>f031-postgresql-mysql</artifactId>
-  <version>1.0.0</version>
-  <properties>
-    <java.version>25</java.version>
-  </properties>
-  <dependencies>
-    <!-- Spring Data JPA + Hibernate 7 -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-    <!-- Flyway 12 gestionado por Boot -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-flyway</artifactId>
-    </dependency>
-    <!-- Soporte de Flyway para PostgreSQL -->
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
-    </dependency>
-    <!-- Soporte de Flyway para MySQL -->
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-mysql</artifactId>
-    </dependency>
-    <!-- Driver JDBC de PostgreSQL 42.7.x -->
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <!-- Driver JDBC de MySQL (Connector/J 26.10.x) -->
-    <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+```kotlin
+// F031 · PostgreSQL y MySQL: la misma app en los dos motores
+plugins {
+    java
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+}
+
+group = "academia.microservicios"
+version = "1.0.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    // Spring Data JPA + Hibernate 7
+    implementation(libs.spring.boot.starter.data.jpa)
+    // Flyway 12 gestionado por Boot
+    implementation(libs.spring.boot.starter.flyway)
+    // Soporte de Flyway para PostgreSQL
+    implementation(libs.flyway.database.postgresql)
+    // Soporte de Flyway para MySQL
+    implementation(libs.flyway.mysql)
+    // Driver JDBC de PostgreSQL 42.7.x
+    runtimeOnly(libs.postgresql)
+    // Driver JDBC de MySQL (Connector/J 26.10.x)
+    runtimeOnly(libs.mysql.connector.j)
+    testImplementation(libs.spring.boot.starter.test)
+    // Gradle 9 exige declarar el lanzador de JUnit Platform (ya no lo añade por su cuenta)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")   // una línea por test en la consola
+        // el mensaje completo de cada fallo (valor esperado y obtenido), no solo el tipo de excepción
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
 ```
 
 `modulo-6/f031-postgresql-mysql/src/main/resources/application.properties`:
@@ -3554,9 +3529,9 @@ public class MotoresApp {
 
 ```bash
 cd examples/microservicios/modulo-6/f031-postgresql-mysql
-../mvnw -q package -DskipTests
-java -jar target/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=postgres | grep -E "^Motor|^Stock|^¿"
-java -jar target/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=mysql | grep -E "^Motor|^Stock|^¿"
+../gradlew -q bootJar
+java -jar build/libs/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=postgres | grep -E "^Motor|^Stock|^¿"
+java -jar build/libs/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=mysql | grep -E "^Motor|^Stock|^¿"
 ```
 
    **Output esperado** (la primera línea de cada bloque depende de la imagen exacta):
@@ -3586,7 +3561,7 @@ docker compose -f ../docker-compose.yml exec mysql mysql -utienda -ptienda --def
    `utf8mb4_0900_ai_ci` (además de un aviso por usar la contraseña en la línea de comandos).
 
 3. **Fallo deliberado:** en `InventarioMysql`, reemplaza el SQL por el de `InventarioPostgres` y ejecuta
-   `../mvnw test -Dtest=MysqlTest`. Falla `elUpsertCreaYLuegoSuma` con un error de sintaxis de MySQL (paso 12). Restaura
+   `../gradlew test --tests MysqlTest`. Falla `elUpsertCreaYLuegoSuma` con un error de sintaxis de MySQL (paso 12). Restaura
    el SQL.
 
 #### 11. VERIFICACIÓN
@@ -3667,11 +3642,11 @@ class MysqlTest extends ContratoMotorTest {
 ```
 
 ```bash
-../mvnw test
+../gradlew test
 ```
 
-**Output esperado:** `Tests run: 3, Failures: 0, Errors: 0, Skipped: 0` para `PostgresTest` y otro igual para
-`MysqlTest`; en total `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0` y `BUILD SUCCESS`.
+**Output esperado:** 3 líneas `PASSED` (una por test) para `PostgresTest` y otro igual para
+`MysqlTest`; en total 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
 
 **Pregunta de comprobación:** un usuario registra el correo `Ana@Correo.co` y luego intenta registrarse con
 `ana@correo.co`. Con una restricción `UNIQUE` en la columna, ¿qué pasa en cada motor?

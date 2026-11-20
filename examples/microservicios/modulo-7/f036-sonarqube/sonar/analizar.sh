@@ -24,7 +24,7 @@ TOKEN=$(curl -s -u "admin:$CLAVE_NUEVA" -X POST "$URL/api/user_tokens/generate" 
   --data-urlencode "name=laboratorio-$(date +%s)" | python3 -c 'import sys,json; print(json.load(sys.stdin)["token"])')
 
 echo "4/5 Tests + cobertura + análisis (el build espera al Quality Gate)..."
-../mvnw -q verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.token="$TOKEN" -Dsonar.host.url="$URL"
+../gradlew -q check sonar -Dsonar.token="$TOKEN" -Dsonar.host.url="$URL"
 
 echo "5/5 Comprobando por API..."
 curl -s -u "$TOKEN:" "$URL/api/qualitygates/project_status?projectKey=f036-sonarqube" | python3 -c '
