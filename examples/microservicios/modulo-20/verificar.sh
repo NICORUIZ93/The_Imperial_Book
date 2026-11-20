@@ -24,7 +24,7 @@ paso() {
   archivo_log "$desc"
   "$@" > "$log" 2>&1; local rc=$?
   if [ $rc -ne 0 ]; then tail -n 15 "$log" | cut -c1-300; falla "$desc (código $rc, ver $log)"; return 1; fi
-  if [ -n "$texto" ] && ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log" | cut -c1-300; falla "$desc: no aparece «$texto» (ver $log)"; return 1; fi
+  if [ -n "$texto" ] && ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log" | cut -c1-300; falla "$desc: no aparece «${texto}» (ver $log)"; return 1; fi
   echo "✔ $desc"
 }
 # debe_fallar "descripción" "mensaje esperado" comando...  → el error común: debe terminar con código ≠ 0 y ese mensaje
@@ -33,7 +33,7 @@ debe_fallar() {
   archivo_log "$desc"
   "$@" > "$log" 2>&1; local rc=$?
   if [ $rc -eq 0 ]; then falla "$desc: debía fallar y terminó con código 0 (ver $log)"; return 1; fi
-  if ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log" | cut -c1-300; falla "$desc: falló, pero sin el mensaje «$texto» (ver $log)"; return 1; fi
+  if ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log" | cut -c1-300; falla "$desc: falló, pero sin el mensaje «${texto}» (ver $log)"; return 1; fi
   echo "✔ $desc (falla como se esperaba)"
 }
 omite() { omitidos=$((omitidos + 1)); echo "– omitido: $1"; }

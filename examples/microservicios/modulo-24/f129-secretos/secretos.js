@@ -3,6 +3,7 @@
 // Requisitos: Node.js 26.13.1 LTS, @aws-sdk/client-secrets-manager 3.1173.0, node-vault 0.13.0,
 // @azure/keyvault-secrets 4.12.0 y @azure/identity 4.14.1 (package.json del laboratorio).
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { createDefaultHttpClient } from '@azure/core-rest-pipeline';
 import { DefaultAzureCredential } from '@azure/identity';
 import { SecretClient } from '@azure/keyvault-secrets';
 import vault from 'node-vault';
@@ -49,17 +50,19 @@ export function proveedorVault({ endpoint = process.env.VAULT_ADDR ?? 'http://12
 export function clienteAzure({ url = process.env.AZURE_KEYVAULT_URL, emulador = process.env.AZURE_EMULADOR === 'si' } = {}) {
   if (!emulador) return new SecretClient(url, new DefaultAzureCredential());
   const credencialLocal = { getToken: async () => ({ token: 'token-local', expiresOnTimestamp: Date.now() + 3_600_000 }) };
-  const forzarHttp = {
-    name: 'forzarHttp',
-    sendRequest(peticion, siguiente) {
-      peticion.url = peticion.url.replace(/^https:/, 'http:');
-      peticion.allowInsecureConnection = true;
-      return siguiente(peticion);
+  // El SDK solo acepta URLs https: su política de «challenge» (401 + WWW-Authenticate) comprueba el esquema
+  // DESPUÉS de las políticas añadidas, así que una política no basta. El cambio a http se hace en el
+  // cliente HTTP, el último eslabón, justo antes de salir a la red. Solo para el emulador local.
+  const red = createDefaultHttpClient();
+  const httpClient = {
+    // Una copia: el SDK reutiliza la misma petición tras el 401 y debe seguir viendo https.
+    sendRequest(peticion) {
+      return red.sendRequest({ ...peticion, url: peticion.url.replace(/^https:/, 'http:'), allowInsecureConnection: true });
     },
   };
   return new SecretClient(url.replace(/^http:/, 'https:'), credencialLocal, {
     disableChallengeResourceVerification: true,
-    additionalPolicies: [{ policy: forzarHttp, position: 'perCall' }],
+    httpClient,
   });
 }
 

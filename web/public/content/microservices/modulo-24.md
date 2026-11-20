@@ -2590,7 +2590,7 @@ porque la clave se rotó, el servicio llama a obtener con forzar true y vuelve a
 |---|---|---|
 | AWS Secrets Manager | `endpoint: http://localhost:4566`, credenciales `test/test` | Sin `endpoint` ni credenciales: el SDK usa el **rol IAM** de la tarea ECS, el pod de EKS (IRSA o Pod Identity) o la Lambda. Política IAM con `secretsmanager:GetSecretValue` solo sobre ese ARN. Cifrado con KMS, rotación automática con una Lambda, coste por secreto y por cada 10 000 llamadas. |
 | HashiCorp Vault | Modo dev: en memoria, HTTP, token `root`, se borra al reiniciar | Clúster con almacenamiento persistente (Raft), **TLS**, *unseal* (manual o automático con KMS), auditoría activada; el servicio se autentica con **AppRole** o con su cuenta de servicio de **Kubernetes** y recibe un token corto con una política de solo lectura sobre su ruta. Nunca el token root. |
-| Azure Key Vault | `http://localhost:4577/devstoreaccount1-keyvault`, token falso, política `forzarHttp` | `https://<tu-vault>.vault.azure.net` y `DefaultAzureCredential` con **identidad administrada**; permisos con Azure RBAC (rol *Key Vault Secrets User*), soft-delete y protección de purga, red privada (Private Endpoint). Sin `forzarHttp` ni `disableChallengeResourceVerification`. |
+| Azure Key Vault | `http://localhost:4577/devstoreaccount1-keyvault`, token falso, cliente HTTP que cambia a `http` solo en el último eslabón | `https://<tu-vault>.vault.azure.net` y `DefaultAzureCredential` con **identidad administrada**; permisos con Azure RBAC (rol *Key Vault Secrets User*), soft-delete y protección de purga, red privada (Private Endpoint). Sin ese cliente HTTP ni `disableChallengeResourceVerification`. |
 
 #### 8. EXPLICACIÓN MAESTRA
 
@@ -2653,6 +2653,7 @@ export function crearBaseDeDatos(claveInicial) {
 // Requisitos: Node.js 26.13.1 LTS, @aws-sdk/client-secrets-manager 3.1173.0, node-vault 0.13.0,
 // @azure/keyvault-secrets 4.12.0 y @azure/identity 4.14.1 (package.json del laboratorio).
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { createDefaultHttpClient } from '@azure/core-rest-pipeline';
 import { DefaultAzureCredential } from '@azure/identity';
 import { SecretClient } from '@azure/keyvault-secrets';
 import vault from 'node-vault';
@@ -2699,17 +2700,19 @@ export function proveedorVault({ endpoint = process.env.VAULT_ADDR ?? 'http://12
 export function clienteAzure({ url = process.env.AZURE_KEYVAULT_URL, emulador = process.env.AZURE_EMULADOR === 'si' } = {}) {
   if (!emulador) return new SecretClient(url, new DefaultAzureCredential());
   const credencialLocal = { getToken: async () => ({ token: 'token-local', expiresOnTimestamp: Date.now() + 3_600_000 }) };
-  const forzarHttp = {
-    name: 'forzarHttp',
-    sendRequest(peticion, siguiente) {
-      peticion.url = peticion.url.replace(/^https:/, 'http:');
-      peticion.allowInsecureConnection = true;
-      return siguiente(peticion);
+  // El SDK solo acepta URLs https: su política de «challenge» (401 + WWW-Authenticate) comprueba el esquema
+  // DESPUÉS de las políticas añadidas, así que una política no basta. El cambio a http se hace en el
+  // cliente HTTP, el último eslabón, justo antes de salir a la red. Solo para el emulador local.
+  const red = createDefaultHttpClient();
+  const httpClient = {
+    // Una copia: el SDK reutiliza la misma petición tras el 401 y debe seguir viendo https.
+    sendRequest(peticion) {
+      return red.sendRequest({ ...peticion, url: peticion.url.replace(/^https:/, 'http:'), allowInsecureConnection: true });
     },
   };
   return new SecretClient(url.replace(/^http:/, 'https:'), credencialLocal, {
     disableChallengeResourceVerification: true,
-    additionalPolicies: [{ policy: forzarHttp, position: 'perCall' }],
+    httpClient,
   });
 }
 
@@ -3169,6 +3172,13 @@ petición 2 después · MAL: FALLA (password authentication failed for user "app
 rotación y termina con el reinicio; en el log, errores de autenticación de la base y ningún acceso al gestor desde el
 arranque. **Arreglo:** caché con TTL, recarga forzada ante un error de autenticación y una ventana en la que conviven
 las dos claves.
+
+**Otro error real (visto en el Mac con Floci-Az):** `Error: The request URL must use HTTPS.` desde
+`@azure/keyvault-common`. El emulador responde primero `401` con `WWW-Authenticate` y la política de *challenge*
+del SDK comprueba que la URL sea `https` **después** de las políticas añadidas con `additionalPolicies`; por eso
+cambiar a `http` en una política no sirve. La solución del laboratorio es pasar un `httpClient` propio que envía
+una **copia** de la petición con `http` (el SDK reutiliza la original tras el 401 y debe seguir viendo `https`).
+En Azure real no hace falta nada de esto: la URL ya es `https://<tu-vault>.vault.azure.net`.
 
 #### 13. PREGUNTA DE ENTREVISTA
 

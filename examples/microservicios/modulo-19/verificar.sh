@@ -23,7 +23,7 @@ paso() {
   local log; log="logs/$(printf '%02d' "$n")-$(printf '%s' "$desc" | LC_ALL=C tr ' /:·' '-----' | LC_ALL=C tr -cd 'A-Za-z0-9._-' | cut -c1-40).log"
   "$@" > "$log" 2>&1; local rc=$?
   if [ $rc -ne 0 ]; then tail -n 15 "$log"; falla "$desc (código $rc, ver $log)"; return 1; fi
-  if [ -n "$texto" ] && ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log"; falla "$desc: no aparece «$texto» (ver $log)"; return 1; fi
+  if [ -n "$texto" ] && ! grep -qF -- "$texto" "$log"; then tail -n 15 "$log"; falla "$desc: no aparece «${texto}» (ver $log)"; return 1; fi
   echo "✔ $desc"
 }
 omite() { omitidos=$((omitidos + 1)); echo "– omitido: $1"; }

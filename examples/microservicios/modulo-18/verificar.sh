@@ -30,7 +30,7 @@ arrancar() { # arrancar puerto comando...  → lanza la API y espera a que acept
 comprobar() { # comprobar "descripción" "texto esperado" curl-args...
   local desc="$1" texto="$2"; shift 2
   local salida; salida=$(curl -s -w ' [%{http_code}]' "$@" 2>&1)
-  if printf '%s' "$salida" | grep -qF -- "$texto"; then echo "✔ $desc"; else echo "  obtenido: $salida"; falla "$desc: se esperaba «$texto»"; fi
+  if printf '%s' "$salida" | grep -qF -- "$texto"; then echo "✔ $desc"; else echo "  obtenido: $salida"; falla "$desc: se esperaba «${texto}»"; fi
 }
 
 echo "== Node.js $(node --version) · npm $(npm --version)"

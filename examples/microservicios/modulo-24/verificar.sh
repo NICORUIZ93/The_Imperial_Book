@@ -25,13 +25,13 @@ guion() { # guion "descripción" archivo.js "texto esperado" ["otro texto espera
   local rc=$? ok=si texto
   cat "$registro"
   [ $rc -eq 0 ] || ok=no
-  for texto in "$@"; do grep -qF -- "$texto" "$registro" || { ok=no; echo "  falta: «$texto»"; }; done
+  for texto in "$@"; do grep -qF -- "$texto" "$registro" || { ok=no; echo "  falta: «${texto}»"; }; done
   if [ "$ok" = si ]; then echo "✔ $desc"; else falla "$desc (mira $registro)"; fi
 }
 comprobar() { # comprobar "descripción" "texto esperado" curl-args...
   local desc="$1" texto="$2"; shift 2
   local salida; salida=$(curl -s -w ' [%{http_code}]' "$@" 2>&1)
-  if printf '%s' "$salida" | grep -qF -- "$texto"; then echo "✔ $desc"; else echo "  obtenido: $salida"; falla "$desc: se esperaba «$texto»"; fi
+  if printf '%s' "$salida" | grep -qF -- "$texto"; then echo "✔ $desc"; else echo "  obtenido: $salida"; falla "$desc: se esperaba «${texto}»"; fi
 }
 esperar() { # esperar url descripción  → hasta 60 s
   local i=0

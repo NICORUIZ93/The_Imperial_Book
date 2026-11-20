@@ -148,6 +148,13 @@ def main() -> int:
         lab = LABS / Path(item["archivo"]).stem
         if not (lab / "README.md").exists():
             globales.append(f"falta el laboratorio examples/microservicios/{lab.name}/README.md ({item['etiqueta']})")
+        # bash 3.2 de macOS: «$var» seguido de un carácter no ASCII («, …, ñ) da «unbound variable». Usar ${var}.
+        for sh in lab.rglob("*.sh"):
+            if "node_modules" in sh.parts:
+                continue
+            for n, linea in enumerate(sh.read_text(errors="replace").splitlines(), 1):
+                if re.search(r"\$[A-Za-z_][A-Za-z0-9_]*[^\x00-\x7F]", linea):
+                    globales.append(f"{sh.relative_to(ROOT)}:{n}: variable junto a carácter no ASCII; usa ${{var}} (bash 3.2)")
 
     total = len(inventario)
     completas = total - len(problemas)
