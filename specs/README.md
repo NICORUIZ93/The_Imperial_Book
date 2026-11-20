@@ -4,8 +4,8 @@ Todo cambio empieza aquí: primero un archivo `specs/NNN-tema.md` con criterios 
 implementación. Cada criterio tiene un estado (`pendiente` o `hecho`) y un comando `Verificación:` que
 lo comprueba. `python3 scripts/validate_specs.py --run` ejecuta las verificaciones de los criterios hechos.
 
-Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas `archivo` y
-`archivo-2026-11-18` (no se borró nada).
+Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiquetas `retirado/archivo` y
+`retirado/archivo-2026-11-18` (no se borró nada; el repositorio solo tiene la rama `main`).
 
 | Spec | Tema | Estado |
 |---|---|---|

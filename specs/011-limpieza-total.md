@@ -30,8 +30,8 @@ resuelve al rehacer cada curso.
 
 ## Criterios
 
-- **C1** `hecho` — Existen las ramas de archivo con todo lo retirado (viven en `origin`, no en refs locales).
-  Verificación: `git rev-parse --verify origin/archivo-2026-11-18 && git rev-parse --verify origin/archivo-docker-piloto`
+- **C1** `hecho` — Existen las etiquetas de archivo con todo lo retirado (desde el 2026-11-20 son etiquetas `retirado/…` en `origin`; antes eran ramas).
+  Verificación: `git ls-remote --tags origin | grep -q "refs/tags/retirado/archivo-2026-11-18" && git ls-remote --tags origin | grep -q "refs/tags/retirado/archivo-docker-piloto"`
 - **C2** `hecho` — `examples/` solo guarda laboratorios que citan las lecciones (specs/013), y los informes de `docs/` y los restos de Floci ya no están en `main`, salvo `docker-compose.yml`, que vuelve porque Cloud M0–M1 lo usan (specs/013).
   Verificación: `python3 scripts/validate_lesson_labs.py && test -f docker-compose.yml`
 - **C3** `hecho` — La validación mínima pasa.

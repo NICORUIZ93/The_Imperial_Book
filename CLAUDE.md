@@ -20,7 +20,8 @@ de `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se defin
   código sigue `docs/ESTANDAR-DE-CODIGO.md`. El plan vigente es `specs/021`.
 - **Exactitud.** Ningún dato técnico se escribe sin ejecutarlo o verificarlo en una fuente primaria.
 - **El dueño aprueba** los temarios antes de escribir temas.
-- Lo retirado del repo está en las ramas `archivo` y `archivo-2026-11-18`; no se vuelve a traer sin spec.
+- Lo retirado del repo está en las etiquetas `retirado/archivo`, `retirado/archivo-2026-11-18` y
+  `retirado/archivo-docker-piloto` (el repositorio solo tiene la rama `main`); no se vuelve a traer sin spec.
 
 ## Comandos
 

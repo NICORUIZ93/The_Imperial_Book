@@ -17,3 +17,4 @@ Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 Pendiente menor de Z0: comprobar los comandos de Floci del README en el Mac (`probar-floci.command`).
 
 Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicios conserva su ficha de 14 puntos).
+- [ ] Z11 · Microservicios con Gradle verificado en el Mac y temario contrastado

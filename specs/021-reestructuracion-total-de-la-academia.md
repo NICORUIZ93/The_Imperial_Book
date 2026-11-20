@@ -100,10 +100,17 @@ básico» o «falta».
 
 ## 5. Orden de los cursos
 
-1.º Java · 2.º Gradle (curso nuevo) · 3.º Spring · después Fundamentos, JavaScript, Node, React, Angular,
-Docker (nuevo), Kubernetes (nuevo), DevOps, Cloud (con Floci), Microservicios (solo huecos y repeticiones),
-Android, Kotlin Multiplatform, iOS, Flutter, Control, Diseño de sistemas (nuevo) y RutaFlow (proyecto
+1.º Java · 2.º Gradle (curso nuevo) · 3.º Spring · 4.º Microservicios (con Gradle; el más completo) ·
+después Fundamentos, JavaScript, Node, React, Angular, Docker (nuevo), Kubernetes (nuevo), DevOps, Cloud (con
+Floci), Android, Kotlin Multiplatform, iOS, Flutter, Control, Diseño de sistemas (nuevo) y RutaFlow (proyecto
 integrador, al final).
+
+**Microservicios (decisión del dueño, 2026-11-20):** es el curso insignia y debe ser el más completo de cero
+a experto. Su pista de Spring Boot se construye con **Gradle** (Kotlin DSL, wrapper y catálogo de versiones):
+los laboratorios hoy en Maven (`examples/microservicios/`, módulos de Spring y el proyecto final) se migran
+a Gradle y se vuelven a verificar en el Mac del dueño; Maven queda solo como nota de equivalencia. Va
+inmediatamente después de Java, Gradle y Spring, y su temario también se contrasta con las fuentes de la
+sección 4 para añadir lo que falte.
 
 Alcance mínimo de los prioritarios (se detalla en su temario):
 
@@ -161,3 +168,6 @@ que se cree en la Fase 3); la verificación de abajo comprueba que ese informe e
 - **Z10** `pendiente` — Formato único: metodología aprobada, validador de formato dentro de `validate.sh`,
   la app dibuja las 12 secciones con los mismos componentes y todos los cursos están al 100 %.
   Verificación: `grep -q "^- \[x\] Z10 " docs/reestructuracion/ESTADO.md`
+- **Z11** `pendiente` — Microservicios: los laboratorios de Spring Boot se construyen con Gradle y pasan en
+  el Mac; su temario está contrastado con las fuentes y sin «falta» pendientes.
+  Verificación: `grep -q "^- \[x\] Z11 " docs/reestructuracion/ESTADO.md`
