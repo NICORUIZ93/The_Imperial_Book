@@ -321,3 +321,27 @@ Todo el código Node.js, los tests (29 en modulo-27 y 21 en modulo-28) y los scr
 - examples/microservicios/modulo-28/verificar.sh:1 — ejecutar `./verificar.sh --compose`: `node:26.13.1-alpine` montando el laboratorio de solo lectura, `prom/prometheus:v3.15.1` (confirmar la etiqueta y que la imagen trae `wget` para el healthcheck) y las fitness functions con PromQL: v1 con código 0 y v2 con código 1 y `✘ FF3`.
 - web/public/content/microservices/modulo-28.md:1869 — F151 paso 2: salida real de `fitness.js --prometheus` para los dos jobs (descrita, no pegada); `medirEnPrometheus` solo se probó contra un doble local de `/api/v1/query`.
 - web/public/content/microservices/modulo-28.md:840 — F149: `workspace.dsl` no se ejecutó (sin Structurizr aquí): pegarlo en https://playground.structurizr.com o abrirlo con Structurizr Lite y confirmar que genera las vistas «Contexto» y «Contenedores».
+
+## Fase 3 · Módulos 25 y 26 (modulo-29 y modulo-30, fichas F152–F160)
+
+Ejecutado en el entorno de autoría con Node 26.13.1, PostgreSQL 16.15 local (`wal_level=logical`,
+`max_prepared_transactions=10`), RabbitMQ 3.12.1 y NATS Server 2.10.7 locales: `./verificar.sh` de los dos módulos
+termina en «RESULTADO: OK» (modulo-29 omite 4 bloques; modulo-30 omite 1). Falta en el Mac:
+
+```bash
+cd examples/microservicios/modulo-29 && ./verificar.sh --compose
+cd examples/microservicios/modulo-30 && ./verificar.sh --compose
+```
+
+- examples/microservicios/modulo-29/verificar.sh:1 — `--compose` con postgres:18.7 (`-c wal_level=logical -c max_prepared_transactions=10`), apache/kafka:4.4.0 y quay.io/debezium/connect:3.7 (tag de la línea 3.7 tomado del tutorial oficial; la estable es 3.7.1.Final): que `up --wait` acaba sano (healthcheck de Connect con `curl` dentro de la imagen) y que pasan F152 Debezium, F154 con Kafka y F155 con Kafka. Confirmar también que las variables `CONNECT_*_STORAGE_REPLICATION_FACTOR` de docker-compose.yml las traduce la imagen de Debezium (si no, Connect pedirá RF 3 con un solo broker).
+- web/public/content/microservices/modulo-29.md:494 — F152 paso 3: registrar `conector-outbox.json` y leer `outbox.event.pedido` con `kafka-console-consumer.sh` (cabecera `eventType`, clave `P-1`/`P-2`, payload expandido con `table.expand.json.payload=true`); estado RUNNING en `/connectors/pedidos-outbox/status`.
+- web/public/content/microservices/modulo-29.md:558 — F152: `node --test f152-outbox/debezium.infra.js` (espera `pass 1`).
+- web/public/content/microservices/modulo-29.md:946 — F153 paso 2: `temporal server start-dev` + `worker.js` + `iniciar.js` (P-1 inestable → COMPLETADA con 3 intentos; P-2 rechazada → COMPENSADA) y el historial en la UI :8233. Aquí no se pudo descargar el servidor (temporal.download bloqueado).
+- web/public/content/microservices/modulo-29.md:959 — F153 paso 3: `temporal.infra.js` con `TestWorkflowEnvironment.createLocal()` (descarga el CLI) o `TEMPORAL_ADDRESS`; espera `pass 3` (incluye que `cause.message` de la ActivityFailure sea «tarjeta rechazada»).
+- web/public/content/microservices/modulo-29.md:1417 — F154 paso 3: `consumidor-kafka.js` contra Kafka 4.4.0 con kafkajs 2.2.4 (mismo riesgo KIP-896 que F116 y F131).
+- web/public/content/microservices/modulo-29.md:1818 — F155 paso 2: `eos-kafka.js` (transacciones de kafkajs 2.2.4 contra Kafka 4.4.0: commit/abort, reentrega de PAGO-2 y lectura `read_committed` vs `read_uncommitted`). Las dos últimas líneas del output esperado se dedujeron del código, no se vieron.
+- web/public/content/microservices/modulo-29.md:1 — F156 con PostgreSQL 18.7 (aquí 16.15): textos `canceling statement due to lock timeout`, `WARNING: there is no transaction in progress` y la consulta de `pg_locks WHERE pid IS NULL`.
+- examples/microservicios/modulo-30/verificar.sh:1 — `--compose` con apache/kafka:4.4.0, confluentinc/cp-schema-registry:8.4.1, rabbitmq:4.4.1-management y nats:2.15.3-alpine (compose copiado de modulo-15).
+- web/public/content/microservices/modulo-30.md:473 — F157 paso 2: `registry.infra.js` (que `registry.encode` de @kafkajs/confluent-schema-registry 4.1.0 dé los mismos bytes que `formato.js`, `is_compatible` false/true y el rechazo de `register`) y `transacciones.js` (nombre del error de fencing con kafkajs 2.2.4 frente a Kafka 4.4.0, que usa PRODUCER_FENCED; kafkajs solo conoce INVALID_PRODUCER_EPOCH) y la línea `read_committed → f157.auditoria:P-1, f157.pedidos:P-1`.
+- web/public/content/microservices/modulo-30.md:980 — F158 con RabbitMQ 4.4.1 (aquí 3.12.1): los 4 tests, en especial que `reject(requeue=true)` cuente para `x-delivery-limit` (la documentación de 4.3+ dice que sí y que `nack` no) y el orden de `x-death` (más reciente primero) con `x-first-death-reason: expired`; la salida de `rabbitmqctl list_queues name type messages` y la consola (*Get messages*) descritas.
+- web/public/content/microservices/modulo-30.md:1390 — F159 con NATS Server 2.15.3 (aquí 2.10.7): los 5 tests, la demo (aviso MAX_DELIVERIES) y el texto `wrong last sequence: 2` del KV; la salida de `nats stream info` / `nats consumer info` descrita en la línea 1323.

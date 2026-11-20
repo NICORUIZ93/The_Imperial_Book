@@ -1,0 +1,24 @@
+{
+  "name": "modulo-25-consistencia-distribuida",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Módulo 25 (Fase 3): Consistencia distribuida (outbox + CDC con Debezium, sagas con Temporal, idempotencia en consumidores Kafka, exactly-once, por qué no 2PC).",
+  "type": "module",
+  "engines": {
+    "node": ">=26.13.1"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 'f15*/*.test.js'"
+  },
+  "dependencies": {
+    "@temporalio/activity": "1.26.0",
+    "@temporalio/client": "1.26.0",
+    "@temporalio/worker": "1.26.0",
+    "@temporalio/workflow": "1.26.0",
+    "kafkajs": "2.2.4",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@temporalio/testing": "1.26.0"
+  }
+}
