@@ -11,13 +11,15 @@ contiene "kind: HorizontalPodAutoscaler" helm template demo charts/catalogo --se
 
 $H uninstall demo -n catalogo-helm >/dev/null 2>&1
 $H install demo charts/catalogo -n catalogo-helm --create-namespace --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 $H upgrade demo charts/catalogo -n catalogo-helm --set image.tag=1.1.0 --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+esperar 120 "tras el upgrade quedan 2 pods, ninguno terminando" pods_asentados catalogo-helm app.kubernetes.io/instance=demo,app.kubernetes.io/name=catalogo 2 || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 $H history demo -n catalogo-helm
 contiene "1.1.0" $K -n catalogo-helm get deployment demo-catalogo -o jsonpath='{.spec.template.spec.containers[0].image}' || fallos=$((fallos + 1))
 $H rollback demo 1 -n catalogo-helm --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+esperar 120 "tras el rollback quedan 2 pods, ninguno terminando" pods_asentados catalogo-helm app.kubernetes.io/instance=demo,app.kubernetes.io/name=catalogo 2 || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 contiene "academia/catalogo:1.0.0" $K -n catalogo-helm get deployment demo-catalogo -o jsonpath='{.spec.template.spec.containers[0].image}' || fallos=$((fallos + 1))
 $H uninstall demo -n catalogo-helm
 [ "$fallos" -eq 0 ]

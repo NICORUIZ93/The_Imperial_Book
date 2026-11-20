@@ -22,4 +22,5 @@ esperar 30 "los pods nuevos leen el ConfigMap nuevo" responde_con http://localho
 $K apply -f k8s/base/configmap.yaml
 $K -n catalogo rollout restart deployment/catalogo
 $K -n catalogo rollout status deployment/catalogo --timeout=180s
+esperar 120 "el rollout terminó del todo: 2 pods, ninguno terminando" pods_asentados catalogo app=catalogo 2 || fallos=$((fallos + 1))
 [ "$fallos" -eq 0 ]

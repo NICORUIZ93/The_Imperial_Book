@@ -61,3 +61,17 @@ jsonpath_mayor() {
 responde_con() {
   curl -s "$1" | tr -d ' \t' | grep -qF "$(printf '%s' "$2" | tr -d ' \t')"
 }
+
+# pods_vivos namespace selector  -> nombres de los pods que NO se están borrando (sin deletionTimestamp), uno por línea
+pods_vivos() {
+  $K -n "$1" get pods -l "$2" \
+    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.deletionTimestamp}{"\n"}{end}' | awk 'NF == 1 {print $1}'
+}
+
+# pods_asentados namespace selector N  -> hay exactamente N pods, ninguno terminando (un rollout deja pods viejos
+# en Terminating unos segundos: preStop + apagado ordenado) y el Service ya tiene N endpoints listos
+pods_asentados() {
+  total=$($K -n "$1" get pods -l "$2" -o name | wc -l | tr -d ' ')
+  vivos=$(pods_vivos "$1" "$2" | wc -l | tr -d ' ')
+  [ "$total" -eq "$3" ] && [ "$vivos" -eq "$3" ]
+}

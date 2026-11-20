@@ -483,6 +483,20 @@ jsonpath_mayor() {
 responde_con() {
   curl -s "$1" | tr -d ' \t' | grep -qF "$(printf '%s' "$2" | tr -d ' \t')"
 }
+
+# pods_vivos namespace selector  -> nombres de los pods que NO se están borrando (sin deletionTimestamp), uno por línea
+pods_vivos() {
+  $K -n "$1" get pods -l "$2" \
+    -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.metadata.deletionTimestamp}{"\n"}{end}' | awk 'NF == 1 {print $1}'
+}
+
+# pods_asentados namespace selector N  -> hay exactamente N pods, ninguno terminando (un rollout deja pods viejos
+# en Terminating unos segundos: preStop + apagado ordenado) y el Service ya tiene N endpoints listos
+pods_asentados() {
+  total=$($K -n "$1" get pods -l "$2" -o name | wc -l | tr -d ' ')
+  vivos=$(pods_vivos "$1" "$2" | wc -l | tr -d ' ')
+  [ "$total" -eq "$3" ] && [ "$vivos" -eq "$3" ]
+}
 ```
 
 ---
@@ -1000,7 +1014,8 @@ services:
       catalogo:
         condition: service_healthy   # nginx no arranca hasta que el catálogo esté LISTO, no solo «iniciado»
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O- http://localhost/salud-entrada >/dev/null"]
+      # 127.0.0.1 y no «localhost»: en Alpine localhost resuelve primero a ::1 y nginx escucha solo en IPv4.
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1/salud-entrada >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -1488,6 +1503,7 @@ esperar 30 "los pods nuevos leen el ConfigMap nuevo" responde_con http://localho
 $K apply -f k8s/base/configmap.yaml
 $K -n catalogo rollout restart deployment/catalogo
 $K -n catalogo rollout status deployment/catalogo --timeout=180s
+esperar 120 "el rollout terminó del todo: 2 pods, ninguno terminando" pods_asentados catalogo app=catalogo 2 || fallos=$((fallos + 1))
 [ "$fallos" -eq 0 ]
 ```
 
@@ -1723,6 +1739,10 @@ Spring Boot ya responde estas preguntas en `/actuator/health/liveness` y `/actua
   (`management.endpoint.health.probes.enabled`, que en el laboratorio se deja explícito).
 - **Arranque lento.** `ArranqueLento` duerme 5 s en un `ApplicationRunner`: durante ese tiempo liveness es `UP` pero
   readiness todavía no, así que el pod está `Running` con `READY 0/1`.
+- **`rollout status` no espera a los pods viejos.** Termina cuando los nuevos están listos; los del ReplicaSet
+  anterior pueden seguir en `Terminating` (el `preStop` más el apagado ordenado). Un guion que elija «el primer pod»
+  justo después puede tomar uno que está a punto de desaparecer: `pruebas/comun.sh` lo evita con `pods_asentados` y
+  `pods_vivos` (pods sin `deletionTimestamp`).
 - **Apagado.** Al borrar un pod, Kubernetes lo retira de los endpoints **y a la vez** envía SIGTERM. El `preStop`
   `sleep` de 5 s da tiempo a que todos los nodos dejen de enviarle tráfico antes de que Spring empiece el apagado
   ordenado (`server.shutdown=graceful`).
@@ -1791,7 +1811,15 @@ cd "$(dirname "$0")/.." || exit 1
 . pruebas/comun.sh
 fallos=0
 $K -n catalogo rollout status deployment/catalogo --timeout=180s
-POD=$($K -n catalogo get pods -l app=catalogo -o jsonpath='{.items[0].metadata.name}')
+# «rollout status» termina cuando los pods nuevos están listos, pero los del ReplicaSet anterior pueden seguir
+# unos segundos en Terminating. Si eligieras uno de esos, desaparecería a mitad de la prueba.
+esperar 120 "quedan exactamente 2 pods y ninguno terminando" pods_asentados catalogo app=catalogo 2 || fallos=$((fallos + 1))
+esperar 60 "el Service tiene 2 endpoints listos" hay_endpoints catalogo catalogo 2 || fallos=$((fallos + 1))
+POD=$(pods_vivos catalogo app=catalogo | head -1)
+if [ -z "$POD" ]; then
+  mal "no hay ningún pod vivo del catálogo"
+  exit 1
+fi
 echo "   pod elegido: $POD"
 # distroless no tiene curl: se habla con ESE pod a través de un port-forward.
 $K -n catalogo port-forward "pod/$POD" 18084:8080 >/dev/null 2>&1 &
@@ -1799,16 +1827,16 @@ PF=$!
 esperar 20 "port-forward listo" curl -fs http://localhost:18084/actuator/health/liveness || fallos=$((fallos + 1))
 
 curl -s -X POST http://localhost:18084/admin/readiness/rechazar; echo
-esperar 30 "readiness 503 -> el pod sale del Service (queda 1 endpoint listo)" hay_endpoints catalogo catalogo 1 \
+esperar 60 "readiness 503 -> el pod sale del Service (queda 1 endpoint listo)" hay_endpoints catalogo catalogo 1 \
   || fallos=$((fallos + 1))
 reinicios=$($K -n catalogo get pod "$POD" -o jsonpath='{.status.containerStatuses[0].restartCount}')
 [ "$reinicios" = "0" ] && ok "readiness NO reinicia el pod (restartCount=0)" || { mal "restartCount=$reinicios"; fallos=$((fallos + 1)); }
 curl -s -X POST http://localhost:18084/admin/readiness/aceptar; echo
-esperar 30 "vuelve a tener 2 endpoints listos" hay_endpoints catalogo catalogo 2 || fallos=$((fallos + 1))
+esperar 60 "vuelve a tener 2 endpoints listos" hay_endpoints catalogo catalogo 2 || fallos=$((fallos + 1))
 
 curl -s -X POST http://localhost:18084/admin/liveness/romper; echo
 kill "$PF" 2>/dev/null
-esperar 60 "liveness 503 x3 -> el kubelet reinicia el contenedor (restartCount=1)" \
+esperar 90 "liveness 503 x3 -> el kubelet reinicia el contenedor (restartCount=1)" \
   jsonpath_mayor catalogo "pod/$POD" '{.status.containerStatuses[0].restartCount}' 0 || fallos=$((fallos + 1))
 $K -n catalogo get events --field-selector "involvedObject.name=$POD" --sort-by=.lastTimestamp | tail -5
 $K -n catalogo rollout status deployment/catalogo --timeout=120s
@@ -1837,7 +1865,9 @@ kubectl -n catalogo get pods -w      # Ctrl+C para salir
    y los 5 s de `ArranqueLento`) antes de `1/1`. Los viejos no terminan hasta que hay uno nuevo listo
    (`maxUnavailable: 0`).
 
-3. Saca un pod del balanceo sin reiniciarlo:
+3. Saca un pod del balanceo sin reiniciarlo. Antes, espera a que `kubectl -n catalogo get pods` muestre **solo 2
+   pods** (los del ReplicaSet anterior siguen unos segundos en `Terminating` tras el rollout; si eligieras uno de
+   esos, desaparecería a mitad del ejercicio, como pasó en la primera verificación en el Mac):
 
 ```bash
 POD=$(kubectl -n catalogo get pods -l app=catalogo -o jsonpath='{.items[0].metadata.name}')
@@ -2601,7 +2631,11 @@ kind: Pod
 metadata:
   name: {{ include "catalogo.fullname" . }}-test
   labels:
-    {{- include "catalogo.labels" . | nindent 4 }}
+    # NO usa catalogo.labels: llevaría name+instance, el selector del Service, y el Service
+    # le mandaría tráfico a este mismo pod de prueba (que no sirve nada en ese puerto).
+    app.kubernetes.io/component: test
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
   annotations:
     "helm.sh/hook": test
     "helm.sh/hook-delete-policy": before-hook-creation
@@ -2612,9 +2646,14 @@ spec:
       image: busybox:1.37.0
       command: ["/bin/sh", "-c"]
       args:
-        - wget -q -O- http://{{ include "catalogo.fullname" . }}:{{ .Values.service.port }}/api/info
-          | tr -d ' ' | grep '"version":"{{ .Values.image.tag | default .Chart.AppVersion }}"'
+        - for i in 1 2 3 4 5 6; do
+            wget -q -T 5 -O- http://{{ include "catalogo.fullname" . }}:{{ .Values.service.port }}/api/info
+            | tr -d ' ' | grep '"version":"{{ .Values.image.tag | default .Chart.AppVersion }}"' && exit 0;
+            sleep 5;
+          done; exit 1
 ```
+
+**Ojo con las etiquetas del pod de prueba:** si lleva `app.kubernetes.io/name` e `instance` (las del selector del Service), el Service lo cuenta como un endpoint más y le manda tráfico a él mismo; en el Mac eso hizo fallar el `helm test` que va después del rollback. Por eso este pod usa solo etiquetas que el selector no mira.
 
 La prueba de la ficha:
 
@@ -2634,13 +2673,15 @@ contiene "kind: HorizontalPodAutoscaler" helm template demo charts/catalogo --se
 
 $H uninstall demo -n catalogo-helm >/dev/null 2>&1
 $H install demo charts/catalogo -n catalogo-helm --create-namespace --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 $H upgrade demo charts/catalogo -n catalogo-helm --set image.tag=1.1.0 --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+esperar 120 "tras el upgrade quedan 2 pods, ninguno terminando" pods_asentados catalogo-helm app.kubernetes.io/instance=demo,app.kubernetes.io/name=catalogo 2 || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 $H history demo -n catalogo-helm
 contiene "1.1.0" $K -n catalogo-helm get deployment demo-catalogo -o jsonpath='{.spec.template.spec.containers[0].image}' || fallos=$((fallos + 1))
 $H rollback demo 1 -n catalogo-helm --wait --timeout 5m || fallos=$((fallos + 1))
-$H test demo -n catalogo-helm || fallos=$((fallos + 1))
+esperar 120 "tras el rollback quedan 2 pods, ninguno terminando" pods_asentados catalogo-helm app.kubernetes.io/instance=demo,app.kubernetes.io/name=catalogo 2 || fallos=$((fallos + 1))
+$H test demo -n catalogo-helm --logs || fallos=$((fallos + 1))
 contiene "academia/catalogo:1.0.0" $K -n catalogo-helm get deployment demo-catalogo -o jsonpath='{.spec.template.spec.containers[0].image}' || fallos=$((fallos + 1))
 $H uninstall demo -n catalogo-helm
 [ "$fallos" -eq 0 ]

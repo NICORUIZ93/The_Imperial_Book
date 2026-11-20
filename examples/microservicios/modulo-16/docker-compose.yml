@@ -44,7 +44,8 @@ services:
       catalogo:
         condition: service_healthy   # nginx no arranca hasta que el catálogo esté LISTO, no solo «iniciado»
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O- http://localhost/salud-entrada >/dev/null"]
+      # 127.0.0.1 y no «localhost»: en Alpine localhost resuelve primero a ::1 y nginx escucha solo en IPv4.
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1/salud-entrada >/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10

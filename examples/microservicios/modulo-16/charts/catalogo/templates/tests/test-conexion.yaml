@@ -4,7 +4,11 @@ kind: Pod
 metadata:
   name: {{ include "catalogo.fullname" . }}-test
   labels:
-    {{- include "catalogo.labels" . | nindent 4 }}
+    # NO usa catalogo.labels: llevaría name+instance, el selector del Service, y el Service
+    # le mandaría tráfico a este mismo pod de prueba (que no sirve nada en ese puerto).
+    app.kubernetes.io/component: test
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version }}
   annotations:
     "helm.sh/hook": test
     "helm.sh/hook-delete-policy": before-hook-creation
@@ -15,5 +19,8 @@ spec:
       image: busybox:1.37.0
       command: ["/bin/sh", "-c"]
       args:
-        - wget -q -O- http://{{ include "catalogo.fullname" . }}:{{ .Values.service.port }}/api/info
-          | tr -d ' ' | grep '"version":"{{ .Values.image.tag | default .Chart.AppVersion }}"'
+        - for i in 1 2 3 4 5 6; do
+            wget -q -T 5 -O- http://{{ include "catalogo.fullname" . }}:{{ .Values.service.port }}/api/info
+            | tr -d ' ' | grep '"version":"{{ .Values.image.tag | default .Chart.AppVersion }}"' && exit 0;
+            sleep 5;
+          done; exit 1
