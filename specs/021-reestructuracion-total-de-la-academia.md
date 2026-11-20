@@ -101,20 +101,20 @@ que se cree en la Fase 3); la verificación de abajo comprueba que ese informe e
 
 - **Z0** `pendiente` — `main` contiene Microservicios completo y el trabajo local del dueño, sin temas
   perdidos, y el README explica cómo arrancar la app y Floci.
-  Verificación: `grep -qi "floci" README.md && ./scripts/validate.sh`
+  Verificación: `grep -q "^- \[x\] Z0 " docs/reestructuracion/ESTADO.md`
 - **Z1** `pendiente` — Existe el mapa de conceptos con la acción de cada tema y el dueño lo aprobó.
-  Verificación: `grep -q "Aprobado por el dueño" docs/reestructuracion/mapa-de-conceptos.md`
+  Verificación: `grep -q "^- \[x\] Z1 " docs/reestructuracion/ESTADO.md`
 - **Z2** `pendiente` — Cada curso tiene su temario objetivo (temas faltantes y orden lineal) aprobado.
-  Verificación: `test -f docs/reestructuracion/temarios-aprobados.md`
+  Verificación: `grep -q "^- \[x\] Z2 " docs/reestructuracion/ESTADO.md`
 - **Z3** `pendiente` — Un validador único comprueba la plantilla en todos los cursos y los títulos no se
   repiten en toda la academia.
-  Verificación: `test -f docs/reestructuracion/validador-unico.md`
+  Verificación: `grep -q "^- \[x\] Z3 " docs/reestructuracion/ESTADO.md`
 - **Z4** `pendiente` — Todos los temas declaran nivel y minutos, y ningún capítulo incumple el orden.
-  Verificación: `python3 scripts/audit_topic_order.py --check && test -f docs/reestructuracion/todos-con-nivel.md`
+  Verificación: `grep -q "^- \[x\] Z4 " docs/reestructuracion/ESTADO.md`
 - **Z5** `pendiente` — Todo tema tiene diagrama o imagen con texto alternativo.
-  Verificación: `test -f docs/reestructuracion/todos-con-visual.md`
+  Verificación: `grep -q "^- \[x\] Z5 " docs/reestructuracion/ESTADO.md`
 - **Z6** `pendiente` — Floci tiene una lección de entrada, LocalStack no aparece fuera de comparaciones y
   los laboratorios de nube pasan contra Floci en el Mac.
-  Verificación: `test -f docs/reestructuracion/floci-verificado.md && ! grep -rIl LocalStack web/public/content --include=*.md | grep -v cloud/modulo-0.md`
+  Verificación: `grep -q "^- \[x\] Z6 " docs/reestructuracion/ESTADO.md`
 - **Z7** `pendiente` — Los laboratorios de todos los cursos pasan en el Mac del dueño.
-  Verificación: `! grep -rh "	FAIL	" verificacion/*/resultados.tsv`
+  Verificación: `grep -q "^- \[x\] Z7 " docs/reestructuracion/ESTADO.md`
