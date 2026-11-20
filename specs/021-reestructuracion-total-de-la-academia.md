@@ -123,6 +123,35 @@ Generalizar `scripts/validate_fichas.py` a todos los cursos: secciones obligator
 alternativo, código con versiones, salida esperada, práctica, nivel y minutos, y título único en toda la
 academia. Actualizar `docs/METODOLOGIA-DE-APRENDIZAJE.md` con la plantilla.
 
+#### Formato educativo único (toda la página y todos los cursos)
+
+El formato se define **una vez**, en `docs/METODOLOGIA-DE-APRENDIZAJE.md`, y la app lo dibuja siempre
+igual: ningún curso tiene estructura, nombres de sección ni componentes propios.
+
+| Nivel | Formato fijo |
+|---|---|
+| **Curso** | portada con: para quién es, prerrequisitos, qué sabrás hacer, mapa del curso (diagrama), proyecto guía, duración total, versiones y cómo preparar el entorno. Cuatro tramos siempre con el mismo nombre: Fundamentos, Aplicación, Integración, Experto. Cierre con proyecto final y rúbrica |
+| **Módulo** | cabecera con: objetivo, prerrequisitos, duración, versiones, laboratorio del módulo y mapa del módulo (diagrama). 3 a 7 temas. Cierre con resumen, autoevaluación y «siguiente módulo» |
+| **Tema** | las mismas 12 secciones, con el mismo nombre y orden: 1 Ubicación y prerrequisitos · 2 Objetivo · 3 Por qué importa (problema real) · 4 Analogía · 5 Diagrama · 6 Explicación (nivel 0, intermedio, maestro) · 7 Código ejecutable y salida real · 8 Mini-laboratorio · 9 Verificación · 10 Error común y diagnóstico · 11 Pregunta con respuesta modelo · 12 Cuándo usarlo y cuándo no. Encabezado «Tema N: título · nivel · minutos» |
+| **Laboratorio** | carpeta `examples/<curso>/modulo-N/` con README, versiones fijadas y `verificar.sh` que termina en «RESULTADO: OK» |
+| **Página (app)** | los mismos componentes en todos los cursos: ficha de tema, bloque de código con nombre de archivo y botón de copiar, bloque de salida esperada, avisos (nota, cuidado, error común), diagrama ampliable, índice del tema, progreso y navegación anterior/siguiente |
+
+Pasos:
+
+1. **Definir** el formato (documento de metodología + una lección de ejemplo completa) y aprobarlo el
+   dueño antes de migrar nada.
+2. **Validador único** (`scripts/validate_formato.py`): falla si un curso, módulo o tema no tiene las
+   secciones con el nombre y orden exactos, o si le falta nivel, minutos, diagrama, código o salida.
+   Entra en `./scripts/validate.sh` y en la integración continua: nada fuera de formato llega a `main`.
+3. **La app dibuja el formato**: `lesson-viewer` reconoce las 12 secciones y las muestra con los mismos
+   componentes; se retiran los estilos y estructuras especiales por curso. Prueba de navegador que
+   recorre un tema de cada curso y comprueba que aparecen las 12 secciones.
+4. **Migración** curso por curso (orden de la Fase 4), en dos pasadas: primero estructura (mover lo que ya
+   existe a las 12 secciones y marcar las que queden vacías), después contenido (llenar lo vacío con la
+   profundidad exigida). Un curso se publica como «en formato» solo cuando el validador da 100 %.
+5. **Tablero de avance** en `docs/reestructuracion/ESTADO.md`: por curso, porcentaje de temas en formato y
+   secciones pendientes, generado por el validador.
+
 ### Fase 4 · Reescritura curso por curso
 Orden: **1.º Java · 2.º Gradle · 3.º Spring** (prioridad del dueño), después Fundamentos → JavaScript →
 Node → React → Angular → Docker → Kubernetes → DevOps → Cloud (con Floci) → Android → Kotlin
@@ -223,3 +252,6 @@ que se cree en la Fase 3); la verificación de abajo comprueba que ese informe e
 - **Z9** `pendiente` — Profundidad: en cada curso al menos la mitad de los temas son de nivel Integración
   o Experto, y todo tema tiene ejemplo realista, error real diagnosticado y criterio de uso.
   Verificación: `grep -q "^- \[x\] Z9 " docs/reestructuracion/ESTADO.md`
+- **Z10** `pendiente` — Formato único: metodología aprobada, validador de formato dentro de `validate.sh`,
+  la app dibuja las 12 secciones con los mismos componentes y todos los cursos están al 100 %.
+  Verificación: `grep -q "^- \[x\] Z10 " docs/reestructuracion/ESTADO.md`
