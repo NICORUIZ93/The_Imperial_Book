@@ -13,3 +13,5 @@ Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 - [ ] Z8 · Java, Gradle y Spring primero, con laboratorios en Gradle verificados
 - [ ] Z9 · profundidad: mitad de temas en Integración/Experto, ejemplo realista, error real y criterio
 - [ ] Z10 · formato educativo único en cursos, módulos, temas, laboratorios y página
+
+Pendiente de Z0: comprobar los comandos de Floci del README en el Mac (`probar-floci.command`).

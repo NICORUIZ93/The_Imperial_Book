@@ -3,25 +3,25 @@
 Generado desde las lecciones para la auditoría de specs/021. La misma tabla, con columnas para anotar, está en
 `listado-de-temas.csv`.
 
-| Curso | Módulos | Temas |
-|---|---|---|
-| android | 19 | 83 |
-| angular | 17 | 78 |
-| cloud | 35 | 168 |
-| control-1 | 29 | 88 |
-| devops | 23 | 139 |
-| flutter | 23 | 119 |
-| foundations | 16 | 105 |
-| ios | 15 | 69 |
-| java | 23 | 120 |
-| javascript | 15 | 92 |
-| kotlin-multiplatform | 14 | 66 |
-| microservices | 37 | 187 |
-| node | 14 | 78 |
-| react | 15 | 64 |
-| rutaflow | 8 | 29 |
-| spring-boot | 21 | 123 |
-| **Total** | 324 | 1608 |
+| Curso | Módulos | Temas | Con nivel |
+|---|---|---|---|
+| android | 19 | 83 | 10 |
+| angular | 17 | 78 | 9 |
+| cloud | 35 | 168 | 12 |
+| control-1 | 29 | 88 | 18 |
+| devops | 23 | 139 | 9 |
+| flutter | 23 | 119 | 119 |
+| foundations | 16 | 105 | 4 |
+| ios | 15 | 69 | 69 |
+| java | 23 | 120 | 118 |
+| javascript | 15 | 92 | 92 |
+| kotlin-multiplatform | 14 | 66 | 10 |
+| microservices | 37 | 187 | 0 |
+| node | 14 | 78 | 78 |
+| react | 15 | 64 | 62 |
+| rutaflow | 8 | 29 | 0 |
+| spring-boot | 21 | 123 | 122 |
+| **Total** | 324 | 1608 | 732 |
 
 ## android
 
@@ -843,169 +843,169 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 ## flutter
 
 **Módulo 0 · Módulo 0: Fundamentos de Dart**
-1. Sound null safety
-2. Clases y mixins
-3. Futures, async/await y colecciones funcionales
-4. Lints y estilo con analysis_options.yaml
+1. Sound null safety — Básico
+2. Clases y mixins — Intermedio
+3. Futures, async/await y colecciones funcionales — Intermedio
+4. Lints y estilo con analysis_options.yaml — Intermedio
 5. Streams en Dart: secuencias de eventos asíncronos con await for y StreamController — Intermedio
 6. Records y patterns en Dart: varios valores sin clases y switch exhaustivo — Intermedio
 7. Extension methods y extension types: agregar comportamiento sin heredar — Intermedio
 
 **Módulo 1 · Módulo 1: Widgets: stateless vs stateful**
-1. StatelessWidget vs StatefulWidget
-2. Layout con Row, Column y Stack, y ciclo de vida
-3. Keys
+1. StatelessWidget vs StatefulWidget — Básico
+2. Layout con Row, Column y Stack, y ciclo de vida — Intermedio
+3. Keys — Intermedio
 4. Los tres árboles de Flutter: Widget, Element y RenderObject — Avanzado
 5. Gestos en Flutter: GestureDetector, Dismissible y la arena de gestos — Avanzado
 
 **Módulo 2 · Módulo 2: Layout y diseño responsive**
-1. MediaQuery vs LayoutBuilder
-2. Cómo Flutter calcula tamaños
-3. Breakpoints propios y SafeArea
+1. MediaQuery vs LayoutBuilder — Intermedio
+2. Cómo Flutter calcula tamaños — Intermedio
+3. Breakpoints propios y SafeArea — Intermedio
 
 **Módulo 3 · Módulo 3: Navegación y rutas**
-1. go_router: navegación como función de la URL
-2. Guards y deep linking
-3. Transiciones personalizadas
+1. go_router: navegación como función de la URL — Intermedio
+2. Guards y deep linking — Intermedio
+3. Transiciones personalizadas — Intermedio
 
 **Módulo 4 · Módulo 4: Gestión de estado**
-1. setState y sus límites
-2. Riverpod
-3. Bloc/Cubit y otras alternativas
-4. Formularios profesionales con Formz y Riverpod
-5. Inyección de dependencias con Riverpod: reemplazar implementaciones
+1. setState y sus límites — Intermedio
+2. Riverpod — Intermedio
+3. Bloc/Cubit y otras alternativas — Intermedio
+4. Formularios profesionales con Formz y Riverpod — Avanzado
+5. Inyección de dependencias con Riverpod: reemplazar implementaciones — Avanzado
 
 **Módulo 5 · Módulo 5: Networking**
-1. http vs dio
-2. json_serializable
-3. Interceptores y estados explícitos
-4. Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión
+1. http vs dio — Intermedio
+2. json_serializable — Intermedio
+3. Interceptores y estados explícitos — Avanzado
+4. Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión — Avanzado
 
 **Módulo 6 · Módulo 6: Persistencia local**
-1. shared_preferences
-2. sqflite vs Hive
-3. Offline-first y Firebase
-4. Restauración de formularios con RestorationMixin y una prueba de recreación
+1. shared_preferences — Básico
+2. sqflite vs Hive — Intermedio
+3. Offline-first y Firebase — Intermedio
+4. Restauración de formularios con RestorationMixin y una prueba de recreación — Intermedio
 5. Archivos en Flutter: path_provider, carpetas correctas y escritura segura — Intermedio
 
 **Módulo 7 · Módulo 7: Integración con plataformas nativas**
-1. MethodChannel
-2. Plugins federados
-3. Permisos de plataforma y cuándo escribir un platform channel propio
-4. Cámara, galería y carga multipart de una evidencia
+1. MethodChannel — Avanzado
+2. Plugins federados — Avanzado
+3. Permisos de plataforma y cuándo escribir un platform channel propio — Avanzado
+4. Cámara, galería y carga multipart de una evidencia — Avanzado
 5. Trabajo en segundo plano con workmanager: sincronizar aunque la app esté cerrada — Avanzado
 6. Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente — Experto
 
 **Módulo 8 · Módulo 8: Animaciones y rendimiento**
-1. Animaciones implícitas vs explícitas
-2. Flutter DevTools y detección de jank
-3. const widgets, RepaintBoundary y shouldRepaint
-4. Isolates — trabajo pesado sin congelar la interfaz
-5. CustomPainter: dibujar con Canvas sin repintar de más
+1. Animaciones implícitas vs explícitas — Intermedio
+2. Flutter DevTools y detección de jank — Intermedio
+3. const widgets, RepaintBoundary y shouldRepaint — Intermedio
+4. Isolates — trabajo pesado sin congelar la interfaz — Avanzado
+5. CustomPainter: dibujar con Canvas sin repintar de más — Avanzado
 
 **Módulo 9 · Módulo 9: Testing en Flutter**
-1. Unit tests y widget tests
-2. Mocking con mocktail
-3. Integration tests
+1. Unit tests y widget tests — Intermedio
+2. Mocking con mocktail — Intermedio
+3. Integration tests — Avanzado
 
 **Módulo 10 · Módulo 10: Theming, accesibilidad y Material/Cupertino**
-1. ThemeData con Material 3
-2. Adaptación Material vs Cupertino
-3. Accesibilidad con Semantics y dark mode
+1. ThemeData con Material 3 — Básico
+2. Adaptación Material vs Cupertino — Intermedio
+3. Accesibilidad con Semantics y dark mode — Intermedio
 
 **Módulo 11 · Módulo 11: Publicación en App Store y Google Play**
-1. Builds de release para cada plataforma
-2. Iconos y splash screens
-3. CI/CD con Codemagic o Fastlane
-4. Entornos y flavors con --dart-define-from-file
+1. Builds de release para cada plataforma — Intermedio
+2. Iconos y splash screens — Intermedio
+3. CI/CD con Codemagic o Fastlane — Avanzado
+4. Entornos y flavors con --dart-define-from-file — Avanzado
 5. Flutter para web y escritorio: compilar, adaptar la interfaz y elegir el renderizador — Avanzado
 
 **Módulo 12 · Módulo 12: Proyecto integrador: app Flutter completa**
-1. Arquitectura por features y Clean Architecture
-2. Uniendo los módulos del track
-3. Retrospectiva del proyecto integrador
+1. Arquitectura por features y Clean Architecture — Avanzado
+2. Uniendo los módulos del track — Avanzado
+3. Retrospectiva del proyecto integrador — Avanzado
 4. Arquitectura recomendada de Flutter: views, view models, repositories y services — Avanzado
 
 **Módulo 13 · Módulo 13: Flutter en producción — seguridad, isolates y operación**
-1. Una API Dart puede terminar en una frontera nativa
-2. Los secretos no pertenecen al binario
-3. Fluidez se mide contra el presupuesto de cada frame
-4. Producción exige protocolo, telemetría y contención
+1. Una API Dart puede terminar en una frontera nativa — Avanzado
+2. Los secretos no pertenecen al binario — Avanzado
+3. Fluidez se mide contra el presupuesto de cada frame — Avanzado
+4. Producción exige protocolo, telemetría y contención — Avanzado
 
 **Módulo 14 · Módulo 14: Flutter para entregas: mapas, GPS y tiempo real**
-1. Diseño de pantallas y Riverpod
-2. Google Maps y localización en tiempo real
-3. Socket.IO y actualización de rutas
-4. Animaciones de localización
-5. Almacenamiento local, imágenes y offline
-6. Dio y notificaciones push
+1. Diseño de pantallas y Riverpod — Intermedio
+2. Google Maps y localización en tiempo real — Intermedio
+3. Animaciones de localización — Intermedio
+4. Socket.IO y actualización de rutas — Avanzado
+5. Almacenamiento local, imágenes y offline — Avanzado
+6. Dio y notificaciones push — Avanzado
 
 **Módulo 15 · Módulo 15: Flutter Master: calidad, arquitectura y despliegue**
-1. flutter test y WidgetTester
-2. pumpAndSettle, golden e integration tests
-3. Rendimiento, RepaintBoundary y Keys
-4. Clean Architecture
-5. Internacionalización completa
-6. Builds, firma y despliegue
-7. Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega
-8. Integrar IA generativa en una app Flutter con Firebase AI Logic
+1. flutter test y WidgetTester — Intermedio
+2. pumpAndSettle, golden e integration tests — Avanzado
+3. Rendimiento, RepaintBoundary y Keys — Avanzado
+4. Clean Architecture — Avanzado
+5. Internacionalización completa — Avanzado
+6. Builds, firma y despliegue — Avanzado
+7. Migrar una app a Flutter 3.50 y Dart 3.14 sin romper la entrega — Avanzado
+8. Integrar IA generativa en una app Flutter con Firebase AI Logic — Avanzado
 
 **Módulo 16 · Módulo 16: Flutter FFI: conectar Dart con código nativo**
-1. reconocer cuándo usar FFI y crear el paquete
-2. generar bindings C seguros para Dart
-3. conectar una biblioteca Rust mediante una ABI C
-4. compilar y empaquetar bibliotecas por plataforma
-5. medir rendimiento y evitar bloquear la interfaz
-6. propiedad de memoria, liberación y errores
+1. reconocer cuándo usar FFI y crear el paquete — Avanzado
+2. generar bindings C seguros para Dart — Avanzado
+3. conectar una biblioteca Rust mediante una ABI C — Avanzado
+4. compilar y empaquetar bibliotecas por plataforma — Avanzado
+5. medir rendimiento y evitar bloquear la interfaz — Avanzado
+6. propiedad de memoria, liberación y errores — Experto
 
 **Módulo 17 · Módulo 17: Dart avanzado: generación, AST y paquetes**
-1. macros de Dart y alternativas disponibles
-2. generación avanzada con build_runner
-3. reflexión limitada y registro tipado
-4. recorrer el AST de Dart con analyzer
-5. crear un builder pequeño para build_runner
-6. diseñar y validar un paquete Dart
+1. macros de Dart y alternativas disponibles — Intermedio
+2. generación avanzada con build_runner — Avanzado
+3. reflexión limitada y registro tipado — Avanzado
+4. recorrer el AST de Dart con analyzer — Avanzado
+5. crear un builder pequeño para build_runner — Avanzado
+6. diseñar y validar un paquete Dart — Avanzado
 
 **Módulo 18 · Módulo 18: Flutter en producción: secretos, calidad y rendimiento**
-1. la frontera entre Dart y el código nativo
-2. secretos fuera del binario
-3. fluidez y presupuesto de frames
-4. protocolo, telemetría y contención
-5. reportes de fallos con Crashlytics y Sentry
-6. analítica con privacidad y consentimiento
-7. monitoreo de rendimiento en una versión publicada
+1. la frontera entre Dart y el código nativo — Avanzado
+2. secretos fuera del binario — Avanzado
+3. fluidez y presupuesto de frames — Avanzado
+4. protocolo, telemetría y contención — Avanzado
+5. reportes de fallos con Crashlytics y Sentry — Avanzado
+6. analítica con privacidad y consentimiento — Avanzado
+7. monitoreo de rendimiento en una versión publicada — Avanzado
 
 **Módulo 19 · Módulo 19: Flutter para entregas: mapa, conexión y trabajo offline**
-1. estado de la jornada con Riverpod
-2. mapa y permiso de ubicación
-3. posiciones en tiempo real con Socket.IO
-4. animar el marcador sin saltos
-5. confirmaciones offline y sincronización
-6. carga de evidencia con Dio y notificaciones
+1. estado de la jornada con Riverpod — Intermedio
+2. mapa y permiso de ubicación — Intermedio
+3. animar el marcador sin saltos — Intermedio
+4. posiciones en tiempo real con Socket.IO — Avanzado
+5. confirmaciones offline y sincronización — Avanzado
+6. carga de evidencia con Dio y notificaciones — Avanzado
 
 **Módulo 20 · Módulo 20: Flutter Master: pruebas, arquitectura y release**
-1. pruebas unitarias y de widget con Flutter Test
-2. golden e integración de un flujo real
-3. perfilado y presupuesto de rendimiento
-4. Clean Architecture y sustitución de dependencias
-5. internacionalización y formatos locales
-6. builds por plataforma, firma y entrega
+1. pruebas unitarias y de widget con Flutter Test — Intermedio
+2. internacionalización y formatos locales — Intermedio
+3. golden e integración de un flujo real — Avanzado
+4. perfilado y presupuesto de rendimiento — Avanzado
+5. Clean Architecture y sustitución de dependencias — Avanzado
+6. builds por plataforma, firma y entrega — Avanzado
 
 **Módulo 21 · Módulo 21: compras dentro de Flutter (IAP)**
-1. catálogo y flujo con `in_app_purchase`
-2. suscripciones Android, planes base y cambios
-3. suscripciones iOS con StoreKit
-4. restauración de compras y entitlement
-5. pruebas de IAP en sandbox
-6. validación de transacciones en servidor
+1. catálogo y flujo con `in_app_purchase` — Intermedio
+2. suscripciones Android, planes base y cambios — Intermedio
+3. suscripciones iOS con StoreKit — Intermedio
+4. pruebas de IAP en sandbox — Intermedio
+5. restauración de compras y entitlement — Avanzado
+6. validación de transacciones en servidor — Experto
 
 **Módulo 22 · Módulo 22: anuncios y monetización en Flutter**
-1. configurar AdMob y cargar el primer banner de prueba
-2. elegir mediación, bidding y waterfall
-3. banners, interstitials y anuncios recompensados
-4. consentimiento, privacidad y audiencias
-5. pruebas de anuncios y diagnóstico de no-fill
-6. comparar AdMob, AppLovin MAX y Unity LevelPlay
+1. configurar AdMob y cargar el primer banner de prueba — Intermedio
+2. elegir mediación, bidding y waterfall — Intermedio
+3. banners, interstitials y anuncios recompensados — Intermedio
+4. pruebas de anuncios y diagnóstico de no-fill — Intermedio
+5. consentimiento, privacidad y audiencias — Avanzado
+6. comparar AdMob, AppLovin MAX y Unity LevelPlay — Avanzado
 
 
 ## foundations
@@ -1151,101 +1151,101 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 ## ios
 
 **Módulo 0 · Módulo 0: Fundamentos de Swift**
-1. Optionals y unwrapping seguro
-2. struct vs class
-3. Protocolos y enums con valores asociados
-4. Closures, colecciones y genéricos con propósito
+1. Optionals y unwrapping seguro — Básico
+2. struct vs class — Básico
+3. Protocolos y enums con valores asociados — Básico
+4. Closures, colecciones y genéricos con propósito — Intermedio
 5. Ownership en Swift: borrowing, consuming y tipos ~Copyable — Experto
 
 **Módulo 1 · Módulo 1: SwiftUI: vistas y layout declarativo**
-1. El protocolo View y composición
-2. Orden de modificadores y layout con stacks
-3. Previews, LazyVGrid/ScrollView y property wrappers
+1. El protocolo View y composición — Básico
+2. Orden de modificadores y layout con stacks — Básico
+3. Previews, LazyVGrid/ScrollView y property wrappers — Intermedio
 
 **Módulo 2 · Módulo 2: Estado y data flow**
-1. @State y @Binding
-2. @Observable
-3. @Environment y identidad vs valor
+1. @State y @Binding — Básico
+2. @Observable — Intermedio
+3. @Environment y identidad vs valor — Intermedio
 
 **Módulo 3 · Módulo 3: Navegación**
-1. NavigationStack y NavigationPath
-2. Sheets, full screen covers y TabView
-3. Deep linking y controles de formulario
+1. NavigationStack y NavigationPath — Básico
+2. Sheets, full screen covers y TabView — Básico
+3. Deep linking y controles de formulario — Intermedio
 
 **Módulo 4 · Módulo 4: Concurrencia moderna: async/await**
-1. async/await y Task
-2. Actors para estado mutable seguro
-3. TaskGroup y MainActor
-4. Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red
+1. async/await y Task — Intermedio
+2. Actors para estado mutable seguro — Avanzado
+3. TaskGroup y MainActor — Avanzado
+4. Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red — Avanzado
 5. AsyncSequence y AsyncStream: recibir valores en el tiempo con for await — Avanzado
 6. Swift 6: aislamiento, Sendable y data races detectadas al compilar — Experto
 
 **Módulo 5 · Módulo 5: Networking con URLSession**
-1. URLSession con async/await y Codable
-2. Errores tipados
-3. Reintentos y cancelación
+1. URLSession con async/await y Codable — Intermedio
+2. Errores tipados — Intermedio
+3. Reintentos y cancelación — Avanzado
 
 **Módulo 6 · Módulo 6: Persistencia con SwiftData**
-1. @Model y ModelContainer
-2. @Query y operaciones de escritura
-3. Migraciones y SwiftData vs Core Data
+1. @Model y ModelContainer — Básico
+2. @Query y operaciones de escritura — Intermedio
+3. Migraciones y SwiftData vs Core Data — Intermedio
 4. Archivos en iOS: FileManager, carpetas de la app y fileImporter — Intermedio
 5. CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario — Avanzado
 
 **Módulo 7 · Módulo 7: Combine y programación reactiva**
-1. Publishers y Subscribers
-2. Operadores: debounce y combineLatest
-3. Combine vs async/await
+1. Publishers y Subscribers — Intermedio
+2. Operadores: debounce y combineLatest — Intermedio
+3. Combine vs async/await — Avanzado
 
 **Módulo 8 · Módulo 8: Arquitectura MVVM**
-1. De una vista "gorda" a MVVM
-2. Capas del proyecto e inyección por inicializador
-3. Cuándo MVVM no alcanza
+1. De una vista "gorda" a MVVM — Intermedio
+2. Capas del proyecto e inyección por inicializador — Intermedio
+3. Cuándo MVVM no alcanza — Avanzado
 
 **Módulo 9 · Módulo 9: Testing en iOS**
-1. XCTest clásico y Swift Testing
-2. Testing de código async
-3. UI Tests con XCUITest
+1. XCTest clásico y Swift Testing — Intermedio
+2. Testing de código async — Avanzado
+3. UI Tests con XCUITest — Avanzado
 
 **Módulo 10 · Módulo 10: Performance, accesibilidad y HIG**
-1. Instruments
-2. Accesibilidad con VoiceOver
-3. Human Interface Guidelines, Dynamic Type e interop con UIKit
-4. UIKit desde cero para mantener aplicaciones reales
-5. Localización con String Catalogs: textos, plurales y formatos por idioma — Intermedio
+1. Instruments — Intermedio
+2. Accesibilidad con VoiceOver — Intermedio
+3. Human Interface Guidelines, Dynamic Type e interop con UIKit — Intermedio
+4. Localización con String Catalogs: textos, plurales y formatos por idioma — Intermedio
+5. UIKit desde cero para mantener aplicaciones reales — Avanzado
 
 **Módulo 11 · Módulo 11: Publicación en App Store**
-1. Certificados y provisioning profiles
-2. Archivar, subir y TestFlight
-3. Metadata y versionado
+1. Certificados y provisioning profiles — Intermedio
+2. Archivar, subir y TestFlight — Intermedio
+3. Metadata y versionado — Intermedio
 
 **Módulo 12 · Módulo 12: Proyecto integrador: app SwiftUI completa**
-1. Arquitectura del proyecto integrador
-2. Sincronización entre red y persistencia local
-3. Cierre del track
-4. Swift Package Manager: separar la app en paquetes locales y declarar dependencias — Avanzado
+1. Arquitectura del proyecto integrador — Avanzado
+2. Sincronización entre red y persistencia local — Avanzado
+3. Swift Package Manager: separar la app en paquetes locales y declarar dependencias — Avanzado
+4. Cierre del track — Experto
 
 **Módulo 13 · Módulo 13: iOS en producción — seguridad, sincronización y operación**
-1. El sandbox reduce superficie, pero no valida intenciones
-2. Proteger datos es controlar todas sus copias
-3. Offline-first es un protocolo, no una caché
-4. Operar significa detectar, limitar y aprender del fallo
-5. Keychain — guardar secretos de forma segura
-6. Permisos y privacidad — pedir acceso con criterio
-7. Notificaciones push con APNs
-8. Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles — Intermedio
+1. El sandbox reduce superficie, pero no valida intenciones — Intermedio
+2. Proteger datos es controlar todas sus copias — Intermedio
+3. Keychain — guardar secretos de forma segura — Intermedio
+4. Permisos y privacidad — pedir acceso con criterio — Intermedio
+5. Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles — Intermedio
+6. Notificaciones push con APNs — Avanzado
+7. Offline-first es un protocolo, no una caché — Avanzado
+8. Operar significa detectar, limitar y aprender del fallo — Avanzado
 9. Core Location moderno: CLLocationUpdate, permisos y precisión — Avanzado
 10. BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite — Avanzado
 
 **Módulo 14 · Módulo 14: SwiftUI Master: pruebas, animación e interoperabilidad**
-1. Swift Testing y pruebas asíncronas
-2. ViewInspector con criterio
-3. Combine avanzado
-4. Animaciones y matchedGeometryEffect
-5. UIViewRepresentable
-6. UIViewControllerRepresentable y Coordinator
-7. Core ML y Vision — inferencia en el dispositivo
-8. Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos — Intermedio
+1. Animaciones y matchedGeometryEffect — Intermedio
+2. Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos — Intermedio
+3. Swift Testing y pruebas asíncronas — Intermedio
+4. ViewInspector con criterio — Intermedio
+5. Combine avanzado — Avanzado
+6. UIViewRepresentable — Avanzado
+7. UIViewControllerRepresentable y Coordinator — Avanzado
+8. Core ML y Vision — inferencia en el dispositivo — Avanzado
 9. WidgetKit: un widget con las entregas pendientes del día — Avanzado
 10. App Intents: acciones de la app en Siri, Atajos y Spotlight — Avanzado
 
@@ -1253,158 +1253,158 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 ## java
 
 **Módulo 0 · Módulo 0: Sintaxis, tipos y el modelo de la JVM**
-1. Del código fuente a la JVM
-2. public static void main — qué significa cada palabra
-3. JDK, JRE y JVM
-4. Tipos primitivos vs referencias
-5. Variables, conversiones y `String`
-6. Operadores, precedencia y control de flujo
-7. Arreglos, wrappers y paso de argumentos
-8. Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)
+1. Del código fuente a la JVM — Básico
+2. JDK, JRE y JVM — Básico
+3. public static void main — qué significa cada palabra — Intermedio
+4. Tipos primitivos vs referencias — Intermedio
+5. Variables, conversiones y `String` — Intermedio
+6. Operadores, precedencia y control de flujo — Intermedio
+7. Arreglos, wrappers y paso de argumentos — Intermedio
+8. Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) — Intermedio
 9. Java 25 para programas pequeños: `IO`, archivos compactos e `import module` — Básico
 
 **Módulo 1 · Módulo 1: Programación orientada a objetos**
-1. Clases, objetos, constructores y encapsulación
-2. Herencia y sobreescritura
-3. Interfaces, clases abstractas y cuándo usar cada una
-4. Sobrecarga vs sobreescritura, y modificadores de acceso
-5. record — modelos inmutables sin boilerplate
+1. Clases, objetos, constructores y encapsulación — Básico
+2. Herencia y sobreescritura — Intermedio
+3. Interfaces, clases abstractas y cuándo usar cada una — Intermedio
+4. Sobrecarga vs sobreescritura, y modificadores de acceso — Intermedio
+5. record — modelos inmutables sin boilerplate — Intermedio
 6. Constructores flexibles (Java 25): validar y preparar antes de `super(...)` — Intermedio
 
 **Módulo 2 · Módulo 2: Colecciones y genéricos**
-1. List, Set, Map y sus implementaciones
+1. List, Set, Map y sus implementaciones — Intermedio
 2. El contrato de equals y hashCode — Básico
 3. Claves mutables y el mapa que pierde entradas — Intermedio
-4. Genéricos, wildcards y type erasure
-5. Comparable vs Comparator, e iteración
+4. Genéricos, wildcards y type erasure — Avanzado
+5. Comparable vs Comparator, e iteración — Intermedio
 6. Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` — Básico
 
 **Módulo 3 · Módulo 3: Excepciones y manejo de recursos**
-1. Checked vs unchecked exceptions
-2. try-with-resources
-3. Excepciones personalizadas y no tragar excepciones
+1. Checked vs unchecked exceptions — Básico
+2. try-with-resources — Intermedio
+3. Excepciones personalizadas y no tragar excepciones — Avanzado
 
 **Módulo 4 · Módulo 4: Streams y programación funcional**
-1. Stream API — map, filter, reduce, collect
-2. Optional — evitar null explícitamente
-3. Streams paralelos y referencias a métodos
-4. Stream Gatherers (Java 24)
+1. Stream API — map, filter, reduce, collect — Básico
+2. Optional — evitar null explícitamente — Básico
+3. Stream Gatherers (Java 24) — Intermedio
+4. Streams paralelos y referencias a métodos — Avanzado
 
 **Módulo 5 · Módulo 5: Concurrencia — hilos y virtual threads**
-1. ExecutorService y gestión de hilos
-2. CompletableFuture
-3. Virtual threads
-4. Condiciones de carrera y sincronización
-5. Structured Concurrency (StructuredTaskScope, Java 25)
-6. Scoped Values frente a ThreadLocal (Java 25)
-7. Timeouts y cancelación cooperativa sin abandonar recursos
+1. ExecutorService y gestión de hilos — Intermedio
+2. CompletableFuture — Intermedio
+3. Virtual threads — Avanzado
+4. Condiciones de carrera y sincronización — Avanzado
+5. Structured Concurrency (StructuredTaskScope, Java 25) — Avanzado
+6. Scoped Values frente a ThreadLocal (Java 25) — Avanzado
+7. Timeouts y cancelación cooperativa sin abandonar recursos — Avanzado
 
 **Módulo 6 · Módulo 6: I/O, NIO.2 y serialización**
-1. NIO.2 — Path y Files
-2. Serialización con Jackson
-3. Archivos grandes y recursos del classpath
+1. NIO.2 — Path y Files — Intermedio
+2. Serialización con Jackson — Intermedio
+3. Archivos grandes y recursos del classpath — Intermedio
 
 **Módulo 7 · Módulo 7: Sealed classes y pattern matching**
-1. sealed — jerarquías cerradas y exhaustividad
-2. Pattern matching exhaustivo y para instanceof
-3. Unnamed variables y patterns (_, Java 22)
+1. sealed — jerarquías cerradas y exhaustividad — Intermedio
+2. Pattern matching exhaustivo y para instanceof — Intermedio
+3. Unnamed variables y patterns (_, Java 22) — Intermedio
 
 **Módulo 8 · Módulo 8: Build tools — Maven y Gradle**
-1. pom.xml vs build.gradle.kts
-2. Ciclo de vida de build y scopes
-3. Proyectos multi-módulo
-4. Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
+1. pom.xml vs build.gradle.kts — Básico
+2. Ciclo de vida de build y scopes — Intermedio
+3. Proyectos multi-módulo — Intermedio
+4. Maven y Gradle lado a lado — el mismo proyecto en dos herramientas — Avanzado
 
 **Módulo 9 · Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito**
 1. JUnit 6 (Jupiter) — anotaciones y ciclo de vida
-2. Mockito — aislar dependencias
-3. Tests parametrizados y cobertura
+2. Mockito — aislar dependencias — Intermedio
+3. Tests parametrizados y cobertura — Intermedio
 4. Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada — Avanzado
 
 **Módulo 10 · Módulo 10: Módulos (JPMS) y proyectos grandes**
-1. module-info.java y encapsulación fuerte
-2. Migración incremental y cuándo JPMS aporta valor
-3. opens para acceso reflexivo controlado de frameworks
+1. module-info.java y encapsulación fuerte — Básico
+2. Migración incremental y cuándo JPMS aporta valor — Intermedio
+3. opens para acceso reflexivo controlado de frameworks — Avanzado
 
 **Módulo 11 · Módulo 11: JVM interna — GC, profiling y JIT**
-1. Generaciones de memoria y recolectores
-2. Java Flight Recorder y JIT compilation
-3. Referencias especiales y heap dumps
-4. Foreign Function & Memory API (Java 22)
+1. Generaciones de memoria y recolectores — Avanzado
+2. Java Flight Recorder y JIT compilation — Avanzado
+3. Referencias especiales y heap dumps — Avanzado
+4. Foreign Function & Memory API (Java 22) — Experto
 
 **Módulo 12 · Módulo 12: Buenas prácticas y patrones de diseño**
-1. Builder — configuración paso a paso y validación
-2. Factory Method y Strategy
-3. Abstract Factory y familias de productos compatibles
-4. SOLID y cuándo NO aplicar un patrón
-5. Prototype: copiar un objeto sin compartir sus datos
-6. Patrones estructurales para conectar piezas existentes
+1. Builder — configuración paso a paso y validación — Básico
+2. Factory Method y Strategy — Intermedio
+3. Abstract Factory y familias de productos compatibles — Intermedio
+4. SOLID y cuándo NO aplicar un patrón — Intermedio
+5. Prototype: copiar un objeto sin compartir sus datos — Intermedio
+6. Patrones estructurales para conectar piezas existentes — Intermedio
 
 **Módulo 13 · Módulo 13: Proyecto integrador**
-1. Arquitectura por capas del proyecto integrador
-2. Integrando concurrencia, modelado y testing
-3. Build reproducible y cierre del track
+1. Arquitectura por capas del proyecto integrador — Intermedio
+2. Build reproducible y cierre del track — Intermedio
+3. Integrando concurrencia, modelado y testing — Avanzado
 
 **Módulo 14 · Módulo 14: Java en producción — memoria, benchmarks y runtime seguro**
-1. Compartir memoria requiere orden y visibilidad
-2. La JVM optimiza y puede invalidar un cronómetro ingenuo
-3. Deserializar es permitir construcción y comportamiento
-4. El runtime es parte del artefacto y necesita ciclo de vida
+1. Compartir memoria requiere orden y visibilidad — Avanzado
+2. La JVM optimiza y puede invalidar un cronómetro ingenuo — Avanzado
+3. Deserializar es permitir construcción y comportamiento — Avanzado
+4. El runtime es parte del artefacto y necesita ciclo de vida — Avanzado
 5. Arranque más rápido: archivos CDS y la caché AOT — Avanzado
 6. Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps — Avanzado
 
 **Módulo 15 · Módulo 15: Java Master — builds, pruebas y observabilidad**
-1. Maven avanzado
-2. Gradle y builds reproducibles
-3. Proyectos multi-módulo sin ciclos
+1. Maven avanzado — Intermedio
+2. Gradle y builds reproducibles — Avanzado
+3. Proyectos multi-módulo sin ciclos — Intermedio
 4. JUnit 6, Mockito y assertions expresivas
-5. Pruebas de integración reproducibles
-6. SLF4J, Logback, MDC y logging estructurado
+5. Pruebas de integración reproducibles — Avanzado
+6. SLF4J, Logback, MDC y logging estructurado — Intermedio
 
 **Módulo 16 · Módulo 16: JPA, Hibernate y FetchType.LAZY vs EAGER**
-1. Entidades y relaciones JPA
-2. FetchType.LAZY, EAGER y el problema N+1
-3. Relaciones uno a uno, muchos a muchos y herencia
-4. Ciclo de vida, EntityManager y consultas tipadas
-5. Búsquedas dinámicas con Criteria y Querydsl
-6. EntityGraph y cachés de persistencia
-7. Concurrencia, transacciones y propagación
-8. Migraciones y pruebas JPA con Testcontainers
+1. Entidades y relaciones JPA — Intermedio
+2. Relaciones uno a uno, muchos a muchos y herencia — Intermedio
+3. Ciclo de vida, EntityManager y consultas tipadas — Intermedio
+4. Búsquedas dinámicas con Criteria y Querydsl — Intermedio
+5. FetchType.LAZY, EAGER y el problema N+1 — Avanzado
+6. EntityGraph y cachés de persistencia — Avanzado
+7. Concurrencia, transacciones y propagación — Avanzado
+8. Migraciones y pruebas JPA con Testcontainers — Avanzado
 
 **Módulo 17 · Módulo 17: JDBC, DAO y transacciones**
-1. JDBC, PreparedStatement y DAO
-2. Transacciones, ACID y aislamiento
+1. JDBC, PreparedStatement y DAO — Intermedio
+2. Transacciones, ACID y aislamiento — Avanzado
 
 **Módulo 18 · Módulo 18: HTTP, seguridad y backend con Java**
-1. HttpClient, REST, timeouts y fallos
-2. Tokens, validación y límites de seguridad
+1. HttpClient, REST, timeouts y fallos — Intermedio
+2. Tokens, validación y límites de seguridad — Avanzado
 3. Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos — Avanzado
 
 **Módulo 19 · Módulo 19: Java del día a día — reflexión, regex, dinero, contratos, plugins e i18n**
-1. Reflexión y anotaciones en tiempo de ejecución
-2. Expresiones regulares con Pattern y Matcher
-3. Dinero exacto con BigDecimal
-4. Assertions y diseño por contrato
-5. ServiceLoader: plugins sin acoplar implementaciones
-6. Proxies dinámicos: así funcionan @Transactional y los mocks
-7. Internacionalización: números, monedas, fechas y orden de texto
+1. Reflexión y anotaciones en tiempo de ejecución — Intermedio
+2. Expresiones regulares con Pattern y Matcher — Intermedio
+3. Dinero exacto con BigDecimal — Intermedio
+4. Assertions y diseño por contrato — Intermedio
+5. ServiceLoader: plugins sin acoplar implementaciones — Intermedio
+6. Internacionalización: números, monedas, fechas y orden de texto — Intermedio
+7. Proxies dinámicos: así funcionan @Transactional y los mocks — Avanzado
 8. Carga de clases: cargadores, delegación y plugins con URLClassLoader — Avanzado
 9. MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado — Experto
 
 **Módulo 20 · Módulo 20: Java funcional — interfaces que componen comportamiento**
-1. Las cuatro formas: Predicate, Function, Consumer y Supplier
-2. Componer sin anidar: andThen, compose, negate y reglas encadenadas
-3. Streams como composición: pereza, orden y efectos que se esconden
-4. Function y BiFunction: transformar uno o dos datos
-5. UnaryOperator y BinaryOperator: la salida conserva el tipo
-6. Referencias a métodos: escribir la operación sin repetirla
-7. Optional: buscar un envío que puede no existir
-8. Streams intermedios: filtrar, transformar, aplanar y ordenar
-9. Streams terminales: encontrar, contar y combinar resultados
-10. Collectors: formar listas, mapas, grupos y texto
-11. Streams paralelos: comparar antes de acelerarlos
-12. Pureza y efectos: calcular separado de guardar o imprimir
-13. Flow API: publicar datos con demanda y cierre
+1. Las cuatro formas: Predicate, Function, Consumer y Supplier — Básico
+2. Function y BiFunction: transformar uno o dos datos — Básico
+3. Componer sin anidar: andThen, compose, negate y reglas encadenadas — Intermedio
+4. Streams como composición: pereza, orden y efectos que se esconden — Intermedio
+5. UnaryOperator y BinaryOperator: la salida conserva el tipo — Intermedio
+6. Referencias a métodos: escribir la operación sin repetirla — Intermedio
+7. Optional: buscar un envío que puede no existir — Intermedio
+8. Streams intermedios: filtrar, transformar, aplanar y ordenar — Intermedio
+9. Streams terminales: encontrar, contar y combinar resultados — Intermedio
+10. Collectors: formar listas, mapas, grupos y texto — Intermedio
+11. Streams paralelos: comparar antes de acelerarlos — Avanzado
+12. Pureza y efectos: calcular separado de guardar o imprimir — Intermedio
+13. Flow API: publicar datos con demanda y cierre — Avanzado
 
 **Módulo 21 · Módulo 21: APIs públicas, compatibilidad y evolución**
 1. Qué es la superficie pública de una API — Básico
@@ -2017,98 +2017,98 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 ## react
 
 **Módulo 0 · Módulo 0: JSX, componentes y props**
-1. JSX es azúcar sintáctica sobre createElement
-2. Listas con key estable
-3. Composición sobre herencia, y Fragments
-4. Renderizado condicional y estilos
+1. JSX es azúcar sintáctica sobre createElement — Básico
+2. Listas con key estable — Básico
+3. Composición sobre herencia, y Fragments — Básico
+4. Renderizado condicional y estilos — Básico
 
 **Módulo 1 · Módulo 1: Estado local y el ciclo de render**
-1. useState y actualizaciones funcionales
-2. Render frente a commit
-3. Batching de actualizaciones
-4. Componentes controlados
+1. useState y actualizaciones funcionales — Básico
+2. Render frente a commit — Intermedio
+3. Batching de actualizaciones — Intermedio
+4. Componentes controlados — Básico
 5. Componentes puros y el estado como instantánea — Básico
 6. Compartir estado: levantar el estado al padre común — Básico
 
 **Módulo 2 · Módulo 2: Hooks esenciales**
-1. useEffect — dependencias y limpieza
+1. useEffect — dependencias y limpieza — Intermedio
 2. Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key` — Intermedio
-3. useRef — valores mutables sin re-render
-4. useMemo y useCallback con criterio
-5. Reglas de los hooks, useReducer y useImperativeHandle
-6. Error Boundaries — contener errores de render sin romper toda la app
-7. Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual
+3. useRef — valores mutables sin re-render — Intermedio
+4. useMemo y useCallback con criterio — Intermedio
+5. Reglas de los hooks, useReducer y useImperativeHandle — Intermedio
+6. Error Boundaries — contener errores de render sin romper toda la app — Avanzado
+7. Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual — Avanzado
 8. useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar — Avanzado
 
 **Módulo 3 · Módulo 3: Formularios y eventos**
-1. React Hook Form y el problema del re-render por tecla
-2. Validación con zod y formularios multi-paso
-3. Eventos sintéticos
+1. Eventos sintéticos — Básico
+2. React Hook Form y el problema del re-render por tecla — Intermedio
+3. Validación con zod y formularios multi-paso — Intermedio
 4. Formularios con Actions: useActionState y useOptimistic — Avanzado
 
 **Módulo 4 · Módulo 4: Context API y composición**
-1. createContext y useContext
-2. Cuándo Context es suficiente y cuándo no
-3. Componentes compuestos, render props y hooks personalizados
+1. createContext y useContext — Intermedio
+2. Cuándo Context es suficiente y cuándo no — Intermedio
+3. Componentes compuestos, render props y hooks personalizados — Avanzado
 
 **Módulo 5 · Módulo 5: React Router — navegación**
-1. Rutas anidadas y layouts compartidos
-2. Loaders — datos antes de renderizar
+1. Rutas anidadas y layouts compartidos — Intermedio
+2. Loaders — datos antes de renderizar — Intermedio
 3. Rutas protegidas
 
 **Módulo 6 · Módulo 6: Data fetching moderno**
-1. useQuery y el problema que resuelve
-2. Mutations e invalidación
-3. Optimistic updates
+1. useQuery y el problema que resuelve — Intermedio
+2. Mutations e invalidación — Intermedio
+3. Optimistic updates — Avanzado
 
 **Módulo 7 · Módulo 7: Gestión de estado global**
-1. Zustand — stores mínimos sin boilerplate
-2. Redux Toolkit — slices y ceremonia
-3. Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto
-4. Jotai y XState como alternativas
+1. Zustand — stores mínimos sin boilerplate — Intermedio
+2. Redux Toolkit — slices y ceremonia — Intermedio
+3. Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto — Avanzado
+4. Jotai y XState como alternativas — Avanzado
 
 **Módulo 8 · Módulo 8: Testing en React**
-1. Queries por rol, no por clase CSS
-2. Mock Service Worker (MSW)
-3. Testing de hooks personalizados
+1. Queries por rol, no por clase CSS — Intermedio
+2. Mock Service Worker (MSW) — Intermedio
+3. Testing de hooks personalizados — Avanzado
 
 **Módulo 9 · Módulo 9: Performance en React**
-1. Medir antes de optimizar
-2. React.memo con criterio
+1. Medir antes de optimizar — Intermedio
+2. React.memo con criterio — Intermedio
 3. Virtualización de listas largas
-4. useTransition, useDeferredValue y Fiber
+4. useTransition, useDeferredValue y Fiber — Avanzado
 5. Suspense y React.lazy: carga diferida de componentes y rutas — Intermedio
 6. El hook use: leer una promesa con Suspense y un contexto de forma condicional — Avanzado
 7. React Compiler y las reglas de React: memoización automática — Avanzado
 
 **Módulo 10 · Módulo 10: Server Components y Next.js**
-1. Server Components por defecto
-2. use client para interactividad
-3. Streaming con Suspense en el servidor
-4. Server Actions
+1. Server Components por defecto — Avanzado
+2. use client para interactividad — Avanzado
+3. Streaming con Suspense en el servidor — Avanzado
+4. Server Actions — Avanzado
 
 **Módulo 11 · Módulo 11: TypeScript con React**
-1. Tipado de props y children
-2. Hooks genéricos
-3. Eventos tipados y componentes polimórficos
+1. Tipado de props y children — Intermedio
+2. Hooks genéricos — Avanzado
+3. Eventos tipados y componentes polimórficos — Avanzado
 
 **Módulo 12 · Módulo 12: Proyecto integrador — SPA con datos reales**
-1. Estructura del proyecto integrador
-2. Integrando rutas, TanStack Query y Zustand
-3. useEnvios — hook dedicado con TanStack Query
+1. Estructura del proyecto integrador — Avanzado
+2. Integrando rutas, TanStack Query y Zustand — Experto
+3. useEnvios — hook dedicado con TanStack Query — Experto
 
 **Módulo 13 · Módulo 13: React en producción — resiliencia, accesibilidad y seguridad**
-1. Diseñar estados de carga, error y recuperación
-2. La composición visual debe conservar semántica y foco
-3. Cliente y servidor forman una sola frontera de seguridad
-4. Hidratación determinista, idioma y releases medibles
-5. Migrar a React 19: codemods, cambios que rompen y verificación — Avanzado
+1. Diseñar estados de carga, error y recuperación — Avanzado
+2. La composición visual debe conservar semántica y foco — Avanzado
+3. Cliente y servidor forman una sola frontera de seguridad — Experto
+4. Hidratación determinista, idioma y releases medibles — Experto
+5. Migrar a React 19: codemods, cambios que rompen y verificación — Experto
 
 **Módulo 14 · Módulo 14: Next.js en producción: caché, Proxy, imágenes, React Aria e i18n**
-1. Next.js ISR, Metadata y Proxy (antes Middleware)
-2. Optimización de imágenes y fuentes
-3. Accesibilidad y React Aria
-4. i18n, pluralización y RTL
+1. Next.js ISR, Metadata y Proxy (antes Middleware) — Avanzado
+2. Optimización de imágenes y fuentes — Avanzado
+3. Accesibilidad y React Aria — Avanzado
+4. i18n, pluralización y RTL — Experto
 
 
 ## rutaflow
@@ -2162,167 +2162,167 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 ## spring-boot
 
 **Módulo 0 · Módulo 0: Fundamentos de Spring: IoC, DI y AOP**
-1. Inversión de control y el contenedor de Spring
-2. Inyección por constructor vs por campo
-3. Estereotipos, autoconfiguración y scopes
+1. Inversión de control y el contenedor de Spring — Básico
+2. Inyección por constructor vs por campo — Intermedio
+3. Estereotipos, autoconfiguración y scopes — Intermedio
 4. Ciclo de vida de los beans y apagado ordenado — Intermedio
 5. Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` — Intermedio
 6. Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL — Intermedio
 
 **Módulo 1 · Módulo 1: Spring Boot CLI y estructura de proyecto**
-1. Spring Initializr y starters
-2. application.yml vs application.properties
-3. Perfiles y estructura por capas
+1. Spring Initializr y starters — Básico
+2. application.yml vs application.properties — Básico
+3. Perfiles y estructura por capas — Intermedio
 
 **Módulo 2 · Módulo 2: REST APIs con Spring Web**
-1. Por qué DTOs en vez de entidades directamente
-2. Validación con Bean Validation y ResponseEntity
-3. Manejo centralizado de errores con @ControllerAdvice
-4. Lombok y MapStruct sin exponer datos internos
-5. OpenAPI con springdoc: el contrato como prueba
-6. Paginación HTTP con validación y un límite de recursos explícito
+1. Por qué DTOs en vez de entidades directamente — Intermedio
+2. Validación con Bean Validation y ResponseEntity — Intermedio
+3. Manejo centralizado de errores con @ControllerAdvice — Intermedio
+4. Lombok y MapStruct sin exponer datos internos — Intermedio
+5. OpenAPI con springdoc: el contrato como prueba — Avanzado
+6. Paginación HTTP con validación y un límite de recursos explícito — Avanzado
 7. JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos — Intermedio
 8. Versionado de API nativo de Spring Framework 7 — Intermedio
 
 **Módulo 3 · Módulo 3: JDBC, JdbcClient y transacciones en Spring Boot**
-1. DataSource, JdbcTemplate y DAO
+1. DataSource, JdbcTemplate y DAO — Intermedio
 2. `JdbcClient`: la API fluida de Spring para SQL explícito — Intermedio
-3. `@Transactional`, rollback y límites de transacción
+3. `@Transactional`, rollback y límites de transacción — Avanzado
 
 **Módulo 4 · Módulo 4: Persistencia con Spring Data JPA**
-1. Entidades y repositorios derivados
-2. El problema N+1 y su corrección
+1. Entidades y repositorios derivados — Intermedio
+2. El problema N+1 y su corrección — Intermedio
 3. Más allá del N+1: el límite de LAZY y páginas DTO
-4. Migraciones con Flyway
+4. Migraciones con Flyway — Intermedio
 5. Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos — Intermedio
 
 **Módulo 5 · Módulo 5: Spring Security I: cadena, JWT con resource server, CORS y SSRF**
-1. SecurityFilterChain moderno
+1. SecurityFilterChain moderno — Intermedio
 2. JWT con el resource server de Spring Security y autorización por rol — Intermedio
-3. CORS y CSRF
-4. Reducir SSRF en clientes HTTP con InetAddressFilter
-5. Flujo de login completo — de `/api/auth/login` a una ruta protegida
+3. CORS y CSRF — Intermedio
+4. Reducir SSRF en clientes HTTP con InetAddressFilter — Avanzado
+5. Flujo de login completo — de `/api/auth/login` a una ruta protegida — Avanzado
 
 **Módulo 6 · Módulo 6: Testing en Spring Boot**
-1. Probar un controller con `@WebMvcTest`
-2. Probar el repositorio contra PostgreSQL con `@DataJpaTest`
-3. Integrar el flujo con `@SpringBootTest`
+1. Probar un controller con `@WebMvcTest` — Intermedio
+2. Probar el repositorio contra PostgreSQL con `@DataJpaTest` — Avanzado
+3. Integrar el flujo con `@SpringBootTest` — Avanzado
 4. `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 — Intermedio
-5. Contenedores Testcontainers reutilizados entre clases
+5. Contenedores Testcontainers reutilizados entre clases — Avanzado
 
 **Módulo 7 · Módulo 7: Configuración, errores y observabilidad**
-1. @ConfigurationProperties tipado
-2. Fallar rápido al arranque
-3. Manejo global de excepciones consistente entre entornos
+1. @ConfigurationProperties tipado — Intermedio
+2. Fallar rápido al arranque — Intermedio
+3. Manejo global de excepciones consistente entre entornos — Intermedio
 4. FailureAnalyzer: errores de arranque que explican la causa y la solución — Avanzado
-5. Actuator y health checks personalizados
-6. Contar operaciones de negocio con Micrometer
-7. Liveness y readiness sin reinicios en cadena
+5. Actuator y health checks personalizados — Intermedio
+6. Contar operaciones de negocio con Micrometer — Intermedio
+7. Liveness y readiness sin reinicios en cadena — Intermedio
 8. Logging en Spring Boot: niveles, grupos y logs estructurados en JSON — Intermedio
 
 **Módulo 8 · Módulo 8: Integraciones Spring: scheduling, eventos, correo, caché e IA**
-1. Scheduling y tareas periódicas
-2. Eventos locales, eventos transaccionales y mensajería
-3. Correo con Spring Mail y entrega recuperable
-4. Caché con Spring Cache, Caffeine y Redis
-5. Integraciones empresariales, SOAP y fronteras de protocolo
-6. Spring AI: ChatClient y herramientas con autorización fuera del modelo
-7. RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
-8. Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
+1. Scheduling y tareas periódicas — Intermedio
+2. Eventos locales, eventos transaccionales y mensajería — Intermedio
+3. Correo con Spring Mail y entrega recuperable — Avanzado
+4. Caché con Spring Cache, Caffeine y Redis — Avanzado
+5. Integraciones empresariales, SOAP y fronteras de protocolo — Avanzado
+6. Spring AI: ChatClient y herramientas con autorización fuera del modelo — Avanzado
+7. RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar — Avanzado
+8. Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas — Avanzado
 
 **Módulo 9 · Módulo 9: Concurrencia, @Async y resiliencia en el núcleo de Spring**
-1. @Async y ejecutores: trabajo en segundo plano con límites
+1. @Async y ejecutores: trabajo en segundo plano con límites — Avanzado
 2. CompletableFuture, @Async y el bug de la autoinvocación — Avanzado
 3. Locks, deadlocks, semáforos y MDC en concurrencia — Experto
 4. Resiliencia en el núcleo: `@Retryable` y `@ConcurrencyLimit` (Spring Framework 7) — Avanzado
 
 **Módulo 10 · Módulo 10: Mensajería con Kafka: eventos, errores, outbox y contratos**
-1. Producers y consumers con Spring Kafka
-2. Dead-letter queue
-3. Transacciones Kafka y SQL: idempotencia y límites de exactly-once
-4. Outbox transaccional y flujo de negocio
-5. Rebalanceo de consumer groups y asignación de particiones
-6. Kafka Streams con Spring para transformar eventos
-7. Avro y Schema Registry para contratos de eventos
+1. Producers y consumers con Spring Kafka — Intermedio
+2. Dead-letter queue — Intermedio
+3. Transacciones Kafka y SQL: idempotencia y límites de exactly-once — Avanzado
+4. Outbox transaccional y flujo de negocio — Avanzado
+5. Rebalanceo de consumer groups y asignación de particiones — Avanzado
+6. Kafka Streams con Spring para transformar eventos — Avanzado
+7. Avro y Schema Registry para contratos de eventos — Avanzado
 
 **Módulo 11 · Módulo 11: RabbitMQ, JMS y Spring Cloud Stream**
-1. Kafka frente a RabbitMQ
-2. RabbitMQ con Spring AMQP: routing, ack y prefetch
+1. Kafka frente a RabbitMQ — Avanzado
+2. RabbitMQ con Spring AMQP: routing, ack y prefetch — Avanzado
 3. JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones — Avanzado
-4. bindings y destinations
-5. binder Kafka y binder RabbitMQ
-6. reintentos, error handler y dead-letter
-7. test binder y límites de la prueba
+4. bindings y destinations — Intermedio
+5. binder Kafka y binder RabbitMQ — Intermedio
+6. reintentos, error handler y dead-letter — Avanzado
+7. test binder y límites de la prueba — Avanzado
 
 **Módulo 12 · Módulo 12: Spring Batch: jobs, chunks y procesamiento masivo**
-1. Job, Step, Tasklet y chunk processing
-2. Reinicio, JobParameters, retry, skip y listeners
+1. Job, Step, Tasklet y chunk processing — Intermedio
+2. Reinicio, JobParameters, retry, skip y listeners — Avanzado
 
 **Módulo 13 · Módulo 13: Programación reactiva con WebFlux**
-1. Mono y Flux
-2. WebClient y composición no bloqueante
-3. Cuándo WebFlux vale la complejidad, y R2DBC
-4. Backpressure real en WebFlux con reactor-test
+1. Mono y Flux — Intermedio
+2. WebClient y composición no bloqueante — Avanzado
+3. Cuándo WebFlux vale la complejidad, y R2DBC — Avanzado
+4. Backpressure real en WebFlux con reactor-test — Avanzado
 
 **Módulo 14 · Módulo 14: Spring GraphQL: contrato, datos anidados y cambios**
-1. schema-first con tipos y consultas
-2. data fetchers, relaciones y problema N+1
-3. mutations y subscriptions
-4. pruebas GraphQL con GraphQlTester
+1. schema-first con tipos y consultas — Intermedio
+2. data fetchers, relaciones y problema N+1 — Avanzado
+3. mutations y subscriptions — Avanzado
+4. pruebas GraphQL con GraphQlTester — Avanzado
 
 **Módulo 15 · Módulo 15: Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith**
-1. Hexagonal: puertos que hablan el idioma del dominio
-2. Arquitectura hexagonal verificada con ArchUnit
-3. Clean Architecture y DDD táctico: caso de uso antes que framework
-4. C4: contexto, contenedores, componentes y código
-5. ADR: decisiones con contexto, alternativas y consecuencias
-6. módulos y límites entre paquetes
-7. eventos entre módulos sin importar implementación
-8. documentación generada y mapa de dependencias
-9. pruebas de integración por módulo
+1. Hexagonal: puertos que hablan el idioma del dominio — Avanzado
+2. Arquitectura hexagonal verificada con ArchUnit — Avanzado
+3. Clean Architecture y DDD táctico: caso de uso antes que framework — Experto
+4. C4: contexto, contenedores, componentes y código — Avanzado
+5. ADR: decisiones con contexto, alternativas y consecuencias — Experto
+6. módulos y límites entre paquetes — Avanzado
+7. eventos entre módulos sin importar implementación — Avanzado
+8. documentación generada y mapa de dependencias — Avanzado
+9. pruebas de integración por módulo — Avanzado
 
 **Módulo 16 · Módulo 16: Microservicios con Spring Cloud**
-1. Config Server y service discovery
-2. Spring Cloud Gateway
-3. Circuit breaker con Resilience4j
-4. Bulkhead y RateLimiter de Resilience4j
-5. OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización
-6. HTTP Interfaces, deadlines y descubrimiento según el entorno
-7. Spring gRPC, contrato HTTP/2 y evolución segura
-8. DDD para decidir límites y propiedad de datos
-9. Orquestar pedidos con Temporal y Spring Boot
-10. Spring Cloud Bus para propagar cambios de configuración
-11. Micrometer Tracing entre servicios
-12. Contract testing entre productor y consumidor
+1. Config Server y service discovery — Intermedio
+2. Spring Cloud Gateway — Intermedio
+3. Circuit breaker con Resilience4j — Intermedio
+4. Bulkhead y RateLimiter de Resilience4j — Avanzado
+5. OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización — Avanzado
+6. HTTP Interfaces, deadlines y descubrimiento según el entorno — Avanzado
+7. Spring gRPC, contrato HTTP/2 y evolución segura — Avanzado
+8. DDD para decidir límites y propiedad de datos — Avanzado
+9. Orquestar pedidos con Temporal y Spring Boot — Avanzado
+10. Spring Cloud Bus para propagar cambios de configuración — Avanzado
+11. Micrometer Tracing entre servicios — Avanzado
+12. Contract testing entre productor y consumidor — Avanzado
 
 **Módulo 17 · Módulo 17: Consistencia, contratos y operación distribuida**
-1. `@Transactional` funciona en una frontera, no como encantamiento
-2. Recuperación implica duplicación segura
-3. Contratos ejecutables protegen despliegues independientes
-4. Observabilidad sirve a un objetivo y a una decisión
-5. Saga con compensación real
-6. Event Sourcing con replay real
-7. Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+1. `@Transactional` funciona en una frontera, no como encantamiento — Avanzado
+2. Recuperación implica duplicación segura — Avanzado
+3. Contratos ejecutables protegen despliegues independientes — Avanzado
+4. Observabilidad sirve a un objetivo y a una decisión — Avanzado
+5. Saga con compensación real — Avanzado
+6. Event Sourcing con replay real — Avanzado
+7. Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar — Experto
 
-**Módulo 18 · Módulo 18: Spring Security II: OIDC, autorización por recurso y SAML**
-1. SecurityFilterChain y autorización
-2. DTO validation, CORS, JWT/OIDC y clientes HTTP
+**Módulo 18 · Módulo 18: Autenticación y backend seguro con Spring Security**
+1. SecurityFilterChain y autorización — Avanzado
+2. DTO validation, CORS, JWT/OIDC y clientes HTTP — Avanzado
 3. SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa — Experto
 
 **Módulo 19 · Módulo 19: Empaquetado y despliegue**
-1. Fat JAR vs capas de Docker
-2. GraalVM native image
-3. Health checks para Kubernetes
+1. Fat JAR vs capas de Docker — Intermedio
+2. GraalVM native image — Avanzado
+3. Health checks para Kubernetes — Avanzado
 4. Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile — Avanzado
 
 **Módulo 20 · Módulo 20: Proyecto integrador: backend de entregas productivo**
-1. Arquitectura del microservicio integrador
-2. Integra seguridad JWT y observabilidad
-3. Cierra el servicio con evidencia y próximos pasos
-4. CRUD API y contratos
-5. MySQL y datos espaciales
-6. JPA e Hibernate Spatial
-7. JWT Bearer y autorización por roles
-8. Tiempo real con STOMP
-9. Archivos y notificaciones push
+1. Arquitectura del microservicio integrador — Avanzado
+2. Integra seguridad JWT y observabilidad — Avanzado
+3. Cierra el servicio con evidencia y próximos pasos — Experto
+4. CRUD API y contratos — Intermedio
+5. MySQL y datos espaciales — Avanzado
+6. JPA e Hibernate Spatial — Avanzado
+7. JWT Bearer y autorización por roles — Avanzado
+8. Tiempo real con STOMP — Avanzado
+9. Archivos y notificaciones push — Avanzado
 
