@@ -1,0 +1,37 @@
+{
+  "nombre": "Tienda en línea",
+  "personas": [
+    { "id": "cliente", "nombre": "Cliente", "descripcion": "Compra productos desde el navegador o el móvil" },
+    { "id": "operador", "nombre": "Operador de almacén", "descripcion": "Prepara y despacha los pedidos" }
+  ],
+  "externos": [
+    { "id": "pasarela", "nombre": "Pasarela de pagos", "descripcion": "Cobra con tarjeta (proveedor externo)" },
+    { "id": "correo", "nombre": "Servicio de correo", "descripcion": "Envía los correos transaccionales" }
+  ],
+  "sistema": {
+    "id": "tienda",
+    "nombre": "Tienda",
+    "descripcion": "Catálogo, pedidos y pagos de la tienda",
+    "contenedores": [
+      { "id": "web", "nombre": "Aplicación web", "tecnologia": "Angular", "descripcion": "Interfaz de compra" },
+      { "id": "bff", "nombre": "BFF", "tecnologia": "Node.js 26 + Express 5", "descripcion": "API para la web y el móvil" },
+      { "id": "pedidos", "nombre": "Servicio de pedidos", "tecnologia": "Node.js 26 + Express 5", "descripcion": "Crea y consulta pedidos" },
+      { "id": "pagos", "nombre": "Servicio de pagos", "tecnologia": "Spring Boot 4.1", "descripcion": "Cobra y reembolsa" },
+      { "id": "bdpedidos", "nombre": "BD de pedidos", "tecnologia": "PostgreSQL 18", "descripcion": "Pedidos y líneas", "tipo": "base de datos" },
+      { "id": "broker", "nombre": "Bus de eventos", "tecnologia": "Kafka 4.4", "descripcion": "Eventos de dominio", "tipo": "cola" },
+      { "id": "almacen", "nombre": "Consola de almacén", "tecnologia": "Angular", "descripcion": "Lista de pedidos por preparar" }
+    ]
+  },
+  "relaciones": [
+    { "de": "cliente", "a": "web", "descripcion": "Compra en", "tecnologia": "HTTPS" },
+    { "de": "web", "a": "bff", "descripcion": "Llama a", "tecnologia": "JSON/HTTPS" },
+    { "de": "bff", "a": "pedidos", "descripcion": "Crea pedidos en", "tecnologia": "JSON/HTTP" },
+    { "de": "pedidos", "a": "bdpedidos", "descripcion": "Lee y escribe", "tecnologia": "SQL" },
+    { "de": "pedidos", "a": "broker", "descripcion": "Publica PedidoCreado en", "tecnologia": "Kafka" },
+    { "de": "pagos", "a": "broker", "descripcion": "Consume PedidoCreado de", "tecnologia": "Kafka" },
+    { "de": "pagos", "a": "pasarela", "descripcion": "Cobra con", "tecnologia": "HTTPS" },
+    { "de": "pedidos", "a": "correo", "descripcion": "Envía confirmaciones con", "tecnologia": "SMTP" },
+    { "de": "operador", "a": "almacen", "descripcion": "Prepara pedidos con", "tecnologia": "HTTPS" },
+    { "de": "almacen", "a": "bff", "descripcion": "Llama a", "tecnologia": "JSON/HTTPS" }
+  ]
+}

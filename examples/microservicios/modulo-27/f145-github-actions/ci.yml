@@ -1,0 +1,58 @@
+# Módulo 23 · F145 · Pipeline de CI/CD del servicio «pedidos» con GitHub Actions.
+# Cópialo a .github/workflows/ci.yml de un repositorio cuya raíz sea este laboratorio (package.json, src/, f142-dockerfile/).
+# Acciones fijadas por SHA de commit (consultado el 2026-11-20): actions/checkout v7.0.1 y actions/setup-node v7.1.0.
+name: ci-pedidos
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Mínimo privilegio: el GITHUB_TOKEN solo puede leer el código, salvo donde un job pida más.
+permissions:
+  contents: read
+
+# Un push nuevo a la misma rama cancela la ejecución anterior que sigue en marcha.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26.13.1
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  imagen:
+    needs: pruebas
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write   # solo este job puede publicar en ghcr.io
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Nombre de la imagen (en minúsculas, etiquetada con el commit)
+        run: echo "IMAGEN=ghcr.io/$(echo "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')/pedidos:${GITHUB_SHA:0:12}" >> "$GITHUB_ENV"
+      - name: Construir
+        run: docker build -f f142-dockerfile/Dockerfile -t "$IMAGEN" .
+      - name: Prueba de humo
+        run: |
+          docker run -d --name humo -p 8080:8080 "$IMAGEN"
+          for i in $(seq 1 20); do curl -fs localhost:8080/salud/lista && break; sleep 1; done
+          curl -fs localhost:8080/version
+      - name: Publicar (solo en main)
+        if: github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}   # entra como variable de entorno, nunca interpolado en el script
+        run: |
+          echo "$TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push "$IMAGEN"

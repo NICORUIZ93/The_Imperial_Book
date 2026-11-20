@@ -1,0 +1,16 @@
+{
+  "name": "modulo-24-gobernanza-arquitectonica",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Módulo 24 (Fase 3): Gobernanza arquitectónica (ADRs, modelo C4, ATAM ligero y fitness functions en producción).",
+  "type": "module",
+  "engines": {
+    "node": ">=26.13.1"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 'f1*/*.test.js'"
+  },
+  "dependencies": {
+    "prom-client": "15.1.3"
+  }
+}

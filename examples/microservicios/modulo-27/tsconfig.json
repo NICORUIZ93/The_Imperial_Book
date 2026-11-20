@@ -1,0 +1,15 @@
+{
+  // Módulo 23 · TypeScript 6.0.3 COMPILA src/ a dist/ (npm run build). La etapa «build» del Dockerfile hace lo mismo.
+  "compilerOptions": {
+    "target": "es2024",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

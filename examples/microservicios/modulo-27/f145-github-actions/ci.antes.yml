@@ -1,0 +1,16 @@
+# Módulo 23 · F145 · ANTES: un workflow que funciona pero NO debes copiar (mira validar.js para los 6 problemas).
+name: ci
+on: [push, pull_request]
+jobs:
+  todo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@v7
+        with:
+          node-version: latest
+      - run: npm install && npm run build && npm test
+      - run: |
+          docker build -t ghcr.io/${{ github.repository }}/pedidos:latest -f f142-dockerfile/Dockerfile .
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository }}/pedidos:latest

@@ -1,0 +1,27 @@
+# Módulo 23 · F143 · ERROR COMÚN: el Service elige «app: pedido» (sin s) y el pod se llama «app: pedidos».
+# kubectl apply funciona sin quejarse, pero el Service no tiene Endpoints y nadie recibe tráfico.
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: pedidos, namespace: tienda }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: pedidos } }
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  template:
+    metadata: { labels: { app: pedidos } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 1000 }
+      containers:
+        - name: pedidos
+          image: pedidos:1.0.0
+          ports: [{ name: http, containerPort: 8080 }]
+          resources: { requests: { cpu: 100m, memory: 96Mi }, limits: { memory: 192Mi } }
+          readinessProbe: { httpGet: { path: /salud/lista, port: http } }
+          livenessProbe: { httpGet: { path: /salud/viva, port: http } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: pedidos, namespace: tienda }
+spec:
+  selector: { app: pedido }
+  ports: [{ port: 80, targetPort: http }]

@@ -1,0 +1,35 @@
+{
+  "id": 28,
+  "title": "Módulo 24 · Gobernanza arquitectónica",
+  "shortTitle": "Gobernanza arquitectónica",
+  "level": "Experto",
+  "duration": "6 h",
+  "color": "#0f766e",
+  "description": "Haz que las decisiones de arquitectura queden escritas, se entiendan y se sigan cumpliendo: ADRs numerados con alternativas, reemplazos enlazados y lint en CI; el modelo C4 como código con las vistas de contexto y contenedores generadas; un ATAM ligero con árbol de utilidad, riesgos y temas de riesgo; y fitness functions en producción que miden p99, errores y dependencias síncronas con métricas reales y bloquean un despliegue.",
+  "concepts": [
+    "ADRs",
+    "Modelo C4",
+    "ATAM ligero",
+    "Fitness functions en producción"
+  ],
+  "practice": [
+    "Crea, acepta y reemplaza ADRs con una herramienta de línea de órdenes y deja que el lint rechace un registro de una línea",
+    "Genera las vistas C4 de contexto y contenedores desde un único modelo JSON y detecta un diagrama que mezcla niveles",
+    "Prioriza los escenarios de calidad de una tienda y convierte sus riesgos en temas ligados a objetivos de negocio",
+    "Marca como NO APTA una versión con p99 de 367 ms, 1,3 % de errores y una llamada síncrona que prohíbe un ADR"
+  ],
+  "questions": [
+    "¿Cómo documentas las decisiones de arquitectura y cómo evitas que se queden desactualizadas?",
+    "¿Qué diagramas harías para explicar 15 microservicios a un equipo nuevo?",
+    "¿Cómo evaluarías una arquitectura de microservicios antes de construirla?",
+    "¿Qué es una fitness function y cómo la usas para que una decisión no se degrade?"
+  ],
+  "tools": [
+    "Node.js 26.13.1 LTS",
+    "prom-client 15.1.3",
+    "Prometheus v3.15.1",
+    "Mermaid",
+    "Structurizr DSL"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-28 con ./verificar.sh en verde (npm ci, 21 tests de node --test y los scripts de las fichas F148–F151) y ./verificar.sh --compose con las fitness functions evaluadas en Prometheus."
+}

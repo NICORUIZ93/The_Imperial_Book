@@ -1,0 +1,24 @@
+{
+  "name": "modulo-23-docker-kubernetes-cicd",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Módulo 23 (Fase 2): Docker, Kubernetes y CI/CD para un servicio Node.js (Dockerfile multi-stage, Kubernetes, HPA, GitHub Actions, Blue-Green y Canary, GitOps con Argo CD).",
+  "type": "module",
+  "engines": {
+    "node": ">=26.13.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/servidor.js",
+    "test": "node --test --test-concurrency=1 'f1*/*.test.js'"
+  },
+  "dependencies": {
+    "express": "5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.6",
+    "@types/node": "26.6.6",
+    "typescript": "6.0.3",
+    "yaml": "2.9.1"
+  }
+}

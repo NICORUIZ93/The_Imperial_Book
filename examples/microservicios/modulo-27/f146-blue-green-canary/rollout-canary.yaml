@@ -1,0 +1,32 @@
+# Módulo 23 · F146 · Canary con Argo Rollouts v1.10.1 (CRD argoproj.io/v1alpha1). Sustituye al Deployment «pedidos».
+# Sin un router de tráfico (Istio, NGINX…), Argo Rollouts aproxima el peso con réplicas: con 10 réplicas,
+# setWeight 10 = 1 pod nuevo y 9 viejos. Avanza solo tras cada pausa; «kubectl argo rollouts abort pedidos -n tienda»
+# vuelve al 100 % estable y «promote» se salta la pausa actual.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata: { name: pedidos, namespace: tienda }
+spec:
+  replicas: 10
+  selector: { matchLabels: { app: pedidos } }
+  template:
+    metadata: { labels: { app: pedidos } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 1000 }
+      containers:
+        - name: pedidos
+          image: pedidos:1.0.0
+          imagePullPolicy: IfNotPresent
+          env: [{ name: VERSION, value: v1 }]
+          ports: [{ name: http, containerPort: 8080 }]
+          resources: { requests: { cpu: 100m, memory: 96Mi }, limits: { memory: 192Mi } }
+          readinessProbe: { httpGet: { path: /salud/lista, port: http }, periodSeconds: 5 }
+          livenessProbe: { httpGet: { path: /salud/viva, port: http }, periodSeconds: 10 }
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: { duration: 2m }
+        - setWeight: 25
+        - pause: { duration: 2m }
+        - setWeight: 50
+        - pause: {}            # se queda aquí hasta «kubectl argo rollouts promote pedidos -n tienda»

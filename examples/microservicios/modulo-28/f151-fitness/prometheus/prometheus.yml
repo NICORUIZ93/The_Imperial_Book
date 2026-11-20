@@ -1,0 +1,10 @@
+# Módulo 24 · F151 · Prometheus v3.15.1 lee las métricas de las dos versiones del servicio cada 5 s.
+global:
+  scrape_interval: 5s
+scrape_configs:
+  - job_name: pedidos-v1
+    static_configs:
+      - targets: ["pedidos-v1:3151"]
+  - job_name: pedidos-v2
+    static_configs:
+      - targets: ["pedidos-v2:3151"]

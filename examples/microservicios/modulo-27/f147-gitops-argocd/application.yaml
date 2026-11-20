@@ -1,0 +1,23 @@
+# Módulo 23 · F147 · Application de Argo CD v3.5.6: «lo que hay en la carpeta k8s/ de la rama main ES el clúster».
+# Cambia repoURL por TU repositorio de configuración (público, o registrado en Argo CD con credenciales).
+#   kubectl apply -n argocd -f f147-gitops-argocd/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pedidos
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/tu-usuario/tienda-gitops.git
+    targetRevision: main
+    path: k8s
+  destination:
+    server: https://kubernetes.default.svc   # el mismo clúster donde corre Argo CD
+    namespace: tienda
+  syncPolicy:
+    automated:
+      prune: true      # borra del clúster lo que ya no está en Git (por defecto NO lo hace)
+      selfHeal: true   # deshace los cambios hechos a mano en el clúster (por defecto NO lo hace)
+    syncOptions:
+      - CreateNamespace=true
