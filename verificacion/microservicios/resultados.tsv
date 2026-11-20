@@ -11,3 +11,5 @@ microservices	modulo-9	PASS	Mac del dueño 2026-11-19 (JDK 25.0.5, Spring Boot 4
 microservices	modulo-10	PASS	Mac del dueño 2026-11-19 (JDK 25.0.5, Spring Boot 4.1.3, Node 26.13.1, Docker)
 microservices	modulo-11	PASS	Mac del dueño 2026-11-19 (JDK 25.0.5, Spring Boot 4.1.3, Spring Cloud 2025.1.4, Docker)
 microservices	modulo-12	PASS	Mac del dueño 2026-11-19 (JDK 25.0.5, Spring Boot 4.1.3, Spring Cloud 2025.1.4, Docker)
+microservices	modulo-17	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript 6.0.3, Docker)
+microservices	modulo-18	PASS	Mac del dueño 2026-11-19 (Node 26.13.1, TypeScript 6.0.3, Docker)
