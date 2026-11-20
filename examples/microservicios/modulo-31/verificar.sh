@@ -67,7 +67,7 @@ guion "F163 ataque antes-despues" "node f163-vault/ataque.js" \
   'leases vivos: 0'
 if [ -n "${PGURL:-}" ]; then
   guion "F163 error común (PostgreSQL real)" "node f163-vault/error-comun.js" 'password authentication failed for user'
-else
+elif [ "${1:-}" != "--compose" ]; then   # con --compose lo cubre el bloque F163 de más abajo
   omite "F163 error común con PostgreSQL real: define PGURL o usa --compose"
 fi
 
