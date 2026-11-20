@@ -61,8 +61,12 @@ if [ "${1:-}" != "--solo-jdk" ]; then
     VAULT_TOKEN=$(./vault/sembrar.sh) && export VAULT_TOKEN || falla "vault/sembrar.sh"
 
     echo "-- Trivy 0.76.1 sobre F069 (antes: exit 1 · después: exit 0)"
-    trivy() { docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$PWD/f069-escaneo":/src:ro \
-      aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --quiet "/src/$1"; }
+    # Trivy resuelve los POM padre; con el ~/.m2 del equipo montado no depende de Maven Central
+    # (que responde 429 y bloquea la IP 30 min si se le pide demasiado).
+    ./mvnw -q -f f069-escaneo/despues/pom.xml dependency:resolve >/dev/null 2>&1 || true
+    mkdir -p "$HOME/.m2/repository"
+    trivy() { docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$HOME/.m2":/root/.m2:ro \
+      -v "$PWD/f069-escaneo":/src:ro aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --quiet "/src/$1"; }
     trivy antes; [ $? -eq 1 ] || falla "Trivy no detectó las vulnerabilidades de antes/"
     trivy despues || falla "Trivy encontró HIGH/CRITICAL en despues/"
     echo "-- Trivy config sobre los Dockerfile (antes: exit 1 · después: exit 0)"

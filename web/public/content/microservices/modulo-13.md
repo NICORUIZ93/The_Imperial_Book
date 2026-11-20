@@ -3936,8 +3936,9 @@ El test es el código de salida, igual que en CI. `verificar.sh` lo comprueba as
 ```bash
 java jdk/MiniEscaner.java f069-escaneo/antes/pom.xml > /dev/null 2>&1; [ $? -eq 1 ] || falla "MiniEscaner antes"
 java jdk/MiniEscaner.java f069-escaneo/despues/pom.xml > /dev/null 2>&1 || falla "MiniEscaner después"
-trivy() { docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$PWD/f069-escaneo":/src:ro \
-  aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --quiet "/src/$1"; }
+# ~/.m2 montado: Trivy resuelve los POM padre sin pedirlos a Maven Central (evita su 429)
+trivy() { docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$HOME/.m2":/root/.m2:ro \
+  -v "$PWD/f069-escaneo":/src:ro aquasec/trivy:0.76.1 fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --quiet "/src/$1"; }
 trivy antes; [ $? -eq 1 ] || falla "Trivy no detectó las vulnerabilidades de antes/"
 trivy despues || falla "Trivy encontró HIGH/CRITICAL en despues/"
 ```
