@@ -1,0 +1,31 @@
+{
+  "id": 2,
+  "title": "Módulo 0.3 · Introducción a Java y Node.js lado a lado (comparativa visual)",
+  "shortTitle": "Java y Node.js lado a lado",
+  "level": "Fundamentos",
+  "duration": "8 h",
+  "color": "#0f766e",
+  "description": "Escribe el mismo programa en Java y en Node.js y compara sintaxis, ejecución, tipos, errores y concurrencia (hilos virtuales frente a event loop) con tests en ambos lenguajes.",
+  "concepts": [
+    "Java y Node.js lado a lado: sintaxis y ejecución",
+    "Java y Node.js lado a lado: tipos, errores y concurrencia"
+  ],
+  "practice": [
+    "Ejecuta el mismo programa con java y con node y compara la salida",
+    "Compila con javac y observa el bytecode",
+    "Provoca un error de tipos que Java detecta al compilar",
+    "Bloquea el event loop a propósito y mide el efecto",
+    "Ejecuta tres esperas en paralelo con hilos virtuales y con async/await"
+  ],
+  "questions": [
+    "¿Qué hace la JVM?",
+    "¿Node.js es de un solo hilo?",
+    "¿Cuándo no usar hilos virtuales?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Node.js 26 LTS",
+    "node:test"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-2 con ./verificar.sh en verde (Java 9 comprobaciones y Node 10 tests)."
+}

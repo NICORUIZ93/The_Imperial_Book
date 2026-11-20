@@ -1,0 +1,39 @@
+{
+  "id": 3,
+  "title": "Módulo 0.4 · Git, terminal, HTTP, JSON, YAML, variables de entorno",
+  "shortTitle": "Git, terminal, HTTP, JSON, YAML, entorno",
+  "level": "Fundamentos",
+  "duration": "12 h",
+  "color": "#0f766e",
+  "description": "Domina las seis herramientas que aparecen en todo microservicio: historia con Git, control desde la terminal, el protocolo HTTP, los formatos JSON y YAML y la configuración por variables de entorno.",
+  "concepts": [
+    "Git",
+    "Terminal",
+    "HTTP",
+    "JSON",
+    "YAML",
+    "Variables de entorno"
+  ],
+  "practice": [
+    "Crea un repositorio, una rama y un merge",
+    "Analiza un log con tuberías y códigos de salida",
+    "Provoca 200, 201, 400, 404, 405 y 415 con curl",
+    "Detecta errores de sintaxis JSON y la pérdida de precisión de números grandes",
+    "Rompe un YAML con una tabulación y descubre el problema de Noruega",
+    "Configura el mismo programa con variables de entorno y --env-file"
+  ],
+  "questions": [
+    "¿Qué haces si subiste un secreto a Git?",
+    "¿Qué significa que un método HTTP sea idempotente?",
+    "¿Dónde viven la configuración y los secretos de un microservicio?"
+  ],
+  "tools": [
+    "Git",
+    "bash",
+    "curl",
+    "Node.js 26 LTS",
+    "yaml 2.9.1",
+    "JDK 25 LTS"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-3 con ./verificar.sh en verde (Git, terminal, 20 tests de Node y 3 de Java)."
+}

@@ -1,0 +1,55 @@
+# Cada changeSet se identifica por id + author + archivo y se aplica UNA sola vez.
+databaseChangeLog:
+  - changeSet:
+      id: 1-crear-productos
+      author: academia
+      changes:
+        - createTable:
+            tableName: productos
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: sku
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: nombre
+                  type: VARCHAR(80)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: precio
+                  type: NUMERIC(12, 2)
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: productos
+            columns:
+              - column: { name: sku, value: CAF-1 }
+              - column: { name: nombre, value: "Café de Huila 500 g" }
+              - column: { name: precio, valueNumeric: 32000 }
+      # createTable e insert no se pueden revertir solos: se dice cómo.
+      rollback:
+        - dropTable:
+            tableName: productos
+  - changeSet:
+      id: 2-agregar-stock
+      author: academia
+      changes:
+        - addColumn:
+            tableName: productos
+            columns:
+              - column:
+                  name: stock
+                  type: INTEGER
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+      # addColumn sí sabe revertirse (dropColumn); no hace falta bloque rollback.

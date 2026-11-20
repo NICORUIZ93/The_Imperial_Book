@@ -5008,106 +5008,11 @@
     ]
   },
   "microservices": {
-    "0": [
-      {
-        "title": "Ejecutar dos procesos Java y comprobar su socket HTTP",
-        "fragment": "tema-1-ejecutar-dos-procesos-java-y-comprobar-su-socket-http"
-      },
-      {
-        "title": "Imponer un presupuesto temporal a una solicitud HTTP",
-        "fragment": "tema-2-imponer-un-presupuesto-temporal-a-una-solicitud-http"
-      },
-      {
-        "title": "Propagar un deadline absoluto entre servicios HTTP",
-        "fragment": "tema-3-propagar-un-deadline-absoluto-entre-servicios-http"
-      },
-      {
-        "title": "Clasificar un resultado desconocido antes de reintentar",
-        "fragment": "tema-4-clasificar-un-resultado-desconocido-antes-de-reintentar"
-      },
-      {
-        "title": "Evitar efectos duplicados con una clave idempotente",
-        "fragment": "tema-5-evitar-efectos-duplicados-con-una-clave-idempotente"
-      },
-      {
-        "title": "Seleccionar un reloj según la evidencia temporal",
-        "fragment": "tema-6-seleccionar-un-reloj-segun-la-evidencia-temporal"
-      },
-      {
-        "title": "Preservar el orden de eventos por versión del agregado",
-        "fragment": "tema-7-preservar-el-orden-de-eventos-por-version-del-agregado"
-      },
-      {
-        "title": "Evolucionar un contrato JSON sin romper consumidores",
-        "fragment": "tema-8-evolucionar-un-contrato-json-sin-romper-consumidores"
-      },
-      {
-        "title": "Rechazar un frame excesivo antes de reservar memoria",
-        "fragment": "tema-9-rechazar-un-frame-excesivo-antes-de-reservar-memoria"
-      },
-      {
-        "title": "Refutar falacias distribuidas mediante evidencia reproducible",
-        "fragment": "tema-10-refutar-falacias-distribuidas-mediante-evidencia-reproducible"
-      }
-    ],
-    "1": [
-      {
-        "title": "Distinguir estructura lógica de unidad de despliegue",
-        "fragment": "tema-1-distinguir-estructura-logica-de-unidad-de-despliegue"
-      },
-      {
-        "title": "Evaluar autonomía antes de extraer un proceso",
-        "fragment": "tema-2-evaluar-autonomia-antes-de-extraer-un-proceso"
-      },
-      {
-        "title": "Agrupar código por capacidad de negocio",
-        "fragment": "tema-3-agrupar-codigo-por-capacidad-de-negocio"
-      },
-      {
-        "title": "Proteger la API pública de un módulo",
-        "fragment": "tema-4-proteger-la-api-publica-de-un-modulo"
-      },
-      {
-        "title": "Mantener reglas de dominio libres de frameworks",
-        "fragment": "tema-5-mantener-reglas-de-dominio-libres-de-frameworks"
-      },
-      {
-        "title": "Sustituir adaptadores mediante puertos",
-        "fragment": "tema-6-sustituir-adaptadores-mediante-puertos"
-      },
-      {
-        "title": "Representar dependencias de módulos como un grafo",
-        "fragment": "tema-7-representar-dependencias-de-modulos-como-un-grafo"
-      },
-      {
-        "title": "Romper ciclos según el tipo de acoplamiento",
-        "fragment": "tema-8-romper-ciclos-segun-el-tipo-de-acoplamiento"
-      },
-      {
-        "title": "Bloquear accesos a internals con ArchUnit",
-        "fragment": "tema-9-bloquear-accesos-a-internals-con-archunit"
-      },
-      {
-        "title": "Detectar ciclos de paquetes con ArchUnit",
-        "fragment": "tema-10-detectar-ciclos-de-paquetes-con-archunit"
-      },
-      {
-        "title": "Evitar falsos verdes en fitness functions",
-        "fragment": "tema-11-evitar-falsos-verdes-en-fitness-functions"
-      },
-      {
-        "title": "Medir señales que justifican una extracción",
-        "fragment": "tema-12-medir-senales-que-justifican-una-extraccion"
-      },
-      {
-        "title": "Registrar una decisión reversible en un ADR",
-        "fragment": "tema-13-registrar-una-decision-reversible-en-un-adr"
-      },
-      {
-        "title": "Separar mitos y verdades de Domain-Driven Design",
-        "fragment": "tema-14-separar-mitos-y-verdades-de-domain-driven-design"
-      }
-    ]
+    "0": [],
+    "1": [],
+    "2": [],
+    "3": [],
+    "4": []
   },
   "node": {
     "0": [

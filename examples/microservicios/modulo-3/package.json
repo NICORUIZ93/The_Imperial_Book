@@ -1,0 +1,16 @@
+{
+  "name": "modulo-0-4-herramientas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Módulo 0.4: Git, terminal, HTTP, JSON, YAML y variables de entorno.",
+  "type": "module",
+  "engines": {
+    "node": ">=26.13.1"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "yaml": "2.9.1"
+  }
+}

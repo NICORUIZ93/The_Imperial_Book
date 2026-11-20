@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- F017 · Java moderno: Streams, Lambdas, Optional, Records, Pattern Matching.
+     Usa el parent de Spring Boot solo para heredar versiones probadas de plugins y de JUnit;
+     el código no depende de Spring. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>4.1.2</version>
+    <relativePath/>
+  </parent>
+  <groupId>academia.microservicios</groupId>
+  <artifactId>f017-java-moderno</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <!-- El parent traduce java.version a maven.compiler.release -->
+    <java.version>25</java.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <!-- JUnit Jupiter 6.0.3, versión gestionada por Spring Boot 4.1.2 -->
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

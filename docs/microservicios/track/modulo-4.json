@@ -1,0 +1,33 @@
+{
+  "id": 4,
+  "title": "Módulo 0.5 · Primer «Hola Mundo» en ambos stacks + Docker básico",
+  "shortTitle": "Hola Mundo y Docker básico",
+  "level": "Fundamentos",
+  "duration": "10 h",
+  "color": "#0f766e",
+  "description": "Instala JDK 25, Node.js 26 y Docker, escribe el Hola Mundo como programa y como servidor HTTP en ambos stacks y arráncalos juntos en contenedores con Docker Compose.",
+  "concepts": [
+    "Primer «Hola Mundo» en Java",
+    "Primer «Hola Mundo» en Node.js",
+    "Docker básico"
+  ],
+  "practice": [
+    "Ejecuta el Hola Mundo clásico y el compacto de JDK 25",
+    "Convierte el Hola Mundo en un servidor HTTP en Java y en Node",
+    "Apaga el servidor Node con SIGTERM de forma ordenada",
+    "Construye una imagen y ejecuta contenedores con variables de entorno",
+    "Arranca los dos servicios con docker compose up"
+  ],
+  "questions": [
+    "¿Qué diferencia hay entre JDK y JRE?",
+    "¿Qué es un graceful shutdown?",
+    "¿Qué diferencia hay entre una imagen y un contenedor?"
+  ],
+  "tools": [
+    "JDK 25 LTS",
+    "Node.js 26 LTS",
+    "Docker Engine 29",
+    "Docker Compose v5"
+  ],
+  "deliverable": "Laboratorio examples/microservicios/modulo-4 con ./verificar.sh --compose en verde."
+}

@@ -1,0 +1,6 @@
+# Solo se carga con el perfil "prod": sobrescribe lo que cambia en producción.
+tienda:
+  descuento-maximo: 5
+  # El secreto NO va en el repositorio: llega por variable de entorno.
+  # ":" = si falta, queda vacío y @NotBlank detiene el arranque.
+  bd-url: ${TIENDA_BD_URL:}

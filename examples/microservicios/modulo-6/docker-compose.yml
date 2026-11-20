@@ -1,0 +1,33 @@
+# Módulo 2 (modulo-6) · APIs REST y persistencia
+# Arranca:   docker compose up -d --wait     (espera a que ambos healthchecks estén "healthy")
+# Detén:     docker compose down              (los datos se pierden: no hay volúmenes)
+services:
+  postgres:
+    image: postgres:18.7
+    environment:
+      POSTGRES_USER: tienda
+      POSTGRES_PASSWORD: tienda
+      POSTGRES_DB: tienda
+    ports: ["5432:5432"]
+    volumes:
+      - ./initdb/postgres.sql:/docker-entrypoint-initdb.d/01-bases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U tienda -d f031"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  mysql:
+    image: mysql:9.7.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: f031
+      MYSQL_USER: tienda
+      MYSQL_PASSWORD: tienda
+    ports: ["3306:3306"]
+    volumes:
+      - ./initdb/mysql.sql:/docker-entrypoint-initdb.d/01-practica.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -utienda -ptienda --silent"]
+      interval: 2s
+      timeout: 3s
+      retries: 60

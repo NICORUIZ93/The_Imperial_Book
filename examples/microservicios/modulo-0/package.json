@@ -1,0 +1,13 @@
+{
+  "name": "modulo-0-1-programa-servidor-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Módulo 0.1: qué es un programa, un servidor y una API. Sin dependencias externas.",
+  "type": "module",
+  "engines": {
+    "node": ">=26.13.1"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

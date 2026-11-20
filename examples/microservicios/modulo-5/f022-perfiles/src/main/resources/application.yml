@@ -1,0 +1,11 @@
+# Valores comunes a todos los entornos (perfil "default").
+spring:
+  main:
+    banner-mode: off
+logging:
+  level:
+    root: warn
+tienda:
+  moneda: COP
+  descuento-maximo: 10
+  bd-url: jdbc:postgresql://localhost:5432/tienda_dev

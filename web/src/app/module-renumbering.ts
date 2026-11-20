@@ -223,6 +223,9 @@ export const RENUMBERING_STEPS: RenumberingStep[] = [
       },
     },
   },
+  // specs/018: el curso de Microservicios se rehízo con otro temario; el progreso de los módulos
+  // anteriores (M0 falacias, M1 monolito modular) no corresponde a los módulos nuevos 0.1 y 0.2.
+  { version: 2, tracks: { microservices: { 0: 900, 1: 901 } } },
 ];
 
 export const RENUMBERING_VERSION_KEY = 'imperial-book-renumbering-version';

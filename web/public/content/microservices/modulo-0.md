@@ -1,1454 +1,812 @@
-# Curso Microservicios · Antes de distribuir: proceso, red y falacias
+# Módulo 0.1 · Qué es un programa, un servidor y una API (analogías visuales)
 
-Este módulo no presupone que «microservicio» signifique Spring Boot, Docker o una API pequeña. Primero separas dos procesos y observas qué se pierde al cruzar la red: llamadas instantáneas, memoria compartida, resultado inequívoco y orden global.
+**Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (3 temas de 2 h). **Dificultad:** 1 de 5,
+para quien nunca ha programado. **Dependencias:** ninguna; solo necesitas un computador con terminal y
+**Node.js 26.13.1 LTS** instalado (el Módulo 0.4 profundiza en la terminal y el 0.5 instala todo paso a paso; si aún
+no tienes Node, ejecuta los comandos de este módulo cuando lo instales). **Laboratorio:**
+`examples/microservicios/modulo-0/` (se verifica con `./verificar.sh`).
 
-## Mapa de la ruta
-
-«Microservicios: sistemas distribuidos» tiene 2 módulos, todos de la etapa Fundamentos; usa la tabla para saltar a un módulo concreto.
+Al terminar este módulo podrás explicar con tus palabras, y demostrar en tu terminal, la diferencia entre un
+programa que termina, un servidor que se queda esperando y una API que define qué se le puede pedir a ese
+servidor. Son las tres piezas con las que, 30 semanas después, construirás microservicios.
 
 ```mermaid
 flowchart LR
-    E0["Fundamentos<br/>módulos 0–1"]
+    P["Programa<br/>instrucciones que terminan"] --> S["Servidor<br/>programa que espera pedidos"]
+    S --> A["API<br/>menú de pedidos aceptados"]
+    A --> M["Microservicio<br/>(Fase 1 y Fase 2)"]
 ```
 
-| Módulo | Etapa | Qué aprendes |
-|---|---|---|
-| 0 | Fundamentos | [Antes de distribuir: proceso, red y falacias](/curso/microservices/0) |
-| 1 | Fundamentos | [Construir un monolito modular antes de extraer servicios](/curso/microservices/1) |
+**Texto alternativo:** cuatro cajas en línea de izquierda a derecha. «Programa» lleva a «Servidor», que lleva a
+«API», que lleva a «Microservicio». Cada pieza se construye sobre la anterior.
 
-## Aprende construyendo
+---
 
-El laboratorio crece de un servidor local a un flujo que hace visibles latencia, ambigüedad, orden y compatibilidad. Conserva cada evidencia: el objetivo no es completar comandos, sino poder explicar qué cambió y por qué.
+### Qué es un programa
 
-## Entorno del módulo
+#### 1. UBICACIÓN
 
-Crea `academia-labs/microservices`, luego `src/` y `evidence/`. Comprueba `java --version`, `javac --version` y `curl --version`. Todos los comandos parten de esa carpeta. En Windows usa PowerShell para crear archivos y `Get-NetTCPConnection`; los ejemplos de shell siguientes presuponen macOS/Linux.
+Módulo 0.1, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md` · Laboratorio
+`examples/microservicios/modulo-0/programa/`.
 
-### Tema 1: Ejecutar dos procesos Java y comprobar su socket HTTP · Básico · 45 min
+#### 2. PRERREQUISITOS
 
-**Prerrequisito:** ninguno. Este es el primer tema del track.
+- Saber abrir la terminal de tu computador (en macOS: aplicación **Terminal**; en Windows: **PowerShell** o
+  **WSL**; en Linux: **Terminal**). No necesitas saber usarla: copiarás los comandos tal cual.
+- Tener Node.js instalado (comprueba con `node -v`; debe empezar por `v26`, o como mínimo `v22`).
+- Ningún conocimiento de programación.
 
-**Al terminar podrás:** compilar y ejecutar un servidor Java en un proceso independiente, localizar su PID y comprobar qué dirección y puerto escucha antes de enviar una petición HTTP.
+#### 3. OBJETIVO DE APRENDIZAJE
 
-**¿Por qué es importante?** Un microservicio es, antes que nada, un proceso separado que escucha en una dirección de red: si no puedes comprobar qué PID atiende qué puerto, cualquier fallo posterior entre servicios se confunde con un error de código.
+**Ejecutar** un programa de 20 líneas, **identificar** en él sus tres partes (datos, instrucciones y resultado) y
+**modificar** un dato para predecir el nuevo resultado antes de ejecutarlo; lo compruebas cuando el test
+`programa/receta.test.js` pasa con 3 de 3.
 
-#### Paso 1 · Objetivo y preparación
+#### 4. ANALOGÍA VISUAL
 
-Usarás **JDK 27.0.1**. Comprueba `java --version`, `javac --version`, `curl --version` y crea `academia-labs/microservices/m0-t1/{src,evidence}`. Si no puedes distinguir un archivo `.java` de una JVM en ejecución, vuelve al curso Java, tema «Ejecutar el ciclo fuente-bytecode-proceso» antes de continuar.
+Imagina una **receta de cocina pegada en la puerta de la nevera**. Arriba, en un recuadro, la lista de
+ingredientes con sus cantidades (arroz 4500, huevos 12000, tomates 3500). Debajo, pasos numerados con flechas
+que bajan: «1. Pon el contador en cero», «2. Por cada ingrediente, suma su precio», «3. Compara con el dinero de
+la billetera». Al final de la hoja, un plato servido con un cartel: «Total: 20000. ¿Alcanza? Sí». A un lado,
+una persona (la computadora) lee la receta **en orden, de arriba abajo, sin saltarse ni inventar pasos**, y
+cuando llega al último paso **se va de la cocina**: la receta terminó.
 
-#### Paso 2 · Contexto y caso real
+La imagen enseña tres cosas: un programa tiene **datos** (ingredientes), **instrucciones** (pasos) y
+**resultado** (plato); la computadora es obediente pero literal; y un programa normal **termina**.
 
-RutaFlow empieza como un proceso único. Antes de separar servicios, el equipo necesita comprobar qué cambia realmente cuando una capacidad vive tras una conexión. En un incidente, decir «el servidor está arriba» puede significar que existe un proceso, que un puerto escucha o que el endpoint responde correctamente: son evidencias distintas. Confundirlas prolonga el diagnóstico y puede hacer que infraestructura reinicie una aplicación saludable mientras el problema está en DNS, routing o lógica HTTP. En esta práctica se establece la primera frontera observable sin Docker ni Spring: una JVM escucha y otro proceso, `curl`, actúa como cliente.
+#### 5. DIAGRAMA TÉCNICO
 
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Proceso y PID | Prerrequisito | Una JVM tiene memoria y recursos propios; `jps -l` demuestra su PID, pero no su salud HTTP |
-| Host e interfaz | Núcleo | `127.0.0.1` solo acepta tráfico local; `0.0.0.0` amplía exposición y no es un destino de cliente |
-| Puerto | Núcleo | Identifica el punto de escucha del proceso; un puerto libre no prueba que el protocolo sea correcto |
-| Socket TCP | Núcleo | Combina protocolo, direcciones y puertos local/remoto; TCP transporta bytes, no objetos Java |
-| Endpoint HTTP | Variante | `/health` añade semántica HTTP sobre TCP; `200 UP` es evidencia diferente de `LISTEN` |
-| Puerto ocupado | Diagnóstico | Dos procesos no pueden escuchar el mismo par dirección/puerto sin una opción explícita de reutilización |
-
-**Proceso** es una instancia ejecutándose; el archivo fuente no consume tráfico. **Host** señala una dirección de red y **puerto** selecciona un punto de comunicación. **Socket** es el extremo concreto que el sistema operativo mantiene. **HTTP** añade método, ruta, estado, headers y cuerpo sobre la conexión TCP.
-
-**Analogía:** un edificio es el host, un local es el puerto, el negocio abierto es el proceso y la conversación en la puerta es la conexión. Ver luz en el local no demuestra que atienda correctamente tu solicitud.
-
-```text
-curl (proceso cliente) ── TCP 127.0.0.1:puerto-efímero → 127.0.0.1:8081 ── Servidor (JVM/PID)
-                                  GET /health → HTTP 200 + "UP"
+```mermaid
+flowchart TD
+    A["Archivo receta.js<br/>(texto en el disco)"] -->|"node receta.js"| B["Proceso en memoria"]
+    B --> C["1. Datos<br/>listaDeCompras, dinero"]
+    C --> D["2. Instrucciones<br/>calcularTotal, alcanzaElDinero"]
+    D --> E["3. Resultado<br/>console.log en la terminal"]
+    E --> F["Fin del proceso<br/>(código de salida 0)"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
-
-**Paso 4.1 — Setup.**
-
-```bash
-mkdir -p academia-labs/microservices/m0-t1/{src,evidence}
-cd academia-labs/microservices/m0-t1
-java --version
-```
-
-**Paso 4.2 — Código.** Crea `src/Servidor.java` completo:
-
-```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-
-public final class Servidor {
-  private static final String HOST = "127.0.0.1";
-  private static final int PUERTO = 8081;
-
-  private Servidor() { }
-
-  public static void main(String[] args) throws IOException {
-    // La dirección fija evita exponer el laboratorio fuera del equipo.
-    var direccion = new InetSocketAddress(HOST, PUERTO);
-    var servidor = HttpServer.create(direccion, 16);
-
-    // El handler siempre cierra el body para liberar la conexión.
-    servidor.createContext("/health", Servidor::responderSalud);
-    servidor.start();
-
-    long pid = ProcessHandle.current().pid();
-    System.out.printf("LISTEN http://%s:%d/health pid=%d%n", HOST, PUERTO, pid);
-  }
-
-  private static void responderSalud(HttpExchange intercambio) throws IOException {
-    byte[] cuerpo = "UP".getBytes(StandardCharsets.UTF_8);
-    intercambio.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
-    intercambio.sendResponseHeaders(200, cuerpo.length);
-    try (var salida = intercambio.getResponseBody()) {
-      salida.write(cuerpo);
-    }
-  }
-}
-```
-
-**Paso 4.3 — Verificación.** En la primera terminal:
-
-```bash
-javac -d out src/Servidor.java
-java -cp out Servidor
-# Esperado: LISTEN http://127.0.0.1:8081/health pid=<número>
-```
-
-En otra terminal:
-
-```bash
-curl -i http://127.0.0.1:8081/health
-# Esperado: HTTP/1.1 200 OK ... Content-type: text/plain; charset=utf-8 ... UP
-jps -l
-lsof -nP -iTCP:8081 -sTCP:LISTEN  # Linux: ss -ltnp 'sport = :8081'
-```
-
-**Fallo deliberado:** sin detener el primer servidor, ejecuta `java -cp out Servidor` en una tercera terminal → **Error esperado:** `java.net.BindException: Address already in use` (Windows puede mostrar `Address already in use: bind`) → **Diagnóstico:** el primer PID ya posee `127.0.0.1:8081`; cambiar el puerto ocultaría el diagnóstico, por lo que primero localiza y detén conscientemente el proceso duplicado.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** cambia el cuerpo a `READY`, recompila y predice el `Content-length`. Pista: cuenta bytes UTF-8.
-2. **Variación:** usa el puerto `8082`; confirma con `lsof`/`ss` que `8081` queda libre. Pista: modifica una sola constante.
-3. **Diagnóstico:** solicita `/no-existe` y explica por qué recibir HTTP `404` demuestra más conectividad que un rechazo TCP. Pista: la JVM sí respondió.
-4. **Integración:** guarda PID, URL, estado y cuerpo en `evidence/tema-1.txt`. Pista: combina `jps`, `curl -i` y la salida del servidor.
-5. **Diseño:** decide si RutaFlow debe escuchar en `127.0.0.1` o `0.0.0.0` durante desarrollo compartido y escribe riesgo, mitigación y condición de uso.
-
-#### Paso 6 · Práctica independiente
-
-Sin copiar el ejemplo, crea `src/ServidorVersion.java` que escuche en `127.0.0.1:8083` y responda exactamente `RutaFlow m0-t1` en `/version`. Entrega el código, la salida de compilación, el PID, el socket en escucha y una petición que demuestre estado, `Content-Type` y cuerpo. No uses Spring, Docker ni dependencias externas.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo archivo fuente, clase compilada y proceso con PID.
-- [ ] Puedo explicar host, puerto y socket sin llamarlos «la URL».
-- [ ] Compruebo por separado escucha TCP y respuesta HTTP.
-- [ ] Reproduzco y diagnostico el puerto ocupado sin cambiarlo al azar.
-- [ ] Entrego evidencia en `evidence/tema-1.txt`.
-
-Si fallas 2 o más puntos, vuelve al Paso 4 y repite desde una carpeta limpia. **Siguiente tema:** «Imponer un presupuesto temporal a una solicitud HTTP» (referencia interna M0 T2). Fuente primaria: [Java 27 `HttpServer`](https://docs.oracle.com/en/java/javase/27/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html).
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** este servidor mínimo en `127.0.0.1:8081/health` es el primer proceso del proyecto; los siguientes temas lo dividen en servicios reales que se comunican por red, no por memoria compartida.
-
-### Tema 2: Imponer un presupuesto temporal a una solicitud HTTP · Intermedio · 45 min
-
-**Prerrequisito:** tema «Ejecutar dos procesos Java y comprobar su socket HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T1).
-
-**Al finalizar podrás:** medir por separado el tiempo de una respuesta saludable y una lenta, configurar límites para establecer una conexión y esperar una respuesta, identificar la excepción que corresponde a cada fase y explicar por qué abandonar la espera del cliente no cancela automáticamente el trabajo del servidor.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y dos terminales. Conserva `academia-labs/microservices/m0-t1` y crea `m0-t2/{src,out,evidence}`. Debes poder iniciar y detener conscientemente el servidor del tema «Ejecutar dos procesos Java y comprobar su socket HTTP»; si todavía resuelves un puerto ocupado cambiando números al azar, repite su fallo deliberado antes de continuar.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un timeout mal ubicado permite que una dependencia lenta retenga recursos o fabrica fallos y reintentos innecesarios. Distinguir la fase que agotó el presupuesto evita diagnosticar como caída del servidor lo que realmente fue rechazo TCP, respuesta tardía o un límite demasiado agresivo.
-
-RutaFlow consulta una tarifa antes de confirmar un envío. El servidor de tarifas puede aceptar TCP inmediatamente y tardar segundos en responder porque espera su base de datos. Si el cliente configura únicamente el tiempo de conexión, la petición permanece ocupando un hilo, memoria y una conexión aunque la respuesta ya no tenga valor para quien espera. Bajo carga, muchas esperas largas agotan recursos y convierten una dependencia lenta en una caída en cascada. Para diagnosticar correctamente debes separar cuatro hechos: cuánto tardó la operación completa, si TCP llegó a conectarse, si HTTP entregó una respuesta y si el servidor continuó trabajando después de que el cliente abandonó.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Explicación causal, límite y evidencia |
-|---|---|---|
-| Latencia observada | Núcleo | Mide tiempo extremo a extremo e incluye conexión, colas, ejecución y transporte; una cifra aislada no identifica la fase lenta |
-| Timeout de conexión | Núcleo | Limita crear una conexión TCP nueva; una conexión reutilizada puede omitir esta fase, por lo que no limita toda la petición |
-| Timeout de solicitud | Núcleo | Limita cuánto espera esa petición por la respuesta y produce `HttpTimeoutException` cuando `/lento` supera 500 ms |
-| Rechazo frente a espera | Diagnóstico | Un puerto local sin escucha suele fallar inmediatamente con `ConnectException`; no demuestra que venció el timeout configurado |
-| Cancelación local | Límite | El cliente deja de esperar, pero el handler puede terminar después; limitar espera no revierte efectos ni interrumpe trabajo remoto |
-| Selección del límite | Decisión | Debe derivarse del presupuesto extremo a extremo y percentiles medidos; demasiado corto crea falsos fallos y demasiado largo consume capacidad |
-
-La **latencia** es una medición; un **timeout** es una decisión que termina una espera al superar una duración. `HttpClient.Builder.connectTimeout` gobierna el establecimiento de una conexión nueva. `HttpRequest.Builder.timeout` gobierna la espera de una solicitud completa. No son intercambiables: conectarse rápido a un servidor lento satisface el primero y puede incumplir el segundo.
-
-##### Medir la latencia observada
-
-Mide desde antes de enviar hasta recibir o fallar. Ese total permite comparar experiencias, pero no atribuir por sí solo la demora: resolución, conexión, cola, cómputo y descarga pueden contribuir. Conserva fase, resultado y unidad; un promedio sin percentiles oculta las peticiones lentas.
-
-##### Limitar la conexión y la solicitud
-
-El timeout de conexión protege únicamente una conexión nueva. El timeout de solicitud protege la espera completa que ve el cliente. Debes configurar ambos porque una conexión aceptada no garantiza una respuesta oportuna, y la reutilización puede hacer que una petición ni siquiera ejecute una conexión nueva.
-
-##### Diagnosticar rechazo y respuesta tardía
-
-`ConnectException` significa que no se estableció la conexión en este experimento; `HttpTimeoutException` significa que la solicitud excedió su límite. Un estado HTTP 500 es distinto: hubo conexión y respuesta HTTP. Esta clasificación decide si inspeccionas escucha/ruta, saturación/latencia o lógica de aplicación.
-
-##### Reconocer el límite de la cancelación local
-
-Abandonar la espera libera recursos del cliente, pero no constituye una transacción distribuida ni revierte efectos. El servidor necesita su propio mecanismo de deadline o cancelación cooperativa. Por eso no debes reintentar una escritura solo porque el cliente recibió un timeout.
-
-##### Decidir el presupuesto profesional
-
-Parte del objetivo extremo a extremo, reserva margen al llamador y contrasta percentiles bajo carga. Un límite demasiado corto fabrica fallos y reintentos; uno demasiado largo retiene capacidad. Registra duración, fase y resultado, evitando identificadores sensibles como etiquetas métricas de alta cardinalidad.
-
-Piensa en una llamada telefónica: el tiempo de conexión limita cuánto esperas a que contesten; el tiempo de solicitud limita cuánto permaneces en la conversación esperando el dato. Colgar libera tu teléfono, pero no obliga a la otra persona a dejar de preparar el informe. Del mismo modo, un timeout del cliente no prueba que el servidor no produjo un efecto.
-
-```text
-Cliente                 TCP                  Servidor
-  |--- connect --------->| aceptado             |
-  |--- GET /lento ------------------------------>|
-  |         espera 500 ms                        | duerme 1500 ms
-  |--- HttpTimeoutException                      |
-  | deja de esperar                              | intenta responder después
-```
-
-Este tema no propaga un presupuesto entre servicios ni diseña reintentos: esas evidencias requieren objetivos propios y aparecen después.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `m0-t2/src/ServidorLatencia.java`:
-
-```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-
-public final class ServidorLatencia {
-  private ServidorLatencia() { }
-
-  public static void main(String[] args) throws IOException {
-    var servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8082), 16);
-    servidor.createContext("/health", intercambio -> responder(intercambio, "UP"));
-    servidor.createContext("/lento", intercambio -> {
-      try {
-        Thread.sleep(1500);
-        // La marca va antes de responder: escribir a un cliente que ya se fue puede fallar.
-        System.out.println("SERVIDOR_TERMINO_LENTO");
-        responder(intercambio, "TARIFA=12000");
-      } catch (IOException error) {
-        System.out.println("RESPUESTA_NO_ENTREGADA " + error);
-        intercambio.close();
-      } catch (InterruptedException error) {
-        Thread.currentThread().interrupt();
-        intercambio.close();
-      }
-    });
-    servidor.start();
-    System.out.println("LISTEN http://127.0.0.1:8082");
-  }
-
-  private static void responder(HttpExchange intercambio, String texto) throws IOException {
-    byte[] cuerpo = texto.getBytes(StandardCharsets.UTF_8);
-    intercambio.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
-    intercambio.sendResponseHeaders(200, cuerpo.length);
-    try (var salida = intercambio.getResponseBody()) {
-      salida.write(cuerpo);
-    }
-  }
-}
-```
-
-Crea `m0-t2/src/ClienteTimeout.java`:
-
-```java
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpTimeoutException;
-import java.time.Duration;
-
-public final class ClienteTimeout {
-  private ClienteTimeout() { }
-
-  public static void main(String[] args) throws Exception {
-    try (var cliente = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofMillis(300))
-        .build()) {
-      var solicitud = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8082/lento"))
-          .timeout(Duration.ofMillis(500))
-          .GET()
-          .build();
-      try {
-        var respuesta = cliente.send(solicitud, HttpResponse.BodyHandlers.ofString());
-        System.out.printf("HTTP_%d %s%n", respuesta.statusCode(), respuesta.body());
-      } catch (HttpTimeoutException error) {
-        System.out.println("TIMEOUT_SOLICITUD HttpTimeoutException");
-      }
-    }
-  }
-}
-```
-
-Desde una **carpeta vacía**, crea el ejemplo independiente con `mkdir -p academia-labs/microservices/m0-t2/{src,out,evidence}`, guarda ambos archivos y ejecuta:
-
-```bash
-javac --release 27 -d out src/ServidorLatencia.java src/ClienteTimeout.java
-java -cp out ServidorLatencia
-# En la segunda terminal:
-curl -fsS http://127.0.0.1:8082/health
-java -cp out ClienteTimeout
-```
-
-**Resultado esperado — salida exacta del cliente:**
-
-```text
-UP
-TIMEOUT_SOLICITUD HttpTimeoutException
-```
-
-Aproximadamente un segundo después, la terminal del servidor imprime `SERVIDOR_TERMINO_LENTO`: esa línea demuestra que el timeout liberó al cliente, pero no canceló el handler. Según el sistema operativo, después puede aparecer `RESPUESTA_NO_ENTREGADA java.io.IOException: Broken pipe`: el handler terminó su trabajo, pero ya no tenía a quién entregarle la respuesta. Por eso la marca se imprime antes de `responder`.
-
-**Fallo deliberado:** cambia la URI del cliente a `http://127.0.0.1:65534/lento`, verifica antes que el puerto no tenga escucha y ejecuta → **Error esperado:** termina con `java.net.ConnectException` en vez de `HttpTimeoutException` → **Diagnóstico:** el sistema operativo rechazó la conexión; un rechazo inmediato no ejercita el timeout de respuesta ni demuestra una red que descarta paquetes.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta `/health` y `/lento`; predice cuál supera 500 ms y conserva ambas salidas en `evidence/tema-2.txt`. Pista: el sueño ocurre solo en un handler.
-2. **Variación:** aumenta el timeout de solicitud a 2000 ms. Predice y confirma `HTTP_200 TARIFA=12000`. Pista: no cambies la latencia del servidor.
-3. **Diagnóstico:** detén el servidor y ejecuta el cliente. Clasifica `ConnectException` como rechazo de conexión, no como respuesta HTTP lenta. Pista: busca si existe un PID escuchando en 8082.
-4. **Integración:** mide cinco llamadas con `curl -o /dev/null -sS -w '%{time_total}\n'`; registra mínimo, máximo y limitación de la muestra. Pista: cinco observaciones no forman un SLO.
-5. **Diseño:** para un presupuesto total de 1000 ms, asigna conexión, respuesta y margen del llamador. Justifica qué señal revisarías antes de reducir el límite; no copies 300/500 ms sin evidencia.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** conserva en `evidence/tema-2.txt` los tres resultados, la medición y la asignación de presupuesto. Esa evidencia fijará después el timeout de la consulta de tarifas del proyecto real; todavía no autoriza reintentos ni efectos de negocio.
-
-#### Paso 6 · Práctica independiente
-
-Crea un endpoint `/variable?ms=N` que acepte únicamente valores entre 0 y 2000, y un cliente con timeout de 700 ms. Entrega tres ejecuciones: 200 ms con HTTP 200, 900 ms con `HttpTimeoutException` y una entrada inválida con HTTP 400. Explica por qué ninguna de esas pruebas demuestra todavía cancelación cooperativa del trabajo remoto.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo latencia medida de timeout configurado.
-- [ ] Explico qué fase limita `connectTimeout` y cuál limita `HttpRequest.timeout`.
-- [ ] Diferencio `ConnectException`, `HttpTimeoutException` y una respuesta HTTP de error.
-- [ ] Demuestro que el servidor puede continuar después del abandono del cliente.
-- [ ] Justifico un límite mediante presupuesto y mediciones, no por intuición.
-
-Si fallas 2 o más puntos, vuelve al Paso 4 y reproduce los tres resultados desde una carpeta limpia. **Siguiente tema:** «Propagar un deadline absoluto entre servicios HTTP» (referencia interna M0 T3). Fuentes primarias: [Java 27 `HttpClient`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpClient.html), [`HttpRequest.Builder.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)) y [`HttpTimeoutException`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpTimeoutException.html).
-
-**Errores comunes:** interpretar todo timeout como «el servidor no hizo nada», medir solo el promedio, usar el timeout de conexión como límite total o aumentar valores sin observar saturación. **Fuentes oficiales:** la API de Java 27 enlazada arriba define el alcance y las excepciones; la elección numérica sigue dependiendo del presupuesto y de mediciones propias.
-
-### Tema 3: Propagar un deadline absoluto entre servicios HTTP · Intermedio · 45 min
-
-**Prerrequisito:** tema «Imponer un presupuesto temporal a una solicitud HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T2).
-
-**Al finalizar podrás:** convertir un presupuesto del cliente en un instante límite, propagar el mismo valor por un gateway, calcular el tiempo restante en cada salto, reservar margen para responder y rechazar trabajo que ya no puede terminar de forma útil.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**, tres terminales y los puertos locales 8082 y 8083. Crea una carpeta vacía `academia-labs/microservices/m0-t3/{src,out,evidence}`. Detén los procesos de T2 y verifica que ambos puertos estén libres antes de compilar; conserva la distinción entre timeout de una fase y presupuesto extremo a extremo.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Si cada servicio recibe «500 ms nuevos», una cadena de cuatro saltos puede consumir dos segundos aunque el usuario sólo pudiera esperar medio segundo. El trabajo tardío ocupa capacidad y puede producir resultados que nadie utilizará.
-
-RutaFlow recibe una solicitud de cotización con 1200 ms disponibles. El gateway necesita consultar tarifas y aún reservar tiempo para serializar y devolver la respuesta. En lugar de reiniciar una duración, el cliente calcula un instante límite; el gateway propaga exactamente ese valor y cada proceso resta su reloj actual. Una dependencia que recibe menos tiempo del necesario rechaza antes de iniciar trabajo costoso. El laboratorio hace visible la conservación del presupuesto, pero no resuelve por sí solo sincronización de relojes, cancelación de efectos ni reintentos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Mapa de subtemas críticos**
-
-| Subtema | Papel | Explicación causal, límite y evidencia |
-|---|---|---|
-| Presupuesto | Prerrequisito | Es la duración disponible al inicio; disminuye mientras la operación avanza |
-| Deadline absoluto | Núcleo | Es el instante final compartido; evita conceder una duración completa nueva en cada salto |
-| Tiempo restante | Núcleo | Se recalcula como `deadline - ahora`; si no alcanza, el servicio rechaza antes de trabajar |
-| Propagación | Núcleo | El gateway reenvía el mismo header, no un deadline reconstruido a partir de su timeout local |
-| Reserva | Variante | El llamador descuenta margen para procesar la respuesta; reservar todo o nada también puede ser incorrecto |
-| Relojes y confianza | Límite/seguridad | Un epoch presupone relojes razonablemente sincronizados y el servidor debe limitar valores absurdos enviados por clientes |
-| Cancelación y efectos | Diagnóstico | Vencer el deadline no revierte una escritura iniciada; los efectos requieren idempotencia y reconciliación |
-
-Un **timeout** limita una espera local; un **deadline** expresa cuándo deja de ser útil toda la operación. El **tiempo restante** cambia en cada salto y la **reserva** evita que una dependencia consuma hasta el último milisegundo. Analogía: una entrega debe llegar antes de las 18:00; cada conductor consulta la misma hora límite. Entregar «30 minutos nuevos» en cada transbordo falsearía el compromiso original.
-
-```text
-Cliente: deadline D
-   | X-Deadline=D
-Gateway: restante=D-ahora; reserva 100 ms
-   | X-Deadline=D (el mismo valor)
-Dependencia: restante=D-ahora; trabajo 400 ms
-   | 200 TARIFA o 504 SIN_PRESUPUESTO
-```
-
-Un deadline absoluto por epoch es didáctico y común en HTTP propio; gRPC puede convertir deadlines entre procesos para mitigar sesgo de reloj. Ningún formato autoriza confiar en plazos arbitrariamente largos enviados desde Internet.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `m0-t3/src/DependenciaDeadline.java`, `m0-t3/src/GatewayDeadline.java` y `m0-t3/src/ClienteDeadline.java`. También puedes copiarlos como ejemplo independiente desde `examples/professional-bridges/microservices/`. Este es el contenido completo de los tres archivos; los comentarios señalan dónde se conserva o consume el presupuesto.
-
-`m0-t3/src/DependenciaDeadline.java`:
-
-```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-
-public final class DependenciaDeadline {
-  private DependenciaDeadline() { }
-  public static void main(String[] args) throws IOException {
-    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8083), 16);
-    server.createContext("/tarifa", DependenciaDeadline::tarifa);
-    server.start();
-    System.out.println("DEPENDENCIA http://127.0.0.1:8083/tarifa");
-  }
-  private static void tarifa(HttpExchange exchange) throws IOException {
-    String raw = exchange.getRequestHeaders().getFirst("X-Deadline-Epoch-Millis");
-    if (raw == null) { respond(exchange, 400, "DEADLINE_REQUERIDO"); return; }
-    long remaining;
-    try { remaining = Long.parseLong(raw) - System.currentTimeMillis(); }
-    catch (NumberFormatException error) { respond(exchange, 400, "DEADLINE_INVALIDO"); return; }
-    // Los 50 ms extra evitan empezar si no queda margen sobre el trabajo de 400 ms.
-    if (remaining < 450) { respond(exchange, 504, "SIN_PRESUPUESTO_DEPENDENCIA"); return; }
-    try {
-      Thread.sleep(400);
-      respond(exchange, 200, "TARIFA=12000");
-    } catch (InterruptedException error) {
-      Thread.currentThread().interrupt();
-      exchange.close();
-    }
-  }
-  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
-    byte[] body = text.getBytes(StandardCharsets.UTF_8);
-    exchange.sendResponseHeaders(status, body.length);
-    try (var output = exchange.getResponseBody()) { output.write(body); }
-  }
-}
-```
-
-`m0-t3/src/GatewayDeadline.java`:
-
-```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
-public final class GatewayDeadline {
-  private static final long RESERVE_MILLIS = 100;
-  private static final HttpClient CLIENT = HttpClient.newHttpClient();
-  private GatewayDeadline() { }
-  public static void main(String[] args) throws IOException {
-    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8082), 16);
-    server.createContext("/cotizar", GatewayDeadline::quote);
-    server.start();
-    System.out.println("GATEWAY http://127.0.0.1:8082/cotizar");
-  }
-  private static void quote(HttpExchange exchange) throws IOException {
-    String raw = exchange.getRequestHeaders().getFirst("X-Deadline-Epoch-Millis");
-    long deadline;
-    try { deadline = Long.parseLong(raw == null ? "" : raw); }
-    catch (NumberFormatException error) { respond(exchange, 400, "DEADLINE_INVALIDO"); return; }
-    long remaining = deadline - System.currentTimeMillis();
-    if (remaining <= RESERVE_MILLIS) { respond(exchange, 504, "SIN_PRESUPUESTO_GATEWAY"); return; }
-    var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8083/tarifa"))
-        // Se propaga el instante original; no se fabrica un presupuesto nuevo.
-        .header("X-Deadline-Epoch-Millis", Long.toString(deadline))
-        .timeout(Duration.ofMillis(remaining - RESERVE_MILLIS))
-        .GET().build();
-    try {
-      var response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-      respond(exchange, response.statusCode(), response.body());
-    } catch (Exception error) {
-      respond(exchange, 504, "DEPENDENCIA_NO_COMPLETO");
-    }
-  }
-  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
-    byte[] body = text.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-    exchange.sendResponseHeaders(status, body.length);
-    try (var output = exchange.getResponseBody()) { output.write(body); }
-  }
-}
-```
-
-`m0-t3/src/ClienteDeadline.java`:
-
-```java
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-public final class ClienteDeadline {
-  private ClienteDeadline() { }
-  public static void main(String[] args) throws Exception {
-    long budget = Long.parseLong(args[0]);
-    // El presupuesto se convierte en deadline una sola vez, en el origen.
-    long deadline = System.currentTimeMillis() + budget;
-    var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8082/cotizar"))
-        .header("X-Deadline-Epoch-Millis", Long.toString(deadline)).GET().build();
-    try (var client = HttpClient.newHttpClient()) {
-      var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-      System.out.printf("HTTP_%d %s%n", response.statusCode(), response.body());
-    }
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/m0-t3/{src,out,evidence}
-cp examples/professional-bridges/microservices/{DependenciaDeadline,GatewayDeadline,ClienteDeadline}.java academia-labs/microservices/m0-t3/src/
-cd academia-labs/microservices/m0-t3
-javac --release 27 -d out src/*.java
-java -cp out DependenciaDeadline  # terminal 1
-java -cp out GatewayDeadline      # terminal 2
-java -cp out ClienteDeadline 1200 # terminal 3
-java -cp out ClienteDeadline 250
-```
-
-**Resultado esperado — salida exacta del cliente:**
-
-```text
-HTTP_200 TARIFA=12000
-HTTP_504 SIN_PRESUPUESTO_DEPENDENCIA
-```
-
-**Fallo deliberado:** en `GatewayDeadline.java`, reemplaza el header reenviado por `Long.toString(System.currentTimeMillis() + 1200)` y ejecuta el cliente con 250 ms → **Error esperado:** aparece `HTTP_200 TARIFA=12000` aunque el presupuesto original no alcanzaba → **Diagnóstico:** el gateway reinició el reloj y violó el compromiso extremo a extremo; restaura la propagación de `deadline`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta 1200 y 250 ms; conserva ambas salidas. Pista: el gateway no cambia el header.
-2. **Variación:** usa 700 ms y predice el resultado antes de medir. Pista: considera trabajo y reserva, no sólo 400 ms.
-3. **Diagnóstico:** omite el header con `curl`; confirma HTTP 400 y explica por qué no debe inventarse un presupuesto. Pista: diferencia contrato inválido de plazo vencido.
-4. **Integración:** registra presupuesto inicial, restante al entrar en cada proceso y estado final en `evidence/tema-3.txt`. Pista: no registres datos sensibles.
-5. **Diseño:** fija máximo aceptable de deadline externo y estrategia ante sesgo de reloj. Pista: un cliente no debe reservar recursos indefinidamente.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** usa el mismo contrato en la consulta de tarifas y conserva el reparto cliente/gateway/dependencia. Este tema decide cuándo no iniciar trabajo; el siguiente determinará qué hacer cuando el resultado de un efecto ya iniciado sea desconocido.
-
-#### Paso 6 · Práctica independiente
-
-Añade una segunda dependencia de 200 ms después de tarifas sin cambiar el deadline original. Diseña dos presupuestos iniciales: uno que complete ambos saltos y otro que obligue al gateway a omitir el segundo. Entrega salidas, tiempos restantes y una justificación de la reserva; no reinicies duraciones ni conviertas HTTP 504 en éxito vacío.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo presupuesto, timeout, deadline y tiempo restante.
-- [ ] Propago exactamente el mismo instante límite entre procesos.
-- [ ] Rechazo trabajo cuando el restante no cubre ejecución y reserva.
-- [ ] Explico el límite de reloj, confianza y cancelación de efectos.
-- [ ] Reproduzco el fallo de reiniciar el presupuesto y lo diagnostico.
-
-Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Clasificar un resultado desconocido antes de reintentar» (referencia interna M0 T4). **Errores comunes:** renovar el deadline, confundir 504 con prueba de ausencia de efectos, aceptar plazos ilimitados y omitir margen. **Fuentes oficiales:** [gRPC deadlines](https://grpc.io/docs/guides/deadlines/) y [Java 27 `HttpRequest.timeout`](https://docs.oracle.com/en/java/javase/27/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html#timeout(java.time.Duration)).
-
-### Tema 4: Clasificar un resultado desconocido antes de reintentar · Avanzado · 45 min
-
-**Prerrequisito:** tema «Propagar un deadline absoluto entre servicios HTTP» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T3).
-
-**Al finalizar podrás:** distinguir éxito, fallo y resultado desconocido; demostrar que un timeout puede ocultar un efecto confirmado; reconciliar mediante el mismo identificador y decidir si existe evidencia suficiente antes de reintentar.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**, `curl` y dos terminales. Crea una carpeta vacía `academia-labs/microservices/resultado-desconocido/{src,out,evidence}` y libera el puerto 8084. Debes comprender que un timeout describe lo observado por el cliente, no el estado final del servidor.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Repetir una operación cuyo resultado es desconocido puede duplicar cobros, reservas o envíos; no repetirla puede abandonar una intención válida.
-
-RutaFlow confirma un envío y persiste `CONFIRMADO`, pero responde después de que el cliente abandona. El cliente no puede afirmar «falló»: sólo sabe que no recibió confirmación. El identificador `ENV-001` permite reconciliar mediante una lectura posterior. Este tema clasifica la incertidumbre; «Evitar efectos duplicados con una clave idempotente» enseñará después cómo proteger un reintento necesario.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Fallo parcial | Núcleo | Cliente y servidor terminan con observaciones distintas aunque sólo falle la comunicación |
-| Punto de compromiso | Núcleo | Después del commit el efecto existe aunque la respuesta se pierda |
-| Resultado desconocido | Núcleo | Es conocimiento insuficiente del cliente, no un estado del negocio |
-| Identificador estable | Prerrequisito | Permite consultar la misma intención; un ID nuevo representa otra operación |
-| Reconciliación | Diagnóstico | Una lectura posterior transforma incertidumbre en estado observable |
-| Reintento | Variante | Sólo es seguro si no hubo efecto o existe protección contra duplicados |
-| Réplica atrasada | Límite | Un 404 temporal puede no demostrar ausencia en sistemas eventualmente consistentes |
-
-Un **fallo parcial** permite que una parte complete y otra pierda la evidencia. El **punto de compromiso** separa «sin efecto» de «efecto aceptado». Un **resultado desconocido** exige reconciliación, no una conclusión inventada. Analogía: entregas un paquete en recepción y se corta la llamada antes del comprobante; llevar otro paquete no aclara el primero, pero consultar el número de guía sí.
-
-```text
-cliente          servidor             estado
- POST ENV-001 ---> commit -----------> CONFIRMADO
- timeout <-------- respuesta tardía
- GET ENV-001 ------------------------> ENV-001 CONFIRMADO
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `resultado-desconocido/src/ServidorResultadoDesconocido.java`. El archivo completo está en `examples/professional-bridges/microservices/ServidorResultadoDesconocido.java`; contiene un `ConcurrentHashMap`, confirma antes de dormir 900 ms y permite reconciliar por `GET`.
-
-```java
-// Fragmento causal del archivo completo: el efecto sucede antes de responder.
-ENVIOS.put(id, "CONFIRMADO");
-System.out.println("EFECTO_CONFIRMADO " + id);
-Thread.sleep(900);
-respond(exchange, 201, id + " CONFIRMADO");
-```
-
-```bash
-mkdir -p academia-labs/microservices/resultado-desconocido/{src,out,evidence}
-cp examples/professional-bridges/microservices/ServidorResultadoDesconocido.java academia-labs/microservices/resultado-desconocido/src/
-cd academia-labs/microservices/resultado-desconocido
-javac --release 27 -d out src/ServidorResultadoDesconocido.java
-java -cp out ServidorResultadoDesconocido
-# Segunda terminal:
-curl --max-time 0.3 -X POST http://127.0.0.1:8084/envios/ENV-001
-curl -sS http://127.0.0.1:8084/envios/ENV-001
-```
-
-**Resultado esperado:** `curl` termina con código 28; el servidor imprime `EFECTO_CONFIRMADO ENV-001`; la consulta imprime exactamente `ENV-001 CONFIRMADO`.
-
-**Fallo deliberado:** interpreta el código 28 como ausencia y repite con `ENV-002` → **Error esperado:** aparecen efectos para `ENV-001` y `ENV-002` → **Diagnóstico:** cambiaste el identificador y creaste otra intención; primero reconcilia `ENV-001`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** provoca el timeout y consulta `ENV-001`. Pista: mira primero el servidor.
-2. **Variación:** usa timeout de 1.2 s y clasifica HTTP 201 como éxito confirmado.
-3. **Diagnóstico:** consulta `ENV-999`; explica el 404 y el límite de una réplica atrasada.
-4. **Integración:** registra ID, observación, estado reconciliado y decisión en `evidence/resultado.txt`.
-5. **Diseño:** define `PENDING`, `SUCCEEDED`, `FAILED` y `UNKNOWN`; decide cuál requiere reconciliación.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** incorpora consulta por ID y bitácora de reconciliación. No automatices aún el reintento: el mapa se pierde al reiniciar y no protege concurrencia.
-
-#### Paso 6 · Práctica independiente
-
-Añade `fallar-antes`, que responde 503 sin escribir, y `fallar-despues`, que escribe y cierra sin responder. Entrega observación, estado real, clasificación y acción segura para ambos y para el camino exitoso.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo fallo confirmado de resultado desconocido.
-- [ ] Identifico el punto de compromiso.
-- [ ] Reconcilio usando el mismo identificador.
-- [ ] No genero un ID nuevo para una operación incierta.
-- [ ] Explico el límite de una réplica atrasada.
-
-Si fallas 2 o más puntos, vuelve a la demostración. **Siguiente tema:** «Evitar efectos duplicados con una clave idempotente» (referencia interna M0 T5). **Errores comunes:** equiparar timeout con rollback y reconciliar otro ID. **Fuentes oficiales:** [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry) y [AWS Builders' Library — retries](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/).
-
-### Tema 5: Evitar efectos duplicados con una clave idempotente · Avanzado · 45 min
-
-**Prerrequisito:** tema «Clasificar un resultado desconocido antes de reintentar» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T4).
-
-**Al finalizar podrás:** asociar una clave estable con la huella y el resultado de una intención, devolver la respuesta original ante una repetición concurrente, rechazar la misma clave con otro payload y explicar qué almacenamiento, ámbito y vencimiento necesita una implementación durable.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**, `curl` y el puerto 8085. Crea `academia-labs/microservices/idempotencia/{src,out,evidence}` desde una carpeta vacía. Debes haber reproducido un resultado desconocido; una clave idempotente no elimina timeouts, sino que limita el efecto de repetir la misma intención.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Después de un resultado desconocido, RutaFlow necesita repetir una confirmación sin crear dos envíos. Deducir duplicados sólo por payload confunde intenciones legítimamente iguales; deducirlos sólo por una clave sin comparar payload permite reutilización accidental o maliciosa.
-
-El cliente genera `OP-001` una vez y la conserva en todos los intentos. El servidor guarda clave, huella normalizada, estado HTTP y cuerpo. Una repetición idéntica recibe el resultado almacenado; la misma clave con otra huella recibe 409. El mapa de este laboratorio hace visible la operación atómica, pero se pierde al reiniciar y no coordina réplicas: producción necesita una restricción única y transacción durable.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Intención y clave | Núcleo | La clave identifica la operación de negocio, no cada intento de transporte |
-| Huella canónica | Núcleo | Detecta reutilización con contenido distinto; exige normalización estable |
-| Reserva atómica | Núcleo | Dos solicitudes concurrentes deben crear un solo registro y un solo efecto |
-| Respuesta almacenada | Núcleo | La repetición devuelve estado y cuerpo originales, no vuelve a ejecutar |
-| Estados de proceso | Variante | `PROCESSING/SUCCEEDED/FAILED` permiten recuperar trabajo huérfano |
-| Ámbito y autorización | Seguridad | La clave debe ligarse a actor y operación para impedir lectura cruzada |
-| TTL | Límite | Debe cubrir la ventana máxima de reintento sin conservar datos indefinidamente |
-| Durabilidad | Profundización | Un mapa demuestra el algoritmo, pero reinicios y múltiples réplicas requieren base compartida |
-
-La **idempotencia** hace que repetir una intención produzca un efecto equivalente a ejecutarla una vez. Analogía: el número de comprobante de una transferencia permite volver a pedir la confirmación; no autoriza cambiar monto y beneficiario conservando el número. `compute` reserva atómicamente dentro de este proceso, pero no sustituye `UNIQUE(actor_id, operation, key)` y una transacción en una base durable.
-
-##### Identificar una intención y comprobar su huella
-
-La clave nace en el cliente cuando nace la intención y se reutiliza en cada intento. El servidor calcula la huella del payload (aquí, SHA-256 del cuerpo); nunca la acepta del cliente, porque así cualquiera podría reutilizar la clave con otro payload declarando la huella antigua. Si la clave existe con otra huella, responde conflicto: reproducir el resultado anterior aplicaría una respuesta a datos diferentes.
-
-##### Reservar y reproducir de forma atómica
-
-La comprobación y la creación del registro forman una sola operación. `ConcurrentHashMap.compute` lo demuestra dentro de una JVM; una base usa una restricción única y transacción. Después del éxito se conserva código, headers relevantes y cuerpo para que el retry observe la misma decisión sin repetir el efecto.
-
-##### Recuperar estados incompletos
-
-Una caída puede dejar `PROCESSING` sin respuesta final. El registro necesita propietario, lease o versión, instante de actualización y una política que distinga recuperar de volver a ejecutar ciegamente. Si el efecto externo no es consultable ni idempotente, la recuperación requiere reconciliación manual.
-
-##### Limitar ámbito, conservación y exposición
-
-La clave se busca dentro del actor y operación autorizados; no es un secreto ni debe permitir consultar resultados de otro usuario. El TTL cubre el máximo de retries y reconciliación. Borrarla antes reabre duplicados; conservarla sin límite acumula datos y puede violar políticas de privacidad.
-
-```text
-OP-001 + huella A -> reservar -> efecto #1 -> guardar 201/cuerpo
-OP-001 + huella A -> reproducir 201/cuerpo (sin efecto)
-OP-001 + huella B -> 409 conflicto
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `idempotencia/src/ServidorIdempotente.java` copiando `examples/professional-bridges/microservices/ServidorIdempotente.java`. Este es el archivo completo:
-
-```java
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class ServidorIdempotente {
-  record Record(String fingerprint, int status, String body) { }
-
-  private static final ConcurrentHashMap<String, Record> RECORDS = new ConcurrentHashMap<>();
-  private static final AtomicInteger EFFECTS = new AtomicInteger();
-
-  private ServidorIdempotente() { }
-
-  public static void main(String[] args) throws IOException {
-    var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 8085), 16);
-    server.createContext("/envios", ServidorIdempotente::create);
-    server.createContext("/metricas", exchange -> respond(exchange, 200, "efectos=" + EFFECTS.get()));
-    server.start();
-    System.out.println("LISTEN http://127.0.0.1:8085");
-  }
-
-  private static void create(HttpExchange exchange) throws IOException {
-    if (!exchange.getRequestMethod().equals("POST")) { respond(exchange, 405, "METODO_NO_PERMITIDO"); return; }
-    String key = exchange.getRequestHeaders().getFirst("Idempotency-Key");
-    if (key == null || key.isBlank()) { respond(exchange, 400, "CLAVE_REQUERIDA"); return; }
-    byte[] payload;
-    try (var input = exchange.getRequestBody()) { payload = input.readAllBytes(); }
-    // La huella la calcula el servidor: el cliente no puede reutilizar la clave declarando otra huella.
-    String fingerprint = sha256(payload);
-    var created = new boolean[1];
-    Record record = RECORDS.compute(key, (ignored, existing) -> {
-      if (existing != null) return existing;
-      created[0] = true;
-      int number = EFFECTS.incrementAndGet();
-      return new Record(fingerprint, 201, "ENVIO_CREADO numero=" + number);
-    });
-    if (!record.fingerprint().equals(fingerprint)) { respond(exchange, 409, "CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD"); return; }
-    exchange.getResponseHeaders().set("Idempotency-Replayed", Boolean.toString(!created[0]));
-    respond(exchange, record.status(), record.body());
-  }
-
-  private static String sha256(byte[] payload) {
-    try {
-      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(payload));
-    } catch (NoSuchAlgorithmException error) {
-      throw new IllegalStateException("SHA-256 no disponible en esta JVM", error);
-    }
-  }
-
-  private static void respond(HttpExchange exchange, int status, String text) throws IOException {
-    byte[] body = text.getBytes(StandardCharsets.UTF_8);
-    exchange.sendResponseHeaders(status, body.length);
-    try (var output = exchange.getResponseBody()) { output.write(body); }
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/idempotencia/{src,out,evidence}
-cp examples/professional-bridges/microservices/ServidorIdempotente.java academia-labs/microservices/idempotencia/src/
-cd academia-labs/microservices/idempotencia
-javac --release 27 -d out src/ServidorIdempotente.java
-java -cp out ServidorIdempotente
-# En una segunda terminal, desde la misma carpeta:
-curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Bogota' http://127.0.0.1:8085/envios
-curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Bogota' http://127.0.0.1:8085/envios
-curl -i -X POST -H 'Idempotency-Key: OP-001' -d 'ciudad=Cali' http://127.0.0.1:8085/envios
-curl -sS http://127.0.0.1:8085/metricas
-```
-
-**Resultado esperado:** ambas respuestas válidas contienen `ENVIO_CREADO numero=1`; la primera trae `Idempotency-replayed: false` y la segunda `Idempotency-replayed: true` (el `HttpServer` del JDK escribe el nombre con una sola mayúscula; HTTP no distingue mayúsculas en los nombres de cabecera); el payload distinto devuelve HTTP 409 y `CLAVE_REUTILIZADA_CON_OTRO_PAYLOAD`; la métrica termina exactamente en `efectos=1`.
-
-**Fallo deliberado:** cambia `compute` por `get` seguido de `put` y lanza dos solicitudes simultáneas → **Error esperado:** la métrica puede terminar en `efectos=2` → **Diagnóstico:** comprobar y escribir en pasos separados abre una carrera; restaura la reserva atómica y, en producción, una restricción única transaccional.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** repite `OP-001` con el mismo cuerpo y confirma `efectos=1`.
-2. **Variación:** usa `OP-002`; predice `numero=2`. Pista: es otra intención.
-3. **Diagnóstico:** omite la cabecera `Idempotency-Key` y explica el HTTP 400 `CLAVE_REQUERIDA`. Pista: sin clave, el servidor no sabe si es la misma intención.
-4. **Integración:** ejecuta dos `curl` en paralelo y conserva headers, cuerpos y métrica en `evidence/idempotencia.txt`.
-5. **Diseño:** propone tabla, restricción única, estados, TTL y ámbito por usuario; explica cómo recuperas `PROCESSING` huérfano.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** aplica la clave a `POST /envios`, conserva la respuesta original y añade una consulta de reconciliación. No uses este mapa en producción ni guardes secretos en la clave.
-
-#### Paso 6 · Práctica independiente
-
-Implementa `PROCESSING`, `SUCCEEDED` y `FAILED` con un fallo después de reservar pero antes de guardar la respuesta. Define quién puede recuperar el registro, cuándo, y cómo evitas que dos recuperadores ejecuten el efecto. Entrega pruebas para repetición idéntica, conflicto de huella y reserva huérfana.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo intención de intento HTTP.
-- [ ] Comparo la huella antes de reproducir una respuesta.
-- [ ] Reservo la clave de forma atómica.
-- [ ] Devuelvo estado y cuerpo originales sin repetir el efecto.
-- [ ] Defino ámbito, TTL, durabilidad y recuperación.
-
-Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar orden causal por agregado» (referencia interna M0 T6). **Errores comunes:** generar clave nueva en cada retry, aceptar otra huella, usar `get`+`put` y confiar en memoria local. **Fuentes oficiales:** [AWS Powertools — idempotency](https://docs.aws.amazon.com/powertools/java/latest/utilities/idempotency/) y [Azure Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry).
-
-### Tema 6: Seleccionar un reloj según la evidencia temporal · Avanzado · 40 min
-
-**Prerrequisito:** tema «Evitar efectos duplicados con una clave idempotente» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T5).
-
-**Al finalizar podrás:** usar un reloj de pared para fechas auditables y uno monotónico para duraciones locales, explicar por qué ninguno establece por sí solo causalidad distribuida y diseñar pruebas con un `Clock` inyectable sin comparar valores `nanoTime` entre procesos.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/relojes/{src,out,evidence}` desde una carpeta vacía. Debes distinguir «cuándo ocurrió según este host» de «cuánto tardó dentro de este proceso»; si aún usas un timeout como prueba de resultado, vuelve al tema «Clasificar un resultado desconocido antes de reintentar».
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Un ajuste NTP, una zona horaria o dos hosts desincronizados pueden hacer que marcas de pared parezcan retroceder. Usarlas para medir duración o decidir el orden del negocio genera latencias negativas y sobrescrituras incorrectas.
-
-RutaFlow necesita registrar la fecha de confirmación y medir cuánto tarda una consulta. `Instant` responde la primera pregunta y `System.nanoTime()` la segunda. La fecha se comparte, pero puede ajustarse; el contador monotónico no retrocede dentro del proceso, pero su origen es arbitrario y no puede enviarse a otro host. La causalidad se modelará en el tema siguiente mediante versión del agregado, no mediante «el timestamp más grande gana».
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Reloj de pared | Núcleo | `Instant` representa fecha UTC; ajustes y sesgo impiden usarlo como cronómetro infalible |
-| Reloj monotónico | Núcleo | `nanoTime` mide intervalos locales; su origen no representa una fecha ni es portable |
-| Zona y calendario | Variante | `ZonedDateTime` presenta reglas humanas; no sustituye `Instant` para intercambio |
-| Clock inyectable | Prueba | Permite fijar y desplazar el tiempo sin dormir ni depender del reloj real |
-| Precisión y exactitud | Límite | Más dígitos no significan un reloj mejor sincronizado |
-| Causalidad | Decisión | Dos timestamps no prueban que un evento influyó en otro |
-
-Analogía: el reloj de pared es la fecha escrita en un recibo; el cronómetro mide una carrera. Un cronómetro con «12345» no dice qué día es, y dos recibos de relojes distintos no prueban cuál acción causó la otra.
-
-```text
-fecha/auditoría -> Clock/Instant -> compartible, sujeto a sesgo
-duración local  -> nanoTime      -> monotónico, origen privado
-orden negocio   -> versión/causa -> no se deduce de los anteriores
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `relojes/src/RelojesDistribuidos.java` copiando el archivo completo de `examples/professional-bridges/microservices/RelojesDistribuidos.java`:
-
-```java
-import java.time.*;
-public final class RelojesDistribuidos {
-  private RelojesDistribuidos() { }
-  public static void main(String[] args) throws Exception {
-    Clock pared = Clock.systemUTC();
-    Instant inicioPared = pared.instant();
-    long inicioMonotono = System.nanoTime();
-    Thread.sleep(120);
-    Instant finPared = pared.instant();
-    long transcurridoMs = (System.nanoTime() - inicioMonotono) / 1_000_000;
-    System.out.println("pared_ordenable=" + !finPared.isBefore(inicioPared));
-    System.out.println("monotono_entre_100_y_500_ms=" + (transcurridoMs >= 100 && transcurridoMs <= 500));
-    System.out.println("nanoTime_no_es_fecha=true");
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/relojes/{src,out,evidence}
-cp examples/professional-bridges/microservices/RelojesDistribuidos.java academia-labs/microservices/relojes/src/
-cd academia-labs/microservices/relojes
-javac --release 27 -d out src/RelojesDistribuidos.java
-java -cp out RelojesDistribuidos
-```
-
-**Resultado esperado:** tres líneas terminan en `true`. **Fallo deliberado:** convierte `System.nanoTime()` a `Instant.ofEpochMilli(...)` → **Error esperado:** obtienes una fecha sin significado real → **Diagnóstico:** el origen de `nanoTime` es arbitrario; sólo las diferencias dentro de la misma JVM son válidas.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta y explica las tres afirmaciones. Pista: no compares el valor absoluto de `nanoTime`.
-2. **Variación:** usa `Clock.fixed` para una fecha repetible sin cambiar el cronómetro.
-3. **Diagnóstico:** registra inicio con `currentTimeMillis` y fin con `nanoTime`; explica por qué la resta no tiene unidad común.
-4. **Integración:** guarda fecha UTC y duración local de una cotización en `evidence/relojes.txt`.
-5. **Diseño:** elige tipo de reloj para auditoría, TTL, timeout y orden de estados; justifica cada elección.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** registra `occurredAt` como fecha de observabilidad y duración monotónica como métrica; no uses ninguno como versión del envío.
-
-#### Paso 6 · Práctica independiente
-
-Crea una política de vencimiento que reciba `Clock` y expire una reserva tras 30 minutos. Pruébala con `Clock.fixed` y `Clock.offset`, sin `sleep`. Explica por qué esa prueba no valida sincronización entre hosts.
-
-#### Paso 7 · Cierre
-
-- [ ] Uso `Instant` para fecha y `nanoTime` para duración local.
-- [ ] No convierto el valor absoluto de `nanoTime` en fecha.
-- [ ] Inyecto `Clock` para probar políticas temporales.
-- [ ] Distingo precisión, exactitud y sincronización.
-- [ ] No deduzco causalidad sólo por timestamps.
-
-Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Preservar el orden de eventos por versión del agregado» (referencia interna M0 T7). **Errores comunes:** medir duración con pared, comparar `nanoTime` entre JVM y ordenar negocio por fecha. **Fuentes oficiales:** [Java 27 `Clock`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/time/Clock.html) y [`System.nanoTime`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/lang/System.html#nanoTime()).
-
-### Tema 7: Preservar el orden de eventos por versión del agregado · Avanzado · 45 min
-
-**Prerrequisito:** tema «Seleccionar un reloj según la evidencia temporal» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T6).
-
-**Al finalizar podrás:** clasificar un evento como aplicable, duplicado/obsoleto o hueco mediante ID y versión del agregado; impedir que una llegada tardía sobrescriba estado nuevo y decidir cuándo reconciliar, aparcar o rechazar.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y una proyección en memoria. Crea `academia-labs/microservices/orden-agregado/{src,out,evidence}`. Debes saber que timestamps describen relojes y que una versión expresa la secuencia aceptada por el dominio.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Brokers, retries y redes pueden entregar duplicados o eventos fuera de orden. Aplicar «lo último que llegó» puede devolver un envío de `ENTREGADO` a `EN_RUTA`.
-
-RutaFlow necesita orden por envío, no un orden global de toda la empresa. Cada evento lleva `aggregateId` y `aggregateVersion`. La proyección acepta exactamente la versión siguiente, ignora versiones ya aplicadas y detecta huecos. La llegada de versión 3 antes de versión 2 no autoriza aplicar 3 ni descartar 2; exige buffer acotado, relectura o cuarentena según el contrato.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Agregado | Prerrequisito | Define la unidad cuya invariante necesita secuencia propia |
-| Versión | Núcleo | Aumenta al aceptar una transición; no es timestamp ni offset del broker |
-| Duplicado/obsoleto | Diagnóstico | Versión menor o igual ya no debe cambiar la proyección |
-| Hueco | Diagnóstico | Versión mayor que la siguiente señala evento faltante |
-| Concurrencia de escritores | Límite | Dos escritores pueden proponer la misma versión; la escritura necesita compare-and-set |
-| Buffer/cuarentena | Variante | Retiene temporalmente o aparta huecos con límite, alerta y reconciliación |
-
-Analogía: cada envío tiene páginas numeradas. Recibir la página 3 después de la 1 revela que falta la 2; la fecha impresa no repara el libro. El orden global tampoco es necesario: las páginas de otro envío forman otro libro.
-
-```text
-ENV-1 v1 -> APLICADO
-ENV-1 v3 -> HUECO, esperaba v2
-ENV-1 v2 -> APLICADO
-ENV-1 v2 -> OBSOLETO_O_DUPLICADO
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `orden-agregado/src/ProyeccionOrden.java` copiando el archivo completo desde `examples/professional-bridges/microservices/ProyeccionOrden.java`.
-
-```java
-import java.util.HashMap;
-import java.util.List;
-public final class ProyeccionOrden {
-  record Evento(String id, long version) { }
-  private ProyeccionOrden() { }
-  public static void main(String[] args) {
-    var ultima = new HashMap<String,Long>();
-    var eventos = List.of(new Evento("ENV-1",1),new Evento("ENV-1",3),
-        new Evento("ENV-1",2),new Evento("ENV-1",2),new Evento("ENV-2",1));
-    for (var evento : eventos) {
-      long actual = ultima.getOrDefault(evento.id(),0L);
-      String resultado;
-      if (evento.version() == actual + 1) {
-        ultima.put(evento.id(),evento.version());
-        resultado = "APLICADO";
-      } else if (evento.version() <= actual) {
-        resultado = "OBSOLETO_O_DUPLICADO";
-      } else {
-        resultado = "HUECO_ESPERABA_v" + (actual + 1);
-      }
-      System.out.printf("%s %s:v%d%n",resultado,evento.id(),evento.version());
-    }
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/orden-agregado/{src,out,evidence}
-cp examples/professional-bridges/microservices/ProyeccionOrden.java academia-labs/microservices/orden-agregado/src/
-cd academia-labs/microservices/orden-agregado
-javac --release 27 -d out src/ProyeccionOrden.java
-java -cp out ProyeccionOrden
-```
-
-**Resultado esperado:** `APLICADO ENV-1:v1`, `HUECO_ESPERABA_v2 ENV-1:v3`, `APLICADO ENV-1:v2`, `OBSOLETO_O_DUPLICADO ENV-1:v2` y `APLICADO ENV-2:v1`.
-
-**Fallo deliberado:** aplica siempre el evento con timestamp mayor → **Error esperado:** una versión 3 puede ocultar el hueco y una versión 2 tardía puede sobrescribirla → **Diagnóstico:** la fecha no representa la secuencia del agregado; restaura `version == actual + 1`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta la secuencia y explica cada clasificación. Pista: conserva `actual` por ID.
-2. **Variación:** agrega `ENV-2:v3`; confirma que el hueco es independiente de ENV-1. Pista: no existe versión global.
-3. **Diagnóstico:** procesa dos veces v1 y distingue duplicado exacto de evento obsoleto con distinto `eventId`. Pista: versión y evento responden preguntas distintas.
-4. **Integración:** registra esperado, recibido y decisión en `evidence/orden.txt`. Pista: incluye agregado y correlation ID.
-5. **Diseño:** fija tamaño/tiempo del buffer, alerta y procedimiento de reconciliación. Pista: una cuarentena sin responsable no resuelve el hueco.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** añade versión a eventos de envío y compare-and-set al escritor; no uses offset del broker como versión del dominio.
-
-#### Paso 6 · Práctica independiente
-
-Implementa un buffer acotado que reciba v1, v3 y v2, aplique v1, espere v2 y luego drene v2/v3. Cuando falte una versión más de cinco eventos, envía el agregado a cuarentena con razón verificable.
-
-#### Paso 7 · Cierre
-
-- [ ] Ordeno por agregado, no globalmente.
-- [ ] Aplico sólo la versión siguiente.
-- [ ] Distingo duplicado, obsoleto y hueco.
-- [ ] Limito buffer y defino reconciliación.
-- [ ] Protejo escritores con compare-and-set.
-
-Si fallas 2 o más puntos, repite la secuencia. **Siguiente tema:** «Evolucionar contratos serializados sin romper consumidores» (referencia interna M0 T8). **Errores comunes:** ordenar por timestamp, usar offset como versión y acumular huecos sin límite. **Fuentes oficiales:** [Azure Sequential Convoy](https://learn.microsoft.com/en-us/azure/architecture/patterns/sequential-convoy) y [OpenTelemetry Context](https://opentelemetry.io/docs/specs/otel/context/).
-
-### Tema 8: Evolucionar un contrato JSON sin romper consumidores · Experto · 45 min
-
-**Prerrequisito:** tema «Preservar el orden de eventos por versión del agregado» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T7).
-
-**Al finalizar podrás:** distinguir compatibilidad hacia atrás y hacia adelante, agregar un campo opcional con default, detectar cambios incompatibles de nombre/tipo/significado y diseñar convivencia, deprecación y migración con pruebas de artefactos reales.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y dos JSON. Crea `academia-labs/microservices/contratos/{src,out,evidence}`. Debes distinguir la versión del agregado de la versión del esquema: una ordena transiciones; la otra describe cómo interpretar bytes.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Productores y consumidores se despliegan en momentos distintos. Un cambio que compila en el productor puede romper un consumidor anterior en producción.
-
-RutaFlow añade `ciudadDestino` mientras existe un consumidor que sólo conoce `id` y `estado`. Agregar un campo opcional suele permitir convivencia si el lector ignora desconocidos y el nuevo lector define un default para datos antiguos. Renombrar `estado`, cambiarlo de texto a objeto o reutilizar su significado requiere migración explícita; publicar `/v2` no explica quién escribe cada versión ni cuándo se retira v1.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Esquema | Núcleo | Define campos, tipos, obligatoriedad y significado, no sólo sintaxis JSON |
-| Compatibilidad atrás | Núcleo | Consumidor anterior tolera datos del productor nuevo |
-| Compatibilidad adelante | Núcleo | Consumidor nuevo interpreta datos históricos mediante defaults |
-| Campo opcional/default | Variante | Permite ausencia sin inventar un significado ambiguo |
-| Cambio incompatible | Diagnóstico | Renombre, tipo o semántica exige adaptador, doble escritura o versión nueva |
-| Ventana de convivencia | Decisión | Define productores/consumidores admitidos, métricas, deprecación y retiro |
-
-Analogía: un formulario nuevo añade «ciudad» opcional; una oficina antigua puede ignorarlo y la nueva puede leer formularios viejos como «desconocida». Cambiar «estado» de palabra a estructura sin avisar equivale a cambiar las casillas del formulario durante su procesamiento.
-
-```text
-V1 {id,estado} -> lector nuevo: ciudad=DESCONOCIDA
-V2 {id,estado,ciudadDestino} -> lector anterior: ignora ciudad
-cambiar estado:string -> object -> INCOMPATIBLE
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `contratos/src/CompatibilidadContrato.java` copiando el archivo completo desde `examples/professional-bridges/microservices/CompatibilidadContrato.java`; guarda `envio-v1.json` y `envio-v2.json` en `evidence/`.
-
-```java
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-/** Lee el JSON de verdad y comprueba nombre y tipo de cada campo del contrato de envío. */
-public final class CompatibilidadContrato {
-  private CompatibilidadContrato() { }
-
-  public static void main(String[] args) throws Exception {
-    for (String file : args) {
-      String json = Files.readString(Path.of(file), StandardCharsets.UTF_8);
-      Map<String, Object> envio = new LectorJson(json).leerObjetoRaiz();
-      exigirTexto(envio, "id");
-      exigirTexto(envio, "estado");
-      Object ciudad = envio.get("ciudadDestino");
-      if (ciudad != null && !(ciudad instanceof String))
-        throw new IllegalArgumentException("CONTRATO_INCOMPATIBLE: ciudadDestino debe ser texto");
-      System.out.println(Path.of(file).getFileName() + " ciudad=" + (ciudad == null ? "DESCONOCIDA" : "PRESENTE"));
-    }
-  }
-
-  private static void exigirTexto(Map<String, Object> envio, String campo) {
-    if (!envio.containsKey(campo)) throw new IllegalArgumentException("CONTRATO_INVALIDO: falta " + campo);
-    if (!(envio.get(campo) instanceof String))
-      throw new IllegalArgumentException("CONTRATO_INCOMPATIBLE: " + campo + " debe ser texto");
-  }
-
-  /** Lector JSON mínimo para el laboratorio; en un servicio real usa Jackson y un esquema. */
-  private static final class LectorJson {
-    private final String texto;
-    private int pos;
-
-    LectorJson(String texto) { this.texto = texto; }
-
-    Map<String, Object> leerObjetoRaiz() {
-      Object valor = leerValor();
-      saltarEspacios();
-      if (pos != texto.length() || !(valor instanceof Map<?, ?>))
-        throw new IllegalArgumentException("CONTRATO_INVALIDO: se esperaba un único objeto JSON");
-      @SuppressWarnings("unchecked") Map<String, Object> objeto = (Map<String, Object>) valor;
-      return objeto;
-    }
-
-    private Object leerValor() {
-      saltarEspacios();
-      if (pos >= texto.length()) throw error("fin inesperado");
-      char c = texto.charAt(pos);
-      if (c == '{') return leerObjeto();
-      if (c == '[') return leerLista();
-      if (c == '"') return leerTexto();
-      int inicio = pos;
-      while (pos < texto.length() && ",}] \n\r\t".indexOf(texto.charAt(pos)) < 0) pos++;
-      String literal = texto.substring(inicio, pos);
-      if (literal.equals("true") || literal.equals("false")) return Boolean.valueOf(literal);
-      if (literal.equals("null")) return null;
-      try { return new java.math.BigDecimal(literal); }
-      catch (NumberFormatException e) { throw error("valor no válido: " + literal); }
-    }
-
-    private Map<String, Object> leerObjeto() {
-      var objeto = new LinkedHashMap<String, Object>();
-      pos++;
-      saltarEspacios();
-      if (consumir('}')) return objeto;
-      do {
-        saltarEspacios();
-        String clave = leerTexto();
-        saltarEspacios();
-        if (!consumir(':')) throw error("se esperaba ':'");
-        objeto.put(clave, leerValor());
-        saltarEspacios();
-      } while (consumir(','));
-      if (!consumir('}')) throw error("se esperaba '}'");
-      return objeto;
-    }
-
-    private List<Object> leerLista() {
-      var lista = new ArrayList<Object>();
-      pos++;
-      saltarEspacios();
-      if (consumir(']')) return lista;
-      do { lista.add(leerValor()); saltarEspacios(); } while (consumir(','));
-      if (!consumir(']')) throw error("se esperaba ']'");
-      return lista;
-    }
-
-    private String leerTexto() {
-      if (!consumir('"')) throw error("se esperaba '\"'");
-      var resultado = new StringBuilder();
-      while (pos < texto.length() && texto.charAt(pos) != '"') {
-        char c = texto.charAt(pos++);
-        if (c == '\\' && pos < texto.length()) c = texto.charAt(pos++); // basta para el laboratorio
-        resultado.append(c);
-      }
-      if (!consumir('"')) throw error("texto sin cerrar");
-      return resultado.toString();
-    }
-
-    private boolean consumir(char esperado) {
-      if (pos < texto.length() && texto.charAt(pos) == esperado) { pos++; return true; }
-      return false;
-    }
-
-    private void saltarEspacios() {
-      while (pos < texto.length() && Character.isWhitespace(texto.charAt(pos))) pos++;
-    }
-
-    private IllegalArgumentException error(String detalle) {
-      return new IllegalArgumentException("JSON_INVALIDO en posición " + pos + ": " + detalle);
-    }
-  }
-}
-```
+**Texto alternativo:** diagrama vertical. Un archivo de texto llamado receta.js se convierte, con el comando
+«node receta.js», en un proceso en memoria. El proceso pasa por tres cajas en orden (datos, instrucciones,
+resultado) y termina en la caja «Fin del proceso, código de salida 0».
+
+#### 6. EXPLICACIÓN NIVEL 0
+
+Un **programa** es un texto escrito en un idioma que la computadora sabe seguir. Ese texto vive en un archivo
+(como una carta guardada en un cajón) y no hace nada hasta que alguien lo **ejecuta**. Ejecutar es decirle a la
+computadora: «lee este archivo y haz lo que dice».
+
+En este curso usarás dos «idiomas» (lenguajes de programación): **JavaScript**, que ejecuta un programa llamado
+**Node.js**, y **Java**, que ejecuta la **JVM** (los conocerás lado a lado en el Módulo 0.3). Hoy empiezas con
+JavaScript porque se ejecuta con un solo comando.
+
+Todo programa, por grande que sea, tiene las mismas tres partes que la receta:
+
+1. **Datos**: la información con la que trabaja (una lista de compras, un precio).
+2. **Instrucciones**: lo que hace con esos datos (sumar, comparar).
+3. **Resultado**: lo que muestra o guarda al final (un mensaje en la pantalla).
+
+Y casi todos los programas que escribirás al principio **terminan**: hacen su trabajo y se cierran.
+
+#### 7. EXPLICACIÓN INTERMEDIA
+
+Cuando escribes `node programa/receta.js`, el sistema operativo crea un **proceso**: un espacio de memoria
+propio donde Node.js lee el archivo, lo traduce a instrucciones de máquina y las ejecuta en orden. Dentro del
+programa:
+
+- `const listaDeCompras = [...]` crea una **variable**: un nombre que apunta a un dato en memoria. `const`
+  significa que el nombre no se reasignará; `let` (que verás en `let total = 0`) permite cambiarlo.
+- `function calcularTotal(lista) { ... }` define una **función**: un bloque de instrucciones con nombre que
+  recibe datos (parámetros) y devuelve un resultado con `return`. Separar la lógica en funciones permite
+  **probarla** por separado: el test importa `calcularTotal` y la llama con datos conocidos.
+- `export` hace que la función se pueda usar desde otro archivo (el test). `import.meta.main` vale `true` solo
+  cuando ejecutas el archivo directamente; así, al importarlo desde el test, no se imprime nada.
+- `console.log(...)` escribe una línea en la **salida estándar** (stdout), el canal de texto que ves en la
+  terminal.
+
+Cuando la última instrucción termina y no queda nada pendiente, el proceso finaliza con **código de salida 0**
+(«todo bien»). Si ocurre un error no controlado, termina con un código distinto de 0. La terminal guarda ese
+código en la variable `$?`.
+
+#### 8. EXPLICACIÓN MAESTRA
+
+Un microservicio también es «un programa», pero de los que **no terminan** (lo verás en el siguiente tema). Las
+decisiones que tomas hoy, aunque parezcan pequeñas, se repiten a escala:
+
+- **Script frente a programa con funciones.** Podrías escribir todo en 5 líneas sin funciones; funciona, pero no
+  se puede probar por partes. Alternativa A: script lineal (rápido, imposible de probar y reutilizar).
+  Alternativa B: funciones puras exportadas + un bloque de arranque (`import.meta.main`), como aquí: algo más de
+  texto, pero cada regla tiene su test. En producción siempre B.
+- **Interpretado frente a compilado.** Node.js compila JavaScript «justo a tiempo» (JIT) mientras se ejecuta;
+  Java compila primero a *bytecode* (`javac`) y luego la JVM lo ejecuta con su propio JIT. Trade-off: Node arranca
+  rápido y sin paso previo; Java detecta errores de tipos antes de ejecutar (Módulo 0.3).
+- **Proceso efímero frente a proceso de larga vida.** Un programa que termina es ideal para tareas por lotes
+  (*batch*), migraciones o *jobs* programados. No sirve para atender clientes: cada pedido tendría que arrancar
+  el programa desde cero.
+
+**Cuándo NO** escribir un programa: si la tarea se hace una sola vez y a mano tardas menos que en escribir y
+probar el código (por ejemplo, sumar tres precios), no lo automatices. Programa lo que se repite o lo que debe
+ser exacto siempre.
+
+#### 9. CÓDIGO EJECUTABLE
+
+Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22). Sin dependencias externas. El `package.json` del
+laboratorio solo declara `"type": "module"` para poder usar `import`/`export`:
 
 ```json
-{"id":"ENV-1","estado":"CREADO"}
-```
-
-```json
-{"id":"ENV-1","estado":"CREADO","ciudadDestino":"Bogotá"}
-```
-
-```bash
-mkdir -p academia-labs/microservices/contratos/{src,out,evidence}
-cp examples/professional-bridges/microservices/CompatibilidadContrato.java academia-labs/microservices/contratos/src/
-cd academia-labs/microservices/contratos
-javac --release 27 -d out src/CompatibilidadContrato.java
-java -cp out CompatibilidadContrato evidence/envio-v1.json evidence/envio-v2.json
-```
-
-**Resultado esperado:** `envio-v1.json ciudad=DESCONOCIDA` y `envio-v2.json ciudad=PRESENTE`.
-
-**Fallo deliberado:** elimina `estado` de V2 → **Error esperado:** `java.lang.IllegalArgumentException: CONTRATO_INVALIDO: falta estado` → **Diagnóstico:** un campo requerido desapareció; restaura el contrato o introduce una migración/versionado explícito. Después cambia V2 a `"estado":{"codigo":"CREADO"}` → **Error esperado:** `CONTRATO_INCOMPATIBLE: estado debe ser texto`. Buscar el texto `"estado"` en el JSON habría aceptado este cambio; por eso el lector interpreta el JSON y comprueba el tipo.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** ejecuta V1/V2 y explica el default. Pista: ausencia no equivale a cadena vacía.
-2. **Variación:** agrega `prioridad` opcional sin romper V1.
-3. **Diagnóstico:** cambia el tipo de `estado`; documenta qué lector falla y por qué.
-4. **Integración:** crea una matriz productor/consumidor V1/V2 con cuatro pruebas.
-5. **Diseño:** define doble lectura/escritura, métrica de uso y condición para retirar V1.
-
-**Conexión con el proyecto integrador RutaFlow Distribuido:** versiona eventos de envío y conserva fixtures de compatibilidad en CI; no reutilices un campo con otro significado.
-
-#### Paso 6 · Práctica independiente
-
-Diseña V3 que reemplace `ciudadDestino` por un objeto de dirección sin romper despliegues escalonados. Entrega adaptador, fixtures V1/V2/V3, matriz de pruebas y criterio observable para retirar el campo anterior.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo compatibilidad atrás y adelante.
-- [ ] Defino defaults explícitos para campos opcionales.
-- [ ] Detecto cambios de nombre, tipo y semántica.
-- [ ] Pruebo artefactos de versiones reales.
-- [ ] Documento convivencia, deprecación y retiro.
-
-Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Delimitar y rechazar payloads antes de reservar memoria» (referencia interna M0 T9). **Errores comunes:** creer que JSON garantiza compatibilidad y llamar `/v2` a una migración inexistente. **Fuentes oficiales:** [Confluent Schema Evolution](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html) y [Microsoft API design](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design).
-
-### Tema 9: Rechazar un frame excesivo antes de reservar memoria · Experto · 35 min
-
-**Prerrequisito:** tema «Evolucionar un contrato JSON sin romper consumidores» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T8).
-
-**Al finalizar podrás:** delimitar mensajes con longitud explícita, validar el tamaño antes de reservar/interpretar, detectar frames truncados y justificar límites por endpoint antes de considerar compresión o streaming.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y bytes UTF-8. Crea `academia-labs/microservices/framing/{src,out,evidence}`. Debes comprender que TCP entrega un flujo de bytes, no objetos ni fronteras de mensajes.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Leer un cuerpo completo antes de validar su tamaño permite que una petición agote heap, CPU o disco. Confundir una lectura TCP con un mensaje completo produce JSON truncado o concatenado.
-
-RutaFlow recibe evidencia y eventos con límites distintos. El receptor lee primero un prefijo de longitud, rechaza valores negativos o superiores al máximo y sólo entonces reserva el cuerpo. La demostración usa 32 bytes para observar el mecanismo; producción fija límites por contrato, autenticación y capacidad, y puede elegir streaming cuando el contenido legítimo es grande.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación, límite y evidencia |
-|---|---|---|
-| Serialización | Prerrequisito | Convierte valores a bytes y pierde identidad/métodos del objeto |
-| Framing | Núcleo | Longitud o delimitador permite separar mensajes en un flujo |
-| Límite temprano | Seguridad | Rechaza antes de reservar el cuerpo completo |
-| Frame truncado | Diagnóstico | Menos bytes que la longitud declarada exige error, no parseo parcial |
-| Compresión | Variante | Reduce red pero puede amplificar al descomprimir; limita tamaño expandido |
-| Streaming | Decisión | Procesa por partes cuando el contrato no cabe razonablemente en memoria |
-
-Analogía: la etiqueta de una caja declara peso antes de subirla al ascensor. Abrir y cargar toda la caja para decidir después que excede el límite llega demasiado tarde.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `framing/src/LimitePayload.java` copiando el archivo completo desde `examples/professional-bridges/microservices/LimitePayload.java`.
-
-```java
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-public final class LimitePayload {
-  private static final int MAX_BYTES = 32;
-  private LimitePayload() { }
-  public static void main(String[] args) throws Exception {
-    byte[] payload = args[0].getBytes(StandardCharsets.UTF_8);
-    var buffer = new ByteArrayOutputStream();
-    try (var output = new DataOutputStream(buffer)) {
-      output.writeInt(payload.length);
-      output.write(payload);
-    }
-    try (var input = new DataInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
-      int length = input.readInt();
-      if (length < 0 || length > MAX_BYTES) throw new IllegalArgumentException("PAYLOAD_EXCESIVO");
-      byte[] body = input.readNBytes(length);
-      if (body.length != length) throw new EOFException("FRAME_INCOMPLETO");
-      System.out.println("FRAME_OK bytes=" + body.length + " texto=" + new String(body,StandardCharsets.UTF_8));
-    }
-  }
+{
+  "name": "modulo-0-1-programa-servidor-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=26.13.1" },
+  "scripts": { "test": "node --test" }
 }
 ```
 
-```bash
-mkdir -p academia-labs/microservices/framing/{src,out,evidence}
-cp examples/professional-bridges/microservices/LimitePayload.java academia-labs/microservices/framing/src/
-cd academia-labs/microservices/framing
-javac --release 27 -d out src/LimitePayload.java
-java -cp out LimitePayload ENVIO-1
-java -cp out LimitePayload 123456789012345678901234567890123
+Archivo `examples/microservicios/modulo-0/programa/receta.js`:
+
+```javascript
+// Módulo 0.1 · Qué es un programa
+// Un programa es una lista de instrucciones que la computadora sigue en orden.
+// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
+// Ejecuta: node programa/receta.js
+
+// 1. DATOS: lo que el programa recibe (los ingredientes de la receta).
+const listaDeCompras = [
+  { producto: 'Arroz', precio: 4500 },
+  { producto: 'Huevos', precio: 12000 },
+  { producto: 'Tomates', precio: 3500 },
+];
+const dineroEnLaBilletera = 20000;
+
+// 2. INSTRUCCIONES: una función es una receta con nombre que se puede repetir.
+export function calcularTotal(lista) {
+  let total = 0; // empezamos en cero
+  for (const item of lista) { // repetimos para cada producto...
+    total = total + item.precio; // ...y sumamos su precio
+  }
+  return total; // devolvemos el resultado
+}
+
+export function alcanzaElDinero(total, dinero) {
+  return total <= dinero; // true (sí) o false (no)
+}
+
+// 3. RESULTADO: lo que el programa muestra al terminar.
+// import.meta.main es true solo cuando ejecutas este archivo directamente
+// (no cuando el test lo importa).
+if (import.meta.main) {
+  const total = calcularTotal(listaDeCompras);
+  console.log(`Productos: ${listaDeCompras.length}`);
+  console.log(`Total a pagar: ${total}`);
+  console.log(`¿Alcanza con ${dineroEnLaBilletera}? ${alcanzaElDinero(total, dineroEnLaBilletera) ? 'Sí' : 'No'}`);
+}
 ```
 
-**Resultado esperado:** `FRAME_OK bytes=7 texto=ENVIO-1`; el segundo comando termina con `java.lang.IllegalArgumentException: PAYLOAD_EXCESIVO`.
+Salida real al ejecutarlo:
 
-**Fallo deliberado:** elimina la comprobación `length > MAX_BYTES` → **Error esperado:** el receptor acepta 33 bytes pese al contrato → **Diagnóstico:** validar después de `readNBytes` ya permitió la reserva; restaura el rechazo previo.
+```text
+Productos: 3
+Total a pagar: 20000
+¿Alcanza con 20000? Sí
+```
 
-#### Paso 5 · Práctica guiada
+#### 10. MINI-LABORATORIO
 
-1. **Reproducción:** prueba 7 y 33 bytes. Pista: cuenta bytes UTF-8, no caracteres visuales.
-2. **Variación:** prueba exactamente 32 bytes y confirma el borde inclusivo.
-3. **Diagnóstico:** declara 10 bytes y entrega 5; exige `FRAME_INCOMPLETO`.
-4. **Integración:** registra en `evidence/framing.txt` la longitud declarada/recibida, la salida `PAYLOAD_EXCESIVO` y la decisión, sin guardar payload sensible; el Tema 10 la revisa.
-5. **Diseño:** fija límites diferentes para evento JSON y evidencia fotográfica; justifica streaming.
+1. Entra a la carpeta del laboratorio:
+   ```bash
+   cd examples/microservicios/modulo-0
+   ```
+2. Ejecuta el programa y mira cómo termina:
+   ```bash
+   node programa/receta.js
+   echo "Código de salida: $?"
+   ```
+3. **Predice antes de ejecutar:** abre `programa/receta.js`, cambia el precio de los huevos de `12000` a `13000`,
+   guarda y escribe en un papel qué crees que dirá. Luego ejecuta de nuevo `node programa/receta.js`.
+4. Devuelve el precio a `12000`.
 
-**Conexión con el proyecto integrador RutaFlow Distribuido:** limita cuerpos antes de parsear y documenta 413/errores de framing; mide tamaño sin usar IDs como etiquetas métricas.
+**Output esperado** (paso 2):
 
-#### Paso 6 · Práctica independiente
+```text
+Productos: 3
+Total a pagar: 20000
+¿Alcanza con 20000? Sí
+Código de salida: 0
+```
 
-Lee dos frames consecutivos desde el mismo flujo, rechaza el segundo por tamaño y demuestra que el primero no consume bytes del siguiente. Añade una prueba de frame truncado y una decisión sobre compresión.
+En el paso 3 la salida debe decir `Total a pagar: 21000` y `¿Alcanza con 20000? No`.
 
-#### Paso 7 · Cierre
+**Captura comentada:** la terminal muestra tres líneas del programa y, justo después, el *prompt* (`$`) vuelve a
+aparecer: esa es la señal visual de que el proceso **terminó**. La cuarta línea, `Código de salida: 0`, la
+imprime la terminal, no el programa.
 
-- [ ] Distingo flujo de bytes de frontera de mensaje.
-- [ ] Valido longitud antes de reservar el cuerpo.
-- [ ] Detecto frame incompleto.
-- [ ] Limito también tamaño descomprimido.
-- [ ] Elijo memoria o streaming según contrato.
+#### 11. VERIFICACIÓN
 
-Si fallas 2 o más puntos, vuelve al Paso 4. **Siguiente tema:** «Refutar falacias distribuidas mediante evidencia reproducible» (referencia interna M0 T10). **Errores comunes:** contar caracteres, confiar en Content-Length sin límite y descomprimir sin cuota. **Fuentes oficiales:** [Java 27 `DataInputStream`](https://docs.oracle.com/en/java/javase/27/docs/api/java.base/java/io/DataInputStream.html) y [OWASP Unrestricted File Upload](https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload).
+Ejecuta el test (comprueba la suma, la lista vacía y el borde «total igual al dinero»):
 
-### Tema 10: Refutar falacias distribuidas mediante evidencia reproducible · Experto · 45 min
+```bash
+node --test --test-reporter=spec programa/receta.test.js
+```
 
-**Prerrequisito:** tema «Delimitar y rechazar payloads antes de reservar memoria» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T9).
+Salida real:
 
-**Al finalizar podrás:** convertir una suposición distribuida en hipótesis, experimento, evidencia, impacto y mitigación; conectar cada falacia con un mecanismo probado en el módulo y evitar listas memorizadas sin decisiones operativas.
+```text
+✔ suma los precios de la lista (0.593344ms)
+✔ una lista vacía cuesta 0 (0.079215ms)
+✔ alcanza cuando el total es igual al dinero (0.065909ms)
+ℹ tests 3
+ℹ pass 3
+ℹ fail 0
+```
 
-#### Paso 1 · Objetivo y preparación
+(Los milisegundos cambian en cada ejecución.) **Pregunta de comprobación:** si la lista de compras estuviera
+vacía, ¿qué imprimiría `Total a pagar:` y por qué? *(0, porque `total` empieza en 0 y el bucle no se repite
+ninguna vez.)*
 
-Reutilizarás las evidencias de sockets, timeout, deadline, reconciliación, idempotencia, orden, contratos y límites. Crea `academia-labs/microservices/falacias/{src,out,evidence}` con **JDK 27.0.1**. Debes conservar salidas reales; una tabla sin experimento no refuta nada.
+#### 12. ERROR COMÚN
 
-#### Paso 2 · Contexto y caso real
+**Síntoma:** escribes `node receta.js` desde la carpeta equivocada y ves:
 
-**¿Por qué es importante?** «La red es confiable» parece inocente hasta que una respuesta perdida duplica un envío. Las falacias son supuestos de diseño que deben transformarse en pruebas y controles verificables.
+```text
+Error: Cannot find module '/…/modulo-0/receta.js'
+  code: 'MODULE_NOT_FOUND'
+```
 
-RutaFlow revisa seis supuestos: confiabilidad, latencia cero, ancho infinito, seguridad implícita, topología estable y homogeneidad. Para cada uno registra condición, perturbación, señal, impacto y mitigación. Un timeout no prueba por sí solo pérdida de red; la evidencia del módulo sí demuestra que el cliente puede abandonar mientras el servidor completa.
+**Cómo se ve:** un bloque rojo de varias líneas que termina en `MODULE_NOT_FOUND`, sin ninguna línea de tu
+programa. **Diagnóstico:** Node buscó el archivo en la carpeta actual y no lo encontró; el programa ni siquiera
+empezó. Ejecuta `pwd` (dónde estás) y `ls` (qué hay aquí). **Arreglo:** usa la ruta correcta
+(`node programa/receta.js` desde `modulo-0`) o entra antes a la carpeta con `cd`.
 
-#### Paso 3 · Teoría, modelo mental y analogía
+#### 13. PREGUNTA DE ENTREVISTA
 
-| Falacia | Evidencia del módulo | Control profesional |
-|---|---|---|
-| Red confiable | timeout con efecto confirmado | reconciliación + idempotencia |
-| Latencia cero | `/lento` supera presupuesto | medición + deadline |
-| Ancho infinito | frame de 33 bytes rechazado | límite + streaming/compresión acotada |
-| Red segura | no se demuestra en loopback (queda para la práctica independiente) | autenticación, cifrado y autorización |
-| Topología estable | puerto/PID cambia | descubrimiento y health checks |
-| Sistema homogéneo | V1/V2 conviven | contrato y compatibilidad |
+«¿Qué diferencia hay entre un programa y un proceso?»
 
-Analogía: una lista de normas de aviación no demuestra que el avión resista una falla; cada supuesto necesita una prueba controlada, instrumentos y procedimiento de recuperación. El límite es que el laboratorio local no reproduce regiones, pérdida real ni adversarios.
+**Respuesta modelo:** un programa es el código guardado en disco: texto o binario que no hace nada por sí
+solo. Un proceso es una ejecución concreta de ese programa: tiene memoria propia, un identificador (PID), canales
+de entrada y salida y un código de salida al terminar. Del mismo programa pueden existir varios procesos a la
+vez; en microservicios eso es justo escalar horizontalmente: varias réplicas (procesos) del mismo servicio.
 
-#### Paso 4 · Demostración guiada desde cero
+#### 14. ANTI-PATRÓN RELACIONADO
 
-Crea `falacias/src/FalaciasDistribuidas.java` copiando el archivo completo desde `examples/professional-bridges/microservices/FalaciasDistribuidas.java`.
+**Datos «quemados» mezclados con la lógica y sin funciones** (*hardcoding*):
 
-```java
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+```javascript
+// ✖ Anti-patrón: todo en una línea, imposible de probar o reutilizar
+console.log(4500 + 12000 + 3500 <= 20000 ? 'Sí' : 'No');
+```
 
-/** Revisa que cada falacia tenga una evidencia real guardada en los temas anteriores del módulo. */
-public final class FalaciasDistribuidas {
-  record Evidencia(String archivo, String marca) { }
-  record Falacia(String nombre, String mitigacion, List<Evidencia> evidencias) { }
+Se ve como un número mágico tras otro: nadie sabe qué es `20000`, y para probar otra lista hay que editar el
+código. Haz lo contrario: datos con nombre, lógica en funciones que reciben esos datos y un test por regla.
 
-  private static final List<Falacia> FALACIAS = List.of(
-      new Falacia("red_confiable", "reconciliacion+idempotencia", List.of(
-          new Evidencia("resultado-desconocido/evidence/resultado.txt", "CONFIRMADO"),
-          new Evidencia("idempotencia/evidence/idempotencia.txt", "efectos=1"))),
-      new Falacia("latencia_cero", "deadline+medicion", List.of(
-          new Evidencia("m0-t2/evidence/tema-2.txt", "HttpTimeoutException"))),
-      new Falacia("ancho_infinito", "limite+framing", List.of(
-          new Evidencia("framing/evidence/framing.txt", "PAYLOAD_EXCESIVO"))),
-      new Falacia("topologia_estable", "descubrimiento+health", List.of(
-          new Evidencia("m0-t1/evidence/tema-1.txt", "UP"))),
-      new Falacia("sistema_homogeneo", "contrato+compatibilidad", List.of(
-          new Evidencia("contratos/evidence/envio-v1.json", "\"estado\""),
-          new Evidencia("contratos/evidence/envio-v2.json", "\"ciudadDestino\""))));
+---
 
-  private FalaciasDistribuidas() { }
+### Qué es un servidor
 
-  public static void main(String[] args) throws IOException {
-    Path labs = Path.of(args.length > 0 ? args[0] : "..");
-    int faltantes = 0;
-    for (Falacia falacia : FALACIAS) {
-      String problema = buscarProblema(labs, falacia.evidencias());
-      if (problema == null) {
-        System.out.println("REFUTADA " + falacia.nombre() + " -> " + falacia.mitigacion());
-      } else {
-        System.out.println("SIN_EVIDENCIA " + falacia.nombre() + ": " + problema);
-        faltantes++;
+#### 1. UBICACIÓN
+
+Módulo 0.1, Lección 2 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-0/servidor/`.
+
+#### 2. PRERREQUISITOS
+
+- Tema anterior: «Qué es un programa» (datos, instrucciones, resultado; un proceso que termina).
+- Saber abrir **dos** ventanas o pestañas de terminal a la vez.
+- Tener `curl` (viene instalado en macOS, Linux y Windows 10+; comprueba con `curl --version`).
+
+#### 3. OBJETIVO DE APRENDIZAJE
+
+**Arrancar** un servidor HTTP, **enviarle** pedidos desde otra terminal con `curl` y **explicar** por qué el
+proceso no termina; lo compruebas cuando el test `servidor/servidor.test.js` pasa y cuando puedes provocar e
+interpretar el error `EADDRINUSE`.
+
+#### 4. ANALOGÍA VISUAL
+
+Dibuja una **ventanilla de atención en un edificio**, con un número grande pintado encima: **3000**. Detrás del
+vidrio hay una persona sentada (el servidor) con un cuaderno donde anota cada visita: «Pedido #1: GET /»,
+«Pedido #2: GET /hola». Frente a la ventanilla, una fila de personas con papelitos (los clientes). Cada una
+entrega su papel, recibe una respuesta impresa («Hola, soy un servidor») y se va. **La persona de la ventanilla no
+se va nunca**: cuando no hay nadie, espera con los brazos cruzados. Solo cuando alguien apaga la luz
+(**Ctrl+C**) cierra la ventanilla. En el edificio hay muchas ventanillas, cada una con su número (puerto), y dos
+personas no pueden atender la misma ventanilla a la vez.
+
+#### 5. DIAGRAMA TÉCNICO
+
+```mermaid
+sequenceDiagram
+    participant T2 as Terminal 2 (cliente: curl)
+    participant S as Proceso servidor.js (puerto 3000)
+    Note over S: listen(3000) y espera
+    T2->>S: GET / HTTP/1.1
+    S-->>T2: 200 OK · "Hola, soy un servidor… 1 vez"
+    T2->>S: GET /hola HTTP/1.1
+    S-->>T2: 200 OK · "… 2 vez/veces"
+    Note over S: sigue esperando hasta Ctrl+C
+```
+
+**Texto alternativo:** diagrama de secuencia con dos participantes: a la izquierda la terminal 2, que actúa como
+cliente con curl; a la derecha el proceso servidor.js escuchando en el puerto 3000. El cliente envía «GET /» y
+recibe «200 OK» con el contador en 1; luego envía «GET /hola» y recibe el contador en 2. Una nota final indica
+que el servidor sigue esperando hasta que se pulsa Ctrl+C.
+
+#### 6. EXPLICACIÓN NIVEL 0
+
+Un **servidor** es un programa que, en vez de terminar, **se queda esperando pedidos** y responde a cada uno.
+Piensa en él como un empleado de ventanilla: su trabajo no es hacer una cosa y marcharse, sino estar disponible.
+
+Para que los pedidos lleguen al programa correcto, cada servidor «se sienta» en un **puerto**: un número entre 1 y
+65535 que funciona como el número de la ventanilla. Nuestro servidor usa el **3000**.
+
+El que hace el pedido se llama **cliente**. Hoy el cliente será `curl`, un programa de terminal que envía pedidos
+web. Mañana será tu navegador, una app del celular u otro microservicio.
+
+La palabra «servidor» también se usa para la **máquina** donde corren estos programas. En este curso, cuando
+digamos servidor, hablamos casi siempre del **programa**.
+
+#### 7. EXPLICACIÓN INTERMEDIA
+
+`http.createServer(manejador)` crea un objeto servidor y registra una función (`manejador`) que Node llamará
+**una vez por cada pedido**. `servidor.listen(3000)` le pide al sistema operativo reservar el puerto 3000 y
+avisar cuando llegue una conexión. Desde ese momento hay algo pendiente (un *socket* escuchando), y por eso el
+proceso **no termina**: Node solo finaliza cuando no le queda nada por hacer.
+
+Cada pedido trae un **método** (`GET`) y una **ruta** (`/hola`); la respuesta lleva un **código de estado**
+(`200` = bien), **cabeceras** (`Content-Type`) y un **cuerpo** (el texto). Lo estudiarás a fondo en el tema HTTP
+del Módulo 0.4.
+
+La variable `pedidosAtendidos` vive en la memoria del proceso y **sobrevive entre pedidos**: por eso el segundo
+pedido dice «2 vez/veces». Si apagas y enciendes el servidor, vuelve a 0: la memoria del proceso se perdió.
+
+El test arranca el servidor con `listen(0)`: el 0 le pide al sistema operativo **cualquier puerto libre**, así el
+test no choca con un servidor que ya tengas encendido.
+
+#### 8. EXPLICACIÓN MAESTRA
+
+- **Estado en memoria frente a estado externo.** El contador vive en RAM: rápido y simple, pero se pierde al
+  reiniciar y **no se comparte entre réplicas**. Con dos procesos detrás de un balanceador, cada uno llevaría su
+  propia cuenta. Alternativas: guardar el estado en una base de datos o en Redis (servidor *stateless*, como exige
+  la 12-Factor App del Módulo 5) o aceptar estado local solo como caché. En microservicios, por defecto,
+  servidores **sin estado**.
+- **Servidor HTTP de la librería estándar frente a framework.** `node:http` (aquí) y `com.sun.net.httpserver`
+  (Java, Módulo 0.5) no necesitan dependencias pero obligan a escribir a mano rutas, validación y errores. Express
+  o NestJS (Fase 2) y Spring Boot (Fase 1) resuelven eso a cambio de dependencias y convenciones. Para aprender y
+  para utilidades mínimas, la librería estándar; para servicios de negocio, un framework.
+- **Modelo de concurrencia.** Node atiende muchos pedidos con un solo hilo y un *event loop*; un servidor Java
+  clásico usa un hilo por pedido (y desde Java 21, hilos virtuales). Lo comparas en el Módulo 0.3.
+
+**Cuándo NO** levantar un servidor: si el trabajo se dispara una vez al día (un reporte nocturno), un programa
+que termina, lanzado por un planificador (`cron`, un *Job* de Kubernetes), cuesta menos y no ocupa un puerto ni
+memoria las 24 horas.
+
+#### 9. CÓDIGO EJECUTABLE
+
+Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22); solo el módulo `node:http` incluido en Node.
+Usa el mismo `package.json` del tema anterior (`"type": "module"`). Archivo
+`examples/microservicios/modulo-0/servidor/servidor.js`:
+
+```javascript
+// Módulo 0.1 · Qué es un servidor
+// Un servidor es un programa que NO termina: se queda esperando pedidos
+// en un "puerto" (como una ventanilla numerada) y responde a cada uno.
+// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Usa solo el módulo 'node:http'.
+// Ejecuta: node servidor/servidor.js   y en otra terminal: curl http://localhost:3000/
+
+import http from 'node:http';
+
+let pedidosAtendidos = 0;
+
+// crearServidor() devuelve el servidor sin encenderlo; así el test puede encenderlo en un puerto libre.
+export function crearServidor() {
+  return http.createServer((pedido, respuesta) => {
+    pedidosAtendidos++;
+    // Cada vez que llega un pedido, el servidor anota quién pidió qué...
+    console.log(`Pedido #${pedidosAtendidos}: ${pedido.method} ${pedido.url}`);
+    // ...y responde con un código de estado (200 = todo bien) y un texto.
+    respuesta.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    respuesta.end(`Hola, soy un servidor. Te he atendido ${pedidosAtendidos} vez/veces.\n`);
+  });
+}
+
+if (import.meta.main) {
+  const puerto = Number(process.env.PORT ?? 3000);
+  crearServidor().listen(puerto, () => {
+    console.log(`Servidor escuchando en http://localhost:${puerto} (Ctrl+C para apagarlo)`);
+  });
+}
+```
+
+#### 10. MINI-LABORATORIO
+
+1. **Terminal 1** (desde `examples/microservicios/modulo-0`): enciende el servidor.
+   ```bash
+   node servidor/servidor.js
+   ```
+2. **Terminal 2**: haz dos pedidos.
+   ```bash
+   curl -i http://localhost:3000/
+   curl http://localhost:3000/hola
+   ```
+3. **Terminal 2**: intenta encender un segundo servidor en el mismo puerto.
+   ```bash
+   node servidor/servidor.js
+   ```
+4. **Terminal 1**: pulsa `Ctrl+C`. Después, en la terminal 2: `curl http://localhost:3000/`.
+
+**Output esperado.** Terminal 1 (el servidor no devuelve el *prompt*):
+
+```text
+Servidor escuchando en http://localhost:3000 (Ctrl+C para apagarlo)
+Pedido #1: GET /
+Pedido #2: GET /hola
+```
+
+Terminal 2, paso 2 (la fecha cambia):
+
+```text
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Date: Fri, 20 Nov 2026 01:53:21 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+Hola, soy un servidor. Te he atendido 1 vez/veces.
+Hola, soy un servidor. Te he atendido 2 vez/veces.
+```
+
+Paso 3: `Error: listen EADDRINUSE: address already in use 0.0.0.0:3000` (en macOS la dirección puede verse como
+`:::3000`). Paso 4: `curl: (7) Failed to connect to localhost port 3000 after 0 ms: Couldn't connect to server`.
+
+**Captura comentada:** en la terminal 1 el cursor se queda parpadeando bajo la última línea, sin `$`: el proceso
+está vivo esperando. Cada `curl` de la terminal 2 hace aparecer una línea nueva en la terminal 1, al mismo
+tiempo. Tras `Ctrl+C` vuelve el `$` y `curl` ya no encuentra a nadie en la ventanilla 3000.
+
+#### 11. VERIFICACIÓN
+
+El test enciende el servidor en un puerto libre, le hace dos pedidos y comprueba que el segundo lo atendió el
+mismo proceso (contador en 2):
+
+```bash
+node --test --test-reporter=spec servidor/servidor.test.js
+```
+
+Salida real:
+
+```text
+Pedido #1: GET /
+Pedido #2: GET /otra-vez
+✔ el servidor responde y sigue esperando pedidos (21.241997ms)
+ℹ tests 1
+ℹ pass 1
+ℹ fail 0
+```
+
+**Pregunta de comprobación:** si apagas el servidor y lo vuelves a encender, ¿qué número dirá el siguiente
+pedido y por qué? *(1, porque el contador vivía en la memoria del proceso anterior, que ya no existe.)*
+
+#### 12. ERROR COMÚN
+
+**Síntoma:** al arrancar ves `Error: listen EADDRINUSE: address already in use 0.0.0.0:3000` y el programa se
+cierra. **Cómo se ve:** un bloque de error que menciona `code: 'EADDRINUSE'` y `port: 3000`. **Diagnóstico:** ya
+hay un proceso ocupando la ventanilla 3000 (otra terminal que olvidaste, o un servidor anterior que no apagaste).
+Averigua cuál con:
+
+```bash
+lsof -i :3000
+```
+
+La columna `PID` te da el número del proceso. **Arreglo:** apágalo (`Ctrl+C` en su terminal o `kill <PID>`) o usa
+otro puerto: `PORT=3005 node servidor/servidor.js`.
+
+#### 13. PREGUNTA DE ENTREVISTA
+
+«¿Por qué un proceso servidor no termina cuando llega al final de su código, y cómo se apaga correctamente?»
+
+**Respuesta modelo:** porque `listen` registra un socket que espera conexiones; mientras exista ese recurso
+pendiente, el *runtime* (el event loop de Node o los hilos no daemon de la JVM) mantiene vivo el proceso. Se
+apaga con una señal del sistema operativo: `SIGINT` (Ctrl+C) o `SIGTERM` (lo que envían Docker y Kubernetes). Un
+apagado correcto (*graceful shutdown*) deja de aceptar conexiones nuevas, termina las que están en curso y libera
+recursos antes de salir; lo implementas en el Módulo 13.
+
+#### 14. ANTI-PATRÓN RELACIONADO
+
+**Guardar datos importantes solo en la memoria del servidor.** Se ve así:
+
+```javascript
+// ✖ Anti-patrón: los pedidos de los clientes viven solo en RAM
+const pedidos = [];
+// ... pedidos.push(nuevoPedido) en cada POST
+```
+
+Funciona en tu máquina, pero al reiniciar (un despliegue, una caída) se pierden todos los pedidos, y con dos
+réplicas cada una ve una lista distinta. En el diagrama de la analogía, es como si la persona de la ventanilla
+anotara los pedidos en una servilleta que tira al irse a casa. Lo correcto es guardar el estado en una base de
+datos (Módulos 2 y 15).
+
+---
+
+### Qué es una API
+
+#### 1. UBICACIÓN
+
+Módulo 0.1, Lección 3 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-0/api/`.
+
+#### 2. PRERREQUISITOS
+
+- Temas «Qué es un programa» y «Qué es un servidor» (puerto, cliente, `curl`).
+- Haber visto un objeto JavaScript con llaves `{ "nombre": "Arepa" }`; el tema JSON del Módulo 0.4 lo
+  profundiza, aquí basta con reconocerlo.
+
+#### 3. OBJETIVO DE APRENDIZAJE
+
+**Consumir** las tres operaciones de una API REST pequeña con `curl`, **distinguir** una respuesta exitosa (200,
+201) de un error del cliente (400, 404) y **explicar** qué es un contrato de API; lo compruebas cuando
+`api/api.test.js` pasa 4 de 4.
+
+#### 4. ANALOGÍA VISUAL
+
+Dibuja un **restaurante visto en corte**: a la izquierda el comedor con un cliente sentado; a la derecha, detrás
+de una pared, la cocina (el servidor) con ollas y cocineros. En la mesa hay un **menú plastificado** con tres
+líneas: «Ver todos los platos», «Ver un plato por su número», «Hacer un pedido (plato + cantidad)». Entre el
+comedor y la cocina va y viene un **mesero** con una libreta: el cliente nunca entra a la cocina, solo pide lo que
+está en el menú, con la forma que el menú indica. Si pide «el plato 99», el mesero vuelve con una nota roja: «No
+existe ese plato» (404). Si pide «cero empanadas», otra nota roja: «Pedido mal hecho» (400). Si pide bien, vuelve
+con una bandeja y la cuenta: «3 empanadas, total 9000» (201).
+
+El **menú es la API**: la lista pública y estable de pedidos que acepta la cocina y la forma exacta de lo que
+devuelve. La cocina puede cambiar sus recetas por dentro sin que el cliente se entere, siempre que el menú no
+cambie.
+
+#### 5. DIAGRAMA TÉCNICO
+
+```mermaid
+flowchart LR
+    C["Cliente<br/>(curl, navegador, otro servicio)"]
+    subgraph API["API pública (contrato)"]
+      E1["GET /api/menu → 200 [platos]"]
+      E2["GET /api/menu/{id} → 200 plato · 404"]
+      E3["POST /api/pedidos {platoId, cantidad} → 201 · 400"]
+    end
+    subgraph INT["Implementación interna (oculta)"]
+      D["arreglo menu en memoria"]
+      L["validación y cálculo del total"]
+    end
+    C --> E1 & E2 & E3
+    E1 & E2 --> D
+    E3 --> L --> D
+```
+
+**Texto alternativo:** a la izquierda, una caja «Cliente». En el centro, un recuadro «API pública (contrato)» con
+tres operaciones: GET /api/menu que responde 200 con la lista; GET /api/menu/{id} que responde 200 o 404; POST
+/api/pedidos que responde 201 o 400. A la derecha, un recuadro «Implementación interna (oculta)» con los datos del
+menú y la lógica de validación. El cliente solo toca el recuadro central.
+
+#### 6. EXPLICACIÓN NIVEL 0
+
+**API** significa *Application Programming Interface*: «interfaz para que un programa hable con otro». Es la
+lista de cosas que un servidor acepta que le pidas y la forma exacta de pedirlas y de responder.
+
+En la web, cada operación de la API se describe con dos datos:
+
+- un **método** (el verbo): `GET` para leer, `POST` para crear algo;
+- una **ruta** (la dirección): `/api/menu`, `/api/pedidos`.
+
+La respuesta llega en **JSON**, un formato de texto con llaves y comillas que tanto personas como programas
+pueden leer: `{"id":2,"nombre":"Empanada","precio":3000}`.
+
+Y siempre trae un **código de estado**, un número que resume qué pasó: `200` (aquí tienes), `201` (creado), `400`
+(pediste mal), `404` (no existe).
+
+#### 7. EXPLICACIÓN INTERMEDIA
+
+La API del laboratorio es una pequeña **API REST**: los recursos son sustantivos en la ruta (`/api/menu`,
+`/api/pedidos`) y el método HTTP indica la acción. El servidor:
+
+1. compara `method` y `url` de cada pedido con su lista de operaciones (el «enrutador», aquí unas cuantas `if`);
+2. para `POST`, lee el **cuerpo** del pedido (llega por trozos), lo convierte de texto JSON a objeto con
+   `JSON.parse` y lo **valida** (¿existe el plato?, ¿la cantidad es un entero mayor que 0?);
+3. responde siempre JSON con `Content-Type: application/json` y el código adecuado.
+
+El conjunto de rutas, métodos, formatos de entrada y salida y códigos de estado es el **contrato**. El test
+`api.test.js` es una forma ejecutable del contrato: si alguien cambia el nombre de un campo o un código de estado,
+el test falla antes de que se entere un cliente. En el Módulo 3 harás lo mismo entre servicios con *contract
+testing* (Pact).
+
+#### 8. EXPLICACIÓN MAESTRA
+
+- **Estilos de API.** REST sobre HTTP+JSON (aquí) es simple, universal y fácil de depurar con `curl`, pero cada
+  cliente recibe la forma que decide el servidor. **GraphQL** deja al cliente elegir los campos (útil con muchos
+  clientes distintos, a cambio de caché HTTP más difícil). **gRPC** usa contratos binarios Protocol Buffers y
+  HTTP/2 (rápido y tipado entre servicios, a cambio de no poder probarlo con `curl` a secas). Los verás en los
+  Módulos 6 y 18. Regla de partida: REST para APIs públicas, gRPC para tráfico interno de alto volumen.
+- **El contrato es más importante que la implementación.** Puedes reescribir la cocina de Node a Java sin romper
+  a nadie si el contrato se mantiene. Cambiar el contrato (quitar un campo, cambiar un 201 por 200) rompe a los
+  clientes: por eso se versiona (`/api/v2/...`) y se añaden campos sin quitar los viejos.
+- **Validar en la frontera.** Toda entrada externa es sospechosa: la API devuelve 400 en vez de calcular con una
+  cantidad 0 o un texto. Validar tarde produce datos corruptos difíciles de rastrear.
+
+**Cuándo NO** crear una API: si dos piezas de código viven en el mismo programa y siempre se despliegan juntas,
+una llamada a función es más rápida, más segura y más fácil de cambiar que una API por red. Una API por red tiene
+sentido cuando hay otro programa (u otro equipo) al otro lado.
+
+#### 9. CÓDIGO EJECUTABLE
+
+Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22); solo `node:http`. Mismo `package.json`
+(`"type": "module"`). Archivo `examples/microservicios/modulo-0/api/api.js`:
+
+```javascript
+// Módulo 0.1 · Qué es una API
+// Una API es el "menú" de un servidor: una lista fija de pedidos que acepta
+// (rutas + métodos), con la forma exacta de lo que devuelve (JSON).
+// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Usa solo 'node:http'.
+// Ejecuta: node api/api.js  y prueba:
+//   curl http://localhost:3001/api/menu
+//   curl http://localhost:3001/api/menu/2
+//   curl -X POST http://localhost:3001/api/pedidos -H 'Content-Type: application/json' -d '{"platoId":2,"cantidad":3}'
+
+import http from 'node:http';
+
+const menu = [
+  { id: 1, nombre: 'Arepa', precio: 5000 },
+  { id: 2, nombre: 'Empanada', precio: 3000 },
+  { id: 3, nombre: 'Limonada', precio: 4000 },
+];
+
+// Ayudante: toda respuesta de esta API es JSON, con un código de estado.
+function responderJson(respuesta, estado, cuerpo) {
+  respuesta.writeHead(estado, { 'Content-Type': 'application/json; charset=utf-8' });
+  respuesta.end(JSON.stringify(cuerpo));
+}
+
+// Lee el cuerpo del pedido (llega en trozos) y lo convierte de texto JSON a objeto.
+async function leerJson(pedido) {
+  let texto = '';
+  for await (const trozo of pedido) texto += trozo;
+  return JSON.parse(texto);
+}
+
+export function crearApi() {
+  return http.createServer(async (pedido, respuesta) => {
+    const { method, url } = pedido;
+
+    // Contrato 1: GET /api/menu -> lista completa
+    if (method === 'GET' && url === '/api/menu') {
+      return responderJson(respuesta, 200, menu);
+    }
+
+    // Contrato 2: GET /api/menu/{id} -> un plato o 404
+    const coincide = url.match(/^\/api\/menu\/(\d+)$/);
+    if (method === 'GET' && coincide) {
+      const plato = menu.find((p) => p.id === Number(coincide[1]));
+      return plato
+        ? responderJson(respuesta, 200, plato)
+        : responderJson(respuesta, 404, { error: 'No existe ese plato' });
+    }
+
+    // Contrato 3: POST /api/pedidos {platoId, cantidad} -> 201 con el total, o 400 si el pedido está mal hecho
+    if (method === 'POST' && url === '/api/pedidos') {
+      let datos;
+      try {
+        datos = await leerJson(pedido);
+      } catch {
+        return responderJson(respuesta, 400, { error: 'El cuerpo no es JSON válido' });
       }
+      const plato = menu.find((p) => p.id === datos.platoId);
+      if (!plato || !Number.isInteger(datos.cantidad) || datos.cantidad < 1) {
+        return responderJson(respuesta, 400, { error: 'Necesito platoId existente y cantidad entera mayor que 0' });
+      }
+      return responderJson(respuesta, 201, { plato: plato.nombre, cantidad: datos.cantidad, total: plato.precio * datos.cantidad });
     }
-    System.out.println("SIN_DEMOSTRAR red_segura: el laboratorio en loopback no prueba identidad ni cifrado");
-    if (faltantes > 0) {
-      System.err.println("REVISION_RECHAZADA faltan " + faltantes + " evidencias");
-      System.exit(1);
-    }
-  }
 
-  private static String buscarProblema(Path labs, List<Evidencia> evidencias) throws IOException {
-    for (Evidencia evidencia : evidencias) {
-      Path archivo = labs.resolve(evidencia.archivo());
-      if (!Files.isRegularFile(archivo)) return "falta " + evidencia.archivo();
-      if (!Files.readString(archivo, StandardCharsets.UTF_8).contains(evidencia.marca()))
-        return evidencia.archivo() + " no contiene " + evidencia.marca();
-    }
-    return null;
-  }
+    // Cualquier otra cosa no está en el menú de la API.
+    return responderJson(respuesta, 404, { error: `La API no ofrece ${method} ${url}` });
+  });
+}
+
+if (import.meta.main) {
+  const puerto = Number(process.env.PORT ?? 3001);
+  crearApi().listen(puerto, () => console.log(`API escuchando en http://localhost:${puerto}/api/menu`));
 }
 ```
 
-```bash
-mkdir -p academia-labs/microservices/falacias/{src,out,evidence}
-cp examples/professional-bridges/microservices/FalaciasDistribuidas.java academia-labs/microservices/falacias/src/
-cd academia-labs/microservices/falacias
-javac --release 27 -d out src/FalaciasDistribuidas.java
-# '..' es academia-labs/microservices, donde viven las carpetas de los temas 1 a 9
-java -cp out FalaciasDistribuidas ..
+#### 10. MINI-LABORATORIO
+
+1. **Terminal 1** (desde `examples/microservicios/modulo-0`):
+   ```bash
+   node api/api.js
+   ```
+2. **Terminal 2**, recorre el menú de la API:
+   ```bash
+   curl -s http://localhost:3001/api/menu; echo
+   curl -s http://localhost:3001/api/menu/2; echo
+   curl -s -i http://localhost:3001/api/menu/99
+   curl -s -X POST http://localhost:3001/api/pedidos -H 'Content-Type: application/json' -d '{"platoId":2,"cantidad":3}' -w ' [%{http_code}]\n'
+   ```
+3. **Rómpelo a propósito:** envía JSON inválido (coma final), una ruta con mayúscula y un método que no existe.
+   ```bash
+   curl -s -X POST http://localhost:3001/api/pedidos -H 'Content-Type: application/json' -d '{"platoId":2,"cantidad":3,}' -w ' [%{http_code}]\n'
+   curl -s http://localhost:3001/api/Menu -w ' [%{http_code}]\n'
+   curl -s -X DELETE http://localhost:3001/api/menu/1 -w ' [%{http_code}]\n'
+   ```
+
+**Output esperado** (paso 2; `-w ' [%{http_code}]'` le pide a curl mostrar el código al final):
+
+```text
+[{"id":1,"nombre":"Arepa","precio":5000},{"id":2,"nombre":"Empanada","precio":3000},{"id":3,"nombre":"Limonada","precio":4000}]
+{"id":2,"nombre":"Empanada","precio":3000}
+HTTP/1.1 404 Not Found
+Content-Type: application/json; charset=utf-8
+…
+{"error":"No existe ese plato"}
+{"plato":"Empanada","cantidad":3,"total":9000} [201]
 ```
 
-**Resultado esperado:** si guardaste las evidencias de los temas anteriores, cinco líneas comienzan con `REFUTADA` (la primera es `REFUTADA red_confiable -> reconciliacion+idempotencia`) y la última es `SIN_DEMOSTRAR red_segura: …`: el programa declara lo que el laboratorio no prueba. Si falta un archivo o no contiene la salida esperada, imprime `SIN_EVIDENCIA` con la ruta, `REVISION_RECHAZADA` y termina con código 1.
+Paso 3:
 
-**Fallo deliberado:** renombra `../idempotencia/evidence/idempotencia.txt` y vuelve a ejecutar → **Error esperado:** `SIN_EVIDENCIA red_confiable: falta idempotencia/evidence/idempotencia.txt`, `REVISION_RECHAZADA faltan 1 evidencias` y `echo $?` imprime `1` → **Diagnóstico:** sin la prueba de un solo efecto, «reintentar» no está respaldado: un retry sin reconciliación ni idempotencia puede duplicar. Restaura el archivo.
+```text
+{"error":"El cuerpo no es JSON válido"} [400]
+{"error":"La API no ofrece GET /api/Menu"} [404]
+{"error":"La API no ofrece DELETE /api/menu/1"} [404]
+```
 
-#### Paso 5 · Práctica guiada
+**Captura comentada:** todas las respuestas son una sola línea de JSON. Los éxitos traen datos; los errores
+traen siempre un objeto con la clave `error` y un código 4xx: el cliente sabe que **él** pidió mal y no tiene
+sentido repetir el mismo pedido. La ruta `/api/Menu` falla porque las rutas distinguen mayúsculas.
 
-1. **Reproducción:** relaciona las seis salidas con evidencias ejecutadas. Pista: cita archivo y comando.
-2. **Variación:** añade «transporte sin costo» con batching y límites.
-3. **Diagnóstico:** encuentra una mitigación que sólo mueve el riesgo y corrígela.
-4. **Integración:** escribe `evidence/falacia.md` con hipótesis, perturbación, salida, impacto y control.
-5. **Diseño:** prioriza dos pruebas para CI y una para staging; justifica costo y señal.
+#### 11. VERIFICACIÓN
 
-**Conexión con el proyecto integrador RutaFlow Distribuido:** el documento se convierte en backlog de pruebas de resiliencia, seguridad y compatibilidad, con responsable y criterio de recuperación.
+El test es el contrato ejecutable de la API (forma de la lista, 404, 201 con total y 400):
 
-#### Paso 6 · Práctica independiente
+```bash
+node --test --test-reporter=spec api/api.test.js
+```
 
-Elige una falacia no demostrada por loopback, diseña un experimento reproducible en dos contenedores o hosts y define qué resultado la refuta. Incluye límites éticos, rollback, señal observable y decisión posterior.
+Salida real:
 
-#### Paso 7 · Cierre
+```text
+✔ GET /api/menu devuelve 3 platos en JSON (26.955317ms)
+✔ GET /api/menu/99 responde 404 (3.402152ms)
+✔ POST /api/pedidos calcula el total y responde 201 (6.349675ms)
+✔ POST /api/pedidos con cantidad inválida responde 400 (4.30047ms)
+ℹ tests 4
+ℹ pass 4
+ℹ fail 0
+```
 
-- [ ] Formulo cada falacia como hipótesis comprobable.
-- [ ] Conservo salida real, no sólo una tabla.
-- [ ] Conecto impacto con mitigación específica.
-- [ ] Declaro límites del laboratorio.
-- [ ] Convierto la evidencia en prueba operativa con responsable.
+Para comprobar el módulo completo: `./verificar.sh` (8 tests y la línea `RESULTADO: OK · Módulo 0.1 (programa,
+servidor y API) verificado`). **Pregunta de comprobación:** cambia en `api.js` la clave `nombre` por `titulo` y
+ejecuta el test: ¿qué test falla y qué le pasaría a una app que usara la API? *(Falla «GET /api/menu devuelve 3
+platos en JSON» porque las claves ya no son `id, nombre, precio`; la app mostraría platos sin nombre: rompiste
+el contrato.)*
 
-Si fallas 2 o más puntos, repite una perturbación del módulo. **Siguiente módulo:** «Construir un monolito modular antes de extraer servicios»; primer tema «Distinguir estructura lógica de unidad de despliegue» (referencia interna M1 T1). **Errores comunes:** memorizar la lista, llamar retry a una solución universal y ocultar límites. **Fuentes oficiales:** [Azure distributed systems patterns](https://learn.microsoft.com/en-us/azure/architecture/patterns/) y [AWS Builders' Library](https://aws.amazon.com/builders-library/).
+#### 12. ERROR COMÚN
 
-## Proyecto de cierre · Diagnosticar una cotización distribuida de RutaFlow · 3 h
+**Síntoma:** envías un pedido válido y recibes `{"error":"El cuerpo no es JSON válido"} [400]`. **Cómo se ve:**
+una respuesta 400 aunque «el pedido parece bien». **Diagnóstico:** casi siempre son las comillas de la terminal.
+En macOS/Linux, el JSON va entre comillas simples por fuera y dobles por dentro: `-d '{"platoId":2}'`. En
+Windows PowerShell 5.1, `curl` es un alias de otro comando (escribe `curl.exe`) y las comillas dobles internas
+pueden perderse al pasar a programas externos; mira lo que realmente envías añadiendo `-v` a curl (línea
+`> Content-Length`) o guarda el JSON en un archivo y envíalo con `-d @pedido.json`. **Arreglo:** usa comillas
+simples por fuera (o `@archivo`) y valida tu JSON antes de enviarlo.
 
-Construye un cliente, un gateway y una dependencia Java sin frameworks. El flujo debe propagar un
-deadline, aceptar `Idempotency-Key` con huella, conservar una versión por envío y devolver un
-contrato V1/V2 compatible. Provoca una respuesta perdida después del efecto y demuestra la
-reconciliación. Conserva en `evidence/proyecto-modulo-red.md` comandos, salidas y decisiones.
+#### 13. PREGUNTA DE ENTREVISTA
 
-### Requisitos verificables
+«¿Qué diferencia hay entre un 400 y un 404, y por qué importa elegir bien el código de estado?»
 
-1. Tres procesos en puertos distintos; PID y sockets comprobados.
-2. Presupuesto de 1200 ms exitoso y otro insuficiente con 504 sin renovar el deadline.
-3. Resultado desconocido reconciliado por el mismo ID.
-4. Retry con la misma clave produce un solo efecto; otra huella devuelve 409.
-5. Evento tardío/duplicado clasificado por versión del agregado.
-6. Consumidores V1/V2 y payload excesivo probados con salida exacta.
-7. Una falacia documentada como hipótesis, perturbación, evidencia, impacto y mitigación.
+**Respuesta modelo:** ambos son errores del cliente (4xx). 404 dice que el recurso o la ruta no existe; 400 dice
+que la ruta existe pero el contenido del pedido es inválido. Importa porque los clientes, los *proxies*, los
+reintentos automáticos y el monitoreo toman decisiones con el código: un 4xx no se reintenta (repetir el mismo
+pedido dará lo mismo), un 5xx sí puede reintentarse; y una alerta basada en tasa de 5xx no debe dispararse por
+clientes que piden mal. Un código incorrecto (por ejemplo, 200 con `{"error":...}`) esconde fallos al monitoreo.
 
-### Rúbrica · 100 puntos
+#### 14. ANTI-PATRÓN RELACIONADO
 
-| Criterio | Puntos |
-|---|---:|
-| Procesos, sockets y ejecución reproducible desde carpeta limpia | 10 |
-| Deadline extremo a extremo y reserva correctamente propagados | 15 |
-| Resultado desconocido y reconciliación demostrados | 15 |
-| Idempotencia atómica, conflicto de huella y un solo efecto | 20 |
-| Orden por agregado, duplicado y hueco diagnosticados | 15 |
-| Compatibilidad V1/V2 y límite temprano de payload | 10 |
-| Evidencia de falacia, límites y decisión profesional | 10 |
-| README, comandos, salidas y limpieza de procesos | 5 |
-| **Total** | **100** |
+**Exponer la implementación interna como API** (la «API anémica» que filtra la base de datos):
 
-Para aprobar técnicamente deben obtenerse al menos 80 puntos y no puede faltar ninguno de los
-criterios de deadline, reconciliación, idempotencia u orden. La puntuación organiza revisión; no
-reemplaza la explicación causal ni acredita comprensión por sí sola.
+```text
+✖ GET /api/tabla_menu_v2?sql=SELECT * FROM menu   →  200 [{"MENU_ID":1,"NOM_PLT":"Arepa","PRC_CENT":500000,"FLG_DEL":0}]
+```
+
+Se ve como rutas con nombres de tablas, columnas crípticas y campos internos (`FLG_DEL`) en la respuesta. Cada
+cambio en la base de datos rompe a los clientes, y aceptar SQL por parámetro es además una puerta a inyecciones.
+En el diagrama técnico, sería borrar el recuadro «API pública» y conectar el cliente directo al recuadro interno.
+Diseña la API desde lo que el cliente necesita (platos, pedidos), no desde cómo guardas los datos.

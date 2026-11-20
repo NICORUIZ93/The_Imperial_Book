@@ -1,1152 +1,569 @@
-# Curso Microservicios · Construir un monolito modular antes de extraer servicios
-
-## Aprende construyendo
-
-RutaFlow empieza como un solo artefacto desplegable con módulos de Envíos y Facturación. En este módulo no extraes procesos: haces visibles las fronteras, reduces dependencias y conviertes decisiones arquitectónicas en pruebas. Solo al final evalúas si separar un servicio compra autonomía suficiente para pagar red, despliegue, datos y operación adicionales.
-
-## Entorno reproducible
-
-Cada tema indica sus archivos. Para los ejercicios Java crea `academia-labs/microservices/modular-rutaflow`; usa JDK 25 y Maven Wrapper. La demostración de ArchUnit incluye un proyecto independiente generado desde una carpeta limpia para que la prueba no dependa de avances ocultos.
-
-### Tema 1: Distinguir estructura lógica de unidad de despliegue · Básico · 40 min
-
-**Prerrequisito:** tema «Refutar falacias distribuidas mediante evidencia reproducible» del módulo «Antes de distribuir: proceso, red y falacias» (referencia interna M0 T10).
-
-**Al finalizar podrás:** clasificar monolito, monolito modular, monolito distribuido y servicios autónomos usando artefactos, procesos, módulos, datos y despliegue, sin inferir arquitectura por tamaño, repositorio o presencia de HTTP.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/clasificacion/{src,out,evidence}`. Debes distinguir proceso, puerto y frontera de red; ahora añadirás unidad lógica y unidad de despliegue.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Llamar microservicio a cualquier API pequeña hace que un equipo pague serialización, fallos parciales y operación distribuida sin obtener autonomía.
-
-RutaFlow contiene Envíos y Facturación en `rutaflow.jar`. Dos módulos dentro de un artefacto siguen siendo un monolito desplegable, aunque sus paquetes estén bien separados. Dividirlos en dos procesos que comparten tablas y release train crea un monolito distribuido. La clasificación debe salir de fronteras observables, no de una etiqueta comercial.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Evidencia |
-|---|---|---|
-| Unidad lógica | Núcleo | Un módulo agrupa una capacidad y puede vivir dentro de un proceso |
-| Artefacto/proceso | Núcleo | Define empaquetado y ejecución, no cohesión interna |
-| Monolito modular | Núcleo | Un despliegue contiene módulos con APIs e internals controlados |
-| Servicio | Variante | Ofrece una capacidad; no exige proceso remoto |
-| Microservicio autónomo | Profundización | Suma contrato, datos, despliegue y operación propios |
-| Monolito distribuido | Diagnóstico | Múltiples procesos conservan coordinación obligatoria o datos compartidos |
-
-Analogía: un edificio puede contener departamentos independientes bajo una sola administración; construir varios edificios conectados por pasillos obligatorios no crea independencia. El tamaño no decide: importan responsabilidades y cambios coordinados.
-
-**Límite profesional:** esta clasificación describe estructura observable, pero no demuestra por sí sola buena cohesión, seguridad ni rentabilidad. Dos servicios pueden ser autónomos y aun así estar mal diseñados; esas decisiones requieren las evidencias de los temas siguientes.
-
-```text
-1 artefacto + 1 proceso + módulos -> MONOLITO_MODULAR
-2 procesos + tablas/release compartidos -> MONOLITO_DISTRIBUIDO
-2 procesos + datos/despliegue propios -> SERVICIOS_AUTONOMOS
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `clasificacion/src/ClasificarArquitectura.java` copiando el archivo completo desde `examples/professional-bridges/microservices/ClasificarArquitectura.java`.
-
-```java
-public final class ClasificarArquitectura {
-  record Evidencia(int artefactos,int procesos,int modulos,boolean datosCompartidos,
-                   boolean despliegueIndependiente) { }
-  private ClasificarArquitectura() { }
-  static String clasificar(Evidencia e) {
-    if (e.artefactos()==1 && e.procesos()==1 && e.modulos()>1) return "MONOLITO_MODULAR";
-    if (e.procesos()>1 && (e.datosCompartidos() || !e.despliegueIndependiente()))
-      return "MONOLITO_DISTRIBUIDO";
-    if (e.procesos()>1 && e.despliegueIndependiente()) return "SERVICIOS_AUTONOMOS";
-    return "MONOLITO";
-  }
-  public static void main(String[] args) {
-    System.out.println(clasificar(new Evidencia(1,1,2,true,false)));
-    System.out.println(clasificar(new Evidencia(2,2,2,true,false)));
-    System.out.println(clasificar(new Evidencia(2,2,2,false,true)));
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/clasificacion/{src,out,evidence}
-cp examples/professional-bridges/microservices/ClasificarArquitectura.java academia-labs/microservices/clasificacion/src/
-cd academia-labs/microservices/clasificacion
-javac --release 27 -d out src/ClasificarArquitectura.java
-java -cp out ClasificarArquitectura
-```
-
-**Resultado esperado:** `MONOLITO_MODULAR`, `MONOLITO_DISTRIBUIDO` y `SERVICIOS_AUTONOMOS`.
-
-**Fallo deliberado:** clasifica sólo por `procesos > 1` → **Error esperado:** el segundo caso aparece como autónomo → **Diagnóstico:** ignoraste datos y despliegue coordinado; restaura todas las evidencias.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** explica las tres clasificaciones. Pista: separa módulo de proceso.
-2. **Variación:** un proceso con un módulo debe dar `MONOLITO`.
-3. **Diagnóstico:** dos repositorios con una tabla compartida no son autónomos.
-4. **Integración:** inventaría artefactos, procesos, módulos y datos en `evidence/clasificacion.md`.
-5. **Diseño:** clasifica una arquitectura real y anota evidencia faltante, sin adivinar.
-
-**Conexión con el proyecto integrador:** conserva la línea base de RutaFlow antes de cualquier extracción.
-
-#### Paso 6 · Práctica independiente
-
-Clasifica cuatro variantes de RutaFlow y defiende cada resultado con artefacto, proceso, propiedad de datos, release y operación. Incluye un caso deliberadamente ambiguo y especifica qué evidencia pedirías.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo módulo, servicio, proceso y artefacto.
-- [ ] Reconozco un monolito modular.
-- [ ] Diagnostico un monolito distribuido.
-- [ ] No clasifico por tamaño o HTTP.
-- [ ] Declaro evidencia faltante.
-
-Si fallas 2 o más puntos, repite la matriz. **Siguiente tema:** «Evaluar autonomía antes de extraer un proceso» (referencia interna M1 T2). **Errores comunes:** equiparar repositorio, API o contenedor con microservicio. **Fuentes oficiales:** [Azure microservices style](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices).
-
-### Tema 2: Evaluar autonomía antes de extraer un proceso · Básico · 45 min
-
-**Prerrequisito:** tema «Distinguir estructura lógica de unidad de despliegue» del módulo «Construir un monolito modular antes de extraer servicios» (referencia interna M1 T1).
-
-**Al finalizar podrás:** decidir si una capacidad está lista para extraerse mediante compatibilidad de contrato, propiedad de datos, despliegue, operación y beneficio medido, y justificar profesionalmente mantenerla modular cuando falta evidencia.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y la clasificación anterior. Crea `academia-labs/microservices/autonomia/{src,out,evidence}`. No necesitas Spring ni Docker: la decisión precede a la tecnología de despliegue.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Separar un proceso compra valor sólo si reduce coordinación o aísla una necesidad medible. Sin datos y operación propios, el equipo conserva el acoplamiento y añade red, pipeline e incidentes.
-
-Facturación parece una candidata porque «puede escalar», pero hoy comparte transacción, equipo, base y release con Envíos. El resultado profesional es mantenerla modular hasta demostrar un cuello, una cadencia distinta o requisito regulatorio y preparar ownership completo. «No extraer todavía» es una decisión válida, reversible y medible.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Evidencia |
-|---|---|---|
-| Contrato compatible | Prerrequisito | Consumidores evolucionan sin despliegue coordinado obligatorio |
-| Datos propios | Núcleo | Escrituras y migraciones tienen propietario único |
-| Despliegue independiente | Núcleo | Release y rollback no requieren cambiar otros componentes |
-| Operación propia | Núcleo | SLO, alertas, capacidad y on-call tienen dueño |
-| Beneficio medido | Decisión | Cadencia, aislamiento, regulación o escalado superan costo distribuido |
-| Reversibilidad | Límite | ADR define cuándo revisar o revertir la extracción |
-
-Analogía: independizar una tienda exige inventario, caja, personal y responsabilidad propios; mover sólo el letrero a otro local duplica costos sin autonomía.
-
-#### Paso 4 · Demostración guiada desde cero
-
-Crea `autonomia/src/EvaluarAutonomia.java` copiando el archivo completo desde `examples/professional-bridges/microservices/EvaluarAutonomia.java`.
-
-```java
-public final class EvaluarAutonomia {
-  record Senales(boolean contratoCompatible,boolean datosPropios,boolean despliegueIndependiente,
-                 boolean operacionPropia,boolean beneficioMedido) { }
-  private EvaluarAutonomia() { }
-  static String decidir(Senales s) {
-    int autonomy=(s.contratoCompatible()?1:0)+(s.datosPropios()?1:0)
-        +(s.despliegueIndependiente()?1:0)+(s.operacionPropia()?1:0);
-    return autonomy==4 && s.beneficioMedido()?"CANDIDATO_A_EXTRAER":"MANTENER_MODULAR";
-  }
-  public static void main(String[] args) {
-    System.out.println(decidir(new Senales(true,false,false,false,false)));
-    System.out.println(decidir(new Senales(true,true,true,true,true)));
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/autonomia/{src,out,evidence}
-cp examples/professional-bridges/microservices/EvaluarAutonomia.java academia-labs/microservices/autonomia/src/
-cd academia-labs/microservices/autonomia
-javac --release 27 -d out src/EvaluarAutonomia.java
-java -cp out EvaluarAutonomia
-```
-
-**Resultado esperado:** `MANTENER_MODULAR` y `CANDIDATO_A_EXTRAER`.
-
-**Fallo deliberado:** decide extraer sólo porque `contratoCompatible=true` → **Error esperado:** el primer caso se vuelve candidato sin datos, despliegue, operación ni beneficio → **Diagnóstico:** una API no compra autonomía; restaura todas las señales.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** justifica ambos resultados. Pista: cuatro autonomías y un beneficio.
-2. **Variación:** activa datos propios pero no operación; debe mantenerse modular.
-3. **Diagnóstico:** detecta «CPU alta» sin perfil atribuible como evidencia insuficiente.
-4. **Integración:** crea `evidence/autonomia.csv` con señal, medida, dueño y estado.
-5. **Diseño:** define un disparador cuantificable y una condición de reversión.
-
-**Conexión con el proyecto integrador:** esta matriz alimentará el ADR final y puede concluir mantener el monolito.
-
-#### Paso 6 · Práctica independiente
-
-Evalúa Envíos y Facturación por separado. Propón una extracción y una no extracción, cuantifica el beneficio esperado y enumera costos de red, consistencia, seguridad y on-call.
-
-#### Paso 7 · Cierre
-
-- [ ] Exijo contrato, datos, despliegue y operación propios.
-- [ ] Vinculo extracción a un beneficio medido.
-- [ ] Reconozco evidencia insuficiente.
-- [ ] Documento costo distribuido.
-- [ ] Defino revisión y reversión.
-
-Si fallas 2 o más puntos, vuelve a la matriz. **Siguiente tema:** «Agrupar código por capacidad de negocio» (referencia interna M1 T3). **Errores comunes:** extraer por moda, CPU global o cantidad de líneas. **Fuentes oficiales:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-### Tema 3: Agrupar código por capacidad de negocio · Intermedio · 40 min
-
-**Prerrequisito:** tema «Evaluar autonomía antes de extraer un proceso» de este módulo (referencia interna M1 T2).
-
-**Al finalizar podrás:** proponer un límite de módulo a partir de motivos de cambio, invariantes y vocabulario de negocio, y distinguir cohesión real de proximidad accidental.
-
-**¿Por qué es importante?** Agrupar por capacidad, en vez de por capa técnica, determina si un módulo puede cambiar y probarse sin arrastrar al resto; una carpeta por tecnología oculta exactamente esa pregunta.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/cohesion/{src,out,evidence}` y copia `examples/professional-bridges/microservices/MedirCohesion.java` a `src/`.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow organizó controladores, servicios y repositorios en carpetas horizontales. Cambiar la asignación de un envío obliga a saltar entre las tres, mientras Facturación aparece mezclada en cada carpeta. El problema no es Java: el código que cambia por la misma regla de negocio no está junto.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Motivo de cambio | Prerrequisito | Commits e incidentes muestran qué clases cambian juntas por una regla |
-| Cohesión funcional | Núcleo | Un módulo reúne comportamiento que sirve a una capacidad reconocible |
-| Invariante | Núcleo | La regla que debe cumplirse atómicamente orienta el límite transaccional |
-| Vocabulario | Núcleo | Un término conserva significado preciso dentro del módulo |
-| Acoplamiento aferente/eferente | Diagnóstico | Entradas y salidas revelan quién depende del módulo y de quién depende |
-| Cohesión accidental | Límite | Compartir tabla, tecnología o autor no demuestra una capacidad común |
-
-Piensa en un taller: las herramientas se agrupan por trabajo que permiten completar, no por color. Un historial de cambios es evidencia, no una fórmula: dos clases pueden cambiar juntas por una migración temporal. Contrasta commits con conversaciones de dominio, invariantes e incidentes.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-import java.util.*;
-import java.util.stream.*;
-public final class MedirCohesion {
-  record Cambio(String motivo,String claseAfectada) {}
-  static Map<String,List<String>> agruparPorMotivo(List<Cambio> cambios) {
-    return cambios.stream().collect(Collectors.groupingBy(Cambio::motivo,
-      Collectors.mapping(Cambio::claseAfectada,Collectors.toList())));
-  }
-  public static void main(String[] args) {
-    var cambios=List.of(new Cambio("regla-envio","CalcularTarifa"),
-      new Cambio("regla-envio","AsignarConductor"),new Cambio("regla-factura","CalcularImpuesto"));
-    agruparPorMotivo(cambios).forEach((m,c)->System.out.println(m+"="+c.size()));
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/cohesion/{src,out,evidence}
-cp examples/professional-bridges/microservices/MedirCohesion.java academia-labs/microservices/cohesion/src/
-cd academia-labs/microservices/cohesion
-javac --release 27 -d out src/MedirCohesion.java
-java -cp out MedirCohesion
-```
-
-**Resultado esperado:** `regla-envio=2` y `regla-factura=1` (el orden puede variar). **Fallo deliberado:** agrupa por sufijo `Service` → **Error esperado:** reglas de Envíos y Facturación quedan juntas → **Diagnóstico:** confundiste capa técnica con capacidad.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** explica por qué las dos clases de Envíos forman candidato, no límite probado.
-2. **Variación:** añade `NotificarEntrega` con motivo `regla-envio` y discute si pertenece al núcleo o a integración.
-3. **Diagnóstico:** identifica un commit masivo de formato como falso indicio de cohesión.
-4. **Integración:** crea `evidence/cambios.csv` con motivo, clases, invariante y propietario.
-5. **Diseño:** compara organización por capas y por capacidad para el mismo caso.
-
-**Conexión con el proyecto integrador:** el inventario justificará los módulos Envíos y Facturación antes de proteger sus APIs.
-
-#### Paso 6 · Práctica independiente
-
-Clasifica doce clases de RutaFlow en capacidades. Defiende dos decisiones difíciles con motivo de cambio, invariante y vocabulario; registra una evidencia que podría refutarlas.
-
-#### Paso 7 · Cierre
-
-- [ ] Agrupo por capacidad y no por tecnología.
-- [ ] Identifico invariantes y motivos de cambio.
-- [ ] Mido entradas y salidas sin convertir el conteo en verdad absoluta.
-- [ ] Distingo evidencia histórica de coincidencia accidental.
-- [ ] Puedo justificar y refutar un límite.
-
-Si fallas 2 o más puntos, repite el inventario. **Siguiente tema:** «Proteger la API pública de un módulo» (referencia interna M1 T4). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-### Tema 4: Proteger la API pública de un módulo · Intermedio · 45 min
-
-**Prerrequisito:** tema «Agrupar código por capacidad de negocio» de este módulo (referencia interna M1 T3).
-
-**Al finalizar podrás:** diseñar una API proporcionada pequeña, ocultar internals, inventariar dependencias de código, datos y operación, y diagnosticar modelos compartidos que propagan cambios.
-
-**¿Por qué es importante?** Una API que filtra su implementación interna convierte cada refactorización de esos internals en un cambio coordinado con todos sus consumidores, exactamente lo que un módulo intenta evitar.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y el límite propuesto. Crea `academia-labs/microservices/api-modulo/{src,out,evidence}` y copia `ProtegerApiModulo.java`.
-
-#### Paso 2 · Contexto y caso real
-
-Facturación importa el repositorio y la entidad JPA de Envíos. Aunque ambos vivan en un único proceso, ese acceso convierte decisiones internas en contrato y obliga a coordinar cada refactorización.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| API proporcionada | Núcleo | Expone casos de uso y resultados estables al consumidor |
-| Implementación interna | Núcleo | Repositorios, entidades y algoritmos cambian sin afectar consumidores |
-| DTO de contrato | Variante | Transporta lo necesario sin filtrar entidad persistente |
-| Modelo compartido | Límite | Un DTO universal mezcla significados y amplía el radio de cambio |
-| Dependencia no Java | Diagnóstico | Tabla, tópico, disponibilidad o release compartido también acoplan |
-| Granularidad | Decisión | API enorme filtra internals; API chatty multiplica coordinación y latencia futura |
-
-La API es la recepción de un taller: acepta una solicitud completa y entrega un resultado; el cliente no entra a mover herramientas. Duplicar un concepto pequeño entre contextos puede ser más seguro que compartir una representación con significados incompatibles.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-public final class ProtegerApiModulo {
-  public interface RegistrarEnvio { Resultado registrar(Comando comando); }
-  public record Comando(String referencia,int kilometros) {}
-  public record Resultado(String id,String estado) {}
-  private static final class ServicioEnvios implements RegistrarEnvio {
-    public Resultado registrar(Comando c) {
-      if(c.referencia()==null||c.referencia().isBlank()) throw new IllegalArgumentException("referencia obligatoria");
-      return new Resultado("env-001","REGISTRADO");
-    }
-  }
-  public static void main(String[] a) {
-    RegistrarEnvio api=new ServicioEnvios();
-    System.out.println(api.registrar(new Comando("REF-7",12)));
-    System.out.println("contrato="+RegistrarEnvio.class.getSimpleName());
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/api-modulo/{src,out,evidence}
-cp examples/professional-bridges/microservices/ProtegerApiModulo.java academia-labs/microservices/api-modulo/src/
-cd academia-labs/microservices/api-modulo
-javac --release 27 -d out src/ProtegerApiModulo.java
-java -cp out ProtegerApiModulo
-```
-
-**Resultado esperado:** `Resultado[id=env-001, estado=REGISTRADO]` y `contrato=RegistrarEnvio`. **Fallo deliberado:** vuelve pública `ServicioEnvios` y úsala como tipo del consumidor → **Error esperado:** el consumidor queda ligado a la implementación → **Diagnóstico:** confundiste acceso posible con contrato permitido.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** señala contrato, comando, resultado e internal.
-2. **Variación:** cambia el algoritmo interno sin modificar ni recompilar conceptualmente al consumidor.
-3. **Diagnóstico:** rechaza devolver una entidad JPA con relaciones perezosas.
-4. **Integración:** registra `origen,destino,tipo,motivo,propietario` para código, datos, eventos y operación.
-5. **Diseño:** convierte tres getters conversacionales en una operación coherente de negocio.
-
-**Límite profesional:** `private` o un `grep` no detectan reflexión, SQL compartido ni acoplamiento temporal; se necesitan fitness functions y pruebas operativas.
-
-#### Paso 6 · Práctica independiente
-
-Diseña la API de Facturación con dos casos de uso. Explica qué campos no expones, cómo versionarías un cambio compatible y qué dependencia de datos seguiría impidiendo extraerla.
-
-#### Paso 7 · Cierre
-
-- [ ] Expongo casos de uso, no repositorios.
-- [ ] Mantengo entidades e implementación internas.
-- [ ] Inventarío código, datos, eventos y operación.
-- [ ] Evito el modelo corporativo universal.
-- [ ] Equilibro API estable y conversación excesiva.
-
-Si fallas 2 o más puntos, rediseña el contrato. **Siguiente tema:** «Mantener reglas de dominio libres de frameworks» (referencia interna M1 T5). **Fuentes:** [Spring Modulith — módulos e interfaces](https://docs.spring.io/spring-modulith/reference/fundamentals.html).
-
-**Conexión con el proyecto integrador:** `RegistrarEnvio` es el contrato que el módulo Envíos de RutaFlow expone a Facturación; ningún otro módulo debe depender de `ServicioEnvios` ni de su entidad JPA.
-
-### Tema 5: Mantener reglas de dominio libres de frameworks · Intermedio · 40 min
-
-**Prerrequisito:** tema «Proteger la API pública de un módulo» de este módulo (referencia interna M1 T4).
-
-**Al finalizar podrás:** implementar y probar una regla de dominio sin Spring, HTTP, JPA ni red, conservando invariantes, tipos y errores propios del negocio.
-
-**¿Por qué es importante?** Si la regla de negocio solo compila con Spring y JPA en el classpath, cambiar el framework o la base de datos obliga a reescribir la regla, no solo su conexión con el mundo exterior.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1**. Crea `academia-labs/microservices/dominio-puro/{src,out,evidence}` y copia `CalcularTarifaPura.java`.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow necesita calcular una tarifa. Si esa regla recibe `HttpServletRequest`, usa una entidad JPA o necesita iniciar Spring, cambiar transporte o persistencia exige tocar la política de negocio y sus pruebas se vuelven lentas y frágiles.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Política y mecanismo | Prerrequisito | La fórmula decide negocio; HTTP/JPA ejecutan detalles externos |
-| Invariante | Núcleo | Distancia no negativa y peso positivo se validan en la regla |
-| Tipo de dominio | Núcleo | Un valor expresa unidad y evita estados ambiguos |
-| Error de dominio | Diagnóstico | El rechazo explica la condición violada sin código HTTP |
-| Dependencia hacia dentro | Núcleo | Frameworks pueden llamar al dominio; el dominio no los importa |
-| Pureza pragmática | Límite | Reloj, aleatoriedad o tasa externa se inyectan cuando afectan determinismo |
-
-La regla es una receta; el horno es un mecanismo. Cambiar el horno no debe reescribir cantidades ni restricciones. «Sin framework» no significa sin dependencias: significa que las dependencias centrales expresan el dominio y son controlables.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-public final class CalcularTarifaPura {
-  public long enCentavos(int kilometros,int kilos) {
-    if(kilometros<0||kilos<=0) throw new IllegalArgumentException("distancia/peso inválidos");
-    return 1_000L+kilometros*80L+kilos*120L;
-  }
-  public static void main(String[] a) {
-    var c=new CalcularTarifaPura();
-    System.out.println(c.enCentavos(10,2));
-    try { c.enCentavos(10,0); } catch(IllegalArgumentException e) { System.out.println(e.getMessage()); }
-  }
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/dominio-puro/{src,out,evidence}
-cp examples/professional-bridges/microservices/CalcularTarifaPura.java academia-labs/microservices/dominio-puro/src/
-cd academia-labs/microservices/dominio-puro
-javac --release 27 -d out src/CalcularTarifaPura.java
-java -cp out CalcularTarifaPura
-```
-
-**Resultado esperado:** `2040` y `distancia/peso inválidos`. **Fallo deliberado:** acepta peso cero → **Error esperado:** produce una tarifa para un envío imposible → **Diagnóstico:** la validación quedó fuera del límite que protege la invariante.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** calcula manualmente 2040.
-2. **Variación:** crea un tipo `Kilometros` que rechace negativos al construirse.
-3. **Diagnóstico:** identifica por qué `@Service` en la regla invierte la dirección deseada.
-4. **Integración:** traduce el error de dominio a HTTP 400 sólo en un adaptador.
-5. **Diseño:** inyecta un reloj para una tarifa nocturna reproducible.
-
-**Conexión con el proyecto integrador:** esta regla será estable al cambiar persistencia y transporte.
-
-#### Paso 6 · Práctica independiente
-
-Implementa recargo por zona con tabla de casos, límites y errores. Demuestra que compila y ejecuta sólo con el JDK; documenta cuándo necesitarías decimal exacto en vez de centavos enteros.
-
-#### Paso 7 · Cierre
-
-- [ ] Separo política de mecanismo.
-- [ ] Protejo invariantes dentro del dominio.
-- [ ] No filtro HTTP, JPA o Spring.
-- [ ] Hago deterministas reloj y aleatoriedad.
-- [ ] Pruebo error y camino feliz.
-
-**Siguiente tema:** «Sustituir adaptadores mediante puertos» (referencia interna M1 T6). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-### Tema 6: Sustituir adaptadores mediante puertos · Intermedio · 45 min
-
-**Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
-
-**Al finalizar podrás:** distinguir puertos de entrada y salida, conectar adaptadores en memoria o externos, y decidir cuándo una interfaz protege una frontera real.
-
-**¿Por qué es importante?** Sin un puerto que el núcleo posea, probar la regla de negocio exige levantar la base de datos real; con él, un adaptador en memoria sustituye al externo sin tocar el caso de uso ni su prueba.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/puertos/{src,out,evidence}` con **JDK 27.0.1** y copia `SustituirAdaptador.java`.
-
-#### Paso 2 · Contexto y caso real
-
-El caso de uso Registrar Envío debe funcionar con memoria en una prueba y con JPA en producción. Si instancia el repositorio concreto, el dominio decide un mecanismo que no le pertenece.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Puerto de entrada | Núcleo | Declara el caso de uso ofrecido a UI, HTTP o mensajería |
-| Puerto de salida | Núcleo | Declara una necesidad del caso de uso, con lenguaje propio |
-| Adaptador de entrada | Variante | Traduce protocolo, autentica formato y llama al puerto |
-| Adaptador de salida | Variante | Implementa persistencia o integración concreta |
-| Inversión de dependencias | Núcleo | La interfaz pertenece al núcleo que necesita la capacidad |
-| Abstracción accidental | Límite | Una interfaz sin frontera ni sustitución sólo duplica una clase |
-| Semántica remota | Profundización | Un adaptador remoto agrega deadline, fallo parcial y observabilidad |
-
-Un enchufe define la forma requerida por el aparato; distintos adaptadores conectan fuentes concretas. La interfaz no vuelve local una operación remota ni elimina su costo.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-import java.util.*;
-public final class SustituirAdaptador {
- record Envio(String id,String estado) {}
- interface GuardarEnvio { void guardar(Envio e); }
- static final class Memoria implements GuardarEnvio {
-  final Map<String,Envio> datos=new HashMap<>(); public void guardar(Envio e){datos.put(e.id(),e);}
- }
- static final class RegistrarEnvio {
-  private final GuardarEnvio salida; RegistrarEnvio(GuardarEnvio s){salida=s;}
-  Envio ejecutar(String id){var e=new Envio(id,"REGISTRADO");salida.guardar(e);return e;}
- }
- public static void main(String[] a){var m=new Memoria();System.out.println(new RegistrarEnvio(m).ejecutar("env-7"));System.out.println("guardados="+m.datos.size());}
-}
-```
-
-```bash
-mkdir -p academia-labs/microservices/puertos/{src,out,evidence}
-cp examples/professional-bridges/microservices/SustituirAdaptador.java academia-labs/microservices/puertos/src/
-cd academia-labs/microservices/puertos && javac --release 27 -d out src/SustituirAdaptador.java && java -cp out SustituirAdaptador
-```
-
-**Resultado esperado:** envío `REGISTRADO` y `guardados=1`. **Fallo deliberado:** instancia `Memoria` dentro de `RegistrarEnvio` → **Error esperado:** no puedes sustituirla desde la composición → **Diagnóstico:** el núcleo volvió a controlar el mecanismo.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** marca puerto, adaptador y punto de composición.
-2. **Variación:** implementa un segundo adaptador que registre llamadas.
-3. **Diagnóstico:** reemplaza `guardar` por CRUD genérico y detecta la filtración de persistencia.
-4. **Integración:** bosqueja un adaptador HTTP que traduzca, sin mover invariantes.
-5. **Diseño:** agrega a un adaptador remoto deadline y error explícito.
-
-#### Paso 6 · Práctica independiente
-
-Crea el puerto `BuscarPendientesDeAsignacion`, dos adaptadores y la misma prueba contractual para ambos. Justifica por qué el puerto pertenece a Envíos.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo entrada, salida y adaptador.
-- [ ] El núcleo posee la abstracción que necesita.
-- [ ] Sustituyo mecanismos sin cambiar el caso de uso.
-- [ ] No creo interfaces ceremoniales.
-- [ ] Conservo semántica de fallos remotos.
-
-**Siguiente tema:** «Representar dependencias de módulos como un grafo» (referencia interna M1 T7). **Fuentes:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-**Conexión con el proyecto integrador:** `RegistrarEnvio` del módulo Envíos recibe su puerto `GuardarEnvio` desde la composición de RutaFlow, no lo instancia; así la prueba del caso de uso usa `Memoria` y producción usa el adaptador JPA real.
-
-### Tema 7: Representar dependencias de módulos como un grafo · Avanzado · 35 min
-
-**Prerrequisito:** tema «Sustituir adaptadores mediante puertos» de este módulo (referencia interna M1 T6).
-
-**Al finalizar podrás:** construir un grafo dirigido respaldado por dependencias de código, datos, eventos y runtime, y detectar ciclos directos o transitivos.
-
-**¿Por qué es importante?** Un ciclo lógico vuelve ficticia la autonomía: ninguno de los módulos puede cambiar, probarse o extraerse sin conocer al otro.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás **JDK 27.0.1** y Graphviz opcional. Crea `academia-labs/microservices/grafo/{src,out,evidence}` y copia `DetectarCiclo.java`.
-
-#### Paso 2 · Contexto y caso real
-
-Envíos llama a Facturación, Facturación publica a Notificaciones y Notificaciones consulta Envíos. El diagrama oficial omite la última arista: la documentación parece acíclica, pero el cambio real exige coordinar los tres módulos.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema | Papel | Evidencia observable |
-|---|---|---|
-| Grafo dirigido | Prerrequisito | nodo=módulo, arista=dependencia |
-| Dependencia estable | Decisión | API pequeña cambia menos que internals |
-| Ciclo directo/transitivo | Diagnóstico | Envíos→Facturación→Notificaciones→Envíos |
-| Acoplamiento temporal | Profundización | ambos deben estar disponibles en el mismo instante |
-| Acoplamiento de datos | Límite | tabla compartida crea dependencia sin import |
-| Ruptura de ciclo | Aplicación | evento, inversión o reasignación de responsabilidad |
-
-Un nodo es un módulo y una arista `A→B` afirma que A necesita B. El tipo de arista importa: código, escritura de tabla, disponibilidad síncrona, evento o despliegue. Un grafo acíclico permite ordenar evolución; no garantiza buen diseño. Un ciclo demuestra que el orden independiente es imposible bajo esas relaciones.
-
-El costo de coordinación se observa: cantidad de repositorios/cambios que deben liberarse juntos, equipos consultados, pruebas cruzadas y ventanas de despliegue. No uses un número de imports como única decisión; combínalo con propiedad de datos, fallos y ritmo de cambio.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir -p academia-labs/microservices/grafo/{src,out,evidence}
-cp examples/professional-bridges/microservices/DetectarCiclo.java academia-labs/microservices/grafo/src/
-cd academia-labs/microservices/grafo
-javac --release 27 -d out src/DetectarCiclo.java
-java -cp out DetectarCiclo
-```
-
-**Resultado esperado:** `ciclo=true`. **Fallo deliberado:** elimina la arista del mapa, pero conserva la consulta real → **Error esperado:** `ciclo=false` falso → **Diagnóstico:** el grafo no está respaldado por inventario verificable.
-
-#### Paso 5 · Práctica guiada
-
-1. Reproduce el ciclo y enumera su camino.
-2. Añade una arista sin ciclo y explica por qué no basta contar aristas.
-3. Diagnostica una tabla compartida invisible para imports.
-4. Genera `evidence/dependencias.csv` con origen, destino, tipo y evidencia.
-5. Dibuja código, datos y runtime con estilos distintos.
-
-**Límite profesional:** Graphviz dibuja lo declarado y ArchUnit ve bytecode; ninguno descubre por sí solo todas las relaciones operativas.
-
-#### Paso 6 · Práctica independiente
-
-Modela cinco módulos, incluye un ciclo transitivo y demuestra el camino. Propón la prueba que mantendrá actualizada cada clase de arista.
-
-#### Paso 7 · Cierre
-
-- [ ] Distingo nodo, dirección y tipo de arista.
-- [ ] Detecto ciclos transitivos.
-- [ ] Respaldo el dibujo con evidencia.
-- [ ] Incluyo datos y runtime.
-- [ ] No confundo DAG con buen diseño.
-
-**Siguiente tema:** «Romper ciclos según el tipo de acoplamiento» (referencia interna M1 T8). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
-
-**Conexión con el proyecto integrador:** el ciclo Envíos→Facturación→Notificaciones→Envíos es exactamente el riesgo que este grafo debe exponer antes de que RutaFlow extraiga cualquiera de esos tres módulos a un proceso independiente.
-
-### Tema 8: Romper ciclos según el tipo de acoplamiento · Avanzado · 45 min
-
-**Prerrequisito:** tema «Representar dependencias de módulos como un grafo» de este módulo (referencia interna M1 T7).
-
-**Al finalizar podrás:** elegir entre mover responsabilidad, invertir dependencia o publicar un evento, y comprobar que la ruptura reduce coordinación en vez de ocultarla.
-
-**¿Por qué es importante?** Un ciclo entre módulos impide desplegarlos, probarlos o evolucionarlos por separado; la estrategia elegida para romperlo decide si esa independencia es real o solo cambió de forma.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/romper-ciclo/{src,out,evidence}` y copia `RomperCiclo.java`.
-
-#### Paso 2 · Contexto y caso real
-
-Notificaciones llama a Envíos para confirmar un estado que Envíos ya decidió. Reemplazar la llamada por un evento pasado puede eliminar el retorno, siempre que Notificaciones tolere asincronía y no responda con otra llamada obligatoria. El ciclo original no apareció en un diagrama: apareció en el inventario del Tema 7, donde la arista `notificaciones -> envios` quedó registrada junto con la arista inversa ya conocida.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Mover responsabilidad | Núcleo | La decisión vive con la invariante que la gobierna |
-| Invertir dependencia | Variante | El consumidor define la interfaz que necesita |
-| Evento pasado | Variante | Publica un hecho con dueño sin exigir respuesta inmediata |
-| Acoplamiento temporal | Diagnóstico | Disponibilidad simultánea puede sobrevivir sin ciclo de código |
-| Acoplamiento de datos | Diagnóstico | Escritura compartida conserva coordinación transaccional |
-| Consistencia eventual | Límite | Evento introduce demora, duplicados, orden y recuperación |
-| Costo de coordinación | Decisión | Releases, equipos y pruebas conjuntas deben disminuir |
-
-Cambiar una flecha en el dibujo no rompe una cadena de decisiones. Un evento es como una notificación postal: desacopla el momento, pero exige identificar, reintentar y tolerar duplicados.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir -p academia-labs/microservices/romper-ciclo/{src,out,evidence}
-cp examples/professional-bridges/microservices/RomperCiclo.java academia-labs/microservices/romper-ciclo/src/
-cd academia-labs/microservices/romper-ciclo
-javac --release 27 -d out src/RomperCiclo.java && java -cp out RomperCiclo
-```
-
-**Resultado esperado:** `eventos=1`. **Fallo deliberado:** el consumidor llama síncronamente al productor para completar cada evento → **Error esperado:** reaparece el ciclo temporal → **Diagnóstico:** cambió el protocolo, no la responsabilidad.
-
-#### Paso 5 · Práctica guiada
-
-1. Reproduce el hecho `EnvioConfirmado`.
-2. Añade identificador para deduplicación.
-3. Diagnostica un evento imperativo llamado `ConfirmarEnvio`.
-4. Actualiza grafo e inventario después de la ruptura.
-5. Compara releases y pruebas coordinadas antes/después.
-
-#### Paso 6 · Práctica independiente
-
-Rompe dos ciclos distintos: uno de código y otro de datos. Justifica estrategias diferentes, riesgos y evidencia de reducción de coordinación.
-
-#### Paso 7 · Cierre
-
-- [ ] Sitúo la decisión con su invariante.
-- [ ] Uso eventos sólo si tolero asincronía.
-- [ ] Considero duplicados, orden y recuperación.
-- [ ] Reviso datos y disponibilidad.
-- [ ] Mido coordinación antes y después.
-
-**Siguiente tema:** «Bloquear accesos a internals con ArchUnit» (referencia interna M1 T9). **Fuente:** [Spring Modulith verification](https://docs.spring.io/spring-modulith/reference/verification.html).
-
-**Conexión con el proyecto integrador:** reemplazar la llamada síncrona `notificaciones -> envios` por el evento `EnvioConfirmado` es la ruptura concreta que RutaFlow necesita antes de poder desplegar Notificaciones como proceso independiente.
-
-### Tema 9: Bloquear accesos a internals con ArchUnit · Avanzado · 40 min
-
-**Prerrequisito:** tema «Romper ciclos según el tipo de acoplamiento» de este módulo (referencia interna M1 T8).
-
-**Al finalizar podrás:** importar bytecode con ArchUnit, bloquear dependencias a paquetes internos y leer el origen y destino de una violación.
-
-**¿Por qué es importante?** Una regla escrita en un diagrama se degrada; una fitness function falla exactamente cuando el código contradice la arquitectura acordada.
-
-#### Paso 1 · Objetivo y preparación
-
-Usarás JDK, Maven (`./mvnw`) y `examples/archunit-hexagonal-rutaflow`. Una fitness function es una propiedad arquitectónica ejecutable, no una prueba de que toda la arquitectura sea correcta.
-
-#### Paso 2 · Contexto y caso real
-
-Facturación compila después de importar `envios.internal.ServicioEnvios`. La revisión humana puede omitirlo; una regla en cada pull request convierte el límite acordado en fallo reproducible. El ejemplo verificable vive en `examples/archunit-hexagonal-rutaflow`, bajo el paquete `academia.rutaflow.modules`, con los tres módulos (Envíos, Facturación, Notificaciones) ya separados en `api` e `internal`.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema | Papel | Evidencia observable |
-|---|---|---|
-| Importación de bytecode | Prerrequisito | ArchUnit analiza clases compiladas |
-| Regla de capas | Núcleo | dominio no depende de adapters |
-| Regla de internals | Núcleo | Facturación no accede a `envios.internal` |
-| Slices y ciclos | Núcleo | el build informa el camino completo del ciclo |
-| Falsos positivos/exclusiones | Límite | exclusión documentada no se usa para silenciar deuda |
-| Spring Modulith | Variante | `ApplicationModules.verify()` comprueba ciclos/API/allowedDependencies |
-
-ArchUnit inspecciona dependencias del bytecode compilado. La selección `resideInAPackage` define sujetos y el predicado `dependOnClassesThat` define la relación prohibida. El mensaje debe expresar intención de negocio. No ve SQL dinámico, reflexión arbitraria ni coordinación operacional.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-package academia.rutaflow.modules;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.lang.ArchRule;
-import org.junit.jupiter.api.Test;
-
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-
-class RutaflowModulesArchitectureTest {
-  private final JavaClasses project = new ClassFileImporter()
-      .importPackages("academia.rutaflow.modules");
-
-  @Test
-  void facturacionNoAccedeAInternalsDeEnvios() {
-    ArchRule rule = noClasses().that().resideOutsideOfPackage("..envios..")
-        .should().dependOnClassesThat().resideInAPackage("..envios.internal..")
-        .because("solo envios.internal puede depender de su propia implementación");
-    rule.check(project);
-  }
-}
-```
-
-```bash
-cd examples/archunit-hexagonal-rutaflow
-./mvnw test -Dtest=RutaflowModulesArchitectureTest
-```
-
-**Resultado esperado:** `BUILD SUCCESS`; la regla pasa mientras Facturación consulte `envios.api.ConsultarEstadoEnvio` en vez de `envios.internal.ServicioEnvios`. **Fallo deliberado:** crea una clase en `facturacion.internal` que recibe `ServicioEnvios` por constructor → **Error esperado:** `Architecture Violation` nombrando el constructor exacto, la clase origen (`facturacion.internal.*`) y el tipo destino (`envios.internal.ServicioEnvios`) → **Diagnóstico:** el consumidor atravesó la API pública y tomó la implementación interna.
-
-#### Paso 5 · Práctica guiada
-
-1. Identifica clases importadas y regla evaluada.
-2. Protege también `facturacion.internal`.
-3. Provoca una violación y conserva el fragmento del reporte.
-4. Corrige mediante la API, no mediante exclusión.
-5. Añade la prueba al pipeline de pull requests.
-
-#### Paso 6 · Práctica independiente
-
-Protege internals de tres módulos y redacta mensajes accionables. Documenta una dependencia que ArchUnit no pueda detectar y su fitness function complementaria.
-
-#### Paso 7 · Cierre
-
-- [ ] Sé qué bytecode importa ArchUnit.
-- [ ] Selecciono origen y destino correctos.
-- [ ] Observo rojo antes de corregir.
-- [ ] No silencio deuda con exclusiones.
-- [ ] Reconozco límites de inspección estática.
-
-**Siguiente tema:** «Detectar ciclos de paquetes con ArchUnit» (referencia interna M1 T10). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
-
-**Conexión con el proyecto integrador:** esta prueba vive en `examples/archunit-hexagonal-rutaflow` y corre en cada pull request de RutaFlow; es la fitness function que convierte en fallo reproducible el límite que el Tema 4 solo describió en prosa.
-
-### Tema 10: Detectar ciclos de paquetes con ArchUnit · Avanzado · 35 min
-
-**Prerrequisito:** tema «Bloquear accesos a internals con ArchUnit» de este módulo (referencia interna M1 T9).
-
-**Al finalizar podrás:** agrupar paquetes como slices, detectar ciclos completos y comprobar que el patrón corresponde a los módulos reales.
-
-**¿Por qué es importante?** Una regla que solo bloquea el acceso a `internal` puede quedar verde aunque los módulos se llamen circularmente a través de sus APIs públicas; detectar el ciclo requiere una regla sobre el grafo completo de módulos.
-
-#### Paso 1 · Objetivo y preparación
-
-Continúa en `examples/archunit-hexagonal-rutaflow`; conserva una copia del grafo del Tema 7 para comparar intención y bytecode.
-
-#### Paso 2 · Contexto y caso real
-
-Una regla de internals puede quedar verde aunque Envíos, Facturación y Notificaciones se llamen circularmente por APIs públicas. El ciclo requiere una regla sobre el grafo completo, porque proteger solo el acceso a paquetes internos no dice nada sobre el orden en que los módulos pueden desplegarse o evolucionar.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-`slices().matching("academia.rutaflow.modules.(*)..")` captura el segmento que sigue a `modules` como nombre del slice, así que `academia.rutaflow.modules.envios.api` y `academia.rutaflow.modules.envios.internal` cuentan como el mismo módulo `envios`. Un ciclo directo es A→B→A; uno transitivo atraviesa un tercer módulo, como A→B→C→A, y es más fácil de introducir sin notarlo porque ningún par de módulos se llama directamente entre sí. Si el patrón no captura ninguna clase (por ejemplo, por un typo en el paquete raíz) o agrupa capas técnicas como si fueran módulos de negocio, la regla pasa en verde sin haber evaluado nada real: el Tema 11 construye precisamente la defensa contra ese escenario. Spring Modulith ofrece `ApplicationModules.of(...).verify()` como alternativa declarativa para proyectos que ya siguen su convención de paquetes, pero delegar en ella tampoco exime de confirmar que detectó los módulos esperados.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
-
-@Test
-void losModulosEstanLibresDeCiclos() {
-  ArchRule rule = slices().matching("academia.rutaflow.modules.(*)..")
-      .should().beFreeOfCycles()
-      .because("los módulos deben poder evolucionar en un orden acíclico");
-  rule.check(project);
-}
-```
-
-```bash
-cd examples/archunit-hexagonal-rutaflow
-./mvnw test -Dtest=RutaflowModulesArchitectureTest
-```
-
-**Resultado esperado:** `BUILD SUCCESS` con el grafo actual (sin ciclos entre envios, facturacion y notificaciones). **Fallo deliberado:** agrega una clase en `envios.internal` que reciba `notificaciones.api.NotificarEntrega` por constructor → **Error esperado:** `Cycle detected: Slice envios -> Slice notificaciones -> Slice envios`, con el constructor y el campo exactos que cierran el ciclo → **Diagnóstico:** el orden independiente dejó de existir: envios ya no puede desplegarse ni compilarse sin notificaciones.
-
-#### Paso 5 · Práctica guiada
-
-1. Explica qué captura `(*)`.
-2. Provoca ciclo directo y transitivo.
-3. Cambia a un patrón incorrecto y observa el falso verde.
-4. Aserta nombres/cantidad de módulos detectados.
-5. Compara el camino con `evidence/dependencias.csv`.
-
-#### Paso 6 · Práctica independiente
-
-Adapta el patrón a una estructura con prefijo `rutaflow.modulos.<nombre>`. Demuestra rojo, corrige el ciclo y vuelve a verde sin ignorar paquetes.
-
-#### Paso 7 · Cierre
-
-- [ ] El patrón representa módulos reales.
-- [ ] Distingo ciclos directos y transitivos.
-- [ ] Verifico que la regla detecta clases.
-- [ ] Leo el camino completo.
-- [ ] No confundo API pública con ausencia de ciclo.
-
-**Siguiente tema:** «Evitar falsos verdes en fitness functions» (referencia interna M1 T11). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
-
-**Conexión con el proyecto integrador:** este `beFreeOfCycles()` sobre `academia.rutaflow.modules` es la regla que RutaFlow necesita en verde antes de prometer que Envíos, Facturación y Notificaciones pueden desplegarse en un orden independiente. **Límite:** la regla solo cubre el ciclo que el patrón `slices().matching(...)` logra capturar; si el patrón tiene un error tipográfico o agrupa capas técnicas en vez de módulos de negocio, la prueba pasa en verde sin haber evaluado nada real — confirma siempre que el conteo de clases importadas no sea cero.
-
-### Tema 11: Evitar falsos verdes en fitness functions · Avanzado · 35 min
-
-**Prerrequisito:** tema «Detectar ciclos de paquetes con ArchUnit» de este módulo (referencia interna M1 T10).
-
-**Al finalizar podrás:** probar la propia fitness function, gobernar excepciones y combinar controles de código, datos, contratos y operación.
-
-**¿Por qué es importante?** Una fitness function que nunca se probó a sí misma puede pasar en verde sin haber evaluado el sistema real; nadie investiga una regla que pasa, así que el defecto se acumula sin que nada lo señale.
-
-#### Paso 1 · Objetivo y preparación
-
-Usa la misma suite. Registra para cada regla: intención, alcance, violación sembrada, propietario y fecha de revisión; esa tabla es la que distingue una regla auditada de una que solo existe en el pipeline.
-
-#### Paso 2 · Contexto y caso real
-
-Una reorganización movió clases a `com.rutaflow`; la regla aún busca `academia.rutaflow.modules` y deja de encontrar nada del sistema real. ArchUnit 1.5.1 ya falla por defecto (`failOnEmptyShould = true`) cuando una regla no evalúa ninguna clase, así que el escenario ingenuo de "verde silencioso" no ocurre con la configuración por defecto de esta versión — pero esa protección depende de una propiedad de configuración que alguien podría deshabilitar sin darse cuenta (`allowEmptyShould(true)` en una regla, o `archRule.failOnEmptyShould = false` globalmente) para "arreglar" un build que fallaba por un import mal escrito.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Una alarma debe probarse con humo controlado, no asumiendo que suena porque nunca se escuchó lo contrario. Verificado con el proyecto real: deshabilitar la importación (apuntar a un paquete inexistente) hace que las reglas de internals y de ciclos fallen explícitamente con el mensaje "failed to check any classes", exactamente el comportamiento por defecto que protege contra el falso verde. Aun así, una aserción propia que confirme que el conjunto de clases importado no está vacío documenta esa garantía en el código mismo, en vez de depender silenciosamente de una opción de configuración que un cambio futuro podría desactivar. Una exclusión documentada necesita razón de negocio, dueño identificable y fecha de vencimiento; sin esos tres datos, la lista de exclusiones se convierte en el lugar donde la deuda arquitectónica se esconde en vez de resolverse. El bytecode que ArchUnit inspecciona se complementa con pruebas de contrato entre servicios, ownership explícito de migraciones de esquema y pruebas de degradación ante fallos parciales: ninguna herramienta individual cubre todas las formas en que un sistema distribuido puede acoplarse.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```java
-@Test
-void laImportacionRealmenteEncontroClases() {
-  assertThat(project).isNotEmpty();
-}
-```
-
-```bash
-cd examples/archunit-hexagonal-rutaflow
-./mvnw test -Dtest=RutaflowModulesArchitectureTest
-```
-
-**Resultado esperado:** `BUILD SUCCESS`, las tres pruebas en verde. **Fallo deliberado:** cambia el paquete importado a uno inexistente (por ejemplo `academia.rutaflow.paquete.inexistente`) → **Error esperado:** las TRES pruebas fallan — la propia (`Expecting actual not to be empty`) y las dos reglas de ArchUnit, cada una con "failed to check any classes" por el `failOnEmptyShould` activo por defecto → **Diagnóstico:** confirmaste que ni tu aserción ni la protección por defecto de la biblioteca dejan pasar un alcance vacío sin aviso.
-
-#### Paso 5 · Práctica guiada
-
-1. Aserta alcance no vacío.
-2. Siembra una dependencia prohibida y exige rojo.
-3. Registra una excepción temporal con vencimiento.
-4. Añade control de ownership de esquema.
-5. Define qué regla detecta disponibilidad coordinada.
-
-#### Paso 6 · Práctica independiente
-
-Construye una matriz `riesgo → señal → fitness function → límite`. Incluye reflexión, SQL compartido, contrato incompatible y dependencia temporal, y anota para cada fila qué tipo de evidencia adicional (contrato, migración, degradación) cubre lo que ArchUnit no puede ver.
-
-#### Paso 7 · Cierre
-
-- [ ] Pruebo alcance y sensibilidad.
-- [ ] Observo rojo deliberado.
-- [ ] Gobierno excepciones con vencimiento.
-- [ ] Combino controles heterogéneos.
-- [ ] No presento ArchUnit como verificación total.
-
-**Siguiente tema:** «Medir señales que justifican una extracción» (referencia interna M1 T12). **Fuente:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html).
-
-### Tema 12: Medir señales que justifican una extracción · Experto · 40 min
-
-**Prerrequisito:** tema «Evitar falsos verdes en fitness functions» de este módulo (referencia interna M1 T11).
-
-**Al finalizar podrás:** reunir evidencia de cadencia, capacidad, aislamiento, ownership y datos, y separar una señal útil de una conclusión prematura.
-
-**¿Por qué es importante?** Extraer un servicio sin evidencia atribuible cambia un cuello de botella técnico por costo de red, consistencia y operación distribuida, sin garantizar que el problema original se resuelva.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/senales/{src,out,evidence}` con **JDK 27.0.1** y copia `EvaluarExtraccion.java`.
-
-#### Paso 2 · Contexto y caso real
-
-Facturación consume CPU alta durante cierres, pero comparte equipo, tabla y transacción con Envíos. Escalarla por separado podría ayudar, aunque primero se necesita atribución sostenida y capacidad operativa; CPU global no prueba un límite de negocio. El mismo pico de CPU podría explicarse por un reporte mensual mal indexado, no por una carga que justifique su propio proceso y su propio equipo de guardia.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-| Subtema crítico | Papel | Explicación y evidencia |
-|---|---|---|
-| Cadencia de cambio | Núcleo | Releases distintos y conflictos muestran coordinación evitables |
-| Perfil de capacidad | Variante | CPU, memoria o I/O deben atribuirse al módulo y ventana |
-| Aislamiento de fallo | Variante | Incidentes demuestran radio de impacto reducible |
-| Ownership completo | Núcleo | Equipo posee código, datos, SLO, alertas y on-call |
-| Acoplamiento de datos | Diagnóstico | Join, transacción o migración compartida bloquea autonomía |
-| Costo distribuido | Límite | Red, consistencia, seguridad, pipeline y carga cognitiva se presupuestan |
-| Umbral de revisión | Decisión | Ventana y medida evitan decisiones por un pico aislado |
-
-Una señal es una pista, no un veredicto. Como separar una línea de producción, la inversión sólo se justifica si el cuello está localizado y el nuevo equipo puede operar la línea completa, no solo el fragmento de código que motivó la conversación. Combinar varias señales débiles en un umbral explícito (por ejemplo, CPU atribuible sostenido más incidentes de aislamiento más un equipo dispuesto a asumir on-call) produce una decisión más defendible que cualquier métrica aislada.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```bash
-mkdir -p academia-labs/microservices/senales/{src,out,evidence}
-cp examples/professional-bridges/microservices/EvaluarExtraccion.java academia-labs/microservices/senales/src/
-cd academia-labs/microservices/senales
-javac --release 27 -d out src/EvaluarExtraccion.java && java -cp out EvaluarExtraccion
-```
-
-**Resultado esperado:** `MANTENER_MODULAR` y `REVISAR_EXTRACCION`. **Fallo deliberado:** decide sólo por CPU → **Error esperado:** un módulo sin datos ni on-call propios se marca candidato → **Diagnóstico:** confundiste cuello técnico con autonomía viable.
-
-#### Paso 5 · Práctica guiada
-
-1. Reproduce ambas decisiones.
-2. Cambia una señal por vez.
-3. Diagnostica un promedio que oculta picos.
-4. Registra fuente, ventana, dueño y limitación en CSV.
-5. Estima costo de pipeline, observabilidad e incidentes.
-
-#### Paso 6 · Práctica independiente
-
-Compara Envíos y Facturación durante 30 días simulados. Formula una hipótesis favorable y otra contraria a extraer; declara evidencia faltante.
-
-#### Paso 7 · Cierre
-
-- [ ] Atribuyo métricas al módulo.
-- [ ] Exijo ownership de datos y operación.
-- [ ] Cuantifico costo distribuido.
-- [ ] Uso ventanas y umbrales.
-- [ ] Puedo concluir «mantener modular».
-
-**Siguiente tema:** «Registrar una decisión reversible en un ADR» (referencia interna M1 T13). **Fuente:** [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-**Conexión con el proyecto integrador:** `EvaluarExtraccion` reproduce la pregunta real sobre Facturación en RutaFlow; el Tema 13 convierte su salida (`MANTENER_MODULAR` o `REVISAR_EXTRACCION`) en el ADR que documenta la decisión.
-
-### Tema 13: Registrar una decisión reversible en un ADR · Experto · 40 min
-
-**Prerrequisito:** tema «Medir señales que justifican una extracción» de este módulo (referencia interna M1 T12).
-
-**Al finalizar podrás:** redactar un ADR que conecte contexto, opciones, evidencia, consecuencias, disparador de revisión y reversión.
-
-**¿Por qué es importante?** Una decisión sin alternativas registradas ni condición de revisión no puede evaluarse después con información nueva; queda como una preferencia, no como algo que otra persona pueda auditar o revertir.
-
-#### Paso 1 · Objetivo y preparación
-
-Crea `academia-labs/microservices/adr/docs/adr` y conserva las evidencias del tema anterior. Un ADR registra una decisión situada; no es una justificación retrospectiva.
-
-#### Paso 2 · Contexto y caso real
-
-RutaFlow decide mantener Facturación modular. La decisión es profesional porque reconoce evidencia insuficiente y define cuándo volver a evaluarla, no porque prometa que nunca habrá extracción. Dentro de seis meses, otra persona del equipo debe poder leer el ADR y entender por qué se decidió así con la información disponible entonces, sin necesitar preguntarle a quien lo escribió.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-Un ADR incluye contexto verificable, al menos dos opciones —incluido no cambiar—, decisión, consecuencias positivas y negativas, estado, dueño y condición de revisión. La reversibilidad exige saber qué preservar y qué costo dispara rollback. «Microservicios escalan» no es evidencia ni alternativa: es una afirmación general que no cita ninguna señal concreta del Tema 12 ni compromete a nadie a revisarla cuando las condiciones cambien.
-
-#### Paso 4 · Demostración guiada desde cero
-
-```markdown
-# ADR-0001: mantener Facturación en el monolito modular
-## Contexto
-Un equipo, una cadencia y transacción local; sin cuello atribuible sostenido.
-## Opciones
-1. Mantener el módulo protegido. 2. Extraer proceso y datos.
-## Decisión
-Mantener; hoy el costo distribuido supera el beneficio observado.
-## Consecuencias
-Conservamos transacción local; posponemos escalado independiente.
-## Revisar cuando
-Equipo propio o CPU atribuible >60% durante 30 días, con datos y on-call preparados.
-## Reversión
-Si la extracción aumenta incidentes sin reducir coordinación, volver al módulo conservando contrato.
-```
-
-```bash
-cd academia-labs/microservices/adr
-test -s docs/adr/0001-extraer-facturacion.md
-grep -q 'Opciones' docs/adr/0001-extraer-facturacion.md
-grep -q 'Revisar cuando' docs/adr/0001-extraer-facturacion.md
-grep -q 'Reversión' docs/adr/0001-extraer-facturacion.md
-```
-
-**Resultado esperado:** cuatro comandos con código `0`. **Fallo deliberado:** elimina opción de mantener y umbral → **Error esperado:** `grep` falla y la decisión no puede reevaluarse → **Diagnóstico:** escribiste una preferencia, no una decisión trazable.
-
-#### Paso 5 · Práctica guiada
-
-1. Vincula cada afirmación a una evidencia.
-2. Añade consecuencias negativas.
-3. Detecta lenguaje absoluto sin medida.
-4. Define dueño y fecha de revisión.
-5. Ensaya reversión y artefactos que deben conservarse.
-
-#### Paso 6 · Práctica independiente
-
-Redacta dos ADR sobre el mismo módulo con decisiones opuestas bajo evidencias distintas. Explica qué señal cambia racionalmente la decisión.
-
-#### Paso 7 · Cierre
-
-- [ ] Incluyo mantener como opción.
-- [ ] Cito evidencia y límites.
-- [ ] Registro consecuencias negativas.
-- [ ] Defino umbral, ventana y dueño.
-- [ ] Diseño reversión verificable.
-
-**Conexión con el proyecto integrador:** `ADR-0001` es el registro final del módulo Facturación de RutaFlow; cierra el módulo con una decisión auditable en vez de dejarla como una preferencia sin evidencia.
-
-**Errores comunes:** ADR sin alternativas, métricas sin atribución o decisión irreversible. **Fuentes:** [Spring Modulith fundamentals](https://docs.spring.io/spring-modulith/reference/fundamentals.html), [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html) y [Azure domain analysis](https://learn.microsoft.com/en-us/azure/architecture/microservices/model/domain-analysis).
-
-
-### Tema 14: Separar mitos y verdades de Domain-Driven Design · Avanzado · 40 min
-
-**Prerrequisito:** tema «Mantener reglas de dominio libres de frameworks» de este módulo (referencia interna M1 T5).
-
-**Al finalizar podrás:** reconocer cuatro mitos frecuentes sobre DDD, explicar qué afirma realmente cada idea y demostrar con código que una misma palabra del negocio necesita dos modelos distintos en dos contextos.
-
-**¿Por qué es importante?** Mucha gente cree que DDD es «usar entidades y repositorios» o «hacer microservicios». Con esa idea se llenan proyectos de capas vacías y se parten sistemas sin motivo. Entender qué es y qué no es DDD evita esos costos.
-
-#### Paso 1 · Objetivo y preparación
-
-Vas a escribir un archivo Java de una sola clase y ejecutarlo sin Maven ni Spring. **Prerrequisitos:** JDK 27.0.1, el mismo del resto del curso, y una terminal. Crea la carpeta `academia-labs/microservices/ddd-mitos`.
-
-#### Paso 2 · Contexto y caso real
-
-En RutaFlow, la palabra «Envío» se usa en dos equipos. Para **Ventas**, un envío es lo que el cliente paga: tiene peso y tarifa. Para **Operación**, un envío es lo que el mensajero mueve: tiene una ruta y un estado de entrega. Si los dos equipos comparten una sola clase `Envio` con todos los campos, cada cambio de uno rompe al otro. DDD da nombre a este problema y una forma de resolverlo.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** dominio, lenguaje ubicuo, contexto delimitado (*bounded context*), objeto de valor, agregado.
-
-DDD significa diseñar el software a partir del negocio. El **lenguaje ubicuo** es el vocabulario que comparten el equipo y los expertos del negocio, y ese vocabulario aparece igual en el código. Un **contexto delimitado** es la frontera dentro de la cual una palabra tiene un solo significado. Fuera de esa frontera, la misma palabra puede significar otra cosa.
-
-| Mito | Verdad |
-|---|---|
-| DDD es usar entidades, repositorios y servicios | Esos son patrones tácticos. Lo central es estratégico: lenguaje ubicuo y contextos delimitados |
-| DDD exige microservicios | Un contexto delimitado es una frontera de modelo, no de despliegue. Puede vivir en un monolito modular |
-| Hay que aplicar DDD a todo el sistema | Se invierte en el dominio central, el que diferencia al negocio. Lo genérico se compra o se simplifica |
-| Un solo modelo para toda la empresa es más ordenado | Un modelo único mezcla significados y se vuelve frágil. Cada contexto tiene su modelo y se traducen en la frontera |
-
-**Analogía:** la palabra «banco» significa algo en una plaza y otra cosa en una calle financiera. Nadie se confunde porque el lugar da el significado. Un contexto delimitado es ese «lugar» dentro del software. La analogía se rompe en que, en el software, la traducción entre lugares hay que escribirla de forma explícita.
-
-**Límite de uso:** para un CRUD sencillo sin reglas de negocio importantes, DDD agrega más ceremonia que valor.
+# Módulo 0.2 · Lógica de programación y pensamiento computacional
+
+**Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (2 temas de 3 h). **Dificultad:** 1 de 5.
+**Dependencias:** Módulo 0.1 (ejecutar un programa con `node` y correr un test con `node --test`).
+**Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas. **Laboratorio:**
+`examples/microservicios/modulo-1/` (se verifica con `./verificar.sh`).
+
+Aquí aprendes los cuatro ladrillos con los que se escribe cualquier programa (variables, decisiones,
+repeticiones y funciones) y la forma de pensar que te permite convertir un problema del mundo real en pasos que
+una computadora pueda seguir. Todo microservicio que escribas después, por sofisticado que sea, está hecho de
+estos ladrillos.
 
 ```mermaid
 flowchart LR
-    subgraph Ventas["Contexto Ventas"]
-        V["Envio: peso, tarifa"]
-    end
-    subgraph Operacion["Contexto Operación"]
-        O["Envio: ruta, estado de entrega"]
-    end
-    V -->|"traducción en la frontera: solo el código"| O
+    PR["Problema real<br/>(cobrar una fila, dar cambio)"] --> PC["Pensamiento computacional<br/>descomponer · patrones · abstraer · algoritmo"]
+    PC --> LO["Lógica de programación<br/>variables · decisiones · repeticiones · funciones"]
+    LO --> T["Código + tests<br/>que lo demuestran"]
 ```
 
-#### Paso 4 · Demostración guiada desde cero
+**Texto alternativo:** cuatro cajas en línea. Un problema real pasa por el pensamiento computacional (cuatro
+herramientas), se expresa con la lógica de programación (cuatro ladrillos) y termina en código con tests.
 
-Archivo `academia-labs/microservices/ddd-mitos/DosContextos.java`:
+---
 
-```java
-import java.util.List;
+### Lógica de programación
 
-public class DosContextos {
+#### 1. UBICACIÓN
 
-    // Contexto Ventas: el envío es algo que se cobra.
-    record EnvioVenta(String codigo, int kilos) {
-        EnvioVenta {
-            // Invariante del objeto de valor: un envío sin peso no se puede cobrar.
-            if (kilos <= 0) throw new IllegalArgumentException("Ventas: el peso debe ser positivo");
-        }
-        long tarifaEnCentavos() { return 1_000L + kilos * 120L; }
-    }
+Módulo 0.2, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-1.md` · Laboratorio
+`examples/microservicios/modulo-1/logica/`.
 
-    // Contexto Operación: el envío es algo que se mueve. Mismo nombre, otro modelo.
-    record EnvioOperacion(String codigo, List<String> ruta, String estado) {
-        EnvioOperacion avanzar() { return new EnvioOperacion(codigo, ruta, "EN_RUTA"); }
-    }
+#### 2. PRERREQUISITOS
 
-    // Traducción explícita en la frontera: Operación no recibe el peso ni la tarifa.
-    static EnvioOperacion traducir(EnvioVenta venta, List<String> ruta) {
-        return new EnvioOperacion(venta.codigo(), ruta, "CREADO");
-    }
+- Módulo 0.1: qué es un programa (datos, instrucciones, resultado) y cómo ejecutarlo con `node`.
+- Saber correr un test con `node --test` y leer `✔` / `✖`.
+- Aritmética básica y las comparaciones «mayor que», «menor que», «igual».
 
-    public static void main(String[] args) {
-        var venta = new EnvioVenta("ENV-42", 2);
-        System.out.println("Ventas cobra " + venta.tarifaEnCentavos() + " centavos por " + venta.codigo());
-        var operacion = traducir(venta, List.of("Bodega", "Calle 26", "Cliente")).avanzar();
-        System.out.println("Operación mueve " + operacion.codigo() + " con estado " + operacion.estado());
-        try {
-            new EnvioVenta("ENV-43", 0);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Rechazado: " + e.getMessage());
-        }
-    }
+#### 3. OBJETIVO DE APRENDIZAJE
+
+**Aplicar** variables, decisiones (`if/else`), operadores lógicos (`&&`, `||`), repeticiones (`for`) y funciones
+para resolver las reglas de una taquilla de cine, y **detectar** con un test un error de borde (`>` en lugar de
+`>=`); lo compruebas cuando `logica/cine.test.js` pasa 5 de 5 y sabes explicar por qué fallaba la versión rota.
+
+#### 4. ANALOGÍA VISUAL
+
+Dibuja la **taquilla de un cine** vista desde arriba. Frente a ella, una **fila de cuatro personas** con su edad
+escrita en la camiseta: 8, 25, 67 y 15. La cajera tiene sobre el mostrador:
+
+- una **caja registradora** con una pantalla que dice «Total: 0» y va subiendo (una **variable**);
+- un **cartel de precios con flechas** que se bifurcan: «¿menor de 12? → 8000», «¿60 o más? → 7000»,
+  «si no → 12000» (una **decisión**);
+- una **flecha circular** pintada en el piso que vuelve desde la taquilla al inicio de la fila: «siguiente»
+  (una **repetición**);
+- un **sello** con la palabra «PRECIO» que estampa en cada boleto: siempre hace lo mismo con cualquier edad
+  (una **función**).
+
+Junto a la puerta de la sala, un portero con un letrero: «Entra si tienes boleto **Y** (eres mayor de 18 **O**
+vienes con un adulto)». Ese letrero es lógica booleana: dos condiciones unidas por «y» y «o».
+
+#### 5. DIAGRAMA TÉCNICO
+
+```mermaid
+flowchart TD
+    I([Inicio: total = 0]) --> Q{"¿Queda alguien<br/>en la fila?"}
+    Q -- No --> F([Mostrar total])
+    Q -- Sí --> E{"edad < 0?"}
+    E -- Sí --> X([Error: edad negativa])
+    E -- No --> A{"edad < 12?"}
+    A -- Sí --> P1["precio = 8000"]
+    A -- No --> B{"edad >= 60?"}
+    B -- Sí --> P2["precio = 7000"]
+    B -- No --> P3["precio = 12000"]
+    P1 & P2 & P3 --> S["total = total + precio"] --> Q
+```
+
+**Texto alternativo:** diagrama de flujo vertical. Empieza con total en 0 y pregunta si queda alguien en la
+fila; si no, muestra el total. Si sí, comprueba si la edad es negativa (error), luego si es menor de 12 (precio
+8000), si no, si es 60 o más (7000), y si no, 12000. Suma el precio al total y vuelve a preguntar por la fila.
+
+#### 6. EXPLICACIÓN NIVEL 0
+
+Programar es dar instrucciones exactas. Para eso usas cuatro ladrillos:
+
+1. **Variable:** una caja con nombre donde guardas un dato que puede cambiar. `let total = 0` es la pantalla de la
+   caja registradora.
+2. **Decisión:** «si pasa esto, haz aquello; si no, haz lo otro». En código: `if (edad < 12) { ... } else { ... }`.
+3. **Repetición (bucle):** hacer lo mismo para cada elemento. `for (const edad of fila) { ... }` significa «por
+   cada edad de la fila, haz esto».
+4. **Función:** un grupo de instrucciones con nombre, que recibe datos y devuelve un resultado.
+   `precioBoleto(25)` devuelve `12000`.
+
+Además, las condiciones se pueden combinar: `&&` significa **y** (las dos deben cumplirse), `||` significa **o**
+(basta una), y `!` significa **no**. El resultado de una condición es siempre `true` (verdadero) o `false`
+(falso): eso se llama un valor **booleano**.
+
+#### 7. EXPLICACIÓN INTERMEDIA
+
+- **Orden de evaluación en `if/else if`:** se revisan las condiciones de arriba abajo y se ejecuta **solo la
+  primera** que sea verdadera. Por eso `edad < 12` va antes que `edad >= 60`: el orden es parte de la lógica.
+- **Bordes:** los errores más frecuentes están en los límites (11, 12, 59, 60). `edad > 60` deja fuera a quien
+  tiene exactamente 60. Los tests deben probar **el valor del borde y el de al lado** (`precioBoleto(59)` y
+  `precioBoleto(60)`).
+- **Cortocircuito:** en `tieneBoleto && (...)`, si `tieneBoleto` es `false` JavaScript ni siquiera evalúa el
+  paréntesis: el resultado ya es `false`. Con `||`, si la primera parte es `true`, no mira la segunda.
+- **Precedencia:** `&&` se evalúa antes que `||`. Los paréntesis de `tieneBoleto && (edad >= 18 || vaConAdulto)`
+  no son decoración: sin ellos, un adulto **sin boleto** podría entrar.
+- **Errores explícitos:** ante una entrada imposible (edad negativa), la función **lanza** un error con `throw`
+  en vez de devolver un precio inventado. El test lo comprueba con `assert.throws`.
+- **Comparación estricta:** en JavaScript usa `===` (compara valor y tipo). `==` convierte tipos y produce
+  sorpresas (`'5' == 5` es `true`).
+
+#### 8. EXPLICACIÓN MAESTRA
+
+- **Cadena de `if` frente a tabla de datos.** Con 3 tarifas, `if/else if` es lo más legible. Con 30 tarifas que
+  cambian cada mes, conviene una **tabla de reglas** (un arreglo `[{ hasta: 11, precio: 8000 }, ...]`) que se
+  recorre: el negocio cambia datos, no código. Trade-off: la tabla es flexible pero esconde la lógica en datos
+  que también hay que validar y probar.
+- **Bucle `for` frente a funciones de colección.** `cobrarFila` podría escribirse como
+  `edades.map(precioBoleto).reduce((a, b) => a + b, 0)`. Es más compacta y declarativa (Java la tiene con
+  Streams, Módulo 1), pero al principio el `for` explícito se depura mejor. Elige la que tu equipo lea más rápido.
+- **Excepciones frente a valores de error.** `throw` detiene el flujo y obliga a quien llama a manejarlo; devolver
+  `null` o `-1` es más barato pero se olvida fácil. En un microservicio, un error de validación se convierte en
+  una respuesta 400 en la frontera (Módulo 2 y Módulo 14), nunca en un precio silenciosamente incorrecto.
+- **Cuándo NO** escribir lógica propia: si la regla ya existe en una librería probada (fechas, monedas,
+  impuestos de un país) o en otro servicio que es su dueño, reutilízala; duplicar reglas de negocio en varios
+  servicios es la semilla del «monolito distribuido» (Módulo 30).
+
+#### 9. CÓDIGO EJECUTABLE
+
+Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22). Sin dependencias. `package.json` mínimo del
+laboratorio:
+
+```json
+{
+  "name": "modulo-0-2-logica-y-pensamiento",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=26.13.1" },
+  "scripts": { "test": "node --test" }
 }
 ```
 
-Ejecútalo desde la carpeta del ejemplo:
+Archivo `examples/microservicios/modulo-1/logica/cine.js`:
 
-```bash
-cd academia-labs/microservices/ddd-mitos
-java DosContextos.java
+```javascript
+// Módulo 0.2 · Lógica de programación
+// Los 4 ladrillos de cualquier programa: variables, decisiones, repeticiones y funciones.
+// Ejemplo: la taquilla de un cine decide quién entra y cuánto paga.
+// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
+// Ejecuta: node logica/cine.js
+
+// FUNCIÓN + DECISIÓN: ¿puede entrar a una película para mayores de 18?
+// Regla: entra si tiene boleto Y (es mayor de edad O va con un adulto).
+export function puedeEntrar(edad, tieneBoleto, vaConAdulto) {
+  return tieneBoleto && (edad >= 18 || vaConAdulto);
+}
+
+// DECISIÓN CON VARIAS RAMAS: el precio depende de la edad.
+export function precioBoleto(edad) {
+  if (edad < 0) {
+    throw new Error('La edad no puede ser negativa');
+  } else if (edad < 12) {
+    return 8000; // niños
+  } else if (edad >= 60) {
+    return 7000; // adultos mayores
+  } else {
+    return 12000; // general
+  }
+}
+
+// REPETICIÓN: recorre la fila y suma lo que paga cada persona.
+export function cobrarFila(edades) {
+  let total = 0; // VARIABLE: una caja con nombre cuyo contenido cambia
+  for (const edad of edades) {
+    total += precioBoleto(edad);
+  }
+  return total;
+}
+
+if (import.meta.main) {
+  const fila = [8, 25, 67, 15];
+  console.log(`Fila: ${fila.join(', ')} años`);
+  for (const edad of fila) {
+    console.log(`  ${edad} años -> paga ${precioBoleto(edad)}`);
+  }
+  console.log(`Total de la fila: ${cobrarFila(fila)}`);
+  console.log(`¿Entra un chico de 15 con boleto y sin adulto? ${puedeEntrar(15, true, false)}`);
+  console.log(`¿Entra un chico de 15 con boleto y con adulto? ${puedeEntrar(15, true, true)}`);
+}
 ```
 
-**Explicación por bloques:** `EnvioVenta` y `EnvioOperacion` comparten la palabra «envío», pero cada uno solo tiene los datos que su contexto necesita. El constructor compacto de `EnvioVenta` protege la invariante del peso. `traducir` es la frontera: copia solo el código y fija el estado inicial de Operación. Nada de esto necesita microservicios ni un framework, y eso desmiente dos de los mitos de la tabla.
+#### 10. MINI-LABORATORIO
 
-![Captura de terminal: java DosContextos.java imprime la tarifa de 1240 centavos para ENV-42, el estado EN_RUTA y el rechazo de un envío con peso cero](content/figures/microservices/ddd-dos-contextos.svg)
+1. Desde `examples/microservicios/modulo-1`, ejecuta el programa:
+   ```bash
+   node logica/cine.js
+   ```
+2. **Predice y comprueba:** antes de ejecutar, escribe en papel qué devolverá `precioBoleto(60)`. Luego:
+   ```bash
+   node -e "import('./logica/cine.js').then(m => console.log(m.precioBoleto(60)))"
+   ```
+3. **Rompe la lógica a propósito:** en `logica/cine.js` cambia `edad >= 60` por `edad > 60`, guarda y ejecuta el
+   test. Observa cuál falla. Después, deshaz el cambio.
+   ```bash
+   node --test --test-reporter=spec logica/cine.test.js
+   ```
 
-**Resultado esperado:**
+**Output esperado** (paso 1):
 
 ```text
-Ventas cobra 1240 centavos por ENV-42
-Operación mueve ENV-42 con estado EN_RUTA
-Rechazado: Ventas: el peso debe ser positivo
+Fila: 8, 25, 67, 15 años
+  8 años -> paga 8000
+  25 años -> paga 12000
+  67 años -> paga 7000
+  15 años -> paga 12000
+Total de la fila: 39000
+¿Entra un chico de 15 con boleto y sin adulto? false
+¿Entra un chico de 15 con boleto y con adulto? true
 ```
 
-**Fallo deliberado:** agrega un campo `kilos` a `EnvioOperacion` «para tenerlo a mano» y cambia `traducir` para copiarlo. **Error esperado:** compila y funciona, pero ahora Operación depende de un dato de Ventas. **Diagnóstico:** cuando Ventas cambie la unidad de peso, Operación se rompe sin haberlo pedido. Ese acoplamiento es justo lo que el contexto delimitado evita; quita el campo.
+Paso 2: `7000`. Paso 3 (con el error introducido):
 
-#### Paso 5 · Práctica guiada
+```text
+✔ sin boleto nadie entra, aunque sea adulto (0.748499ms)
+✔ un menor entra solo si va con un adulto (0.153788ms)
+✖ los bordes de edad caen en la tarifa correcta (0.883617ms)
+✔ la fila suma el precio de cada persona (0.146356ms)
+✔ una edad negativa es un error, no un precio (1.317278ms)
+…
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 
-1. **Reproducción:** calcula a mano la tarifa de 2 kilos y compárala con la salida.
-2. **Variación:** agrega a Operación el estado `ENTREGADO` con un método `entregar()`.
-3. **Diagnóstico:** explica por qué una clase `Envio` compartida con peso, tarifa, ruta y estado viola el lenguaje ubicuo de cada equipo.
-4. **Integración:** escribe en `glosario.md` qué significa «envío» en cada contexto, en una frase cada uno.
-5. **Diseño:** propone un tercer contexto, Facturación, y di qué datos recibiría en su frontera.
+  12000 !== 7000
+```
 
-**Pista:** si dudas de si un dato pertenece a un contexto, pregunta qué experto del negocio lo usa para tomar decisiones.
+**Captura comentada:** en el paso 3, solo una línea cambia de `✔` a `✖`. El mensaje `12000 !== 7000` se lee
+«obtuve 12000, esperaba 7000»: la persona de 60 años cayó en la tarifa general. La suma de la fila sigue
+pasando porque en esa fila nadie tiene exactamente 60: los tests de borde atrapan lo que los casos «normales» no.
 
-#### Paso 6 · Práctica independiente
+#### 11. VERIFICACIÓN
 
-Toma un sistema que conozcas (por ejemplo, el inventario de una tienda) y encuentra una palabra que cambie de significado entre dos áreas. Escribe los dos modelos en Java y la función de traducción, sin compartir clases entre ellos.
+Con el código correcto, el test debe pasar completo:
 
-#### Paso 7 · Cierre
+```bash
+node --test --test-reporter=spec logica/cine.test.js
+```
 
-- [ ] Explicas los cuatro mitos y su verdad sin mirar la tabla.
-- [ ] `DosContextos.java` imprime las tres líneas esperadas.
-- [ ] Reprodujiste el fallo deliberado y explicaste el acoplamiento.
-- [ ] `glosario.md` define «envío» en dos contextos.
+Salida real:
 
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confundir contexto delimitado con microservicio, crear capas DDD en un CRUD sin reglas y compartir modelos entre equipos. **Siguiente paso:** el proyecto integrador del módulo usa estas fronteras para defender el monolito modular.
+```text
+✔ sin boleto nadie entra, aunque sea adulto (0.554325ms)
+✔ un menor entra solo si va con un adulto (0.166841ms)
+✔ los bordes de edad caen en la tarifa correcta (0.093232ms)
+✔ la fila suma el precio de cada persona (0.098384ms)
+✔ una edad negativa es un error, no un precio (0.288728ms)
+ℹ tests 5
+ℹ pass 5
+ℹ fail 0
+```
 
-**Transferencia al proyecto integrador «RutaFlow»:** documenta los contextos Ventas y Operación del monolito modular y protege su frontera con las pruebas de ArchUnit de los temas anteriores.
+**Pregunta de comprobación:** si quitas los paréntesis y escribes `tieneBoleto && edad >= 18 || vaConAdulto`,
+¿entra alguien de 30 años sin boleto que va con un adulto? *(Sí: `&&` se evalúa primero, `false || true` es
+`true`. Por eso los paréntesis son parte de la regla.)*
 
-**Fuente oficial:** [Martin Fowler — Bounded Context](https://martinfowler.com/bliki/BoundedContext.html) y [Domain-Driven Design Reference de Eric Evans](https://www.domainlanguage.com/ddd/reference/).
+#### 12. ERROR COMÚN
 
-## Proyecto integrador · Defender el monolito modular de RutaFlow · 3 h
+**Síntoma:** el precio sale mal solo para algunas edades y «el código parece correcto». **Cómo se ve:** en el
+diagrama de flujo, una flecha de borde que cae en la rama equivocada; en el test, `✖` con `12000 !== 7000`.
+**Diagnóstico:** imprime el valor en el borde y en sus vecinos:
 
-Construye un monolito modular mínimo con Envíos, Facturación y Notificaciones. Entrega mapa de capacidades, APIs e internals, dos reglas de dominio sin framework, adaptador en memoria, inventario/grafo de dependencias, ciclo sembrado y corregido, fitness functions con prueba de sensibilidad, matriz de señales y ADR final. La decisión puede ser mantener o extraer, pero debe seguir la evidencia.
+```bash
+node -e "import('./logica/cine.js').then(m => [11,12,59,60].forEach(e => console.log(e, m.precioBoleto(e))))"
+```
 
-### Rúbrica (100 puntos)
+Si `60` muestra `12000`, la comparación es `>` donde la regla dice «60 o más» (`>=`). **Arreglo:** traduce la
+frase del negocio palabra por palabra («o más» → `>=`, «menor de» → `<`) y añade un test por cada borde.
 
-| Evidencia | Puntos |
-|---|---:|
-| Límites por capacidad, invariantes y vocabulario | 15 |
-| APIs públicas pequeñas e internals protegidos | 15 |
-| Dominio puro, puertos y adaptadores sustituibles | 15 |
-| Grafo respaldado y ruptura de ciclo justificada | 15 |
-| ArchUnit rojo→verde y control contra falso verde | 20 |
-| Señales atribuibles, costos y ownership | 10 |
-| ADR con alternativas, consecuencias y reversión | 10 |
+#### 13. PREGUNTA DE ENTREVISTA
 
-**Criterio profesional:** 80/100, sin cero en ArchUnit ni ADR. Guarda comandos, salidas y fallos deliberados; una captura sin artefactos reproducibles no acredita la entrega.
+«¿Qué es la evaluación en cortocircuito y cuándo puede causar un error o evitarlo?»
+
+**Respuesta modelo:** en `a && b`, si `a` es falso no se evalúa `b`; en `a || b`, si `a` es verdadero no se
+evalúa `b`. Sirve para protegerse: `usuario && usuario.nombre` evita leer una propiedad de algo que no existe.
+Puede causar errores si `b` tiene un efecto que esperabas que ocurriera siempre (por ejemplo, registrar un
+evento) o si se usa `||` para valores por defecto con datos válidos falsos: `cantidad || 1` convierte un `0`
+legítimo en `1`; para eso existe `??`, que solo reemplaza `null` o `undefined`.
+
+#### 14. ANTI-PATRÓN RELACIONADO
+
+**La «pirámide» de `if` anidados (*arrow code*):**
+
+```javascript
+// ✖ Anti-patrón: cada regla nueva añade un nivel de sangría
+if (tieneBoleto) {
+  if (edad >= 18) {
+    entra = true;
+  } else {
+    if (vaConAdulto) {
+      entra = true;
+    } else {
+      entra = false;
+    }
+  }
+} else {
+  entra = false;
+}
+```
+
+Se ve como una flecha que apunta a la derecha: el código se aleja del margen con cada condición y es casi
+imposible ver todos los caminos. Exprésalo como una condición con nombre
+(`return tieneBoleto && (edad >= 18 || vaConAdulto)`) o con **retornos tempranos** (`if (!tieneBoleto) return
+false;`) que mantienen el código plano.
+
+---
+
+### Pensamiento computacional
+
+#### 1. UBICACIÓN
+
+Módulo 0.2, Lección 2 de 2 · Fase 0 · Laboratorio `examples/microservicios/modulo-1/pensamiento/`.
+
+#### 2. PRERREQUISITOS
+
+- Tema anterior «Lógica de programación» (variables, decisiones, bucles, funciones y `throw`).
+- Saber dividir y obtener la parte entera (cuántas veces cabe 20000 en 36300: 1).
+
+#### 3. OBJETIVO DE APRENDIZAJE
+
+**Descomponer** un problema real (dar el vuelto en una caja registradora) en subproblemas, **reconocer** el
+patrón que se repite, **abstraerlo** en una función reutilizable y **evaluar** en qué caso ese algoritmo no da la
+mejor respuesta; lo compruebas cuando `pensamiento/cambio.test.js` pasa 6 de 6, incluido el caso donde el
+algoritmo voraz no es óptimo.
+
+#### 4. ANALOGÍA VISUAL
+
+Dibuja una **caja registradora abierta** con sus compartimentos de billetes y monedas ordenados de izquierda a
+derecha, del más grande al más pequeño: 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100. Encima, un papel
+dice «Vuelto: 36300». La mano del cajero hace siempre el **mismo gesto**: mira el compartimento más grande, se
+pregunta «¿cabe en lo que falta?», toma uno si cabe, y si no, se mueve al siguiente compartimento. Junto a la
+caja hay cuatro carteles pegados con cinta:
+
+1. «**Descomponer**: vuelto = pagado − precio; luego elegir piezas; luego contarlas».
+2. «**Patrón**: siempre la pieza más grande que quepa».
+3. «**Abstraer**: da igual si son pesos o dólares; solo importan los valores».
+4. «**Algoritmo**: los pasos exactos, en orden, sin ambigüedad».
+
+En una esquina, un quinto cartel en rojo con una advertencia: «Con monedas de 1, 3 y 4, para dar 6 el gesto da
+4+1+1 (tres monedas), pero 3+3 son solo dos».
+
+#### 5. DIAGRAMA TÉCNICO
+
+```mermaid
+flowchart TD
+    P["Problema: dar el vuelto con pocas piezas"] --> D1["Descomponer"]
+    D1 --> S1["calcularVuelto(precio, pagado)"]
+    D1 --> S2["darCambio(monto, piezas)"]
+    D1 --> S3["contarPiezas(cambio)"]
+    S2 --> PA["Patrón: por cada pieza de mayor a menor,<br/>cuántas = floor(restante / pieza)"]
+    PA --> AB["Abstracción: piezas es un parámetro<br/>(pesos, centavos de dólar…)"]
+    AB --> AL["Algoritmo voraz verificado con tests<br/>+ caso límite donde no es óptimo"]
+```
+
+**Texto alternativo:** diagrama vertical. El problema «dar el vuelto con pocas piezas» se descompone en tres
+funciones: calcularVuelto, darCambio y contarPiezas. darCambio aplica el patrón de tomar, de mayor a menor,
+cuántas piezas caben; ese patrón se abstrae haciendo que la lista de piezas sea un parámetro, y termina en un
+algoritmo voraz verificado con tests, incluido un caso donde no es óptimo.
+
+#### 6. EXPLICACIÓN NIVEL 0
+
+**Pensamiento computacional** es una forma de pensar los problemas para que una computadora pueda resolverlos.
+No requiere computadora: lo usas cuando organizas una mudanza o sigues una receta. Tiene cuatro herramientas:
+
+1. **Descomposición:** partir un problema grande en partes pequeñas. «Dar cambio» = «calcular cuánto devolver» +
+   «elegir billetes» + «contar cuántos di».
+2. **Reconocimiento de patrones:** notar qué se repite. Con cada billete haces lo mismo: «¿cabe? tómalo».
+3. **Abstracción:** quedarte con lo importante y olvidar el detalle. Para el cálculo no importa el color del
+   billete ni el país; solo su valor.
+4. **Algoritmo:** escribir los pasos exactos, en orden, sin dudas posibles. Si dos personas siguen el algoritmo,
+   obtienen el mismo resultado.
+
+Cuando tienes las cuatro, pasar a código es casi traducir.
+
+#### 7. EXPLICACIÓN INTERMEDIA
+
+- La descomposición produce **funciones pequeñas con una sola responsabilidad**: `calcularVuelto` valida y
+  resta, `darCambio` elige piezas, `contarPiezas` suma. Cada una tiene su test.
+- El patrón «toma la pieza más grande que quepa» es un **algoritmo voraz** (*greedy*): en cada paso toma la mejor
+  opción local sin mirar el futuro. `Math.floor(restante / pieza)` calcula cuántas veces cabe una pieza de una
+  sola vez, en lugar de restar de a una.
+- La abstracción aparece como **parámetro con valor por defecto**: `piezas = [50000, …, 100]`. Pasando
+  `[25, 10, 5, 1]` la misma función sirve para centavos de dólar. Además, la función ordena una **copia**
+  (`[...piezas].sort(...)`) para no modificar el arreglo de quien la llama.
+- El algoritmo declara sus **casos imposibles**: pagar de menos lanza un error; un monto que no se puede formar
+  con las piezas (por ejemplo, 150 con piezas de 100) también.
+
+#### 8. EXPLICACIÓN MAESTRA
+
+- **Voraz frente a programación dinámica.** El voraz es O(n) en el número de tipos de pieza, simple y correcto
+  para sistemas monetarios «canónicos» como los de la mayoría de países. Con un sistema no canónico (1, 3, 4) no
+  garantiza el mínimo; la **programación dinámica** (calcular el mínimo para cada monto de 0 a N) sí lo
+  garantiza, a cambio de O(N × piezas) en tiempo y memoria. Alternativa intermedia: voraz + verificación de que
+  el sistema de piezas es canónico. Elige según los datos reales, y documenta el supuesto en un test, como hace
+  aquí el último caso.
+- **La descomposición es diseño.** Las mismas cuatro herramientas deciden, a escala, cómo partir un sistema en
+  servicios (DDD, Módulo 5): descomponer por capacidades del negocio, reconocer patrones de comunicación, abstraer
+  contratos. Una mala descomposición en funciones produce código enredado; una mala descomposición en servicios
+  produce un monolito distribuido.
+- **Cuándo NO** abstraer: si solo existe un caso de uso y no hay señales de un segundo, una abstracción prematura
+  (parámetros, interfaces, configuraciones) añade complejidad sin beneficio. Regla práctica: abstrae al ver el
+  patrón repetirse, no al imaginarlo.
+
+#### 9. CÓDIGO EJECUTABLE
+
+Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22). Sin dependencias; usa el `package.json` del tema
+anterior. Archivo `examples/microservicios/modulo-1/pensamiento/cambio.js`:
+
+```javascript
+// Módulo 0.2 · Pensamiento computacional
+// Problema: una caja registradora debe devolver el cambio con la menor cantidad de billetes/monedas.
+// Las 4 herramientas del pensamiento computacional aplicadas:
+//   1. Descomposición: "dar cambio" = calcular el vuelto + elegir piezas + contar piezas.
+//   2. Patrones: siempre se repite lo mismo: "toma la pieza más grande que quepa".
+//   3. Abstracción: no importa si son pesos o dólares; solo importan los valores de las piezas.
+//   4. Algoritmo: los pasos exactos, en orden, que escribimos abajo.
+// Requisitos: Node.js 26.13.1 LTS (funciona desde Node 22). Sin dependencias.
+// Ejecuta: node pensamiento/cambio.js
+
+// Paso de la descomposición 1: calcular el vuelto.
+export function calcularVuelto(precio, pagado) {
+  if (pagado < precio) throw new Error(`Faltan ${precio - pagado} para pagar`);
+  return pagado - precio;
+}
+
+// Pasos 2 y 3: elegir piezas (patrón repetido) usando valores abstractos.
+export function darCambio(monto, piezas = [50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100]) {
+  const ordenadas = [...piezas].sort((a, b) => b - a); // de la más grande a la más pequeña
+  const resultado = {};
+  let restante = monto;
+  for (const pieza of ordenadas) {
+    const cuantas = Math.floor(restante / pieza); // ¿cuántas veces cabe esta pieza?
+    if (cuantas > 0) {
+      resultado[pieza] = cuantas;
+      restante -= cuantas * pieza;
+    }
+  }
+  if (restante !== 0) throw new Error(`No se puede dar exacto: sobran ${restante}`);
+  return resultado;
+}
+
+export function contarPiezas(cambio) {
+  return Object.values(cambio).reduce((suma, n) => suma + n, 0);
+}
+
+if (import.meta.main) {
+  const vuelto = calcularVuelto(13700, 50000);
+  const cambio = darCambio(vuelto);
+  console.log(`Precio 13700, pagan con 50000 -> vuelto ${vuelto}`);
+  for (const [pieza, cuantas] of Object.entries(cambio).sort((a, b) => b[0] - a[0])) {
+    console.log(`  ${cuantas} x ${pieza}`);
+  }
+  console.log(`Piezas entregadas: ${contarPiezas(cambio)}`);
+}
+```
+
+#### 10. MINI-LABORATORIO
+
+1. **Primero sin computadora:** en papel, descompón «dar el vuelto de 50000 para una compra de 13700» y escribe
+   cuántas piezas de cada valor entregarías.
+2. Desde `examples/microservicios/modulo-1`, compara tu papel con el programa:
+   ```bash
+   node pensamiento/cambio.js
+   ```
+3. Prueba la abstracción con otras piezas (centavos de dólar) y el caso donde el voraz falla:
+   ```bash
+   node -e "import('./pensamiento/cambio.js').then(m => { console.log(m.darCambio(68, [25, 10, 5, 1])); console.log(m.darCambio(6, [1, 3, 4])); })"
+   ```
+
+**Output esperado** (paso 2):
+
+```text
+Precio 13700, pagan con 50000 -> vuelto 36300
+  1 x 20000
+  1 x 10000
+  1 x 5000
+  1 x 1000
+  1 x 200
+  1 x 100
+Piezas entregadas: 6
+```
+
+Paso 3:
+
+```text
+{ '1': 3, '5': 1, '10': 1, '25': 2 }
+{ '1': 2, '4': 1 }
+```
+
+**Captura comentada:** en el paso 3, la primera línea dice 2 de 25, 1 de 10, 1 de 5 y 3 de 1 (68 en 7 piezas).
+La segunda dice 1 de 4 y 2 de 1: tres piezas para 6, cuando 3 + 3 lo haría con dos. Node muestra las claves
+numéricas en orden ascendente; el contenido es lo que importa.
+
+#### 11. VERIFICACIÓN
+
+```bash
+node --test --test-reporter=spec pensamiento/cambio.test.js
+```
+
+Salida real:
+
+```text
+✔ el vuelto es lo pagado menos el precio (0.615142ms)
+✔ si pagan de menos, es un error (0.306166ms)
+✔ 36300 se entrega con 6 piezas (0.613276ms)
+✔ vuelto 0 no entrega piezas (0.088844ms)
+✔ la abstracción sirve con otras piezas (centavos de dólar) (0.290367ms)
+✔ el patrón voraz no siempre da el mínimo: con piezas 1, 3 y 4, para 6 da 3 piezas y lo óptimo es 2 (0.10493ms)
+ℹ tests 6
+ℹ pass 6
+ℹ fail 0
+```
+
+Para el módulo completo: `./verificar.sh` (11 tests y `RESULTADO: OK · Módulo 0.2 (lógica y pensamiento
+computacional) verificado`). **Pregunta de comprobación:** ¿cuál de las cuatro herramientas te permitió reusar
+`darCambio` con centavos de dólar sin cambiar su código? *(La abstracción: las piezas son un parámetro.)*
+
+#### 12. ERROR COMÚN
+
+**Síntoma:** empiezas a escribir código sin descomponer y terminas con una función de 60 líneas que «casi
+funciona». **Cómo se ve:** en el diagrama, una sola caja gigante en vez de tres; en el código, variables que
+cambian en muchos lugares y casos que no sabes dónde probar. Un caso concreto: olvidar ordenar las piezas.
+
+```bash
+node -e "const p=[100,500,200]; let r=700, s=[]; for (const x of p) { const c=Math.floor(r/x); if(c){s.push(c+'x'+x); r-=c*x;} } console.log(s)"
+```
+
+Imprime `[ '7x100' ]`: siete monedas en lugar de dos (500 + 200), porque el patrón «la más grande primero» no se
+cumplió. **Diagnóstico:** escribe el algoritmo en pasos numerados en español y compáralo con el código línea a
+línea. **Arreglo:** descompón primero, una función por paso, y deja que el test del caso «normal» (36300 → 6
+piezas) te avise si el patrón se rompe.
+
+#### 13. PREGUNTA DE ENTREVISTA
+
+«¿Qué es un algoritmo voraz y cómo decides si es suficiente?»
+
+**Respuesta modelo:** es un algoritmo que en cada paso toma la mejor opción local sin reconsiderar decisiones
+pasadas. Es suficiente cuando el problema tiene la propiedad de que las elecciones locales óptimas llevan al
+óptimo global (por ejemplo, sistemas monetarios canónicos o ciertos problemas de planificación). Lo decido con
+evidencia: busco un contraejemplo pequeño, lo dejo como test y, si existe y el resultado importa, uso
+programación dinámica u otra técnica exacta, midiendo su costo. Si el voraz es «suficientemente bueno» para el
+negocio, lo documento explícitamente.
+
+#### 14. ANTI-PATRÓN RELACIONADO
+
+**La «función Dios»** (*God function*): una sola función que valida, calcula, elige piezas, formatea el texto y lo
+imprime.
+
+```javascript
+// ✖ Anti-patrón: todo mezclado; no se puede probar el cálculo sin capturar la consola
+function cajaRegistradora(precio, pagado) {
+  if (pagado < precio) { console.log('ERROR'); return; }
+  let r = pagado - precio;
+  for (const x of [50000, 20000, 10000]) { /* ... */ console.log(x); }
+  console.log('Gracias por su compra');
+}
+```
+
+Se ve como una función larga cuyo nombre no describe una sola acción, con `console.log` mezclado con cálculo y
+errores que se imprimen en vez de lanzarse. Descompón: funciones puras que calculan (probables) y un borde que
+imprime. A escala de arquitectura, es el mismo error que un servicio que «lo hace todo».

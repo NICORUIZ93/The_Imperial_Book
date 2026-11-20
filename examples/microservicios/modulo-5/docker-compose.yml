@@ -1,0 +1,38 @@
+# Módulo 1 (modulo-5) · Infraestructura de las fichas que necesitan Linux o una JVM especial.
+# Nada arranca por defecto: cada bloque se activa con su perfil.
+#   CRaC  : ./mvnw -q -f f023-crac/pom.xml package -DskipTests
+#           docker compose --profile crac run --rm crac-checkpoint
+#           docker compose --profile crac up crac-restore
+#   Native: docker compose --profile native run --rm native-build
+#           docker compose --profile native up native-run
+services:
+  crac-checkpoint:
+    profiles: ["crac"]
+    build: ./f023-crac
+    image: academia/f023-crac:1.0.0
+    # Arranca, crea el checkpoint en onRefresh y el proceso termina.
+    command: ["java", "-Dspring.context.checkpoint=onRefresh", "-XX:CRaCCheckpointTo=/crac", "-jar", "/app/app.jar"]
+    cap_add: ["CHECKPOINT_RESTORE", "SYS_PTRACE"]
+    volumes: ["./f023-crac/target/crac:/crac"]
+  crac-restore:
+    profiles: ["crac"]
+    image: academia/f023-crac:1.0.0
+    # Restaura la JVM ya inicializada desde los archivos del checkpoint.
+    command: ["java", "-XX:CRaCRestoreFrom=/crac"]
+    cap_add: ["CHECKPOINT_RESTORE", "SYS_PTRACE"]
+    volumes: ["./f023-crac/target/crac:/crac"]
+    ports: ["8080:8080"]
+  native-build:
+    profiles: ["native"]
+    image: ghcr.io/graalvm/native-image-community:25
+    working_dir: /workspace/f024-graalvm-native
+    entrypoint: ["../mvnw", "-Pnative", "-DskipTests", "native:compile"]
+    volumes: [".:/workspace", "m2:/root/.m2"]
+  native-run:
+    profiles: ["native"]
+    image: ghcr.io/graalvm/native-image-community:25
+    entrypoint: ["/workspace/f024-graalvm-native/target/f024-graalvm-native"]
+    volumes: [".:/workspace"]
+    ports: ["8081:8080"]
+volumes:
+  m2:

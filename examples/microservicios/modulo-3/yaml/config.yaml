@@ -1,0 +1,13 @@
+# Módulo 0.4 · YAML: configuración de un servicio. Los espacios de la izquierda SON la estructura.
+# Regla: sangría con ESPACIOS (nunca tabulaciones). Un "-" inicia un elemento de lista.
+servicio:
+  nombre: pedidos
+  puerto: 8080
+  depuracion: false
+base_de_datos:
+  url: "postgres://localhost:5432/pedidos"
+  pool: 10
+paises_habilitados:
+  - CO
+  - MX
+  - "NO"   # entre comillas: así siempre es el texto "NO" (Noruega), en cualquier versión de YAML
