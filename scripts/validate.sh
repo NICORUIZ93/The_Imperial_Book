@@ -52,6 +52,7 @@ echo "== Specs"
 echo "== Formato único (specs/021)"
 python3 scripts/validate_formato.py --check > /tmp/validate_formato.out || { tail -1 /tmp/validate_formato.out; exit 1; }
 tail -1 /tmp/validate_formato.out
+python3 scripts/build_estado_temas.py --check
 
 # Guarda contra recursión: hay criterios cuya verificación es este mismo script.
 if [ -n "${VALIDATE_SH_EN_CURSO:-}" ]; then
