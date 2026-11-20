@@ -10,3 +10,5 @@ Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 - [ ] Z5 · todo tema con diagrama o imagen
 - [ ] Z6 · Floci con lección de entrada y laboratorios verificados
 - [ ] Z7 · laboratorios de todos los cursos verificados en el Mac
+- [ ] Z8 · Java, Gradle y Spring primero, con laboratorios en Gradle verificados
+- [ ] Z9 · profundidad: mitad de temas en Integración/Experto, ejemplo realista, error real y criterio
