@@ -1745,7 +1745,7 @@ publica en ghcr.io; si es un pull request, termina sin publicar.
 
 Versiones: **GitHub Actions** (servicio), **`actions/checkout` v7.0.1** (SHA `3d3c42e5aac5ba805825da76410c181273ba90b1`)
 y **`actions/setup-node` v7.1.0** (SHA `949feb2413d6458794dcd2491c4babbbce0c15c1`), leídos de la página *Latest
-release* de cada repositorio el 2026-11-20; runner **`ubuntu-24.04`**; **Node.js 26.13.1**.
+release* de cada repositorio y confirmados con `git ls-remote` contra esas etiquetas el 2026-11-20; runner **`ubuntu-24.04`**; **Node.js 26.13.1**.
 
 `f145-github-actions/ci.yml` (cópialo a `.github/workflows/ci.yml` de un repositorio cuya raíz sea este laboratorio):
 

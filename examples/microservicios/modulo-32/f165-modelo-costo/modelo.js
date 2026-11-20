@@ -7,6 +7,7 @@ import { HORAS_MES, p, usd } from '../comun/precios.js';
 
 const SEG_MES = HORAS_MES * 3600;
 const GB = 1024 ** 3;
+const SENTIDOS_COBRADOS = 2;
 
 /** Devuelve las partidas mensuales en USD y el costo por cada 1000 pedidos. */
 export function costear(arq, { soloComputo = false } = {}) {
@@ -18,7 +19,8 @@ export function costear(arq, { soloComputo = false } = {}) {
     partidas['NAT gateway (horas)'] = r.natGateways * HORAS_MES * p('natHora');
     partidas['NAT gateway (GB)'] = r.gbSalientesMes * p('natGb');
     const gbInternos = arq.pedidosMes * r.llamadasInternasPorPedido * r.kbPorLlamada * 1024 / GB;
-    partidas['tráfico entre zonas'] = gbInternos * r.fraccionEntreZonas * p('entreZonasGb');
+    // AWS cobra el GB que cruza de zona dos veces: al que lo envía (salida) y al que lo recibe (entrada).
+    partidas['tráfico entre zonas'] = gbInternos * r.fraccionEntreZonas * p('entreZonasGb') * SENTIDOS_COBRADOS;
     const gbLogs = arq.pedidosMes * arq.logs.lineasPorPedido * arq.logs.bytesPorLinea / GB;
     partidas['logs (ingesta)'] = gbLogs * p('logsIngestaGb');
   }

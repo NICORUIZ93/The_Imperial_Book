@@ -19,3 +19,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las ramas
 | [018](018-microservicios-de-cero-a-maestro.md) | Microservicios de Cero a Maestro (prompt del dueño) | hecho |
 | [019](019-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
 | [020](020-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |
+| [021](021-reestructuracion-total-de-la-academia.md) | Reestructuración total: un tema, un lugar, una forma (incluye Floci) | en curso |

@@ -60,7 +60,7 @@ export const ESCENARIOS = {
   },
 };
 
-export function informe(computoMes = 396.30) {
+export function informe(computoMes = 398.14) {
   const lineas = [];
   for (const e of Object.values(ESCENARIOS)) {
     const f = factura(e);
