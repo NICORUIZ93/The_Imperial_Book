@@ -18,3 +18,6 @@ Pendiente menor de Z0: comprobar los comandos de Floci del README en el Mac (`pr
 
 Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicios conserva su ficha de 14 puntos).
 - [ ] Z11 · Microservicios con Gradle verificado en el Mac y temario contrastado
+
+Decisiones del dueño sobre los temarios (2026-11-20): siempre la versión extendida, nunca la reducida.
+Gradle: 28 módulos y 166 temas. Java: 279 temas. Spring: 281 temas (Spring AI incluido).

@@ -42,7 +42,10 @@ El listado completo de temas actuales está en `docs/reestructuracion/listado-de
 8. **Floci es la nube local** (AWS, Azure y GCP con el `docker-compose.yml` de la raíz). LocalStack solo
    como comparación. Cada laboratorio dice qué emula Floci y qué cambia en la nube real.
 9. **Exactitud.** Nada sin ejecutar o sin fuente primaria; cada curso se verifica en el Mac del dueño.
-10. **El dueño aprueba** el formato, el mapa de conceptos y cada temario antes de reescribir. Se trabaja un
+10. **Siempre la versión extendida.** Decisión del dueño (2026-11-20): nunca se elige la variante reducida
+    de un temario o de un curso; ante dos tamaños, el más completo. Los temas que una fuente cubre y el
+    curso no, se añaden.
+11. **El dueño aprueba** el formato, el mapa de conceptos y cada temario antes de reescribir. Se trabaja un
     curso a la vez y en `main`.
 
 ## 3. Formato educativo único
